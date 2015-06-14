@@ -1,0 +1,82 @@
+@mixin gerp-label {
+	
+	/* TODO fix in base theme */
+	.v-label {
+		overflow: visible;
+	}
+	
+	.v-label.h1 {
+		font-size: 36px;
+		line-height: 1;
+		font-weight: 300;
+		-webkit-font-smoothing: antialiased;
+		letter-spacing: -0.05em;
+	/* 	color: #404346; */
+	}
+	
+	.v-label.h2 {
+		color: #404346;
+		font-size: 22px;
+		line-height: 1;
+		font-weight: 1;
+		padding: .5em 0;
+		-webkit-font-smoothing: antialiased;
+	}
+	
+	.v-label.h3 {
+		color: #404346;
+		font-size: 22px;
+		line-height: 1;
+		font-weight: 1;
+		padding-left: 10px;
+		-webkit-font-smoothing: antialiased;
+	}
+	.v-label.light {
+		color: #979699;
+	}
+	
+	.v-label.h4 {
+		font-weight: bold;
+		text-transform: uppercase;
+		color: #349aff;
+	}
+	
+		.v-label.h5 {
+		font-size: 36px;
+		line-height: 1;
+		font-weight: inherit;
+		/*-webkit-font-smoothing: antialiased;*/
+		letter-spacing: -0.05em;
+	/* 	color: #404346; */
+	}
+	
+		.v-label.h7 {
+		font-size: 12px;
+		line-height: 1;
+		font-weight: inherit;
+		/*-webkit-font-smoothing: antialiased;*/
+		letter-spacing: -0.05em;
+	/* 	color: #404346; */
+	}
+		.v-label.h7-text {
+		font-size: 12px;
+		background: #e6e6e6 ;
+		line-height: 1;
+		font-weight: inherit;
+		/*-webkit-font-smoothing: antialiased;*/
+		letter-spacing: -0.05em;
+	/* 	color: #404346; */
+	}
+
+.v-label.h6 {
+		/*font-size: 36px;*/
+		/*line-height: 1;*/
+		padding: 1px;
+		 top: 50px;
+		font-weight: inherit;
+		/*-webkit-font-smoothing: antialiased;*/
+		letter-spacing: -0.05em;
+	/* 	color: #404346; */
+	padding-bottom: 36px;
+	}
+}

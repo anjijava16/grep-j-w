@@ -1,0 +1,256 @@
+<html lang="en">
+
+<head>     
+	<title>Dashboard</title>   
+      
+        <!-- CSS INCLUDE -->        
+        <link rel="stylesheet" type="text/css" id="theme" href="widget.css"/>
+        
+        <!-- EOF CSS INCLUDE -->  
+<style>
+
+.navigation {
+    border: 1px solid transparent;
+    margin-bottom: 20px;
+    min-height: 50px;
+    position: relative;
+}
+
+
+.page-container {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    clear: both;
+}
+
+.row {
+    margin-left: -15px;
+    margin-right: -15px;
+	clear:both;
+}
+
+.col-md-12 {
+    width: 100%;
+}
+
+.col-md-3 {
+    width: 20%;
+    float:left;
+}
+
+.col-md-2 {
+    width: 15%;
+}
+
+/*.page-container {
+    width: 100%;
+    
+    min-height: 100%;
+    position: relative;
+    background: none repeat scroll 0% 0% #33414E;
+    transition: all 200ms ease 0s;
+}
+.column_3 {
+    width: 19%;
+}*/
+</style>		
+    </head>
+    <body>
+    	
+		<div class="page-container">
+		<div style="height: 10px"></div>
+			<div class="row">
+				<div class="col-md-3 float_left">
+					<div class="widget widget-default widget-item-icon">
+						<div class="widget-main-title">
+						<span>Products</span>
+						</div>
+		                <div class="widget-item-left widget-danger">
+		                    <span class="fa fa-suitcase"></span>
+		                </div>
+		                    <div class="widget-data">
+		                        <div class="widget-int num-count" location="productCount">6,504</div>
+		                        
+		                        <div class="widget-subtitle">Total Products</div>
+		                    </div>
+						  
+						
+		            </div>
+				</div>
+				<div class="col-md-3 float_left">
+					<div class="widget widget-default widget-item-icon">
+						<div class="widget-main-title">
+						<span>Clients</span>
+						</div>
+		                <div class="widget-item-left widget-warning">
+		                    <span class="fa fa-users"></span>
+		                </div>
+		                    <div class="widget-data">
+		                        <div class="widget-int num-count" location="clientCount">2,102</div>
+		                       
+		                        <div class="widget-subtitle">Total Clients</div>
+		                    </div>
+						  
+						
+		            </div>
+				</div>
+				<div class="col-md-3 float_left">
+					<div class="widget widget-default widget-item-icon">
+						<div class="widget-main-title">
+						<span>New Revenue</span>
+						</div>
+		                <div class="widget-item-left widget-info">
+		                    <span class="fa fa-money"></span>
+		                </div>
+		                    <div class="widget-data">
+		                        <div class="widget-int num-count">307</div>
+		                        
+		                        <div class="widget-subtitle">New customer this month</div>
+		                    </div>
+						   
+						
+		            </div>
+				</div>
+				<div class="col-md-3 float_left">
+					<div class="widget widget-default widget-item-icon">
+						<div class="widget-main-title">
+						<span>Total Leads</span>
+						</div>
+		                <div class="widget-item-left widget-success">
+		                    <span class="fa fa-users"></span>
+		                </div>
+		                    <div class="widget-data">
+		                        <div class="widget-int num-count">$375K</div>
+		                       
+		                        <div class="widget-subtitle">New revenue this month</div>
+		                    </div>
+						  
+						
+		            </div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2 float_left">
+					<div onclick="location.href='#';" class="widget widget-default widget-item-icon widget-item-icon-bottom">
+					<div class="widget-main-title">
+						<span>Sales Enquires</span>
+						</div>
+				        <div class="row">
+							<div class="col-md-4">
+								<div class="widget-item-left widget-item-small widget-primary ">
+						            <span class="fa fa-pencil-square-o"></span>
+						        </div>
+							</div>
+							<div class="col-md-8">                           
+								<div class="widget-small-data">
+								    <div class="widget-small-int num-count" style="margin-left: -50px;" location="enquirycount">548</div>
+								    <div class="widget-subtitle" style="margin-left: -30px;">Approved Enquires</div>
+								    
+								</div>
+							</div>  
+						</div>      
+				        
+				    </div>
+				</div>
+				<div class="col-md-2 float_left">
+					<div onclick="location.href='#';" class="widget widget-default widget-item-icon widget-item-icon-bottom">
+					<div class="widget-main-title">
+						<span>Documents</span>
+						</div>
+				        <div class="row">
+							<div class="col-md-4">
+								<div class="widget-item-left widget-item-small widget-primary ">
+						            <span class="fa fa-hand-o-right"></span>
+						        </div>
+							</div>
+							<div class="col-md-8">                           
+								<div class="widget-small-data">
+								    <div class="widget-small-int num-count" location="quotationcount">548</div>
+								    <div class="widget-subtitle">Design Documents</div>
+								    
+								</div>
+							</div>  
+						</div>      
+				        
+				    </div>
+				</div>
+				<div class="col-md-2 float_left">
+					<div onclick="location.href='#';" class="widget widget-default widget-item-icon widget-item-icon-bottom">
+					<div class="widget-main-title">
+						<span>ECR</span>
+						</div>
+				        <div class="row">
+							<div class="col-md-4">
+								<div class="widget-item-left widget-item-small widget-primary ">
+						            <span class="fa fa-star"></span>
+						        </div>
+							</div>
+							<div class="col-md-8">                           
+								<div class="widget-small-data">
+								    <div class="widget-small-int num-count" location="pocount"></div>
+								    <div class="widget-subtitle">Pending EC Request</div>
+								    
+								</div>
+							</div>  
+						</div>      
+				        
+				    </div>
+				</div>
+				<div class="col-md-2 float_left">
+					<div onclick="location.href='#';" class="widget widget-default widget-item-icon widget-item-icon-bottom">
+					<div class="widget-main-title">
+						<span>ECN</span>
+						</div>
+				        <div class="row">
+							<div class="col-md-4">
+								<div class="widget-item-left widget-item-small widget-primary ">
+						            <span class="fa fa-calendar-o"></span>
+						        </div>
+							</div>
+							<div class="col-md-8">                           
+								<div class="widget-small-data">
+								    <div class="widget-small-int num-count" location="invoicecount"></div>
+								    <div class="widget-subtitle">Pending EC Note</div>
+								    
+								</div>
+							</div>  
+						</div>      
+				        
+				    </div>
+				</div>
+				<div class="col-md-2 float_left">
+					<div onclick="location.href='#';" class="widget widget-default widget-item-icon widget-item-icon-bottom">
+					<div class="widget-main-title">
+						<span>Work Orders</span>
+						</div>
+				        <div class="row">
+							<div class="col-md-4">
+								<div class="widget-item-left widget-item-small widget-primary ">
+						            <span class="fa fa-cogs"></span>
+						        </div>
+							</div>
+							<div class="col-md-8">                           
+								<div class="widget-small-data">
+								    <div class="widget-small-int num-count" location="workordercount">548</div>
+								    <div class="widget-subtitle">Pending Workorders</div>
+								    
+								</div>
+							</div>  
+						</div>      
+				        
+				    </div>
+				</div>
+				
+			</div>
+			<div class="row grid" style="min-height:280px;" >
+			<div class="widget-main-title">
+						<span>Total Income</span>
+						
+						</div>
+						<div location="marketchart"></div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,893 @@
+/**
+ * File Name 		: POMMSReceipts.java 
+ * Description 		: this class is used for add/edit POMMSReceipts details. 
+ * Author 			: Karthikeyan R
+ * Date 			: Oct 18, 2014
+ * Copyright (C) 2014 GNTS Technologies pvt. ltd. * All rights reserved.
+ * 
+ * This software is the confidential and proprietary information of GNTS
+ * Technologies pvt. ltd.
+ * Version       Date           	  Modified By               Remarks
+ * 0.1          Oct 18, 2014          Karthikeyan R 		    Initial Version
+ */
+package com.gnts.mms.txn;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import org.apache.log4j.Logger;
+import com.gnts.base.domain.mst.BranchDM;
+import com.gnts.base.domain.mst.CompanyLookupDM;
+import com.gnts.base.domain.mst.SlnoGenDM;
+import com.gnts.base.service.mst.BranchService;
+import com.gnts.base.service.mst.CompanyLookupService;
+import com.gnts.base.service.mst.SlnoGenService;
+import com.gnts.erputil.BASEConstants;
+import com.gnts.erputil.components.GERPAddEditHLayout;
+import com.gnts.erputil.components.GERPButton;
+import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPPanelGenerator;
+import com.gnts.erputil.components.GERPPopupDateField;
+import com.gnts.erputil.components.GERPTable;
+import com.gnts.erputil.components.GERPTextArea;
+import com.gnts.erputil.components.GERPTextField;
+import com.gnts.erputil.constants.GERPErrorCodes;
+import com.gnts.erputil.exceptions.ERPException;
+import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
+import com.gnts.erputil.exceptions.ERPException.ValidationException;
+import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.UploadDocumentUI;
+import com.gnts.erputil.util.DateUtils;
+import com.gnts.mms.domain.mst.MaterialDM;
+import com.gnts.mms.domain.txn.IndentHdrDM;
+import com.gnts.mms.domain.txn.PoReceiptDtlDM;
+import com.gnts.mms.domain.txn.PoReceiptHdrDM;
+import com.gnts.mms.service.mst.MaterialService;
+import com.gnts.mms.service.txn.IndentHdrService;
+import com.gnts.mms.service.txn.PoReceiptDtlService;
+import com.gnts.mms.service.txn.PoReceiptHdrService;
+import com.gnts.sms.domain.txn.PurchasePOHdrDM;
+import com.gnts.sms.service.txn.PurchasePOHdrService;
+import com.gnts.sms.txn.PurchaseEnquiry;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.server.UserError;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.Align;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+
+public class POMMSReceipts extends BaseUI {
+	// Bean Creation
+	private PoReceiptHdrService servicePoReceiptHdr = (PoReceiptHdrService) SpringContextHelper.getBean("poRecepitHdr");
+	private PoReceiptDtlService servicePoReceiptDtl = (PoReceiptDtlService) SpringContextHelper.getBean("poRecepitDtl");
+	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
+	private IndentHdrService serviceIndent = (IndentHdrService) SpringContextHelper.getBean("IndentHdr");
+	private PurchasePOHdrService servicepurchaePOHdr = (PurchasePOHdrService) SpringContextHelper
+			.getBean("PurchasePOhdr");
+	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
+	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	// Parent layout for all the input controls
+	private HorizontalLayout hlSearchLayout;
+	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
+	private VerticalLayout hlevdDoc = new VerticalLayout();
+	private VerticalLayout hlrefDoc = new VerticalLayout();
+	// User Input Components for Purchase Enquire Details
+	private Button btnadd = new GERPButton("Add", "addbt", this);
+	// POHdr Recepits Components
+	private GERPComboBox cbBranch, cbDocType, cbHdrStatus, cbindentid, cbPoNo;
+	private GERPTextField tfLotNo, tfVendorDcNo, tfVenInvNo;
+	private TextArea taRecepitRemark;
+	private PopupDateField dfReceiptDate, dfvendorDt, dfvendorInvDt;
+	private CheckBox chkBillRaised;
+	private FormLayout flHdr1, flHdr2, flHdr3, flHdr4;
+	// PODtl Recepits Components
+	private ComboBox cbMaterial, cbmaterialUOM, cbDtlStatus;
+	private TextField tfReceiptqty, tfRejectqty;
+	private TextArea taRejectReason;
+	private Table tblReceiptDtl = new GERPTable();
+	private List<PoReceiptDtlDM> receiptDtlList = null;
+	private FormLayout flDtl1, flDtl2, flDtl3, flDtl4, flDtl5;
+	// Bean Container
+	private BeanItemContainer<PoReceiptHdrDM> beanPoReceiptHdrDM = null;
+	private BeanItemContainer<PoReceiptDtlDM> beanPoReceiptDtlDM = null;
+	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
+	private Button btndelete = new GERPButton("Delete", "delete", this);
+	// local variables declaration
+	private Long companyid, enquiryId, receiptId, EmployeeId, moduleId, branchId;
+	private int recordCnt = 0;
+	private String username, lotNo;
+	// Initialize logger
+	private Logger logger = Logger.getLogger(PurchaseEnquiry.class);
+	private static final long serialVersionUID = 1L;
+	
+	public POMMSReceipts() {
+		// Get the logged in user name and company id from the session
+		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
+		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Inside PurchasePoReceipt() constructor");
+		// Loading the UI
+		buildView();
+	}
+	
+	// Build View
+	private void buildView() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting PurchaseEnquiry UI");
+		// Initialization for Purchase Order Receipts Hdr Details user input components
+		cbPoNo = new GERPComboBox("PO No");
+		cbPoNo.setItemCaptionPropertyId("pono");
+		loadPoNo();
+		cbBranch = new GERPComboBox("Branch");
+		cbBranch.setItemCaptionPropertyId("branchName");
+		loadBranchList();
+		dfReceiptDate = new GERPPopupDateField("Recepit Date");
+		dfReceiptDate.setInputPrompt("Select Date");
+		dfReceiptDate.setDateFormat("dd-MMM-yyyy");
+		dfReceiptDate.setWidth("130");
+		cbDocType = new GERPComboBox("Document Type");
+		cbDocType.addItem("DC");
+		cbDocType.addItem("Invoice");
+		tfLotNo = new GERPTextField("LotNo.");
+		tfVendorDcNo = new GERPTextField("Vendor Doc No.");
+		dfvendorDt = new GERPPopupDateField("Vendor Document Date");
+		dfvendorDt.setInputPrompt("Select Date");
+		dfvendorDt.setDateFormat("dd-MMM-yyyy");
+		cbindentid = new GERPComboBox("Indent No");
+		cbindentid.setItemCaptionPropertyId("indentNo");
+		cbindentid.setWidth("150");
+		loadindent();
+		tfVenInvNo = new GERPTextField("Vendor Invoice No.");
+		dfvendorInvDt = new GERPPopupDateField("Vendor Invoice Date");
+		dfvendorInvDt.setInputPrompt("Select Date");
+		dfvendorInvDt.setDateFormat("dd-MMM-yyyy");
+		taRecepitRemark = new GERPTextArea("Remarks");
+		taRecepitRemark.setHeight("50");
+		chkBillRaised = new CheckBox("Bill Raised?");
+		// Receipt Detail
+		cbMaterial = new GERPComboBox("Material Name");
+		cbMaterial.setItemCaptionPropertyId("materialName");
+		cbMaterial.setWidth("150");
+		cbMaterial.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (cbMaterial.getValue() != null) {
+					MaterialDM materialDM = (MaterialDM) cbMaterial.getValue();
+					System.out.println("materialDM.getMaterialUOM()-->"+materialDM.getMaterialUOM());
+					cbmaterialUOM.setValue(materialDM.getMaterialUOM());
+				}
+			}
+		});
+		loadMaterial();
+		cbmaterialUOM = new ComboBox("UOM");
+		cbmaterialUOM.setItemCaptionPropertyId("lookupname");
+		cbmaterialUOM.setWidth("150");
+		loadUomList();
+		tfReceiptqty = new GERPTextField("Receipt Qty");
+		tfReceiptqty.setValue("0");
+		tfReceiptqty.setWidth("150");
+		tfRejectqty = new GERPTextField("Reject Qty");
+		tfRejectqty.setValue("0");
+		tfReceiptqty.setWidth("150");
+		cbDtlStatus = new GERPComboBox("Status", BASEConstants.T_MMS_PO_RECEIPTS_DTL, BASEConstants.PORECDTL_STATUS);
+		cbDtlStatus.addValueChangeListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			public void valueChange(ValueChangeEvent event) {
+				if (cbDtlStatus.getValue() != null) {
+					if (cbDtlStatus.getValue().equals("Rejected")) {
+						taRejectReason.setEnabled(true);
+						taRejectReason.setRequired(true);
+					} else if (cbDtlStatus.getValue().equals("Approved")) {
+						taRejectReason.setEnabled(false);
+					}
+				}
+			}
+		});
+		cbDtlStatus.setWidth("150");
+		cbHdrStatus = new GERPComboBox("Status", BASEConstants.T_MMS_PO_RECEIPTS_HDR, BASEConstants.PORECT_STATUS);
+		cbHdrStatus.setWidth("150");
+		taRejectReason = new TextArea("Reject Reason");
+		taRejectReason.setWidth("150");
+		taRejectReason.setHeight("30");
+		hlSearchLayout = new GERPAddEditHLayout();
+		assembleSearchLayout();
+		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
+		resetFields();
+		loadSrchRslt();
+		loadReceiptDtl();
+		btnadd.setStyleName("add");
+		btnadd.addClickListener(new ClickListener() {
+			// Click Listener for Add and Update
+			private static final long serialVersionUID = 6551953728534136363L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if (dtlValidation()) {
+					saveReceiptDtl();
+				}
+			}
+		});
+		btndelete.addClickListener(new ClickListener() {
+			// Click Listener for Add and Update
+			private static final long serialVersionUID = 6551953728534136363L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if (btndelete == event.getButton()) {
+					btnadd.setCaption("Add");
+					deleteDetails();
+				}
+			}
+		});
+		// ClickListener for Receipt Detail Tale
+		tblReceiptDtl.addItemClickListener(new ItemClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				if (tblReceiptDtl.isSelected(event.getItemId())) {
+					tblReceiptDtl.setImmediate(true);
+					btnadd.setCaption("Add");
+					btnadd.setStyleName("savebt");
+					receiptResetFields();
+				} else {
+					((AbstractSelect) event.getSource()).select(event.getItemId());
+					btnadd.setCaption("Update");
+					btnadd.setStyleName("savebt");
+					editReceiptDetail();
+				}
+			}
+		});
+	}
+	
+	// Assemble Search Layout
+	private void assembleSearchLayout() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
+		hlSearchLayout.removeAllComponents();
+		hlSearchLayout.setMargin(true);
+		flHdr1 = new FormLayout();
+		flHdr2 = new FormLayout();
+		flHdr3 = new FormLayout();
+		flHdr1.addComponent(cbBranch);
+		flHdr2.addComponent(tfLotNo);
+		flHdr3.addComponent(cbHdrStatus);
+		hlSearchLayout.addComponent(flHdr1);
+		hlSearchLayout.addComponent(flHdr2);
+		hlSearchLayout.addComponent(flHdr3);
+		hlSearchLayout.setMargin(true);
+		hlSearchLayout.setSizeUndefined();
+	}
+	
+	// Assemble Input User Layout
+	private void assembleInputUserLayout() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
+		// Remove all components in search layout
+		hlUserInputLayout.removeAllComponents();
+		flHdr1 = new FormLayout();
+		flHdr2 = new FormLayout();
+		flHdr3 = new FormLayout();
+		flHdr4 = new FormLayout();
+		flHdr1.addComponent(cbPoNo);
+		flHdr1.addComponent(cbBranch);
+		flHdr1.addComponent(dfReceiptDate);
+		flHdr1.addComponent(cbDocType);
+		flHdr1.addComponent(tfLotNo);
+		flHdr2.addComponent(dfvendorDt);
+		flHdr2.addComponent(tfVendorDcNo);
+		flHdr2.addComponent(cbindentid);
+		flHdr2.addComponent(dfvendorInvDt);
+		flHdr2.addComponent(tfVenInvNo);
+		flHdr3.addComponent(taRecepitRemark);
+		flHdr3.addComponent(cbHdrStatus);
+		flHdr3.addComponent(chkBillRaised);
+		flHdr4.addComponent(hlrefDoc);
+		HorizontalLayout hlHdr = new HorizontalLayout();
+		hlHdr = new HorizontalLayout();
+		hlHdr.addComponent(flHdr1);
+		hlHdr.addComponent(flHdr2);
+		hlHdr.addComponent(flHdr3);
+		hlHdr.addComponent(flHdr4);
+		hlHdr.setSpacing(true);
+		hlHdr.setMargin(true);
+		// Adding Purchase Order Receipt Dtl components
+		// Add components for User Input Layout
+		flDtl1 = new FormLayout();
+		flDtl2 = new FormLayout();
+		flDtl3 = new FormLayout();
+		flDtl4 = new FormLayout();
+		flDtl5 = new FormLayout();
+		flDtl1.addComponent(cbMaterial);
+		flDtl1.addComponent(tfReceiptqty);
+		flDtl2.addComponent(tfRejectqty);
+		flDtl2.addComponent(cbmaterialUOM);
+		flDtl3.addComponent(cbDtlStatus);
+		flDtl3.addComponent(taRejectReason);
+		flDtl4.addComponent(btnadd);
+		flDtl4.addComponent(btndelete);
+		flDtl5.addComponent(hlevdDoc);
+		flDtl4.setHeight("10");
+		flDtl4.setWidth("80");
+		HorizontalLayout hldTL = new HorizontalLayout();
+		hldTL.addComponent(flDtl1);
+		hldTL.addComponent(flDtl2);
+		hldTL.addComponent(flDtl3);
+		hldTL.addComponent(flDtl4);
+		// hldTL.addComponent(flDtl5);
+		hldTL.setSpacing(true);
+		hldTL.setMargin(true);
+		VerticalLayout vlHDR = new VerticalLayout();
+		vlHDR = new VerticalLayout();
+		vlHDR.addComponent(hldTL);
+		vlHDR.addComponent(tblReceiptDtl);
+		vlHDR.setSpacing(true);
+		VerticalLayout vlHdrdTL = new VerticalLayout();
+		vlHdrdTL = new VerticalLayout();
+		vlHdrdTL.addComponent(GERPPanelGenerator.createPanel(hlHdr));
+		vlHdrdTL.addComponent(GERPPanelGenerator.createPanel(vlHDR));
+		vlHdrdTL.setSpacing(true);
+		vlHdrdTL.setWidth("100%");
+		hlUserInputLayout.addComponent(vlHdrdTL);
+		hlUserInputLayout.setSizeFull();
+		hlUserInputLayout.setWidth("100%");
+		hlUserInputLayout.setMargin(false);
+		hlUserInputLayout.setSpacing(true);
+	}
+	
+	// Load Receipt Header
+	private void loadSrchRslt() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+		tblMstScrSrchRslt.removeAllItems();
+		List<PoReceiptHdrDM> receiptHdrList = new ArrayList<PoReceiptHdrDM>();
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+				+ companyid + ", " + cbBranch.getValue() + ", " + cbPoNo.getValue());
+		Long poNo = null;
+		if (cbPoNo.getValue() != null) {
+			poNo = (((PurchasePOHdrDM) cbPoNo.getValue()).getPoId());
+		}
+		receiptHdrList = servicePoReceiptHdr.getPoReceiptsHdrList(companyid, null, poNo, (Long) cbBranch.getValue(),
+				(String) tfLotNo.getValue(), (String) cbHdrStatus.getValue(), "F");
+		recordCnt = receiptHdrList.size();
+		beanPoReceiptHdrDM = new BeanItemContainer<PoReceiptHdrDM>(PoReceiptHdrDM.class);
+		beanPoReceiptHdrDM.addAll(receiptHdrList);
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Got the PO Recepit. result set");
+		tblMstScrSrchRslt.setContainerDataSource(beanPoReceiptHdrDM);
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "receiptId", "branchName", "lotNo", "projectStatus",
+				"lastUpdtDate", "lastUpdatedBy" });
+		tblMstScrSrchRslt.setPageLength(15);
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Lot No.", "Status",
+				"Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setColumnAlignment("receiptId", Align.RIGHT);
+		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+	}
+	
+	// Load Receipt Detail
+	private void loadReceiptDtl() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			recordCnt = receiptDtlList.size();
+			beanPoReceiptDtlDM = new BeanItemContainer<PoReceiptDtlDM>(PoReceiptDtlDM.class);
+			beanPoReceiptDtlDM.addAll(receiptDtlList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the DtlRecDt. result set");
+			tblReceiptDtl.setContainerDataSource(beanPoReceiptDtlDM);
+			tblReceiptDtl.setVisibleColumns(new Object[] { "materialName", "receiptqty", "rejectqty", "materialUOM",
+					"lastupdateddt", "lastupdatedby" });
+			tblReceiptDtl.setColumnHeaders(new String[] { "Material Name", "Receipt Qty", "Reject Qty", "Material Uom",
+					"Last Updated Date", "Last Updated By" });
+			tblReceiptDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+			tblReceiptDtl.setPageLength(6);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Delete POMMSReceiptDetail
+	private void deleteDetails() {
+		PoReceiptDtlDM save = new PoReceiptDtlDM();
+		if (tblReceiptDtl.getValue() != null) {
+			save = beanPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
+			receiptDtlList.remove(save);
+			receiptResetFields();
+			loadReceiptDtl();
+			btndelete.setEnabled(false);
+		}
+	}
+	
+	// Load Indent No
+	private void loadindent() {
+		List<IndentHdrDM> indentHdr = serviceIndent.getMmsIndentHdrList(null, null, null, companyid, null, null, null,
+				null, "F");
+		BeanContainer<Long, IndentHdrDM> beanIndent = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
+		beanIndent.setBeanIdProperty("indentId");
+		beanIndent.addAll(indentHdr);
+		cbindentid.setContainerDataSource(beanIndent);
+	}
+	
+	// Load Purchase order No
+	private void loadPoNo() {
+		List<PurchasePOHdrDM> getPoHdr = new ArrayList<PurchasePOHdrDM>();
+		getPoHdr.addAll(servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, null, null, null, null));
+		BeanItemContainer<PurchasePOHdrDM> beanPurPoDM = new BeanItemContainer<PurchasePOHdrDM>(PurchasePOHdrDM.class);
+		beanPurPoDM.addAll(getPoHdr);
+		cbPoNo.setContainerDataSource(beanPurPoDM);
+	}
+	
+	// Load Uom List
+	public void loadUomList() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
+		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+				"SM_UOM");
+		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		beanCompanyLookUp.setBeanIdProperty("lookupname");
+		beanCompanyLookUp.addAll(lookUpList);
+		cbmaterialUOM.setContainerDataSource(beanCompanyLookUp);
+	}
+	
+	// Load Material List
+	public void loadMaterial() {
+		List<MaterialDM> ProductList = serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null,
+				null, "Active", "F");
+		BeanItemContainer<MaterialDM> beanProduct = new BeanItemContainer<MaterialDM>(MaterialDM.class);
+		beanProduct.addAll(ProductList);
+		cbMaterial.setContainerDataSource(beanProduct);
+	}
+	
+	// Load Branch List
+	public void loadBranchList() {
+		List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
+		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+		beanbranch.setBeanIdProperty("branchId");
+		beanbranch.addAll(branchList);
+		cbBranch.setContainerDataSource(beanbranch);
+	}
+	
+	// Method to edit the values from table into fields to update process
+	private void editReceiptHdr() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
+		hlUserInputLayout.setVisible(true);
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected receiptId. Id -> "
+				+ enquiryId);
+		if (tblMstScrSrchRslt.getValue() != null) {
+			PoReceiptHdrDM editRecepitHdrList = beanPoReceiptHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			receiptId = editRecepitHdrList.getReceiptId();
+			cbBranch.setValue(editRecepitHdrList.getBranchId());
+			tfLotNo.setReadOnly(false);
+			tfLotNo.setValue(editRecepitHdrList.getLotNo());
+			tfLotNo.setReadOnly(true);
+			cbPoNo.setValue(editRecepitHdrList.getPoId());
+			if (editRecepitHdrList.getReceiptDate() != null) {
+				dfReceiptDate.setValue(editRecepitHdrList.getReceiptDate());
+			}
+			if (editRecepitHdrList.getVendordcNo() != null) {
+				tfVendorDcNo.setValue(editRecepitHdrList.getVendordcNo());
+			}
+			if (editRecepitHdrList.getVendorDate() != null) {
+				dfvendorDt.setValue(editRecepitHdrList.getVendorDate());
+			}
+			if (editRecepitHdrList.getReceiptdocType() != null) {
+				cbDocType.setValue(editRecepitHdrList.getReceiptdocType());
+			}
+			if (editRecepitHdrList.getIndentId() != null) {
+				cbindentid.setValue(editRecepitHdrList.getIndentId());
+			}
+			if (editRecepitHdrList.getVendorinvoiceNo() != null) {
+				tfVenInvNo.setValue(editRecepitHdrList.getVendorinvoiceNo());
+			}
+			if (editRecepitHdrList.getVendorinvoiceDate() != null) {
+				dfvendorInvDt.setValue(editRecepitHdrList.getVendorinvoiceDate());
+			}
+			if (editRecepitHdrList.getReceiptRemark() != null) {
+				taRecepitRemark.setValue(editRecepitHdrList.getReceiptRemark());
+			}
+			if (editRecepitHdrList.getBillraisedYN().equals("Y")) {
+				chkBillRaised.setValue(true);
+			} else {
+				chkBillRaised.setValue(false);
+			}
+			Long uom = editRecepitHdrList.getPoId();
+			Collection<?> uomid = cbPoNo.getItemIds();
+			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+				Object itemId = (Object) iterator.next();
+				BeanItem<?> item = (BeanItem<?>) cbPoNo.getItem(itemId);
+				// Get the actual bean and use the data
+				PurchasePOHdrDM st = (PurchasePOHdrDM) item.getBean();
+				if (uom != null && uom.equals(st.getPoId())) {
+					cbPoNo.setValue(itemId);
+				}
+			}
+			cbHdrStatus.setValue(editRecepitHdrList.getProjectStatus());
+			receiptDtlList = servicePoReceiptDtl.getPoReceiptDtlList(null, receiptId, null, null, null);
+			loadReceiptDtl();
+		}
+	}
+	
+	// Edit Recepit Details
+	private void editReceiptDetail() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
+		hlUserInputLayout.setVisible(true);
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Receipt.Id -> "
+				+ enquiryId);
+		if (tblReceiptDtl.getValue() != null) {
+			PoReceiptDtlDM editReceiptDtllist = beanPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
+			Long uom = editReceiptDtllist.getMaterialid();
+			Collection<?> uomid = cbMaterial.getItemIds();
+			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+				Object itemId = (Object) iterator.next();
+				BeanItem<?> item = (BeanItem<?>) cbMaterial.getItem(itemId);
+				// Get the actual bean and use the data
+				MaterialDM st = (MaterialDM) item.getBean();
+				if (uom != null && uom.equals(st.getMaterialId())) {
+					cbMaterial.setValue(itemId);
+				}
+			}
+			cbmaterialUOM.setValue(editReceiptDtllist.getMaterialUOM());
+			if (editReceiptDtllist.getReceiptqty() != null) {
+				tfReceiptqty.setValue(editReceiptDtllist.getReceiptqty().toString());
+			}
+			if (editReceiptDtllist.getRejectqty() != null) {
+				tfRejectqty.setValue(editReceiptDtllist.getRejectqty().toString());
+			}
+			if (editReceiptDtllist.getRejectreason() != null) {
+				taRejectReason.setValue(editReceiptDtllist.getRejectreason().toString());
+			}
+			cbDtlStatus.setValue(editReceiptDtllist.getReceiptstatus());
+		}
+	}
+	
+	// Search Details
+	@Override
+	protected void searchDetails() throws NoDataFoundException {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + " Invoking search");
+		loadSrchRslt();
+		if (recordCnt == 0) {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "No data for the search. throwing ERPException.NoDataFoundException");
+			throw new ERPException.NoDataFoundException();
+		} else {
+			lblNotification.setIcon(null);
+			lblNotification.setCaption("");
+			assembleSearchLayout();
+		}
+	}
+	
+	// Reset Search Details
+	@Override
+	protected void resetSearchDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
+		cbHdrStatus.setValue(null);
+		cbHdrStatus.setRequired(false);
+		tfLotNo.setValue("");
+		cbPoNo.setValue(null);
+		cbBranch.setValue(branchId);
+		loadSrchRslt();
+	}
+	
+	// Add Details
+	@Override
+	protected void addDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
+		// remove the components in the search layout and input controls in the same container
+		hlUserInputLayout.removeAllComponents();
+		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
+		assembleInputUserLayout();
+		// reset the input controls to default value
+		new UploadDocumentUI(hlevdDoc);
+		new UploadDocumentUI(hlrefDoc);
+		tblMstScrSrchRslt.setVisible(false);
+		hlCmdBtnLayout.setVisible(false);
+		btnadd.setCaption("Add");
+		tblReceiptDtl.setVisible(true);
+		cbBranch.setRequired(true);
+		cbMaterial.setRequired(true);
+		cbmaterialUOM.setRequired(true);
+		cbPoNo.setRequired(true);
+		dfReceiptDate.setRequired(true);
+		dfvendorDt.setRequired(true);
+		dfvendorInvDt.setRequired(true);
+		cbHdrStatus.setRequired(true);
+		tfReceiptqty.setRequired(true);
+		tfRejectqty.setRequired(true);
+		resetFields();
+		tfLotNo.setReadOnly(false);
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_LOTNO").get(0);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfLotNo.setValue(slnoObj.getKeyDesc());
+				tfLotNo.setReadOnly(true);
+			}
+		}
+		catch (Exception e) {
+		}
+	}
+	
+	// Edit Details
+	@Override
+	protected void editDetails() {
+		hlUserInputLayout.removeAllComponents();
+		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
+		assembleInputUserLayout();
+		tblMstScrSrchRslt.setVisible(false);
+		hlCmdBtnLayout.setVisible(false);
+		tblReceiptDtl.setVisible(true);
+		if (tfLotNo.getValue() == null || tfLotNo.getValue().trim().length() == 0) {
+			tfLotNo.setReadOnly(false);
+		}
+		cbBranch.setRequired(true);
+		cbMaterial.setRequired(true);
+		cbmaterialUOM.setRequired(true);
+		cbPoNo.setRequired(true);
+		cbHdrStatus.setRequired(true);
+		dfReceiptDate.setRequired(true);
+		dfvendorDt.setRequired(true);
+		dfvendorInvDt.setRequired(true);
+		tfReceiptqty.setRequired(true);
+		tfRejectqty.setRequired(true);
+		editReceiptDetail();
+		editReceiptHdr();
+	}
+	
+	// Validation Details
+	@Override
+	protected void validateDetails() throws ValidationException {
+		cbBranch.setComponentError(null);
+		cbPoNo.setComponentError(null);
+		dfReceiptDate.setComponentError(null);
+		dfvendorDt.setComponentError(null);
+		dfvendorInvDt.setComponentError(null);
+		cbHdrStatus.setComponentError(null);
+		Boolean errorFlag = false;
+		if ((cbBranch.getValue() == null)) {
+			cbBranch.setComponentError(new UserError(GERPErrorCodes.NULL_POBRANCH_NAME));
+			errorFlag = true;
+		}
+		if (cbPoNo.getValue() == null) {
+			cbPoNo.setComponentError(new UserError(GERPErrorCodes.NULL_PURCAHSE_ORD_NO));
+			errorFlag = true;
+		}
+		if (dfReceiptDate.getValue() == null) {
+			dfReceiptDate.setComponentError(new UserError(GERPErrorCodes.NULL_REGECT_REASON));
+			errorFlag = true;
+		}
+		if (dfvendorDt.getValue() == null) {
+			dfvendorDt.setComponentError(new UserError(GERPErrorCodes.NULL_REGECT_REASON));
+			errorFlag = true;
+		}
+		if (dfvendorInvDt.getValue() == null) {
+			dfvendorInvDt.setComponentError(new UserError(GERPErrorCodes.NULL_REGECT_REASON));
+			errorFlag = true;
+		}
+		if (cbHdrStatus.getValue() == null) {
+			cbHdrStatus.setComponentError(new UserError(GERPErrorCodes.NULL_MMS_HDRSTATUS));
+			errorFlag = true;
+		}
+		if (errorFlag) {
+			throw new ERPException.ValidationException();
+		}
+	}
+	
+	// Detail Validation
+	private boolean dtlValidation() {
+		boolean isValid = true;
+		if (cbMaterial.getValue() == null) {
+			cbMaterial.setComponentError(new UserError(GERPErrorCodes.NUL_POMATERIAL_NAME));
+			isValid = false;
+		} else {
+			cbMaterial.setComponentError(null);
+		}
+		if (cbmaterialUOM.getValue() == null) {
+			cbmaterialUOM.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
+			isValid = false;
+		} else {
+			cbmaterialUOM.setComponentError(null);
+		}
+		if (taRejectReason.getValue() == null) {
+			taRejectReason.setComponentError(new UserError(GERPErrorCodes.REGECT_REASON));
+			isValid = false;
+		} else {
+			taRejectReason.setComponentError(null);
+		}
+		return isValid;
+	}
+	
+	// Save Details
+	@Override
+	protected void saveDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+		try {
+			PoReceiptHdrDM recepithdrObj = new PoReceiptHdrDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				recepithdrObj = beanPoReceiptHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
+			recepithdrObj.setLotNo(tfLotNo.getValue());
+			recepithdrObj.setCompanyId(companyid);
+			if (cbPoNo.getValue() != null) {
+				recepithdrObj.setPoId(((PurchasePOHdrDM) cbPoNo.getValue()).getPoId());
+			}
+			recepithdrObj.setBranchId((Long) cbBranch.getValue());
+			if (cbDocType.getValue() != null) {
+				recepithdrObj.setReceiptdocType(cbDocType.getValue().toString());
+			}
+			recepithdrObj.setReceiptDate((Date) dfReceiptDate.getValue());
+			recepithdrObj.setVendorDate((Date) dfvendorDt.getValue());
+			recepithdrObj.setVendordcNo(tfVendorDcNo.getValue());
+			recepithdrObj.setIndentId((Long) cbindentid.getValue());
+			recepithdrObj.setVendorinvoiceNo(tfVenInvNo.getValue().toString());
+			recepithdrObj.setVendorinvoiceDate((Date) dfvendorInvDt.getValue());
+			recepithdrObj.setReceiptRemark((taRecepitRemark.getValue()));
+			if (chkBillRaised.getValue().equals(true)) {
+				recepithdrObj.setBillraisedYN("Y");
+			} else if (chkBillRaised.getValue().equals(false)) {
+				recepithdrObj.setBillraisedYN("N");
+			}
+			recepithdrObj.setProjectStatus(cbHdrStatus.getValue().toString());
+			recepithdrObj.setPreparedBy(EmployeeId);
+			recepithdrObj.setReviewedBy(EmployeeId);
+			recepithdrObj.setActionedBy(EmployeeId);
+			recepithdrObj.setLastUpdtDate(DateUtils.getcurrentdate());
+			recepithdrObj.setLastUpdatedBy(username);
+			servicePoReceiptHdr.saveorUpdatePoReceiptHdrDetails(recepithdrObj);
+			@SuppressWarnings("unchecked")
+			Collection<PoReceiptDtlDM> itemIds = (Collection<PoReceiptDtlDM>) tblReceiptDtl.getVisibleItemIds();
+			for (PoReceiptDtlDM save : (Collection<PoReceiptDtlDM>) itemIds) {
+				save.setReceiptid(Long.valueOf(recepithdrObj.getReceiptId().toString()));
+				servicePoReceiptDtl.savePoReceiptDtl(save);
+			}
+			if (tblMstScrSrchRslt.getValue() == null) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_LOTNO")
+							.get(0);
+					if (slnoObj.getAutoGenYN().equals("Y")) {
+						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_LOTNO");
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			tfLotNo.setReadOnly(false);
+			tfLotNo.setValue(recepithdrObj.getLotNo());
+			tfLotNo.setReadOnly(true);
+			receiptResetFields();
+			loadSrchRslt();
+			receiptId = 0L;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Save Recepit Details
+	public void saveReceiptDtl() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+		try {
+			PoReceiptDtlDM receiptDtlObj = new PoReceiptDtlDM();
+			if (tblReceiptDtl.getValue() != null) {
+				receiptDtlObj = beanPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
+				receiptDtlList.remove(receiptDtlObj);
+			}
+			receiptDtlObj.setMaterialid(((MaterialDM) cbMaterial.getValue()).getMaterialId());
+			receiptDtlObj.setMaterialName(((MaterialDM) cbMaterial.getValue()).getMaterialName());
+			receiptDtlObj.setMaterialUOM(cbmaterialUOM.getValue().toString());
+			if (tfRejectqty.getValue() != null && tfRejectqty.getValue().trim().length() > 0) {
+				receiptDtlObj.setRejectqty(Long.valueOf(tfRejectqty.getValue()));
+			}
+			receiptDtlObj.setRejectreason(taRejectReason.getValue().toString());
+			if (tfReceiptqty.getValue() != null && tfReceiptqty.getValue().trim().length() > 0) {
+				receiptDtlObj.setReceiptqty(Long.valueOf(tfReceiptqty.getValue()));
+			}
+			if (cbDtlStatus.getValue() != null) {
+				receiptDtlObj.setReceiptstatus((cbDtlStatus.getValue().toString()));
+			}
+			receiptDtlObj.setLastupdateddt(DateUtils.getcurrentdate());
+			receiptDtlObj.setLastupdatedby(username);
+			receiptDtlList.add(receiptDtlObj);
+			loadReceiptDtl();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		receiptResetFields();
+		btnadd.setCaption("Add");
+	}
+	
+	// Audit Details
+	@Override
+	protected void showAuditDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Getting audit record for TestType. ID " + "");
+		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_MMS_PO_RECEIPTS_HDR);
+		UI.getCurrent().getSession().setAttribute("audittablepk", lotNo);
+	}
+	
+	// Cancel Details
+	@Override
+	protected void cancelDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
+		hlUserIPContainer.removeAllComponents();
+		assembleSearchLayout();
+		hlCmdBtnLayout.setVisible(true);
+		tblReceiptDtl.removeAllItems();
+		tblMstScrSrchRslt.setVisible(true);
+		tfLotNo.setReadOnly(false);
+		cbBranch.setRequired(false);
+		receiptResetFields();
+		resetFields();
+		loadSrchRslt();
+	}
+	
+	// Reset Fields
+	@Override
+	protected void resetFields() {
+		receiptDtlList = new ArrayList<PoReceiptDtlDM>();
+		tblReceiptDtl.removeAllItems();
+		cbBranch.setValue(branchId);
+		cbBranch.setComponentError(null);
+		cbDocType.setValue(null);
+		cbHdrStatus.setValue(null);
+		cbHdrStatus.setComponentError(null);
+		cbPoNo.setValue(null);
+		cbPoNo.setComponentError(null);
+		tfLotNo.setValue("");
+		tfVenInvNo.setValue("");
+		tfVendorDcNo.setValue("");
+		cbindentid.setValue(null);
+		taRecepitRemark.setValue("");
+		dfvendorDt.setValue(null);
+		dfReceiptDate.setValue(null);
+		dfvendorInvDt.setValue(null);
+		dfReceiptDate.setComponentError(null);
+		dfvendorDt.setComponentError(null);
+		dfvendorInvDt.setComponentError(null);
+		new UploadDocumentUI(hlevdDoc);
+		new UploadDocumentUI(hlrefDoc);
+	}
+	
+	// Recepit Reset Fields
+	private void receiptResetFields() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
+		cbMaterial.setValue(null);
+		taRejectReason.setValue("");
+		tfReceiptqty.setValue("0");
+		tfReceiptqty.setComponentError(null);
+		tfReceiptqty.setValue("0");
+		tfRejectqty.setValue("0");
+		tfRejectqty.setComponentError(null);
+		tfRejectqty.setValue("0");
+		cbDtlStatus.setValue(null);
+		cbmaterialUOM.setValue(null);
+		cbMaterial.setComponentError(null);
+		cbmaterialUOM.setComponentError(null);
+		new UploadDocumentUI(hlevdDoc);
+	}
+}

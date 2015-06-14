@@ -1,0 +1,299 @@
+/* Import all the mixins for this theme */
+@import "gerp.scss";
+
+
+/* Font embeds and keyframe definitions need to be 
+ * on the top level of the stylesheet, not nested 
+ * with any selectors, so we output them here */
+@include font-open-sans;
+@include icons-fontello;
+@include gerp-keyframes;
+
+
+/* Output the actual theme selectors */
+.gerp {
+	@include gerp;
+}
+
+
+.gerp .v-tree-node-children {
+    padding-left: 0;
+    color: #FF0000;
+}
+
+.gerp.v-tree-node-no-children
+{
+    background:none;
+   
+   
+}
+.v-tree-node.v-tree-node-leaf {
+  /* color: blue;*/
+ /*  text-decoration: underline;*/
+  margin-left: -7px;
+}
+
+.v-tree-node.v-tree-node-leaf:hover {
+   background: #e6e6e6;
+   color: #333;
+}
+
+
+.gerp .v-slot.v-slot-sidebar {
+    height: 100%;
+    overflow: auto;
+    background: none repeat scroll 0 0 #FFFFFF;
+    
+}
+
+.gerp .v-slot v-slot-h3{
+ v-align-bottom" style="width: 150px;
+ }
+ 
+.gerp.v-slot.v-align-middle
+ {
+ border:1px solid red;
+ }
+ 
+
+
+
+
+.gerp .v-widget {
+    -moz-font-feature-settings: inherit;
+    -moz-font-language-override: inherit;
+    color: #000000;
+    font-family: inherit;
+    font-size: 12px;
+    font-size-adjust: inherit;
+    font-stretch: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+}
+
+.v-gridlayout-slot{
+
+ position: absolute; 
+}
+.gerp .v-tree-node {
+    background: url("img/expand.png") no-repeat scroll 2px 2px / 16px auto rgba(0, 0, 0, 0);
+    margin-left: -1px;
+    padding: 1px 8px;
+    
+}
+
+.gerp .v-tree-node-expanded {
+    background: url("img/collapse.png") no-repeat scroll 2px 2px / 16px auto rgba(0, 0, 0, 0);
+    margin-left: -1px;
+   
+    
+}
+
+
+.gerp div.v-tree-node-leaf {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+    margin-left: -7px;
+}
+
+ .gerp .v-caption {
+    color: #000000;
+    font-size: 13px;
+}
+.gerp .v-textfield, .gerp .v-textarea, .gerp .v-filterselect {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    -moz-font-feature-settings: inherit;
+    -moz-font-language-override: inherit;
+    border-color: #D8D7D6 #C9C8C7 #C9C8C7;
+    border-image: none;
+    border-radius: 1px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 0 0 0 rgba(51, 50, 49, 0.07);
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-size-adjust: inherit;
+    font-stretch: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-weight: inherit;
+    line-height: 1;
+    margin: -2px;
+}
+.gerp .v-button-wrap, .gerp .v-button-caption {
+    -moz-font-feature-settings: inherit;
+    -moz-font-language-override: inherit;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-size-adjust: inherit;
+    font-stretch: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-weight: inherit;
+    line-height: normal;
+    padding: 0;
+    vertical-align: middle;
+    white-space: nowrap;
+    }
+    .gerp .v-popupview {
+    background: url("img/download.png") no-repeat scroll 2px 4px / 16px auto rgba(0, 0, 0, 0);
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.add.v-button {
+		border: none !important;
+		background: url("img/add.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0); 
+		background-position: left middle;  
+		-webkit-box-shadow: none;
+		-mox-box-shadow: none;
+		box-shadow: none;
+		padding: 1px 19px;
+		
+	}
+.add.v-button:hover {
+  
+     background: url("img/add_blue.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0);
+}
+
+.editbt.v-button {
+		border: none !important;
+		background: url("img/edit.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0); 
+		background-position: left middle;  
+		-webkit-box-shadow: none;
+		-mox-box-shadow: none;
+		box-shadow: none;
+		padding: 1px 19px;
+		
+	}
+.editbt.v-button:hover {
+  
+     background: url("img/edit_blue.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0);
+}
+
+.savebt.v-button {
+		border: none !important;
+		background: url("img/save.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0); 
+		background-position: left middle;  
+		-webkit-box-shadow: none;
+		-mox-box-shadow: none;
+		box-shadow: none;
+		padding: 1px 19px;
+		
+	}
+.savebt.v-button:hover {
+  
+     background: url("img/save_blue.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0);
+}
+
+.cancelbt.v-button {
+		border: none !important;
+		background: url("img/cancel.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0); 
+		background-position: left middle;  
+		-webkit-box-shadow: none;
+		-mox-box-shadow: none;
+		box-shadow: none;
+		padding: 1px 19px;
+		
+	}
+.cancelbt.v-button:hover {
+  
+     background: url("img/cancel_blue.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0);
+}
+
+.searchbt.v-button {
+		border: none !important;
+		background: url("img/search.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0); 
+		background-position: left middle;  
+		-webkit-box-shadow: none;
+		-mox-box-shadow: none;
+		box-shadow: none;
+		padding: 1px 19px;
+		
+	}
+.searchbt.v-button:hover {
+  
+     background: url("img/search_blue.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0);
+}
+
+.resetbt.v-button {
+		border: none !important;
+		background: url("img/reset.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0); 
+		background-position: left middle;  
+		-webkit-box-shadow: none;
+		-mox-box-shadow: none;
+		box-shadow: none;
+		padding: 1px 19px;
+		
+	}
+.resetbt.v-button:hover {
+  
+     background: url("img/reset_blue.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0);
+}
+
+.downloadbt.v-button {
+		border: none !important;
+		background: url("img/download.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0); 
+		background-position: left middle;  
+		-webkit-box-shadow: none;
+		-mox-box-shadow: none;
+		box-shadow: none;
+		padding: 1px 19px;
+		
+	}
+.downloadbt.v-button:hover {
+  
+     background: url("img/download_blue.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0);
+}
+
+.unpin.v-image {
+		
+		background: url("img/unpin.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0); 
+		background-position: right bottom;  
+		-webkit-box-shadow: none;
+		-mox-box-shadow: none;
+		
+		padding: 1px 19px;
+		
+	}
+.unpin.v-image:hover {
+  
+     background: url("img/unpin_blue.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0);
+     background-position: right bottom;  
+     cursor: pointer;
+}
+
+.pin.v-image {
+		
+		background: url("img/pin.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0); 
+		background-position: left bottom;  
+		-webkit-box-shadow: none;
+		-mox-box-shadow: none;
+		
+		padding: 1px 0px;
+		
+	}
+.pin.v-image:hover {
+  
+     background: url("img/pin_blue.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0);
+     background-position: left bottom;  
+      cursor: pointer;
+}
+
+.homebtn.v-button {
+		border: none !important;
+		background: url("img/home.png") no-repeat scroll 0px 4px / 16px auto rgba(0, 0, 0, 0); 
+		background-position: left middle;  
+		-webkit-box-shadow: none;
+		-mox-box-shadow: none;
+		box-shadow: none;
+		padding: 1px 19px;
+		
+	}

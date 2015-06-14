@@ -1,0 +1,403 @@
+/**
+ * File Name 		: JobCandidate .java 
+ * Description 		: this class is used for add/edit JobCandidate  details. 
+ * Author 			:  KAVITHA V M 
+ * Date 			: 14-Aug-2014	
+ *
+ * Copyright (C) 2014 GNTS Technologies pvt. ltd. 
+ * All rights reserved.
+ * This software is the confidential and proprietary information of GNTS
+ * Technologies pvt. ltd.
+ *
+ * Version      Date           	Modified By 	 Remarks
+ * 0.1          14-Aug-2014	    KAVITHA V M	     Initial Version
+ * 
+ */
+package com.gnts.hcm.txn;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.log4j.Logger;
+import com.gnts.erputil.BASEConstants;
+import com.gnts.erputil.components.GERPAddEditHLayout;
+import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPPanelGenerator;
+import com.gnts.erputil.components.GERPPopupDateField;
+import com.gnts.erputil.components.GERPTextArea;
+import com.gnts.erputil.components.GERPTextField;
+import com.gnts.erputil.constants.GERPConstants;
+import com.gnts.erputil.constants.GERPErrorCodes;
+import com.gnts.erputil.exceptions.ERPException;
+import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
+import com.gnts.erputil.exceptions.ERPException.ValidationException;
+import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.UploadDocumentUI;
+import com.gnts.erputil.util.DateUtils;
+import com.gnts.hcm.domain.txn.JobCandidateDM;
+import com.gnts.hcm.domain.txn.JobVaccancyDM;
+import com.gnts.hcm.service.txn.JobCandidateService;
+import com.gnts.hcm.service.txn.JobVaccancyService;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.UserError;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.Table.Align;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+
+public class JobCandidate extends BaseUI {
+	// Bean creation
+	private JobCandidateService serviceJobCandidate = (JobCandidateService) SpringContextHelper.getBean("JobCandidate");
+	private JobVaccancyService serviceJobVaccancy = (JobVaccancyService) SpringContextHelper.getBean("JobVaccancy");
+	// Form layout for input controls
+	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
+	// Parent layout for all the input controls
+	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
+	// Search Control Layout
+	private HorizontalLayout hlSearchLayout;
+	// Add User Input Controls
+	private TextField tffirstname, tflastname, tfemailid, tfcontactno;
+	private PopupDateField dfDOA;
+	private TextArea taresumkywrd;
+	private ComboBox cbStatus, cbjobtitle;
+	private VerticalLayout vlresumdoc = new VerticalLayout();
+	// BeanItemContainer
+	private BeanItemContainer<JobCandidateDM> beanJobCandidateDM = null;
+	private BeanContainer<Long, JobVaccancyDM> beanJobVaccancyDM = null;
+	// local variables declaration
+	private Long companyid;
+	private int recordCnt = 0;
+	private String username;
+	// Initialize logger
+	private Logger logger = Logger.getLogger(JobCandidate.class);
+	private String jobCandidateId;
+	private static final long serialVersionUID = 1L;
+	
+	// Constructor
+	public JobCandidate() {
+		// Get the logged in user name and company id from the session
+		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
+		logger.info("username >>>>>>>>>>>> " + username);
+		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Inside JobCandidate() constructor");
+		// Loading the UI
+		buildview();
+	}
+	
+	// Build the UI components
+	private void buildview() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Printing JobCandidate UI");
+		// Status ComboBox
+		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		// Job Candidate Description text field
+		tffirstname = new GERPTextField("First Name");
+		tflastname = new GERPTextField("Last Name");
+		tfemailid = new GERPTextField("E-mail");
+		tfemailid.setMaxLength(30);
+		tfcontactno = new GERPTextField("Contact No.");
+		tfcontactno.setMaxLength(12);
+		// Resume Keyword Description Area
+		taresumkywrd = new GERPTextArea("Resume Keyword");
+		taresumkywrd.setHeight("25");
+		taresumkywrd.setWidth("150");
+		dfDOA = new GERPPopupDateField("DOA");
+		dfDOA.setWidth("110");
+		// Job Title combobox
+		cbjobtitle = new GERPComboBox("Job Title");
+		cbjobtitle.setItemCaptionPropertyId("jobtitle");
+		cbjobtitle.setWidth("150");
+		loadJobVaccancy();
+		// // build search layout
+		hlSearchLayout = new GERPAddEditHLayout();
+		assembleSearchLayout();
+		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
+		assembleSearchLayout();
+		resetFields();
+		loadSrchRslt();
+	}
+	
+	private void assembleSearchLayout() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
+		// Remove all components in search layout
+		hlSearchLayout.removeAllComponents();
+		flColumn1 = new FormLayout();
+		flColumn2 = new FormLayout();
+		flColumn3 = new FormLayout();
+		flColumn4 = new FormLayout();
+		flColumn1.addComponent(cbjobtitle);
+		flColumn2.addComponent(tffirstname);
+		flColumn3.addComponent(tfcontactno);
+		flColumn4.addComponent(cbStatus);
+		hlSearchLayout.addComponent(flColumn1);
+		hlSearchLayout.addComponent(flColumn2);
+		hlSearchLayout.addComponent(flColumn3);
+		hlSearchLayout.addComponent(flColumn4);
+		hlSearchLayout.setMargin(true);
+		hlSearchLayout.setSizeUndefined();
+	}
+	
+	private void assembleUserInputLayout() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling User Input layout");
+		tfemailid.setRequired(true);
+		tblMstScrSrchRslt.setPageLength(12);
+		// Remove all components in Search Layout
+		hlSearchLayout.removeAllComponents();
+		// Add components for User Input Layout
+		flColumn1 = new FormLayout();
+		flColumn2 = new FormLayout();
+		flColumn3 = new FormLayout();
+		flColumn4 = new FormLayout();
+		flColumn1.addComponent(cbjobtitle);
+		flColumn1.addComponent(tffirstname);
+		flColumn1.addComponent(tflastname);
+		flColumn2.addComponent(tfemailid);
+		flColumn2.addComponent(tfcontactno);
+		flColumn3.addComponent(dfDOA);
+		flColumn2.addComponent(taresumkywrd);
+		flColumn3.addComponent(cbStatus);
+		flColumn4.addComponent(vlresumdoc);
+		flColumn4.setMargin(true);
+		hlUserInputLayout.addComponent(flColumn1);
+		hlUserInputLayout.addComponent(flColumn2);
+		hlUserInputLayout.addComponent(flColumn3);
+		hlUserInputLayout.addComponent(flColumn4);
+		hlUserInputLayout.setSizeUndefined();
+		hlUserInputLayout.setMargin(true);
+		hlUserInputLayout.setSpacing(true);
+	}
+	
+	// get the search result from DB based on the search parameters
+	public void loadSrchRslt() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+		tblMstScrSrchRslt.removeAllItems();
+		List<JobCandidateDM> jobcandidatelist = new ArrayList<JobCandidateDM>();
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+				+ companyid + ", " + tffirstname.getValue() + ", " + tfcontactno.getValue()
+				+ (String) cbStatus.getValue());
+		jobcandidatelist = serviceJobCandidate.getJobCandidateList(null,(Long) cbjobtitle.getValue() , tffirstname.getValue(),
+				tfcontactno.getValue(), (String) cbStatus.getValue());
+		recordCnt = jobcandidatelist.size();
+		logger.info("size" + jobcandidatelist.size());
+		beanJobCandidateDM = new BeanItemContainer<JobCandidateDM>(JobCandidateDM.class);
+		beanJobCandidateDM.addAll(jobcandidatelist);
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Got the jobcandidatelist. result set");
+		tblMstScrSrchRslt.setContainerDataSource(beanJobCandidateDM);
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "candidateId","jobtitle", "firstName","email", "contactNo", "status",
+				"lastUpdatedDt", "lastUpdatedBy" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Job Title","First Name", "E-mail","Contact No.", "Status",
+				"Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setColumnAlignment("candidateid", Align.RIGHT);
+		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+	}
+	
+	public void loadJobVaccancy() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Loading JobVaccancy Search...");
+		List<JobVaccancyDM> vaccancylist = serviceJobVaccancy.getJobVaccancyList(null, null, null, null, null, null,
+				null, "F");
+		beanJobVaccancyDM = new BeanContainer<Long, JobVaccancyDM>(JobVaccancyDM.class);
+		beanJobVaccancyDM.setBeanIdProperty("vaccancyId");
+		beanJobVaccancyDM.addAll(vaccancylist);
+		cbjobtitle.setContainerDataSource(beanJobVaccancyDM);
+	}
+	
+	protected void searchDetails() throws NoDataFoundException {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + " Invoking search");
+		loadSrchRslt();
+		if (recordCnt == 0) {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "No data for the search. throwing ERPException.NoDataFoundException");
+			throw new ERPException.NoDataFoundException();
+		} else {
+			lblNotification.setIcon(null);
+			lblNotification.setCaption("");
+			assembleSearchLayout();
+		}
+	}
+	
+	@Override
+	protected void resetSearchDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Resetting search fields and reloading the result");
+		cbjobtitle.setValue(null);
+		tffirstname.setValue("");
+		tfcontactno.setValue("");
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+		// reload the search using the defaults
+		loadSrchRslt();
+	}
+	
+	@Override
+	protected void addDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
+		// remove the components in the search layout and input controls in the same container
+		hlUserInputLayout.removeAllComponents();
+		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
+		new UploadDocumentUI(vlresumdoc);
+		assembleUserInputLayout();
+		resetFields();
+		cbjobtitle.setRequired(true);
+		tfemailid.setRequired(true);
+	}
+	
+	public void editCandidate() {
+		hlUserInputLayout.setVisible(true);
+		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
+		if (itselect != null) {
+			JobCandidateDM jobcandidatelist = beanJobCandidateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			if (cbjobtitle != null) {
+				cbjobtitle.setValue(jobcandidatelist.getVaccancyid());
+			}
+			if ((itselect.getItemProperty("firstName").getValue() != null)) {
+				tffirstname.setValue(jobcandidatelist.getFirstName().toString());
+			}
+			if ((itselect.getItemProperty("lastName").getValue() != null)) {
+				tflastname.setValue(jobcandidatelist.getLastName());
+			}
+			if ((itselect.getItemProperty("email").getValue() != null)) {
+				tfemailid.setValue(jobcandidatelist.getEmail().toString());
+			}
+			if ((itselect.getItemProperty("contactNo").getValue() != null)) {
+				tfcontactno.setValue(jobcandidatelist.getContactNo());
+			}
+			if ((itselect.getItemProperty("doa").getValue() != null)) {
+				dfDOA.setValue(jobcandidatelist.getDoa());
+			}
+			if ((itselect.getItemProperty("resumKeywrds").getValue() != null)) {
+				taresumkywrd.setValue(jobcandidatelist.getResumKeywrds());
+			}
+			if ((itselect.getItemProperty("status").getValue() != null)) {
+				cbStatus.setValue(jobcandidatelist.getStatus());
+			}
+			if (itselect.getItemProperty("resume").getValue() != null) {
+				byte[] certificate = (byte[]) itselect.getItemProperty("resume").getValue();
+				UploadDocumentUI test = new UploadDocumentUI(vlresumdoc);
+				test.displaycertificate(certificate);
+			} else {
+				new UploadDocumentUI(vlresumdoc);
+			}
+		}
+	}
+	
+	@Override
+	protected void editDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Invoking Edit record ");
+		hlUserInputLayout.removeAllComponents();
+		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
+		assembleUserInputLayout();
+		resetFields();
+		cbjobtitle.setRequired(true);
+		tfemailid.setRequired(true);
+		editCandidate();
+	}
+	
+	@Override
+	protected void validateDetails() throws ValidationException {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
+		boolean errorFlag = false;
+		cbjobtitle.setComponentError(null);
+		tfemailid.setComponentError(null);
+		if ((cbjobtitle.getValue() == null)) {
+			cbjobtitle.setComponentError(new UserError(GERPErrorCodes.NULL_JOB_CANDIDATE));
+			errorFlag = true;
+		}
+		String emailSeq = tfemailid.getValue().toString();
+		if (!emailSeq.contains("@") || !emailSeq.contains(".")) {
+			tfemailid.setComponentError(new UserError(GERPErrorCodes.EMAIL_VALIDATION));
+			errorFlag = true;
+		}
+		if (errorFlag) {
+			throw new ERPException.ValidationException();
+		}
+	}
+	
+	@Override
+	protected void saveDetails() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+			JobCandidateDM jobcandidateobj = new JobCandidateDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				jobcandidateobj = beanJobCandidateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
+			jobcandidateobj.setVaccancyid((Long) cbjobtitle.getValue());
+			jobcandidateobj.setFirstName(tffirstname.getValue().toString());
+			jobcandidateobj.setLastName(tflastname.getValue().toString());
+			jobcandidateobj.setEmail(tfemailid.getValue().toString());
+			jobcandidateobj.setContactNo(tfcontactno.getValue().toString());
+			jobcandidateobj.setResumKeywrds(taresumkywrd.getValue().toString());
+			if (cbStatus.getValue() != null) {
+				jobcandidateobj.setStatus((String) cbStatus.getValue());
+			}
+			if (dfDOA.getValue() != null) {
+				jobcandidateobj.setDoa(dfDOA.getValue());
+			}
+			File file = new File(GERPConstants.DOCUMENT_PATH);
+			FileInputStream fio = new FileInputStream(file);
+			byte fileContent[] = new byte[(int) file.length()];
+			fio.read(fileContent);
+			fio.close();
+			jobcandidateobj.setResume(fileContent);
+			jobcandidateobj.setLastUpdatedDt(DateUtils.getcurrentdate());
+			jobcandidateobj.setLastUpdatedBy(username);
+			serviceJobCandidate.saveJobCandidateDetails(jobcandidateobj);
+			resetFields();
+			loadSrchRslt();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	protected void showAuditDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Getting audit record for jobCandidateId. ID " + "");
+		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_HCM_JOB_CANDIDATE);
+		UI.getCurrent().getSession().setAttribute("audittablepk", jobCandidateId);
+	}
+	
+	@Override
+	protected void cancelDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
+		assembleSearchLayout();
+		tblMstScrSrchRslt.setValue(null);
+		cbjobtitle.setRequired(false);
+		tfemailid.setRequired(false);
+		resetFields();
+		loadSrchRslt();
+	}
+	
+	@Override
+	protected void resetFields() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Resetting search fields and reloading the result");
+		tffirstname.setValue("");
+		tfcontactno.setValue("");
+		tfcontactno.setComponentError(null);
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+		tffirstname.setComponentError(null);
+		tffirstname.setValue("");
+		cbjobtitle.setComponentError(null);
+		cbjobtitle.setValue(null);
+		tflastname.setComponentError(null);
+		tflastname.setValue("");
+		tfemailid.setComponentError(null);
+		tfemailid.setValue("");
+		dfDOA.setComponentError(null);
+		dfDOA.setValue(null);
+		taresumkywrd.setComponentError(null);
+		taresumkywrd.setValue("");
+		new UploadDocumentUI(vlresumdoc);
+	}
+}

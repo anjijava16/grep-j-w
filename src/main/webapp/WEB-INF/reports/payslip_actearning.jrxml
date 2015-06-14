@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="payslip_actearning" pageWidth="260" pageHeight="802" columnWidth="260" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="8ca86f8a-c1f1-4166-ab48-54f41a3b7736">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="processid" class="java.lang.String"/>
+	<parameter name="staffid" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select payroll_earn_id,earn_desc, earn_amount
+FROM t_hcm_payroll_earn
+WHERE payroll_id = $P{processid}
+ AND employee_id = $P{staffid}
+AND emp_earn_id NOT IN (
+SELECT se.emp_earn_id
+FROM t_hcm_payroll_earn pe, t_hcm_employee_earning se, m_hcm_earnings e
+WHERE pe.payroll_id = $P{processid}
+AND pe.employee_id = $P{staffid}
+AND pe.employee_id = se.employee_id
+AND pe.emp_earn_id = se.emp_earn_id
+AND se.earn_id = e.earn_id
+AND e.earn_code = 'GROSS'
+AND e.earn_status = 'A'
+AND emp_earn_status = 'A')
+order by sort_order]]>
+	</queryString>
+	<field name="PAYROLL_EARN_ID" class="java.math.BigDecimal"/>
+	<field name="EARN_DESC" class="java.lang.String"/>
+	<field name="EARN_AMOUNT" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField>
+				<reportElement uuid="35aacc59-ea96-44d3-acaf-1e72bdb0c2b1" x="0" y="0" width="172" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{EARN_DESC}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement uuid="653229cc-1d3b-4809-ad0c-9c5997d18acd" x="173" y="0" width="83" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{EARN_AMOUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

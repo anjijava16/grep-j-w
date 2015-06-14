@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<uiFlowData>
+    <adjoinProperty>
+        <adjoinid>852</adjoinid>
+        <asperdeed>70</asperdeed>
+        <asperplan>70</asperplan>
+        <aspersite>70</aspersite>
+        <docid>12</docid>
+        <fieldlabel>North by</fieldlabel>
+        <grouphdr>Item No :1</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.352+05:30</lastupdateddt>
+    </adjoinProperty>
+    <adjoinProperty>
+        <adjoinid>853</adjoinid>
+        <asperdeed>78</asperdeed>
+        <asperplan>78</asperplan>
+        <aspersite>78</aspersite>
+        <docid>12</docid>
+        <fieldlabel>South by</fieldlabel>
+        <grouphdr>Item No :1</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.461+05:30</lastupdateddt>
+    </adjoinProperty>
+    <adjoinProperty>
+        <adjoinid>854</adjoinid>
+        <asperdeed>uu</asperdeed>
+        <asperplan>uu</asperplan>
+        <aspersite>uu</aspersite>
+        <docid>12</docid>
+        <fieldlabel>East by</fieldlabel>
+        <grouphdr>Item No :1</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.514+05:30</lastupdateddt>
+    </adjoinProperty>
+    <adjoinProperty>
+        <adjoinid>855</adjoinid>
+        <asperdeed>uuuu</asperdeed>
+        <asperplan>uuuu</asperplan>
+        <aspersite>uuuu</aspersite>
+        <docid>12</docid>
+        <fieldlabel>West by</fieldlabel>
+        <grouphdr>Item No :1</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.556+05:30</lastupdateddt>
+    </adjoinProperty>
+    <adjoinProperty>
+        <adjoinid>856</adjoinid>
+        <asperdeed>100</asperdeed>
+        <asperplan>85</asperplan>
+        <aspersite>9</aspersite>
+        <docid>12</docid>
+        <fieldlabel>North by</fieldlabel>
+        <grouphdr>Item No :2</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.597+05:30</lastupdateddt>
+    </adjoinProperty>
+    <adjoinProperty>
+        <adjoinid>857</adjoinid>
+        <asperdeed>166</asperdeed>
+        <asperplan>3</asperplan>
+        <aspersite>6</aspersite>
+        <docid>12</docid>
+        <fieldlabel>South by</fieldlabel>
+        <grouphdr>Item No :2</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.643+05:30</lastupdateddt>
+    </adjoinProperty>
+    <adjoinProperty>
+        <adjoinid>858</adjoinid>
+        <asperdeed>822</asperdeed>
+        <asperplan>testdata</asperplan>
+        <aspersite>6</aspersite>
+        <docid>12</docid>
+        <fieldlabel>East by</fieldlabel>
+        <grouphdr>Item No :2</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.670+05:30</lastupdateddt>
+    </adjoinProperty>
+    <adjoinProperty>
+        <adjoinid>859</adjoinid>
+        <asperdeed>963</asperdeed>
+        <asperplan>6</asperplan>
+        <aspersite>6</aspersite>
+        <docid>12</docid>
+        <fieldlabel>West by</fieldlabel>
+        <grouphdr>Item No :2</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.699+05:30</lastupdateddt>
+    </adjoinProperty>
+    <adjoinProperty>
+        <adjoinid>860</adjoinid>
+        <asperdeed>70</asperdeed>
+        <asperplan>9</asperplan>
+        <aspersite>5</aspersite>
+        <docid>12</docid>
+        <fieldlabel>North of</fieldlabel>
+        <grouphdr>Item No :3</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.727+05:30</lastupdateddt>
+    </adjoinProperty>
+    <adjoinProperty>
+        <adjoinid>861</adjoinid>
+        <asperdeed>55</asperdeed>
+        <asperplan>10</asperplan>
+        <aspersite>6</aspersite>
+        <docid>12</docid>
+        <fieldlabel>South of</fieldlabel>
+        <grouphdr>Item No :3</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.813+05:30</lastupdateddt>
+    </adjoinProperty>
+    <adjoinProperty>
+        <adjoinid>862</adjoinid>
+        <asperdeed>66</asperdeed>
+        <asperplan>11</asperplan>
+        <aspersite>7</aspersite>
+        <docid>12</docid>
+        <fieldlabel>East of</fieldlabel>
+        <grouphdr>Item No :3</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.869+05:30</lastupdateddt>
+    </adjoinProperty>
+    <adjoinProperty>
+        <adjoinid>863</adjoinid>
+        <asperdeed>77</asperdeed>
+        <asperplan>12</asperplan>
+        <aspersite>8</aspersite>
+        <docid>12</docid>
+        <fieldlabel>West of</fieldlabel>
+        <grouphdr>Item No :3</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.882+05:30</lastupdateddt>
+    </adjoinProperty>
+    <areaDetails>
+        <areaid>256</areaid>
+        <docid>12</docid>
+        <fieldlabel>Site Area</fieldlabel>
+        <fieldvalue>2100 sqtf cent</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.343+05:30</lastupdateddt>
+        <orderno>1</orderno>
+    </areaDetails>
+    <areaDetails>
+        <areaid>257</areaid>
+        <docid>12</docid>
+        <fieldlabel>Plinth Area of the building</fieldlabel>
+        <fieldvalue>Nil-</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.362+05:30</lastupdateddt>
+        <orderno>2</orderno>
+    </areaDetails>
+    <areaDetails>
+        <areaid>258</areaid>
+        <docid>12</docid>
+        <fieldlabel>Carpet Area</fieldlabel>
+        <fieldvalue>Nil</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.383+05:30</lastupdateddt>
+        <orderno>3</orderno>
+    </areaDetails>
+    <areaDetails>
+        <areaid>259</areaid>
+        <docid>12</docid>
+        <fieldlabel>Salabale Area</fieldlabel>
+        <fieldvalue>2100 sqtf cent</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.393+05:30</lastupdateddt>
+        <orderno>4</orderno>
+    </areaDetails>
+    <areaDetails>
+        <areaid>260</areaid>
+        <docid>12</docid>
+        <fieldlabel>Remarks</fieldlabel>
+        <fieldvalue>no</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.417+05:30</lastupdateddt>
+        <orderno>5</orderno>
+    </areaDetails>
+    <assetDtls>
+        <assetid>345</assetid>
+        <docid>12</docid>
+        <fieldlabel>Owner Name</fieldlabel>
+        <fieldvalue>test1</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:10.922+05:30</lastupdateddt>
+        <orderno>1</orderno>
+    </assetDtls>
+    <assetDtls>
+        <assetid>346</assetid>
+        <docid>12</docid>
+        <fieldlabel>Land Mark</fieldlabel>
+        <fieldvalue>test2</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:10.952+05:30</lastupdateddt>
+        <orderno>2</orderno>
+    </assetDtls>
+    <assetDtls>
+        <assetid>347</assetid>
+        <docid>12</docid>
+        <fieldlabel>Owner Address</fieldlabel>
+        <fieldvalue>karthiga devi</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:10.965+05:30</lastupdateddt>
+        <orderno>3</orderno>
+    </assetDtls>
+    <assetDtls>
+        <assetid>348</assetid>
+        <docid>12</docid>
+        <fieldlabel>Property Address</fieldlabel>
+        <fieldvalue>chennai</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:10.988+05:30</lastupdateddt>
+        <orderno>4</orderno>
+    </assetDtls>
+    <boundary>
+        <docid>12</docid>
+        <fieldlabel>Matching of Boundaries</fieldlabel>
+        <fieldvalue>No</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.081+05:30</lastupdateddt>
+        <matchid>237</matchid>
+        <orderno>1</orderno>
+    </boundary>
+    <boundary>
+        <docid>12</docid>
+        <fieldlabel>Plot Demarcated</fieldlabel>
+        <fieldvalue>Yes</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.093+05:30</lastupdateddt>
+        <matchid>238</matchid>
+        <orderno>2</orderno>
+    </boundary>
+    <boundary>
+        <docid>12</docid>
+        <fieldlabel>Approved Land Use</fieldlabel>
+        <fieldvalue>Residential Area</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.116+05:30</lastupdateddt>
+        <matchid>239</matchid>
+        <orderno>3</orderno>
+    </boundary>
+    <boundary>
+        <docid>12</docid>
+        <fieldlabel>Type of Property</fieldlabel>
+        <fieldvalue>Commercial Area</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.134+05:30</lastupdateddt>
+        <matchid>240</matchid>
+        <orderno>4</orderno>
+    </boundary>
+    <customer>
+        <custid>225</custid>
+        <docid>12</docid>
+        <fieldlabel>Customer Name</fieldlabel>
+        <fieldvalue>soundar</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:10.882+05:30</lastupdateddt>
+        <orderno>1</orderno>
+    </customer>
+    <customer>
+        <custid>226</custid>
+        <docid>12</docid>
+        <fieldlabel>Description of the Property</fieldlabel>
+        <fieldvalue>Vacant Commercial</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:10.894+05:30</lastupdateddt>
+        <orderno>2</orderno>
+    </customer>
+    <dimension>
+        <asperdeed>t7g</asperdeed>
+        <asperplan>t7g</asperplan>
+        <aspersite>t7g</aspersite>
+        <dimenid>381</dimenid>
+        <docid>12</docid>
+        <fieldlabel>North joih</fieldlabel>
+        <grouphdr>Item No :1</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.948+05:30</lastupdateddt>
+    </dimension>
+    <dimension>
+        <asperdeed>fr</asperdeed>
+        <asperplan>fr</asperplan>
+        <aspersite>fr</aspersite>
+        <dimenid>382</dimenid>
+        <docid>12</docid>
+        <fieldlabel>Sout kln</fieldlabel>
+        <grouphdr>Item No :1</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.976+05:30</lastupdateddt>
+    </dimension>
+    <dimension>
+        <asperdeed>f</asperdeed>
+        <asperplan>f</asperplan>
+        <aspersite>f</aspersite>
+        <dimenid>383</dimenid>
+        <docid>12</docid>
+        <fieldlabel>Eas mmpo</fieldlabel>
+        <grouphdr>Item No :1</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.996+05:30</lastupdateddt>
+    </dimension>
+    <dimension>
+        <asperdeed>f</asperdeed>
+        <asperplan>f</asperplan>
+        <aspersite>f</aspersite>
+        <dimenid>384</dimenid>
+        <docid>12</docid>
+        <fieldlabel>Westf</fieldlabel>
+        <grouphdr>Item No :1</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.014+05:30</lastupdateddt>
+    </dimension>
+    <dimension>
+        <asperdeed>f</asperdeed>
+        <asperplan>f</asperplan>
+        <aspersite>f</aspersite>
+        <dimenid>385</dimenid>
+        <docid>12</docid>
+        <fieldlabel>Extend</fieldlabel>
+        <grouphdr>Item No :1</grouphdr>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.024+05:30</lastupdateddt>
+    </dimension>
+    <document>
+        <approvalyn>No</approvalyn>
+        <approveauth>test</approveauth>
+        <approveref>myname</approveref>
+        <dataid>245</dataid>
+        <docid>12</docid>
+        <fieldlabel>Land and Building Approval Plan</fieldlabel>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.021+05:30</lastupdateddt>
+        <orderno>1</orderno>
+    </document>
+    <document>
+        <approvalyn>Yes</approvalyn>
+        <approveauth>mine</approveauth>
+        <approveref>details</approveref>
+        <dataid>246</dataid>
+        <docid>12</docid>
+        <fieldlabel>Layout Plan</fieldlabel>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.070+05:30</lastupdateddt>
+        <orderno>2</orderno>
+    </document>
+    <document>
+        <approvalyn>Yes</approvalyn>
+        <approveauth>33</approveauth>
+        <approveref>33</approveref>
+        <dataid>247</dataid>
+        <docid>12</docid>
+        <fieldlabel>Other Documents</fieldlabel>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.107+05:30</lastupdateddt>
+        <orderno>3</orderno>
+    </document>
+    <evalDtls>
+        <bankbranch>Anna nager</bankbranch>
+        <bankid>2</bankid>
+        <checkedby>Kumar</checkedby>
+        <checkeddt>2013-12-16T00:00:00+05:30</checkeddt>
+        <docdate>2013-12-23T00:00:00+05:30</docdate>
+        <docid>12</docid>
+        <docstatus>Active</docstatus>
+        <evaldate>2013-12-23T00:00:00+05:30</evaldate>
+        <evalno>SYN_LAND_12</evalno>
+        <evalpurpose>Collateral Security to the Bank</evalpurpose>
+        <lastupdateddt>2013-12-26T20:44:10.811+05:30</lastupdateddt>
+        <lastupdtedby>username</lastupdtedby>
+        <valuationby>soundarc</valuationby>
+    </evalDtls>
+    <guideline>
+        <amount>9663.6</amount>
+        <area>1000</area>
+        <docid>12</docid>
+        <fieldlabel>Land</fieldlabel>
+        <guidelineid>43</guidelineid>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.674+05:30</lastupdateddt>
+        <orderno>1</orderno>
+        <rate>500</rate>
+    </guideline>
+    <landval>
+        <docid>12</docid>
+        <fieldlabel>Area of the Land1</fieldlabel>
+        <fieldvalue>2100 sqtf cent</fieldvalue>
+        <landid>238</landid>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.475+05:30</lastupdateddt>
+        <orderno>1</orderno>
+    </landval>
+    <landval>
+        <docid>12</docid>
+        <fieldlabel>Noth and South</fieldlabel>
+        <fieldvalue>fdgfd2</fieldvalue>
+        <landid>239</landid>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.524+05:30</lastupdateddt>
+        <orderno>2</orderno>
+    </landval>
+    <landval>
+        <docid>12</docid>
+        <fieldlabel>Market Rate of land/cent</fieldlabel>
+        <fieldvalue>fd3</fieldvalue>
+        <landid>240</landid>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.551+05:30</lastupdateddt>
+        <orderno>3</orderno>
+    </landval>
+    <landval>
+        <docid>12</docid>
+        <fieldlabel>Adopted Market rate of land/cent</fieldlabel>
+        <fieldvalue>fdgdf4</fieldvalue>
+        <landid>241</landid>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.581+05:30</lastupdateddt>
+        <orderno>4</orderno>
+    </landval>
+    <landval>
+        <docid>12</docid>
+        <fieldlabel>Fair Market value of the Land</fieldlabel>
+        <fieldvalue>fgfd5</fieldvalue>
+        <landid>242</landid>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.616+05:30</lastupdateddt>
+        <orderno>5</orderno>
+    </landval>
+    <legalDoc>
+        <docdated>2013-12-24T00:00:00+05:30</docdated>
+        <docid>12</docid>
+        <docno>test/ref</docno>
+        <fieldlabel>mydocumnet</fieldlabel>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.165+05:30</lastupdateddt>
+        <legalid>161</legalid>
+        <orderno>1</orderno>
+    </legalDoc>
+    <legalDoc>
+        <docdated>2013-12-03T00:00:00+05:30</docdated>
+        <docid>12</docid>
+        <docno>32</docno>
+        <fieldlabel>33</fieldlabel>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:11.213+05:30</lastupdateddt>
+        <legalid>162</legalid>
+        <orderno>2</orderno>
+    </legalDoc>
+    <propertyConstruct>
+        <constid>54</constid>
+        <docid>12</docid>
+        <fieldlabel>Stage of Construction</fieldlabel>
+        <fieldvalue>NA</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.272+05:30</lastupdateddt>
+        <orderno>1</orderno>
+    </propertyConstruct>
+    <propertyOccupancy>
+        <docid>12</docid>
+        <fieldlabel>Status of Tenure</fieldlabel>
+        <fieldvalue>NA</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.178+05:30</lastupdateddt>
+        <occupid>218</occupid>
+        <orderno>1</orderno>
+    </propertyOccupancy>
+    <propertyOccupancy>
+        <docid>12</docid>
+        <fieldlabel>Owned/Rented</fieldlabel>
+        <fieldvalue>Owned</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.201+05:30</lastupdateddt>
+        <occupid>219</occupid>
+        <orderno>2</orderno>
+    </propertyOccupancy>
+    <propertyOccupancy>
+        <docid>12</docid>
+        <fieldlabel>No of Years Occupancy</fieldlabel>
+        <fieldvalue>5 Years</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.217+05:30</lastupdateddt>
+        <occupid>220</occupid>
+        <orderno>3</orderno>
+    </propertyOccupancy>
+    <propertyOccupancy>
+        <docid>12</docid>
+        <fieldlabel>Relationship of tenant to the owner</fieldlabel>
+        <fieldvalue>NA</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.241+05:30</lastupdateddt>
+        <occupid>221</occupid>
+        <orderno>4</orderno>
+    </propertyOccupancy>
+    <propertyViolation>
+        <docid>12</docid>
+        <fieldlabel>Violation if any observed</fieldlabel>
+        <fieldvalue>--</fieldvalue>
+        <lastupdatedby>username</lastupdatedby>
+        <lastupdateddt>2013-12-26T20:44:12.311+05:30</lastupdateddt>
+        <orderno>1</orderno>
+        <violationid>54</violationid>
+    </propertyViolation>
+</uiFlowData>

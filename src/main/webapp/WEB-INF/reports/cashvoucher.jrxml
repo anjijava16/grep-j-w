@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cashvoucher" pageWidth="595" pageHeight="400" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3762ec32-ae9c-41ac-a870-03f613bd17bf">
+	<property name="ireport.zoom" value="1.4641000000000013"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="259"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#FFBFBF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<subDataset name="Table Dataset 1" uuid="6f8f7c41-4aca-4a8f-9b9c-7e9ed82a6e95"/>
+	<parameter name="ATXNID" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select atxn.* from t_fms_account_txns atxn where  acctxn_id=$P{ATXNID}]]>
+	</queryString>
+	<field name="ACCTXN_ID" class="java.math.BigDecimal"/>
+	<field name="TRANS_DATE" class="java.sql.Timestamp"/>
+	<field name="VALUE_DATE" class="java.sql.Timestamp"/>
+	<field name="COMPANY_ID" class="java.math.BigDecimal"/>
+	<field name="ACCOUNT_ID" class="java.math.BigDecimal"/>
+	<field name="VOUCHER_NO" class="java.lang.String"/>
+	<field name="EMPLOYEE_ID" class="java.math.BigDecimal"/>
+	<field name="TRANS_TYPE_ID" class="java.math.BigDecimal"/>
+	<field name="OPEN_BALANCE" class="java.math.BigDecimal"/>
+	<field name="TRANS_AMOUNT" class="java.math.BigDecimal"/>
+	<field name="CLOSE_BALANCE" class="java.math.BigDecimal"/>
+	<field name="CHEQUE_NO" class="java.lang.String"/>
+	<field name="CHEQUE_DATE" class="java.sql.Timestamp"/>
+	<field name="INSTRUMENT_REMARKS" class="java.lang.String"/>
+	<field name="PAYMENT_MODE" class="java.lang.String"/>
+	<field name="PREPARED_BY" class="java.math.BigDecimal"/>
+	<field name="TXN_STATUS" class="java.lang.String"/>
+	<field name="ACTIONED_DT" class="java.sql.Timestamp"/>
+	<field name="ACTIONED_BY" class="java.math.BigDecimal"/>
+	<field name="APP_REMARKS" class="java.lang.String"/>
+	<field name="LAST_UPDATED_DT" class="java.sql.Timestamp"/>
+	<field name="LAST_UPDATED_BY" class="java.lang.String"/>
+	<field name="ACC_REF_NAME" class="java.lang.String"/>
+	<field name="REF_DETAILS" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="358" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="eb8b5ac5-fcc2-4845-87b4-cf170c2c60f4" x="397" y="21" width="155" height="46"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="06087fb6-b3f9-4895-9195-0ae5b24c791c" x="0" y="21" width="258" height="27"/>
+				<textElement verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC TOOL TECH (P) LTD.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ecab15e7-3600-4b23-891c-acfa148726a3" x="0" y="48" width="258" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Coimbatore - 641 050.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d5f94875-0133-4f81-8546-b55ab4dfe378" x="277" y="3" width="100" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[VOUCHER]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="93ab8ef2-9ccc-465b-882f-c8203bf55b71" x="400" y="23" width="60" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="88e0a9b4-ac19-4097-a549-45af5045964b" x="400" y="46" width="60" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="f410073d-ab3d-4233-80dd-5d5a35f1f2ba" x="397" y="43" width="155" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="a7d49654-9326-4c67-955b-bbfe551e1004" x="460" y="21" width="1" height="47"/>
+			</line>
+			<rectangle>
+				<reportElement uuid="f05a677e-7f1a-47cb-b5ab-531a5d763743" x="0" y="75" width="397" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="f4603fe5-05af-4a65-b36e-0cfffc072d67" x="0" y="97" width="397" height="89"/>
+			</rectangle>
+			<line>
+				<reportElement uuid="a6ee3ebb-c1c3-4efe-8db1-372eb43f3d7f" x="257" y="75" width="1" height="20"/>
+			</line>
+			<line>
+				<reportElement uuid="f756c1ca-2786-4b78-af64-72132a4a19dc" x="329" y="75" width="1" height="20"/>
+			</line>
+			<staticText>
+				<reportElement uuid="afd9bfdf-d532-4b88-9d63-d15f25958418" x="2" y="76" width="257" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Account :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="41f8cada-c53e-4f04-a33e-e6e60855bd47" x="260" y="76" width="70" height="19"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Debit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d80b9a0f-4721-44ca-8517-6f2b0a1f2b46" x="332" y="75" width="67" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Credit]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement uuid="67cd9c92-2779-404e-a938-b5c49f318013" x="0" y="188" width="397" height="20"/>
+			</rectangle>
+			<line>
+				<reportElement uuid="543bb4e6-c8ce-41d5-9d2f-43b602c25a45" x="258" y="97" width="1" height="111"/>
+			</line>
+			<line>
+				<reportElement uuid="1b0b65cf-7bc5-44a3-a409-94c4568c6530" x="330" y="97" width="1" height="111"/>
+			</line>
+			<staticText>
+				<reportElement uuid="bdfa8d19-9058-461e-9df0-ba0e77f10fa7" x="2" y="188" width="256" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Total ]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement uuid="8b74d504-03fa-4944-9248-3ebeae9182a9" x="0" y="211" width="555" height="20"/>
+			</rectangle>
+			<line>
+				<reportElement uuid="6c56d02b-50d7-4b95-8de2-51cef20635e9" x="82" y="211" width="1" height="20"/>
+			</line>
+			<staticText>
+				<reportElement uuid="90973af0-409c-432b-a15e-770a3e68d0e3" x="2" y="211" width="79" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Reference]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement uuid="b3b1b46b-47a5-4bf1-af6d-ce8582f78f97" x="0" y="231" width="555" height="49"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="f35b3816-3c9c-409c-be9f-a8492d3d7256" x="3" y="231" width="78" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Narration]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement uuid="c263c915-7588-44df-b271-32f821e35aab" x="0" y="280" width="555" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="af08f94a-1872-48c2-b1ea-6eb88271ac33" x="3" y="283" width="61" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Rupees]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="1a44df6e-f054-443a-b2a1-e935d39f3506" x="82" y="280" width="1" height="24"/>
+			</line>
+			<line>
+				<reportElement uuid="641a8666-8364-4209-b508-8485ab0c2449" x="82" y="231" width="1" height="49"/>
+			</line>
+			<rectangle>
+				<reportElement uuid="1a731de8-2417-4575-9462-df7150f2b03d" x="400" y="75" width="152" height="111"/>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="4d2464f7-906c-4ced-abd3-1d04dc54f6ef" x="0" y="306" width="555" height="51"/>
+			</rectangle>
+			<line>
+				<reportElement uuid="3f255742-cc90-406c-9f12-dd84ba57b9c7" x="0" y="337" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="6e110b22-cc67-4950-8016-9a194c46e27d" x="0" y="338" width="152" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Approved]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="aaa7a48a-1f96-4ba7-a9c0-1304987337fe" x="152" y="337" width="141" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Checked by]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3108dd8a-0778-411b-957d-7fce4fd3729f" x="293" y="338" width="128" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Prepared by]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="69a8b3fa-0132-4a24-ba57-8c52e353d787" x="421" y="338" width="134" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Receiver's Signature]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="46291653-2639-4c82-af3a-5102417ad858" x="152" y="306" width="1" height="51"/>
+			</line>
+			<line>
+				<reportElement uuid="7a773192-a924-47ed-b4f9-fd5c2131fece" x="293" y="306" width="1" height="52"/>
+			</line>
+			<line>
+				<reportElement uuid="1486a04d-e686-46a5-ba75-2d9e6125144c" x="421" y="306" width="1" height="51"/>
+			</line>
+		</band>
+	</title>
+</jasperReport>

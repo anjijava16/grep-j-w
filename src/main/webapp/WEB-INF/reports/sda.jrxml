@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sda" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b2110745-7f55-49d9-960b-5671724150b6">
+	<property name="ireport.zoom" value="1.1000000000000005"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="395"/>
+	<parameter name="SDAID" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select enqh.enquiry_no enquiry_no,enqh.enquiry_date enquiry_date, sdah.sda_no sda_no,sdah.sda_date sda_date,
+prod.product_name,sdad.cust_fld1 cust_fld1,sdad.cust_fld2 cust_fld2,sdad.qty qty,client.clnt_address
+from t_sms_sda_hdr sdah,t_sms_sda_dtl sdad,t_sms_enquiry_hdr enqh,t_sms_enquiry_dtl enqd,m_base_product prod,m_crm_clients client
+where sdah.sda_hdr_id = sdad.sda_hdr_id
+and sdah.enquiry_id = enqh.enquiry_id
+and enqd.enquiry_id = enqh.enquiry_id
+and prod.product_id = enqd.product_id
+and client.client_id = enqh.client_id
+and sdad.sda_hdr_id = $P{SDAID}]]>
+	</queryString>
+	<field name="ENQUIRY_NO" class="java.lang.String"/>
+	<field name="ENQUIRY_DATE" class="java.sql.Timestamp"/>
+	<field name="SDA_NO" class="java.lang.String"/>
+	<field name="SDA_DATE" class="java.sql.Timestamp"/>
+	<field name="PRODUCT_NAME" class="java.lang.String"/>
+	<field name="CUST_FLD1" class="java.lang.String"/>
+	<field name="CUST_FLD2" class="java.lang.String"/>
+	<field name="QTY" class="java.math.BigDecimal"/>
+	<field name="CLNT_ADDRESS" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="157" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="c56c1fb1-29a8-4270-87ba-e89bec09f7e4" x="86" y="37" width="277" height="15"/>
+				<textElement/>
+				<text><![CDATA[Plot No : 85,86,87, Sidco Industrial Estate,]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="25287f22-3622-43eb-8605-412d7e519826" x="0" y="-700" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="a8a24193-17a7-4132-96a4-d59828d6cf33" x="86" y="52" width="277" height="19"/>
+				<textElement verticalAlignment="Top"/>
+				<text><![CDATA[Malumichampatti(PO),Coimbatore - 641 050.TN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ea756912-da76-4118-a8da-e49d8b6679cb" x="86" y="69" width="277" height="19"/>
+				<textElement/>
+				<text><![CDATA[Ph: 0422- 6060121/122/123, Fax : 0422-2655156/157]]></text>
+			</staticText>
+			<image>
+				<reportElement uuid="b4072f19-631f-4110-bf01-33e505a83dd1" x="8" y="11" width="111" height="71"/>
+				<imageExpression><![CDATA["saarclogo-small.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement uuid="5ab02a25-d88d-4f9c-8df9-6d7b4d3ce497" x="86" y="85" width="277" height="19"/>
+				<textElement/>
+				<text><![CDATA[Email:marketing@saarccases.com]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a838251b-b952-4105-b010-e6cbbb016eaa" x="86" y="100" width="277" height="19"/>
+				<textElement/>
+				<text><![CDATA[Visit us:www.saarccases.com]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="be20a68b-dcb3-4c46-b80f-ddc1c9ddf3e8" x="0" y="155" width="555" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="00991068-99a5-467f-8dc4-085cb3c72c00" x="-1" y="-1" width="556" height="2"/>
+			</line>
+			<staticText>
+				<reportElement uuid="744f084f-e024-41ec-ace8-bdc1fde40e1c" x="86" y="14" width="277" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="17" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC TOOL TECH (P) LTD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="057989b0-e4e3-4066-a606-de473cc5e781" x="-1" y="133" width="555" height="22"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAMPLE DELIVERY ADVISE]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="154" splitType="Stretch">
+			<line>
+				<reportElement uuid="3d22983a-10c8-4a9f-b896-b614281b55d7" x="0" y="150" width="555" height="2"/>
+			</line>
+			<staticText>
+				<reportElement uuid="804b5d9a-4477-44b2-815b-c8228443d503" x="3" y="31" width="24" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[To]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4f3e845d-54ab-4581-9fbc-a55d34e5e704" x="4" y="113" width="65" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Kind Attn:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7cd6c98d-592e-4e2c-ba88-1b726a687fcf" x="4" y="133" width="115" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Dear Sir / Madam,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="31c22cfe-96c0-4966-9f85-ffeea2efc73c" x="2" y="3" width="53" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Enq.No :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="be835c78-de87-4de2-963e-61158fdeb978" x="400" y="3" width="42" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2724e156-4f51-4302-8ec7-1fc3364fc574" x="400" y="68" width="56" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[SDA No    :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d5e83352-d4fd-441a-bdb5-3de85bc31797" x="400" y="94" width="56" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Date         :]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="1b407ccc-2186-4315-a69b-ef163adc4607" x="55" y="3" width="189" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ENQUIRY_NO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement uuid="ea514d87-7085-4cd3-9a0a-074ac9b66823" x="442" y="3" width="112" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ENQUIRY_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="3cad10c9-f948-40da-8d7f-a821778958a6" x="27" y="45" width="227" height="65"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{CLNT_ADDRESS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="abd30be1-4a0b-4062-92ff-b8fa8882e4d0" x="456" y="68" width="98" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{SDA_NO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement uuid="42690c3f-6e0e-496d-99d6-8e4ed180b92c" x="456" y="94" width="98" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{SDA_DATE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="33" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="c85844d6-8407-4698-8106-270c2de2bd68" x="490" y="1" width="64" height="32"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[QTY
+(In Nos)]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="0a3ba96c-2e43-484c-87a3-6810846ec2e6" x="0" y="31" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="f31486af-e6c9-4d39-bf5f-ac7f9ddcf3fd" x="290" y="0" width="198" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Saarc P/No  &]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="207e3798-5f56-4178-97b2-5b8c05f19c91" x="40" y="-1" width="251" height="32"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPTION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d6a6513d-1d2c-4d4d-9610-e6461bc30f3f" x="0" y="-1" width="39" height="32"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f0798b27-6a5a-4d9d-82d0-000fe52dda1c" x="290" y="17" width="198" height="12"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Drg.No]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="32" splitType="Stretch">
+			<textField>
+				<reportElement uuid="355323f1-3c23-411c-b788-8ad9b7ef1d5a" x="40" y="0" width="251" height="32"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PRODUCT_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="1f65b777-53cf-4c97-8d3c-c722f7a0f5c5" x="290" y="0" width="198" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CUST_FLD1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="cad139a9-316c-4786-834d-f9e9e251d07e" x="290" y="14" width="198" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CUST_FLD2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="ce2083ef-1794-4e09-b264-c9eb8e421b91" x="490" y="0" width="64" height="32"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{QTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="05481264-e687-4787-9ea1-5e720a1fff36" x="2" y="0" width="37" height="32"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="162" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="d6755f18-b335-4e79-8aa4-971b2c2c92d9" x="2" y="11" width="552" height="36"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[The above item is sample for Trial – Testing & Evaluation purpose only, onReturnable basis.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9b1520b0-2b46-4856-84da-a44a7750e17c" x="3" y="51" width="551" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[IT IS NOT FOR SALE AND HAS NO COMMERCIAL VALUE.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="0fde8bc8-e3b4-45cb-8071-a82a8945de2b" x="0" y="2" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="75f3be4f-52bc-4c3b-8e2f-898b13338f59" x="2" y="90" width="326" height="52"/>
+				<textElement verticalAlignment="Top">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TIN No: 33311802763           Area Code - 095
+CST No: 287235                    Date: 28.06.2004
+CIN No: U25209KA2001PTC029466]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e0b1b215-06b3-449e-afb9-6a462d8a13b8" x="356" y="90" width="198" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[For SAARC Tool Tech (P) Ltd.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8248f4f6-452d-416c-8e89-dc2a30c258cd" x="363" y="134" width="191" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Authorized Signatory]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="75" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="14" splitType="Stretch"/>
+	</summary>
+</jasperReport>

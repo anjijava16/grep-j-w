@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="payslip" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="822" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" uuid="ff1e6302-fea9-42ae-a5f1-3d32001b560b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="48"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["G:\\Sara\\GNTS\\DEV.SVN\\projects-new\\gHCM\\Reports\\payroll\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="staffid" class="java.lang.String"/>
+	<parameter name="processid" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT ph.payroll_id,
+  c.company_name,
+  ph.processed_dt,
+  pd.employee_id,
+  s.first_name||' '||s.last_name first_name,
+  pd.working_days,
+  pd.no_of_leaves,
+  pd.lwp_days,
+  pd.total_earn,
+  pd.total_dedn,
+  pd.net_pay,
+  s.employee_code,
+  d.dept_name,
+  ds.designation_name,
+  b.branch_name,
+  TO_CHAR(s.doj,'DD-Mon-RRRR') doj,
+  bb.IFSC_CODE as bank_branchname,
+  pd.bank_acc_no,
+  g.grade_desc,
+  DECODE(s.gender,'M','Male','Female') gender,
+  (SELECT 'Pay Period '
+    ||TO_CHAR(att_start_dt,'DD-Mon-RRRR')
+    ||' to '
+    ||TO_CHAR(att_end_dt,'DD-Mon-RRRR')
+  FROM t_hcm_attendence_proc ap,
+    t_hcm_payroll_att_ids pai
+  WHERE ap.att_proc_id = pai.att_proc_id
+  AND pai.payroll_id   = $P{processid}
+  AND rownum           =1
+  ) pay_duration,
+  (SELECT se.earn_amount
+  FROM t_hcm_employee_earning se,
+    m_hcm_earnings e
+  WHERE se.employee_id   = $P{staffid}
+  AND se.earn_id      = e.earn_id
+  AND e.earn_code     = 'GROSS'
+  AND e.earn_status   = 'Active'
+  AND emp_earn_status = 'Active'
+  ) std_earn_amount
+FROM t_hcm_payroll_hdr ph,
+  t_hcm_payroll_dtl pd,
+  m_base_employee s,
+  m_base_company c,
+  m_base_department d,
+  m_hcm_designation ds,
+  m_base_branch b,
+  m_fms_bank_branch bb,
+  m_hcm_grade g
+WHERE ph.payroll_id   = pd.payroll_id
+AND pd.employee_id       = s.employee_id
+AND ph.company_id     = c.company_id
+AND s.dept_id         = d.dept_id
+AND pd.designation_id = ds.designation_id
+AND pd.branch_id      = b.branch_id
+AND pd.bank_branch_id = bb.bank_branch_id(+)
+AND ds.grade_id       = g.grade_id
+AND pd.payroll_id     = $P{processid}
+AND pd.employee_id       = $P{staffid}]]>
+	</queryString>
+	<field name="PAYROLL_ID" class="java.math.BigDecimal"/>
+	<field name="COMPANY_NAME" class="java.lang.String"/>
+	<field name="PROCESSED_DT" class="java.sql.Timestamp"/>
+	<field name="EMPLOYEE_ID" class="java.math.BigDecimal"/>
+	<field name="FIRST_NAME" class="java.lang.String"/>
+	<field name="WORKING_DAYS" class="java.math.BigDecimal"/>
+	<field name="NO_OF_LEAVES" class="java.math.BigDecimal"/>
+	<field name="LWP_DAYS" class="java.math.BigDecimal"/>
+	<field name="TOTAL_EARN" class="java.math.BigDecimal"/>
+	<field name="TOTAL_DEDN" class="java.math.BigDecimal"/>
+	<field name="NET_PAY" class="java.math.BigDecimal"/>
+	<field name="EMPLOYEE_CODE" class="java.lang.String"/>
+	<field name="DEPT_NAME" class="java.lang.String"/>
+	<field name="DESIGNATION_NAME" class="java.lang.String"/>
+	<field name="BRANCH_NAME" class="java.lang.String"/>
+	<field name="DOJ" class="java.lang.String"/>
+	<field name="BANK_BRANCHNAME" class="java.lang.String"/>
+	<field name="BANK_ACC_NO" class="java.lang.String"/>
+	<field name="GRADE_DESC" class="java.lang.String"/>
+	<field name="GENDER" class="java.lang.String"/>
+	<field name="PAY_DURATION" class="java.lang.String"/>
+	<field name="STD_EARN_AMOUNT" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="54" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="b8643ef3-5303-46e7-acfa-d131d69663cd" x="278" y="18" width="247" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PAY_DURATION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="cd8d7d12-e1ad-4da3-b7c4-1d42c9323d58" x="234" y="0" width="337" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COMPANY_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="70ba71e5-c6d1-422c-8dff-80e9a5a9e466" x="251" y="34" width="306" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="1aaa977c-7014-4b00-a7d6-ade78391e071" x="0" y="51" width="822" height="1" forecolor="#999999"/>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="131" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="06835b85-3a01-4da1-9fd9-a14b387d0cec" x="144" y="1" width="191" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{EMPLOYEE_CODE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d3aee301-de78-4046-9fd9-3184507574ae" x="0" y="1" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Staff Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="421d9df9-f271-46f4-a271-f2cab282df12" x="130" y="1" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b6504e14-4bb6-4a6e-a6c6-f4ec017d45e8" x="0" y="16" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Designation]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c3df8051-177d-4382-b8a7-b9a1262f4074" x="130" y="16" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="e4e132a2-df1a-4c7f-9d55-ebbd51240b58" x="144" y="16" width="191" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DESIGNATION_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="20519b99-35cc-4271-9ae4-b020defa7b5a" x="0" y="31" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date of Join]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="cb10a766-59e4-42a8-9a4e-52c4b1ed9dba" x="130" y="31" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="d207c7e7-c528-4b88-b4d4-104ad2673161" x="144" y="31" width="100" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DOJ}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="dc7e7b41-3a34-46fe-8859-d270d6fbbc5e" x="0" y="46" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gender ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c5ca37db-d335-4ad9-ac78-b7fdc84e0c0a" x="130" y="46" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="e8b1a33a-3c80-4088-9602-9cdf28fd8727" x="144" y="46" width="100" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{GENDER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="2595cf91-2878-420d-9eda-106dcf201bf3" x="0" y="61" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PAN No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="86967581-bc5a-44bb-866f-7f1ae439a607" x="130" y="61" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d055f8fe-c153-4f2c-af01-a34122a572fe" x="0" y="76" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PF No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="66c8f8a8-1bec-425e-ad71-a0642e82e93b" x="130" y="76" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="46ef998e-beb6-4418-85a9-ef8dca9a96bb" x="471" y="1" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bank Account No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2a1a0347-1c10-41ed-ad62-a9e5c26e0de7" x="599" y="1" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="7bc3cae6-24c7-4ebe-860e-0580b7befb0f" x="610" y="1" width="203" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{BANK_ACC_NO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="cd8eff06-e6c5-4024-8f6f-463880a8d19d" x="471" y="16" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bank Branch]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="55b260de-3043-40dc-8099-64e35f21b749" x="599" y="16" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="bdf34437-a874-40dd-a5f3-8df9e8acb696" x="610" y="16" width="203" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{BANK_BRANCHNAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="718d5bfd-c869-485e-b741-67c8290bb101" x="471" y="31" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Work Location]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="67f45375-a3e0-411e-bd48-6b9d9a7d91cc" x="599" y="31" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="d8c0fcef-3b56-4686-af06-8f4dc817aa52" x="610" y="31" width="203" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{BRANCH_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="8719007c-ffa8-4477-9a0a-9fcd51208e5d" x="471" y="46" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Department]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="24f74743-3b22-4cbb-812a-315c6ff0fc39" x="599" y="46" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="96978703-48d8-493b-8c14-6fcd69300b6f" x="610" y="46" width="203" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DEPT_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="27ad59ad-41a5-49e8-b9b3-0455e541239c" x="471" y="61" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Grade]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="bc704d49-966f-4acb-bf61-2055065805e2" x="599" y="61" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="9c1a0a87-8300-4ccb-b3f1-43c9e2091d0c" x="610" y="61" width="203" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{GRADE_DESC}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="82abc05c-1874-43ad-9a99-1b97131f0ae2" x="471" y="76" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Days Worked]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c8249d35-869f-4445-8432-eba741317f3d" x="599" y="76" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="ca96eb70-0b38-4038-86a3-7a6a36d3dbce" x="610" y="76" width="100" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{WORKING_DAYS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="f31fdec0-249d-4fbf-99e3-8c509392c515" x="0" y="91" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pension No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e47ff6b4-5794-4060-b4e7-1a2f42fd0b1c" x="130" y="91" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="23297e97-92f6-4280-ae39-359b98323170" x="471" y="91" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[LWP Days]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8a0debae-8d17-4b88-a265-f23cdf8ed4da" x="599" y="91" width="10" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="e8eb9df4-e88d-4edf-a5c2-1ca917d3652f" x="610" y="91" width="100" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{LWP_DAYS}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="dc5bd0d0-f336-440d-974e-925610e04236" x="0" y="109" width="822" height="1" forecolor="#999999"/>
+			</line>
+			<line>
+				<reportElement uuid="bca3d5d2-30d5-4284-bd65-9bc9f85828aa" x="0" y="130" width="822" height="1" forecolor="#999999"/>
+			</line>
+			<staticText>
+				<reportElement uuid="e09bd887-fe9a-4c4e-9f1e-19ff18297bb9" x="0" y="112" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Standard Monthly Salary]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="f450bbca-0f9a-40bb-ba10-8288da889d74" x="263" y="110" width="1" height="20"/>
+				<graphicElement>
+					<pen lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="b3b79b5b-a4b8-4d72-a620-b0a24eec509b" x="270" y="112" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Earnings]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2acb2d88-88ec-47c4-a920-451d446b3a84" x="558" y="112" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Deductions]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="978bf253-e654-43c7-8018-13575eaf39cd" x="547" y="109" width="1" height="20"/>
+				<graphicElement>
+					<pen lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="07124695-134d-4fca-aa89-fbed5f01b2ce" x="200" y="112" width="53" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rs.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="24b6db26-4610-44cc-9556-aa531f323ca2" x="471" y="112" width="53" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rs.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="dcdec6de-2c7c-49ff-b0ce-c8f32a100b34" x="760" y="112" width="53" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rs.]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="163" splitType="Stretch">
+			<line>
+				<reportElement uuid="cc68298f-60b2-4433-a120-9ec8516fc024" x="263" y="0" width="1" height="125"/>
+				<graphicElement>
+					<pen lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="dd9dadfe-1932-4815-a772-1914f5c03c6b" x="547" y="0" width="1" height="125"/>
+				<graphicElement>
+					<pen lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="da519dc9-b7ee-4747-9d62-02cc96c35291" x="0" y="123" width="822" height="2" forecolor="#999999"/>
+			</line>
+			<subreport>
+				<reportElement uuid="0b3da2de-c28e-43f7-b7ba-fd18ab769ec5" x="0" y="0" width="261" height="121"/>
+				<subreportParameter name="staffid">
+					<subreportParameterExpression><![CDATA[$P{staffid}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="processid">
+					<subreportParameterExpression><![CDATA[$P{processid}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["payslip_earn.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement uuid="37e01008-e4d0-428a-a8e6-e83bed2f830d" x="271" y="0" width="274" height="121"/>
+				<subreportParameter name="staffid">
+					<subreportParameterExpression><![CDATA[$P{staffid}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="processid">
+					<subreportParameterExpression><![CDATA[$P{processid}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["payslip_actearning.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement uuid="73e2a07b-8f88-479a-a8ed-e567ef23e78e" x="558" y="0" width="237" height="121"/>
+				<subreportParameter name="staffid">
+					<subreportParameterExpression><![CDATA[$P{staffid}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="processid">
+					<subreportParameterExpression><![CDATA[$P{processid}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["payslip_dedn.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement uuid="818d86fa-2513-4ebc-866a-84f67a51a2ba" x="0" y="141" width="822" height="2" forecolor="#999999"/>
+			</line>
+			<textField pattern="#,##0">
+				<reportElement uuid="3e23ed0f-d168-4dce-ae67-ce21f1e58ee2" x="715" y="127" width="100" height="13"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_DEDN}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement uuid="81273882-7602-41bb-8a59-d62f89e7ed3d" x="429" y="127" width="100" height="13"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_EARN}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement uuid="a2ea6112-70ef-462b-827b-476aaf90f1a7" x="715" y="146" width="100" height="14"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{NET_PAY}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="87e63e2e-d247-421c-9cda-d105a9b8b6d4" x="0" y="161" width="822" height="2" forecolor="#999999"/>
+			</line>
+			<staticText>
+				<reportElement uuid="7433371f-e167-4b40-9fe6-0e224b03cf4d" x="271" y="126" width="99" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gross Earnings]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1a4e1281-3dd1-4563-896d-72773d36380b" x="558" y="126" width="99" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gross Deductions]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f337cdf7-4c02-41d1-879e-7ca8a976e145" x="558" y="145" width="99" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Net Pay]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5fa1c329-9740-4fc4-86eb-a7bd73f57cf2" x="1" y="126" width="143" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Standard Salary]]></text>
+			</staticText>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement uuid="3b2833ca-c758-4d3c-b813-874c5f3890e6" x="179" y="126" width="77" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{STD_EARN_AMOUNT}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="2b8e6a38-aaee-4501-ae61-953415663a16" x="263" y="125" width="1" height="16"/>
+				<graphicElement>
+					<pen lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="ac369c11-7ad6-404b-92d4-5d10259d29f4" x="547" y="123" width="1" height="38"/>
+				<graphicElement>
+					<pen lineColor="#999999"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="212" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="15" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="90e2b628-aa33-4d31-8b29-0aa7f277426b" x="1" y="0" width="821" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[This is a computer generated payslip and does not require signature or any company seal.All one time payments like PB,taxable LTA,variable pay etc will be subject to one time tax deduction at your applicable tax slab.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="80de8acd-28fd-49c3-8540-1ea9ccdb1365" x="0" y="0" width="822" height="2" forecolor="#999999"/>
+			</line>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

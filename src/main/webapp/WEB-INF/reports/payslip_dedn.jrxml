@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="payslip_dedn" pageWidth="260" pageHeight="802" columnWidth="260" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="d7e1cbb6-b313-4a1d-a444-57d6584f2c8a">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="processid" class="java.lang.String"/>
+	<parameter name="staffid" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select payroll_dedn_id, dedn_desc, dedn_amount
+FROM t_hcm_payroll_dedn
+WHERE payroll_id = $P{processid}
+AND employee_id = $P{staffid}
+order by sort_order]]>
+	</queryString>
+	<field name="PAYROLL_DEDN_ID" class="java.math.BigDecimal"/>
+	<field name="DEDN_DESC" class="java.lang.String"/>
+	<field name="DEDN_AMOUNT" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement uuid="9b206459-0bba-4241-a186-24419e57ca1e" x="0" y="2" width="181" height="13"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DEDN_DESC}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement uuid="d09f06ff-4404-4820-8753-0828991cfc0b" x="181" y="2" width="79" height="13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DEDN_AMOUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

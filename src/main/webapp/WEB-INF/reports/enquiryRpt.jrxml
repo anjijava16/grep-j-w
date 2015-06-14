@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="enquiryRpt" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
+	<property name="ireport.zoom" value="1.0000000000000009"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<parameter name="ENQID" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select  enqhdr.ENQUIRY_DATE, enqhdr.ENQUIRY_NO, enqdtl.CUST_PROD_DESC,  cust.CLIENT_NAME customer_name,enqs.spec_code,enqs.spec_desc,p.PRODUCT_NAME,city.CITY_NAME,enqdtl.ENQRY_QTY
+
+from T_SMS_ENQUIRY_HDR enqhdr, T_SMS_ENQUIRY_DTL enqdtl, M_CRM_CLIENTS cust,t_sms_enquiry_spec enqs,M_BASE_PRODUCT p,M_BASE_CITY city
+where enqhdr.ENQUIRY_ID= enqdtl.ENQUIRY_ID
+and  enqhdr.CLIENT_ID=cust.CLIENT_ID
+
+and enqhdr.CLIENT_ID=cust.CLIENT_ID
+and city.CITY_ID=cust.CITY_ID
+and p.PRODUCT_ID=enqdtl.PRODUCT_ID
+and enqdtl.PRODUCT_ID=enqs.PRODUCT_ID
+and  enqhdr.ENQUIRY_ID=$P{ENQID}]]>
+	</queryString>
+	<field name="ENQUIRY_DATE" class="java.sql.Timestamp"/>
+	<field name="ENQUIRY_NO" class="java.lang.String"/>
+	<field name="CUST_PROD_DESC" class="java.lang.String"/>
+	<field name="CUSTOMER_NAME" class="java.lang.String"/>
+	<field name="SPEC_CODE" class="java.lang.String"/>
+	<field name="SPEC_DESC" class="java.lang.String"/>
+	<field name="PRODUCT_NAME" class="java.lang.String"/>
+	<field name="CITY_NAME" class="java.lang.String"/>
+	<field name="ENQRY_QTY" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="78" splitType="Stretch">
+			<staticText>
+				<reportElement x="81" y="8" width="218" height="23" uuid="ae744ec5-bc02-4b70-bf2e-a0074ca48f99"/>
+				<textElement verticalAlignment="Middle">
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC Tool Tech (P) Ltd.,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="81" y="31" width="206" height="16" uuid="a0c75f9f-1164-4352-af40-2b478bdfe32b"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[85,86,87, Sidco Industrial Estate,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="81" y="47" width="206" height="14" uuid="b0944c40-73b1-4c06-97b0-db98fd231c03"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Malumichampatti,Coimbatore - 641 050,]]></text>
+			</staticText>
+			<image>
+				<reportElement x="4" y="2" width="84" height="70" uuid="64de2ad2-b915-4665-8917-4a1f39e91a80"/>
+				<imageExpression><![CDATA["saarclogo-small.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="400" y="18" width="144" height="32" uuid="90f7303f-e42f-412f-9704-fd134c1ab815"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Enquiry]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="77" width="555" height="1" uuid="3faa7861-be7a-49b6-812b-dad8680653df"/>
+			</line>
+			<staticText>
+				<reportElement x="81" y="61" width="304" height="15" uuid="2cb68b06-b5fa-41df-ab35-f630d62d3bbd"/>
+				<text><![CDATA[Tamil Nadu. Ph: 0422- 6060121/122/123, Fax : 0422-2655156/157]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="52" splitType="Stretch">
+			<staticText>
+				<reportElement x="9" y="6" width="71" height="20" uuid="56a66dd8-8da1-4372-bdf4-6415c6bff584"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Enquiry Date  ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="9" y="28" width="71" height="20" uuid="234fb649-6639-4923-9bf6-41fc01d8d78d"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Enquiry Ref. No  ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="257" y="6" width="85" height="20" uuid="99cc87c7-ab24-4049-b446-cf760783cfcf"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Customer Name:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="342" y="6" width="210" height="20" uuid="8746e409-5819-496f-bed7-17709d16bb3f"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CUSTOMER_NAME}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="51" width="555" height="1" uuid="7273f9f8-7766-49dc-be1e-a2c73aba4b97"/>
+			</line>
+			<staticText>
+				<reportElement x="81" y="6" width="7" height="20" uuid="7c1089dd-bcba-4d9d-8e82-107eed111220"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="81" y="28" width="7" height="20" uuid="9d9c738f-43a4-4a7e-8326-6a9c2696f2db"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="88" y="6" width="100" height="20" uuid="30e57670-998d-4e01-85f7-fa7ca22b226e"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ENQUIRY_DATE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="88" y="28" width="100" height="20" uuid="f771648c-a50d-445d-a399-e37106c60ef7"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ENQUIRY_NO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="315" y="26" width="27" height="20" uuid="b070dc2c-019f-4681-adbd-7f6c3e5e5b78"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[City:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="344" y="26" width="208" height="20" uuid="74124a9f-52c7-45c2-8250-24e907afa5a7"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CITY_NAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="31" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="29" width="555" height="1" uuid="8f46f420-f4b8-46c0-ab18-2d839227ef0e"/>
+			</line>
+			<staticText>
+				<reportElement x="35" y="4" width="130" height="20" uuid="e0721ddf-ea12-4f12-aa0c-9397c764f277"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="348" y="4" width="207" height="20" uuid="d224f18b-5d68-4c4a-89f1-8857fc44690c"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Equipment Details]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="162" y="4" width="130" height="20" uuid="976f5332-5924-4a97-9dfb-fe1812ebb582"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="4" width="32" height="20" uuid="b305570d-e399-441b-b78e-5341803dfc71"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[S. No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="299" y="4" width="45" height="20" uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Qty]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="32" height="20" uuid="b99c2ef8-a94c-4eae-b1b4-b76c166c58de"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="162" y="1" width="130" height="20" uuid="31ff895d-ab25-4c86-8109-18d310c7f9ca"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CUST_PROD_DESC}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="35" y="1" width="130" height="20" uuid="cb900cb3-64c0-4135-a97a-fb8104e2b022"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PRODUCT_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="297" y="1" width="47" height="20" uuid="fc70ce21-f1de-439e-b56c-9272374dccf9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ENQRY_QTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="348" y="1" width="52" height="20" uuid="24957b3d-95bb-4f72-82c9-94274e957414"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{SPEC_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="400" y="0" width="152" height="20" uuid="3f07cc6c-3641-4969-83fc-dd5eec39eab6"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{SPEC_DESC}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="35" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="80" splitType="Stretch">
+			<staticText>
+				<reportElement x="386" y="2" width="166" height="14" uuid="2632bf53-d6c2-45f2-9788-7b5c3e04d48e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[For SAARC Tool Tech (P) Ltd.,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="386" y="47" width="166" height="15" uuid="7789a1fe-31bb-4e80-9de2-1365717a9053"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Authorised Signatory]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="1" width="555" height="1" uuid="1ac04e8c-3ee1-4c12-9883-8f1d8385a4df"/>
+			</line>
+			<line>
+				<reportElement x="0" y="62" width="555" height="1" uuid="031fd68b-57af-40ae-8432-ca9a584b0e3d"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="63" width="62" height="15" uuid="96f01932-e404-40dd-8da9-9009137f7508"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Head Office :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="62" y="63" width="493" height="15" uuid="68d4486a-c0be-43c5-9594-401fd7c5e45e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[31A, Abbigere Main Road, Kammagondanahalli,Banglore - 560 090. Phone : 080-23453962,Fax : 080-23253949]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="78" width="555" height="1" uuid="c1b8988b-2081-44e9-bd74-8d1201613eeb"/>
+			</line>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

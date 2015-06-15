@@ -15,7 +15,6 @@
  */
 package com.gnts.erputil.constants;
 
-import com.vaadin.server.UserError;
 
 public class GERPErrorCodes {
 	// Common
@@ -493,12 +492,12 @@ public class GERPErrorCodes {
 	public static String NULL_SPEC_CODE = "Please Enter Specification Code";
 	public static String NULL_SPEC_STATUS = "Please Select Spec Status";
 	public static String NULL_SPEC_DESC = "Please Enter Specification Desc";
-	public static String NULL_ENQUIRY_QTY = "Please Select Enquiry_Qty";
-	public static String NULL_ENQUIRYNO = "Please Enter EnquiryNo";
-	public static String NULL_PREPARED_BY = "Please Enter Preparedby";
-	public static String NULL_CLIENT_NAME = "Please Select ClientName";
-	public static String NULL_MODOF_ENQUIRY = "Please Select ModofEnquiry";
-	public static String NULL_ENQUIRY_DATE = "Please Select EnquiryDate";
+	public static String NULL_ENQUIRY_QTY = "Please Enter Enquiry Qty";
+	public static String NULL_ENQUIRYNO = "Please Enter Enquiry No";
+	public static String NULL_PREPARED_BY = "Please Enter Prepared by";
+	public static String NULL_CLIENT_NAME = "Please Select Client Name";
+	public static String NULL_MODOF_ENQUIRY = "Please Select Modof Enquiry";
+	public static String NULL_ENQUIRY_DATE = "Please Select Enquiry Date";
 	public static String NULL_DUE_DATE = "Please Select DueDate";
 	public static String NULL_SMS_STATUS = "Please Select SMS_Enquiry_Status";
 	public static String NULL_SMS_QUOTE_STATUS = "Please Select SMS Quote Status";

@@ -129,7 +129,7 @@ public class MaterialQuote extends BaseTransUI {
 	private BeanContainer<Long, MmsQuoteHdrDM> beanquote = null;
 	private BeanContainer<Long, MMSVendorDtlDM> beanvndrdtl = null;
 	// private BeanItemContainer<MmsQuoteHdrDM> beanSmsPurEnqHdrDM = null;
-	private List<MmsQuoteDtlDM> QuoteDtllList = new ArrayList<MmsQuoteDtlDM>();
+	private List<MmsQuoteDtlDM> listQuoteDetails = new ArrayList<MmsQuoteDtlDM>();
 	// local variables declaration
 	private String username;
 	private Long companyid;
@@ -149,9 +149,8 @@ public class MaterialQuote extends BaseTransUI {
 	private Long quoteid;
 	private MmsComments comments;
 	private VerticalLayout vlTableForm = new VerticalLayout();
-	public static boolean filevalue1 = false;
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(MaterialQuote.class);
+	private Logger logger = Logger.getLogger(MaterialQuote.class);
 	private Button btndelete = new GERPButton("Delete", "delete", this);
 	private String status;
 	private ComboBox cbvendorname;
@@ -289,13 +288,16 @@ public class MaterialQuote extends BaseTransUI {
 		cbBranch.setWidth("150");
 		cbBranch.setItemCaptionPropertyId("branchName");
 		loadBranchList();
-		List<ApprovalSchemaDM> list = serviceMmsQuoteHdrService.getReviewerId(companyid, screenId, branchId, roleId);
-		for (ApprovalSchemaDM obj : list) {
+		try {
+			ApprovalSchemaDM obj = serviceMmsQuoteHdrService.getReviewerId(companyid, screenId, branchId, roleId)
+					.get(0);
 			if (obj.getApprLevel().equals("Reviewer")) {
 				cbStatus = new GERPComboBox("Status", BASEConstants.T_MMS_QUOTE_HDR, BASEConstants.MMS_QUOTE_STATUS);
 			} else {
 				cbStatus = new GERPComboBox("Status", BASEConstants.T_MMS_QUOTE_HDR, BASEConstants.MMS_QUOTE_STATUS_RV);
 			}
+		}
+		catch (Exception e) {
 		}
 		cbStatus.setWidth("120");
 		// Purchase QuoteDtl Comp
@@ -417,6 +419,7 @@ public class MaterialQuote extends BaseTransUI {
 			tfBasicValue.setReadOnly(true);
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -620,18 +623,11 @@ public class MaterialQuote extends BaseTransUI {
 			tblMatQuDtl.removeAllItems();
 			tblMatQuDtl.setPageLength(3);
 			recordCnt = 0;
-			/*
-			 * if (cbmaterial.getValue() != null || tfQuoteQunt.getValue().trim().length() > 0||cbUom.getValue() !=
-			 * null|| tfBasicValue.getValue().trim().length() > 0|| tfUnitRate.getValue().trim().length() > 0||
-			 * taQuoteRemark.getValue().trim().length() > 0) { QuoteDtllList =
-			 * serviceMmsQuoteDtlService.getmmsquotedtllist(null, QuoteId, null, null, null); recordCnt =
-			 * QuoteDtllList.size(); }
-			 */
-			recordCnt = QuoteDtllList.size();
+			recordCnt = listQuoteDetails.size();
 			beanQuoteDtl = new BeanItemContainer<MmsQuoteDtlDM>(MmsQuoteDtlDM.class);
-			beanQuoteDtl.addAll(QuoteDtllList);
+			beanQuoteDtl.addAll(listQuoteDetails);
 			BigDecimal sum = new BigDecimal("0");
-			for (MmsQuoteDtlDM obj : QuoteDtllList) {
+			for (MmsQuoteDtlDM obj : listQuoteDetails) {
 				if (obj.getBasicvalue() != null) {
 					sum = sum.add(obj.getBasicvalue());
 				}
@@ -642,9 +638,9 @@ public class MaterialQuote extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblMatQuDtl.setContainerDataSource(beanQuoteDtl);
-			tblMatQuDtl.setVisibleColumns(new Object[] { "materialname", "quoteqty",  "unitrate","basicvalue",
+			tblMatQuDtl.setVisibleColumns(new Object[] { "materialname", "quoteqty", "unitrate", "basicvalue",
 					"lastupdateddt", "lastupdatedby" });
-			tblMatQuDtl.setColumnHeaders(new String[] { "Material Name", "Quote Qty",  "UnitRate","Basic Value",
+			tblMatQuDtl.setColumnHeaders(new String[] { "Material Name", "Quote Qty", "UnitRate", "Basic Value",
 					"Last Updated Date", "Last Updated By" });
 			tblMatQuDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
@@ -911,7 +907,7 @@ public class MaterialQuote extends BaseTransUI {
 			} else {
 				new UploadDocumentUI(hlquoteDoc);
 			}
-			QuoteDtllList = serviceMmsQuoteDtlService.getmmsquotedtllist(null, QuoteId, null, null, null);
+			listQuoteDetails = serviceMmsQuoteDtlService.getmmsquotedtllist(null, QuoteId, null, null, null);
 		}
 		loadMatDtl();
 		comments = new MmsComments(vlTableForm, null, companyid, null, null, QuoteId, null, null, null, null, status);
@@ -935,7 +931,7 @@ public class MaterialQuote extends BaseTransUI {
 				if (uom != null && uom.equals(st.getMaterialid())) {
 					cbmaterial.setValue(itemId);
 					break;
-				}else{
+				} else {
 					cbmaterial.setValue(null);
 				}
 			}
@@ -1020,18 +1016,21 @@ public class MaterialQuote extends BaseTransUI {
 		loadMatDtl();
 		assembleInputUserLayout();
 		new UploadDocumentUI(hlquoteDoc);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_QN ");
-		tfQuoteRef.setReadOnly(true);
-		for (SlnoGenDM slnoObj : slnoList) {
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_QN ").get(0);
+			tfQuoteRef.setReadOnly(false);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfQuoteRef.setValue(slnoObj.getKeyDesc());
 				tfQuoteRef.setReadOnly(true);
 			} else {
 				tfQuoteRef.setReadOnly(false);
 			}
-			btnsavepurQuote.setCaption("Add");
-			tblMatQuDtl.setVisible(true);
-			lblNotification.setValue("");
 		}
+		catch (Exception e) {
+		}
+		btnsavepurQuote.setCaption("Add");
+		tblMatQuDtl.setVisible(true);
+		lblNotification.setValue("");
 		comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null);
 	}
 	
@@ -1050,13 +1049,6 @@ public class MaterialQuote extends BaseTransUI {
 		tfUnitRate.setRequired(true);
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_QN ");
-		tfQuoteRef.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfQuoteRef.setReadOnly(true);
-			}
-		}
 		cbmaterial.setRequired(true);
 		lblNotification.setValue("");
 		assembleInputUserLayout();
@@ -1068,7 +1060,6 @@ public class MaterialQuote extends BaseTransUI {
 	@Override
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		// try {
 		cbBranch.setComponentError(null);
 		cbEnqNo.setComponentError(null);
 		dfvalidDt.setComponentError(null);
@@ -1096,10 +1087,6 @@ public class MaterialQuote extends BaseTransUI {
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
-		// }
-		// catch (Exception e) {
-		// e.printStackTrace();
-		// }
 	}
 	
 	private boolean dtlValidation() {
@@ -1110,12 +1097,6 @@ public class MaterialQuote extends BaseTransUI {
 		} else {
 			cbmaterial.setComponentError(null);
 		}
-		// if (tfUnitRate.getValue() == "0") {
-		// tfUnitRate.setComponentError(new UserError(GERPErrorCodes.UNIT_RATE));
-		// isValid = false;
-		// } else {
-		// tfUnitRate.setComponentError(null);
-		// }
 		Long achievedQty;
 		try {
 			achievedQty = Long.valueOf(tfUnitRate.getValue());
@@ -1136,108 +1117,98 @@ public class MaterialQuote extends BaseTransUI {
 		try {
 			dtlValidation();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			MmsQuoteHdrDM MaterialQuotHdrobj = new MmsQuoteHdrDM();
+			MmsQuoteHdrDM mmsQuoteHdrDM = new MmsQuoteHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				MaterialQuotHdrobj = beanQuoteHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				if (tfQuoteRef.getValue() != null) {
-					MaterialQuotHdrobj.setQuoteRef(tfQuoteRef.getValue());
-				}
-			} else {
-				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_QN");
-				logger.info("Serial No Generation  Data...===> " + companyid + "," + branchId + "," + moduleId);
-				for (SlnoGenDM slnoObj : slnoList) {
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						MaterialQuotHdrobj.setQuoteRef(slnoObj.getKeyDesc());
-					}
-				}
+				mmsQuoteHdrDM = beanQuoteHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			MaterialQuotHdrobj.setVendorid((Long) cbvendorname.getValue());
-			MaterialQuotHdrobj.setBranchId((Long) cbBranch.getValue());
-			MaterialQuotHdrobj.setCompanyId(companyid);
-			MaterialQuotHdrobj.setEnquiryId(((MmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId());
-			MaterialQuotHdrobj.setEnquiryNo(((MmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryNo());
-			MaterialQuotHdrobj.setQuoteDate(dfQuoteDt.getValue());
-			MaterialQuotHdrobj.setQuoteValDate(dfvalidDt.getValue());
-			MaterialQuotHdrobj.setRemarks(taRemark.getValue());
-			MaterialQuotHdrobj.setQuoteVersion(tfQuoteVersion.getValue());
+			mmsQuoteHdrDM.setQuoteRef(tfQuoteRef.getValue());
+			mmsQuoteHdrDM.setVendorid((Long) cbvendorname.getValue());
+			mmsQuoteHdrDM.setBranchId((Long) cbBranch.getValue());
+			mmsQuoteHdrDM.setCompanyId(companyid);
+			mmsQuoteHdrDM.setEnquiryId(((MmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId());
+			mmsQuoteHdrDM.setEnquiryNo(((MmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryNo());
+			mmsQuoteHdrDM.setQuoteDate(dfQuoteDt.getValue());
+			mmsQuoteHdrDM.setQuoteValDate(dfvalidDt.getValue());
+			mmsQuoteHdrDM.setRemarks(taRemark.getValue());
+			mmsQuoteHdrDM.setQuoteVersion(tfQuoteVersion.getValue());
 			if (tfBasictotal.getValue() != null && tfBasictotal.getValue().trim().length() > 0) {
-				MaterialQuotHdrobj.setBasicTotal(new BigDecimal(tfBasictotal.getValue()));
+				mmsQuoteHdrDM.setBasicTotal(new BigDecimal(tfBasictotal.getValue()));
 			}
-			MaterialQuotHdrobj.setPackingPrcnt((new BigDecimal(tfpackingPer.getValue())));
+			mmsQuoteHdrDM.setPackingPrcnt((new BigDecimal(tfpackingPer.getValue())));
 			if (tfPackingValue.getValue() != null && tfPackingValue.getValue().trim().length() > 0) {
-				MaterialQuotHdrobj.setPackingValue(new BigDecimal(tfPackingValue.getValue()));
+				mmsQuoteHdrDM.setPackingValue(new BigDecimal(tfPackingValue.getValue()));
 			}
-			MaterialQuotHdrobj.setSubTotal(new BigDecimal(tfSubTotal.getValue()));
-			MaterialQuotHdrobj.setVatPrcnt(((new BigDecimal(tfVatPer.getValue()))));
+			mmsQuoteHdrDM.setSubTotal(new BigDecimal(tfSubTotal.getValue()));
+			mmsQuoteHdrDM.setVatPrcnt(((new BigDecimal(tfVatPer.getValue()))));
 			if (tfVatValue.getValue() != null && tfVatValue.getValue().trim().length() > 0) {
-				MaterialQuotHdrobj.setVatValue((new BigDecimal(tfVatValue.getValue())));
+				mmsQuoteHdrDM.setVatValue((new BigDecimal(tfVatValue.getValue())));
 			}
 			if (tfEDPer.getValue() != null && tfEDPer.getValue().trim().length() > 0) {
-				MaterialQuotHdrobj.setEd_Prcnt((new BigDecimal(tfEDPer.getValue())));
+				mmsQuoteHdrDM.setEd_Prcnt((new BigDecimal(tfEDPer.getValue())));
 			}
 			if (tfEDValue.getValue() != null && tfEDValue.getValue().trim().length() > 0) {
-				MaterialQuotHdrobj.setEdValue(new BigDecimal(tfEDValue.getValue()));
+				mmsQuoteHdrDM.setEdValue(new BigDecimal(tfEDValue.getValue()));
 			}
-			MaterialQuotHdrobj.setHedValue(new BigDecimal(tfHEDValue.getValue()));
-			MaterialQuotHdrobj.setHedPrcnt((new BigDecimal(tfHEDPer.getValue())));
-			MaterialQuotHdrobj.setCessPrcnt((new BigDecimal(tfCessPer.getValue())));
-			MaterialQuotHdrobj.setCessValue(new BigDecimal(tfCessValue.getValue()));
-			MaterialQuotHdrobj.setCstPrcnt((new BigDecimal(tfCstPer.getValue())));
+			mmsQuoteHdrDM.setHedValue(new BigDecimal(tfHEDValue.getValue()));
+			mmsQuoteHdrDM.setHedPrcnt((new BigDecimal(tfHEDPer.getValue())));
+			mmsQuoteHdrDM.setCessPrcnt((new BigDecimal(tfCessPer.getValue())));
+			mmsQuoteHdrDM.setCessValue(new BigDecimal(tfCessValue.getValue()));
+			mmsQuoteHdrDM.setCstPrcnt((new BigDecimal(tfCstPer.getValue())));
 			if (tfCstValue.getValue() != null && tfCstValue.getValue().trim().length() > 0) {
-				MaterialQuotHdrobj.setCstValue((new BigDecimal(tfCstValue.getValue())));
+				mmsQuoteHdrDM.setCstValue((new BigDecimal(tfCstValue.getValue())));
 			}
-			MaterialQuotHdrobj.setSubTaxTotal(new BigDecimal(tfSubTaxTotal.getValue()));
-			MaterialQuotHdrobj.setFreightPrcnt(new BigDecimal(tfFreightPer.getValue()));
-			MaterialQuotHdrobj.setFreightValue(new BigDecimal(tfFreightValue.getValue()));
-			MaterialQuotHdrobj.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
-			MaterialQuotHdrobj.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
-			MaterialQuotHdrobj.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
+			mmsQuoteHdrDM.setSubTaxTotal(new BigDecimal(tfSubTaxTotal.getValue()));
+			mmsQuoteHdrDM.setFreightPrcnt(new BigDecimal(tfFreightPer.getValue()));
+			mmsQuoteHdrDM.setFreightValue(new BigDecimal(tfFreightValue.getValue()));
+			mmsQuoteHdrDM.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
+			mmsQuoteHdrDM.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
+			mmsQuoteHdrDM.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
 			if (cbpaymetTerms.getValue() != null) {
-				MaterialQuotHdrobj.setPaymentTerms((cbpaymetTerms.getValue().toString()));
+				mmsQuoteHdrDM.setPaymentTerms((cbpaymetTerms.getValue().toString()));
 			}
 			if (cbFreightTerms.getValue() != null) {
-				MaterialQuotHdrobj.setFreightTerms(cbFreightTerms.getValue().toString());
+				mmsQuoteHdrDM.setFreightTerms(cbFreightTerms.getValue().toString());
 			}
 			if (cbWarrentyTerms.getValue() != null) {
-				MaterialQuotHdrobj.setWarrantyTerms((cbWarrentyTerms.getValue().toString()));
+				mmsQuoteHdrDM.setWarrantyTerms((cbWarrentyTerms.getValue().toString()));
 			}
 			if (cbDelTerms.getValue() != null) {
-				MaterialQuotHdrobj.setDeliveryTerms(cbDelTerms.getValue().toString());
+				mmsQuoteHdrDM.setDeliveryTerms(cbDelTerms.getValue().toString());
 			}
 			if (ckdutyexm.getValue().equals(true)) {
-				MaterialQuotHdrobj.setDutyExempted("Y");
+				mmsQuoteHdrDM.setDutyExempted("Y");
 			} else if (ckdutyexm.getValue().equals(false)) {
-				MaterialQuotHdrobj.setDutyExempted("N");
+				mmsQuoteHdrDM.setDutyExempted("N");
 			}
 			if (ckCformRqu.getValue().equals(true)) {
-				MaterialQuotHdrobj.setCformReqd("Y");
+				mmsQuoteHdrDM.setCformReqd("Y");
 			} else if (ckCformRqu.getValue().equals(false)) {
-				MaterialQuotHdrobj.setCformReqd("N");
+				mmsQuoteHdrDM.setCformReqd("N");
 			}
 			if (ckPdcRqu.getValue().equals(true)) {
-				MaterialQuotHdrobj.setPdcReqd("Y");
+				mmsQuoteHdrDM.setPdcReqd("Y");
 			} else if (ckPdcRqu.getValue().equals(false)) {
-				MaterialQuotHdrobj.setPdcReqd("N");
+				mmsQuoteHdrDM.setPdcReqd("N");
 			}
 			if (cbStatus.getValue() != null) {
-				MaterialQuotHdrobj.setStatus(cbStatus.getValue().toString());
+				mmsQuoteHdrDM.setStatus(cbStatus.getValue().toString());
 			}
-			MaterialQuotHdrobj.setPreparedBy(EmployeeId);
-			MaterialQuotHdrobj.setReviewedBy(null);
-			MaterialQuotHdrobj.setActionedBy(null);
-			MaterialQuotHdrobj.setLastupdateddt(DateUtils.getcurrentdate());
-			MaterialQuotHdrobj.setLastupdatedby(username);
+			mmsQuoteHdrDM.setPreparedBy(EmployeeId);
+			mmsQuoteHdrDM.setReviewedBy(null);
+			mmsQuoteHdrDM.setActionedBy(null);
+			mmsQuoteHdrDM.setLastupdateddt(DateUtils.getcurrentdate());
+			mmsQuoteHdrDM.setLastupdatedby(username);
 			file = new File(GERPConstants.DOCUMENT_PATH);
 			FileInputStream fio = new FileInputStream(file);
 			byte fileContents[] = new byte[(int) file.length()];
 			fio.read(fileContents);
 			fio.close();
-			MaterialQuotHdrobj.setQuoteDoc(fileContents);
-			serviceMmsQuoteHdrService.saveOrUpdateMmsQuoteHdr(MaterialQuotHdrobj);
+			mmsQuoteHdrDM.setQuoteDoc(fileContents);
+			serviceMmsQuoteHdrService.saveOrUpdateMmsQuoteHdr(mmsQuoteHdrDM);
 			@SuppressWarnings("unchecked")
 			Collection<MmsQuoteDtlDM> itemIds = (Collection<MmsQuoteDtlDM>) tblMatQuDtl.getVisibleItemIds();
 			for (MmsQuoteDtlDM save : (Collection<MmsQuoteDtlDM>) itemIds) {
-				save.setQuoteid(Long.valueOf(MaterialQuotHdrobj.getQuoteId().toString()));
+				save.setQuoteid(Long.valueOf(mmsQuoteHdrDM.getQuoteId().toString()));
 				serviceMmsQuoteDtlService.saveOrUpdatemmsquotedtlDetails(save);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
@@ -1249,7 +1220,7 @@ public class MaterialQuote extends BaseTransUI {
 					}
 				}
 			}
-			comments.saveQuote(MaterialQuotHdrobj.getQuoteId(), MaterialQuotHdrobj.getStatus());
+			comments.saveQuote(mmsQuoteHdrDM.getQuoteId(), mmsQuoteHdrDM.getStatus());
 			comments.resetfields();
 			resetDetailsFields();
 			loadSrchRslt();
@@ -1264,21 +1235,20 @@ public class MaterialQuote extends BaseTransUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			int count = 0;
-			for (MmsQuoteDtlDM mmsQuoteDtlDM : QuoteDtllList) {
+			for (MmsQuoteDtlDM mmsQuoteDtlDM : listQuoteDetails) {
 				if (mmsQuoteDtlDM.getMaterialid() == ((MmsEnqDtlDM) cbmaterial.getValue()).getMaterialid()) {
 					count++;
 					break;
 				}
 			}
-			System.out.println("count--->" + count);
 			if (tblMatQuDtl.getValue() != null) {
-				count = 1;
+				count = 0;
 			}
 			if (count == 0) {
 				MmsQuoteDtlDM MaterialQuotDtlobj = new MmsQuoteDtlDM();
 				if (tblMatQuDtl.getValue() != null) {
 					MaterialQuotDtlobj = beanQuoteDtl.getItem(tblMatQuDtl.getValue()).getBean();
-					QuoteDtllList.remove(MaterialQuotDtlobj);
+					listQuoteDetails.remove(MaterialQuotDtlobj);
 				}
 				MaterialQuotDtlobj.setMaterialid(((MmsEnqDtlDM) cbmaterial.getValue()).getMaterialid());
 				MaterialQuotDtlobj.setMaterialname(((MmsEnqDtlDM) cbmaterial.getValue()).getMaterialName());
@@ -1295,7 +1265,7 @@ public class MaterialQuote extends BaseTransUI {
 				MaterialQuotDtlobj.setRemarks(taQuoteRemark.getValue());
 				MaterialQuotDtlobj.setLastupdateddt(DateUtils.getcurrentdate());
 				MaterialQuotDtlobj.setLastupdatedby(username);
-				QuoteDtllList.add(MaterialQuotDtlobj);
+				listQuoteDetails.add(MaterialQuotDtlobj);
 				loadMatDtl();
 				btnsavepurQuote.setCaption("Add");
 				getCalculatedValues();
@@ -1440,7 +1410,7 @@ public class MaterialQuote extends BaseTransUI {
 		cbpaymetTerms.setValue(null);
 		cbWarrentyTerms.setValue(null);
 		cbFreightTerms.setValue(null);
-		QuoteDtllList = new ArrayList<MmsQuoteDtlDM>();
+		listQuoteDetails = new ArrayList<MmsQuoteDtlDM>();
 		tblMatQuDtl.removeAllItems();
 		new UploadDocumentUI(hlquoteDoc);
 		cbBranch.setValue(branchId);
@@ -1519,7 +1489,7 @@ public class MaterialQuote extends BaseTransUI {
 		MmsQuoteDtlDM save = new MmsQuoteDtlDM();
 		if (tblMatQuDtl.getValue() != null) {
 			save = beanQuoteDtl.getItem(tblMatQuDtl.getValue()).getBean();
-			QuoteDtllList.remove(save);
+			listQuoteDetails.remove(save);
 			resetDetailsFields();
 			loadMatDtl();
 			btndelete.setEnabled(false);

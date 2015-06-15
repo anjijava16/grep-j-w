@@ -93,7 +93,7 @@ public class MaterialEnquiry extends BaseTransUI {
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
-	private List<MmsEnqDtlDM> MmsEnqDtList = new ArrayList<MmsEnqDtlDM>();
+	private List<MmsEnqDtlDM> listEnqDetails = new ArrayList<MmsEnqDtlDM>();
 	// form layout for input controls
 	private FormLayout flMmsEnqHdr1, flMmsEnqHdr2, flMmsEnqHdr3, flMmsEnqHdr4, flMmsEnqDtl1, flMmsEnqDtl4,
 			flMmsEnqDtl5, flMmsEnqDtl6, flMmsEnqDtl2, flMmsEnqDtl3;
@@ -160,31 +160,32 @@ public class MaterialEnquiry extends BaseTransUI {
 		tfEnqNo.setMaxLength(40);
 		tfEnqQty = new TextField();
 		tfEnqQty.setValue("0");
-		tfEnqQty.setWidth("90");
+		tfEnqQty.setWidth("100");
 		dfDueDate = new GERPPopupDateField("Due Date");
 		dfDueDate.setInputPrompt("Select Date");
 		dfEnqDate = new GERPPopupDateField("Enquiry Date");
 		dfEnqDate.setInputPrompt("Select Date");
 		taEnqDtlRem = new TextArea("Remarks");
 		taEnqDtlRem.setMaxLength(40);
-		taEnqDtlRem.setWidth("150");
-		taEnqDtlRem.setHeight("50");
+		taEnqDtlRem.setWidth("163");
+		taEnqDtlRem.setHeight("75");
 		taEnqRem = new GERPTextArea("Remarks");
 		taEnqRem.setHeight("35");
 		taEnqDtlRem.setMaxLength(100);
 		cbBranch = new GERPComboBox("Branch Name");
 		cbBranch.setItemCaptionPropertyId("branchName");
 		loadBranchList();
-		List<ApprovalSchemaDM> list = ServiceMmsEnqHdr.getReviewerId(companyid, appScreenId, branchId, roleId);
-		for (ApprovalSchemaDM obj : list) {
-			System.out.println("Level=>" + obj.getApprLevel());
+		try {
+			ApprovalSchemaDM obj = ServiceMmsEnqHdr.getReviewerId(companyid, appScreenId, branchId, roleId).get(0);
 			if (obj.getApprLevel().equals("Reviewer")) {
 				cbEnqStatus = new GERPComboBox("Status", BASEConstants.T_SMS_P_ENQUIRY_HDR, BASEConstants.RP_STATUS);
 			} else {
 				cbEnqStatus = new GERPComboBox("Status", BASEConstants.T_SMS_P_ENQUIRY_HDR, BASEConstants.PE_STATUS_RV);
 			}
 		}
-		// cbEnqStatus = new GERPComboBox("Status", BASEConstants.T_MMS_ENQUIRY_HDR, BASEConstants.ENQUIRYSTATUS);
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		cbEnqStatus.setWidth("150");
 		cbEnqDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		lsmaterial = new ListSelect("Material Name");
@@ -213,7 +214,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		cbUom = new ComboBox();
 		cbUom.setItemCaptionPropertyId("lookupname");
 		loadUomList();
-		cbUom.setWidth("77");
+		cbUom.setWidth("67");
 		cbUom.setHeight("18");
 		cbindentno = new ComboBox("Indent No");
 		cbindentno.setItemCaptionPropertyId("indentNo");
@@ -239,7 +240,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (DtlValidation()) {
+				if (valideteDetailFields()) {
 					saveEnqDtl();
 				}
 			}
@@ -338,7 +339,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		hlQtyUom.setCaption("Enquiry Qty");
 		flMmsEnqDtl2.addComponent(hlQtyUom);
 		flMmsEnqDtl2.setComponentAlignment(hlQtyUom, Alignment.TOP_LEFT);
-		flMmsEnqDtl4.addComponent(taEnqDtlRem);
+		flMmsEnqDtl2.addComponent(taEnqDtlRem);
 		flMmsEnqDtl5.addComponent(cbEnqDtlStatus);
 		VerticalLayout btn = new VerticalLayout();
 		btn.addComponent(btnaddDtl);
@@ -407,15 +408,15 @@ public class MaterialEnquiry extends BaseTransUI {
 	private void loadMatDtl() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			recordCnt = MmsEnqDtList.size();
+			recordCnt = listEnqDetails.size();
 			beanMmsEnqDtlDM = new BeanItemContainer<MmsEnqDtlDM>(MmsEnqDtlDM.class);
-			beanMmsEnqDtlDM.addAll(MmsEnqDtList);
+			beanMmsEnqDtlDM.addAll(listEnqDetails);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the dfmatDt. result set");
 			tblMmsEnqDtl.setContainerDataSource(beanMmsEnqDtlDM);
-			tblMmsEnqDtl.setVisibleColumns(new Object[] { "materialName", "matuom", "enquiryQty", "enqdtlsts",
+			tblMmsEnqDtl.setVisibleColumns(new Object[] { "materialName", "enquiryQty", "matuom", "enqdtlsts",
 					"lastUpdateddt", "lastUpdatedby" });
-			tblMmsEnqDtl.setColumnHeaders(new String[] { "Material Name", "UOM", "Enquiry Qty", "Status",
+			tblMmsEnqDtl.setColumnHeaders(new String[] { "Material Name", "Enquiry Qty", "UOM", "Status",
 					"Last Updated Date", "Last Updated By" });
 			tblMmsEnqDtl.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 			tblMmsEnqDtl.setPageLength(4);
@@ -455,21 +456,6 @@ public class MaterialEnquiry extends BaseTransUI {
 		}
 	}
 	
-	// // Load Vendor List
-	// public void loadVendorList() {
-	// try {
-	// List<VendorDM> vendorList = serviceVendor.getVendorList(branchId, null, companyid, null, null, null, null,
-	// null, "Active", null, "P");
-	// BeanContainer<Long, VendorDM> beanVendor = new BeanContainer<Long, VendorDM>(VendorDM.class);
-	// beanVendor.setBeanIdProperty("vendorId");
-	// beanVendor.addAll(vendorList);
-	// lsVendorName.setContainerDataSource(beanVendor);
-	// }
-	// catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
-	//
 	public void loadVendorNameList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading VendorNameList");
 		List<VendorDM> vendorlist = serviceVendor.getVendorList(null, null, companyid, null, null, null, null, null,
@@ -489,7 +475,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		tfEnqQty.setValue("0");
 		cbEnqStatus.setValue(null);
 		cbindentno.setValue(null);
-		MmsEnqDtList = new ArrayList<MmsEnqDtlDM>();
+		listEnqDetails = new ArrayList<MmsEnqDtlDM>();
 		tblMmsEnqDtl.removeAllItems();
 		cbBranch.setValue(branchId);
 		// cbBranch.setComponentError(null);
@@ -530,7 +516,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			if (editMmsPurEnqHdrlist.getEnqRemark() != null) {
 				taEnqRem.setValue(editMmsPurEnqHdrlist.getEnqRemark().toString());
 			}
-			MmsEnqDtList = ServiceMmsEnqDtl.getMmsEnqDtlList(null, enquiryId, null, null,
+			listEnqDetails = ServiceMmsEnqDtl.getMmsEnqDtlList(null, enquiryId, null, null,
 					(String) cbEnqDtlStatus.getValue());
 		}
 		loadMatDtl();
@@ -616,16 +602,19 @@ public class MaterialEnquiry extends BaseTransUI {
 		lsVendorName.setRequired(true);
 		tfEnqNo.setReadOnly(true);
 		lsmaterial.setRequired(true);
-		// cbUom.setRequired(true);
 		resetFields();
-		tfEnqNo.setReadOnly(true);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO ");
-		for (SlnoGenDM slnoObj : slnoList) {
+		tfEnqNo.setReadOnly(false);
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfEnqNo.setValue(slnoObj.getKeyDesc());
 				tfEnqNo.setReadOnly(true);
 			} else {
 				tfEnqNo.setReadOnly(false);
 			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 		comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null);
 	}
@@ -635,13 +624,6 @@ public class MaterialEnquiry extends BaseTransUI {
 		hlUserInputLayout.removeAllComponents();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		assembleInputUserLayout();
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO ");
-		tfEnqNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfEnqNo.setReadOnly(true);
-			}
-		}
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		tblMmsEnqDtl.setVisible(true);
@@ -691,8 +673,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			errorFlag = false;
 		}
 		if (tblMmsEnqDtl.size() == 0) {
-			cbUom.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
-			tfEnqQty.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRY_QTY));
+			cbUom.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRY_QTY));
 			lsmaterial.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_NAME));
 			errorFlag = true;
 		}
@@ -701,7 +682,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		}
 	}
 	
-	private boolean DtlValidation() {
+	private boolean valideteDetailFields() {
 		boolean isValid = true;
 		if (cbUom.getValue() == null) {
 			cbUom.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
@@ -710,22 +691,22 @@ public class MaterialEnquiry extends BaseTransUI {
 			cbUom.setComponentError(null);
 		}
 		if (tfEnqQty.getValue().equals("0")) {
-			tfEnqQty.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRY_QTY));
+			cbUom.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRY_QTY));
 			isValid = false;
 		} else {
-			tfEnqQty.setComponentError(null);
+			cbUom.setComponentError(null);
 			isValid = true;
 		}
 		Long achievedQty;
 		try {
 			achievedQty = Long.valueOf(tfEnqQty.getValue());
 			if (achievedQty < 0) {
-				tfEnqQty.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
+				cbUom.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				isValid = false;
 			}
 		}
 		catch (Exception e) {
-			tfEnqQty.setComponentError(new UserError(GERPErrorCodes.QUNATITY_CHAR_VALIDATION));
+			cbUom.setComponentError(new UserError(GERPErrorCodes.QUNATITY_CHAR_VALIDATION));
 			isValid = false;
 		}
 		if (lsmaterial.getValue() == null) {
@@ -745,20 +726,8 @@ public class MaterialEnquiry extends BaseTransUI {
 			MmsEnqHdrDM matEnqobj = new MmsEnqHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				matEnqobj = beanMmsEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				matEnqobj.setEnquiryNo(tfEnqNo.getValue());
-			} else {
-				List<SlnoGenDM> slnoList = serviceSlnogen
-						.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO");
-				logger.info("Serial No Generation  Data...===> " + companyid + "," + branchId + "," + moduleId);
-				for (SlnoGenDM slnoObj : slnoList) {
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						matEnqobj.setEnquiryNo(slnoObj.getKeyDesc());
-					}
-				}
 			}
-			if (enquiryId != null) {
-				matEnqobj.setEnquiryId(enquiryId);
-			}
+			matEnqobj.setEnquiryNo(tfEnqNo.getValue());
 			matEnqobj.setCompanyId(companyid);
 			matEnqobj.setEnqRemark(taEnqRem.getValue().toString());
 			matEnqobj.setBranchId((Long) cbBranch.getValue());
@@ -801,10 +770,8 @@ public class MaterialEnquiry extends BaseTransUI {
 			comments.saveEnquiry(matEnqobj.getEnquiryId(), matEnqobj.getEnquiryStatus());
 			comments.resetfields();
 			enqDtlresetFields();
-			// resetFields();
 			loadSrchRslt();
 			enquiryId = 0L;
-			// loadMatDtl();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -818,13 +785,12 @@ public class MaterialEnquiry extends BaseTransUI {
 			String[] split = lsmaterial.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
 			for (String obj : split) {
 				if (obj.trim().length() > 0) {
-					for (MmsEnqDtlDM mmsEnqDtlDM : MmsEnqDtList) {
+					for (MmsEnqDtlDM mmsEnqDtlDM : listEnqDetails) {
 						if (mmsEnqDtlDM.getMaterialid().equals(Long.valueOf(obj.trim()))) {
 							count++;
 							break;
 						}
 					}
-					System.out.println("count--->" + count);
 					if (tblMmsEnqDtl.getValue() != null) {
 						count = 0;
 					}
@@ -832,7 +798,7 @@ public class MaterialEnquiry extends BaseTransUI {
 						MmsEnqDtlDM enqDtlObj = new MmsEnqDtlDM();
 						if (tblMmsEnqDtl.getValue() != null) {
 							enqDtlObj = beanMmsEnqDtlDM.getItem(tblMmsEnqDtl.getValue()).getBean();
-							MmsEnqDtList.remove(enqDtlObj);
+							listEnqDetails.remove(enqDtlObj);
 						}
 						if (lsmaterial.getValue() != null) {
 							enqDtlObj.setMaterialid(Long.valueOf(obj.trim()));
@@ -840,13 +806,7 @@ public class MaterialEnquiry extends BaseTransUI {
 									.getMaterialList(Long.valueOf(obj.trim()), null, null, null, null, null, null,
 											null, null, "P").get(0).getMaterialName());
 						}
-						/*
-						 * enqDtlObj.setMaterialid(((MaterialDM) Lsmaterial.getValue()).getMaterialId());
-						 * enqDtlObj.setMaterialName(((MaterialDM) Lsmaterial.getValue()).getMaterialName());
-						 */
-						// cbUom.setReadOnly(false);
 						enqDtlObj.setMatuom(cbUom.getValue().toString());
-						// cbUom.setReadOnly(true);
 						enqDtlObj.setRemarks(taEnqDtlRem.getValue().toString());
 						if (tfEnqQty.getValue() != null && tfEnqQty.getValue().trim().length() > 0) {
 							enqDtlObj.setEnquiryQty(Long.valueOf(tfEnqQty.getValue()));
@@ -856,7 +816,7 @@ public class MaterialEnquiry extends BaseTransUI {
 						}
 						enqDtlObj.setLastUpdateddt(DateUtils.getcurrentdate());
 						enqDtlObj.setLastUpdatedby(username);
-						MmsEnqDtList.add(enqDtlObj);
+						listEnqDetails.add(enqDtlObj);
 						btnaddDtl.setCaption("Add");
 						loadMatDtl();
 						count = 0;
@@ -900,14 +860,9 @@ public class MaterialEnquiry extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		lsmaterial.setValue(null);
 		taEnqDtlRem.setValue("");
-		// cbUom.setReadOnly(false);
 		cbUom.setValue(null);
-		// cbUom.setReadOnly(true);
 		tfEnqQty.setValue("0");
 		cbEnqDtlStatus.setValue(cbEnqDtlStatus.getItemIds().iterator().next());
-		// Lsmaterial.setComponentError(null);
-		// cbUom.setComponentError(null);
-		// tfEnqQty.setComponentError(null);
 	}
 	
 	public void loadMatNameList() {
@@ -938,7 +893,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		MmsEnqDtlDM save = new MmsEnqDtlDM();
 		if (tblMmsEnqDtl.getValue() != null) {
 			save = beanMmsEnqDtlDM.getItem(tblMmsEnqDtl.getValue()).getBean();
-			MmsEnqDtList.remove(save);
+			listEnqDetails.remove(save);
 			enqDtlresetFields();
 			loadMatDtl();
 			btndelete.setEnabled(false);

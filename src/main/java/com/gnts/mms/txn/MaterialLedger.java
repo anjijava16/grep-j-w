@@ -62,7 +62,6 @@ public class MaterialLedger extends BaseUI {
 	private PopupDateField dfrefdate;
 	// Bean Container
 	private BeanItemContainer<MaterialLedgerDM> beanmatrlledger = null;
-	private BeanContainer<Long, MaterialDM> beanmaterial;
 	private BeanContainer<Long, BranchDM> beanbranch;
 	private FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4;
 	// form layout for input controls
@@ -70,7 +69,7 @@ public class MaterialLedger extends BaseUI {
 	// UserInput control layout
 	private HorizontalLayout hlUserInputLayout = new GERPAddEditHLayout();
 	// local variables declaration
-	private Long companyId, stockledgeId, branchId;
+	private Long companyId, branchId;
 	private String userName;
 	private int recordCnt = 0;
 	// Initialize logger
@@ -191,7 +190,7 @@ public class MaterialLedger extends BaseUI {
 			tblMstScrSrchRslt.removeAllItems();
 			stockledgeDate = dtstockletdate.getValue();
 			List<MaterialLedgerDM> materiallist = serviceledger.getMaterialLedgerList((Long) cbmaterial.getValue(),
-					null, stockledgeDate, (Long) cbbranch.getValue(), (String) cbstocktype.getValue(), "F");
+					null, stockledgeDate, (Long) cbbranch.getValue(), (String) cbstocktype.getValue(),null,null, "F");
 			recordCnt = materiallist.size();
 			beanmatrlledger = new BeanItemContainer<MaterialLedgerDM>(MaterialLedgerDM.class);
 			beanmatrlledger.addAll(materiallist);

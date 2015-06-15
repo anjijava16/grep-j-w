@@ -933,19 +933,21 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		loadPurDtl();
 		assembleInputUserLayout();
 		new UploadDocumentUI(hlPODoc);
-		tfPONo.setReadOnly(true);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_NPONO ");
-		tfPONo.setReadOnly(true);
-		for (SlnoGenDM slnoObj : slnoList) {
+		try {
+			resetFields();
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_NPONO ").get(0);
+			tfPONo.setReadOnly(false);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfPONo.setValue(slnoObj.getKeyDesc());
 				tfPONo.setReadOnly(true);
 			} else {
 				tfPONo.setReadOnly(false);
 			}
-			resetFields();
-			btnsavepurQuote.setCaption("Add");
-			tblpodtl.setVisible(true);
 		}
+		catch (Exception e) {
+		}
+		btnsavepurQuote.setCaption("Add");
+		tblpodtl.setVisible(true);
 		comments = new MmsComments(vlTableForm, null, companyid, null, null, null, poId, null, null, null, null);
 	}
 	
@@ -1037,107 +1039,97 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			POHdrDM PurchaseHdrobj = new POHdrDM();
+			POHdrDM purchaseHdrobj = new POHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				PurchaseHdrobj = beanpohdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				if (tfPONo.getValue() != null) {
-					PurchaseHdrobj.setPono(tfPONo.getValue());
-				}
-			} else {
-				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_NPONO");
-				logger.info("Serial No Generation  Data...===> " + companyid + "," + branchId + "," + moduleId);
-				for (SlnoGenDM slnoObj : slnoList) {
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						PurchaseHdrobj.setPono(slnoObj.getKeyDesc());
-					}
-				}
+				purchaseHdrobj = beanpohdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			PurchaseHdrobj.setBranchId((Long) cbBranch.getValue());
-			PurchaseHdrobj.setCompanyId(companyid);
-			PurchaseHdrobj.setPurchaseDate(dfPODt.getValue());
-			PurchaseHdrobj.setPoRemark(taRemark.getValue());
-			PurchaseHdrobj.setpOType((String) cbpoType.getValue());
-			PurchaseHdrobj.setVendorId((Long) cbVendor.getValue());
-			PurchaseHdrobj.setVersionNo((Long.valueOf(tfversionNo.getValue())));
-			PurchaseHdrobj.setBasicTotal(new BigDecimal(tfBasictotal.getValue()));
-			PurchaseHdrobj.setPackingPrcnt((Long.valueOf(tfpackingPer.getValue())));
-			PurchaseHdrobj.setPackingVL(new BigDecimal(tfPaclingValue.getValue()));
-			PurchaseHdrobj.setSubTotal(new BigDecimal(tfSubTotal.getValue()));
-			PurchaseHdrobj.setVatPrcnt(new BigDecimal(tfVatPer.getValue()));
-			PurchaseHdrobj.setVatValue(new BigDecimal(tfVatValue.getValue()));
-			PurchaseHdrobj.setEdPrcnt(new BigDecimal(tfEDPer.getValue()));
-			PurchaseHdrobj.setEdValue((new BigDecimal(tfEDValue.getValue())));
-			PurchaseHdrobj.setHedValue(new BigDecimal(tfHEDValue.getValue()));
-			PurchaseHdrobj.setHedPrcnt(new BigDecimal(tfHEDPer.getValue()));
-			PurchaseHdrobj.setCessPrcnt(new BigDecimal(tfCessPer.getValue()));
-			PurchaseHdrobj.setCessValue(new BigDecimal(tfCessValue.getValue()));
-			PurchaseHdrobj.setCstPrcnt((new BigDecimal(tfCstPer.getValue())));
-			PurchaseHdrobj.setCstValue(new BigDecimal(tfCstValue.getValue()));
-			PurchaseHdrobj.setSubTaxTotal(new BigDecimal(tfSubTaxTotal.getValue()));
-			PurchaseHdrobj.setFrgtValue(new BigDecimal(tfFreightPer.getValue()));
-			PurchaseHdrobj.setFrgtPrcnt(new BigDecimal(tfFreightPer.getValue()));
-			PurchaseHdrobj.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
-			PurchaseHdrobj.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
-			PurchaseHdrobj.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
+			purchaseHdrobj.setPono(tfPONo.getValue());
+			purchaseHdrobj.setBranchId((Long) cbBranch.getValue());
+			purchaseHdrobj.setCompanyId(companyid);
+			purchaseHdrobj.setPurchaseDate(dfPODt.getValue());
+			purchaseHdrobj.setPoRemark(taRemark.getValue());
+			purchaseHdrobj.setpOType((String) cbpoType.getValue());
+			purchaseHdrobj.setVendorId((Long) cbVendor.getValue());
+			purchaseHdrobj.setVersionNo((Long.valueOf(tfversionNo.getValue())));
+			purchaseHdrobj.setBasicTotal(new BigDecimal(tfBasictotal.getValue()));
+			purchaseHdrobj.setPackingPrcnt((Long.valueOf(tfpackingPer.getValue())));
+			purchaseHdrobj.setPackingVL(new BigDecimal(tfPaclingValue.getValue()));
+			purchaseHdrobj.setSubTotal(new BigDecimal(tfSubTotal.getValue()));
+			purchaseHdrobj.setVatPrcnt(new BigDecimal(tfVatPer.getValue()));
+			purchaseHdrobj.setVatValue(new BigDecimal(tfVatValue.getValue()));
+			purchaseHdrobj.setEdPrcnt(new BigDecimal(tfEDPer.getValue()));
+			purchaseHdrobj.setEdValue((new BigDecimal(tfEDValue.getValue())));
+			purchaseHdrobj.setHedValue(new BigDecimal(tfHEDValue.getValue()));
+			purchaseHdrobj.setHedPrcnt(new BigDecimal(tfHEDPer.getValue()));
+			purchaseHdrobj.setCessPrcnt(new BigDecimal(tfCessPer.getValue()));
+			purchaseHdrobj.setCessValue(new BigDecimal(tfCessValue.getValue()));
+			purchaseHdrobj.setCstPrcnt((new BigDecimal(tfCstPer.getValue())));
+			purchaseHdrobj.setCstValue(new BigDecimal(tfCstValue.getValue()));
+			purchaseHdrobj.setSubTaxTotal(new BigDecimal(tfSubTaxTotal.getValue()));
+			purchaseHdrobj.setFrgtValue(new BigDecimal(tfFreightPer.getValue()));
+			purchaseHdrobj.setFrgtPrcnt(new BigDecimal(tfFreightPer.getValue()));
+			purchaseHdrobj.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
+			purchaseHdrobj.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
+			purchaseHdrobj.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
 			if (tfpaymetTerms.getValue() != null) {
-				PurchaseHdrobj.setPaymentTerms((tfpaymetTerms.getValue().toString()));
+				purchaseHdrobj.setPaymentTerms((tfpaymetTerms.getValue().toString()));
 			}
 			if (tfFreightTerms.getValue() != null) {
-				PurchaseHdrobj.setFrnghtTerms(tfFreightTerms.getValue().toString());
+				purchaseHdrobj.setFrnghtTerms(tfFreightTerms.getValue().toString());
 			}
 			if (tfWarrentyTerms.getValue() != null) {
-				PurchaseHdrobj.setWrntyTerms((tfWarrentyTerms.getValue().toString()));
+				purchaseHdrobj.setWrntyTerms((tfWarrentyTerms.getValue().toString()));
 			}
 			if (tfDelTerms.getValue() != null) {
-				PurchaseHdrobj.setDlvryTerms(tfDelTerms.getValue().toString());
+				purchaseHdrobj.setDlvryTerms(tfDelTerms.getValue().toString());
 			}
 			if (ckdutyexm.getValue().equals(true)) {
-				PurchaseHdrobj.setDutyExempt("Y");
+				purchaseHdrobj.setDutyExempt("Y");
 			} else if (ckdutyexm.getValue().equals(false)) {
-				PurchaseHdrobj.setDutyExempt("N");
+				purchaseHdrobj.setDutyExempt("N");
 			}
 			if (ckCformRqu.getValue().equals(true)) {
-				PurchaseHdrobj.setCformReqd("Y");
+				purchaseHdrobj.setCformReqd("Y");
 			} else if (ckCformRqu.getValue().equals(false)) {
-				PurchaseHdrobj.setCformReqd("N");
+				purchaseHdrobj.setCformReqd("N");
 			}
 			if (ckPdcRqu.getValue().equals(true)) {
-				PurchaseHdrobj.setpDCReqd("Y");
+				purchaseHdrobj.setpDCReqd("Y");
 			} else if (ckPdcRqu.getValue().equals(false)) {
-				PurchaseHdrobj.setpDCReqd("N");
+				purchaseHdrobj.setpDCReqd("N");
 			}
 			if (ckcasePO.getValue().equals(true)) {
-				PurchaseHdrobj.setCasePoYn("Y");
+				purchaseHdrobj.setCasePoYn("Y");
 			} else if (ckcasePO.getValue().equals(false)) {
-				PurchaseHdrobj.setCasePoYn("N");
+				purchaseHdrobj.setCasePoYn("N");
 			}
 			if (cbquoteNo.getValue() != null) {
-				PurchaseHdrobj.setQuoteId(((MmsQuoteHdrDM) cbquoteNo.getValue()).getQuoteId());
+				purchaseHdrobj.setQuoteId(((MmsQuoteHdrDM) cbquoteNo.getValue()).getQuoteId());
 			}
-			PurchaseHdrobj.setShippingAddr(taShpnAddr.getValue());
-			PurchaseHdrobj.setInvoiceAddress(taInvoiceOrd.getValue());
+			purchaseHdrobj.setShippingAddr(taShpnAddr.getValue());
+			purchaseHdrobj.setInvoiceAddress(taInvoiceOrd.getValue());
 			if (cbStatus.getValue().toString() != null) {
-				PurchaseHdrobj.setpOStatus(cbStatus.getValue().toString());
+				purchaseHdrobj.setpOStatus(cbStatus.getValue().toString());
 			}
-			PurchaseHdrobj.setPreparedBy(EmployeeId);
-			PurchaseHdrobj.setReviewedBy(null);
-			PurchaseHdrobj.setActionedBY(null);
-			PurchaseHdrobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			PurchaseHdrobj.setLastUpdatedBy(username);
+			purchaseHdrobj.setPreparedBy(EmployeeId);
+			purchaseHdrobj.setReviewedBy(null);
+			purchaseHdrobj.setActionedBY(null);
+			purchaseHdrobj.setLastUpdatedDt(DateUtils.getcurrentdate());
+			purchaseHdrobj.setLastUpdatedBy(username);
 			file = new File(GERPConstants.DOCUMENT_PATH);
 			FileInputStream fio = new FileInputStream(file);
 			byte fileContents[] = new byte[(int) file.length()];
 			fio.read(fileContents);
 			fio.close();
-			PurchaseHdrobj.setPoDoc(fileContents);
-			servicepohdr.saveorUpdatePOHdrDetails(PurchaseHdrobj);
+			purchaseHdrobj.setPoDoc(fileContents);
+			servicepohdr.saveorUpdatePOHdrDetails(purchaseHdrobj);
 			@SuppressWarnings("unchecked")
 			Collection<MmsPoDtlDM> itemIds = (Collection<MmsPoDtlDM>) tblpodtl.getVisibleItemIds();
 			for (MmsPoDtlDM save : (Collection<MmsPoDtlDM>) itemIds) {
-				save.setPoid(Long.valueOf(PurchaseHdrobj.getPoId().toString()));
+				save.setPoid(Long.valueOf(purchaseHdrobj.getPoId().toString()));
 				servicepodtl.saveorupdatepodtl(save);
 			}
-			comments.savePurchaseOrder(PurchaseHdrobj.getPoId(), PurchaseHdrobj.getpOStatus());
+			comments.savePurchaseOrder(purchaseHdrobj.getPoId(), purchaseHdrobj.getpOStatus());
 			if (tblMstScrSrchRslt.getValue() == null) {
 				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_NPONO");
 				for (SlnoGenDM slnoObj : slnoList) {

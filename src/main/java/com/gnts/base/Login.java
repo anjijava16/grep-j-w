@@ -30,9 +30,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 import javax.servlet.annotation.WebServlet;
-import javax.sql.DataSource;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.gnts.base.dashboard.DashbordDesignView;
 import com.gnts.base.dashboard.DashbordView;
 import com.gnts.base.domain.mst.AppScreensDM;
@@ -86,7 +84,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 @Theme("gerp")
 @Title("gERP")
@@ -144,9 +141,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 	private String systemUser;
 	private Logger logger = Logger.getLogger(Login.class.getName());
 	private MenuBar mbFavarotise;
-	private Window subwindow;
-	@Autowired
-	private DataSource dataSource;
+	
 	
 	@WebServlet(value = "/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = false, ui = Login.class, widgetset = "com.gnts.base.AppWidgetSet")
@@ -884,9 +879,11 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 				targetClass = "com.gnts.base.dashboard.DashbordDesignView";
 			} else if (sreenName.equalsIgnoreCase("Finance Management")) {
 				targetClass = "com.gnts.base.dashboard.DashboardFinanceView";
-			}  else if (sreenName.equalsIgnoreCase("Human Capital")) {
+			} else if (sreenName.equalsIgnoreCase("Human Capital")) {
 				targetClass = "com.gnts.base.dashboard.DashboardHCMView";
-			}else {
+			} else if (sreenName.equalsIgnoreCase("Material Management")) {
+				targetClass = "com.gnts.base.dashboard.DashboardMMSView";
+			} else {
 				targetClass = "com.gnts.base.dashboard.DashbordView";
 			}
 		}

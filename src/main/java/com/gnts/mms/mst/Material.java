@@ -132,7 +132,7 @@ public class Material extends BaseUI {
 	private Table tblMatOwner = new GERPTable();
 	// Material Specification Components Declaration
 	private TextField tfMatSpecName;
-	private TextArea taMatSpecDesc;
+	private TextField taMatSpecDesc;
 	private ComboBox cbMatSpecStatus = new GERPComboBox("Status", BASEConstants.M_BASE_USER, BASEConstants.USER_STATUS);
 	private Table tblMatSpec = new GERPTable();
 	private Button btnaddMatSpec = new GERPButton("Add", "addbt", this);
@@ -306,9 +306,8 @@ public class Material extends BaseUI {
 		// Material Specification Components Definition
 		tfMatSpecName = new GERPTextField("Spec.Name");
 		tfMatSpecName.setWidth("150");
-		taMatSpecDesc = new GERPTextArea("Spec.Description");
-		taMatSpecDesc.setWidth("250");
-		taMatSpecDesc.setHeight("25");
+		taMatSpecDesc = new TextField("Spec.Description");
+		taMatSpecDesc.setWidth("275");
 		btnaddMatSpec.setStyleName("add");
 		btnaddMatSpec.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update for Material Specification
@@ -756,18 +755,6 @@ public class Material extends BaseUI {
 	}
 	
 	/*
-	 * loadMaterialBranchList()-->this function is used for load the branch list to material branch combo box
-	 */
-	// private void loadMaterialBranchList() {
-	// logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Branch Search...");
-	// List<BranchDM> branchlist = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
-	// branchlist.add(new BranchDM(0L, "All Branch"));
-	// beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-	// beanBranch.setBeanIdProperty("branchId");
-	// beanBranch.addAll(branchlist);
-	// cbBranch.setContainerDataSource(beanBranch);
-	// }
-	/*
 	 * loadMatOwnerBranchList()-->this function is used for load the branch list to material owner branch combo box
 	 */
 	private void loadMatOwnerBranchList() {
@@ -1168,6 +1155,7 @@ public class Material extends BaseUI {
 			materialObj.setLastupdateddt(DateUtils.getcurrentdate());
 			materialObj.setLastupdatedby(userName);
 			serviceMaterial.saveOrUpdateMaterial(materialObj);
+			materialId = materialObj.getMaterialId();
 			@SuppressWarnings("unchecked")
 			Collection<MaterialOwnersDM> matOwnerItemIds = (Collection<MaterialOwnersDM>) tblMatOwner
 					.getVisibleItemIds();
@@ -1353,8 +1341,7 @@ public class Material extends BaseUI {
 	 * editMaterialOwner()-->this function is used for restore the selected row's data to material owner components
 	 */
 	private void editMaterialOwner() {
-		Item matOwnerSelected = tblMatOwner.getItem(tblMatOwner.getValue());
-		if (matOwnerSelected != null) {
+		if (tblMatOwner.getValue() != null) {
 			MaterialOwnersDM editmatowner = beanMaterialOwner.getItem(tblMatOwner.getValue()).getBean();
 			Long empId = editmatowner.getEmployeeId();
 			Collection<?> empColId = cbMatOwnerEmployee.getItemIds();
@@ -1389,17 +1376,7 @@ public class Material extends BaseUI {
 					cbMatOwnerDept.setValue(itemIdClient);
 				}
 			}
-			// if (editmatowner.getEmployeeId()!= null) {
-			// cbMatOwnerEmployee.setValue(matOwnerSelected.getItemProperty("employeeId").getValue().toString());
-			// }
-			// if (editmatowner.getBranchId()!= null) {
-			// cbMatOwnerBranch.setValue(matOwnerSelected.getItemProperty("branchId").getValue().toString());
-			// }
-			// if (editmatowner.getDeptId()!= null) {
-			// cbMatOwnerDept.setValue(matOwnerSelected.getItemProperty("deptId").getValue().toString());
-			// }
-			String stCode = matOwnerSelected.getItemProperty("ownershipStatus").getValue().toString();
-			cbMatOwnerStatus.setValue(stCode);
+			cbMatOwnerStatus.setValue(editmatowner.getOwnershipStatus());
 		}
 	}
 	
@@ -1408,8 +1385,7 @@ public class Material extends BaseUI {
 	 * components
 	 */
 	private void editMaterialConsumer() {
-		Item matConsSelected = tblMatCons.getItem(tblMatCons.getValue());
-		if (matConsSelected != null) {
+		if (tblMatCons.getValue() != null) {
 			MaterialConsumersDM editmatowner = beanMaterialConsumer.getItem(tblMatCons.getValue()).getBean();
 			Long branchId = editmatowner.getBranchId();
 			Collection<?> branchcolId = cbMatConsBranch.getItemIds();
@@ -1433,10 +1409,7 @@ public class Material extends BaseUI {
 					cbMatConsDepartment.setValue(itemIdClient);
 				}
 			}
-			// cbMatConsBranch.setValue(matConsSelected.getItemProperty("branchId").getValue());
-			// cbMatConsDepartment.setValue(matConsSelected.getItemProperty("deptId").getValue());
-			String stCode = matConsSelected.getItemProperty("matConsStatus").getValue().toString();
-			cbMatConsStatus.setValue(stCode);
+			cbMatConsStatus.setValue(editmatowner.getMatConsStatus());
 		}
 	}
 	

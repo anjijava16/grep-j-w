@@ -9306,14 +9306,14 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', end
 
 /****************  Dashboard 2  **************************/
 
-.container{width:1120px; float:left; height:auto; margin-bottom:30px;}
+.container{width:96%; float:left; height:auto; margin-bottom:30px;}
 .fullBox{width:1097px; height:154px; float:left; border:1px solid #c9c9c9; border-top:3px solid #36a9e1; background:#fff; padding:10px}
-.smallBox1, .smallBox2, .smallBox3, .smallBox4{width:228px; height:49px; float:left; border:1px solid #c9c9c9; border-top:3px solid #53d0c0; background:#fff; padding:19px 10px; margin-right:27px;}
+.smallBox1, .smallBox2, .smallBox3, .smallBox4{width:176px; height:49px; float:left; border:1px solid #c9c9c9; border-top:3px solid #53d0c0; background:#fff; padding:19px 10px; margin-right:27px;}
 .smallBox2{border-top:3px solid #f76767;}
 .smallBox3{border-top:3px solid #62a9f9;}
 .smallBox4{border-top:3px solid #ffa83c;}
 .smallBox1con{width:50px; height:49px; line-height:64px; float:left; margin-right:10px; background:#53d0c0 ; text-align:center; vertical-align:middle; float:left} 
-.smallBoxText{width:157px; border-left:1px solid #dddddd; padding-left:10px; font-size:21px; font-weight:bold; color:#555555; float:left}
+.smallBoxText{width:105px; border-left:1px solid #dddddd; padding-left:10px; font-size:21px; font-weight:bold; color:#555555; float:left}
 .smallBoxText span{width:157px; font-size:13px; font-weight:normal; color:#88888b;}
 .iconBG2{background:#f76767; line-height:59px;}
 .iconBG3{background:#62a9f9}

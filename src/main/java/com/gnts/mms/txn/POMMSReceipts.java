@@ -318,6 +318,8 @@ public class POMMSReceipts extends BaseUI {
 		hlHdr.addComponent(flHdr4);
 		hlHdr.setSpacing(true);
 		hlHdr.setMargin(true);
+		
+		HorizontalLayout hlDtl1 =new HorizontalLayout();
 		// Adding Purchase Order Receipt Dtl components
 		// Add components for User Input Layout
 		flDtl1 = new FormLayout();
@@ -329,19 +331,18 @@ public class POMMSReceipts extends BaseUI {
 		flDtl1.addComponent(tfReceiptqty);
 		flDtl2.addComponent(tfRejectqty);
 		flDtl2.addComponent(cbmaterialUOM);
-		flDtl3.addComponent(cbDtlStatus);
+		taRejectReason.setHeight("50");
 		flDtl3.addComponent(taRejectReason);
-		flDtl4.addComponent(btnadd);
-		flDtl4.addComponent(btndelete);
+		flDtl4.addComponent(cbDtlStatus);
+		flDtl4.addComponent(hlDtl1);
+		hlDtl1.addComponent(btnadd);
+		hlDtl1.addComponent(btndelete);
 		flDtl5.addComponent(hlevdDoc);
-		flDtl4.setHeight("10");
-		flDtl4.setWidth("80");
 		HorizontalLayout hldTL = new HorizontalLayout();
 		hldTL.addComponent(flDtl1);
 		hldTL.addComponent(flDtl2);
 		hldTL.addComponent(flDtl3);
 		hldTL.addComponent(flDtl4);
-		// hldTL.addComponent(flDtl5);
 		hldTL.setSpacing(true);
 		hldTL.setMargin(true);
 		VerticalLayout vlHDR = new VerticalLayout();

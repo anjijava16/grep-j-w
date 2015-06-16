@@ -461,18 +461,23 @@ public class DC extends BaseTransUI {
 		flDCCol1.addComponent(tfDcNo);
 		flDCCol1.addComponent(cbEnquiry);
 		flDCCol1.addComponent(cbDCType);
+		dfDcDt.setWidth("130");
 		flDCCol1.addComponent(dfDcDt);
 
 		flDCCol2.addComponent(cbVendor);
 		flDCCol2.addComponent(cbClients);
+		cbwindcommPerson.setWidth("150");
 		flDCCol2.addComponent(cbwindcommPerson);
+		cbwindTechPers.setWidth("150");
 		flDCCol2.addComponent(cbwindTechPers);
 		flDCCol3.addComponent(cbModeOfTrans);
 		flDCCol3.addComponent(cbPersonName);
-		flDCCol3.addComponent(cbStatus);
-		flColumn4.addComponent(taClientAddres);
+		flDCCol3.addComponent(taClientAddres);
+		taRemarks.setHeight("80");
 		flColumn4.addComponent(taRemarks);
-
+		cbStatus.setWidth("150");
+		flColumn4.addComponent(cbStatus);
+		
 		
 		
 		hlDC = new HorizontalLayout();

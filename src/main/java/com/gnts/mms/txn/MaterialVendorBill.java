@@ -422,9 +422,12 @@ public class MaterialVendorBill extends BaseTransUI {
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
+		FormLayout flColumn5 = new FormLayout();
+		
 		flColumn1.addComponent(cbBranch);
 		flColumn1.addComponent(cbpoNo);
 		flColumn1.addComponent(tfbillNo);
+		dfbillDt.setWidth("130");
 		flColumn1.addComponent(dfbillDt);
 		flColumn1.addComponent(taRemark);
 		flColumn1.addComponent(tfBasictotal);
@@ -432,8 +435,8 @@ public class MaterialVendorBill extends BaseTransUI {
 		pv.addComponent(tfpackingPer);
 		pv.addComponent(tfPaclingValue);
 		pv.setCaption("Packing");
-		flColumn1.addComponent(pv);
-		flColumn1.setComponentAlignment(pv, Alignment.TOP_LEFT);
+		flColumn2.addComponent(pv);
+		flColumn2.setComponentAlignment(pv, Alignment.TOP_LEFT);
 		// Formlayout2 components
 		flColumn2.addComponent(tfSubTotal);
 		HorizontalLayout vp = new HorizontalLayout();
@@ -465,9 +468,9 @@ public class MaterialVendorBill extends BaseTransUI {
 		cst.addComponent(tfCstPer);
 		cst.addComponent(tfCstValue);
 		cst.setCaption("CST");
-		flColumn2.addComponent(cst);
-		flColumn2.setComponentAlignment(cst, Alignment.TOP_LEFT);
-		flColumn2.addComponent(tfSubTaxTotal);
+		flColumn3.addComponent(cst);
+		flColumn3.setComponentAlignment(cst, Alignment.TOP_LEFT);
+		flColumn3.addComponent(tfSubTaxTotal);
 		HorizontalLayout frgt = new HorizontalLayout();
 		frgt.addComponent(tfFreightPer);
 		frgt.addComponent(tfFreightValue);
@@ -483,20 +486,25 @@ public class MaterialVendorBill extends BaseTransUI {
 		flColumn3.setComponentAlignment(other, Alignment.TOP_LEFT);
 		flColumn3.addComponent(tfGrandtotal);
 		flColumn3.addComponent(tfpaymetTerms);
-		flColumn3.addComponent(tfFreightTerms);
-		flColumn3.addComponent(tfWarrentyTerms);
-		flColumn3.addComponent(tfDelTerms);
+		flColumn4.addComponent(tfFreightTerms);
+		flColumn4.addComponent(tfWarrentyTerms);
+		flColumn4.addComponent(tfDelTerms);
 		// Formlayout4 components
-		flColumn4.addComponent(cbStatus);
+		HorizontalLayout hlHdr1 = new HorizontalLayout();
 		flColumn4.addComponent(ckdutyexm);
-		flColumn4.addComponent(ckCformRqu);
-		flColumn4.addComponent(ckPdcRqu);
-		flColumn4.addComponent(hlPODoc);
+		//flColumn4.addComponent(ckCformRqu);
+		flColumn4.addComponent(hlHdr1);
+		hlHdr1.addComponent(ckCformRqu);
+		hlHdr1.addComponent(ckPdcRqu);
+		//flColumn4.addComponent(ckPdcRqu);
+		flColumn4.addComponent(cbStatus);
+		flColumn5.addComponent(hlPODoc);
 		HorizontalLayout hlHdr = new HorizontalLayout();
 		hlHdr.addComponent(flColumn1);
 		hlHdr.addComponent(flColumn2);
 		hlHdr.addComponent(flColumn3);
 		hlHdr.addComponent(flColumn4);
+		hlHdr.addComponent(flColumn5);
 		hlHdr.setSpacing(true);
 		hlHdr.setMargin(true);
 		// Adding VendorBillDtl components
@@ -516,9 +524,9 @@ public class MaterialVendorBill extends BaseTransUI {
 		flDtlColumn3.addComponent(tarejectReason);
 		flDtlColumn3.addComponent(ckdebitNote);
 		flDtlColumn4.addComponent(tfDebitValue);
-		flDtlColumn4.addComponent(hldtlDoc);
-		flDtlColumn5.addComponent(btnAdd);
-		flDtlColumn5.addComponent(btndelete);
+		flDtlColumn4.addComponent(btnAdd);
+		flDtlColumn4.addComponent(btndelete);
+		flDtlColumn5.addComponent(hldtlDoc);
 		HorizontalLayout hlVendorBillDtl = new HorizontalLayout();
 		hlVendorBillDtl.addComponent(flDtlColumn1);
 		hlVendorBillDtl.addComponent(flDtlColumn2);

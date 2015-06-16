@@ -42,6 +42,7 @@ import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mms.domain.mst.MaterialDM;
@@ -77,7 +78,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class MaterialGatepass extends BaseUI {
+public class MaterialGatepass extends BaseTransUI {
 	/**
 	 * 
 	 */
@@ -300,7 +301,6 @@ public class MaterialGatepass extends BaseUI {
 			}
 		});
 		tbldtl = new GERPTable();
-		tbldtl.setPageLength(10);
 		tbldtl.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -336,7 +336,7 @@ public class MaterialGatepass extends BaseUI {
 		flcolumn1 = new FormLayout();
 		flcolumn2 = new FormLayout();
 		flcolumn3 = new FormLayout();
-		// flcolumn4 = new FormLayout();
+		flcolumn4 = new FormLayout();
 		// flcolumn1.addComponent(tfGatePassNo);
 		flcolumn1.addComponent(gatepassdt);
 		flcolumn2.addComponent(cbgatepasstype);
@@ -359,29 +359,32 @@ public class MaterialGatepass extends BaseUI {
 		flcolumn4 = new FormLayout();
 		// tfGatePassNo.setReadOnly(true);
 		flcolumn1.addComponent(tfGatePassNo);
-		flcolumn2.addComponent(cbVendorDCNo);
-		flcolumn1.addComponent(cbDC);
-		flcolumn1.addComponent(gatepassdt);
+		flcolumn3.addComponent(cbVendorDCNo);
+		flcolumn3.addComponent(cbDC);
 		flcolumn1.addComponent(cbgatepasstype);
+		flcolumn1.addComponent(gatepassdt);
 		cbgatepasstype.setRequired(true);
 		flcolumn1.addComponent(cbvendor);
 		tfvendorname.setRequired(true);
-		flcolumn2.addComponent(tavendoraddres);
 		flcolumn1.addComponent(tfvendorname);
-		flcolumn2.addComponent(dtlead);
-		flcolumn2.setSizeUndefined();
-		flcolumn2.setSpacing(true);
-		flcolumn2.addComponent(dtreturndate);
-		flcolumn3.addComponent(cbmodetransport);
-		flcolumn3.addComponent(tfpersonname);
-		flcolumn3.addComponent(taHdrremarks);
-		flcolumn3.addComponent(cbgatestatus);
+		flcolumn2.addComponent(tavendoraddres);
+		tavendoraddres.setHeight("120");
+		flcolumn3.addComponent(dtlead);
 		flcolumn3.setSizeUndefined();
 		flcolumn3.setSpacing(true);
+		flcolumn3.addComponent(dtreturndate);
+		flcolumn3.addComponent(cbmodetransport);
+		flcolumn4.addComponent(tfpersonname);
+		flcolumn4.addComponent(taHdrremarks);
+		flcolumn4.addComponent(cbgatestatus);
+		taHdrremarks.setHeight("70");
+		flcolumn4.setSizeUndefined();
+		flcolumn4.setSpacing(true);
 		hlInput = new HorizontalLayout();
 		hlInput.addComponent(flcolumn1);
 		hlInput.addComponent(flcolumn2);
 		hlInput.addComponent(flcolumn3);
+		hlInput.addComponent(flcolumn4);
 		// hlInput.addComponent(flcolumn4);
 		hlInput.setSpacing(true);
 		hlInput.setMargin(true);
@@ -394,21 +397,29 @@ public class MaterialGatepass extends BaseUI {
 		cbgoodstype.setRequired(true);
 		fldtl1.addComponent(cbmaterial);
 		cbmaterial.setRequired(true);
-		fldtl2.addComponent(cbproduct);
+		fldtl1.addComponent(cbproduct);
 		cbproduct.setRequired(true);
-		fldtl1.addComponent(tagoodsdesc);
-		fldtl2.addComponent(tfGatePassQty);
 		fldtl2.addComponent(cbgoodsuom);
+		fldtl2.addComponent(tfGatePassQty);
 		HorizontalLayout hlQtyUom = new HorizontalLayout();
 		hlQtyUom.addComponent(tfGatePassQty);
 		hlQtyUom.addComponent(cbgoodsuom);
 		hlQtyUom.setCaption("Quantity");
+		//hlQtyUom.setWidth("30");
+		tfGatePassQty.setWidth("90");
+		tfGatePassQty.setHeight("18");
+		cbgoodsuom.setWidth("65");
+		cbgoodsuom.setHeight("18");
 		fldtl2.addComponent(hlQtyUom);
 		fldtl2.setComponentAlignment(hlQtyUom, Alignment.TOP_LEFT);
 		// cbgoodsuom.setRequired(true);
+		tagoodsdesc.setHeight("50");
+		fldtl2.addComponent(tagoodsdesc);
+		taremarks.setHeight("50");
 		fldtl3.addComponent(taremarks);
 		fldtl3.addComponent(tfReturnQty);
-		fldtl3.addComponent(cbdtlstatus);
+		fldtl4.addComponent(cbdtlstatus);
+		cbdtlstatus.setWidth("150");
 		fldtl4.addComponent(btnAddDtl);
 		fldtl4.addComponent(btndelete);
 		hluserinput = new HorizontalLayout();
@@ -433,7 +444,7 @@ public class MaterialGatepass extends BaseUI {
 		hluserinputlayout.setWidth("100%");
 		hluserinputlayout.setMargin(true);
 		hluserinputlayout.setSpacing(true);
-		hlCmdBtnLayout.setVisible(false);
+		hlCmdBtnLayout.setVisible(true);
 		loadDtlList();
 	}
 	
@@ -473,7 +484,7 @@ public class MaterialGatepass extends BaseUI {
 			tbldtl.setVisibleColumns(new Object[] { "goodstype", "gatepassquanty", "returnqty", "status" });
 			tbldtl.setColumnHeaders(new String[] { "Goods Type", "Quantity", "Return Quantity", "Status" });
 			tbldtl.setColumnFooter("status", "No.of.Records :" + recordCnt);
-			tbldtl.setPageLength(5);
+			tbldtl.setPageLength(4);
 			tbldtl.setSizeFull();
 		}
 		catch (Exception e) {
@@ -1012,5 +1023,11 @@ public class MaterialGatepass extends BaseUI {
 			loadDtlList();
 			btndelete.setEnabled(false);
 		}
+	}
+
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -732,7 +732,7 @@ public class Material extends BaseUI {
 	public void loadMaterialGroupList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Loading Material UOM Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
+		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, null, "Active",
 				"MM_MTRLGRP");
 		beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("cmplookupid");
@@ -746,7 +746,7 @@ public class Material extends BaseUI {
 	public void loadMaterialUOMList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Loading Material UOM Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
+		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, null, "Active",
 				"MM_UOM");
 		beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
@@ -1037,21 +1037,6 @@ public class Material extends BaseUI {
 		}
 		if (cbDepartment.getValue() == null) {
 			cbDepartment.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_DEPARTMENT));
-			errorFlag = true;
-		}
-		if (tblMatOwner.size() == 0) {
-			cbMatOwnerEmployee.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_NAME));
-			cbMatOwnerBranch.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_BRANCH));
-			cbMatOwnerDept.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_DEPARTMENT));
-			errorFlag = true;
-		}
-		if (tblMatCons.size() == 0) {
-			cbMatConsBranch.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_BRANCH));
-			cbMatConsDepartment.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_DEPARTMENT));
-			errorFlag = true;
-		}
-		if (tblMatSpec.size() == 0) {
-			tfMatSpecName.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_SPEC_NAME));
 			errorFlag = true;
 		}
 		logger.warn("Company ID : " + companyId + " | User Name : " + userName + " > "

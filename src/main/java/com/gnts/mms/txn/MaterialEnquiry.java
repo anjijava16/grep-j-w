@@ -83,8 +83,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class MaterialEnquiry extends BaseTransUI {
-	private MmsEnqHdrService ServiceMmsEnqHdr = (MmsEnqHdrService) SpringContextHelper.getBean("MmsEnqHdr");
-	private MmsEnqDtlService ServiceMmsEnqDtl = (MmsEnqDtlService) SpringContextHelper.getBean("MmsEnqDtl");
+	private MmsEnqHdrService serviceMmsEnqHdr = (MmsEnqHdrService) SpringContextHelper.getBean("MmsEnqHdr");
+	private MmsEnqDtlService serviceMmsEnqDtl = (MmsEnqDtlService) SpringContextHelper.getBean("MmsEnqDtl");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private MMSVendorDtlService serviceMMSVendordtl = (MMSVendorDtlService) SpringContextHelper.getBean("mmsVendorDtl");
@@ -176,7 +176,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		cbBranch.setItemCaptionPropertyId("branchName");
 		loadBranchList();
 		try {
-			ApprovalSchemaDM obj = ServiceMmsEnqHdr.getReviewerId(companyid, appScreenId, branchId, roleId).get(0);
+			ApprovalSchemaDM obj = serviceMmsEnqHdr.getReviewerId(companyid, appScreenId, branchId, roleId).get(0);
 			if (obj.getApprLevel().equals("Reviewer")) {
 				cbEnqStatus = new GERPComboBox("Status", BASEConstants.T_SMS_P_ENQUIRY_HDR, BASEConstants.RP_STATUS);
 			} else {
@@ -387,7 +387,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		List<MmsEnqHdrDM> MmsPurEnqHdrList = new ArrayList<MmsEnqHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbBranch.getValue() + ", " + cbEnqStatus.getValue());
-		MmsPurEnqHdrList = ServiceMmsEnqHdr.getMmsEnqHdrList(companyid, null, tfEnqNo.getValue(),
+		MmsPurEnqHdrList = serviceMmsEnqHdr.getMmsEnqHdrList(companyid, null, tfEnqNo.getValue(),
 				(Long) cbBranch.getValue(), (String) cbEnqStatus.getValue(), username);
 		recordCnt = MmsPurEnqHdrList.size();
 		beanMmsEnqHdrDM = new BeanItemContainer<MmsEnqHdrDM>(MmsEnqHdrDM.class);
@@ -516,7 +516,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			if (editMmsPurEnqHdrlist.getEnqRemark() != null) {
 				taEnqRem.setValue(editMmsPurEnqHdrlist.getEnqRemark().toString());
 			}
-			listEnqDetails = ServiceMmsEnqDtl.getMmsEnqDtlList(null, enquiryId, null, null,
+			listEnqDetails = serviceMmsEnqDtl.getMmsEnqDtlList(null, enquiryId, null, null,
 					(String) cbEnqDtlStatus.getValue());
 		}
 		loadMatDtl();
@@ -738,7 +738,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			matEnqobj.setPreparedBy(EmployeeId);
 			matEnqobj.setLastUpdateddt(DateUtils.getcurrentdate());
 			matEnqobj.setLastUpdatedby(username);
-			ServiceMmsEnqHdr.saveorUpdateMmsEnqHdrDetails(matEnqobj);
+			serviceMmsEnqHdr.saveorUpdateMmsEnqHdrDetails(matEnqobj);
 			String[] split = lsVendorName.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
 			for (String obj : split) {
 				if (obj.trim().length() > 0) {
@@ -752,7 +752,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			Collection<MmsEnqDtlDM> itemIds = (Collection<MmsEnqDtlDM>) tblMmsEnqDtl.getVisibleItemIds();
 			for (MmsEnqDtlDM save : (Collection<MmsEnqDtlDM>) itemIds) {
 				save.setEnquiryId(Long.valueOf(matEnqobj.getEnquiryId().toString()));
-				ServiceMmsEnqDtl.save(save);
+				serviceMmsEnqDtl.save(save);
 			}
 			comments.resetfields();
 			if (tblMstScrSrchRslt.getValue() == null) {

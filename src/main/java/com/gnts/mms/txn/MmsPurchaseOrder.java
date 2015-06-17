@@ -598,7 +598,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			poType = cbpoType.getValue().toString();
 		}
 		pohdrlist = servicepohdr.getPOHdrList(companyid, null, (Long) cbBranch.getValue(), null,
-				(String) cbStatus.getValue(), poType);
+				(String) cbStatus.getValue(), poType,"F");
 		recordcnt = pohdrlist.size();
 		beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
 		beanpohdr.addAll(pohdrlist);
@@ -1227,14 +1227,14 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfCessValue.setValue("0");
 		ckCformRqu.setValue(false);
 		// tfCstPer.setValue("10");
-		tfDelTerms.setValue(null);
+		tfDelTerms.setValue("");
 		tfCstValue.setReadOnly(false);
 		tfCstValue.setValue("0");
 		ckdutyexm.setValue(false);
 		// tfEDPer.setValue("10");
 		tfEDValue.setReadOnly(false);
 		tfEDValue.setValue("0");
-		tfWarrentyTerms.setValue(null);
+		tfWarrentyTerms.setValue("");
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue("0");
 		// tfVatPer.setValue("10");
@@ -1245,7 +1245,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfversionNo.setReadOnly(false);
 		tfversionNo.setValue("0");
 		cbquoteNo.setValue(null);
-		tfpaymetTerms.setValue(null);
+		tfpaymetTerms.setValue("");
 		tfPaclingValue.setReadOnly(false);
 		tfPaclingValue.setValue("0");
 		// tfpackingPer.setValue("10");
@@ -1260,7 +1260,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfFreightValue.setReadOnly(false);
 		tfFreightValue.setValue("0");
 		// tfFreightPer.setValue("10");
-		tfFreightTerms.setValue(null);
+		tfFreightTerms.setValue("");
 		cbmaterial.setValue(null);
 		cbStatus.setValue(null);
 		// cbBranch.setValue(null);

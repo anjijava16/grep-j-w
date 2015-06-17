@@ -661,7 +661,7 @@ public class MaterialVendorBill extends BaseTransUI {
 	
 	private void loadPoNo() {
 		List<POHdrDM> getEnNoHdr = new ArrayList<POHdrDM>();
-		getEnNoHdr.addAll(servicepoHdr.getPOHdrList(companyid, null, null, null, null, null));
+		getEnNoHdr.addAll(servicepoHdr.getPOHdrList(companyid, null, null, null, null, null,"F"));
 		BeanItemContainer<POHdrDM> beanPurPoDM = new BeanItemContainer<POHdrDM>(POHdrDM.class);
 		beanPurPoDM.addAll(getEnNoHdr);
 		cbpoNo.setContainerDataSource(beanPurPoDM);

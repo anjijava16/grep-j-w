@@ -378,7 +378,7 @@ public class MaterialQuote extends BaseTransUI {
 		}
 		cbStatus.setWidth("150");
 		// Sales QuoteDtl Comp
-		cbMaterial = new GERPComboBox("Product Name");
+		cbMaterial = new GERPComboBox("Material Name");
 		cbMaterial.setItemCaptionPropertyId("materialName");
 		cbMaterial.setWidth("130");
 		cbMaterial.addValueChangeListener(new ValueChangeListener() {

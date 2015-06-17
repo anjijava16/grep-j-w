@@ -43,10 +43,14 @@ import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.txn.IndentHdrDM;
+import com.gnts.mms.domain.txn.MaterialLedgerDM;
+import com.gnts.mms.domain.txn.MaterialStockDM;
 import com.gnts.mms.domain.txn.PoReceiptDtlDM;
 import com.gnts.mms.domain.txn.PoReceiptHdrDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.IndentHdrService;
+import com.gnts.mms.service.txn.MaterialLedgerService;
+import com.gnts.mms.service.txn.MaterialStockService;
 import com.gnts.mms.service.txn.PoReceiptDtlService;
 import com.gnts.mms.service.txn.PoReceiptHdrService;
 import com.gnts.sms.domain.txn.PurchasePOHdrDM;
@@ -83,6 +87,9 @@ public class POMMSReceipts extends BaseUI {
 	private PoReceiptDtlService servicePoReceiptDtl = (PoReceiptDtlService) SpringContextHelper.getBean("poRecepitDtl");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
+	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
+	private MaterialStockService serviceMaterialStock = (MaterialStockService) SpringContextHelper
+			.getBean("materialstock");
 	private IndentHdrService serviceIndent = (IndentHdrService) SpringContextHelper.getBean("IndentHdr");
 	private PurchasePOHdrService servicepurchaePOHdr = (PurchasePOHdrService) SpringContextHelper
 			.getBean("PurchasePOhdr");
@@ -181,7 +188,7 @@ public class POMMSReceipts extends BaseUI {
 				// TODO Auto-generated method stub
 				if (cbMaterial.getValue() != null) {
 					MaterialDM materialDM = (MaterialDM) cbMaterial.getValue();
-					System.out.println("materialDM.getMaterialUOM()-->"+materialDM.getMaterialUOM());
+					System.out.println("materialDM.getMaterialUOM()-->" + materialDM.getMaterialUOM());
 					cbmaterialUOM.setValue(materialDM.getMaterialUOM());
 				}
 			}
@@ -318,8 +325,7 @@ public class POMMSReceipts extends BaseUI {
 		hlHdr.addComponent(flHdr4);
 		hlHdr.setSpacing(true);
 		hlHdr.setMargin(true);
-		
-		HorizontalLayout hlDtl1 =new HorizontalLayout();
+		HorizontalLayout hlDtl1 = new HorizontalLayout();
 		// Adding Purchase Order Receipt Dtl components
 		// Add components for User Input Layout
 		flDtl1 = new FormLayout();
@@ -763,6 +769,90 @@ public class POMMSReceipts extends BaseUI {
 			for (PoReceiptDtlDM save : (Collection<PoReceiptDtlDM>) itemIds) {
 				save.setReceiptid(Long.valueOf(recepithdrObj.getReceiptId().toString()));
 				servicePoReceiptDtl.savePoReceiptDtl(save);
+				try {
+					MaterialLedgerDM materialLedgerDM = null;
+					try {
+						materialLedgerDM = serviceledger.getMaterialLedgerList(save.getMaterialid(), null, null, null,
+								null, null, "Y", "F").get(0);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					if (materialLedgerDM == null) {
+						MaterialLedgerDM ledgerDM = new MaterialLedgerDM();
+						ledgerDM.setStockledgeDate(new Date());
+						ledgerDM.setCompanyId(companyid);
+						ledgerDM.setBranchId(branchId);
+						ledgerDM.setMaterialId(save.getMaterialid());
+						ledgerDM.setStockType("New");
+						ledgerDM.setOpenQty(0L);
+						ledgerDM.setInoutFlag("I");
+						ledgerDM.setInoutFQty(save.getReceiptqty());
+						ledgerDM.setCloseQty(save.getReceiptqty());
+						ledgerDM.setReferenceNo(recepithdrObj.getLotNo());
+						ledgerDM.setReferenceDate(recepithdrObj.getReceiptDate());
+						ledgerDM.setIsLatest("Y");
+						ledgerDM.setReferenceRemark(save.getRejectreason());
+						ledgerDM.setLastUpdatedby(username);
+						ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
+						serviceledger.saveOrUpdateLedger(ledgerDM);
+					} else {
+						MaterialLedgerDM ledgerDM = new MaterialLedgerDM();
+						ledgerDM.setStockledgeDate(new Date());
+						ledgerDM.setCompanyId(companyid);
+						ledgerDM.setBranchId(branchId);
+						ledgerDM.setMaterialId(save.getMaterialid());
+						ledgerDM.setStockType("New");
+						ledgerDM.setOpenQty(materialLedgerDM.getCloseQty());
+						ledgerDM.setInoutFlag("I");
+						ledgerDM.setInoutFQty(save.getReceiptqty());
+						ledgerDM.setCloseQty(materialLedgerDM.getCloseQty() + save.getReceiptqty());
+						ledgerDM.setReferenceNo(recepithdrObj.getLotNo());
+						ledgerDM.setReferenceDate(recepithdrObj.getReceiptDate());
+						ledgerDM.setIsLatest("Y");
+						ledgerDM.setReferenceRemark(save.getRejectreason());
+						ledgerDM.setLastUpdatedby(username);
+						ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
+						serviceledger.saveOrUpdateLedger(ledgerDM);
+					}
+					try {
+						// for material stock
+						MaterialStockDM materialStockDM = null;
+						try {
+							materialStockDM = serviceMaterialStock.getMaterialStockList(save.getMaterialid(), null,
+									null, null, null, null, "F").get(0);
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+						if (materialStockDM == null) {
+							materialStockDM = new MaterialStockDM();
+							materialStockDM.setCompanyId(companyid);
+							materialStockDM.setBranchId(branchId);
+							materialStockDM.setMaterialId(save.getMaterialid());
+							materialStockDM.setLotNo(recepithdrObj.getLotNo());
+							materialStockDM.setStockType("New");
+							materialStockDM.setCurrentStock(save.getReceiptqty());
+							materialStockDM.setParkedStock(0L);
+							materialStockDM.setEffectiveStock(save.getReceiptqty());
+							materialStockDM.setLastUpdatedby(username);
+							materialStockDM.setLastUpdateddt(DateUtils.getcurrentdate());
+							serviceMaterialStock.saveorupdatematerialstock(materialStockDM);
+						} else {
+							materialStockDM.setCurrentStock(materialStockDM.getCurrentStock() + save.getReceiptqty());
+							materialStockDM.setEffectiveStock(materialStockDM.getEffectiveStock()
+									+ save.getReceiptqty());
+							materialStockDM.setLastUpdatedby(username);
+							materialStockDM.setLastUpdateddt(DateUtils.getcurrentdate());
+							serviceMaterialStock.saveorupdatematerialstock(materialStockDM);
+						}
+					}
+					catch (Exception e) {
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
 				try {

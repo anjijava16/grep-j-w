@@ -3,10 +3,16 @@ package com.gnts.base.dashboard;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
-import com.gnts.erputil.components.GERPTable;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.txn.MaterialStockDM;
+import com.gnts.mms.domain.txn.MmsEnqHdrDM;
+import com.gnts.mms.domain.txn.POHdrDM;
+import com.gnts.mms.mst.Material;
+import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.MaterialStockService;
+import com.gnts.mms.service.txn.MmsEnqHdrService;
+import com.gnts.mms.service.txn.POHdrService;
 import com.gnts.mms.txn.MaterialEnquiry;
 import com.gnts.mms.txn.MaterialQuote;
 import com.gnts.mms.txn.MaterialVendorBill;
@@ -23,6 +29,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -38,16 +45,26 @@ public class DashboardMMSView implements ClickListener {
 	private Button btnOrdersCount = new Button("13 Nos.", this);
 	private Button btnBillsCount = new Button("17 Nos.", this);
 	private Button btnReceiptsCount = new Button("16 Nos.", this);
+	private Button btnAddMaterial = new Button("+  Add Material", this);
 	private MaterialStockService servicematerialstock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
+	private MmsEnqHdrService serviceMmsEnqHdr = (MmsEnqHdrService) SpringContextHelper.getBean("MmsEnqHdr");
+	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
+	private POHdrService servicepohdr = (POHdrService) SpringContextHelper.getBean("pohdr");
 	private Logger logger = Logger.getLogger(DashboardMMSView.class);
-	private Table tblMstScrSrchRslt = new GERPTable();
+	private Table tblMstScrSrchRslt = new Table();
+	private Table tblPaymentPending=new Table();
+	private Table tblEnquiry = new Table();
 	private Long companyId;
 	
 	public DashboardMMSView() {
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
 		hlHeader = (HorizontalLayout) UI.getCurrent().getSession().getAttribute("hlLayout");
-		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		try {
+			companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("logincompanyId").toString());
+		}
+		catch (Exception e) {
+		}
 		buildView(clMainLayout, hlHeader);
 	}
 	
@@ -66,14 +83,21 @@ public class DashboardMMSView implements ClickListener {
 		btnOrdersCount.setStyleName(Runo.BUTTON_LINK);
 		btnBillsCount.setStyleName(Runo.BUTTON_LINK);
 		btnReceiptsCount.setStyleName(Runo.BUTTON_LINK);
+		btnAddMaterial.setStyleName(Runo.BUTTON_LINK);
+		btnAddMaterial.setHtmlContentAllowed(true);
 		custom.addComponent(btnEnquiryCount, "enquiry");
 		custom.addComponent(btnQuotationCount, "quotation");
 		custom.addComponent(btnOrdersCount, "purchaseorder");
 		custom.addComponent(btnReceiptsCount, "receipts");
 		custom.addComponent(btnBillsCount, "vendorbills");
 		custom.addComponent(tblMstScrSrchRslt, "stockDetails");
+		custom.addComponent(tblEnquiry, "enquirytable");
+		custom.addComponent(btnAddMaterial, "addmaterial");
 		tblMstScrSrchRslt.setHeight("300px");
+		tblEnquiry.setHeight("250px");
+		tblPaymentPending.setHeight("300px");
 		loadStockDetails();
+		loadEnquiryList();
 	}
 	
 	private void loadStockDetails() {
@@ -86,12 +110,14 @@ public class DashboardMMSView implements ClickListener {
 					MaterialStockDM.class);
 			beanmaterialstock.addAll(materiallist);
 			tblMstScrSrchRslt.setContainerDataSource(beanmaterialstock);
-			tblMstScrSrchRslt.setSelectable(true);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialName", "stockType", "materialUOM",
 					"currentStock", "effectiveStock" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Material", "Stock Type", "UOM", "Current Stock",
-					"Effective Stock" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Material", "Stock Type", "UOM", "Curr. Stock",
+					"Eff. Stock" });
 			tblMstScrSrchRslt.setColumnFooter("effectiveStock", "No.of.Records :" + materiallist.size());
+			tblMstScrSrchRslt.setColumnWidth("materialName", 160);
+			tblMstScrSrchRslt.setColumnWidth("currentStock", 75);
+			tblMstScrSrchRslt.setColumnWidth("effectiveStock", 75);
 			tblMstScrSrchRslt.addGeneratedColumn("materialName", new ColumnGenerator() {
 				private static final long serialVersionUID = 1L;
 				
@@ -100,9 +126,26 @@ public class DashboardMMSView implements ClickListener {
 					@SuppressWarnings("unchecked")
 					BeanItem<MaterialStockDM> item = (BeanItem<MaterialStockDM>) source.getItem(itemId);
 					MaterialStockDM emp = (MaterialStockDM) item.getBean();
-					Label textLabel = new Label("<body><p style='backgrckckound-color:lightgrey;color:#3CAF9E;font-size:15px'>" + emp.getMaterialName()
-							+ "</p></body>", ContentMode.HTML);
-					return textLabel;
+					MaterialDM material = serviceMaterial.getMaterialList(emp.getMaterialId(), null, null, null, null,
+							null, null, null, null, "P").get(0);
+					System.out.println("material.getReorderLevel()--->" + material.getReorderLevel());
+					if (material.getReorderLevel() == null || material.getReorderLevel() == emp.getEffectiveStock()) {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
+										+ emp.getMaterialName() + "</h1>", ContentMode.HTML);
+					} else if (material.getReorderLevel() > emp.getEffectiveStock()) {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
+										+ emp.getMaterialName() + "</h1>", ContentMode.HTML);
+					} else if (material.getReorderLevel() < emp.getEffectiveStock()) {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#6CD4BD;font-size:12px'>"
+										+ emp.getMaterialName() + "</h1>", ContentMode.HTML);
+					} else {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
+										+ emp.getMaterialName() + "</h1>", ContentMode.HTML);
+					}
 				}
 			});
 		}
@@ -110,6 +153,71 @@ public class DashboardMMSView implements ClickListener {
 			e.printStackTrace();
 			logger.info("loadSrchRslt-->" + e);
 		}
+	}
+	
+	// Load Purchase Header
+	private void loadEnquiryList() {
+		logger.info("Company ID : " + companyId + " | User Name :  > " + "Loading Search...");
+		tblEnquiry.removeAllItems();
+		List<MmsEnqHdrDM> mmsPurEnqHdrList = new ArrayList<MmsEnqHdrDM>();
+		mmsPurEnqHdrList = serviceMmsEnqHdr.getMmsEnqHdrList(companyId, null, null, null, null, "P");
+		BeanItemContainer<MmsEnqHdrDM> beanMmsEnqHdrDM = new BeanItemContainer<MmsEnqHdrDM>(MmsEnqHdrDM.class);
+		beanMmsEnqHdrDM.addAll(mmsPurEnqHdrList);
+		tblEnquiry.setContainerDataSource(beanMmsEnqHdrDM);
+		tblEnquiry.setVisibleColumns(new Object[] { "enquiryNo", "enquiryStatus" });
+		tblEnquiry.setColumnHeaders(new String[] { "Enquiry No", "Status" });
+		tblEnquiry.setColumnWidth("enquiryNo", 160);
+		tblEnquiry.addGeneratedColumn("enquiryStatus", new ColumnGenerator() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				@SuppressWarnings("unchecked")
+				BeanItem<MmsEnqHdrDM> item = (BeanItem<MmsEnqHdrDM>) source.getItem(itemId);
+				MmsEnqHdrDM emp = (MmsEnqHdrDM) item.getBean();
+				System.out.println("emp.getEnquiryStatus()--->" + emp.getEnquiryStatus());
+				if (emp.getEnquiryStatus() == null) {
+					return new Label(
+							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
+									+ "---" + "</h1>", ContentMode.HTML);
+				} else if (emp.getEnquiryStatus().equals("Pending")) {
+					return new Label(
+							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
+									+ emp.getEnquiryStatus() + "</h1>", ContentMode.HTML);
+				} else if (emp.getEnquiryStatus().equals("Approved")) {
+					return new Label(
+							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#6CD4BD;font-size:12px'>"
+									+ emp.getEnquiryStatus() + "</h1>", ContentMode.HTML);
+				} else if (emp.getEnquiryStatus().equals("Progress")) {
+					return new Label(
+							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#A8EDFF;font-size:12px'>"
+									+ emp.getEnquiryStatus() + "</h1>", ContentMode.HTML);
+				} else {
+					return new Label(
+							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
+									+ emp.getEnquiryStatus() + "</h1>", ContentMode.HTML);
+				}
+			}
+		});
+	}
+	
+	
+	private void loadPaymentPendingDetails() {
+		tblPaymentPending.removeAllItems();
+		System.out.println("ddddddddd");
+		List<POHdrDM> pohdrlist = new ArrayList<POHdrDM>();
+		String poType = null;
+		pohdrlist = servicepohdr.getPOHdrList(companyId, null, null, null,
+				null, poType,"P");
+		BeanItemContainer<POHdrDM> beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
+		beanpohdr.addAll(pohdrlist);
+		tblPaymentPending.setContainerDataSource(beanpohdr);
+		tblPaymentPending.setVisibleColumns(new Object[] { "poId", "branchName", "pOType", "paymentTerms", "pOStatus",
+				"lastUpdatedDt", "lastUpdatedBy" });
+		tblPaymentPending.setColumnHeaders(new String[] { "Ref.Id", "Branch", "Po Type", "Payment Terms", "Status",
+				"Last Updated Date", "Last Updated By" });
+		tblPaymentPending.setColumnAlignment("poId", Align.RIGHT);
+		tblPaymentPending.setColumnFooter("lastUpdatedBy", "No.of Records : " + pohdrlist.size());
 	}
 	
 	@Override
@@ -143,6 +251,13 @@ public class DashboardMMSView implements ClickListener {
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Material Receipts");
 			new POMMSReceipts();
+		}
+		if (event.getButton() == btnAddMaterial) {
+			clMainLayout.removeAllComponents();
+			hlHeader.removeAllComponents();
+			UI.getCurrent().getSession().setAttribute("screenName", "Material");
+			UI.getCurrent().getSession().setAttribute("moduleId",9L);
+			new Material();
 		}
 	}
 }

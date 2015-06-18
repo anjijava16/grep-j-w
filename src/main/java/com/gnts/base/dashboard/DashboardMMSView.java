@@ -247,30 +247,35 @@ public class DashboardMMSView implements ClickListener {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Material Enquiry");
+			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new MaterialEnquiry();
 		}
 		if (event.getButton() == btnQuotationCount) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Material Quotation");
+			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new MaterialQuote();
 		}
 		if (event.getButton() == btnOrdersCount) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Material Purchase Orders");
+			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new MmsPurchaseOrder();
 		}
 		if (event.getButton() == btnBillsCount) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Material Vendor Bills");
+			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new MaterialVendorBill();
 		}
 		if (event.getButton() == btnReceiptsCount) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Material Receipts");
+			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new POMMSReceipts();
 		}
 		if (event.getButton() == btnAddMaterial) {

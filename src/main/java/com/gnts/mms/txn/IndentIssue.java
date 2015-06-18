@@ -38,10 +38,13 @@ import com.gnts.mms.domain.txn.IndentDtlDM;
 import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.domain.txn.IndentIssueDtlDM;
 import com.gnts.mms.domain.txn.IndentIssueHdrDM;
+import com.gnts.mms.domain.txn.MaterialLedgerDM;
+import com.gnts.mms.domain.txn.PoReceiptHdrDM;
 import com.gnts.mms.service.txn.IndentDtlService;
 import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.IndentIssueDtlService;
 import com.gnts.mms.service.txn.IndentIssueHdrService;
+import com.gnts.mms.service.txn.MaterialLedgerService;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -106,9 +109,10 @@ public class IndentIssue extends BaseTransUI {
 	private BeanContainer<Long, EmployeeDM> beanEmployeeDM = null;
 	public Button btndelete = new GERPButton("Delete", "delete", this);
 	private BeanContainer<Long, IndentHdrDM> beanIndentHdrDM = null;
+	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
 	// local variables declaration
 	private String pkIndentId;
-	private Long companyid;
+	private Long companyid, branchId;
 	private Long issueId, indentId, indqty;
 	private int recordCnt = 0;
 	private String username;
@@ -183,17 +187,11 @@ public class IndentIssue extends BaseTransUI {
 		cbIntNo = new GERPComboBox("Indent No");
 		cbIntNo.setItemCaptionPropertyId("indentNo");
 		loadIndentList();
-		cbIntNo.addValueChangeListener(new Property.ValueChangeListener() {
-			/**
-			 * UI.getCurrent().getSession().setAttribute("balqty", balqty);
-			 */
-			private static final long serialVersionUID = 1L;
-			
+		cbIntNo.addValueChangeListener(new ValueChangeListener() {
+			@Override
 			public void valueChange(ValueChangeEvent event) {
-				Object itemid = event.getProperty().getValue();
-				if (itemid != null) {
-					loadMaterialList();
-				}
+				// TODO Auto-generated method stub
+				loadMaterialList();
 			}
 		});
 		// Issue Date PopupDateField
@@ -217,7 +215,7 @@ public class IndentIssue extends BaseTransUI {
 		cbMatName.setImmediate(true);
 		cbMatName.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
@@ -652,12 +650,101 @@ public class IndentIssue extends BaseTransUI {
 				indqty = (Long) balqty - Long.valueOf(saveDtl.getIssueQty());
 				serviceIndentDtl.saveorUpdate(saveDtl);
 				serviceIndentDtlDM.updateissueqty(indentObj.getIndentId(), saveDtl.getMaterialId(), indqty);
+				// MaterialLedgerDM materialLedgerDM = null;
+				IndentIssueHdrDM indentissuehdrObj = new IndentIssueHdrDM();
+				try {
+					MaterialLedgerDM materialLedgerDM = null;
+					try {
+						materialLedgerDM = serviceledger.getMaterialLedgerList(saveDtl.getMaterialId(), null, null,
+								null, null, null, "Y", "F").get(0);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					if (materialLedgerDM == null) {
+						MaterialLedgerDM ledgerDM = new MaterialLedgerDM();
+						ledgerDM.setStockledgeDate(new Date());
+						ledgerDM.setCompanyId(companyid);
+						ledgerDM.setBranchId(branchId);
+						ledgerDM.setMaterialId(saveDtl.getMaterialId());
+						ledgerDM.setStockType("New");
+						ledgerDM.setOpenQty(0L);
+						ledgerDM.setInoutFlag("O");
+						ledgerDM.setInoutFQty(saveDtl.getIssueQty());
+						ledgerDM.setCloseQty(ledgerDM.getOpenQty() - saveDtl.getIssueQty());
+						ledgerDM.setReferenceNo(indentissuehdrObj.getIndentNo());
+						ledgerDM.setReferenceDate(indentissuehdrObj.getIssueDate1());
+						ledgerDM.setIsLatest("Y");
+						ledgerDM.setReferenceRemark(indentissuehdrObj.getIssueRemarks());
+						ledgerDM.setLastUpdatedby(username);
+						ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
+						serviceledger.saveOrUpdateLedger(ledgerDM);
+					} else {
+						MaterialLedgerDM ledgerDM = new MaterialLedgerDM();
+						ledgerDM.setStockledgeDate(new Date());
+						ledgerDM.setCompanyId(companyid);
+						ledgerDM.setBranchId(branchId);
+						ledgerDM.setMaterialId(saveDtl.getMaterialId());
+						ledgerDM.setStockType("New");
+						ledgerDM.setOpenQty(materialLedgerDM.getCloseQty());
+						ledgerDM.setInoutFlag("O");
+						ledgerDM.setInoutFQty(saveDtl.getIssueQty());
+						ledgerDM.setCloseQty(ledgerDM.getOpenQty() - saveDtl.getIssueQty());
+						ledgerDM.setReferenceNo(indentissuehdrObj.getIndentNo());
+						ledgerDM.setReferenceDate(indentissuehdrObj.getIssueDate1());
+						ledgerDM.setIsLatest("Y");
+						ledgerDM.setReferenceRemark(indentissuehdrObj.getIssueRemarks());
+						ledgerDM.setLastUpdatedby(username);
+						ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
+						serviceledger.saveOrUpdateLedger(ledgerDM);
+						materialLedgerDM.setIsLatest("N");
+						serviceledger.saveOrUpdateLedger(materialLedgerDM);
+					}
+					if (materialLedgerDM == null) {
+						MaterialLedgerDM ledgerDM = new MaterialLedgerDM();
+						ledgerDM.setStockledgeDate(new Date());
+						ledgerDM.setCompanyId(companyid);
+						ledgerDM.setBranchId(branchId);
+						ledgerDM.setMaterialId(saveDtl.getMaterialId());
+						ledgerDM.setStockType("New");
+						ledgerDM.setOpenQty(0L);
+						ledgerDM.setInoutFlag("I");
+						ledgerDM.setInoutFQty(saveDtl.getIssueQty());
+						ledgerDM.setCloseQty(ledgerDM.getOpenQty() - saveDtl.getIssueQty());
+						ledgerDM.setReferenceNo(indentissuehdrObj.getIndentNo());
+						ledgerDM.setReferenceDate(indentissuehdrObj.getIssueDate1());
+						ledgerDM.setIsLatest("Y");
+						ledgerDM.setReferenceRemark(indentissuehdrObj.getIssueRemarks());
+						ledgerDM.setLastUpdatedby(username);
+						ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
+						serviceledger.saveOrUpdateLedger(ledgerDM);
+					} else {
+						MaterialLedgerDM ledgerDM = new MaterialLedgerDM();
+						ledgerDM.setStockledgeDate(new Date());
+						ledgerDM.setCompanyId(companyid);
+						ledgerDM.setBranchId(branchId);
+						ledgerDM.setMaterialId(saveDtl.getMaterialId());
+						ledgerDM.setStockType("New");
+						ledgerDM.setOpenQty(materialLedgerDM.getCloseQty());
+						ledgerDM.setInoutFlag("I");
+						ledgerDM.setInoutFQty(saveDtl.getIssueQty());
+						ledgerDM.setCloseQty(ledgerDM.getOpenQty() - saveDtl.getIssueQty());
+						ledgerDM.setReferenceNo(indentissuehdrObj.getIndentNo());
+						ledgerDM.setReferenceDate(indentissuehdrObj.getIssueDate1());
+						ledgerDM.setIsLatest("Y");
+						ledgerDM.setReferenceRemark(indentissuehdrObj.getIssueRemarks());
+						ledgerDM.setLastUpdatedby(username);
+						ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
+						serviceledger.saveOrUpdateLedger(ledgerDM);
+						materialLedgerDM.setIsLatest("N");
+						serviceledger.saveOrUpdateLedger(materialLedgerDM);
+					}
+					
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-			// IndentDtlresetField();
-			// resetFields();
-			loadSrchRslt();
-			issueId = 0L;
-			loadIndentDtl();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -759,10 +846,9 @@ public class IndentIssue extends BaseTransUI {
 			btndelete.setEnabled(false);
 		}
 	}
-
+	
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
-		
 	}
 }

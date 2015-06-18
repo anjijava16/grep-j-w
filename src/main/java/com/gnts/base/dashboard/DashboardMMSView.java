@@ -1,5 +1,8 @@
 package com.gnts.base.dashboard;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -53,7 +56,7 @@ public class DashboardMMSView implements ClickListener {
 	private POHdrService servicepohdr = (POHdrService) SpringContextHelper.getBean("pohdr");
 	private Logger logger = Logger.getLogger(DashboardMMSView.class);
 	private Table tblMstScrSrchRslt = new Table();
-	private Table tblPaymentPending=new Table();
+	private Table tblPaymentPending = new Table();
 	private Table tblEnquiry = new Table();
 	private Long companyId;
 	
@@ -93,11 +96,13 @@ public class DashboardMMSView implements ClickListener {
 		custom.addComponent(tblMstScrSrchRslt, "stockDetails");
 		custom.addComponent(tblEnquiry, "enquirytable");
 		custom.addComponent(btnAddMaterial, "addmaterial");
+		custom.addComponent(tblPaymentPending, "paymenttable");
 		tblMstScrSrchRslt.setHeight("300px");
 		tblEnquiry.setHeight("250px");
-		tblPaymentPending.setHeight("300px");
+		tblPaymentPending.setHeight("450px");
 		loadStockDetails();
 		loadEnquiryList();
+		loadPaymentPendingDetails();
 	}
 	
 	private void loadStockDetails() {
@@ -201,23 +206,39 @@ public class DashboardMMSView implements ClickListener {
 		});
 	}
 	
-	
 	private void loadPaymentPendingDetails() {
 		tblPaymentPending.removeAllItems();
 		System.out.println("ddddddddd");
 		List<POHdrDM> pohdrlist = new ArrayList<POHdrDM>();
 		String poType = null;
-		pohdrlist = servicepohdr.getPOHdrList(companyId, null, null, null,
-				null, poType,"P");
+		pohdrlist = servicepohdr.getPOHdrList(companyId, null, null, null, null, poType, "P");
 		BeanItemContainer<POHdrDM> beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
 		beanpohdr.addAll(pohdrlist);
 		tblPaymentPending.setContainerDataSource(beanpohdr);
-		tblPaymentPending.setVisibleColumns(new Object[] { "poId", "branchName", "pOType", "paymentTerms", "pOStatus",
-				"lastUpdatedDt", "lastUpdatedBy" });
-		tblPaymentPending.setColumnHeaders(new String[] { "Ref.Id", "Branch", "Po Type", "Payment Terms", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblPaymentPending.setColumnAlignment("poId", Align.RIGHT);
-		tblPaymentPending.setColumnFooter("lastUpdatedBy", "No.of Records : " + pohdrlist.size());
+		tblPaymentPending.setVisibleColumns(new Object[] { "pono", "vendorName", "balancePayAmount" });
+		tblPaymentPending.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Balance Amount" });
+		tblPaymentPending.setColumnWidth("pono", 150);
+		tblPaymentPending.setColumnWidth("vendorName", 150);
+		tblPaymentPending.setColumnAlignment("balancePayAmount", Align.RIGHT);
+		tblPaymentPending.addGeneratedColumn("balancePayAmount", new ColumnGenerator() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				@SuppressWarnings("unchecked")
+				BeanItem<POHdrDM> item = (BeanItem<POHdrDM>) source.getItem(itemId);
+				POHdrDM emp = (POHdrDM) item.getBean();
+				System.out.println("emp.getBalancePayAmount()--->" + emp.getBalancePayAmount());
+				DecimalFormat df = new DecimalFormat("#.00", new DecimalFormatSymbols());
+				if (emp.getBalancePayAmount().compareTo(new BigDecimal("5000")) > 0) {
+					return new Label("<p style='color:#EC9E20;font-size:14px;align=right'>Rs. "
+							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
+				} else {
+					return new Label("<p style='color:#E26666;font-size:14px;align=right'>Rs. "
+							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
+				}
+			}
+		});
 	}
 	
 	@Override
@@ -256,7 +277,7 @@ public class DashboardMMSView implements ClickListener {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Material");
-			UI.getCurrent().getSession().setAttribute("moduleId",9L);
+			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new Material();
 		}
 	}

@@ -3,8 +3,6 @@ package com.gnts.base.dashboard;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.mms.domain.mst.MaterialDM;
@@ -57,6 +55,7 @@ public class DashboardMMSView implements ClickListener {
 	private Logger logger = Logger.getLogger(DashboardMMSView.class);
 	private Table tblMstScrSrchRslt = new Table();
 	private Table tblPaymentPending = new Table();
+	private Table tblDeliveryPending = new Table();
 	private Table tblEnquiry = new Table();
 	private Long companyId;
 	
@@ -97,29 +96,32 @@ public class DashboardMMSView implements ClickListener {
 		custom.addComponent(tblEnquiry, "enquirytable");
 		custom.addComponent(btnAddMaterial, "addmaterial");
 		custom.addComponent(tblPaymentPending, "paymenttable");
+		custom.addComponent(tblDeliveryPending, "deliverypending");
 		tblMstScrSrchRslt.setHeight("300px");
 		tblEnquiry.setHeight("250px");
 		tblPaymentPending.setHeight("450px");
+		tblPaymentPending.setWidth("510px");
+		tblDeliveryPending.setWidth("510px");
+		tblDeliveryPending.setHeight("450px");
 		loadStockDetails();
 		loadEnquiryList();
 		loadPaymentPendingDetails();
+		loadDeliveryDetails();
 	}
 	
 	private void loadStockDetails() {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<MaterialStockDM> materiallist = new ArrayList<MaterialStockDM>();
-			materiallist = servicematerialstock.getMaterialStockList(null, companyId, null, null, null, null, "F");
 			BeanItemContainer<MaterialStockDM> beanmaterialstock = new BeanItemContainer<MaterialStockDM>(
 					MaterialStockDM.class);
-			beanmaterialstock.addAll(materiallist);
+			beanmaterialstock.addAll(servicematerialstock.getMaterialStockList(null, companyId, null, null, null, null,
+					"F"));
 			tblMstScrSrchRslt.setContainerDataSource(beanmaterialstock);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialName", "stockType", "materialUOM",
 					"currentStock", "effectiveStock" });
 			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Material", "Stock Type", "UOM", "Curr. Stock",
 					"Eff. Stock" });
-			tblMstScrSrchRslt.setColumnFooter("effectiveStock", "No.of.Records :" + materiallist.size());
 			tblMstScrSrchRslt.setColumnWidth("materialName", 160);
 			tblMstScrSrchRslt.setColumnWidth("currentStock", 75);
 			tblMstScrSrchRslt.setColumnWidth("effectiveStock", 75);
@@ -164,10 +166,8 @@ public class DashboardMMSView implements ClickListener {
 	private void loadEnquiryList() {
 		logger.info("Company ID : " + companyId + " | User Name :  > " + "Loading Search...");
 		tblEnquiry.removeAllItems();
-		List<MmsEnqHdrDM> mmsPurEnqHdrList = new ArrayList<MmsEnqHdrDM>();
-		mmsPurEnqHdrList = serviceMmsEnqHdr.getMmsEnqHdrList(companyId, null, null, null, null, "P");
 		BeanItemContainer<MmsEnqHdrDM> beanMmsEnqHdrDM = new BeanItemContainer<MmsEnqHdrDM>(MmsEnqHdrDM.class);
-		beanMmsEnqHdrDM.addAll(mmsPurEnqHdrList);
+		beanMmsEnqHdrDM.addAll(serviceMmsEnqHdr.getMmsEnqHdrList(companyId, null, null, null, null, "P"));
 		tblEnquiry.setContainerDataSource(beanMmsEnqHdrDM);
 		tblEnquiry.setVisibleColumns(new Object[] { "enquiryNo", "enquiryStatus" });
 		tblEnquiry.setColumnHeaders(new String[] { "Enquiry No", "Status" });
@@ -208,15 +208,11 @@ public class DashboardMMSView implements ClickListener {
 	
 	private void loadPaymentPendingDetails() {
 		tblPaymentPending.removeAllItems();
-		System.out.println("ddddddddd");
-		List<POHdrDM> pohdrlist = new ArrayList<POHdrDM>();
-		String poType = null;
-		pohdrlist = servicepohdr.getPOHdrList(companyId, null, null, null, null, poType, "P");
 		BeanItemContainer<POHdrDM> beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
-		beanpohdr.addAll(pohdrlist);
+		beanpohdr.addAll(servicepohdr.getPOHdrList(companyId, null, null, null, null, null, "P"));
 		tblPaymentPending.setContainerDataSource(beanpohdr);
 		tblPaymentPending.setVisibleColumns(new Object[] { "pono", "vendorName", "balancePayAmount" });
-		tblPaymentPending.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Balance Amount" });
+		tblPaymentPending.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Balance Amount(Rs.)" });
 		tblPaymentPending.setColumnWidth("pono", 150);
 		tblPaymentPending.setColumnWidth("vendorName", 150);
 		tblPaymentPending.setColumnAlignment("balancePayAmount", Align.RIGHT);
@@ -231,10 +227,41 @@ public class DashboardMMSView implements ClickListener {
 				System.out.println("emp.getBalancePayAmount()--->" + emp.getBalancePayAmount());
 				DecimalFormat df = new DecimalFormat("#.00", new DecimalFormatSymbols());
 				if (emp.getBalancePayAmount().compareTo(new BigDecimal("5000")) > 0) {
-					return new Label("<p style='color:#EC9E20;font-size:14px;align=right'>Rs. "
+					return new Label("<p style='color:#EC9E20;font-size:14px;align=right'>"
 							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
 				} else {
-					return new Label("<p style='color:#E26666;font-size:14px;align=right'>Rs. "
+					return new Label("<p style='color:#E26666;font-size:14px;align=right'>"
+							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
+				}
+			}
+		});
+	}
+	
+	private void loadDeliveryDetails() {
+		tblDeliveryPending.removeAllItems();
+		BeanItemContainer<POHdrDM> beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
+		beanpohdr.addAll(servicepohdr.getPOHdrList(companyId, null, null, null, null, null, "P"));
+		tblDeliveryPending.setContainerDataSource(beanpohdr);
+		tblDeliveryPending.setVisibleColumns(new Object[] { "pono", "vendorName", "balancePayAmount" });
+		tblDeliveryPending.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Balance Amount(Rs.)" });
+		tblDeliveryPending.setColumnWidth("pono", 150);
+		tblDeliveryPending.setColumnWidth("vendorName", 150);
+		tblDeliveryPending.setColumnAlignment("balancePayAmount", Align.RIGHT);
+		tblDeliveryPending.addGeneratedColumn("balancePayAmount", new ColumnGenerator() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				@SuppressWarnings("unchecked")
+				BeanItem<POHdrDM> item = (BeanItem<POHdrDM>) source.getItem(itemId);
+				POHdrDM emp = (POHdrDM) item.getBean();
+				System.out.println("emp.getBalancePayAmount()--->" + emp.getBalancePayAmount());
+				DecimalFormat df = new DecimalFormat("#.00", new DecimalFormatSymbols());
+				if (emp.getBalancePayAmount().compareTo(new BigDecimal("5000")) > 0) {
+					return new Label("<p style='color:#EC9E20;font-size:14px;align=right'>"
+							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
+				} else {
+					return new Label("<p style='color:#E26666;font-size:14px;align=right'>"
 							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
 				}
 			}

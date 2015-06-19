@@ -103,8 +103,9 @@ public class LetterofIntent extends BaseTransUI {
 	private Long indentHdrId, moduleId, branchId;
 	private int recordCnt = 0;
 	private String username;
-	// Initialize logger
+	// Initialize logger 
 	private Logger logger = Logger.getLogger(LetterofIntent.class);
+	private Button btnConvertToPO=new GERPButton("Convert To PO","hostorybtn");
 	
 	// Constructor received the parameters from Login UI class
 	public LetterofIntent() {

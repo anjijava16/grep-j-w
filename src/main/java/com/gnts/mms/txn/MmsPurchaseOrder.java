@@ -148,7 +148,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	// UserInput control layout
 	private HorizontalLayout hlUserInputLayout = new GERPAddEditHLayout();
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(MmsPurchaseOrder.class);
+	private Logger logger = Logger.getLogger(MmsPurchaseOrder.class);
 	private int recordcnt = 0;
 	
 	// Constructor received the parameters from Login UI class
@@ -272,13 +272,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		cbpoType.setItemCaptionPropertyId("lookupname");
 		cbpoType.setWidth("150");
 		loadPOTypet();
-		List<ApprovalSchemaDM> list = servicepohdr.getReviewerId(companyid, appScreenId, branchID, roleId);
-		for (ApprovalSchemaDM obj : list) {
-			if (obj.getApprLevel().equals("Reviewer")) {
-				cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_RV_STATUS);
-			} else {
-				cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_AP_STATUS);
-			}
+		ApprovalSchemaDM obj = servicepohdr.getReviewerId(companyid, appScreenId, branchID, roleId).get(0);
+		if (obj.getApprLevel().equals("Reviewer")) {
+			cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_RV_STATUS);
+		} else {
+			cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_AP_STATUS);
 		}
 		cbStatus.setWidth("155");
 		// PurchaseOrder Detail Comp
@@ -598,7 +596,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			poType = cbpoType.getValue().toString();
 		}
 		pohdrlist = servicepohdr.getPOHdrList(companyid, null, (Long) cbBranch.getValue(), null,
-				(String) cbStatus.getValue(), poType,"F");
+				(String) cbStatus.getValue(), poType, "F");
 		recordcnt = pohdrlist.size();
 		beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
 		beanpohdr.addAll(pohdrlist);

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="loi" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
+	<property name="ireport.zoom" value="3.138428376721005"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="681"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<parameter name="ENQID" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select loihdr.loi_number,loihdr.ref_date ,v.vendor_name,v.vendor_address,v.contact_number,loihdr.subject,
+loihdr.remarks,m.materail_name ,loidtl.qty,loidtl.unit_rate,loidtl.remarks dtlremarks
+from t_mms_loi_hdr loihdr,
+t_mms_loi_dtl loidtl,m_base_vendor v,m_mms_material m
+where loihdr.loi_hdr_id = loidtl.loi_hdr_id
+and v.vendor_id=loihdr.vendor_id
+and m.material_id=loidtl.mat_id
+and loihdr.loi_hdr_id=$P{ENQID}]]>
+	</queryString>
+	<field name="LOI_NUMBER" class="java.lang.String"/>
+	<field name="REF_DATE" class="java.sql.Timestamp"/>
+	<field name="VENDOR_NAME" class="java.lang.String"/>
+	<field name="VENDOR_ADDRESS" class="java.lang.String"/>
+	<field name="CONTACT_NUMBER" class="java.lang.String"/>
+	<field name="SUBJECT" class="java.lang.String"/>
+	<field name="REMARKS" class="java.lang.String"/>
+	<field name="MATERAIL_NAME" class="java.lang.String"/>
+	<field name="QTY" class="java.math.BigDecimal"/>
+	<field name="UNIT_RATE" class="java.math.BigDecimal"/>
+	<field name="DTLREMARKS" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="106" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="ae744ec5-bc02-4b70-bf2e-a0074ca48f99" x="81" y="8" width="234" height="23"/>
+				<textElement verticalAlignment="Middle">
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC Tool Tech (P) Ltd.,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a0c75f9f-1164-4352-af40-2b478bdfe32b" x="81" y="31" width="206" height="16"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[85,86,87, Sidco Industrial Estate,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b0944c40-73b1-4c06-97b0-db98fd231c03" x="81" y="47" width="206" height="14"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Malumichampatti,Coimbatore - 641 050,]]></text>
+			</staticText>
+			<image>
+				<reportElement uuid="64de2ad2-b915-4665-8917-4a1f39e91a80" x="10" y="8" width="78" height="64"/>
+				<imageExpression><![CDATA["saarclogo-small.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement uuid="2cb68b06-b5fa-41df-ab35-f630d62d3bbd" x="81" y="61" width="334" height="15"/>
+				<textElement/>
+				<text><![CDATA[Tamil Nadu. Ph: 0422- 6060121/122/123, Fax : 0422-2655156/157]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8689836e-365e-4f62-988a-b506853b7293" x="0" y="82" width="552" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[LETTER OF INTENT]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="235" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="56a66dd8-8da1-4372-bdf4-6415c6bff584" x="10" y="26" width="22" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[To,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="234fb649-6639-4923-9bf6-41fc01d8d78d" x="32" y="46" width="30" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[M/s.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="99cc87c7-ab24-4049-b446-cf760783cfcf" x="257" y="6" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Ref No :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="8746e409-5819-496f-bed7-17709d16bb3f" x="343" y="6" width="210" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{LOI_NUMBER}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="7273f9f8-7766-49dc-be1e-a2c73aba4b97" x="-1" y="232" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="b070dc2c-019f-4681-adbd-7f6c3e5e5b78" x="299" y="26" width="43" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Date :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="74124a9f-52c7-45c2-8250-24e907afa5a7" x="343" y="26" width="208" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{REF_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="fe3d164a-ae04-416e-9e68-36cc5542e6aa" x="1" y="120" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Kind Atten : Mr/Mrs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9d223fa5-d878-4424-a5a8-9675489cce1a" x="1" y="139" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Sub :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1a572323-3253-41ee-97db-0c3189cb23f2" x="1" y="177" width="50" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Dear Sir,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="885460a8-b5fe-4e10-8445-11c26948b268" x="0" y="197" width="553" height="34"/>
+				<textElement/>
+				<text><![CDATA[	In regard with the above subject, we hereby sending LOI to plan the activities well in advance as such the items are urgent.]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="ea8b081f-3e2f-4023-b252-4c06d8ccb3eb" x="62" y="46" width="237" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{VENDOR_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="35e716e3-2cad-4452-bafd-a27d58468dee" x="62" y="66" width="280" height="54"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{VENDOR_ADDRESS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="abc10e3c-a0d1-4a7f-95f0-e8651794581d" x="101" y="120" width="241" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{VENDOR_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="a0cadcb7-bc34-4668-be18-f3510fa3e95f" x="101" y="139" width="450" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{SUBJECT}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="3c585914-5afc-4399-95f4-2bed70c3c714" x="102" y="138" width="447" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="3c585914-5afc-4399-95f4-2bed70c3c714" x="101" y="158" width="447" height="1"/>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="23" splitType="Stretch">
+			<line>
+				<reportElement uuid="8f46f420-f4b8-46c0-ab18-2d839227ef0e" x="0" y="21" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="e0721ddf-ea12-4f12-aa0c-9397c764f277" x="35" y="0" width="166" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d224f18b-5d68-4c4a-89f1-8857fc44690c" x="348" y="0" width="207" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Remarks]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="976f5332-5924-4a97-9dfb-fe1812ebb582" x="204" y="1" width="63" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty In Nos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b305570d-e399-441b-b78e-5341803dfc71" x="0" y="0" width="32" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[S. No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="277" y="0" width="67" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rate / Unit]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement uuid="b99c2ef8-a94c-4eae-b1b4-b76c166c58de" x="0" y="0" width="32" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="cb900cb3-64c0-4135-a97a-fb8104e2b022" x="35" y="1" width="166" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{MATERAIL_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="fc70ce21-f1de-439e-b56c-9272374dccf9" x="277" y="1" width="67" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{UNIT_RATE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="3f07cc6c-3641-4969-83fc-dd5eec39eab6" x="348" y="0" width="204" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DTLREMARKS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="31ff895d-ab25-4c86-8109-18d310c7f9ca" x="201" y="1" width="66" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{QTY}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="79" splitType="Stretch">
+			<line>
+				<reportElement uuid="1ac04e8c-3ee1-4c12-9883-8f1d8385a4df" x="1" y="0" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="af11bc1a-ce67-4979-8f2f-ea983ac43159" x="1" y="12" width="555" height="27"/>
+				<textElement textAlignment="Justified"/>
+				<text><![CDATA[	This may be treated as formal supply order and e original P.O shall be sent througn post within a stipulated time. Please arrange to supply the item as early as possible. Kndly acknowledges the receipt.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b3ec7520-3333-45d2-b720-cf76249ceb41" x="1" y="58" width="34" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Note :]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="a2de6343-d107-4b6e-8141-cad145158ddc" x="35" y="75" width="367" height="1"/>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="2b9369a8-b912-495a-8f55-360045bc8263" x="32" y="58" width="370" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{REMARKS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="94" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="2632bf53-d6c2-45f2-9788-7b5c3e04d48e" x="0" y="12" width="204" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Thanks with Regards,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7789a1fe-31bb-4e80-9de2-1365717a9053" x="1" y="54" width="200" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[M.Karthiga - PD1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="100bd97a-44ca-41c9-8de2-32d8c4b23f45" x="1" y="69" width="200" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Mob : 08754030135.]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

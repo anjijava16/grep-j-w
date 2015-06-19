@@ -14,6 +14,7 @@ package com.gnts.mms.txn;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -23,6 +24,7 @@ import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
+import com.gnts.erputil.components.GERPTable;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
@@ -36,10 +38,16 @@ import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.txn.IndentDtlDM;
 import com.gnts.mms.domain.txn.IndentIssueHdrDM;
 import com.gnts.mms.domain.txn.IndentIssueReturnDM;
+import com.gnts.mms.domain.txn.MaterialLedgerDM;
+import com.gnts.mms.domain.txn.MaterialStockDM;
+import com.gnts.mms.domain.txn.PoReceiptDtlDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.IndentDtlService;
 import com.gnts.mms.service.txn.IndentIssueHdrService;
 import com.gnts.mms.service.txn.IndentIssueReturnService;
+import com.gnts.mms.service.txn.MaterialLedgerService;
+import com.gnts.mms.domain.txn.IndentIssueReturnDM;
+import com.gnts.mms.service.txn.MaterialStockService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -49,6 +57,7 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -63,6 +72,9 @@ public class IndentIssueReturn extends BaseUI {
 	private IndentDtlService serviceIndentDtlDM = (IndentDtlService) SpringContextHelper.getBean("IndentDtl");
 	private IndentIssueHdrService serviceIndentIssueHdr = (IndentIssueHdrService) SpringContextHelper
 			.getBean("IndentIssueHdr");
+	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
+	private MaterialStockService serviceMaterialStock = (MaterialStockService) SpringContextHelper
+			.getBean("materialstock");
 	private MaterialService servicematerial = (MaterialService) SpringContextHelper.getBean("material");
 	// form layout for input controls
 	private FormLayout fltaxCol1, fltaxCol2, fltaxCol3, flColumn4;
@@ -81,11 +93,12 @@ public class IndentIssueReturn extends BaseUI {
 	private BeanItemContainer<IndentIssueReturnDM> beanIndentIssueReturnDM = null;
 	// local variables declaration
 	private String taxSlapId;
-	private Long companyid, moduleId, indqty;
+	private Long companyid, moduleId, indqty, branchId;
 	private Long indentId;
 	private int recordCnt = 0;
 	private String username;
 	private Boolean errorFlag = false;
+	private Table tblIndentReturnDTl = new GERPTable();
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Tax.class);
 	private static final long serialVersionUID = 1L;
@@ -96,6 +109,7 @@ public class IndentIssueReturn extends BaseUI {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside IndentIssueReturn() constructor");
 		// Loading the UI
@@ -112,7 +126,7 @@ public class IndentIssueReturn extends BaseUI {
 		loadIssueList();
 		cbIssueName.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				Object itemid = event.getProperty().getValue();
@@ -141,10 +155,9 @@ public class IndentIssueReturn extends BaseUI {
 		cbMatName.setItemCaptionPropertyId("materialName");
 		loadMaterialNameList();
 		cbMatName.setImmediate(true);
-		
 		cbMatName.addValueChangeListener(new ValueChangeListener() {
-					private static final long serialVersionUID = 1L;
-
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
@@ -223,6 +236,7 @@ public class IndentIssueReturn extends BaseUI {
 		beanCtgry.addAll(materiallist);
 		cbMatName.setContainerDataSource(beanCtgry);
 	}
+	
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
@@ -254,7 +268,7 @@ public class IndentIssueReturn extends BaseUI {
 		tfissueqty.setValue("");
 		cbMatName.setValue(null);
 		cbMatName.setComponentError(null);
-//		cbMatName.setContainerDataSource(null);
+		// cbMatName.setContainerDataSource(null);
 		cbReturnReason.setValue(null);
 		tfReturnQty.setValue("0");
 		cbIndStatus.setValue(cbIndStatus.getItemIds().iterator().next());
@@ -480,6 +494,98 @@ public class IndentIssueReturn extends BaseUI {
 		} else {
 			tfReturnQty.setComponentError(new UserError("Enter Issue qty greater than Indent qty \n Balance Qty="
 					+ Long.valueOf(tfissueqty.getValue())));
+		}
+		IndentIssueReturnDM save = new IndentIssueReturnDM();
+		
+		
+		
+		
+		try {
+			// for material stock
+			MaterialStockDM materialStockDM = null;
+			try {
+				materialStockDM = serviceMaterialStock.getMaterialStockList(save.getMaterialId(), null, null, null,
+						null, cbStockType.getValue().toString(), "F").get(0);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (materialStockDM == null) {
+				materialStockDM = new MaterialStockDM();
+				materialStockDM.setCompanyId(companyid);
+				materialStockDM.setBranchId(branchId);
+				materialStockDM.setMaterialId(save.getMaterialId());
+				materialStockDM.setLotNo("----");
+				materialStockDM.setStockType(cbStockType.getValue().toString());
+				materialStockDM.setCurrentStock(Long.valueOf(tfReturnQty.getValue()));
+				materialStockDM.setParkedStock(0L);
+				materialStockDM.setEffectiveStock(Long.valueOf(tfReturnQty.getValue()));
+				materialStockDM.setLastUpdatedby(username);
+				materialStockDM.setLastUpdateddt(DateUtils.getcurrentdate());
+				serviceMaterialStock.saveorupdatematerialstock(materialStockDM);
+			} else {
+				materialStockDM.setCurrentStock(materialStockDM.getCurrentStock()
+						+ Long.valueOf(tfReturnQty.getValue()));
+				materialStockDM.setEffectiveStock(materialStockDM.getEffectiveStock()
+						+ Long.valueOf(tfReturnQty.getValue()));
+				materialStockDM.setLastUpdatedby(username);
+				materialStockDM.setLastUpdateddt(DateUtils.getcurrentdate());
+				serviceMaterialStock.saveorupdatematerialstock(materialStockDM);
+			}
+		  }
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		try{
+			MaterialLedgerDM materialledgerDM =null; 
+			try {
+				
+				materialledgerDM = serviceledger.getMaterialLedgerList(save.getMaterialId(), null, null, null,
+						cbStockType.getValue().toString(), null, "Y", "F").get(0);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (materialledgerDM == null) {
+				MaterialLedgerDM ledgerDM = new MaterialLedgerDM();
+				ledgerDM.setStockledgeDate(new Date());
+				ledgerDM.setCompanyId(companyid);
+				ledgerDM.setBranchId(branchId);
+				ledgerDM.setMaterialId(save.getMaterialId());
+				ledgerDM.setStockType("New");
+				ledgerDM.setOpenQty(0L);
+				ledgerDM.setInoutFlag("I");
+				ledgerDM.setInoutFQty(save.getReturnQty());
+				ledgerDM.setCloseQty(save.getReturnQty());
+				ledgerDM.setReferenceNo("00");
+				ledgerDM.setReferenceDate(DateUtils.getcurrentdate());
+				ledgerDM.setIsLatest("Y");
+				ledgerDM.setReferenceRemark(save.getRemarks());
+				ledgerDM.setLastUpdatedby(username);
+				ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
+				serviceledger.saveOrUpdateLedger(ledgerDM);
+			} else {
+				MaterialLedgerDM ledgerDM = new MaterialLedgerDM();
+				ledgerDM.setStockledgeDate(new Date());
+				ledgerDM.setCompanyId(companyid);
+				ledgerDM.setBranchId(branchId);
+				ledgerDM.setMaterialId(save.getMaterialId());
+				ledgerDM.setStockType("New");
+				ledgerDM.setOpenQty(materialledgerDM.getCloseQty());
+				ledgerDM.setInoutFlag("I");
+				ledgerDM.setInoutFQty(save.getReturnQty());
+				ledgerDM.setCloseQty(materialledgerDM.getCloseQty() + save.getReturnQty());
+				ledgerDM.setReferenceNo("00");
+				ledgerDM.setReferenceDate(DateUtils.getcurrentdate());
+				ledgerDM.setIsLatest("Y");
+				ledgerDM.setReferenceRemark(save.getRemarks());
+				ledgerDM.setLastUpdatedby(username);
+				ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
+				serviceledger.saveOrUpdateLedger(ledgerDM);
+			}
+		}
+		
+		catch (Exception e) {
 		}
 		resetFields();
 		loadSrchRslt();

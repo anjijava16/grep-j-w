@@ -38,6 +38,7 @@ import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPFormLayout;
+import com.gnts.erputil.components.GERPNumberField;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPTable;
@@ -111,12 +112,12 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	private ComboBox cbBranch, cbStatus, cbVendor, cbpoType, cbquoteNo;
 	private TextField tfversionNo, tfBasictotal, tfpackingPer, tfPaclingValue, tfPONo, tfpaymetTerms, tfFreightTerms,
 			tfWarrentyTerms, tfDelTerms;
-	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
-	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
+	private TextField tfSubTotal, tfVatPer, tfVatValue;
+	private TextField tfCstPer, tfCstValue, tfSubTaxTotal;
 	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal;
 	private TextArea taRemark, taInvoiceOrd, taShpnAddr;
 	private CheckBox ckdutyexm, ckPdcRqu, ckCformRqu, ckcasePO;
-	private PopupDateField dfPODt;
+	private PopupDateField dfPODt, dfExpDt;
 	private Button btnsavepurQuote = new GERPButton("Add", "addbt", this);
 	private VerticalLayout hlPODoc = new VerticalLayout();
 	// PODtl components
@@ -136,6 +137,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	private File file;
 	private Long roleId;
 	private Long branchId;
+	private Long stateId;
 	private Long moduleId;
 	private Long appScreenId;
 	private Long branchID;
@@ -200,51 +202,39 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		taShpnAddr.setWidth("150");
 		dfPODt = new GERPPopupDateField("Purchase Ord Date");
 		dfPODt.setInputPrompt("Select Date");
-		dfPODt.setWidth("150");
+		dfPODt.setWidth("130");
 		tfPONo = new TextField("PO.No");
 		tfPONo.setWidth("150");
 		taRemark = new TextArea("Remarks");
 		taRemark.setHeight("50");
 		taRemark.setWidth("150");
-		tfversionNo = new TextField(" Version No");
+		tfversionNo = new GERPNumberField(" Version No");
 		tfversionNo.setWidth("150");
-		tfBasictotal = new TextField("Basic total");
+		tfBasictotal = new GERPNumberField("Basic total");
 		tfBasictotal.setWidth("150");
-		tfpackingPer = new TextField();
+		tfpackingPer = new GERPNumberField();
 		tfpackingPer.setWidth("30");
-		tfPaclingValue = new TextField();
-		tfPaclingValue.setWidth("120");
-		tfSubTotal = new TextField("Sub Total");
+		tfPaclingValue = new GERPNumberField();
+		tfPaclingValue.setWidth("125");
+		tfSubTotal = new GERPNumberField("Sub Total");
 		tfSubTotal.setWidth("150");
-		tfVatPer = new TextField();
+		tfVatPer = new GERPNumberField();
 		tfVatPer.setWidth("30");
-		tfVatValue = new TextField();
-		tfVatValue.setWidth("120");
-		tfEDPer = new TextField();
-		tfEDPer.setWidth("30");
-		tfEDValue = new TextField();
-		tfEDValue.setWidth("120");
-		tfHEDPer = new TextField();
-		tfHEDPer.setWidth("30");
-		tfHEDValue = new TextField();
-		tfHEDValue.setWidth("120");
-		tfCessPer = new TextField();
-		tfCessPer.setWidth("30");
-		tfCessValue = new TextField();
-		tfCessValue.setWidth("120");
-		tfCstPer = new TextField();
+		tfVatValue = new GERPNumberField();
+		tfVatValue.setWidth("125");
+		tfCstPer = new GERPNumberField();
 		tfCstPer.setWidth("30");
-		tfCstValue = new TextField();
-		tfCstValue.setWidth("120");
-		tfSubTaxTotal = new TextField("Sub Tax Total");
+		tfCstValue = new GERPNumberField();
+		tfCstValue.setWidth("125");
+		tfSubTaxTotal = new GERPNumberField("Sub Tax Total");
 		tfSubTaxTotal.setWidth("150");
-		tfFreightPer = new TextField();
+		tfFreightPer = new GERPNumberField();
 		tfFreightPer.setWidth("30");
-		tfFreightValue = new TextField();
-		tfFreightValue.setWidth("120");
-		tfOtherValue = new TextField();
-		tfOtherValue.setWidth("120");
-		tfGrandtotal = new TextField("Grand Total");
+		tfFreightValue = new GERPNumberField();
+		tfFreightValue.setWidth("125");
+		tfOtherValue = new GERPNumberField();
+		tfOtherValue.setWidth("125");
+		tfGrandtotal = new GERPNumberField("Grand Total");
 		tfGrandtotal.setWidth("150");
 		tfOtherPer = new TextField();
 		tfOtherPer.setWidth("30");
@@ -278,6 +268,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		} else {
 			cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_AP_STATUS);
 		}
+		
 		cbStatus.setWidth("155");
 		// PurchaseOrder Detail Comp
 		cbmaterial = new ComboBox("Material Name");
@@ -301,6 +292,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		taPODtlRemark = new TextArea("Remark");
 		taPODtlRemark.setWidth("130");
 		taPODtlRemark.setHeight("50");
+		dfExpDt = new GERPPopupDateField("Expected Delivery  Date");
+		dfExpDt.setInputPrompt("Select Date");
+		dfExpDt.setWidth("130");
 		cbPODtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbPODtlStatus.setWidth("150");
 		btnsavepurQuote.addClickListener(new ClickListener() {
@@ -408,31 +402,12 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		vp.setCaption("VAT");
 		flColumn2.addComponent(vp);
 		flColumn2.setComponentAlignment(vp, Alignment.TOP_LEFT);
-		HorizontalLayout ed = new HorizontalLayout();
-		ed.addComponent(tfEDPer);
-		ed.addComponent(tfEDValue);
-		ed.setCaption("ED");
-		flColumn2.addComponent(ed);
-		flColumn2.setComponentAlignment(ed, Alignment.TOP_LEFT);
-		HorizontalLayout hed = new HorizontalLayout();
-		hed.addComponent(tfHEDPer);
-		hed.addComponent(tfHEDValue);
-		hed.setCaption("HED");
-		flColumn2.addComponent(hed);
-		flColumn2.setComponentAlignment(hed, Alignment.TOP_LEFT);
-		flColumn2.addComponent(hed);
-		HorizontalLayout cess = new HorizontalLayout();
-		cess.addComponent(tfCessPer);
-		cess.addComponent(tfCessValue);
-		cess.setCaption("CESS");
-		flColumn3.addComponent(cess);
-		flColumn3.setComponentAlignment(cess, Alignment.TOP_LEFT);
 		HorizontalLayout cst = new HorizontalLayout();
 		cst.addComponent(tfCstPer);
 		cst.addComponent(tfCstValue);
 		cst.setCaption("CST");
-		flColumn3.addComponent(cst);
-		flColumn3.setComponentAlignment(cst, Alignment.TOP_LEFT);
+		flColumn2.addComponent(cst);
+		flColumn2.setComponentAlignment(cst, Alignment.TOP_LEFT);
 		flColumn3.addComponent(tfSubTaxTotal);
 		HorizontalLayout frgt = new HorizontalLayout();
 		frgt.addComponent(tfFreightPer);
@@ -450,7 +425,8 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		flColumn3.addComponent(tfpaymetTerms);
 		flColumn3.addComponent(tfFreightTerms);
 		flColumn3.addComponent(tfWarrentyTerms);
-		flColumn4.addComponent(tfDelTerms);
+		flColumn3.addComponent(tfDelTerms);
+		flColumn3.addComponent(dfExpDt);
 		flColumn4.addComponent(cbStatus);
 		flColumn4.addComponent(ckdutyexm);
 		flColumn4.addComponent(ckCformRqu);
@@ -532,18 +508,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getVatValue().toString());
 		tfVatValue.setReadOnly(true);
-		tfEDPer.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getEd_Prcnt().toString());
-		tfEDValue.setReadOnly(false);
-		tfEDValue.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getEdValue().toString());
-		tfEDValue.setReadOnly(true);
-		tfHEDPer.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getHedPrcnt().toString());
-		tfHEDValue.setReadOnly(false);
-		tfHEDValue.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getHedValue().toString());
-		tfHEDValue.setReadOnly(true);
-		tfCessPer.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getCessPrcnt().toString());
-		tfCessValue.setReadOnly(false);
-		tfCessValue.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getCessValue().toString());
-		tfCessValue.setReadOnly(true);
 		tfCstPer.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getCstPrcnt().toString());
 		tfCstValue.setReadOnly(false);
 		tfCstValue.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getCstValue().toString());
@@ -566,6 +530,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfFreightTerms.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getFreightTerms().toString());
 		tfWarrentyTerms.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getWarrantyTerms().toString());
 		tfDelTerms.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getDeliveryTerms().toString());
+		
 		// cbStatus.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getStatus().toString());
 		// load quote details
 		mmspodtllist = new ArrayList<MmsPoDtlDM>();
@@ -680,12 +645,14 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	
 	public void loadVendor() {
 		try {
-			List<VendorDM> vendorList = serviceVendor.getVendorList(null, null, companyid, null, null, null, null,
+			
+			List<VendorDM> vendorList = serviceVendor.getVendorList(null, null, companyid, null, null, null, stateId,
 					null, null, null, "P");
 			BeanContainer<Long, VendorDM> beanVendor = new BeanContainer<Long, VendorDM>(VendorDM.class);
 			beanVendor.setBeanIdProperty("vendorId");
 			beanVendor.addAll(vendorList);
 			cbVendor.setContainerDataSource(beanVendor);
+		System.out.println("===========>"+stateId);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -731,6 +698,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			tfPONo.setValue(editPurchaseOrdlist.getPono());
 			tfPONo.setReadOnly(true);
 			dfPODt.setValue(editPurchaseOrdlist.getPurchaseDate());
+			dfExpDt.setValue(editPurchaseOrdlist.getExpDate());
 			taRemark.setValue(editPurchaseOrdlist.getPoRemark());
 			tfversionNo.setValue(editPurchaseOrdlist.getVersionNo().toString());
 			tfBasictotal.setReadOnly(false);
@@ -747,18 +715,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			tfVatValue.setReadOnly(false);
 			tfVatValue.setValue(editPurchaseOrdlist.getVatValue().toString());
 			tfVatValue.setReadOnly(true);
-			tfEDPer.setValue(editPurchaseOrdlist.getEdPrcnt().toString());
-			tfEDValue.setReadOnly(false);
-			tfEDValue.setValue(editPurchaseOrdlist.getEdValue().toString());
-			tfEDValue.setReadOnly(true);
-			tfHEDPer.setValue(editPurchaseOrdlist.getHedPrcnt().toString());
-			tfHEDValue.setReadOnly(false);
-			tfHEDValue.setValue(editPurchaseOrdlist.getHedValue().toString());
-			tfHEDValue.setReadOnly(true);
-			tfCessPer.setValue(editPurchaseOrdlist.getCessPrcnt().toString());
-			tfCessValue.setReadOnly(false);
-			tfCessValue.setValue(editPurchaseOrdlist.getCessValue().toString());
-			tfCessValue.setReadOnly(true);
 			tfCstPer.setValue(editPurchaseOrdlist.getCstPrcnt().toString());
 			tfCstValue.setReadOnly(false);
 			tfCstValue.setValue(editPurchaseOrdlist.getCstValue().toString());
@@ -783,6 +739,10 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			if (editPurchaseOrdlist.getFrnghtTerms() != null) {
 				tfFreightTerms.setValue(editPurchaseOrdlist.getFrnghtTerms());
 			}
+			if (editPurchaseOrdlist.getExpDate() != null) {
+				dfExpDt.setValue(editPurchaseOrdlist.getExpDate());
+			}
+			
 			if (editPurchaseOrdlist.getWrntyTerms() != null) {
 				tfWarrentyTerms.setValue(editPurchaseOrdlist.getWrntyTerms());
 			}
@@ -843,6 +803,10 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		System.out.println("PoID=>" + poId);
 	}
 	
+	public void setDfPODt(PopupDateField dfPODt) {
+		this.dfPODt = dfPODt;
+	}
+
 	private void editPODtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		Item sltedRcd = tblpodtl.getItem(tblpodtl.getValue());
@@ -922,9 +886,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfGrandtotal.setReadOnly(true);
 		tfPaclingValue.setReadOnly(true);
 		tfVatValue.setReadOnly(true);
-		tfEDValue.setReadOnly(true);
-		tfHEDValue.setReadOnly(true);
-		tfCessValue.setReadOnly(true);
 		tfCstValue.setReadOnly(true);
 		tfFreightValue.setReadOnly(true);
 		tfOtherValue.setReadOnly(true);
@@ -933,7 +894,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		new UploadDocumentUI(hlPODoc);
 		try {
 			resetFields();
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_NPONO ").get(0);
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_NPONO").get(0);
 			tfPONo.setReadOnly(false);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				tfPONo.setValue(slnoObj.getKeyDesc());
@@ -1045,6 +1006,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			purchaseHdrobj.setBranchId((Long) cbBranch.getValue());
 			purchaseHdrobj.setCompanyId(companyid);
 			purchaseHdrobj.setPurchaseDate(dfPODt.getValue());
+			purchaseHdrobj.setExpDate(dfExpDt.getValue());
 			purchaseHdrobj.setPoRemark(taRemark.getValue());
 			purchaseHdrobj.setpOType((String) cbpoType.getValue());
 			purchaseHdrobj.setVendorId((Long) cbVendor.getValue());
@@ -1055,12 +1017,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			purchaseHdrobj.setSubTotal(new BigDecimal(tfSubTotal.getValue()));
 			purchaseHdrobj.setVatPrcnt(new BigDecimal(tfVatPer.getValue()));
 			purchaseHdrobj.setVatValue(new BigDecimal(tfVatValue.getValue()));
-			purchaseHdrobj.setEdPrcnt(new BigDecimal(tfEDPer.getValue()));
-			purchaseHdrobj.setEdValue((new BigDecimal(tfEDValue.getValue())));
-			purchaseHdrobj.setHedValue(new BigDecimal(tfHEDValue.getValue()));
-			purchaseHdrobj.setHedPrcnt(new BigDecimal(tfHEDPer.getValue()));
-			purchaseHdrobj.setCessPrcnt(new BigDecimal(tfCessPer.getValue()));
-			purchaseHdrobj.setCessValue(new BigDecimal(tfCessValue.getValue()));
 			purchaseHdrobj.setCstPrcnt((new BigDecimal(tfCstPer.getValue())));
 			purchaseHdrobj.setCstValue(new BigDecimal(tfCstValue.getValue()));
 			purchaseHdrobj.setSubTaxTotal(new BigDecimal(tfSubTaxTotal.getValue()));
@@ -1069,6 +1025,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			purchaseHdrobj.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
 			purchaseHdrobj.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
 			purchaseHdrobj.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
+			System.out.println("--------------->"+expDt());
 			if (tfpaymetTerms.getValue() != null) {
 				purchaseHdrobj.setPaymentTerms((tfpaymetTerms.getValue().toString()));
 			}
@@ -1106,7 +1063,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			}
 			purchaseHdrobj.setShippingAddr(taShpnAddr.getValue());
 			purchaseHdrobj.setInvoiceAddress(taInvoiceOrd.getValue());
-			if (cbStatus.getValue().toString() != null) {
+			if (cbStatus.getValue() != null) {
 				purchaseHdrobj.setpOStatus(cbStatus.getValue().toString());
 			}
 			purchaseHdrobj.setPreparedBy(EmployeeId);
@@ -1147,6 +1104,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		}
 	}
 	
+	private String expDt() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	protected void savePurchaseQuoteDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
@@ -1221,8 +1183,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfBasictotal.setReadOnly(false);
 		tfBasictotal.setValue("0");
 		// tfCessPer.setValue("10");
-		tfCessValue.setReadOnly(false);
-		tfCessValue.setValue("0");
 		ckCformRqu.setValue(false);
 		// tfCstPer.setValue("10");
 		tfDelTerms.setValue("");
@@ -1230,8 +1190,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfCstValue.setValue("0");
 		ckdutyexm.setValue(false);
 		// tfEDPer.setValue("10");
-		tfEDValue.setReadOnly(false);
-		tfEDValue.setValue("0");
 		tfWarrentyTerms.setValue("");
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue("0");
@@ -1250,8 +1208,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfOtherValue.setReadOnly(false);
 		tfOtherValue.setValue("0");
 		// tfOtherPer.setValue("10");
-		tfHEDValue.setReadOnly(false);
-		tfHEDValue.setValue("0");
 		// tfHEDPer.setValue("10");
 		tfGrandtotal.setReadOnly(false);
 		tfGrandtotal.setValue("");
@@ -1263,6 +1219,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		cbStatus.setValue(null);
 		// cbBranch.setValue(null);
 		dfPODt.setValue(new Date());
+		dfExpDt.setValue(new Date());
 		taRemark.setValue("");
 		cbBranch.setComponentError(null);
 		ckPdcRqu.setValue(false);
@@ -1310,23 +1267,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue(vatvalue.toString());
 		tfVatValue.setReadOnly(true);
-		BigDecimal edValue = gerPercentageValue(new BigDecimal(tfEDPer.getValue()), subtotal);
-		tfEDValue.setReadOnly(false);
-		tfEDValue.setValue(edValue.toString());
-		tfEDValue.setReadOnly(true);
-		BigDecimal hedValue = gerPercentageValue(new BigDecimal(tfHEDPer.getValue()), subtotal);
-		tfHEDValue.setReadOnly(false);
-		tfHEDValue.setValue(hedValue.toString());
-		tfHEDValue.setReadOnly(true);
-		BigDecimal cessval = gerPercentageValue(new BigDecimal(tfCessPer.getValue()), subtotal);
-		tfCessValue.setReadOnly(false);
-		tfCessValue.setValue(cessval.toString());
-		tfCessValue.setReadOnly(true);
 		BigDecimal cstval = gerPercentageValue(new BigDecimal(tfCstPer.getValue()), subtotal);
 		tfCstValue.setReadOnly(false);
 		tfCstValue.setValue(cstval.toString());
 		tfCstValue.setReadOnly(true);
-		BigDecimal csttotal = vatvalue.add(edValue).add(hedValue).add(cessval).add(cstval);
+		BigDecimal csttotal = vatvalue.add(cstval);
 		BigDecimal subtaxTotal = subtotal.add(csttotal);
 		tfSubTaxTotal.setReadOnly(false);
 		tfSubTaxTotal.setValue(subtaxTotal.toString());

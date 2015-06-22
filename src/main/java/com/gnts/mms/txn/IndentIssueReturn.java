@@ -24,7 +24,6 @@ import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
-import com.gnts.erputil.components.GERPTable;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
@@ -40,13 +39,11 @@ import com.gnts.mms.domain.txn.IndentIssueHdrDM;
 import com.gnts.mms.domain.txn.IndentIssueReturnDM;
 import com.gnts.mms.domain.txn.MaterialLedgerDM;
 import com.gnts.mms.domain.txn.MaterialStockDM;
-import com.gnts.mms.domain.txn.PoReceiptDtlDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.IndentDtlService;
 import com.gnts.mms.service.txn.IndentIssueHdrService;
 import com.gnts.mms.service.txn.IndentIssueReturnService;
 import com.gnts.mms.service.txn.MaterialLedgerService;
-import com.gnts.mms.domain.txn.IndentIssueReturnDM;
 import com.gnts.mms.service.txn.MaterialStockService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -57,7 +54,6 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -89,7 +85,6 @@ public class IndentIssueReturn extends BaseUI {
 	private TextField tfReturnQty, tfissueqty;
 	private ComboBox cbMatName, cbIssueName, cbReturnReason, cbStockType;
 	private TextArea taRemarks;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private BeanItemContainer<IndentIssueReturnDM> beanIndentIssueReturnDM = null;
 	// local variables declaration
 	private String taxSlapId;
@@ -98,7 +93,6 @@ public class IndentIssueReturn extends BaseUI {
 	private int recordCnt = 0;
 	private String username;
 	private Boolean errorFlag = false;
-	private Table tblIndentReturnDTl = new GERPTable();
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Tax.class);
 	private static final long serialVersionUID = 1L;
@@ -143,10 +137,9 @@ public class IndentIssueReturn extends BaseUI {
 		// Remarks TextArea
 		taRemarks = new TextArea("Remarks");
 		taRemarks.setWidth("200px");
-		taRemarks.setHeight("50px");
+		taRemarks.setHeight("22px");
 		taRemarks.setNullRepresentation("");
 		// Dtl Status ComboBox
-		cbIndStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbIndStatus.setWidth("200");
 		// Indent Detail
 		// Material Name combobox
@@ -212,8 +205,9 @@ public class IndentIssueReturn extends BaseUI {
 		fltaxCol2.addComponent(cbReturnReason);
 		fltaxCol3.addComponent(tfReturnQty);
 		fltaxCol3.addComponent(cbStockType);
-		flColumn4.addComponent(cbIndStatus);
 		flColumn4.addComponent(taRemarks);
+		flColumn4.addComponent(cbIndStatus);
+		
 		hlTax = new HorizontalLayout();
 		hlTax.addComponent(fltaxCol1);
 		hlTax.addComponent(fltaxCol2);
@@ -268,7 +262,6 @@ public class IndentIssueReturn extends BaseUI {
 		tfissueqty.setValue("");
 		cbMatName.setValue(null);
 		cbMatName.setComponentError(null);
-		// cbMatName.setContainerDataSource(null);
 		cbReturnReason.setValue(null);
 		tfReturnQty.setValue("0");
 		cbIndStatus.setValue(cbIndStatus.getItemIds().iterator().next());
@@ -596,10 +589,9 @@ public class IndentIssueReturn extends BaseUI {
 	 */
 	private void loadMaterialList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<IndentDtlDM> indentIssueList = serviceIndentDtlDM.getIndentDtlDMList(null,
-				((IndentIssueHdrDM) cbIssueName.getValue()).getIndentId(), null, "Active", "F");
 		BeanItemContainer<IndentDtlDM> beanIndentDtl = new BeanItemContainer<IndentDtlDM>(IndentDtlDM.class);
-		beanIndentDtl.addAll(indentIssueList);
+		beanIndentDtl.addAll(serviceIndentDtlDM.getIndentDtlDMList(null,
+				((IndentIssueHdrDM) cbIssueName.getValue()).getIndentId(), null, "Active", "F"));
 		cbMatName.setContainerDataSource(beanIndentDtl);
 	}
 	
@@ -609,11 +601,10 @@ public class IndentIssueReturn extends BaseUI {
 	 */
 	private void loadReturnReason() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"MM_ISURTN");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("cmplookupid");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll( serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+				"MM_ISURTN"));
 		cbReturnReason.setContainerDataSource(beanCompanyLookUp);
 	}
 	
@@ -622,11 +613,10 @@ public class IndentIssueReturn extends BaseUI {
 	 */
 	private void loadIssueList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<IndentIssueHdrDM> indentIssueList = serviceIndentIssueHdr.getIndentIssueHdrList(null, companyid, null,
-				null, null, null, "F");
 		BeanItemContainer<IndentIssueHdrDM> beanIndentDtl = new BeanItemContainer<IndentIssueHdrDM>(
 				IndentIssueHdrDM.class);
-		beanIndentDtl.addAll(indentIssueList);
+		beanIndentDtl.addAll(serviceIndentIssueHdr.getIndentIssueHdrList(null, companyid, null,
+				null, null, null, "F"));
 		cbIssueName.setContainerDataSource(beanIndentDtl);
 	}
 }

@@ -21,9 +21,11 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
+import com.gnts.base.domain.mst.DepartmentDM;
 import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.CompanyLookupService;
+import com.gnts.base.service.mst.DepartmentService;
 import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
@@ -83,7 +85,8 @@ public class Indent extends BaseTransUI {
 			.getBean("companyLookUp");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
-	List<IndentDtlDM> indentDtlList = null;
+	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private List<IndentDtlDM> indentDtlList = null;
 	// form layout for input controls
 	private FormLayout flIndentCol1, flIndentCol2, flIndentCol3, flIndentCol4, flIndentCol5, flIndentDtlCol1,
 			flIndentDtlCol2;
@@ -96,23 +99,19 @@ public class Indent extends BaseTransUI {
 	private Button btnAddDtl = new GERPButton("Add", "addbt", this);
 	private ComboBox cbDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
-	public Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btndelete = new GERPButton("Delete", "delete", this);
 	// Dtl Status ComboBox
 	private ComboBox cbIndStatus = new GERPComboBox("Status", BASEConstants.T_SMS_INVOICE_HDR,
 			BASEConstants.INVOICE_STATUS);
 	private TextField tfIndNo, tfIndQty;
-	private ComboBox cbIndType, cbBranchId, cbuom;
+	private ComboBox cbIndType, cbBranchId, cbuom, cbDepartment;
 	private ListSelect cbMatName;
 	private PopupDateField dfIndDate, dfExpDt;
 	private TextArea taRemarks;
 	private Table tblDtl;
 	private BeanItemContainer<IndentHdrDM> beanIndentHdrDM = null;
-	private BeanContainer<Long, MaterialDM> beanMaterial = null;
 	private BeanItemContainer<IndentDtlDM> beanIndentDtlDM = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private BeanContainer<Long, BranchDM> beanBranchDM = null;
-	List<MaterialDM> getMatList = new ArrayList<MaterialDM>();
-	List<IndentDtlDM> getinddtl = new ArrayList<IndentDtlDM>();
 	// local variables declaration
 	private String taxSlapId;
 	private Long companyid, employeeId;
@@ -120,7 +119,7 @@ public class Indent extends BaseTransUI {
 	private int recordCnt = 0;
 	private MmsComments comments;
 	private String username;
-	VerticalLayout vlTableForm = new VerticalLayout();
+	private VerticalLayout vlTableForm = new VerticalLayout();
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Tax.class);
 	private String status;
@@ -157,7 +156,7 @@ public class Indent extends BaseTransUI {
 		btndelete.setEnabled(false);
 		tblDtl = new GERPTable();
 		tblDtl.setWidth("656px");
-		tblDtl.setPageLength(4);
+		tblDtl.setPageLength(6);
 		tblDtl.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -193,7 +192,6 @@ public class Indent extends BaseTransUI {
 		// Indent No. TextField
 		tfIndNo = new GERPTextField("Indent No.");
 		tfIndNo.setWidth("130px");
-		tfIndNo.setHeight("25px");
 		tfIndNo.setMaxLength(40);
 		tfIndQty = new TextField();
 		tfIndQty.setValue("0");
@@ -202,14 +200,17 @@ public class Indent extends BaseTransUI {
 		cbuom.setItemCaptionPropertyId("lookupname");
 		loadMaterialUOMList();
 		cbuom.setWidth("77");
-		cbuom.setHeight("23");
+		cbuom.setHeight("18");
 		cbuom.setReadOnly(true);
 		// Indent Type GERPComboBox
 		cbIndType = new GERPComboBox("Indent Type");
 		cbIndType.addItem("Local Purchase");
 		cbIndType.addItem("Normal Purchase");
 		cbIndType.setWidth("130px");
-		cbIndType.setHeight("25px");
+		cbDepartment = new GERPComboBox("Department");
+		cbDepartment.setItemCaptionPropertyId("deptname");
+		loadDepartmentList();
+		cbDepartment.setWidth("130");
 		// Indent Date PopupDateField
 		dfIndDate = new GERPPopupDateField("Indent Date");
 		dfIndDate.setInputPrompt("Select Date");
@@ -217,12 +218,11 @@ public class Indent extends BaseTransUI {
 		cbBranchId = new GERPComboBox("Branch Name");
 		cbBranchId.setItemCaptionPropertyId("branchName");
 		cbBranchId.setWidth("130px");
-		cbBranchId.setHeight("25px");
 		loadBranchList();
 		// Expected Date field
 		dfExpDt = new GERPPopupDateField("Expected Date");
 		// Remarks TextArea
-		taRemarks = new TextArea("Remarks");
+		taRemarks = new TextArea("Purpose");
 		taRemarks.setWidth("110px");
 		taRemarks.setHeight("50px");
 		taRemarks.setNullRepresentation("");
@@ -236,9 +236,10 @@ public class Indent extends BaseTransUI {
 		cbMatName.setMultiSelect(true);
 		loadMaterialList();
 		cbMatName.setImmediate(true);
+		cbMatName.setHeight("250");
 		cbMatName.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (cbMatName.getValue() != null) {
@@ -297,24 +298,25 @@ public class Indent extends BaseTransUI {
 		flIndentCol2 = new FormLayout();
 		flIndentCol3 = new FormLayout();
 		flIndentCol4 = new FormLayout();
+		flIndentCol5 = new FormLayout();
 		flIndentCol1.addComponent(cbBranchId);
 		flIndentCol1.addComponent(tfIndNo);
 		flIndentCol2.addComponent(dfIndDate);
-		//dfIndDate.setWidth("80");
 		flIndentCol2.addComponent(dfExpDt);
-		//dfExpDt.setWidth("80");
 		flIndentCol4.addComponent(cbIndType);
+		flIndentCol4.addComponent(cbDepartment);
 		flIndentCol3.setSpacing(true);
 		flIndentCol3.setMargin(true);
 		flIndentCol3.addComponent(taRemarks);
 		taRemarks.setWidth("140");
-		flIndentCol4.addComponent(cbIndStatus);
+		flIndentCol5.addComponent(cbIndStatus);
 		cbIndStatus.setWidth("130");
 		HorizontalLayout hlTax = new HorizontalLayout();
 		hlTax.addComponent(flIndentCol1);
 		hlTax.addComponent(flIndentCol2);
 		hlTax.addComponent(flIndentCol3);
 		hlTax.addComponent(flIndentCol4);
+		hlTax.addComponent(flIndentCol5);
 		hlTax.setSpacing(true);
 		hlTax.setMargin(true);
 		// Adding TaxSlap components
@@ -324,25 +326,19 @@ public class Indent extends BaseTransUI {
 		flIndentDtlCol1.addComponent(cbMatName);
 		HorizontalLayout hlQtyUom = new HorizontalLayout();
 		hlQtyUom.addComponent(tfIndQty);
-		// tfEnqQty.setRequired(true);
 		hlQtyUom.addComponent(cbuom);
 		hlQtyUom.setCaption("Indent Qty");
 		cbuom.setWidth("60");
 		flIndentDtlCol2.addComponent(hlQtyUom);
 		flIndentDtlCol2.setComponentAlignment(hlQtyUom, Alignment.TOP_LEFT);
-		// flIndentDtlCol2.addComponent(tfIndQty);
 		flIndentDtlCol2.addComponent(cbDtlStatus);
 		cbDtlStatus.setWidth("145px");
-		cbDtlStatus.setHeight("25px");
 		flIndentDtlCol2.addComponent(btnAddDtl);
 		flIndentDtlCol2.addComponent(btndelete);
 		flIndentDtlCol2.setMargin(true);
 		flIndentDtlCol2.setSpacing(true);
 		hlIndentDtl = new HorizontalLayout();
 		hlIndentDtl.addComponent(flIndentDtlCol1);
-		hlIndentDtl.addComponent(flIndentDtlCol2);
-		hlIndentDtl.addComponent(flIndentDtlCol2);
-		hlIndentDtl.addComponent(flIndentDtlCol2);
 		hlIndentDtl.addComponent(flIndentDtlCol2);
 		hlIndentDtl.addComponent(tblDtl);
 		hlIndentDtl.setSpacing(true);
@@ -351,7 +347,6 @@ public class Indent extends BaseTransUI {
 		VerticalLayout vlIndent = new VerticalLayout();
 		vlIndent = new VerticalLayout();
 		vlIndent.addComponent(hlIndentDtl);
-		// vlIndent.addComponent(tblDtl);
 		vlIndent.setSpacing(true);
 		TabSheet dtlTab = new TabSheet();
 		dtlTab.addTab(vlIndent, "Indent Detail");
@@ -414,24 +409,15 @@ public class Indent extends BaseTransUI {
 		}
 	}
 	
-	/*
-	 * // Load Uom List public void loadUomList() { try { logger.info("Company ID : " + companyid + " | User Name : " +
-	 * username + " > " + "Loading Uom Search..."); List<CompanyLookupDM> lookUpList =
-	 * serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "BS_PRODUOM"); beanCompanyLookUp = new
-	 * BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class); beanCompanyLookUp.setBeanIdProperty("lookupname");
-	 * beanCompanyLookUp.addAll(lookUpList); cbuom.setContainerDataSource(beanCompanyLookUp); } catch (Exception e) {
-	 * e.printStackTrace(); } }
-	 */
-	// Load loadUomList
 	// Load Uom List
 	public void loadMaterialUOMList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading Material UOM Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"MM_UOM");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp
+				.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active", "MM_UOM"));
 		cbuom.setContainerDataSource(beanCompanyLookUp);
 	}
 	
@@ -554,15 +540,6 @@ public class Indent extends BaseTransUI {
 		// remove the components in the search layout and input controls in the same container
 		hlUserInputLayout.removeAllComponents();
 		hlUserIPContainer.addComponent(hlUserInputLayout);
-		tfIndNo.setReadOnly(true);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNO ");
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfIndNo.setReadOnly(true);
-			} else {
-				tfIndNo.setReadOnly(false);
-			}
-		}
 		cbIndType.setRequired(true);
 		cbBranchId.setRequired(true);
 		cbBranchId.setValue(branchId);
@@ -578,6 +555,18 @@ public class Indent extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(false);
 		btnAddDtl.setCaption("Add");
 		tblDtl.setVisible(true);
+		tfIndNo.setReadOnly(false);
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNO").get(0);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfIndNo.setValue(slnoObj.getKeyDesc());
+				tfIndNo.setReadOnly(true);
+			} else {
+				tfIndNo.setReadOnly(false);
+			}
+		}
+		catch (Exception e) {
+		}
 		comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null);
 	}
 	
@@ -621,16 +610,6 @@ public class Indent extends BaseTransUI {
 		cbBranchId.setRequired(true);
 		cbMatName.setRequired(true);
 		hlUserInputLayout.removeAllComponents();
-		tfIndNo.setReadOnly(false);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNO ");
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfIndNo.setReadOnly(true);
-			}
-		}
-		if (tfIndNo.getValue() == null || tfIndNo.getValue().trim().length() == 0) {
-			tfIndNo.setReadOnly(false);
-		}
 		// remove the components in the search layout and input controls in the same container
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		hlCmdBtnLayout.setVisible(false);
@@ -675,19 +654,19 @@ public class Indent extends BaseTransUI {
 		try {
 			achievedQty = Long.valueOf(tfIndQty.getValue());
 			if (achievedQty < 0) {
-				tfIndQty.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
+				cbuom.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				isValid = false;
 			}
 		}
 		catch (Exception e) {
-			tfIndQty.setComponentError(new UserError(GERPErrorCodes.QUNATITY_CHAR_VALIDATION));
+			cbuom.setComponentError(new UserError(GERPErrorCodes.QUNATITY_CHAR_VALIDATION));
 			isValid = false;
 		}
 		if (tfIndQty.getValue().equals("0")) {
-			tfIndQty.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRY_QTY));
+			cbuom.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRY_QTY));
 			isValid = false;
 		} else {
-			tfIndQty.setComponentError(null);
+			cbuom.setComponentError(null);
 			isValid = true;
 		}
 		return isValid;
@@ -734,16 +713,8 @@ public class Indent extends BaseTransUI {
 			IndentHdrDM indentObj = new IndentHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				indentObj = beanIndentHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				indentObj.setIndentNo(tfIndNo.getValue());
-			} else {
-				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNO");
-				logger.info("Serial No Generation  Data...===> " + companyid + "," + branchId + "," + moduleId);
-				for (SlnoGenDM slnoObj : slnoList) {
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						indentObj.setIndentNo(slnoObj.getKeyDesc());
-					}
-				}
 			}
+			indentObj.setIndentNo(tfIndNo.getValue());
 			indentObj.setCompanyId(companyid);
 			indentObj.setIndentType((String) cbIndType.getValue());
 			indentObj.setIndentDate((Date) dfIndDate.getValue());
@@ -854,14 +825,13 @@ public class Indent extends BaseTransUI {
 	 * loadBranchList()-->this function is used for load the branch name
 	 */
 	public void loadBranchList() {
-		try
-		{
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<BranchDM> lookUpList = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
-		beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranchDM.setBeanIdProperty("branchId");
-		beanBranchDM.addAll(lookUpList);
-		cbBranchId.setContainerDataSource(beanBranchDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			List<BranchDM> lookUpList = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
+			beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranchDM.setBeanIdProperty("branchId");
+			beanBranchDM.addAll(lookUpList);
+			cbBranchId.setContainerDataSource(beanBranchDM);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -871,28 +841,25 @@ public class Indent extends BaseTransUI {
 	/*
 	 * loadMaterialList()-->this function is used for load the Material name
 	 */
-	/*
-	 * private void loadMaterialList() { getMatList.addAll(serviceMaterial .getMaterialList(null, null, null, null,
-	 * null, null, null, null, "Active", "F")); BeanContainer<Long, MaterialDM> beanMaterial = new BeanContainer<Long,
-	 * MaterialDM>(MaterialDM.class); beanMaterial.setBeanIdProperty("materialId"); beanMaterial.addAll(getMatList);
-	 * cbMatName.setContainerDataSource(beanMaterial); }
-	 */
-	// Load loadMaterialList
-	/*
-	 * public void loadMaterialList() { try { List<MaterialDM> ProductList = serviceMaterial.getMaterialList(null, null,
-	 * null, null, null, null, null, null, "Active", "F"); BeanItemContainer<MaterialDM> beanProduct = new
-	 * BeanItemContainer<MaterialDM>(MaterialDM.class); beanProduct.addAll(ProductList);
-	 * cbMatName.setContainerDataSource(beanProduct); } catch (Exception e) { e.printStackTrace(); } }
-	 */
 	public void loadMaterialList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading Material UOM Search...");
-		List<MaterialDM> materialList = serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null,
-				null, "Active", "P");
-		beanMaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
+		BeanContainer<Long, MaterialDM> beanMaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 		beanMaterial.setBeanIdProperty("materialId");
-		beanMaterial.addAll(materialList);
+		beanMaterial.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
+				"Active", "P"));
 		cbMatName.setContainerDataSource(beanMaterial);
+	}
+	
+	/*
+	 * loadDepartmentList()-->this function is used for load the Department list
+	 */
+	public void loadDepartmentList() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
+		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+		beanDepartment.setBeanIdProperty("deptid");
+		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
+		cbDepartment.setContainerDataSource(beanDepartment);
 	}
 	
 	// delete row in temporary table
@@ -906,10 +873,9 @@ public class Indent extends BaseTransUI {
 			btndelete.setEnabled(false);
 		}
 	}
-
+	
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
-		
 	}
 }

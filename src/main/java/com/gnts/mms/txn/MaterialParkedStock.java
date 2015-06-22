@@ -35,7 +35,6 @@ import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
-import com.gnts.erputil.util.DateUtils;
 import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.txn.MaterialParkedStockDM;
 import com.gnts.mms.service.mst.MaterialService;
@@ -66,14 +65,12 @@ public class MaterialParkedStock extends BaseUI {
 	private TextArea taRefRemarks;
 	private HorizontalLayout hlsearch;
 	private BeanItemContainer<MaterialParkedStockDM> beanmaterialparkedstock;
-	private BeanContainer<Long, MaterialDM> beanmaterial;
-	private BeanContainer<Long, BranchDM> beanbranch;
 	private FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4;
 	private Logger logger = Logger.getLogger(MaterialParkedStock.class);
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private String userName;
-	private Long companyId, parkStockId, branchId;
+	private Long companyId, branchId;
 	private Date parkedDate;
 	int recordCnt = 0;
 	
@@ -177,17 +174,7 @@ public class MaterialParkedStock extends BaseUI {
 		hlUserInputLayout.setMargin(true);
 	}
 	
-	/*
-	 * private void editMaterialStock() { logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-	 * + "Editing the selected record"); Item slectedrecd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-	 * logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Selected Dept. Id -> " +
-	 * parkStockId); if (slectedrecd != null) { MaterialParkedStockDM editmaterialstock =
-	 * beanmaterialparkedstock.getItem(tblMstScrSrchRslt.getValue()) .getBean(); parkStockId =
-	 * editmaterialstock.getParkStockId(); cbbranch.setValue(editmaterialstock.getBranchId());
-	 * cbmaterial.setValue(editmaterialstock.getMaterialId()); cbstocktype.setValue(editmaterialstock.getStockType());
-	 * editmaterialstock.setParkedDate(dtparkdate.getValue()); } readonlytrue(); }
-	 */
-	public void readonlytrue() {
+	private void readonlytrue() {
 		dtparkdate.setReadOnly(true);
 		cbmaterial.setReadOnly(true);
 		cbstocktype.setReadOnly(true);
@@ -201,7 +188,7 @@ public class MaterialParkedStock extends BaseUI {
 		taRefRemarks.setReadOnly(true);
 	}
 	
-	public void readonlyfalse() {
+	private void readonlyfalse() {
 		dtparkdate.setReadOnly(false);
 		cbmaterial.setReadOnly(false);
 		cbstocktype.setReadOnly(false);
@@ -261,7 +248,7 @@ public class MaterialParkedStock extends BaseUI {
 	}
 	
 	// Load Product List
-	public void loadmateriallist() {
+	private void loadmateriallist() {
 		try {
 			List<MaterialDM> list = new ArrayList<MaterialDM>();
 			list.add(new MaterialDM(0L, "All Materials"));
@@ -276,11 +263,10 @@ public class MaterialParkedStock extends BaseUI {
 		}
 	}
 	
-	public void loadbranchlist() {
-		List<BranchDM> branchlist = servicebranch.getBranchList(null, null, null, null, companyId, "P");
-		beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+	private void loadbranchlist() {
+		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(branchlist);
+		beanbranch.addAll(servicebranch.getBranchList(null, null, null, null, companyId, "P"));
 		cbbranch.setContainerDataSource(beanbranch);
 	}
 	

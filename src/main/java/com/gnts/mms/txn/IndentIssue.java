@@ -39,14 +39,12 @@ import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.domain.txn.IndentIssueDtlDM;
 import com.gnts.mms.domain.txn.IndentIssueHdrDM;
 import com.gnts.mms.domain.txn.MaterialLedgerDM;
-import com.gnts.mms.domain.txn.PoReceiptHdrDM;
 import com.gnts.mms.service.txn.IndentDtlService;
 import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.IndentIssueDtlService;
 import com.gnts.mms.service.txn.IndentIssueHdrService;
 import com.gnts.mms.service.txn.MaterialLedgerService;
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -56,6 +54,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -66,7 +65,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -83,8 +81,7 @@ public class IndentIssue extends BaseTransUI {
 	private List<IndentIssueDtlDM> indentDtlList = null;
 	// form layout for input controls
 	private FormLayout flIndentIssueCol1, flIndentIssueCol2, flIndentIssueCol3, flColumn4, flColumn5,
-			flIndentIssueDtlCol1, flIndentIssueDtlCol2, flIndentIssueDtlCol3, flIndentIssueDtlCol4,
-			flIndentIssueDtlCol5;
+			flIndentIssueDtlCol1, flIndentIssueDtlCol2, flIndentIssueDtlCol3, flIndentIssueDtlCol4;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private HorizontalLayout hlIndent = new HorizontalLayout();
@@ -102,13 +99,11 @@ public class IndentIssue extends BaseTransUI {
 	private TextField tfIssueQty, tfBalanceQty;
 	private ComboBox cbIssuedTo, cbMatName, cbIntNo;
 	private DateField dfIssueDt;
-	private TextArea taRemarks;
+	private TextField taRemarks;
 	private Table tblDtl;
 	private BeanItemContainer<IndentIssueHdrDM> beanIndentIssueHdrDM = null;
 	private BeanItemContainer<IndentIssueDtlDM> beanIndentIssueDtlDM = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployeeDM = null;
 	public Button btndelete = new GERPButton("Delete", "delete", this);
-	private BeanContainer<Long, IndentHdrDM> beanIndentHdrDM = null;
 	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
 	// local variables declaration
 	private String pkIndentId;
@@ -188,6 +183,11 @@ public class IndentIssue extends BaseTransUI {
 		cbIntNo.setItemCaptionPropertyId("indentNo");
 		loadIndentList();
 		cbIntNo.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
@@ -202,9 +202,7 @@ public class IndentIssue extends BaseTransUI {
 		cbIssuedTo.setItemCaptionPropertyId("firstname");
 		loadEmployeeList();
 		// Remarks TextArea
-		taRemarks = new TextArea("Remarks");
-		taRemarks.setWidth("110px");
-		taRemarks.setHeight("50px");
+		taRemarks = new TextField("Remarks");
 		taRemarks.setNullRepresentation("");
 		// Hdr Status ComboBox
 		cbIndStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
@@ -289,21 +287,19 @@ public class IndentIssue extends BaseTransUI {
 		flIndentIssueDtlCol2 = new FormLayout();
 		flIndentIssueDtlCol3 = new FormLayout();
 		flIndentIssueDtlCol4 = new FormLayout();
-		flIndentIssueDtlCol5 = new FormLayout();
 		flIndentIssueDtlCol1.addComponent(cbMatName);
 		flIndentIssueDtlCol2.addComponent(tfBalanceQty);
 		flIndentIssueDtlCol3.addComponent(tfIssueQty);
 		flIndentIssueDtlCol4.addComponent(cbDtlStatus);
-		flIndentIssueDtlCol5.addComponent(btnAddDtl);
-		flIndentIssueDtlCol5.addComponent(btndelete);
-		flIndentIssueDtlCol5.setSpacing(true);
-		flIndentIssueDtlCol5.setMargin(true);
 		hlIndentslap = new HorizontalLayout();
 		hlIndentslap.addComponent(flIndentIssueDtlCol1);
 		hlIndentslap.addComponent(flIndentIssueDtlCol2);
 		hlIndentslap.addComponent(flIndentIssueDtlCol3);
 		hlIndentslap.addComponent(flIndentIssueDtlCol4);
-		hlIndentslap.addComponent(flIndentIssueDtlCol5);
+		hlIndentslap.addComponent(btnAddDtl);
+		hlIndentslap.setComponentAlignment(btnAddDtl, Alignment.MIDDLE_LEFT);
+		hlIndentslap.addComponent(btndelete);
+		hlIndentslap.setComponentAlignment(btndelete, Alignment.MIDDLE_LEFT);
 		hlIndentslap.setSpacing(true);
 		hlIndentslap.setMargin(true);
 		vlIndent = new VerticalLayout();
@@ -563,12 +559,6 @@ public class IndentIssue extends BaseTransUI {
 		} else {
 			cbMatName.setComponentError(null);
 		}
-		// if (Long.valueOf(tfIssueQty.getValue()) < 0) {
-		// tfIssueQty.setComponentError(new UserError(GERPErrorCodes.NULL_ISSUE_QTY));
-		// isValid = false;
-		// } else {
-		// tfIssueQty.setComponentError(null);
-		// }
 		Long achievedQty;
 		try {
 			achievedQty = Long.valueOf(tfIssueQty.getValue());
@@ -643,20 +633,22 @@ public class IndentIssue extends BaseTransUI {
 			for (IndentIssueDtlDM saveDtl : (Collection<IndentIssueDtlDM>) colPlanDtls) {
 				saveDtl.setIssueId(indentObj.getIssueId());
 				saveDtl.setIndentId(indentObj.getIndentId());
-				balqty = serviceIndentDtlDM.getIndentDtlDMList(null, indentId, saveDtl.getMaterialId(), null, "F")
-						.get(0).getBalenceQty();
-				System.out.println("blceqty" + balqty);
-				System.out.println("iss" + Long.valueOf(saveDtl.getIssueQty()));
+				balqty = 0L;
+				try {
+					balqty = serviceIndentDtlDM.getIndentDtlDMList(null, indentId, saveDtl.getMaterialId(), null, "F")
+							.get(0).getBalenceQty();
+				}
+				catch (Exception e) {
+				}
 				indqty = (Long) balqty - Long.valueOf(saveDtl.getIssueQty());
 				serviceIndentDtl.saveorUpdate(saveDtl);
 				serviceIndentDtlDM.updateissueqty(indentObj.getIndentId(), saveDtl.getMaterialId(), indqty);
-				// MaterialLedgerDM materialLedgerDM = null;
 				IndentIssueHdrDM indentissuehdrObj = new IndentIssueHdrDM();
 				try {
 					MaterialLedgerDM materialLedgerDM = null;
 					try {
 						materialLedgerDM = serviceledger.getMaterialLedgerList(saveDtl.getMaterialId(), null, null,
-								null, null, null, "Y", "F").get(0);
+								null, "New", null, "Y", "F").get(0);
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -739,7 +731,6 @@ public class IndentIssue extends BaseTransUI {
 						materialLedgerDM.setIsLatest("N");
 						serviceledger.saveOrUpdateLedger(materialLedgerDM);
 					}
-					
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -779,7 +770,6 @@ public class IndentIssue extends BaseTransUI {
 					}
 					indentDtlObj.setLastUpdatedDt(DateUtils.getcurrentdate());
 					indentDtlObj.setLastUpdatedBy(username);
-					// serviceindent.updateissueqty(((IndentDtlDM) cbMatName.getValue()).getMaterialId(), indqt);
 					indentDtlList.add(indentDtlObj);
 					loadIndentDtl();
 					IndentDtlresetField();
@@ -802,11 +792,9 @@ public class IndentIssue extends BaseTransUI {
 	 * loadMaterialList()-->this function is used for load the Material name
 	 */
 	private void loadMaterialList() {
-		List<IndentDtlDM> getIndentDtlList = new ArrayList<IndentDtlDM>();
-		getIndentDtlList.addAll(serviceIndentDtlDM.getIndentDtlDMList(null, (Long) cbIntNo.getValue(), null, "Active",
-				"F"));
 		BeanItemContainer<IndentDtlDM> beanIndentDtl = new BeanItemContainer<IndentDtlDM>(IndentDtlDM.class);
-		beanIndentDtl.addAll(getIndentDtlList);
+		beanIndentDtl
+				.addAll(serviceIndentDtlDM.getIndentDtlDMList(null, (Long) cbIntNo.getValue(), null, "Active", "F"));
 		cbMatName.setContainerDataSource(beanIndentDtl);
 	}
 	
@@ -815,11 +803,10 @@ public class IndentIssue extends BaseTransUI {
 	 */
 	public void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<EmployeeDM> lookUpList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null,
-				null, null, null, "P");
-		beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+		BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployeeDM.setBeanIdProperty("employeeid");
-		beanEmployeeDM.addAll(lookUpList);
+		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+				null, "P"));
 		cbIssuedTo.setContainerDataSource(beanEmployeeDM);
 	}
 	
@@ -828,11 +815,10 @@ public class IndentIssue extends BaseTransUI {
 	 */
 	public void loadIndentList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<IndentHdrDM> indentList = serviceIndHdr.getMmsIndentHdrList(null, null, null, companyid, null, null, null,
-				null, "F");
-		beanIndentHdrDM = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
+		BeanContainer<Long, IndentHdrDM> beanIndentHdrDM = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
 		beanIndentHdrDM.setBeanIdProperty("indentId");
-		beanIndentHdrDM.addAll(indentList);
+		beanIndentHdrDM.addAll(serviceIndHdr.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null,
+				"F"));
 		cbIntNo.setContainerDataSource(beanIndentHdrDM);
 	}
 	

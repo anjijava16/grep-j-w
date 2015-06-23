@@ -17,16 +17,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import net.sourceforge.htmlunit.corejs.javascript.regexp.SubString;
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.taskdefs.Concat;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CityDM;
 import com.gnts.base.domain.mst.CountryDM;
+import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.domain.mst.StateDM;
 import com.gnts.base.domain.mst.VendorDM;
 import com.gnts.base.domain.mst.VendorTypeDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.CityService;
 import com.gnts.base.service.mst.CountryService;
+import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.base.service.mst.StateService;
 import com.gnts.base.service.mst.VendorService;
 import com.gnts.base.service.mst.VendorTypeService;
@@ -42,12 +46,15 @@ import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.erputil.validations.PhoneNumberValidation;
 import com.gnts.mms.domain.mst.MaterialDM;
+import com.thoughtworks.selenium.webdriven.commands.GetValue;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -71,6 +78,7 @@ public class Vendor extends BaseUI {
 	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
 	private CityService serviceCity = (CityService) SpringContextHelper.getBean("city");
 	private StateService serviceState = (StateService) SpringContextHelper.getBean("mstate");
+	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn4, flColumn3;
 	// Parent layout for all the input controls
@@ -90,7 +98,7 @@ public class Vendor extends BaseUI {
 	private BeanContainer<Long, VendorTypeDM> beanVendorTypeDM = null;
 	private BeanContainer<Long, VendorTypeDM> beanvendrdm = null;
 	// local variables declaration
-	private Long companyid;
+	private Long companyid,moduleId,branchId;
 	private String departId, pkvendorId;
 	private int recordCnt = 0;
 	private String username;
@@ -104,6 +112,8 @@ public class Vendor extends BaseUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside Vendor() constructor");
 		// Loading the UI
 		buildview();
@@ -123,9 +133,21 @@ public class Vendor extends BaseUI {
 		loadVendorTypeList();
 		// VendorCode text field
 		tfVendorCode = new GERPTextField("Vendor Code");
+		tfVendorName.addBlurListener(new BlurListener() {
+			@Override
+			public void blur(BlurEvent event) {
+				String venName = tfVendorName.getValue();
+				venName=venName.substring(0,4);
+				String venCode= tfVendorCode.getValue();
+				venName="/".concat(venName);
+				tfVendorCode.setReadOnly(false);
+				tfVendorCode.setValue(venCode.concat(venName));
+				tfVendorCode.setReadOnly(true);
+			}
+		});
 		// VendorRating text field
 		tfVendorRating = new GERPTextField("Vendor Rating");
-		// ContactName text field
+		// ContactName text fieldPUR
 		tfContactName = new GERPTextField("Contact Name");
 		// ContactName text field
 		tfcontactno = new GERPTextField("Contact Number");
@@ -298,6 +320,7 @@ public class Vendor extends BaseUI {
 			flColumn4.addComponent(tfACType);
 			flColumn4.addComponent(tfBankName);
 			flColumn4.addComponent(taBankAddress);
+			cbStatus.setWidth("150");
 			flColumn4.addComponent(cbStatus);
 			hlUserInputLayout.addComponent(flColumn1);
 			hlUserInputLayout.addComponent(flColumn2);
@@ -564,8 +587,22 @@ public class Vendor extends BaseUI {
 		cbCountry.setRequired(true);
 		cbState.setRequired(true);
 		cbCity.setRequired(true);
-		resetFields();
-	}
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "BS_VNDRCD").get(0);
+			tfVendorCode.setReadOnly(false);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfVendorCode.setValue(slnoObj.getKeyDesc());
+				tfVendorCode.setReadOnly(true);
+				System.out.println("=+=+=+=+=+=+=>"+tfVendorCode);
+				
+			} else {
+				tfVendorCode.setReadOnly(false);
+			}
+		}
+		catch (Exception e) {
+		}
+		
+	   }
 	
 	@Override
 	protected void showAuditDetails() {

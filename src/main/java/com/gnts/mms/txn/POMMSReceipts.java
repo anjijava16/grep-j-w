@@ -773,7 +773,7 @@ public class POMMSReceipts extends BaseUI {
 					MaterialLedgerDM materialLedgerDM = null;
 					try {
 						materialLedgerDM = serviceledger.getMaterialLedgerList(save.getMaterialid(), null, null, null,
-								null, null, "Y", "F").get(0);
+								"New", null, "Y", "F").get(0);
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -820,7 +820,7 @@ public class POMMSReceipts extends BaseUI {
 						MaterialStockDM materialStockDM = null;
 						try {
 							materialStockDM = serviceMaterialStock.getMaterialStockList(save.getMaterialid(), null,
-									null, null, null, null, "F").get(0);
+									null, null, null, "New", "F").get(0);
 						}
 						catch (Exception e) {
 							e.printStackTrace();

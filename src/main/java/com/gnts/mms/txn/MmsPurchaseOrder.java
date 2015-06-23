@@ -18,12 +18,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.eclipse.jdt.internal.core.SetVariablesOperation;
 import com.gnts.base.domain.mst.ApprovalSchemaDM;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
@@ -49,6 +53,8 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
+import com.gnts.erputil.ui.Database;
+import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mms.domain.txn.MmsPoDtlDM;
@@ -63,12 +69,14 @@ import com.gnts.mms.service.txn.POHdrService;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -114,7 +122,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			tfWarrentyTerms, tfDelTerms;
 	private TextField tfSubTotal, tfVatPer, tfVatValue;
 	private TextField tfCstPer, tfCstValue, tfSubTaxTotal;
-	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal;
+	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal, tfvendorCode;
 	private TextArea taRemark, taInvoiceOrd, taShpnAddr;
 	private CheckBox ckdutyexm, ckPdcRqu, ckCformRqu, ckcasePO;
 	private PopupDateField dfPODt, dfExpDt;
@@ -257,7 +265,25 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		cbVendor = new ComboBox("Vendor Name");
 		cbVendor.setWidth("150");
 		cbVendor.setItemCaptionPropertyId("vendorName");
+		cbVendor.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (cbVendor.getValue() != null) {
+					tfvendorCode.setReadOnly(false);
+					tfvendorCode.setValue(serviceVendor
+							.getVendorList(null, (Long) cbVendor.getValue(), companyid, null, null, null, stateId,
+									null, null, null, "P").get(0).getVendorCode());
+					tfvendorCode.setReadOnly(true);
+				}
+			}
+		});
 		loadVendor();
+		tfvendorCode = new TextField("Vendor Code");
+		tfvendorCode.setWidth("150");
+		tfvendorCode.setReadOnly(true);
 		cbpoType = new ComboBox("Order Type");
 		cbpoType.setItemCaptionPropertyId("lookupname");
 		cbpoType.setWidth("150");
@@ -268,7 +294,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		} else {
 			cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_AP_STATUS);
 		}
-		
 		cbStatus.setWidth("155");
 		// PurchaseOrder Detail Comp
 		cbmaterial = new ComboBox("Material Name");
@@ -277,11 +302,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		loadmaterial();
 		tfPOQnty = new TextField();
 		tfPOQnty.setValue("0");
-		tfPOQnty.setWidth("60");
+		tfPOQnty.setWidth("80");
 		cbMatUom = new ComboBox();
 		cbMatUom.setItemCaptionPropertyId("lookupname");
-		cbMatUom.setWidth("77");
-		cbMatUom.setHeight("23");
+		cbMatUom.setWidth("60");
+		cbMatUom.setHeight("20");
 		loadUomList();
 		tfUnitRate = new TextField("Unit Rate");
 		tfUnitRate.setWidth("133");
@@ -291,7 +316,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfBasicValue.setValue("0");
 		taPODtlRemark = new TextArea("Remark");
 		taPODtlRemark.setWidth("130");
-		taPODtlRemark.setHeight("50");
+		taPODtlRemark.setHeight("40");
 		dfExpDt = new GERPPopupDateField("Expected Delivery  Date");
 		dfExpDt.setInputPrompt("Select Date");
 		dfExpDt.setWidth("130");
@@ -380,12 +405,13 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		flColumn1.addComponent(cbBranch);
 		flColumn1.addComponent(cbquoteNo);
 		flColumn1.addComponent(cbVendor);
+		flColumn1.addComponent(tfvendorCode);
 		flColumn1.addComponent(cbpoType);
 		flColumn1.addComponent(ckcasePO);
 		flColumn1.addComponent(tfPONo);
 		flColumn1.addComponent(dfPODt);
 		flColumn1.addComponent(tfversionNo);
-		flColumn1.addComponent(taInvoiceOrd);
+		flColumn2.addComponent(taInvoiceOrd);
 		flColumn2.addComponent(taShpnAddr);
 		flColumn2.addComponent(taRemark);
 		flColumn2.addComponent(tfBasictotal);
@@ -406,8 +432,8 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		cst.addComponent(tfCstPer);
 		cst.addComponent(tfCstValue);
 		cst.setCaption("CST");
-		flColumn2.addComponent(cst);
-		flColumn2.setComponentAlignment(cst, Alignment.TOP_LEFT);
+		flColumn3.addComponent(cst);
+		flColumn3.setComponentAlignment(cst, Alignment.TOP_LEFT);
 		flColumn3.addComponent(tfSubTaxTotal);
 		HorizontalLayout frgt = new HorizontalLayout();
 		frgt.addComponent(tfFreightPer);
@@ -426,7 +452,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		flColumn3.addComponent(tfFreightTerms);
 		flColumn3.addComponent(tfWarrentyTerms);
 		flColumn3.addComponent(tfDelTerms);
-		flColumn3.addComponent(dfExpDt);
+		flColumn4.addComponent(dfExpDt);
 		flColumn4.addComponent(cbStatus);
 		flColumn4.addComponent(ckdutyexm);
 		flColumn4.addComponent(ckCformRqu);
@@ -530,7 +556,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfFreightTerms.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getFreightTerms().toString());
 		tfWarrentyTerms.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getWarrantyTerms().toString());
 		tfDelTerms.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getDeliveryTerms().toString());
-		
 		// cbStatus.setValue(((MmsQuoteHdrDM) cbquoteNo.getValue()).getStatus().toString());
 		// load quote details
 		mmspodtllist = new ArrayList<MmsPoDtlDM>();
@@ -645,14 +670,13 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	
 	public void loadVendor() {
 		try {
-			
 			List<VendorDM> vendorList = serviceVendor.getVendorList(null, null, companyid, null, null, null, stateId,
 					null, null, null, "P");
 			BeanContainer<Long, VendorDM> beanVendor = new BeanContainer<Long, VendorDM>(VendorDM.class);
 			beanVendor.setBeanIdProperty("vendorId");
 			beanVendor.addAll(vendorList);
 			cbVendor.setContainerDataSource(beanVendor);
-		System.out.println("===========>"+stateId);
+			System.out.println("===========>" + stateId);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -742,7 +766,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			if (editPurchaseOrdlist.getExpDate() != null) {
 				dfExpDt.setValue(editPurchaseOrdlist.getExpDate());
 			}
-			
 			if (editPurchaseOrdlist.getWrntyTerms() != null) {
 				tfWarrentyTerms.setValue(editPurchaseOrdlist.getWrntyTerms());
 			}
@@ -806,7 +829,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	public void setDfPODt(PopupDateField dfPODt) {
 		this.dfPODt = dfPODt;
 	}
-
+	
 	private void editPODtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		Item sltedRcd = tblpodtl.getItem(tblpodtl.getValue());
@@ -1025,7 +1048,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			purchaseHdrobj.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
 			purchaseHdrobj.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
 			purchaseHdrobj.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
-			System.out.println("--------------->"+expDt());
+			System.out.println("--------------->" + expDt());
 			if (tfpaymetTerms.getValue() != null) {
 				purchaseHdrobj.setPaymentTerms((tfpaymetTerms.getValue().toString()));
 			}
@@ -1078,6 +1101,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			fio.close();
 			purchaseHdrobj.setPoDoc(fileContents);
 			servicepohdr.saveorUpdatePOHdrDetails(purchaseHdrobj);
+			poId=purchaseHdrobj.getPoId();
 			@SuppressWarnings("unchecked")
 			Collection<MmsPoDtlDM> itemIds = (Collection<MmsPoDtlDM>) tblpodtl.getVisibleItemIds();
 			for (MmsPoDtlDM save : (Collection<MmsPoDtlDM>) itemIds) {
@@ -1108,7 +1132,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	protected void savePurchaseQuoteDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
@@ -1298,5 +1322,31 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
+			System.out.println("poid-->"+poid);
+			parameterMap.put("ENQID", poId);
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "/WEB-INF/reports/mmspo"); // productlist is the name of my jasper
+			// file.
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

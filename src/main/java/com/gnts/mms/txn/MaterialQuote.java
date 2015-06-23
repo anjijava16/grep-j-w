@@ -31,9 +31,11 @@ import com.gnts.base.domain.mst.ApprovalSchemaDM;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.SlnoGenDM;
+import com.gnts.base.domain.mst.VendorDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.SlnoGenService;
+import com.gnts.base.service.mst.VendorService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
@@ -113,6 +115,7 @@ public class MaterialQuote extends BaseTransUI {
 	private List<MmsQuoteDtlDM> listQuoteDetails = new ArrayList<MmsQuoteDtlDM>();
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private SmsTaxesService serviceTaxesSms = (SmsTaxesService) SpringContextHelper.getBean("SmsTaxes");
+	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
@@ -123,7 +126,7 @@ public class MaterialQuote extends BaseTransUI {
 	// User Input Components for Sales Quote Details
 	private ComboBox cbBranch, cbStatus, cbEnqNo, cbvendorname;
 	private TextField tfQuoteNumber, tfQuoteRef, tfQuoteVersion, tfBasictotal, tfpackingPer, tfPaclingValue;
-	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
+	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer,tfvendorCode;
 	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
 	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal, tfDocumentCharges,
 			tfPDCCharges;
@@ -185,7 +188,7 @@ public class MaterialQuote extends BaseTransUI {
 		tfQuoteRef.setWidth("150");
 		dfQuoteDt = new GERPPopupDateField("Quote Date");
 		dfQuoteDt.setInputPrompt("Select Date");
-		dfQuoteDt.setWidth("110px");
+		dfQuoteDt.setWidth("80");
 		dfvalidDt = new GERPPopupDateField("Valid Date");
 		dfvalidDt.setInputPrompt("Select Date");
 		dfvalidDt.setWidth("110px");
@@ -246,6 +249,30 @@ public class MaterialQuote extends BaseTransUI {
 		tfCstValue.setImmediate(true);
 		tfGrandtotal = new GERPNumberField("Grand Total");
 		tfGrandtotal.setWidth("150");
+		
+		cbvendorname = new ComboBox("Vendor Name");
+		cbvendorname.setWidth("150");
+		cbvendorname.setItemCaptionPropertyId("vendorName");
+		cbvendorname.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (cbvendorname.getValue() != null) {
+					tfvendorCode.setReadOnly(false);
+					tfvendorCode.setValue(serviceVendor
+							.getVendorList(null, (Long) cbvendorname.getValue(), companyid, null, null, null, null,
+									null, null, null, "P").get(0).getVendorCode());
+					tfvendorCode.setReadOnly(true);
+				}
+			}
+		});
+		loadVendor();
+		tfvendorCode = new TextField("Vendor Code");
+		tfvendorCode.setWidth("150");
+		tfvendorCode.setReadOnly(true);
+		
 		tfDocumentCharges = new GERPNumberField("Doc. Charges");
 		tfDocumentCharges.setWidth("150");
 		tfDocumentCharges.setImmediate(true);
@@ -462,7 +489,7 @@ public class MaterialQuote extends BaseTransUI {
 		tacustproddesc.setWidth("150");
 		tacustproddesc.setHeight("50");
 		btnsavepurQuote.addClickListener(new ClickListener() {
-			// Click Listener for Add and Update
+			// Click Listener for Add and Up
 			private static final long serialVersionUID = 6551953728534136363L;
 			
 			@Override
@@ -606,11 +633,14 @@ public class MaterialQuote extends BaseTransUI {
 		flColumn5 = new FormLayout();
 		flColumn1.addComponent(cbBranch);
 		flColumn1.addComponent(cbEnqNo);
+		flColumn1.addComponent(cbvendorname);
+		flColumn1.addComponent(tfvendorCode);
 		flColumn1.addComponent(cbQuotationType);
 		flColumn1.addComponent(tfQuoteNumber);
 		flColumn1.addComponent(tfQuoteRef);
 		flColumn1.addComponent(tfQuoteVersion);
-		flColumn1.addComponent(dfQuoteDt);
+		flColumn2.addComponent(dfQuoteDt);
+		dfQuoteDt.setWidth("110px");
 		flColumn2.addComponent(dfvalidDt);
 		flColumn2.addComponent(tfBasictotal);
 		HorizontalLayout pp = new HorizontalLayout();
@@ -815,6 +845,20 @@ public class MaterialQuote extends BaseTransUI {
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
 			beanCompanyLookUp.addAll(lookUpList);
 			cbpaymetTerms.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public void loadVendor() {
+		try {
+			List<VendorDM> vendorList = serviceVendor.getVendorList(null, null, companyid, null, null, null, null,
+					null, null, null, "P");
+			BeanContainer<Long, VendorDM> beanVendor = new BeanContainer<Long, VendorDM>(VendorDM.class);
+			beanVendor.setBeanIdProperty("vendorId");
+			beanVendor.addAll(vendorList);
+			cbvendorname.setContainerDataSource(beanVendor);
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();

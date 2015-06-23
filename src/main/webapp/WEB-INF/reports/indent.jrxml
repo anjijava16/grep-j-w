@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="indent" pageWidth="300" pageHeight="842" columnWidth="260" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
+	<property name="ireport.zoom" value="1.4641000000000017"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<parameter name="INDID" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select hdr.indent_no ,hdr.indent_dt ,nvl(hdr.indent_remarks,'---') indent_remarks,m.materail_name,dtl.indent_qty
+from t_mms_indent_hdr hdr,t_mms_indent_dtl dtl,m_mms_material m
+where hdr.indent_id = dtl.indent_id
+and m.material_id = dtl.material_id
+and hdr.indent_id = $P{INDID}]]>
+	</queryString>
+	<field name="INDENT_NO" class="java.lang.String"/>
+	<field name="INDENT_DT" class="java.sql.Timestamp"/>
+	<field name="INDENT_REMARKS" class="java.lang.String"/>
+	<field name="MATERAIL_NAME" class="java.lang.String"/>
+	<field name="INDENT_QTY" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="59" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="09f07830-e225-48b1-95ef-c8f49d5eabf2" x="66" y="21" width="133" height="16" backcolor="#F0EFEF"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="8689836e-365e-4f62-988a-b506853b7293" x="0" y="21" width="260" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[INTERNAL INDENT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8689836e-365e-4f62-988a-b506853b7293" x="0" y="1" width="260" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[SAARC TOOL-TECH (P) LTD.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="24036a4b-cbab-416e-ae9f-736c285ba815" x="2" y="37" width="26" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="088a4ba3-f089-4ab2-ac58-d0e5faf74464" x="162" y="37" width="33" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Date :]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="90d021df-21b3-40b1-8e6f-4a5d2e5e9626" x="-1" y="56" width="261" height="1"/>
+			</line>
+			<textField>
+				<reportElement uuid="266436eb-7a35-4738-ab3a-e5c0dbbffcf6" x="28" y="37" width="83" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{INDENT_NO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yy">
+				<reportElement uuid="e410a7fc-ea01-4ec7-b313-2f39c7a96091" x="195" y="37" width="65" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{INDENT_DT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="33" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="6b2a71e4-2a64-48e4-a9b1-fb73969f24a9" x="0" y="2" width="150" height="12"/>
+				<textElement verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[We require the following items for ]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="51e5d5e4-6180-4910-ad89-8cdcc2af45f3" x="-1" y="29" width="261" height="1"/>
+			</line>
+			<textField>
+				<reportElement uuid="46de9639-d68e-421c-951d-c4ba4842be61" x="2" y="13" width="258" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{INDENT_REMARKS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="26" splitType="Stretch">
+			<line>
+				<reportElement uuid="8f46f420-f4b8-46c0-ab18-2d839227ef0e" x="0" y="21" width="260" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="e0721ddf-ea12-4f12-aa0c-9397c764f277" x="30" y="0" width="120" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="976f5332-5924-4a97-9dfb-fe1812ebb582" x="150" y="1" width="49" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b305570d-e399-441b-b78e-5341803dfc71" x="0" y="0" width="28" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S. No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="199" y="2" width="61" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Required on]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement uuid="b99c2ef8-a94c-4eae-b1b4-b76c166c58de" x="0" y="1" width="28" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="cb900cb3-64c0-4135-a97a-fb8104e2b022" x="29" y="1" width="121" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MATERAIL_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="31ff895d-ab25-4c86-8109-18d310c7f9ca" x="150" y="0" width="49" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{INDENT_QTY}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="41" splitType="Stretch"/>
+	</columnFooter>
+	<summary>
+		<band height="58" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="26c13838-1495-41a0-9bdf-2e7f6b35e0b8" x="128" y="38" width="132" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Head of the Department]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

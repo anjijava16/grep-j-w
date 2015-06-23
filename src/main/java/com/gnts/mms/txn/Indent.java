@@ -13,9 +13,12 @@
  **/
 package com.gnts.mms.txn;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -41,6 +44,8 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
+import com.gnts.erputil.ui.Database;
+import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.mst.Tax;
 import com.gnts.mms.domain.mst.MaterialDM;
@@ -58,6 +63,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -731,6 +737,7 @@ public class Indent extends BaseTransUI {
 			indentObj.setLast_updated_dt(DateUtils.getcurrentdate());
 			indentObj.setLast_updated_by(username);
 			serviceIndentHdr.saveorUpdateMmsIndentHdrDetails(indentObj);
+			indentHdrId = indentObj.getIndentId();
 			@SuppressWarnings("unchecked")
 			Collection<IndentDtlDM> colPlanDtls = ((Collection<IndentDtlDM>) tblDtl.getVisibleItemIds());
 			for (IndentDtlDM saveDtl : (Collection<IndentDtlDM>) colPlanDtls) {
@@ -752,7 +759,6 @@ public class Indent extends BaseTransUI {
 			tfIndNo.setValue(indentObj.getIndentNo());
 			tfIndNo.setReadOnly(true);
 			comments.saveindent(indentObj.getIndentId(), indentObj.getIndentStatus());
-			indentHdrId = 0L;
 			loadSrchRslt();
 			loadIndentDtl();
 		}
@@ -877,5 +883,30 @@ public class Indent extends BaseTransUI {
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
+			parameterMap.put("INDID", indentHdrId);
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "/WEB-INF/reports/indent"); // indent is the name of my jasper
+			// file.
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

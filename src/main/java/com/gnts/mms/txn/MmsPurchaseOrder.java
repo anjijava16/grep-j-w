@@ -30,11 +30,13 @@ import org.apache.log4j.Logger;
 import org.eclipse.jdt.internal.core.SetVariablesOperation;
 import com.gnts.base.domain.mst.ApprovalSchemaDM;
 import com.gnts.base.domain.mst.BranchDM;
+import com.gnts.base.domain.mst.CompanyDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.domain.mst.VendorDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.CompanyLookupService;
+import com.gnts.base.service.mst.CompanyService;
 import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.base.service.mst.VendorService;
 import com.gnts.erputil.BASEConstants;
@@ -46,6 +48,7 @@ import com.gnts.erputil.components.GERPNumberField;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPTable;
+import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPConstants;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
@@ -74,6 +77,8 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
@@ -109,6 +114,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	private MmsQuoteHdrService serviceMmsQuoteHdr = (MmsQuoteHdrService) SpringContextHelper.getBean("mmsquotehdr");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
+	private CompanyService serviceCompany = (CompanyService) SpringContextHelper.getBean("companyBean");
 	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private BeanItemContainer<MmsPoDtlDM> beanpodtldm = null;
 	private GERPTable tblpodtl;
@@ -138,7 +144,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	private BeanItemContainer<POHdrDM> beanpohdr = null;
 	// local variables declaration
 	private String username;
-	private Long companyid;
+	private Long companyid, StateId;
 	private int recordCnt;
 	private Long QuoteId;
 	private Long EmployeeId;
@@ -167,6 +173,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		// StateId = Long.valueOf(UI.getCurrent().getSession().getAttribute("stateId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
@@ -187,7 +194,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		loadQuoteNoList();
 		cbquoteNo.setImmediate(true);
 		cbquoteNo.addValueChangeListener(new Property.ValueChangeListener() {
-			/**
+		/**
 		 * 
 		 */
 			private static final long serialVersionUID = 1L;
@@ -221,31 +228,31 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfBasictotal = new GERPNumberField("Basic total");
 		tfBasictotal.setWidth("150");
 		tfpackingPer = new GERPNumberField();
-		tfpackingPer.setWidth("30");
+		tfpackingPer.setWidth("50");
 		tfPaclingValue = new GERPNumberField();
-		tfPaclingValue.setWidth("125");
+		tfPaclingValue.setWidth("105");
 		tfSubTotal = new GERPNumberField("Sub Total");
 		tfSubTotal.setWidth("150");
 		tfVatPer = new GERPNumberField();
-		tfVatPer.setWidth("30");
+		tfVatPer.setWidth("50");
 		tfVatValue = new GERPNumberField();
-		tfVatValue.setWidth("125");
+		tfVatValue.setWidth("105");
 		tfCstPer = new GERPNumberField();
-		tfCstPer.setWidth("30");
+		tfCstPer.setWidth("50");
 		tfCstValue = new GERPNumberField();
-		tfCstValue.setWidth("125");
+		tfCstValue.setWidth("105");
 		tfSubTaxTotal = new GERPNumberField("Sub Tax Total");
 		tfSubTaxTotal.setWidth("150");
 		tfFreightPer = new GERPNumberField();
-		tfFreightPer.setWidth("30");
+		tfFreightPer.setWidth("50");
 		tfFreightValue = new GERPNumberField();
-		tfFreightValue.setWidth("125");
+		tfFreightValue.setWidth("105");
 		tfOtherValue = new GERPNumberField();
-		tfOtherValue.setWidth("125");
+		tfOtherValue.setWidth("105");
+		tfOtherPer = new TextField();
+		tfOtherPer.setWidth("50");
 		tfGrandtotal = new GERPNumberField("Grand Total");
 		tfGrandtotal.setWidth("150");
-		tfOtherPer = new TextField();
-		tfOtherPer.setWidth("30");
 		tfpaymetTerms = new TextField("Payment Terms");
 		tfpaymetTerms.setWidth("150");
 		tfFreightTerms = new TextField("Freight Terms");
@@ -277,6 +284,21 @@ public class MmsPurchaseOrder extends BaseTransUI {
 							.getVendorList(null, (Long) cbVendor.getValue(), companyid, null, null, null, stateId,
 									null, null, null, "P").get(0).getVendorCode());
 					tfvendorCode.setReadOnly(true);
+					Long VendorstateId=serviceVendor
+							.getVendorList(null, (Long) cbVendor.getValue(), null, null, null, null, stateId,
+									null, null, null, "P").get(0).getStateId();
+					List<CompanyDM> companyList = serviceCompany.getCompanyList(null, null, null);
+					Long LoginstateId= serviceCompany.getCompanyList(null,null, companyid).get(0).getStateid();
+					if(LoginstateId== VendorstateId)
+					{
+						tfCstValue.setReadOnly(false);
+						tfCstValue.setValue("00");
+						tfCstValue.setReadOnly(true);
+						tfCstPer.setReadOnly(false);
+						tfCstPer.setValue("00");
+						tfCstPer.setReadOnly(true);
+						
+					}
 				}
 			}
 		});
@@ -1101,7 +1123,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			fio.close();
 			purchaseHdrobj.setPoDoc(fileContents);
 			servicepohdr.saveorUpdatePOHdrDetails(purchaseHdrobj);
-			poId=purchaseHdrobj.getPoId();
+			poId = purchaseHdrobj.getPoId();
 			@SuppressWarnings("unchecked")
 			Collection<MmsPoDtlDM> itemIds = (Collection<MmsPoDtlDM>) tblpodtl.getVisibleItemIds();
 			for (MmsPoDtlDM save : (Collection<MmsPoDtlDM>) itemIds) {
@@ -1329,7 +1351,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			System.out.println("poid-->"+poid);
+			System.out.println("poid-->" + poid);
 			parameterMap.put("ENQID", poId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/mmspo"); // productlist is the name of my jasper

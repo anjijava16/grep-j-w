@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="materialstock" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a8936763-1e64-4910-9eaf-f17bdd40c183">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[select m.materail_name,m.material_code,m.materail_uom ,s.current_stock,s.parked_stock,s.effctive_stock
+from t_mms_material_stock s,m_mms_material m
+where s.material_id = m.material_id]]>
+	</queryString>
+	<field name="MATERAIL_NAME" class="java.lang.String"/>
+	<field name="MATERIAL_CODE" class="java.lang.String"/>
+	<field name="MATERAIL_UOM" class="java.lang.String"/>
+	<field name="CURRENT_STOCK" class="java.math.BigDecimal"/>
+	<field name="PARKED_STOCK" class="java.math.BigDecimal"/>
+	<field name="EFFCTIVE_STOCK" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="49" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="f88958ba-d892-4cb9-8dd6-363626c9bffd" x="0" y="0" width="555" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC TOOL-TECH (P) LTD. CBE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="06f56dce-73b9-477b-810e-3b5a71dd8eac" x="190" y="20" width="196" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Material Stock Summary]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="29" splitType="Stretch">
+			<line>
+				<reportElement uuid="7f694eb7-fb3c-41c0-bceb-b16af57a2c65" x="0" y="2" width="555" height="1" forecolor="#999999"/>
+			</line>
+			<line>
+				<reportElement uuid="c4e29cfa-0ca7-4975-ad9d-2a7aa0b040c4" x="0" y="26" width="555" height="1" forecolor="#999999"/>
+			</line>
+			<staticText>
+				<reportElement uuid="446cad0e-9aa0-4904-b9d0-c6d552f3ca9a" x="170" y="7" width="91" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Material Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="da6cc6d5-1a53-4055-a347-ef45aebb1b7e" x="0" y="7" width="166" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Material Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d90e4e70-9886-4b8c-b38e-b205c7c6dfa4" x="306" y="7" width="88" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Current Stock]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="74be598b-70cf-4320-9e7b-abc01d66adf0" x="263" y="7" width="40" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[UOM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d90e4e70-9886-4b8c-b38e-b205c7c6dfa4" x="394" y="7" width="88" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Parked Stock]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="91944985-12be-447c-9a9f-6b6e007504ec" x="483" y="7" width="73" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Eff Stock]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement uuid="1c244f30-55cf-4728-abe2-b73dccd98e80" x="170" y="4" width="91" height="17"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{MATERIAL_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="3128ac0d-e92c-4f3b-85f6-9d86f72faf39" x="394" y="4" width="88" height="17"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{PARKED_STOCK}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="97311aaa-1211-4b3c-a131-1b1ef9fbe9d4" x="0" y="4" width="166" height="17"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{MATERAIL_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="bbf9ffe5-dd23-40ef-8683-b56dfe289e38" x="306" y="4" width="88" height="17"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{CURRENT_STOCK}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="5eb75278-3ab9-4644-a8b7-084e7cef504a" x="263" y="4" width="40" height="17"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{MATERAIL_UOM}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="8f966528-c5a6-4478-a6f1-b8e4b42657cc" x="483" y="3" width="73" height="17"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{EFFCTIVE_STOCK}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="1" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="24" splitType="Stretch">
+			<line>
+				<reportElement uuid="6080ba16-9ff8-408b-9262-384c0103b85a" x="0" y="2" width="555" height="1" forecolor="#999999"/>
+			</line>
+			<textField>
+				<reportElement uuid="1518bbb8-0ae6-48b7-a2fb-9a5a301b2fb7" x="431" y="6" width="80" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="e81f0b53-bd59-413c-a7fb-d1381f0a60ff" x="511" y="6" width="40" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement uuid="032ac970-de99-47cd-ba52-23383804ac11" x="0" y="6" width="154" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="2" splitType="Stretch"/>
+	</summary>
+</jasperReport>

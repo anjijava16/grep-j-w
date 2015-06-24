@@ -232,8 +232,10 @@ and hdr.po_id=$P{ENQID}]]>
 				<reportElement uuid="1ac04e8c-3ee1-4c12-9883-8f1d8385a4df" x="1" y="0" width="555" height="1"/>
 			</line>
 			<staticText>
-				<reportElement uuid="af11bc1a-ce67-4979-8f2f-ea983ac43159" x="1" y="2" width="555" height="22"/>
-				<textElement textAlignment="Justified" verticalAlignment="Middle"/>
+				<reportElement uuid="af11bc1a-ce67-4979-8f2f-ea983ac43159" x="1" y="2" width="121" height="22"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
 				<text><![CDATA[Total Amount In Words]]></text>
 			</staticText>
 			<line>

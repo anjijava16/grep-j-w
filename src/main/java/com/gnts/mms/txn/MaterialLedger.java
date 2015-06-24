@@ -40,7 +40,6 @@ import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.txn.MaterialLedgerDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.MaterialLedgerService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.ComboBox;
@@ -190,7 +189,7 @@ public class MaterialLedger extends BaseUI {
 			tblMstScrSrchRslt.removeAllItems();
 			stockledgeDate = dtstockletdate.getValue();
 			List<MaterialLedgerDM> materiallist = serviceledger.getMaterialLedgerList((Long) cbmaterial.getValue(),
-					null, stockledgeDate, (Long) cbbranch.getValue(), (String) cbstocktype.getValue(),null,null, "F");
+					null, stockledgeDate, (Long) cbbranch.getValue(), (String) cbstocktype.getValue(), null, null, "F");
 			recordCnt = materiallist.size();
 			beanmatrlledger = new BeanItemContainer<MaterialLedgerDM>(MaterialLedgerDM.class);
 			beanmatrlledger.addAll(materiallist);
@@ -313,22 +312,21 @@ public class MaterialLedger extends BaseUI {
 	}
 	
 	private void editmaterialLedger() {
-		Item iteselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (iteselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			MaterialLedgerDM editledgerlist = beanmatrlledger.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			setReadOnlyFalseFields();
 			cbbranch.setValue(editledgerlist.getBranchId());
 			cbmaterial.setValue(editledgerlist.getMaterialId());
 			cbstocktype.setValue(editledgerlist.getStockType());
-			tfopenqty.setValue(iteselect.getItemProperty("openQty").getValue().toString());
-			tfInoutflag.setValue(iteselect.getItemProperty("inoutFlag").getValue().toString());
-			tfinoutqty.setValue(iteselect.getItemProperty("inoutFQty").getValue().toString());
-			tfcloseqty.setValue(iteselect.getItemProperty("closeQty").getValue().toString());
-			tfrefNo.setValue(iteselect.getItemProperty("referenceNo").getValue().toString());
-			dtstockletdate.setValue((Date) iteselect.getItemProperty("stockledgeDate").getValue());
-			dfrefdate.setValue((Date) iteselect.getItemProperty("referenceDate").getValue());
-			tfislatest.setValue(iteselect.getItemProperty("isLatest").getValue().toString());
-			tfremarks.setValue(iteselect.getItemProperty("referenceRemark").getValue().toString());
+			tfopenqty.setValue(editledgerlist.getOpenQty().toString());
+			tfInoutflag.setValue(editledgerlist.getInoutFlag());
+			tfinoutqty.setValue(editledgerlist.getInoutFQty().toString());
+			tfcloseqty.setValue(editledgerlist.getCloseQty().toString());
+			tfrefNo.setValue(editledgerlist.getReferenceNo());
+			dtstockletdate.setValue(editledgerlist.getStockledgeDate1());
+			dfrefdate.setValue(editledgerlist.getReferenceDate());
+			tfislatest.setValue(editledgerlist.getIsLatest());
+			tfremarks.setValue(editledgerlist.getReferenceRemark());
 			setReadOnlyTrueFields();
 		}
 	}

@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.eclipse.jdt.internal.core.SetVariablesOperation;
 import com.gnts.base.domain.mst.ApprovalSchemaDM;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CompanyDM;
@@ -744,7 +743,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			tfPONo.setValue(editPurchaseOrdlist.getPono());
 			tfPONo.setReadOnly(true);
 			dfPODt.setValue(editPurchaseOrdlist.getPurchaseDate());
-			dfExpDt.setValue(editPurchaseOrdlist.getExpDate());
+			dfExpDt.setValue(editPurchaseOrdlist.getExpDate1());
 			taRemark.setValue(editPurchaseOrdlist.getPoRemark());
 			tfversionNo.setValue(editPurchaseOrdlist.getVersionNo().toString());
 			tfBasictotal.setReadOnly(false);
@@ -786,7 +785,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				tfFreightTerms.setValue(editPurchaseOrdlist.getFrnghtTerms());
 			}
 			if (editPurchaseOrdlist.getExpDate() != null) {
-				dfExpDt.setValue(editPurchaseOrdlist.getExpDate());
+				dfExpDt.setValue(editPurchaseOrdlist.getExpDate1());
 			}
 			if (editPurchaseOrdlist.getWrntyTerms() != null) {
 				tfWarrentyTerms.setValue(editPurchaseOrdlist.getWrntyTerms());

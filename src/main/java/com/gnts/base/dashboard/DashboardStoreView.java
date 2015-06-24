@@ -1,34 +1,40 @@
 package com.gnts.base.dashboard;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.erputil.ui.Database;
+import com.gnts.erputil.ui.Report;
 import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.txn.IndentHdrDM;
+import com.gnts.mms.domain.txn.MaterialLedgerDM;
 import com.gnts.mms.domain.txn.MaterialStockDM;
-import com.gnts.mms.domain.txn.POHdrDM;
 import com.gnts.mms.mst.Material;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.MaterialLedgerService;
 import com.gnts.mms.service.txn.MaterialStockService;
-import com.gnts.mms.service.txn.POHdrService;
+import com.gnts.mms.txn.DC;
 import com.gnts.mms.txn.Indent;
 import com.gnts.mms.txn.IndentIssue;
 import com.gnts.mms.txn.IndentIssueReturn;
+import com.gnts.mms.txn.MaterialGatepass;
 import com.gnts.mms.txn.MaterialLedger;
 import com.gnts.mms.txn.MaterialStock;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -50,17 +56,22 @@ public class DashboardStoreView implements ClickListener {
 	private Button btnLedgerCount = new Button("17 Nos.", this);
 	private Button btnStockCount = new Button("16 Nos.", this);
 	private Button btnAddMaterial = new Button("+  Add Material", this);
+	private Button btnStockReport = new Button("View Report", this);
+	private Button btnLedgerInReport = new Button("Inward", this);
+	private Button btnLedgerOutReport = new Button("Outward", this);
+	private Button btnGatepass = new Button("11 Nos", this);
+	private Button btnDC = new Button("10 Nos", this);
 	private IndentHdrService serviceIndentHdr = (IndentHdrService) SpringContextHelper.getBean("IndentHdr");
 	private MaterialStockService servicematerialstock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
 	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
-	private POHdrService servicepohdr = (POHdrService) SpringContextHelper.getBean("pohdr");
 	private Logger logger = Logger.getLogger(DashboardStoreView.class);
 	private Table tblMstScrSrchRslt = new Table();
 	private Table tblMaterialInward = new Table();
 	private Table tblMaterialOutward = new Table();
 	private Table tblIndent = new Table();
+	private ComboBox cbMaterial;
 	private Long companyId;
 	
 	public DashboardStoreView() {
@@ -90,6 +101,11 @@ public class DashboardStoreView implements ClickListener {
 		btnLedgerCount.setStyleName(Runo.BUTTON_LINK);
 		btnStockCount.setStyleName(Runo.BUTTON_LINK);
 		btnAddMaterial.setStyleName(Runo.BUTTON_LINK);
+		btnGatepass.setStyleName(Runo.BUTTON_LINK);
+		btnDC.setStyleName(Runo.BUTTON_LINK);
+		btnStockReport.setStyleName(Runo.BUTTON_LINK);
+		btnLedgerInReport.setStyleName(Runo.BUTTON_LINK);
+		btnLedgerOutReport.setStyleName(Runo.BUTTON_LINK);
 		btnAddMaterial.setHtmlContentAllowed(true);
 		custom.addComponent(btnIntentCount, "enquiry");
 		custom.addComponent(btnIntentIssueCount, "quotation");
@@ -101,6 +117,29 @@ public class DashboardStoreView implements ClickListener {
 		custom.addComponent(btnAddMaterial, "addmaterial");
 		custom.addComponent(tblMaterialInward, "paymenttable");
 		custom.addComponent(tblMaterialOutward, "deliverypending");
+		custom.addComponent(btnGatepass, "gatepass");
+		custom.addComponent(btnDC, "dc");
+		custom.addComponent(btnStockReport, "stockreport");
+		cbMaterial = new ComboBox();
+		cbMaterial.setItemCaptionPropertyId("materialName");
+		cbMaterial.setWidth("180");
+		btnLedgerInReport.setWidth("90px");
+		loadMaterialList();
+		custom.addComponent(new VerticalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(cbMaterial);
+				addComponent(new HorizontalLayout() {
+					private static final long serialVersionUID = 1L;
+					{
+						setSpacing(true);
+						addComponent(btnLedgerInReport);
+						addComponent(btnLedgerOutReport);
+					}
+				});
+			}
+		}, "ledgerreports");
 		tblMstScrSrchRslt.setHeight("300px");
 		tblIndent.setHeight("250px");
 		tblMaterialInward.setHeight("450px");
@@ -109,7 +148,7 @@ public class DashboardStoreView implements ClickListener {
 		tblMaterialOutward.setHeight("450px");
 		loadStockDetails();
 		loadEnquiryList();
-		loadPaymentPendingDetails();
+		loadMaterialInwardDetails();
 		loadDeliveryDetails();
 	}
 	
@@ -186,16 +225,16 @@ public class DashboardStoreView implements ClickListener {
 				@SuppressWarnings("unchecked")
 				BeanItem<IndentHdrDM> item = (BeanItem<IndentHdrDM>) source.getItem(itemId);
 				IndentHdrDM emp = (IndentHdrDM) item.getBean();
-				if (emp.getIndentStatus().equalsIgnoreCase("Pending")||emp.getIndentStatus().equalsIgnoreCase("Cancelled")) {
+				if (emp.getIndentStatus().equalsIgnoreCase("Pending")
+						|| emp.getIndentStatus().equalsIgnoreCase("Cancelled")) {
 					return new Label(
 							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
 									+ emp.getIndentStatus() + "</h1>", ContentMode.HTML);
-				}else if (emp.getIndentStatus().equalsIgnoreCase("Approved")) {
+				} else if (emp.getIndentStatus().equalsIgnoreCase("Approved")) {
 					return new Label(
 							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#6CD4BD;font-size:12px'>"
 									+ emp.getIndentStatus() + "</h1>", ContentMode.HTML);
-				}
-				else{
+				} else {
 					return new Label(
 							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
 									+ emp.getIndentStatus() + "</h1>", ContentMode.HTML);
@@ -204,66 +243,62 @@ public class DashboardStoreView implements ClickListener {
 		});
 	}
 	
-	private void loadPaymentPendingDetails() {
-		tblMaterialInward.removeAllItems();
-		BeanItemContainer<POHdrDM> beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
-		beanpohdr.addAll(servicepohdr.getPOHdrList(companyId, null, null, null, null, null, "P"));
-		tblMaterialInward.setContainerDataSource(beanpohdr);
-		tblMaterialInward.setVisibleColumns(new Object[] { "pono", "vendorName", "balancePayAmount" });
-		tblMaterialInward.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Balance Amount(Rs.)" });
-		tblMaterialInward.setColumnWidth("pono", 150);
-		tblMaterialInward.setColumnWidth("vendorName", 150);
-		tblMaterialInward.setColumnAlignment("balancePayAmount", Align.RIGHT);
-		tblMaterialInward.addGeneratedColumn("balancePayAmount", new ColumnGenerator() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				@SuppressWarnings("unchecked")
-				BeanItem<POHdrDM> item = (BeanItem<POHdrDM>) source.getItem(itemId);
-				POHdrDM emp = (POHdrDM) item.getBean();
-				System.out.println("emp.getBalancePayAmount()--->" + emp.getBalancePayAmount());
-				DecimalFormat df = new DecimalFormat("#.00", new DecimalFormatSymbols());
-				if (emp.getBalancePayAmount().compareTo(new BigDecimal("5000")) > 0) {
-					return new Label("<p style='color:#EC9E20;font-size:14px;align=right'>"
-							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
-				} else {
-					return new Label("<p style='color:#E26666;font-size:14px;align=right'>"
-							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
-				}
-			}
-		});
+	private void loadMaterialInwardDetails() {
+		try {
+			tblMaterialInward.removeAllItems();
+			List<MaterialLedgerDM> materiallist = serviceledger.getMaterialLedgerList(null, null, null, null, null,
+					"I", null, "F");
+			BeanItemContainer<MaterialLedgerDM> beanmatrlledger = new BeanItemContainer<MaterialLedgerDM>(
+					MaterialLedgerDM.class);
+			beanmatrlledger.addAll(materiallist);
+			tblMaterialInward.setContainerDataSource(beanmatrlledger);
+			tblMaterialInward.setSelectable(true);
+			tblMaterialInward.setVisibleColumns(new Object[] { "materialName", "stockledgeDate", "inoutFQty",
+					"materialUOM", "referenceRemark" });
+			tblMaterialInward.setColumnHeaders(new String[] { "Material", "Date", "Qty", "UOM", "Remarks" });
+			tblMaterialInward.setColumnWidth("referenceRemark", 130);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info("loadSrchRslt-->" + e);
+		}
 	}
 	
 	private void loadDeliveryDetails() {
-		tblMaterialOutward.removeAllItems();
-		BeanItemContainer<POHdrDM> beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
-		beanpohdr.addAll(servicepohdr.getPOHdrList(companyId, null, null, null, null, null, "P"));
-		tblMaterialOutward.setContainerDataSource(beanpohdr);
-		tblMaterialOutward.setVisibleColumns(new Object[] { "pono", "vendorName", "balancePayAmount" });
-		tblMaterialOutward.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Balance Amount(Rs.)" });
-		tblMaterialOutward.setColumnWidth("pono", 150);
-		tblMaterialOutward.setColumnWidth("vendorName", 150);
-		tblMaterialOutward.setColumnAlignment("balancePayAmount", Align.RIGHT);
-		tblMaterialOutward.addGeneratedColumn("balancePayAmount", new ColumnGenerator() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				@SuppressWarnings("unchecked")
-				BeanItem<POHdrDM> item = (BeanItem<POHdrDM>) source.getItem(itemId);
-				POHdrDM emp = (POHdrDM) item.getBean();
-				System.out.println("emp.getBalancePayAmount()--->" + emp.getBalancePayAmount());
-				DecimalFormat df = new DecimalFormat("#.00", new DecimalFormatSymbols());
-				if (emp.getBalancePayAmount().compareTo(new BigDecimal("5000")) > 0) {
-					return new Label("<p style='color:#EC9E20;font-size:14px;align=right'>"
-							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
-				} else {
-					return new Label("<p style='color:#E26666;font-size:14px;align=right'>"
-							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
-				}
-			}
-		});
+		try {
+			tblMaterialOutward.removeAllItems();
+			List<MaterialLedgerDM> materiallist = serviceledger.getMaterialLedgerList(null, null, null, null, null,
+					"O", null, "F");
+			BeanItemContainer<MaterialLedgerDM> beanmatrlledger = new BeanItemContainer<MaterialLedgerDM>(
+					MaterialLedgerDM.class);
+			beanmatrlledger.addAll(materiallist);
+			tblMaterialOutward.setContainerDataSource(beanmatrlledger);
+			tblMaterialOutward.setSelectable(true);
+			tblMaterialOutward.setVisibleColumns(new Object[] { "materialName", "stockledgeDate", "inoutFQty",
+					"materialUOM", "referenceRemark" });
+			tblMaterialOutward.setColumnHeaders(new String[] { "Material", "Date", "Qty", "UOM", "Remarks" });
+			tblMaterialOutward.setColumnWidth("referenceRemark", 130);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info("loadSrchRslt-->" + e);
+		}
+	}
+	
+	// Loading Material List
+	public void loadMaterialList() {
+		try {
+			List<MaterialDM> list = new ArrayList<MaterialDM>();
+			list.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null, "Active",
+					"P"));
+			BeanContainer<Long, MaterialDM> beanmaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
+			beanmaterial.setBeanIdProperty("materialId");
+			beanmaterial.addAll(list);
+			cbMaterial.setContainerDataSource(beanmaterial);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -309,6 +344,91 @@ public class DashboardStoreView implements ClickListener {
 			UI.getCurrent().getSession().setAttribute("screenName", "Material");
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new Material();
+		}
+		if (event.getButton() == btnGatepass) {
+			clMainLayout.removeAllComponents();
+			hlHeader.removeAllComponents();
+			UI.getCurrent().getSession().setAttribute("screenName", "Gatepass");
+			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
+			new MaterialGatepass();
+		}
+		if (event.getButton() == btnDC) {
+			clMainLayout.removeAllComponents();
+			hlHeader.removeAllComponents();
+			UI.getCurrent().getSession().setAttribute("screenName", "Delivery challan");
+			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
+			new DC();
+		}
+		if (event.getButton() == btnStockReport) {
+			showStockReport();
+		}
+		if (event.getButton() == btnLedgerInReport) {
+			showLedgerReport("I");
+		}
+		if (event.getButton() == btnLedgerOutReport) {
+			showLedgerReport("O");
+		}
+	}
+	
+	private void showLedgerReport(String inout) {
+		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, String> parameterMap = new HashMap<String, String>();
+			parameterMap.put("INOUT_FLAG", inout);
+			if (cbMaterial.getValue() != null) {
+				parameterMap.put("item_id", ((Long) cbMaterial.getValue()).toString());
+			} else {
+				parameterMap.put("item_id", (String) cbMaterial.getValue());
+			}
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "/WEB-INF/reports/materialledger"); // materialledger is the name of my jasper
+			// file.
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void showStockReport() {
+		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "/WEB-INF/reports/materialstock"); // materialstock is the name of my jasper
+			// file.
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

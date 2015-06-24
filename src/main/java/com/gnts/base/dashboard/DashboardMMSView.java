@@ -3,6 +3,7 @@ package com.gnts.base.dashboard;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Date;
 import org.apache.log4j.Logger;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.mms.domain.mst.MaterialDM;
@@ -242,12 +243,11 @@ public class DashboardMMSView implements ClickListener {
 		BeanItemContainer<POHdrDM> beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
 		beanpohdr.addAll(servicepohdr.getPOHdrList(companyId, null, null, null, null, null, "P"));
 		tblDeliveryPending.setContainerDataSource(beanpohdr);
-		tblDeliveryPending.setVisibleColumns(new Object[] { "pono", "vendorName", "balancePayAmount" });
-		tblDeliveryPending.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Balance Amount(Rs.)" });
+		tblDeliveryPending.setVisibleColumns(new Object[] { "pono", "vendorName", "expDate" });
+		tblDeliveryPending.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Delivery Date" });
 		tblDeliveryPending.setColumnWidth("pono", 150);
 		tblDeliveryPending.setColumnWidth("vendorName", 150);
-		tblDeliveryPending.setColumnAlignment("balancePayAmount", Align.RIGHT);
-		tblDeliveryPending.addGeneratedColumn("balancePayAmount", new ColumnGenerator() {
+		tblDeliveryPending.addGeneratedColumn("expDate", new ColumnGenerator() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
@@ -255,14 +255,14 @@ public class DashboardMMSView implements ClickListener {
 				@SuppressWarnings("unchecked")
 				BeanItem<POHdrDM> item = (BeanItem<POHdrDM>) source.getItem(itemId);
 				POHdrDM emp = (POHdrDM) item.getBean();
-				System.out.println("emp.getBalancePayAmount()--->" + emp.getBalancePayAmount());
-				DecimalFormat df = new DecimalFormat("#.00", new DecimalFormatSymbols());
-				if (emp.getBalancePayAmount().compareTo(new BigDecimal("5000")) > 0) {
-					return new Label("<p style='color:#EC9E20;font-size:14px;align=right'>"
-							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
+				if (emp.getExpDate1().after(new Date())) {
+					return new Label(
+							"<p style='color:#6CD4BD;font-size:14px;align=right'>" + emp.getExpDate() + "</p>",
+							ContentMode.HTML);
 				} else {
-					return new Label("<p style='color:#E26666;font-size:14px;align=right'>"
-							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
+					return new Label(
+							"<p style='color:#E26666;font-size:14px;align=right'>" + emp.getExpDate() + "</p>",
+							ContentMode.HTML);
 				}
 			}
 		});

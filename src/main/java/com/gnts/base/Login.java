@@ -136,7 +136,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 	String paramRefVersion;
 	String paramRefCopyright;
 	private Long loginCompanyId, userId, userLoginId, roleId, branchId, appScreenId, moduleId, employeeid, deptId,
-			quoteId, enquiryId, timezoneId, currenyId, countryid;
+			quoteId, enquiryId, timezoneId, currenyId, countryid,stateId;
 	private String currencysymbol;
 	private String systemUser;
 	private Logger logger = Logger.getLogger(Login.class.getName());
@@ -183,7 +183,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 		/*
 		 * HelpOverlay w = helpManager .addOverlay("","",null ); w.center(); addWindow(w);
 		 */
-		logger.info("fn_buildLoginView() calling");
+		logger.info("fn_buildLoginView() callloginCompanyIding");
 		addStyleName("login");
 		Random rand = new Random();
 		int randomNum = rand.nextInt((20 - 1) + 1) + 1;

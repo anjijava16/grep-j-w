@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="mmsenquiry" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
 	<property name="ireport.zoom" value="2.1435888100000033"/>
-	<property name="ireport.x" value="429"/>
-	<property name="ireport.y" value="301"/>
+	<property name="ireport.x" value="151"/>
+	<property name="ireport.y" value="349"/>
 	<style name="Crosstab Data Text" hAlign="Center"/>
-	<parameter name="ENQID" class="java.lang.String">
+	<parameter name="ENQID" class="java.lang.Long">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>

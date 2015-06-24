@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="loi" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
-	<property name="ireport.zoom" value="3.138428376721005"/>
+	<property name="ireport.zoom" value="1.1000000000000012"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="681"/>
+	<property name="ireport.y" value="338"/>
 	<style name="Crosstab Data Text" hAlign="Center"/>
-	<parameter name="ENQID" class="java.lang.String"/>
+	<parameter name="LOIID" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[select loihdr.loi_number,loihdr.ref_date ,v.vendor_name,v.vendor_address,v.contact_number,loihdr.subject,
 loihdr.remarks,m.materail_name ,loidtl.qty,loidtl.unit_rate,loidtl.remarks dtlremarks
@@ -13,7 +15,7 @@ t_mms_loi_dtl loidtl,m_base_vendor v,m_mms_material m
 where loihdr.loi_hdr_id = loidtl.loi_hdr_id
 and v.vendor_id=loihdr.vendor_id
 and m.material_id=loidtl.mat_id
-and loihdr.loi_hdr_id=$P{ENQID}]]>
+and loihdr.loi_hdr_id=$P{LOIID}]]>
 	</queryString>
 	<field name="LOI_NUMBER" class="java.lang.String"/>
 	<field name="REF_DATE" class="java.sql.Timestamp"/>

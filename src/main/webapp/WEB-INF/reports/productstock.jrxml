@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="productstock" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a8936763-1e64-4910-9eaf-f17bdd40c183">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="branch_id" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="prod_id" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT p.prod_name, b.branch_name, s.current_stock, p.prod_uom, p.prod_packed, p.prod_wieght, p.prod_cost, p.prod_cost * s.current_stock as stock_value
+FROM tbl_t_product_stock s, tbl_m_product p, tbl_m_branch b
+where s.prod_id = p.prod_id
+and s.branch_id = b.branch_id
+and s.branch_id =$P{branch_id}
+and s.prod_id=$P{prod_id}
+order by p.prod_name]]>
+	</queryString>
+	<field name="prod_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="branch_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="current_stock" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prod_uom" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prod_packed" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prod_wieght" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prod_cost" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="stock_value" class="java.lang.Double"/>
+	<variable name="stock_value_1" class="java.lang.Long" resetType="Group" resetGroup="branch" calculation="Sum">
+		<variableExpression><![CDATA[$F{stock_value}]]></variableExpression>
+	</variable>
+	<variable name="stock_value_2" class="java.lang.Long" resetType="Group" resetGroup="branch" calculation="Sum">
+		<variableExpression><![CDATA[$F{stock_value}]]></variableExpression>
+	</variable>
+	<group name="branch">
+		<groupExpression><![CDATA[$F{branch_name}]]></groupExpression>
+		<groupHeader>
+			<band height="30">
+				<textField>
+					<reportElement uuid="77fb11ad-b0f3-4ec2-8b8f-31ab2cb16d01" x="54" y="6" width="168" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{branch_name}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="0e3c48cc-74cc-4b45-bb60-fdbc2b39ea5e" x="0" y="5" width="50" height="15"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Branch :]]></text>
+				</staticText>
+				<line>
+					<reportElement uuid="91032afe-2dfb-4d8b-b976-c3655605ad98" x="0" y="25" width="555" height="1" forecolor="#999999"/>
+					<graphicElement>
+						<pen lineStyle="Dashed"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement uuid="e1d23c6a-1115-484c-8177-a89fdc54b0ef" x="341" y="6" width="113" height="15"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Branch Stock Value : ]]></text>
+				</staticText>
+				<textField evaluationTime="Group" evaluationGroup="branch">
+					<reportElement uuid="2d4f2e21-fc9c-4166-8b51-36a7ca16549a" x="464" y="6" width="87" height="14"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$V{stock_value_2}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="4"/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="49" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="f88958ba-d892-4cb9-8dd6-363626c9bffd" x="0" y="0" width="555" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC TOOL TECH (P) LTD.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="06f56dce-73b9-477b-810e-3b5a71dd8eac" x="0" y="20" width="555" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Product Stock Summary]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="29" splitType="Stretch">
+			<line>
+				<reportElement uuid="7f694eb7-fb3c-41c0-bceb-b16af57a2c65" x="0" y="2" width="555" height="1" forecolor="#999999"/>
+			</line>
+			<line>
+				<reportElement uuid="c4e29cfa-0ca7-4975-ad9d-2a7aa0b040c4" x="0" y="26" width="555" height="1" forecolor="#999999"/>
+			</line>
+			<staticText>
+				<reportElement uuid="097864b7-e95d-4ad7-9b37-d94ea5e8ce5b" x="0" y="7" width="154" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="607d24fb-8853-4fa4-aa83-35e2996548de" x="158" y="7" width="45" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Packed?]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7cc7ca6d-1f5e-4645-8b68-d51638f2082f" x="211" y="7" width="68" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Weight]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="aa7be812-4407-412d-bc96-b0bf360d0c5b" x="286" y="7" width="69" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Stock]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b332cd80-a91e-4edc-bcda-a7b241351e28" x="364" y="7" width="37" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[UOM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="cc0ca173-17ec-4ddc-b1dd-c96b5d9db9e4" x="464" y="7" width="83" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Stock Value]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f8d29644-aeaf-4985-b2d1-ee7f1bfeea47" x="406" y="7" width="54" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cost]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement uuid="26a17090-ac09-4f12-bf88-0367848b7379" x="0" y="4" width="154" height="14"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{prod_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="9a5e2b9d-fb89-4594-a145-4129ca7f361e" x="158" y="4" width="45" height="14"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{prod_packed}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="6825e7d8-c651-423d-bd3d-21a5a2899929" x="211" y="4" width="68" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{prod_wieght}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="3c4ee993-a0c7-478f-a6c0-ac8faef56712" x="286" y="4" width="69" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{current_stock}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="854d6d85-2fd4-4d79-ac3a-9d19f342cdb6" x="364" y="4" width="37" height="14"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{prod_uom}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement uuid="6095f9ec-01d6-4b17-a231-7751a932fea9" x="464" y="4" width="83" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{stock_value}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="cf9fe52e-62ce-4f91-b43d-daac9859ea39" x="406" y="4" width="54" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{prod_cost}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="1" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="24" splitType="Stretch">
+			<line>
+				<reportElement uuid="6080ba16-9ff8-408b-9262-384c0103b85a" x="0" y="2" width="555" height="1" forecolor="#999999"/>
+			</line>
+			<textField>
+				<reportElement uuid="1518bbb8-0ae6-48b7-a2fb-9a5a301b2fb7" x="431" y="6" width="80" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="e81f0b53-bd59-413c-a7fb-d1381f0a60ff" x="511" y="6" width="40" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement uuid="032ac970-de99-47cd-ba52-23383804ac11" x="0" y="6" width="154" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="3" splitType="Stretch"/>
+	</summary>
+</jasperReport>

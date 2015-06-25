@@ -131,7 +131,7 @@ public class Vendor extends BaseUI {
 		cbVendorTypeName.setWidth("150");
 		cbVendorTypeName.setItemCaptionPropertyId("vendortypename");
 		loadVendorTypeList();
-		// VendorCode text field
+		// VendorCode generator text field
 		tfVendorCode = new GERPTextField("Vendor Code");
 		tfVendorName.addBlurListener(new BlurListener() {
 			@Override

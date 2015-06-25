@@ -236,7 +236,7 @@ public class SmsInvoice extends BaseTransUI {
 		dfInvoiceDt = new GERPPopupDateField("Invoice Date");
 		dfInvoiceDt.setInputPrompt("Select Date");
 		dfInvoiceDt.setWidth("116");
-		dfprpnDt = new PopupDateField("Prep. Time");
+		dfprpnDt = new GERPPopupDateField("Prep. Time");
 		dfprpnDt.setDateFormat("dd-MMM-yyyy HH:mm");
 		dfprpnDt.setInputPrompt("Select Date");
 		dfprpnDt.setWidth("116");
@@ -1713,7 +1713,7 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 		cbEnqNumber.setValue(null);
 		cbPONumber.setValue(null);
 		ogInvoiceType.setValue(null);
-		dfprpnDt.setValue(DateUtils.getcurrentdate());
+		dfprpnDt.setValue(null);
 		dfShipmntDt.setValue(null);
 		tfLrNo.setValue("");
 		dfLRDate.setValue(null);

@@ -378,6 +378,7 @@ public class Vendor extends BaseUI {
 		cbCountry.setComponentError(null);
 		cbState.setComponentError(null);
 		cbCity.setComponentError(null);
+		tfVendorCode.setReadOnly(false);
 		tfVendorCode.setValue("");
 		cbVendorTypeName.setValue(null);
 		tfcontactno.setValue("");

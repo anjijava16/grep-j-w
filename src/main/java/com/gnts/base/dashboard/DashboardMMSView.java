@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import org.apache.log4j.Logger;
+import com.gnts.base.mst.Vendor;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.txn.MaterialStockDM;
@@ -48,6 +49,7 @@ public class DashboardMMSView implements ClickListener {
 	private Button btnBillsCount = new Button("17 Nos.", this);
 	private Button btnReceiptsCount = new Button("16 Nos.", this);
 	private Button btnAddMaterial = new Button("+  Add Material", this);
+	private Button btnAddVendor=new Button("+ Add Vendor",this);
 	private MaterialStockService servicematerialstock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
 	private MmsEnqHdrService serviceMmsEnqHdr = (MmsEnqHdrService) SpringContextHelper.getBean("MmsEnqHdr");
@@ -87,6 +89,7 @@ public class DashboardMMSView implements ClickListener {
 		btnBillsCount.setStyleName(Runo.BUTTON_LINK);
 		btnReceiptsCount.setStyleName(Runo.BUTTON_LINK);
 		btnAddMaterial.setStyleName(Runo.BUTTON_LINK);
+		btnAddVendor.setStyleName(Runo.BUTTON_LINK);
 		btnAddMaterial.setHtmlContentAllowed(true);
 		custom.addComponent(btnEnquiryCount, "enquiry");
 		custom.addComponent(btnQuotationCount, "quotation");
@@ -98,6 +101,8 @@ public class DashboardMMSView implements ClickListener {
 		custom.addComponent(btnAddMaterial, "addmaterial");
 		custom.addComponent(tblPaymentPending, "paymenttable");
 		custom.addComponent(tblDeliveryPending, "deliverypending");
+		custom.addComponent(btnAddVendor, "addVendor");
+		
 		tblMstScrSrchRslt.setHeight("300px");
 		tblEnquiry.setHeight("250px");
 		tblPaymentPending.setHeight("450px");
@@ -311,6 +316,13 @@ public class DashboardMMSView implements ClickListener {
 			UI.getCurrent().getSession().setAttribute("screenName", "Material");
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new Material();
+		}
+		if (event.getButton() == btnAddVendor) {
+			clMainLayout.removeAllComponents();
+			hlHeader.removeAllComponents();
+			UI.getCurrent().getSession().setAttribute("screenName", "Vendor");
+			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
+			new Vendor();
 		}
 	}
 }

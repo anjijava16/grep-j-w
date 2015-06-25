@@ -50,4 +50,26 @@ public class SerialNumberGenerator {
 		System.out.println("serialnumber--->"+serialnumber);
 		return serialnumber;
 	}
+	
+	public static String generateVendorCode(Long companyid, Long branchid, String vendortype, String refkey,
+			String vendorname) {
+		String serialnumber = "";
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "BS_VNDRCD").get(0);
+			System.out.println("slnoObj---->"+slnoObj);
+			logger.info("Serial No Generation  Data...===>" + companyid + "," + branchid + "," + vendortype);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + vendortype
+						+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey() + slnoObj.getSuffixCncat()
+						+ slnoObj.getCurrSeqNo();
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("serialnumber--->"+serialnumber);
+		return serialnumber;
+	}
+	
+	
 }

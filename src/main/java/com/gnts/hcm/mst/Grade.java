@@ -32,7 +32,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.mst.GradeDM;
 import com.gnts.hcm.service.mst.GradeService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
@@ -41,9 +40,9 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class Grade extends BaseUI {
 	// Bean creation
@@ -62,7 +61,6 @@ public class Grade extends BaseUI {
 	private int gradeByhiry = 0;
 	// BeanItemContainer
 	private BeanItemContainer<GradeDM> beanGradeDM = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// local variables declaration
 	private Long companyid, moduleId;
 	private Long maxsal = 0L;
@@ -86,7 +84,6 @@ public class Grade extends BaseUI {
 	}
 	
 	// Build the UI components
-	@SuppressWarnings("deprecation")
 	private void buildview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting Grade UI");
 		// Status ComboBox
@@ -106,12 +103,12 @@ public class Grade extends BaseUI {
 		// Grade Hierarchy text field
 		tfGRDHierachy = new GERPTextField("Grade Hierarchy");
 		tfGRDHierachy.setValue("0");
-		tfGRDHierachy.addListener(new BlurListener() {
+		tfGRDHierachy.addBlurListener(new BlurListener() {
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			public void blur(BlurEvent event) {
 				// TODO Auto-generated method stub
 				try {
@@ -201,11 +198,13 @@ public class Grade extends BaseUI {
 		beanGradeDM.addAll(gradeList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Grade. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanGradeDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "gradeId", "gradeDESC", "gradeLvl", "status",
-				"lastUpdatedBy", "lastUpdatedDate" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Grand Desc.", "Grade Level", "Status",
-				"Last Updated By", "Last Updated Date" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "gradeId", "gradeDESC", "gradeLvl", "minSal", "maxSal",
+				"status", "lastUpdatedBy", "lastUpdatedDate" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Grand Desc.", "Grade Level", "Min Salary",
+				"Max Salary", "Status", "Last Updated By", "Last Updated Date" });
 		tblMstScrSrchRslt.setColumnAlignment("gradeId", Align.RIGHT);
+		tblMstScrSrchRslt.setColumnAlignment("minSal", Align.RIGHT);
+		tblMstScrSrchRslt.setColumnAlignment("maxSal", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedDate", "No.of Records : " + recordCnt);
 	}
 	
@@ -227,28 +226,27 @@ public class Grade extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editGrade() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		GradeDM editGrade = beanGradeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		pkGradeId = editGrade.getGradeId().toString();
-		if (itselect.getItemProperty("gradeDESC") != null && !"null".equals(itselect.getItemProperty("gradeDESC"))) {
-			tfGRDDesc.setValue(itselect.getItemProperty("gradeDESC").getValue().toString());
+		if (editGrade.getGradeDESC() != null) {
+			tfGRDDesc.setValue(editGrade.getGradeDESC());
 		}
 		if (editGrade.getMinSal() != null) {
-			tfMinSal.setValue(itselect.getItemProperty("minSal").getValue().toString());
+			tfMinSal.setValue(editGrade.getMinSal().toString());
 		}
 		if (editGrade.getMaxSal() != null) {
-			tfMaxSal.setValue(itselect.getItemProperty("maxSal").getValue().toString());
+			tfMaxSal.setValue(editGrade.getMaxSal().toString());
 		}
 		if (editGrade.getNoOfLates() != null) {
-			tfNoLates.setValue(itselect.getItemProperty("noOfLates").getValue().toString());
+			tfNoLates.setValue(editGrade.getNoOfLates().toString());
 		}
 		if (editGrade.getGradeHirarchy() != null) {
-			tfGRDHierachy.setValue(itselect.getItemProperty("gradeHirarchy").getValue().toString());
+			tfGRDHierachy.setValue(editGrade.getGradeHirarchy().toString());
 		}
 		if (editGrade.getNoOfPermission() != null) {
-			tfPermission.setValue(itselect.getItemProperty("noOfPermission").getValue().toString());
+			tfPermission.setValue(editGrade.getNoOfPermission().toString());
 		}
-		cbStatus.setValue(itselect.getItemProperty("status").getValue());
+		cbStatus.setValue(editGrade.getStatus());
 		cbGRDLvl.setValue(editGrade.getGradeLvl());
 	}
 	
@@ -397,11 +395,11 @@ public class Grade extends BaseUI {
 	
 	public void loadGRDLvl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_GRDLVL");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+				"HC_GRDLVL"));
 		cbGRDLvl.setContainerDataSource(beanCompanyLookUp);
 	}
 }

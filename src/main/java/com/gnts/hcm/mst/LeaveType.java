@@ -29,16 +29,15 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.mst.LeaveTypeDM;
 import com.gnts.hcm.service.mst.LeaveTypeService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class LeaveType extends BaseUI {
 	private LeaveTypeService serviceLeaveType = (LeaveTypeService) SpringContextHelper.getBean("LeaveType");
@@ -140,18 +139,18 @@ public class LeaveType extends BaseUI {
 		List<LeaveTypeDM> leaveTypeList = new ArrayList<LeaveTypeDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfLeaveTypeName.getValue() + ", " + cbLeaveTypeStatus.getValue());
-		leaveTypeList = serviceLeaveType.getLeaveTypeList(null, tfLeaveTypeName.getValue(), companyid, tfSymbol.getValue(),null,
-				(String) cbLeaveTypeStatus.getValue(), "F");
+		leaveTypeList = serviceLeaveType.getLeaveTypeList(null, tfLeaveTypeName.getValue(), companyid,
+				tfSymbol.getValue(), null, (String) cbLeaveTypeStatus.getValue(), "F");
 		recordCnt = leaveTypeList.size();
 		beanLeaveType = new BeanItemContainer<LeaveTypeDM>(LeaveTypeDM.class);
 		beanLeaveType.addAll(leaveTypeList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Leave Type. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanLeaveType);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "leaveTypeId", "leaveTypeName","leaveTypeSymbl", "leaveTypeStatus",
-				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Leave Type Name", "Symbol","Status", "Last Updated Date",
-				"Last Updated By" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "leaveTypeId", "leaveTypeName", "leaveTypeSymbl",
+				"leaveTypeStatus", "lastUpdatedDate", "lastUpdatedBy" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Leave Type Name", "Symbol", "Status",
+				"Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("leaveTypeId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
@@ -172,23 +171,22 @@ public class LeaveType extends BaseUI {
 	private void editLeaveType() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		LeaveTypeDM editLeaveType = beanLeaveType.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		leaveTypeId = editLeaveType.getLeaveTypeId().toString();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected LeaveType. Id -> "
 				+ leaveTypeId);
 		if (editLeaveType.getLeaveTypeName() != null) {
-			tfLeaveTypeName.setValue(itselect.getItemProperty("leaveTypeName").getValue().toString());
+			tfLeaveTypeName.setValue(editLeaveType.getLeaveTypeName());
 		}
 		if (editLeaveType.getLeaveTypeSymbl() != null) {
-			tfSymbol.setValue(itselect.getItemProperty("leaveTypeSymbl").getValue().toString());
+			tfSymbol.setValue(editLeaveType.getLeaveTypeSymbl());
 		}
 		if (editLeaveType.getLeaveTypeCarryFrwd().equals("Y")) {
 			ckCarryFrwd.setValue(true);
 		} else {
 			ckCarryFrwd.setValue(false);
 		}
-		cbLeaveTypeStatus.setValue(itselect.getItemProperty("leaveTypeStatus").getValue());
+		cbLeaveTypeStatus.setValue(editLeaveType.getLeaveTypeStatus());
 	}
 	
 	// Base class implementations

@@ -35,7 +35,6 @@ import com.gnts.hcm.domain.mst.GradeEarningsDM;
 import com.gnts.hcm.service.mst.EarningsService;
 import com.gnts.hcm.service.mst.GradeEarningService;
 import com.gnts.hcm.service.mst.GradeService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -66,12 +65,8 @@ public class GradeEarning extends BaseUI {
 	private ComboBox cbStatus, cbGradeDesc, cbEarnDesc, cbOnBasicGros, cbFlatPercent;
 	// BeanItemContainer
 	private BeanItemContainer<GradeEarningsDM> beanGradeEarningDM = null;
-	private BeanContainer<Long, GradeDM> beanGradeDM = null;
-	private BeanContainer<Long, EarningsDM> beanEarningsDM = null;
 	// local variables declaration
 	private Long companyid;
-	private Long maxsal = 0L;
-	private Long minsal = 0L;
 	private String departId, pkGradeEarningId;
 	private int recordCnt = 0;
 	private int gradeByhiry = 0;
@@ -284,24 +279,23 @@ public class GradeEarning extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editGradeEarning() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			GradeEarningsDM editGradeEarning = beanGradeEarningDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			pkGradeEarningId = editGradeEarning.getGrdEarnId().toString();
 			if (editGradeEarning.getMinVal() != null) {
-				tfMinValue.setValue(itselect.getItemProperty("minVal").getValue().toString());
+				tfMinValue.setValue(editGradeEarning.getMinVal().toString());
 			}
 			if (editGradeEarning.getMaxVal() != null) {
-				tfMaxValue.setValue(itselect.getItemProperty("maxVal").getValue().toString());
+				tfMaxValue.setValue(editGradeEarning.getMaxVal().toString());
 			}
 			if (editGradeEarning.getEarnPercent() != null) {
-				tfEarnPercent.setValue(itselect.getItemProperty("earnPercent").getValue().toString());
+				tfEarnPercent.setValue(editGradeEarning.getEarnPercent().toString());
 			}
-			cbStatus.setValue(itselect.getItemProperty("status").getValue());
+			cbStatus.setValue(editGradeEarning.getStatus());
 			cbGradeDesc.setValue(editGradeEarning.getGradeId());
 			cbEarnDesc.setValue(editGradeEarning.getEarnId());
-			cbFlatPercent.setValue(itselect.getItemProperty("isFlatPer").getValue());
-			cbOnBasicGros.setValue(itselect.getItemProperty("onBasicGros").getValue());
+			cbFlatPercent.setValue(editGradeEarning.getIsFlatPer());
+			cbOnBasicGros.setValue(editGradeEarning.getOnBasicGros());
 		}
 	}
 	
@@ -405,9 +399,9 @@ public class GradeEarning extends BaseUI {
 			cbEarnDesc.setComponentError(new UserError(GERPErrorCodes.NULL_EARN_NAME));
 			errorFlag = true;
 		}
-		minsal = Long.valueOf(tfMinValue.getValue().toString());
-		maxsal = Long.valueOf(tfMaxValue.getValue().toString());
-		if (minsal > maxsal) {
+		BigDecimal minsal = new BigDecimal(tfMinValue.getValue().toString());
+		BigDecimal maxsal = new BigDecimal(tfMaxValue.getValue().toString());
+		if (minsal.compareTo(maxsal) > 0) {
 			tfMaxValue.setComponentError(new UserError("Maximum Value is greater than minimum Value"));
 			errorFlag = true;
 		}
@@ -420,43 +414,43 @@ public class GradeEarning extends BaseUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			GradeEarningsDM GradeEarningObj = new GradeEarningsDM();
+			GradeEarningsDM gradeEarningObj = new GradeEarningsDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				GradeEarningObj = beanGradeEarningDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				gradeEarningObj = beanGradeEarningDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			if (tfMinValue.getValue() != null && tfMinValue.getValue().trim().length() > 0) {
-				GradeEarningObj.setMinVal(Long.valueOf(tfMinValue.getValue()));
+				gradeEarningObj.setMinVal(new BigDecimal(tfMinValue.getValue()));
 			} else {
-				GradeEarningObj.setMinVal(new Long("0"));
+				gradeEarningObj.setMinVal(new BigDecimal("0"));
 			}
 			if (tfMaxValue.getValue() != null && tfMaxValue.getValue().trim().length() > 0) {
-				GradeEarningObj.setMaxVal(Long.valueOf(tfMaxValue.getValue()));
+				gradeEarningObj.setMaxVal(new BigDecimal(tfMaxValue.getValue()));
 			} else {
-				GradeEarningObj.setMaxVal(new Long("0"));
+				gradeEarningObj.setMaxVal(new BigDecimal("0"));
 			}
 			if (tfEarnPercent.getValue() != null && tfEarnPercent.getValue().trim().length() > 0) {
-				GradeEarningObj.setEarnPercent(new BigDecimal(tfEarnPercent.getValue()));
+				gradeEarningObj.setEarnPercent(new BigDecimal(tfEarnPercent.getValue()));
 			} else {
-				GradeEarningObj.setEarnPercent(new BigDecimal("0"));
+				gradeEarningObj.setEarnPercent(new BigDecimal("0"));
 			}
 			if (cbStatus.getValue() != null) {
-				GradeEarningObj.setStatus((String) cbStatus.getValue());
+				gradeEarningObj.setStatus((String) cbStatus.getValue());
 			}
 			if (cbFlatPercent.getValue() != null) {
-				GradeEarningObj.setIsFlatPer((String) cbFlatPercent.getValue());
+				gradeEarningObj.setIsFlatPer((String) cbFlatPercent.getValue());
 			}
 			if (cbOnBasicGros.getValue() != null) {
-				GradeEarningObj.setOnBasicGros((String) cbOnBasicGros.getValue());
+				gradeEarningObj.setOnBasicGros((String) cbOnBasicGros.getValue());
 			}
 			if (cbGradeDesc.getValue() != null) {
-				GradeEarningObj.setGradeId((Long.valueOf(cbGradeDesc.getValue().toString())));
+				gradeEarningObj.setGradeId((Long.valueOf(cbGradeDesc.getValue().toString())));
 			}
 			if (cbEarnDesc.getValue() != null) {
-				GradeEarningObj.setEarnId((Long.valueOf(cbEarnDesc.getValue().toString())));
+				gradeEarningObj.setEarnId((Long.valueOf(cbEarnDesc.getValue().toString())));
 			}
-			GradeEarningObj.setLastUpdatedDate(DateUtils.getcurrentdate());
-			GradeEarningObj.setLastUpdatedBy(username);
-			serviceGradeEarning.saveAndUpdate(GradeEarningObj);
+			gradeEarningObj.setLastUpdatedDate(DateUtils.getcurrentdate());
+			gradeEarningObj.setLastUpdatedBy(username);
+			serviceGradeEarning.saveAndUpdate(gradeEarningObj);
 			resetFields();
 			loadSrchRslt();
 		}
@@ -467,20 +461,18 @@ public class GradeEarning extends BaseUI {
 	
 	public void loadGradeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<GradeDM> gradeList = serviceGrade.getGradeList(null, null, null, companyid, "Active", "P");
-		beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
+		BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
 		beanGradeDM.setBeanIdProperty("gradeId");
-		beanGradeDM.addAll(gradeList);
+		beanGradeDM.addAll(serviceGrade.getGradeList(null, null, null, companyid, "Active", "P"));
 		cbGradeDesc.setContainerDataSource(beanGradeDM);
 	}
 	
 	public void loadEarnList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-			List<EarningsDM> earnList = serviceEarnings.getEarningList(null, null, null, companyid, "Active", "F");
-			beanEarningsDM = new BeanContainer<Long, EarningsDM>(EarningsDM.class);
+			BeanContainer<Long, EarningsDM> beanEarningsDM = new BeanContainer<Long, EarningsDM>(EarningsDM.class);
 			beanEarningsDM.setBeanIdProperty("earnId");
-			beanEarningsDM.addAll(earnList);
+			beanEarningsDM.addAll(serviceEarnings.getEarningList(null, null, null, companyid, "Active", "F"));
 			cbEarnDesc.setContainerDataSource(beanEarningsDM);
 		}
 		catch (Exception e) {

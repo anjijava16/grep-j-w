@@ -13,6 +13,7 @@
  */
 package com.gnts.hcm.mst;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -34,7 +35,6 @@ import com.gnts.hcm.domain.mst.GradeDeductionDM;
 import com.gnts.hcm.service.mst.DeductionService;
 import com.gnts.hcm.service.mst.GradeDeductionService;
 import com.gnts.hcm.service.mst.GradeService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -65,12 +65,8 @@ public class GradeDeduction extends BaseUI {
 	private ComboBox cbStatus, cbGradeDesc, cbDednDesc, cbOnBasicGros, cbFlatOrPercent;
 	// BeanItemContainer
 	private BeanItemContainer<GradeDeductionDM> beanGradeEarningDM = null;
-	private BeanContainer<Long, GradeDM> beanGradeDM = null;
-	private BeanContainer<Long, DeductionDM> beanDeducDM = null;
 	// local variables declaration
 	private Long companyid;
-	private Long maxsal = 0L;
-	private Long minsal = 0L;
 	private String pkGradeEarningId;
 	private int recordCnt = 0;
 	private int gradeByhiry = 0;
@@ -284,24 +280,23 @@ public class GradeDeduction extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editGradeEarning() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			GradeDeductionDM editGradeEarning = beanGradeEarningDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			pkGradeEarningId = editGradeEarning.getGrdDednId().toString();
 			if (editGradeEarning.getMinVal() != null) {
-				tfMinValue.setValue(itselect.getItemProperty("minVal").getValue().toString());
+				tfMinValue.setValue(editGradeEarning.getMinVal().toString());
 			}
 			if (editGradeEarning.getMaxVal() != null) {
-				tfMaxValue.setValue(itselect.getItemProperty("maxVal").getValue().toString());
+				tfMaxValue.setValue(editGradeEarning.getMaxVal().toString());
 			}
 			if (editGradeEarning.getDednPercent() != null) {
-				tfDeduPercent.setValue(itselect.getItemProperty("dednPercent").getValue().toString());
+				tfDeduPercent.setValue(editGradeEarning.getDednPercent().toString());
 			}
-			cbStatus.setValue(itselect.getItemProperty("status").getValue());
+			cbStatus.setValue(editGradeEarning.getStatus());
 			cbGradeDesc.setValue(editGradeEarning.getGradeId());
 			cbDednDesc.setValue(editGradeEarning.getDednId());
-			cbFlatOrPercent.setValue(itselect.getItemProperty("isFlatPer").getValue());
-			cbOnBasicGros.setValue(itselect.getItemProperty("onBasicGros").getValue());
+			cbFlatOrPercent.setValue(editGradeEarning.getIsFlatPer());
+			cbOnBasicGros.setValue(editGradeEarning.getOnBasicGros());
 		}
 	}
 	
@@ -404,9 +399,9 @@ public class GradeDeduction extends BaseUI {
 			cbDednDesc.setComponentError(new UserError(GERPErrorCodes.NULL_DEDCTION_NAME));
 			errorFlag = true;
 		}
-		minsal = Long.valueOf(tfMinValue.getValue().toString());
-		maxsal = Long.valueOf(tfMaxValue.getValue().toString());
-		if (minsal > maxsal) {
+		BigDecimal minsal = new BigDecimal(tfMinValue.getValue().toString());
+		BigDecimal maxsal = new BigDecimal(tfMaxValue.getValue().toString());
+		if (minsal.compareTo(maxsal) > 0) {
 			tfMaxValue.setComponentError(new UserError("Maximum Value is greater than minimum Value"));
 			errorFlag = true;
 		}
@@ -419,43 +414,43 @@ public class GradeDeduction extends BaseUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			GradeDeductionDM GradeEarningObj = new GradeDeductionDM();
+			GradeDeductionDM gradeEarningObj = new GradeDeductionDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				GradeEarningObj = beanGradeEarningDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				gradeEarningObj = beanGradeEarningDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			if (tfMinValue.getValue() != null && tfMinValue.getValue().trim().length() > 0) {
-				GradeEarningObj.setMinVal(Long.valueOf(tfMinValue.getValue()));
+				gradeEarningObj.setMinVal(new BigDecimal(tfMinValue.getValue()));
 			} else {
-				GradeEarningObj.setMinVal(new Long("0"));
+				gradeEarningObj.setMinVal(new BigDecimal("0"));
 			}
 			if (tfMaxValue.getValue() != null && tfMaxValue.getValue().trim().length() > 0) {
-				GradeEarningObj.setMaxVal(Long.valueOf(tfMaxValue.getValue()));
+				gradeEarningObj.setMaxVal(new BigDecimal(tfMaxValue.getValue()));
 			} else {
-				GradeEarningObj.setMaxVal(new Long("0"));
+				gradeEarningObj.setMaxVal(new BigDecimal("0"));
 			}
 			if (tfDeduPercent.getValue() != null && tfDeduPercent.getValue().trim().length() > 0) {
-				GradeEarningObj.setDednPercent(Long.valueOf(tfDeduPercent.getValue()));
+				gradeEarningObj.setDednPercent(new BigDecimal(tfDeduPercent.getValue()));
 			} else {
-				GradeEarningObj.setDednPercent(new Long("0"));
+				gradeEarningObj.setDednPercent(new BigDecimal("0"));
 			}
 			if (cbStatus.getValue() != null) {
-				GradeEarningObj.setStatus((String) cbStatus.getValue());
+				gradeEarningObj.setStatus((String) cbStatus.getValue());
 			}
 			if (cbFlatOrPercent.getValue() != null) {
-				GradeEarningObj.setIsFlatPer((String) cbFlatOrPercent.getValue());
+				gradeEarningObj.setIsFlatPer((String) cbFlatOrPercent.getValue());
 			}
 			if (cbOnBasicGros.getValue() != null) {
-				GradeEarningObj.setOnBasicGros((String) cbOnBasicGros.getValue());
+				gradeEarningObj.setOnBasicGros((String) cbOnBasicGros.getValue());
 			}
 			if (cbGradeDesc.getValue() != null) {
-				GradeEarningObj.setGradeId((Long.valueOf(cbGradeDesc.getValue().toString())));
+				gradeEarningObj.setGradeId((Long.valueOf(cbGradeDesc.getValue().toString())));
 			}
 			if (cbDednDesc.getValue() != null) {
-				GradeEarningObj.setDednId((Long.valueOf(cbDednDesc.getValue().toString())));
+				gradeEarningObj.setDednId((Long.valueOf(cbDednDesc.getValue().toString())));
 			}
-			GradeEarningObj.setLastUpdatedDate(DateUtils.getcurrentdate());
-			GradeEarningObj.setLastUpdatedBy(username);
-			serviceGradeDeduction.saveAndUpdate(GradeEarningObj);
+			gradeEarningObj.setLastUpdatedDate(DateUtils.getcurrentdate());
+			gradeEarningObj.setLastUpdatedBy(username);
+			serviceGradeDeduction.saveAndUpdate(gradeEarningObj);
 			resetFields();
 			loadSrchRslt();
 		}
@@ -467,7 +462,7 @@ public class GradeDeduction extends BaseUI {
 	public void loadGradeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 		List<GradeDM> gradeList = serviceGrade.getGradeList(null, null, null, companyid, null, "P");
-		beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
+		BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
 		beanGradeDM.setBeanIdProperty("gradeId");
 		beanGradeDM.addAll(gradeList);
 		cbGradeDesc.setContainerDataSource(beanGradeDM);
@@ -477,7 +472,7 @@ public class GradeDeduction extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 			List<DeductionDM> earnList = serviceDeduction.getDuctionList(null, null, companyid, null, null, "P");
-			beanDeducDM = new BeanContainer<Long, DeductionDM>(DeductionDM.class);
+			BeanContainer<Long, DeductionDM> beanDeducDM = new BeanContainer<Long, DeductionDM>(DeductionDM.class);
 			beanDeducDM.setBeanIdProperty("deductionId");
 			beanDeducDM.addAll(earnList);
 			cbDednDesc.setContainerDataSource(beanDeducDM);

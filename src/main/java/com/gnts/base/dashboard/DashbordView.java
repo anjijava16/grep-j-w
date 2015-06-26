@@ -1,7 +1,6 @@
 package com.gnts.base.dashboard;
 
 import com.gnts.base.mst.Product;
-import com.gnts.base.rpt.MultipleAxes;
 import com.gnts.base.service.mst.ProductService;
 import com.gnts.crm.mst.Client;
 import com.gnts.crm.service.mst.ClientService;
@@ -92,8 +91,6 @@ public class DashbordView implements ClickListener {
 		hlHeader.addComponent(lblDashboardTitle);
 		hlHeader.setComponentAlignment(lblDashboardTitle, Alignment.MIDDLE_LEFT);
 		clMainLayout.addComponent(custom);
-		MultipleAxes multipleAxes = new MultipleAxes();
-		custom.addComponent(multipleAxes.getChart(), "marketchart");
 		custom.addComponent(btnEnquiryCount, "enquirycount");
 		custom.addComponent(btnQuotationCount, "quotationcount");
 		custom.addComponent(btnPOCount, "pocount");

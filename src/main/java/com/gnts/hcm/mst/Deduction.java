@@ -29,9 +29,7 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.mst.DeductionDM;
-import com.gnts.hcm.domain.mst.EarningsDM;
 import com.gnts.hcm.service.mst.DeductionService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanItemContainer;
@@ -42,9 +40,9 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class Deduction extends BaseUI {
 	// Bean creation
@@ -85,7 +83,6 @@ public class Deduction extends BaseUI {
 	}
 	
 	// Build the UI components
-	@SuppressWarnings("deprecation")
 	private void buildview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting Deduction UI");
 		// Status ComboBox
@@ -96,7 +93,9 @@ public class Deduction extends BaseUI {
 		tfDeduPercent = new GERPTextField("Deduction Percent");
 		tfDeduPercent.setWidth("70");
 		tfDeduPercent.setValue("0");
-		tfDeduPercent.addListener(new Property.ValueChangeListener() {
+		tfDeduPercent.addValueChangeListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				percentValidation();
@@ -105,7 +104,7 @@ public class Deduction extends BaseUI {
 		// Deduction Code text field
 		tfDeduCode = new GERPTextField("Deduction Code");
 		tfDeduCode.setWidth("50");
-		tfDeduCode.addListener(new BlurListener() {
+		tfDeduCode.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
@@ -189,11 +188,12 @@ public class Deduction extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Deduction. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanDeductionDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "deductionId", "deductionCode", "deducnDesc", "status",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "deductionId", "deductionCode", "deducnDesc","dedcnPercent", "status",
 				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Deduction Code", "Deduction Desc", "Status",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Deduction Code", "Deduction Desc","Percentage (%)", "Status",
 				"Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("deductionId", Align.RIGHT);
+		tblMstScrSrchRslt.setColumnAlignment("dedcnPercent", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
 	
@@ -212,24 +212,23 @@ public class Deduction extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editDeduction() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		DeductionDM editDeduction = beanDeductionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		pkDeductionId = editDeduction.getDeductionId().toString();
 		if (editDeduction.getDeducnDesc() != null) {
-			tfDeduDesc.setValue(itselect.getItemProperty("deducnDesc").getValue().toString());
+			tfDeduDesc.setValue(editDeduction.getDeducnDesc());
 		}
 		if (editDeduction.getDeductionCode() != null) {
-			tfDeduCode.setValue(itselect.getItemProperty("deductionCode").getValue().toString());
+			tfDeduCode.setValue(editDeduction.getDeductionCode());
 		}
 		if (editDeduction.getDedcnPercent() != null) {
-			tfDeduPercent.setValue(itselect.getItemProperty("dedcnPercent").getValue().toString());
+			tfDeduPercent.setValue(editDeduction.getDedcnPercent().toString());
 		}
 		if (editDeduction.getAppAllGRD().equals("Y")) {
 			chkAppAllGRD.setValue(true);
 		} else {
 			chkAppAllGRD.setValue(false);
 		}
-		cbStatus.setValue(itselect.getItemProperty("status").getValue());
+		cbStatus.setValue(editDeduction.getStatus());
 	}
 	
 	// Base class implementations

@@ -32,7 +32,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.mst.EarningsDM;
 import com.gnts.hcm.service.mst.EarningsService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -40,9 +39,9 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class Earnings extends BaseUI {
 	// Bean creation
@@ -50,18 +49,17 @@ public class Earnings extends BaseUI {
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	// Form layout for input controls
-	private FormLayout flColumn1, flColumn2, flColumn3,flColumn4,flColumn5;
+	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4, flColumn5;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// Add User Input Controls
-	private TextField tfEarnDESC, tfEarnCode;
+	private TextField tfEarnDesc, tfEarnCode;
 	private ComboBox cbStatus, cbEarnType;
 	private CheckBox chkIsTax;
 	// BeanItemContainer
 	private BeanItemContainer<EarningsDM> beanEarningsDM = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// local variables declaration
 	private Long companyid, moduleId;
 	private String pkEarningsId;
@@ -89,7 +87,7 @@ public class Earnings extends BaseUI {
 		// Status ComboBox
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// Earnings Description text field
-		tfEarnDESC = new GERPTextField("Earnings Description");
+		tfEarnDesc = new GERPTextField("Earnings Description");
 		// Earnings Type ComboBox
 		cbEarnType = new GERPComboBox("Earning Type");
 		cbEarnType.setItemCaptionPropertyId("lookupname");
@@ -115,7 +113,7 @@ public class Earnings extends BaseUI {
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
 		flColumn1.addComponent(tfEarnCode);
-		flColumn2.addComponent(tfEarnDESC);
+		flColumn2.addComponent(tfEarnDesc);
 		flColumn3.addComponent(cbStatus);
 		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn2);
@@ -135,7 +133,7 @@ public class Earnings extends BaseUI {
 		flColumn4 = new FormLayout();
 		flColumn5 = new FormLayout();
 		flColumn1.addComponent(tfEarnCode);
-		flColumn2.addComponent(tfEarnDESC);
+		flColumn2.addComponent(tfEarnDesc);
 		flColumn3.addComponent(cbEarnType);
 		flColumn4.addComponent(chkIsTax);
 		flColumn5.addComponent(cbStatus);
@@ -155,19 +153,19 @@ public class Earnings extends BaseUI {
 		tblMstScrSrchRslt.removeAllItems();
 		List<EarningsDM> EarningsList = new ArrayList<EarningsDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfEarnDESC.getValue() + ", " + tfEarnDESC.getValue()
+				+ companyid + ", " + tfEarnDesc.getValue() + ", " + tfEarnDesc.getValue()
 				+ (String) cbStatus.getValue());
-		EarningsList = serviceEarnings.getEarningList(null, tfEarnCode.getValue(), tfEarnDESC.getValue(), null,
+		EarningsList = serviceEarnings.getEarningList(null, tfEarnCode.getValue(), tfEarnDesc.getValue(), null,
 				(String) cbStatus.getValue(), "F");
 		recordCnt = EarningsList.size();
 		beanEarningsDM = new BeanItemContainer<EarningsDM>(EarningsDM.class);
 		beanEarningsDM.addAll(EarningsList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Earnings. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanEarningsDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "earnId", "earnCode", "earnDESCR", "status",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "earnId", "earnCode", "earnDESCR", "earnType", "status",
 				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Earn Code", "Earn Description", "Status",
-				"Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Earn Code", "Earn Description", "Earning Type",
+				"Status", "Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("earnId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
@@ -177,38 +175,33 @@ public class Earnings extends BaseUI {
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
-		tfEarnDESC.setValue("");
+		tfEarnDesc.setValue("");
 		tfEarnCode.setValue("");
-		cbEarnType.setValue("");
+		cbEarnType.setValue(null);
 		chkIsTax.setValue(false);
-		tfEarnDESC.setComponentError(null);
+		tfEarnDesc.setComponentError(null);
 		tfEarnCode.setComponentError(null);
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editEarnings() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		EarningsDM editEarnings = beanEarningsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		pkEarningsId = editEarnings.getEarnId().toString();
-		if (itselect.getItemProperty("EarningsDESC") != null
-				&& !"null".equals(itselect.getItemProperty("EarningsDESC"))) {
-			tfEarnDESC.setValue(itselect.getItemProperty("EarningsDESC").getValue().toString());
-		}
 		if (editEarnings.getEarnCode() != null) {
-			tfEarnCode.setValue(itselect.getItemProperty("earnCode").getValue().toString());
+			tfEarnCode.setValue(editEarnings.getEarnCode());
 		}
 		if (editEarnings.getEarnDESCR() != null) {
-			tfEarnDESC.setValue(itselect.getItemProperty("earnDESCR").getValue().toString());
+			tfEarnDesc.setValue(editEarnings.getEarnDESCR());
 		}
 		if (editEarnings.getEarnType() != null) {
-			cbEarnType.setValue(itselect.getItemProperty("earnType").getValue().toString());
+			cbEarnType.setValue(editEarnings.getEarnType());
 		}
 		if (editEarnings.getIsTax().equals("Y")) {
 			chkIsTax.setValue(true);
 		} else {
 			chkIsTax.setValue(false);
 		}
-		cbStatus.setValue(itselect.getItemProperty("status").getValue());
+		cbStatus.setValue(editEarnings.getStatus());
 	}
 	
 	// Base class implementations
@@ -232,7 +225,7 @@ public class Earnings extends BaseUI {
 	protected void resetSearchDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting search fields and reloading the result");
-		tfEarnDESC.setValue("");
+		tfEarnDesc.setValue("");
 		tfEarnCode.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		// reset the field valued to default
@@ -250,7 +243,7 @@ public class Earnings extends BaseUI {
 		hlUserInputLayout.removeAllComponents();
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		tfEarnDESC.setRequired(true);
+		tfEarnDesc.setRequired(true);
 		tfEarnCode.setRequired(true);
 	}
 	
@@ -266,7 +259,7 @@ public class Earnings extends BaseUI {
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assembleSearchLayout();
-		tfEarnDESC.setRequired(false);
+		tfEarnDesc.setRequired(false);
 		tfEarnCode.setRequired(false);
 		tblMstScrSrchRslt.setValue(null);
 		resetFields();
@@ -277,7 +270,7 @@ public class Earnings extends BaseUI {
 	protected void editDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Invoking Edit record ");
 		resetFields();
-		tfEarnDESC.setRequired(true);
+		tfEarnDesc.setRequired(true);
 		tfEarnCode.setRequired(true);
 		hlUserInputLayout.removeAllComponents();
 		assembleUserInputLayout();
@@ -289,13 +282,13 @@ public class Earnings extends BaseUI {
 	@Override
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		tfEarnDESC.setComponentError(null);
+		tfEarnDesc.setComponentError(null);
 		tfEarnCode.setComponentError(null);
 		errorFlag = false;
-		if ((tfEarnDESC.getValue() == null) || tfEarnDESC.getValue().trim().length() == 0) {
-			tfEarnDESC.setComponentError(new UserError(GERPErrorCodes.NULL_EARNING_DESC));
+		if ((tfEarnDesc.getValue() == null) || tfEarnDesc.getValue().trim().length() == 0) {
+			tfEarnDesc.setComponentError(new UserError(GERPErrorCodes.NULL_EARNING_DESC));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + tfEarnDESC.getValue());
+					+ "Throwing ValidationException. User data is > " + tfEarnDesc.getValue());
 			errorFlag = true;
 		}
 		if ((tfEarnCode.getValue() == "") || tfEarnCode.getValue().trim().length() == 0) {
@@ -326,8 +319,8 @@ public class Earnings extends BaseUI {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			earningObj = beanEarningsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		if (tfEarnDESC.getValue() != null) {
-			earningObj.setEarnDESCR(tfEarnDESC.getValue().toString());
+		if (tfEarnDesc.getValue() != null) {
+			earningObj.setEarnDESCR(tfEarnDesc.getValue().toString());
 		}
 		if (cbEarnType.getValue() != null) {
 			earningObj.setEarnType(cbEarnType.getValue().toString());
@@ -353,11 +346,10 @@ public class Earnings extends BaseUI {
 	
 	public void loadCmpLkup() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_ERNTYPE");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+				"HC_ERNTYPE"));
 		cbEarnType.setContainerDataSource(beanCompanyLookUp);
 	}
 }

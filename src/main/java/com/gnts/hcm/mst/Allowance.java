@@ -29,18 +29,16 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.mst.AllowanceDM;
-import com.gnts.hcm.domain.mst.DeductionDM;
 import com.gnts.hcm.service.mst.AllowanceService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class Allowance extends BaseUI {
 	// Bean creation
@@ -55,7 +53,6 @@ public class Allowance extends BaseUI {
 	private TextField tfAlowncDesc, tfAlownceCode;
 	private ComboBox cbStatus;
 	private CheckBox chkAddToGros;
-	private Boolean errorFlag = false;
 	// BeanItemContainer
 	private BeanItemContainer<AllowanceDM> beanAllowanceDM = null;
 	// local variables declaration
@@ -110,8 +107,8 @@ public class Allowance extends BaseUI {
 		flColumn1.addComponent(tfAlownceCode);
 		flColumn2.addComponent(tfAlowncDesc);
 		flColumn3.addComponent(cbStatus);
-		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn2);
+		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn3);
 		hlSearchLayout.setMargin(true);
 		hlSearchLayout.setSizeUndefined();
@@ -177,21 +174,20 @@ public class Allowance extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editAllowance() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		AllowanceDM editAllowance = beanAllowanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		pkAllowanceId = editAllowance.getAlowncId().toString();
 		if (editAllowance.getAlowncDesc() != null) {
-			tfAlowncDesc.setValue(itselect.getItemProperty("alowncDesc").getValue().toString());
+			tfAlowncDesc.setValue(editAllowance.getAlowncDesc());
 		}
 		if (editAllowance.getAlowncCode() != null) {
-			tfAlownceCode.setValue(itselect.getItemProperty("alowncCode").getValue().toString());
+			tfAlownceCode.setValue(editAllowance.getAlowncCode());
 		}
 		if (editAllowance.getAddToGross().equals("Y")) {
 			chkAddToGros.setValue(true);
 		} else {
 			chkAddToGros.setValue(false);
 		}
-		cbStatus.setValue(itselect.getItemProperty("status").getValue());
+		cbStatus.setValue(editAllowance.getStatus());
 	}
 	
 	// Base class implementations

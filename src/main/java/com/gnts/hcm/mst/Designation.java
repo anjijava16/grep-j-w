@@ -35,7 +35,6 @@ import com.gnts.hcm.domain.mst.JobClassificationDM;
 import com.gnts.hcm.service.mst.DesignationService;
 import com.gnts.hcm.service.mst.GradeService;
 import com.gnts.hcm.service.mst.JobClassificationService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -64,11 +63,8 @@ public class Designation extends BaseUI {
 	private ComboBox cbStatus, cbGRDDesc, cbJobClsName;
 	// BeanItemContainer
 	private BeanItemContainer<DesignationDM> beanDesignationDM = null;
-	private BeanContainer<Long, GradeDM> beanGradeDM = null;
-	private BeanContainer<Long, JobClassificationDM> beanClsFcnDM = null;
 	// local variables declaration
 	private Long companyid;
-	public static boolean filevalue = false;
 	private String departId, pkDesigId;
 	private int recordCnt = 0;
 	private String username;
@@ -184,7 +180,7 @@ public class Designation extends BaseUI {
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Designation Name", "Grade Desc.",
 				"Job classification Name", "Status", "Last Updated Date", "Last Updated By", });
 		tblMstScrSrchRslt.setColumnAlignment("designationId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedDate", "No.of Records : " + recordCnt);
+		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
 	
 	// Reset the field values to default values
@@ -204,18 +200,11 @@ public class Designation extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editDesignation() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		DesignationDM editDesignation = beanDesignationDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		pkDesigId = editDesignation.getDesignationId().toString();
-		if (itselect.getItemProperty("designationName") != null
-				&& !"null".equals(itselect.getItemProperty("designationName"))) {
-			tfDescName.setValue(itselect.getItemProperty("designationName").getValue().toString());
+		if (editDesignation.getDesignationName() != null) {
+			tfDescName.setValue(editDesignation.getDesignationName());
 		}
-		/*
-		 * if (itselect.getItemProperty("jobSpec").getValue() != null) { byte[] myimage = (byte[])
-		 * itselect.getItemProperty("jobSpec").getValue(); UploadUI test = new UploadUI(hlimage);
-		 * test.dispayImage(myimage); } else { new UploadUI(hlimage); }
-		 */
 		if (editDesignation.getJobSpec() != null) {
 			hlimage.removeAllComponents();
 			byte[] myimage = (byte[]) editDesignation.getJobSpec();
@@ -229,7 +218,7 @@ public class Designation extends BaseUI {
 				e.printStackTrace();
 			}
 		}
-		cbStatus.setValue(itselect.getItemProperty("status").getValue());
+		cbStatus.setValue(editDesignation.getStatus());
 		cbGRDDesc.setValue(Long.valueOf(editDesignation.getGradeId()));
 		cbJobClsName.setValue(Long.valueOf(editDesignation.getJobClasfnId().toString()));
 	}
@@ -364,11 +353,6 @@ public class Designation extends BaseUI {
 			if (cbStatus.getValue() != null) {
 				designationObj.setStatus((String) cbStatus.getValue());
 			}
-			/*
-			 * File file = new File(GERPConstants.IMAGE_PATH); FileInputStream fin = new FileInputStream(file); byte
-			 * fileContent[] = new byte[(int) file.length()]; fin.read(fileContent); fin.close();
-			 * designationObj.setJobSpec(fileContent);
-			 */
 			if ((Boolean) UI.getCurrent().getSession().getAttribute("isFileUploaded")) {
 				try {
 					designationObj.setJobSpec((byte[]) UI.getCurrent().getSession().getAttribute("imagebyte"));
@@ -392,20 +376,18 @@ public class Designation extends BaseUI {
 	
 	public void loadGRDLvl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<GradeDM> gradeList = serviceGrade.getGradeList(null, null, null, companyid, "Active", "P");
-		beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
+		BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
 		beanGradeDM.setBeanIdProperty("gradeId");
-		beanGradeDM.addAll(gradeList);
+		beanGradeDM.addAll(serviceGrade.getGradeList(null, null, null, companyid, "Active", "P"));
 		cbGRDDesc.setContainerDataSource(beanGradeDM);
 	}
 	
 	public void loadJobClassification() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<JobClassificationDM> jobClsFcnList = serviceJobclsFcn.getJobClassificationList(null, null, companyid,
-				"Active", "P");
-		beanClsFcnDM = new BeanContainer<Long, JobClassificationDM>(JobClassificationDM.class);
+		BeanContainer<Long, JobClassificationDM> beanClsFcnDM = new BeanContainer<Long, JobClassificationDM>(
+				JobClassificationDM.class);
 		beanClsFcnDM.setBeanIdProperty("jobClasfnId");
-		beanClsFcnDM.addAll(jobClsFcnList);
+		beanClsFcnDM.addAll(serviceJobclsFcn.getJobClassificationList(null, null, companyid, "Active", "P"));
 		cbJobClsName.setContainerDataSource(beanClsFcnDM);
 	}
 }

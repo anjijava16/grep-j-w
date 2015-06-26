@@ -22,7 +22,6 @@ import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
-import com.gnts.erputil.components.GERPTextArea;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
@@ -31,13 +30,8 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.hcm.domain.mst.EarningsDM;
 import com.gnts.hcm.domain.mst.EmploymentStatusDM;
 import com.gnts.hcm.service.mst.EmploymentStatusService;
-import com.vaadin.client.ui.VFormLayout.ErrorFlag;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.CheckBox;
@@ -45,7 +39,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table.Align;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
@@ -60,15 +53,14 @@ public class EmploymentStatus extends BaseUI {
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// Add User Input Controls
-	private TextField tfempstscod;
+	private TextField tfStatusCode, tfStatusDesc;
 	private CheckBox ckprssalry;
-	private TextArea taempstsdesc;
 	private ComboBox cbStatus;
 	private Boolean errorFlag = false;
 	// BeanItemContainer
 	private BeanItemContainer<EmploymentStatusDM> beanEmploymentStatusDM = null;
 	// local variables declaration
-	private Long companyid, empStsid;
+	private Long companyid;
 	private int recordCnt = 0;
 	private String username;
 	// Initialize logger
@@ -93,11 +85,10 @@ public class EmploymentStatus extends BaseUI {
 		// Status ComboBox
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// Employment Status Description text field
-		tfempstscod = new GERPTextField("Emp. Status Code");
+		tfStatusCode = new GERPTextField("Emp. Status Code");
 		// Employment Status Description Area
-		taempstsdesc = new GERPTextArea("Emp. Status Desc");
-		taempstsdesc.setHeight("25");
-		taempstsdesc.setWidth("250");
+		tfStatusDesc = new GERPTextField("Emp. Status Desc");
+		tfStatusDesc.setWidth("250");
 		// Salary field
 		ckprssalry = new CheckBox("");
 		ckprssalry.setCaption("Process Salary");
@@ -116,7 +107,7 @@ public class EmploymentStatus extends BaseUI {
 		hlSearchLayout.removeAllComponents();
 		flColumn1 = new FormLayout();
 		flColumn2 = new FormLayout();
-		flColumn1.addComponent(tfempstscod);
+		flColumn1.addComponent(tfStatusCode);
 		flColumn2.addComponent(cbStatus);
 		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn2);
@@ -133,8 +124,8 @@ public class EmploymentStatus extends BaseUI {
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
-		flColumn1.addComponent(tfempstscod);
-		flColumn2.addComponent(taempstsdesc);
+		flColumn1.addComponent(tfStatusCode);
+		flColumn2.addComponent(tfStatusDesc);
 		flColumn3.addComponent(ckprssalry);
 		flColumn4.addComponent(cbStatus);
 		hlUserInputLayout.addComponent(flColumn1);
@@ -150,21 +141,21 @@ public class EmploymentStatus extends BaseUI {
 	public void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<EmploymentStatusDM> EmploymentStatusList = new ArrayList<EmploymentStatusDM>();
+		List<EmploymentStatusDM> employmentStatusList = new ArrayList<EmploymentStatusDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfempstscod.getValue() + ", " + tfempstscod.getValue()
+				+ companyid + ", " + tfStatusCode.getValue() + ", " + tfStatusCode.getValue()
 				+ (String) cbStatus.getValue());
-		EmploymentStatusList = serviceEmploymentStatus.getEmploymentStatusList(null, tfempstscod.getValue(), companyid,
+		employmentStatusList = serviceEmploymentStatus.getEmploymentStatusList(null, tfStatusCode.getValue(), companyid,
 				(String) cbStatus.getValue());
-		recordCnt = EmploymentStatusList.size();
+		recordCnt = employmentStatusList.size();
 		beanEmploymentStatusDM = new BeanItemContainer<EmploymentStatusDM>(EmploymentStatusDM.class);
-		beanEmploymentStatusDM.addAll(EmploymentStatusList);
+		beanEmploymentStatusDM.addAll(employmentStatusList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the EmploymentStatusList. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanEmploymentStatusDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empstatusid", "empstatuscode", "status", "lastupdateddt",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empstatusid", "empstatuscode","empstatusdesc", "status", "lastupdateddt",
 				"lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Emp. Status Code", "Status", "Last Updated Date",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Emp. Status Code","Emp. Status Desc", "Status", "Last Updated Date",
 				"Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("empstatusid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
@@ -189,7 +180,7 @@ public class EmploymentStatus extends BaseUI {
 	protected void resetSearchDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting search fields and reloading the result");
-		tfempstscod.setValue("");
+		tfStatusCode.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		// reload the search using the defaults
 		loadSrchRslt();
@@ -203,8 +194,8 @@ public class EmploymentStatus extends BaseUI {
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		assembleUserInputLayout();
 		resetFields();
-		tfempstscod.setRequired(true);
-		taempstsdesc.setRequired(true);
+		tfStatusCode.setRequired(true);
+		tfStatusDesc.setRequired(true);
 	}
 	
 	@Override
@@ -215,60 +206,57 @@ public class EmploymentStatus extends BaseUI {
 		assembleUserInputLayout();
 		hlUserIPContainer.removeAllComponents();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		tfempstscod.setRequired(true);
-		taempstsdesc.setRequired(true);
+		tfStatusCode.setRequired(true);
+		tfStatusDesc.setRequired(true);
 		editEmp();
 	}
 	
 	protected void editEmp() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			EmploymentStatusDM empsts = beanEmploymentStatusDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			empStsid = empsts.getEmpstatusid();
-			if (itselect.getItemProperty("empstatusdesc") != null
-					&& !"null".equals(itselect.getItemProperty("empstatusdesc"))) {
-				taempstsdesc.setValue(itselect.getItemProperty("empstatusdesc").getValue().toString());
+			if (empsts.getEmpstatusdesc() != null) {
+				tfStatusDesc.setValue(empsts.getEmpstatusdesc());
 			}
 			if (empsts.getEmpstatuscode() != null) {
-				tfempstscod.setValue(itselect.getItemProperty("empstatuscode").getValue().toString());
+				tfStatusCode.setValue(empsts.getEmpstatuscode());
 			}
 			if (empsts.getProcesssalary().equals("Y")) {
 				ckprssalry.setValue(true);
 			} else {
 				ckprssalry.setValue(false);
 			}
-			cbStatus.setValue(itselect.getItemProperty("status").getValue());
+			cbStatus.setValue(empsts.getStatus());
 		}
 	}
 	
 	@Override
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		tfempstscod.setComponentError(null);
-		taempstsdesc.setComponentError(null);
+		tfStatusCode.setComponentError(null);
+		tfStatusDesc.setComponentError(null);
 		errorFlag = false;
-		if ((tfempstscod.getValue() == null) || tfempstscod.getValue().trim().length() == 0) {
-			tfempstscod.setComponentError(new UserError(GERPErrorCodes.NULL_EMP_STS_CODE));
+		if ((tfStatusCode.getValue() == null) || tfStatusCode.getValue().trim().length() == 0) {
+			tfStatusCode.setComponentError(new UserError(GERPErrorCodes.NULL_EMP_STS_CODE));
 			errorFlag = true;
 		}
-		if ((taempstsdesc.getValue() == null) || taempstsdesc.getValue().trim().length() == 0) {
-			taempstsdesc.setComponentError(new UserError(GERPErrorCodes.NULL_EMP_STS_DESC));
+		if ((tfStatusDesc.getValue() == null) || tfStatusDesc.getValue().trim().length() == 0) {
+			tfStatusDesc.setComponentError(new UserError(GERPErrorCodes.NULL_EMP_STS_DESC));
 			errorFlag = true;
 		}
 		EmploymentStatusDM employmentstatusobj = new EmploymentStatusDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
 			employmentstatusobj = beanEmploymentStatusDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		if ((tfempstscod.getValue() != null) && employmentstatusobj.getEmpstatusid() == null) {
-			if (serviceEmploymentStatus.getEmploymentStatusList(null, tfempstscod.getValue(), companyid, "Active")
+		if ((tfStatusCode.getValue() != null) && employmentstatusobj.getEmpstatusid() == null) {
+			if (serviceEmploymentStatus.getEmploymentStatusList(null, tfStatusCode.getValue(), companyid, "Active")
 					.size() > 0) {
-				tfempstscod.setComponentError(new UserError("Earning Code already Exist"));
+				tfStatusCode.setComponentError(new UserError("Earning Code already Exist"));
 				errorFlag = true;
 			}
 		}
 		if (errorFlag) {
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + tfempstscod.getValue());
+					+ "Throwing ValidationException. User data is > " + tfStatusCode.getValue());
 		}
 	}
 	
@@ -280,11 +268,11 @@ public class EmploymentStatus extends BaseUI {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				employmentstatusobj = beanEmploymentStatusDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			if (tfempstscod.getValue() != null) {
-				employmentstatusobj.setEmpstatuscode(tfempstscod.getValue().toString());
+			if (tfStatusCode.getValue() != null) {
+				employmentstatusobj.setEmpstatuscode(tfStatusCode.getValue().toString());
 			}
-			if (taempstsdesc.getValue() != null) {
-				employmentstatusobj.setEmpstatusdesc(taempstsdesc.getValue().toString());
+			if (tfStatusDesc.getValue() != null) {
+				employmentstatusobj.setEmpstatusdesc(tfStatusDesc.getValue().toString());
 			}
 			if (ckprssalry.getValue().equals(true)) {
 				employmentstatusobj.setProcesssalary("Y");
@@ -315,8 +303,8 @@ public class EmploymentStatus extends BaseUI {
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assembleSearchLayout();
-		tfempstscod.setRequired(false);
-		taempstsdesc.setRequired(false);
+		tfStatusCode.setRequired(false);
+		tfStatusDesc.setRequired(false);
 		tblMstScrSrchRslt.setValue(null);
 		resetFields();
 		loadSrchRslt();
@@ -326,11 +314,11 @@ public class EmploymentStatus extends BaseUI {
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting search fields and reloading the result");
-		tfempstscod.setValue("");
-		taempstsdesc.setValue("");
+		tfStatusCode.setValue("");
+		tfStatusDesc.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		ckprssalry.setValue(false);
-		tfempstscod.setComponentError(null);
-		taempstsdesc.setComponentError(null);
+		tfStatusCode.setComponentError(null);
+		tfStatusDesc.setComponentError(null);
 	}
 }

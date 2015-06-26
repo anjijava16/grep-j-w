@@ -87,6 +87,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -109,10 +110,8 @@ public class SmsInvoice extends BaseTransUI {
 	private SmsInvoiceHdrService serviceInvoiceHdr = (SmsInvoiceHdrService) SpringContextHelper
 			.getBean("smsInvoiceheader");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
-
 	private WorkOrderDtlService serviceWrkOrdDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
 	private SmsPODtlService servicesmspodtl = (SmsPODtlService) SpringContextHelper.getBean("SmsPODtl");
-
 	private SmsPOHdrService servicePurchaseOrdHdr = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
 	private SmsTaxesService serviceTaxesSms = (SmsTaxesService) SpringContextHelper.getBean("SmsTaxes");
 	private SmsInvoiceDtlService serviceInvoiceDtl = (SmsInvoiceDtlService) SpringContextHelper
@@ -140,7 +139,7 @@ public class SmsInvoice extends BaseTransUI {
 			tfPDCCharges, tfDiscountPer, tfDiscountValue;
 	private ComboBox cbpaymetTerms, cbFreightTerms, cbWarrentyTerms, cbDelTerms, cbDispatchBy, cbEnqNumber;
 	private TextArea taInvoiceOrd, taShpnAddr;
-	private PopupDateField dfInvoiceDt, dfShipmntDt, dfprpnDt, dfLRDate, dfDelNotDt,dfedd;
+	private PopupDateField dfInvoiceDt, dfRemovelDt, dfprpnDt, dfLRDate, dfDelNotDt, dfedd;
 	private CheckBox chkDutyExe, ckPdcRqu, chkCformReq;
 	private OptionGroup ogInvoiceType = new OptionGroup("Invoice Type");
 	private Button btnAdd = new GERPButton("Add", "addbt", this);
@@ -175,7 +174,7 @@ public class SmsInvoice extends BaseTransUI {
 	private Long branchId;
 	private Long screenId;
 	private Long moduleId;
-	private String invoiceaId,invoicetype;
+	private String invoiceaId, invoicetype;
 	private SmsComments comments;
 	private Long poId;
 	VerticalLayout vlTableForm = new VerticalLayout();
@@ -237,13 +236,16 @@ public class SmsInvoice extends BaseTransUI {
 		dfInvoiceDt.setInputPrompt("Select Date");
 		dfInvoiceDt.setWidth("116");
 		dfprpnDt = new GERPPopupDateField("Prep. Time");
+		dfprpnDt.setResolution(Resolution.MINUTE);
 		dfprpnDt.setDateFormat("dd-MMM-yyyy HH:mm");
 		dfprpnDt.setInputPrompt("Select Date");
 		dfprpnDt.setWidth("116");
-		dfShipmntDt = new PopupDateField("Removal Time");
-		dfShipmntDt.setDateFormat("dd-MMM-yyyy HH:mm");
-		dfShipmntDt.setInputPrompt("Select Date");
-		dfShipmntDt.setWidth("116");
+		dfRemovelDt = new PopupDateField("Removal Time");
+		dfRemovelDt.setResolution(Resolution.MINUTE);
+		dfRemovelDt.setDateFormat("dd-MMM-yyyy HH:mm");
+		dfRemovelDt.setInputPrompt("Select Date");
+		dfRemovelDt.setWidth("116");
+		dfRemovelDt.setEnabled(false);
 		dfLRDate = new GERPPopupDateField("LR Date");
 		dfLRDate.setInputPrompt("Select Date");
 		dfLRDate.setWidth("116");
@@ -290,8 +292,6 @@ public class SmsInvoice extends BaseTransUI {
 				}
 			}
 		});
-		
-		
 		tfDocumentCharges = new GERPNumberField("Doc. Charges");
 		tfDocumentCharges.setWidth("116");
 		tfDocumentCharges.setImmediate(true);
@@ -620,11 +620,10 @@ public class SmsInvoice extends BaseTransUI {
 			@Override
 			public void blur(BlurEvent event) {
 				// TODO Auto-generated method stub
-				
 				getCalculatedValues();
 			}
 		});
-tfOtherValue.addBlurListener(new BlurListener() {
+		tfOtherValue.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
@@ -633,8 +632,7 @@ tfOtherValue.addBlurListener(new BlurListener() {
 				getCalculatedValues();
 			}
 		});
-changeInvoiceType();
-
+		changeInvoiceType();
 		ogInvoiceType.setImmediate(true);
 		ogInvoiceType.setRequired(true);
 		ogInvoiceType.addValueChangeListener(new ValueChangeListener() {
@@ -672,7 +670,8 @@ changeInvoiceType();
 				}
 				catch (Exception e) {
 				}
-				loadProductfull();			} else {
+				loadProductfull();
+			} else {
 				try {
 					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, moduleId, "SM_INVNO").get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
@@ -684,11 +683,11 @@ changeInvoiceType();
 				}
 				cbPONumber.setRequired(true);
 				dfedd.setRequired(false);
-
 				cbproduct.setContainerDataSource(null);
 			}
 		}
 	}
+	
 	// Load Product List
 	public void loadProductfull() {
 		try {
@@ -702,6 +701,7 @@ changeInvoiceType();
 			e.printStackTrace();
 		}
 	}
+	
 	private void getCalcBasicValue() {
 		// TODO Auto-generated method stub
 		try {
@@ -764,7 +764,7 @@ changeInvoiceType();
 		flColumn1.addComponent(tfInvNo);
 		flColumn1.addComponent(dfInvoiceDt);
 		flColumn1.addComponent(dfprpnDt);
-		flColumn2.addComponent(dfShipmntDt);
+		flColumn2.addComponent(dfRemovelDt);
 		// flColumn1.addComponent(taInvoiceOrd);
 		// flColumn1.addComponent(taShpnAddr);
 		flColumn2.addComponent(dfedd);
@@ -783,7 +783,6 @@ changeInvoiceType();
 		flColumn2.addComponent(pp);
 		flColumn2.setComponentAlignment(pp, Alignment.TOP_LEFT);
 		flColumn2.addComponent(tfSubTotal);
-	
 		HorizontalLayout ed = new HorizontalLayout();
 		ed.addComponent(tfEDPer);
 		ed.addComponent(tfEDValue);
@@ -798,7 +797,6 @@ changeInvoiceType();
 		 * Alignment.TOP_LEFT);
 		 */
 		flColumn2.addComponent(tfSubTaxTotal);
-
 		HorizontalLayout vp = new HorizontalLayout();
 		vp.addComponent(tfVatPer);
 		vp.addComponent(tfVatValue);
@@ -836,7 +834,6 @@ changeInvoiceType();
 		flColumn4.addComponent(dfLRDate);
 		flColumn4.addComponent(tfDelNOtNo);
 		flColumn4.addComponent(dfDelNotDt);
-		
 		flColumn4.addComponent(cbCarrier);
 		flColumn4.addComponent(chkDutyExe);
 		flColumn4.addComponent(chkCformReq);
@@ -911,10 +908,10 @@ changeInvoiceType();
 		beanInvoiceHdr.addAll(inviceHdrList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanInvoiceHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "invoiceId", "branchName", "clientName", "invoiceNo",
-				"status", "lastUpdtDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Client Name", "Invoice No",
-				"Status", "Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "invoiceId", "branchName", "enqNo", "clientName",
+				"invoiceNo", "status", "lastUpdtDate", "lastUpdatedBy" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Enquiry No.", "Client Name",
+				"Invoice No", "Status", "Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("invoiceId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
@@ -938,10 +935,10 @@ changeInvoiceType();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblInvoicDtl.setContainerDataSource(beanInvoiceDtl);
-			tblInvoicDtl.setVisibleColumns(new Object[] { "productName", "productUom", "invoiceQty", "unitRate",
-					"basicValue", "cusProdCode", "invoDtlStatus", "lastUpdtDate", "lastUpdatedBy" });
-			tblInvoicDtl.setColumnHeaders(new String[] { "Product Name", "UOM", "Invoice qty", "UnitRate",
-					"Basic Value", "Product Code", "Status", "Last Updated Date", "Last Updated By" });
+			tblInvoicDtl.setVisibleColumns(new Object[] { "productName", "cusProdDesc", "productUom", "invoiceQty",
+					"unitRate", "basicValue", "cusProdCode", "customField1", "customField2", "invoDtlStatus" });
+			tblInvoicDtl.setColumnHeaders(new String[] { "Product Name", "Description", "UOM", "Invoice qty",
+					"UnitRate", "Basic Value", "Product Code", "Part No.", "Drawing No.", "Status" });
 			tblInvoicDtl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
@@ -1105,7 +1102,7 @@ changeInvoiceType();
 		if (sltedRcd != null) {
 			SmsInvoiceHdrDM editSmsInvoice = beanInvoiceHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			invoiceId = editSmsInvoice.getInvoiceId();
-			invoicetype=editSmsInvoice.getInvoiceType();
+			invoicetype = editSmsInvoice.getInvoiceType();
 			if (editSmsInvoice.getInvoiceType() != null) {
 				ogInvoiceType.setValue(editSmsInvoice.getInvoiceType());
 			}
@@ -1127,7 +1124,7 @@ changeInvoiceType();
 			}
 			dfInvoiceDt.setValue(editSmsInvoice.getInvoiceDate());
 			dfprpnDt.setValue(editSmsInvoice.getPrepnDtTime());
-			dfShipmntDt.setValue(editSmsInvoice.getShipmntDtTime());
+			dfRemovelDt.setValue(editSmsInvoice.getShipmntDtTime());
 			if (editSmsInvoice.getDespatchedBy() != null) {
 				cbDispatchBy.setValue(editSmsInvoice.getDespatchedBy().toString());
 			}
@@ -1140,7 +1137,6 @@ changeInvoiceType();
 			dfLRDate.setValue(editSmsInvoice.getLrDate());
 			dfDelNotDt.setValue(editSmsInvoice.getDeliveryNoteDt());
 			dfedd.setValue(editSmsInvoice.getEdd());
-
 			if (editSmsInvoice.getDeliveryNoteNo() != null) {
 				tfDelNOtNo.setValue(editSmsInvoice.getDeliveryNoteNo());
 			}
@@ -1183,17 +1179,15 @@ changeInvoiceType();
 			tfSubTaxTotal.setReadOnly(false);
 			tfSubTaxTotal.setValue(editSmsInvoice.getSubTaxTotal().toString());
 			tfSubTaxTotal.setReadOnly(true);
-			if(editSmsInvoice.getDisTotal()!=null){
-			tfDisToatal.setReadOnly(false);
-			tfDisToatal.setValue(editSmsInvoice.getDisTotal().toString());
+			if (editSmsInvoice.getDisTotal() != null) {
+				tfDisToatal.setReadOnly(false);
+				tfDisToatal.setValue(editSmsInvoice.getDisTotal().toString());
 			}
 			if (editSmsInvoice.getPdcChharges() != null) {
 				tfPDCCharges.setReadOnly(false);
-				
 				tfPDCCharges.setValue(editSmsInvoice.getPdcChharges().toString());
 			} else {
 				tfPDCCharges.setReadOnly(false);
-
 				tfPDCCharges.setValue("0");
 			}
 			tfFreightPer.setValue(editSmsInvoice.getFreightPrcnt().toString());
@@ -1426,23 +1420,21 @@ changeInvoiceType();
 				cbPONumber.setComponentError(new UserError(GERPErrorCodes.PURCAHSE_ORD_NO));
 				errorFlag = true;
 			}
-					}
+		}
 		if (ogInvoiceType.getValue().toString().equalsIgnoreCase("Proforma Invoice")) {
 			if (dfedd.getValue() == null) {
 				dfedd.setComponentError(new UserError(GERPErrorCodes.EXP_DAL_DATE));
 				errorFlag = true;
 			}
 		}
-		System.out.println("ogInvoiceType.getValue()"+ogInvoiceType.getValue());
-if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equals("Proforma Invoice")){
-	ogInvoiceType.setComponentError(new UserError("Please select Invoice Type"));
-	errorFlag = true;
-
-}else{
-	ogInvoiceType.setComponentError(null);
-}
-	if ((cbClient.getValue() == null)) {
-
+		System.out.println("ogInvoiceType.getValue()" + ogInvoiceType.getValue());
+		if (!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equals("Proforma Invoice")) {
+			ogInvoiceType.setComponentError(new UserError("Please select Invoice Type"));
+			errorFlag = true;
+		} else {
+			ogInvoiceType.setComponentError(null);
+		}
+		if ((cbClient.getValue() == null)) {
 			cbClient.setComponentError(new UserError(GERPErrorCodes.NULL_CLIENT_NAME));
 			errorFlag = true;
 		}
@@ -1489,13 +1481,13 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 			if (tfInvNo.getValue() != null) {
 				smsInvoiceHdrobj.setInvoiceNo(tfInvNo.getValue());
 			}
-			invoicetype=(String) ogInvoiceType.getValue();
+			invoicetype = (String) ogInvoiceType.getValue();
 			smsInvoiceHdrobj.setInvoiceType((String) ogInvoiceType.getValue());
 			smsInvoiceHdrobj.setBranchId((Long) cbBranch.getValue());
 			smsInvoiceHdrobj.setClientId((Long) cbClient.getValue());
 			smsInvoiceHdrobj.setInvoiceDate(dfInvoiceDt.getValue());
 			smsInvoiceHdrobj.setPrepnDtTime(dfprpnDt.getValue());
-			smsInvoiceHdrobj.setShipmntDtTime(dfShipmntDt.getValue());
+			smsInvoiceHdrobj.setShipmntDtTime(new Date());
 			smsInvoiceHdrobj.setCompanyId(companyid);
 			if (cbPONumber.getValue() != null) {
 				smsInvoiceHdrobj.setPoId(((Long) cbPONumber.getValue()));
@@ -1539,12 +1531,12 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 			smsInvoiceHdrobj.setOtherPrcnt(new BigDecimal(tfOtherPer.getValue()));
 			smsInvoiceHdrobj.setOtherValue(new BigDecimal(tfOtherValue.getValue()));
 			smsInvoiceHdrobj.setPdcChharges(new BigDecimal(tfPDCCharges.getValue()));
-			if(tfDisToatal.getValue()!=null){
-
-			smsInvoiceHdrobj.setDisTotal(new BigDecimal(tfDisToatal.getValue()));}
-			if(tfPDCCharges.getValue()!=null){
-
-			smsInvoiceHdrobj.setPdcChharges(new BigDecimal(tfPDCCharges.getValue()));}
+			if (tfDisToatal.getValue() != null) {
+				smsInvoiceHdrobj.setDisTotal(new BigDecimal(tfDisToatal.getValue()));
+			}
+			if (tfPDCCharges.getValue() != null) {
+				smsInvoiceHdrobj.setPdcChharges(new BigDecimal(tfPDCCharges.getValue()));
+			}
 			smsInvoiceHdrobj.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
 			if (cbpaymetTerms.getValue() != null) {
 				smsInvoiceHdrobj.setPaymentTerms((cbpaymetTerms.getValue().toString()));
@@ -1587,7 +1579,6 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 			smsInvoiceHdrobj.setDeliveryNoteNo(tfDelNOtNo.getValue());
 			smsInvoiceHdrobj.setDeliveryNoteDt(dfDelNotDt.getValue());
 			smsInvoiceHdrobj.setEdd(dfedd.getValue());
-
 			smsInvoiceHdrobj.setPreparedBy(EmployeeId);
 			smsInvoiceHdrobj.setReviewedBy(null);
 			smsInvoiceHdrobj.setActionedBy(null);
@@ -1606,7 +1597,7 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 			for (SmsInvoiceDtlDM save : (Collection<SmsInvoiceDtlDM>) itemIds) {
 				save.setInvoiceId(Long.valueOf(smsInvoiceHdrobj.getInvoiceId().toString()));
 				serviceInvoiceDtl.saveOrUpdateSmsInvoiceDtl(save);
-				Long invoicedqty=save.getInvoiceQty();
+				Long invoicedqty = save.getInvoiceQty();
 				servicesmspodtl.updateInvoiceOrderQty(((Long) cbPONumber.getValue()), save.getProductId(), invoicedqty);
 			}
 			comments.saveInvoice(smsInvoiceHdrobj.getInvoiceId(), smsInvoiceHdrobj.getStatus());
@@ -1713,8 +1704,8 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 		cbEnqNumber.setValue(null);
 		cbPONumber.setValue(null);
 		ogInvoiceType.setValue(null);
-		dfprpnDt.setValue(null);
-		dfShipmntDt.setValue(null);
+		dfprpnDt.setValue(new Date());
+		dfRemovelDt.setValue(null);
 		tfLrNo.setValue("");
 		dfLRDate.setValue(null);
 		cbCarrier.setValue(null);
@@ -1826,7 +1817,6 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 		tfDelNOtNo.setValue("");
 		dfDelNotDt.setValue(null);
 		dfedd.setValue(null);
-
 		cbDispatchBy.setValue(null);
 		tfDisToatal.setValue("0");
 		loadProduct();
@@ -1870,8 +1860,10 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 		if (chkCformReq.getValue()) {
 			tfVatPer.setValue("0");
 			try {
-			/*	tfCstPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "CST", "Active", "F").get(0)
-						.getTaxprnct().toString());*/
+				/*
+				 * tfCstPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "CST", "Active", "F").get(0)
+				 * .getTaxprnct().toString());
+				 */
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -1880,8 +1872,10 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 		} else {
 			tfCstPer.setValue("0");
 			try {
-			/*	tfVatPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "VAT", "Active", "F").get(0)
-						.getTaxprnct().toString());*/
+				/*
+				 * tfVatPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "VAT", "Active", "F").get(0)
+				 * .getTaxprnct().toString());
+				 */
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -1894,22 +1888,28 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 			tfCessPer.setValue("0");
 		} else {
 			try {
-				/*tfHEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "HED", "Active", "F").get(0)
-						.getTaxprnct().toString());*/
+				/*
+				 * tfHEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "HED", "Active", "F").get(0)
+				 * .getTaxprnct().toString());
+				 */
 			}
 			catch (Exception e) {
 				tfHEDPer.setValue("0");
 			}
 			try {
-			/*	tfEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "ED", "Active", "F").get(0)
-						.getTaxprnct().toString());*/
+				/*
+				 * tfEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "ED", "Active", "F").get(0)
+				 * .getTaxprnct().toString());
+				 */
 			}
 			catch (Exception e) {
 				tfEDPer.setValue("0");
 			}
 			try {
-				/*tfCessPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "CESS", "Active", "F").get(0)
-						.getTaxprnct().toString());*/
+				/*
+				 * tfCessPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "CESS", "Active", "F").get(0)
+				 * .getTaxprnct().toString());
+				 */
 			}
 			catch (Exception e) {
 				tfCessPer.setValue("0");
@@ -1919,9 +1919,8 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 		if (!tfDiscountPer.getValue().equals("0")) {
 			BigDecimal discountamt = gerPercentageValue(new BigDecimal(tfDiscountPer.getValue()), basictotal);
 			tfDiscountValue.setValue(discountamt.toString());
-		}else {
+		} else {
 			tfDiscountValue.setValue("0");
-
 		}
 		BigDecimal discountTotal = basictotal.subtract(new BigDecimal(tfDiscountValue.getValue()));
 		tfDisToatal.setValue(discountTotal.toString());
@@ -1943,7 +1942,6 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 		tfEDValue.setReadOnly(false);
 		tfEDValue.setValue(edValue.toString());
 		tfEDValue.setReadOnly(true);
-	
 		BigDecimal subtaxTotal = subtotal.add(new BigDecimal(tfEDValue.getValue()));
 		tfSubTaxTotal.setReadOnly(false);
 		tfSubTaxTotal.setValue(subtaxTotal.toString());
@@ -1952,7 +1950,6 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue(vatvalue.toString());
 		tfVatValue.setReadOnly(true);
-		
 		BigDecimal cstval = gerPercentageValue(new BigDecimal(tfCstPer.getValue()), subtaxTotal);
 		tfCstValue.setReadOnly(false);
 		tfCstValue.setValue(cstval.toString());
@@ -1961,21 +1958,19 @@ if(!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equa
 		BigDecimal frgval = new BigDecimal(0);
 		BigDecimal otherval = new BigDecimal(0);
 		if (!tfFreightPer.getValue().equals("0")) {
-
-		 frgval = gerPercentageValue(new BigDecimal(tfFreightPer.getValue()), subtaxTotal);
-		tfFreightValue.setValue(frgval.toString());}else {
+			frgval = gerPercentageValue(new BigDecimal(tfFreightPer.getValue()), subtaxTotal);
+			tfFreightValue.setValue(frgval.toString());
+		} else {
 			tfFreightValue.setValue("0");
-			frgval=new BigDecimal(tfFreightValue.getValue());
-			
+			frgval = new BigDecimal(tfFreightValue.getValue());
 		}
 		if (!tfOtherPer.getValue().equals("0")) {
-
-		 otherval = gerPercentageValue(new BigDecimal(tfOtherPer.getValue()), subtaxTotal);
+			otherval = gerPercentageValue(new BigDecimal(tfOtherPer.getValue()), subtaxTotal);
 			tfOtherValue.setValue(otherval.toString());
-}else {
-	tfOtherValue.setValue("0");
-otherval=new BigDecimal(tfOtherValue.getValue());
-}
+		} else {
+			tfOtherValue.setValue("0");
+			otherval = new BigDecimal(tfOtherValue.getValue());
+		}
 		BigDecimal grand = frgval.add(otherval).add(cstval).add(csttotal);
 		BigDecimal documentCharges = new BigDecimal(tfDocumentCharges.getValue());
 		BigDecimal grandTotal = subtaxTotal.add(grand).add(documentCharges);
@@ -2000,12 +1995,13 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
 			parameterMap.put("INVHDR", invoiceId);
 			Report rpt = new Report(parameterMap, connection);
-			System.out.println("invoicetype----------------->"+invoicetype);
-			if(invoicetype.equals("Invoice")){
-			rpt.setReportName(basepath + "/WEB-INF/reports/invoice_Report1"); // productlist is the name of my jasper
-			}else if(invoicetype.equals("Proforma Invoice")){
-				rpt.setReportName(basepath + "/WEB-INF/reports/performaInvoiceReport"); // productlist is the name of my jasper
-
+			System.out.println("invoicetype----------------->" + invoicetype);
+			if (invoicetype.equals("Invoice")) {
+				rpt.setReportName(basepath + "/WEB-INF/reports/invoice_Report1"); // productlist is the name of my
+																					// jasper
+			} else if (invoicetype.equals("Proforma Invoice")) {
+				rpt.setReportName(basepath + "/WEB-INF/reports/performaInvoiceReport"); // productlist is the name of my
+																						// jasper
 			}
 			// file.
 			rpt.callReport(basepath, "Preview");

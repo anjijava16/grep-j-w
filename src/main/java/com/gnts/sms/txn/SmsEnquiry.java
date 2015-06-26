@@ -762,9 +762,9 @@ public class SmsEnquiry extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the SMSENQUIRYDTL. result set");
 		tbldtl.setContainerDataSource(beandtl);
-		tbldtl.setVisibleColumns(new Object[] { "prodname", "enquiryqty", "uom", "customField1", "customField2",
+		tbldtl.setVisibleColumns(new Object[] { "prodname","custproddesc","enquiryqty", "uom", "customField1", "customField2",
 				"enquitydtlstatus", "lastupdateddt", "lastupdatedby" });
-		tbldtl.setColumnHeaders(new String[] { "Product Name", "Enquiry Qty", "UOM", "Part No.", "Drg. No", "Status",
+		tbldtl.setColumnHeaders(new String[] { "Product Name","Description", "Enquiry Qty", "UOM", "Part No.", "Drg. No", "Status",
 				"Last Updated Date", "Last Updated By" });
 		tbldtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}

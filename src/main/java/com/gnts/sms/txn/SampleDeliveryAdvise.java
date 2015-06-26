@@ -75,7 +75,6 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	// Bean Creation
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
-	
 	private ClientContactsService serviceClntContact = (ClientContactsService) SpringContextHelper
 			.getBean("clientContact");
 	private SmsEnqHdrService serviceEnqHeader = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
@@ -85,23 +84,21 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 	private SmsSDADtlService serviceSDADetail = (SmsSDADtlService) SpringContextHelper.getBean("smsSDRDtl");
 	private List<SmsSDADtlDM> listSDADetails = new ArrayList<SmsSDADtlDM>();
 	private BeanContainer<Long, ClientsContactsDM> beanclientcontact = null;
-
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(SmsEnquiry.class);
 	// User Input Fields for Sales Enquiry Header
 	private TextField tfSDANumber;
 	private PopupDateField dfSDADate;
-	private ComboBox cbEnquiry;
+	private ComboBox cbEnquiry,cbgatepasstype;
 	private ComboBox cbSDAStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<SmsSDAHdrDM> beanhdr = null;
 	// User Input Fields for Sales Enquiry Detail
-	private ComboBox cbProduct, cbSDADtlStatus,cbwindTechPers,cbwindcommPerson;
+	private ComboBox cbProduct, cbSDADtlStatus, cbwindTechPers, cbwindcommPerson;
 	private TextField tfSDAQty;
-	private GERPTextArea taClientAddres=new GERPTextArea("Client Address");
+	private GERPTextArea taClientAddres = new GERPTextArea("Client Address");
 	private GERPTextField tfCustomField1 = new GERPTextField("Part Number");
 	private GERPTextField tfCustomField2 = new GERPTextField("Drawing Number");
-	
 	private Table tblSDADetails = new GERPTable();
 	private BeanItemContainer<SmsSDADtlDM> beanSDADetails = null;
 	// User Input Components for Sales Enquire Details
@@ -109,7 +106,6 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 	public Button btnDetailAdd = new GERPButton("Add", "addbtn", this);
 	// form layout for input controls Sales Enquiry Header
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
-
 	private FormLayout flcol1, flcol2, flcol3, flcol4, flcol5;
 	// form layout for input controls Sales Enquiry Deatil
 	private FormLayout fldtl1, fldtl2, fldtl3, fldtl4, fldtl5;
@@ -173,11 +169,22 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 				loadProduct();
 				loadclientCommCont();
 				loadclienTecCont();
-				if(cbEnquiry.getValue()!=null){
-				Long clientid=serviceEnqHeader.getSmsEnqHdrList(companyid, (Long)cbEnquiry.getValue(), null, null, null, "F", null, null).get(0).getClientId();
-				if(serviceClients.getClientDetails(companyid,clientid, null, null, null, null, null, null, "Active", "F").get(0).getClientAddress()!=null){
-				taClientAddres.setValue(serviceClients.getClientDetails(companyid,clientid, null, null, null, null, null, null, "Active", "F").get(0).getClientAddress());}}}
 			
+				if (cbEnquiry.getValue() != null) {
+					try{
+					Long clientid = serviceEnqHeader
+							.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "F", null, null)
+							.get(0).getClientId();
+					taClientAddres.setValue(serviceClients
+							.getClientDetails(null, clientid, null, null, null, null, null, null, "Active", "F")
+							.get(0).getClientAddress());
+					}
+					catch(Exception e){
+						
+					}
+					}
+				
+			}
 		});
 		loadEnquiryList();
 		dfSDADate = new GERPPopupDateField("SDA Date");
@@ -185,6 +192,11 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 		dfSDADate.setInputPrompt("Select Date");
 		dfSDADate.setWidth("100px");
 		cbSDAStatus.setWidth("130");
+		// Returned or Not field defenition
+		cbgatepasstype = new GERPComboBox("Stock Type");
+		cbgatepasstype.addItem("Returnable");
+		cbgatepasstype.addItem("NonReturnable");
+		cbgatepasstype.setImmediate(true);
 		// Sales Enquiry Detail Components Definition
 		cbProduct = new GERPComboBox("Product Name");
 		cbProduct.setItemCaptionPropertyId("prodname");
@@ -215,7 +227,6 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 		cbwindTechPers.setWidth("130");
 		cbwindcommPerson = new GERPComboBox("Commer.Person");
 		cbwindcommPerson.setWidth("130");
-	
 		loadSDADetails(true);
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
@@ -309,11 +320,10 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 		flcol1.addComponent(cbEnquiry);
 		flcol2.addComponent(cbwindTechPers);
 		flcol2.addComponent(cbwindcommPerson);
-
 		flcol3.addComponent(dfSDADate);
 		flcol3.addComponent(cbSDAStatus);
+		taClientAddres.setHeight("50");
 		flcol4.addComponent(taClientAddres);
-
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
 		hllayout.addComponent(flcol2);
@@ -334,8 +344,8 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 		fldtl1.addComponent(tfSDAQty);
 		fldtl2.addComponent(tfCustomField1);
 		fldtl2.addComponent(tfCustomField2);
+		fldtl3.addComponent(cbgatepasstype);
 		fldtl3.addComponent(cbSDADtlStatus);
-
 		fldtl4.addComponent(btnDetailAdd);
 		fldtl4.addComponent(btnDetailDelete);
 		hlDtlCompnts.setMargin(true);
@@ -372,17 +382,16 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 		List<SmsSDAHdrDM> hdrlist = new ArrayList<SmsSDAHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + null + "," + tfSDANumber.getValue() + ", " + (String) cbSDAStatus.getValue());
-		hdrlist = serviceSDAHeader.getsmsSDRdetails(null, tfSDANumber.getValue(), null, (String) cbSDAStatus.getValue());
+		hdrlist = serviceSDAHeader
+				.getsmsSDRdetails(null, tfSDANumber.getValue(), null, (String) cbSDAStatus.getValue());
 		recordCnt = hdrlist.size();
 		beanhdr = new BeanItemContainer<SmsSDAHdrDM>(SmsSDAHdrDM.class);
 		beanhdr.addAll(hdrlist);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the SMSENQUIRY. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanhdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "sdaHdrId", "sdaNo", "sdaDate", "status", "lastUpdatedDate",
-				"lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "SDA Number", "Date", "Status",
-				"Last Updated date", "Last Updated by" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "sdaHdrId", "sdaNo","enqNo","clientName","cpmPerson","tecPerson","sdaDate", "status", "lastUpdatedDate","lastUpdatedBy" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "SDA Number","Enquiry No.","Client Name","Commer. Person","Tech. Person", "Date", "Status","Last Updated date", "Last Updated by" });
 		tblMstScrSrchRslt.setColumnAlignment("sdaHdrId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
@@ -408,10 +417,10 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the SMSENQUIRYDTL. result set");
 		tblSDADetails.setContainerDataSource(beanSDADetails);
-		tblSDADetails
-				.setVisibleColumns(new Object[] { "prodname", "qty","custFld1","custFld2", "status", "lastUpdatedDate", "lastUpdatedBy" });
-		tblSDADetails.setColumnHeaders(new String[] { "Product Name", "Qty","Part Number","Drawing Number", "Status", "Last Updated Date",
-				"Last Updated By" });
+		tblSDADetails.setVisibleColumns(new Object[] { "prodname","proddesc", "qty", "custFld1", "custFld2", "status",
+				"lastUpdatedDate", "lastUpdatedBy" });
+		tblSDADetails.setColumnHeaders(new String[] { "Product Name","Description", "Qty", "Part Number", "Drawing Number", "Status",
+				"Last Updated Date", "Last Updated By" });
 		tblSDADetails.setColumnFooter("lastUpdatedBy", "No.of Records : " + numRecordCount);
 	}
 	
@@ -446,7 +455,8 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
 		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected enquiryId. Id -> "+ sdaHeaderId);
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected enquiryId. Id -> "
+				+ sdaHeaderId);
 		if (sltedRcd != null) {
 			SmsSDAHdrDM smsSDAHdrDM = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			sdaHeaderId = smsSDAHdrDM.getSdaHdrId();
@@ -456,14 +466,15 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			cbEnquiry.setValue(smsSDAHdrDM.getEnquiryId());
 			dfSDADate.setValue(smsSDAHdrDM.getSdaDate());
 			cbSDAStatus.setValue(smsSDAHdrDM.getStatus());
-			if(smsSDAHdrDM.getCpmPerson()!=null){
-			cbwindcommPerson.setValue(smsSDAHdrDM.getCpmPerson());}
-			if(smsSDAHdrDM.getTecPerson()!=null){
-				cbwindTechPers.setValue(smsSDAHdrDM.getTecPerson());}
-			if(smsSDAHdrDM.getClientAddress()!=null){
-				taClientAddres.setValue(smsSDAHdrDM.getClientAddress());}
-			
-			
+			if (smsSDAHdrDM.getCpmPerson() != null) {
+				cbwindcommPerson.setValue(smsSDAHdrDM.getCpmPerson());
+			}
+			if (smsSDAHdrDM.getTecPerson() != null) {
+				cbwindTechPers.setValue(smsSDAHdrDM.getTecPerson());
+			}
+			if (smsSDAHdrDM.getClientAddress() != null) {
+				taClientAddres.setValue(smsSDAHdrDM.getClientAddress());
+			}
 		}
 		loadSDADetails(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, sdaHeaderId, null, null,
@@ -491,8 +502,8 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 					cbProduct.setValue(itemId);
 				}
 			}
-			if(smsSDADtlDM.getQty()!=null){
-			tfSDAQty.setValue(smsSDADtlDM.getQty().toString());
+			if (smsSDADtlDM.getQty() != null) {
+				tfSDAQty.setValue(smsSDADtlDM.getQty().toString());
 			}
 			tfCustomField1.setValue(smsSDADtlDM.getCustFld1());
 			tfCustomField2.setValue(smsSDADtlDM.getCustFld2());
@@ -517,51 +528,53 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... "); //
-		try{
-		validationForEnqDetails();
-		SmsSDAHdrDM smsSDAHdrDM = new SmsSDAHdrDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			smsSDAHdrDM = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		} 
-		smsSDAHdrDM.setSdaNo(tfSDANumber.getValue());
-		smsSDAHdrDM.setEnquiryId((Long)cbEnquiry.getValue());
-		smsSDAHdrDM.setSdaDate(dfSDADate.getValue());
-		smsSDAHdrDM.setStatus((String)cbSDAStatus.getValue());
-		smsSDAHdrDM.setLastUpdatedBy(username);
-		smsSDAHdrDM.setLastUpdatedDate(DateUtils.getcurrentdate());
-		if(taClientAddres.getValue()!=null){
-		smsSDAHdrDM.setClientAddress(taClientAddres.getValue());}
-		if(cbwindTechPers.getValue()!=null){
-			smsSDAHdrDM.setTecPerson(cbwindTechPers.getValue().toString());}
-			if(cbwindcommPerson.getValue()!=null){
-				smsSDAHdrDM.setCpmPerson(cbwindcommPerson.getValue().toString());}
-			
-		serviceSDAHeader.saveorupdateSDR(smsSDAHdrDM);
-		@SuppressWarnings("unchecked")
-		Collection<SmsSDADtlDM> itemIds = (Collection<SmsSDADtlDM>) tblSDADetails.getVisibleItemIds();
-		for (SmsSDADtlDM smsSDADtlDM : (Collection<SmsSDADtlDM>) itemIds) {
-			smsSDADtlDM.setSdaHdrId(smsSDAHdrDM.getSdaHdrId());
-			sdaHeaderId=smsSDAHdrDM.getSdaHdrId();
-			serviceSDADetail.saveorupdateSDRDtl(smsSDADtlDM);
-		}
-		if (tblMstScrSrchRslt.getValue() == null) {
-			try{
-			SlnoGenDM slnoObj = serviceSlnogen
-					.getSequenceNumber(companyid, branchId, moduleId, "SM_SDANO").get(0);
-				if (slnoObj.getAutoGenYN().equals("Y")) {
-					serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_SDANO");
-					System.out.println("Serial no=>" + companyid + "," + moduleId + "," + branchId);
-				}
-			}catch(Exception e){
-				e.printStackTrace();
+		try {
+			validationForEnqDetails();
+			SmsSDAHdrDM smsSDAHdrDM = new SmsSDAHdrDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				smsSDAHdrDM = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			
+			smsSDAHdrDM.setSdaNo(tfSDANumber.getValue());
+			smsSDAHdrDM.setEnquiryId((Long) cbEnquiry.getValue());
+			smsSDAHdrDM.setSdaDate(dfSDADate.getValue());
+			smsSDAHdrDM.setStatus((String) cbSDAStatus.getValue());
+			smsSDAHdrDM.setLastUpdatedBy(username);
+			smsSDAHdrDM.setLastUpdatedDate(DateUtils.getcurrentdate());
+			if (taClientAddres.getValue() != null) {
+				smsSDAHdrDM.setClientAddress(taClientAddres.getValue());
+			}
+			if (cbwindTechPers.getValue() != null) {
+				smsSDAHdrDM.setTecPerson(cbwindTechPers.getValue().toString());
+			}
+			if (cbwindcommPerson.getValue() != null) {
+				smsSDAHdrDM.setCpmPerson(cbwindcommPerson.getValue().toString());
+			}
+			serviceSDAHeader.saveorupdateSDR(smsSDAHdrDM);
+			@SuppressWarnings("unchecked")
+			Collection<SmsSDADtlDM> itemIds = (Collection<SmsSDADtlDM>) tblSDADetails.getVisibleItemIds();
+			for (SmsSDADtlDM smsSDADtlDM : (Collection<SmsSDADtlDM>) itemIds) {
+				smsSDADtlDM.setSdaHdrId(smsSDAHdrDM.getSdaHdrId());
+				sdaHeaderId = smsSDAHdrDM.getSdaHdrId();
+				serviceSDADetail.saveorupdateSDRDtl(smsSDADtlDM);
+			}
+			if (tblMstScrSrchRslt.getValue() == null) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_SDANO")
+							.get(0);
+					if (slnoObj.getAutoGenYN().equals("Y")) {
+						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_SDANO");
+						System.out.println("Serial no=>" + companyid + "," + moduleId + "," + branchId);
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			comments.saveSalesEnqId(smsSDAHdrDM.getEnquiryId(), null);
+			resetSDADetails();
+			loadSrchRslt();
 		}
-		
-		comments.saveSalesEnqId(smsSDAHdrDM.getEnquiryId(), null);
-		resetSDADetails();
-		loadSrchRslt();}
-		catch(Exception e){
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -577,11 +590,12 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			}
 			smsSDADtlDM.setProductId(((SmsEnquiryDtlDM) cbProduct.getValue()).getProductid());
 			smsSDADtlDM.setProdname(((SmsEnquiryDtlDM) cbProduct.getValue()).getProdname());
+			smsSDADtlDM.setProddesc(((SmsEnquiryDtlDM) cbProduct.getValue()).getCustproddesc());
 			smsSDADtlDM.setQty(Long.valueOf(tfSDAQty.getValue()));
 			smsSDADtlDM.setCustFld1(tfCustomField1.getValue());
 			smsSDADtlDM.setCustFld2(tfCustomField2.getValue());
-			smsSDADtlDM.setStatus((String)cbSDADtlStatus.getValue());
-			smsSDADtlDM.setLastUpdatedDate(DateUtils.getcurrentdate()); 
+			smsSDADtlDM.setStatus((String) cbSDADtlStatus.getValue());
+			smsSDADtlDM.setLastUpdatedDate(DateUtils.getcurrentdate());
 			smsSDADtlDM.setLastUpdatedBy(username);
 			listSDADetails.add(smsSDADtlDM);
 			loadSDADetails(false);
@@ -756,9 +770,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 		taClientAddres.setValue("");
 		cbwindcommPerson.setContainerDataSource(null);
 		cbwindTechPers.setContainerDataSource(null);
-
 	}
-
 	
 	@Override
 	protected void searchDetails() throws NoDataFoundException {
@@ -805,33 +817,40 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			}
 		}
 	}
-	private void loadclienTecCont() {try {
-		Long enquid = ((Long) cbEnquiry.getValue());
-		Long clientId=serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null).get(0).getClientId();
-		List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null, clientId, null, "Active","Technical Person");
-		beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
-		beanclientcontact.setBeanIdProperty("contactName");
-		beanclientcontact.addAll(listclientconDtls);
-		cbwindTechPers.setContainerDataSource(beanclientcontact);
-		cbwindTechPers.setItemCaptionPropertyId("contactName");	}
-	catch (Exception e) {
-		e.printStackTrace();
-	}}
-
 	
-
-	private void loadclientCommCont() {
-
-	try {
-		Long enquid = ((Long) cbEnquiry.getValue());
-		Long clientId=serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null).get(0).getClientId();
-		List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null, clientId, null, "Active","Contact Person");
-		beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
-		beanclientcontact.setBeanIdProperty("contactName");
-		beanclientcontact.addAll(listclientconDtls);
-		cbwindcommPerson.setContainerDataSource(beanclientcontact);
-		cbwindcommPerson.setItemCaptionPropertyId("contactName");	}
-	catch (Exception e) {
-		e.printStackTrace();
+	private void loadclienTecCont() {
+		try {
+			Long enquid = ((Long) cbEnquiry.getValue());
+			Long clientId = serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null)
+					.get(0).getClientId();
+			List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null,
+					clientId, null, "Active", "Technical Person");
+			beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
+			beanclientcontact.setBeanIdProperty("contactName");
+			beanclientcontact.addAll(listclientconDtls);
+			cbwindTechPers.setContainerDataSource(beanclientcontact);
+			cbwindTechPers.setItemCaptionPropertyId("contactName");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-}}
+	
+	private void loadclientCommCont() {
+		try {
+			Long enquid = ((Long) cbEnquiry.getValue());
+			Long clientId = serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null)
+					.get(0).getClientId();
+			List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null,
+					clientId, null, "Active", "Contact Person");
+			beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
+			beanclientcontact.setBeanIdProperty("contactName");
+			beanclientcontact.addAll(listclientconDtls);
+			cbwindcommPerson.setContainerDataSource(beanclientcontact);
+			cbwindcommPerson.setItemCaptionPropertyId("contactName");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}

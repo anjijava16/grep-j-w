@@ -793,7 +793,7 @@ tfOtherValue.addBlurListener(new BlurListener() {
 			beansmsQuoteDtl.addAll(smsQuoteDtlList);
 			BigDecimal sum = new BigDecimal("0");
 			for (SmsQuoteDtlDM obj : smsQuoteDtlList) {
-				if (obj.getBasicvalue() != null) {
+				if (obj.getBasicvalue() != null) {		
 					sum = sum.add(obj.getBasicvalue());
 				}
 			}
@@ -803,10 +803,10 @@ tfOtherValue.addBlurListener(new BlurListener() {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblsmsQuoteDtl.setContainerDataSource(beansmsQuoteDtl);
-			tblsmsQuoteDtl.setVisibleColumns(new Object[] { "prodname", "quoteqty"/* , "produom" */, "unitrate",
-					"basicvalue", "quodtlstatus", "lastupdateddt", "lastupdatedby" });
-			tblsmsQuoteDtl.setColumnHeaders(new String[] { "Product Name", "Quote Qty"/* , "UOM" */, "Unit Rate",
-					"Basic Value", "Status", "Last Updated Date", "Last Updated By" });
+			tblsmsQuoteDtl.setVisibleColumns(new Object[] { "prodname","custproddesc", "quoteqty"/* , "produom" */, "unitrate",
+					"basicvalue","customField1", "quodtlstatus", "lastupdateddt", "lastupdatedby" });
+			tblsmsQuoteDtl.setColumnHeaders(new String[] { "Product Name","Description", "Quote Qty"/* , "UOM" */, "Unit Rate",
+					"Basic Value","Part No.", "Status", "Last Updated Date", "Last Updated By" });
 			tblsmsQuoteDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {

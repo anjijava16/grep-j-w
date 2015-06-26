@@ -623,9 +623,9 @@ public class WorkOrder extends BaseTransUI {
 		beanWrkOdrHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
 		beanWrkOdrHdr.addAll(wrkOdrHdrList);
 		tblMstScrSrchRslt.setContainerDataSource(beanWrkOdrHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "workOrdrId", "workOrdrNo", "workOrdrTyp", "branchName",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "workOrdrId", "workOrdrNo", "pono","workOrdrTyp", "branchName",
 				"clientName", "workOrdrDt", "workOrdrSts", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Work Order No.", "Work Order Type", "Branch Name",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Work Order No.","PO No.", "Work Order Type", "Branch Name",
 				"Client Name", "Work Order Date", "Status", "Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("workOrdrId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
@@ -638,9 +638,9 @@ public class WorkOrder extends BaseTransUI {
 		beanWrkOdrDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
 		beanWrkOdrDtl.addAll(workOdrDtlList);
 		tblWrkOdrDtl.setContainerDataSource(beanWrkOdrDtl);
-		tblWrkOdrDtl.setVisibleColumns(new Object[] { "prodName", "workOrdQty", "planQty", "balQty", "lastUpdatedDt",
+		tblWrkOdrDtl.setVisibleColumns(new Object[] { "prodName", "workOrdQty","customField1","customField2","planQty", "balQty", "lastUpdatedDt",
 				"lastUpdatedBy" });
-		tblWrkOdrDtl.setColumnHeaders(new String[] { "Product Name", "Work Order Qty.", "Plan Qty.", "Balance Qty.",
+		tblWrkOdrDtl.setColumnHeaders(new String[] { "Product Name", "Work Order Qty.","Part No.","Drawing No." ,"Plan Qty.", "Balance Qty.",
 				"Last Updated Date", "Last Updated By" });
 		tblWrkOdrDtl.setColumnAlignment("prodName", Align.RIGHT);
 		tblWrkOdrDtl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordDtlCount);

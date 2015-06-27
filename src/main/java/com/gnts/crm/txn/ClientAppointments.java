@@ -24,6 +24,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import org.apache.log4j.Logger;
+import com.gnts.base.dashboard.CalendarMonthly;
 import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.service.mst.CompanyLookupService;
@@ -57,7 +58,6 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.erputil.validations.DateValidation;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -103,34 +103,25 @@ public class ClientAppointments extends BaseUI {
 	private VerticalLayout vlCalendar, vlFeildsLayout;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
-	HorizontalLayout hlInput = new HorizontalLayout();
-	private String userName, appointId, strWidth = "160px";
+	private HorizontalLayout hlInput = new HorizontalLayout();
+	private String userName, appointId, strWidth = "150px";
 	/**
 	 * UI Components
 	 */
 	private TextArea taObjectives, taMeetRemarks;
-	private ComboBox cbValues, cbLead, cbClient, cbCampaign, cbCase, cbEmployee, cbContact, cbMeetingType, cbPriority,
+	private ComboBox cbTypeofContact, cbLead, cbClient, cbCampaign, cbCase, cbEmployee, cbContact, cbMeetingType, cbPriority,
 			cbMeetingStatus, cbPreviewAppoint, cbOppertunity;
 	private TabSheet tabAppointment;
 	private PopupDateField dueDate;
 	private PopupDateField scheduleDt;
 	private EmployeeDM employee;
 	private CompanyLookupDM typeLookUp;
-	private BeanContainer<Long, LeadsDM> beanLead = null;
-	private BeanContainer<Long, CampaignDM> beanCampaign = null;
-	private BeanContainer<Long, ClientDM> beanClients = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployee = null;
-	private BeanContainer<Long, ClientCasesDM> beanClntCase = null;
-	private BeanContainer<Long, ClientsContactsDM> beanClntContact = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompLookUp = null;
 	private BeanItemContainer<ClientAppointmentsDM> beanAppointment = null;
-	private BeanContainer<Long, OppertunitiesDM> beanClntOppertunity = null;
 	private Long clientId, moduleId;
 	private int recordCnt = 0;
 	private Logger logger = Logger.getLogger(ClientAppointments.class);
-	GregorianCalendar daystart;
-	BasicEvent dayEvent;
-	Calendar calendar;
+	private BasicEvent dayEvent;
+	private Calendar calendar;
 	
 	public ClientAppointments() {
 		// Get the logged in user name and company id from the session
@@ -149,28 +140,28 @@ public class ClientAppointments extends BaseUI {
 		/**
 		 * Declaration add/edit text field and combo box fields
 		 */
-		cbValues = new GERPComboBox("Type of Contact");
-		cbValues.addItem("Client Name");
-		cbValues.addItem("Campaign");
-		cbValues.addItem("Lead Name");
-		cbValues.addItem("Contact Name");
-		cbValues.addItem("Client Case");
-		cbValues.addItem("Opportunity Provider");
-		cbValues.setImmediate(true);
-		cbValues.addValueChangeListener(new Property.ValueChangeListener() {
+		cbTypeofContact = new GERPComboBox("Type of Contact");
+		cbTypeofContact.addItem("Client Name");
+		cbTypeofContact.addItem("Campaign");
+		cbTypeofContact.addItem("Lead Name");
+		cbTypeofContact.addItem("Contact Name");
+		cbTypeofContact.addItem("Client Case");
+		cbTypeofContact.addItem("Opportunity Provider");
+		cbTypeofContact.setImmediate(true);
+		cbTypeofContact.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (cbValues.getValue() != null) {
-					if (cbValues.getValue().equals("Client Name")) {
+				if (cbTypeofContact.getValue() != null) {
+					if (cbTypeofContact.getValue().equals("Client Name")) {
 						cbLead.setVisible(false);
 						cbCase.setVisible(false);
 						cbContact.setVisible(false);
 						cbOppertunity.setVisible(false);
 						cbCampaign.setVisible(false);
 						cbClient.setVisible(true);
-					} else if (cbValues.getValue().equals("Campaign")) {
+					} else if (cbTypeofContact.getValue().equals("Campaign")) {
 						cbVisibleFalse();
 						cbLead.setVisible(false);
 						cbCase.setVisible(false);
@@ -178,21 +169,21 @@ public class ClientAppointments extends BaseUI {
 						cbOppertunity.setVisible(false);
 						cbClient.setVisible(false);
 						cbCampaign.setVisible(true);
-					} else if (cbValues.getValue().equals("Lead Name")) {
+					} else if (cbTypeofContact.getValue().equals("Lead Name")) {
 						cbCampaign.setVisible(false);
 						cbCase.setVisible(false);
 						cbContact.setVisible(false);
 						cbOppertunity.setVisible(false);
 						cbClient.setVisible(false);
 						cbLead.setVisible(true);
-					} else if (cbValues.getValue().equals("Opportunity Provider")) {
+					} else if (cbTypeofContact.getValue().equals("Opportunity Provider")) {
 						cbCampaign.setVisible(false);
 						cbLead.setVisible(false);
 						cbCase.setVisible(false);
 						cbContact.setVisible(false);
 						cbClient.setVisible(false);
 						cbOppertunity.setVisible(true);
-					} else if (cbValues.getValue().equals("Client Case")) {
+					} else if (cbTypeofContact.getValue().equals("Client Case")) {
 						cbCampaign.setVisible(false);
 						cbLead.setVisible(false);
 						cbContact.setVisible(false);
@@ -210,7 +201,7 @@ public class ClientAppointments extends BaseUI {
 				}
 			}
 		});
-		cbValues.addItem("Client Case");
+		cbTypeofContact.addItem("Client Case");
 		cbClient = new GERPComboBox("Client Name");
 		cbClient.setItemCaptionPropertyId("clientName");
 		cbClient.setNullSelectionAllowed(true);
@@ -403,10 +394,10 @@ public class ClientAppointments extends BaseUI {
 		});
 		taObjectives = new GERPTextArea("Objective");
 		taObjectives.setWidth(strWidth);
-		taObjectives.setHeight("50px");
+		taObjectives.setHeight("100px");
 		taMeetRemarks = new GERPTextArea("Remarks");
 		taMeetRemarks.setWidth("145");
-		taMeetRemarks.setHeight("50px");
+		taMeetRemarks.setHeight("100px");
 		scheduleDt = new GERPPopupDateField("Schedule Date");
 		scheduleDt.setDateFormat("dd-MMM-yyyy");
 		scheduleDt.setLenient(true);
@@ -455,9 +446,7 @@ public class ClientAppointments extends BaseUI {
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		resetFields();
 		loadSrchRslt();
-		/**
-		 * Exporter
-		 */
+		laodCalendarviewList();
 	}
 	
 	private void assembleSearchLayout() {
@@ -497,7 +486,7 @@ public class ClientAppointments extends BaseUI {
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
-		flColumn1.addComponent(cbValues);
+		flColumn1.addComponent(cbTypeofContact);
 		flColumn1.addComponent(cbClient);
 		flColumn1.addComponent(cbCampaign);
 		flColumn1.addComponent(cbLead);
@@ -505,25 +494,25 @@ public class ClientAppointments extends BaseUI {
 		flColumn1.addComponent(cbContact);
 		flColumn1.addComponent(cbCase);
 		flColumn1.addComponent(cbOppertunity);
-		flColumn2.addComponent(cbEmployee);
-		flColumn2.addComponent(scheduleDt);
-		flColumn2.addComponent(dueDate);
+		flColumn1.addComponent(cbEmployee);
+		flColumn1.addComponent(scheduleDt);
+		flColumn1.addComponent(dueDate);
 		flColumn2.setSpacing(true);
 		flColumn2.setMargin(true);
-		flColumn3.addComponent(taObjectives);
+		flColumn2.addComponent(taObjectives);
 		flColumn3.addComponent(cbPreviewAppoint);
 		flColumn3.addComponent(cbMeetingType);
 		flColumn3.setSpacing(true);
 		flColumn3.setMargin(true);
-		flColumn4.addComponent(cbPriority);
+		flColumn3.addComponent(cbPriority);
+		flColumn3.addComponent(cbMeetingStatus);
 		flColumn4.addComponent(taMeetRemarks);
-		flColumn4.addComponent(cbMeetingStatus);
 		hlInput.addComponent(flColumn1);
 		hlInput.addComponent(flColumn2);
 		hlInput.addComponent(flColumn3);
 		hlInput.addComponent(flColumn4);
 		tabAppointment.addTab(hlInput, "Appointment");
-		tabAppointment.addTab(vlCalendar, "Calendar");
+		tabAppointment.addTab(new CalendarMonthly(), "Monthly Calendar");
 		hlUserInputLayout.setWidth("1200");
 		hlUserInputLayout.addComponent(tabAppointment);
 		hlUserInputLayout.setSpacing(true);
@@ -552,10 +541,10 @@ public class ClientAppointments extends BaseUI {
 			beanAppointment.addAll(appointList);
 			tblMstScrSrchRslt.setSelectable(true);
 			tblMstScrSrchRslt.setContainerDataSource(beanAppointment);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "appointId", "scheduleDt",
-					 "meetingType", "meetingStatus", "lastUpdatedDt", "lastUpdatedBy" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Schedule Date",
-					"Meeting Type", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "appointId", "scheduleDt", "meetingType",
+					"meetingStatus", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Schedule Date", "Meeting Type", "Status",
+					"Last Updated Date", "Last Updated By" });
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
@@ -568,35 +557,34 @@ public class ClientAppointments extends BaseUI {
 		cbVisibleFalse();
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Selected Appointement. Id -> " + appointId);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			ClientAppointmentsDM editappointmentlist = beanAppointment.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			appointId = editappointmentlist.getAppointId().toString();
 			taMeetRemarks.setValue(editappointmentlist.getMeetingRemakrs());
 			if (editappointmentlist.getCompaignId() != null) {
-				cbValues.setValue("Campaign");
+				cbTypeofContact.setValue("Campaign");
 				cbCampaign.setValue(editappointmentlist.getCompaignId());
 			}
 			if (editappointmentlist.getClientId() != null) {
-				cbValues.setValue("Client Name");
+				cbTypeofContact.setValue("Client Name");
 				cbClient.setValue(editappointmentlist.getClientId());
 			}
 			if (editappointmentlist.getLeadId() != null) {
-				cbValues.setValue("Lead Name");
+				cbTypeofContact.setValue("Lead Name");
 				cbLead.setValue(editappointmentlist.getLeadId());
 			}
 			if (editappointmentlist.getContactId() != null) {
-				cbValues.setValue("Contact Name");
+				cbTypeofContact.setValue("Contact Name");
 				cbContact.setValue(editappointmentlist.getContactId());
 			}
 			if (editappointmentlist.getClientCaseId() != null) {
-				cbValues.setValue("Client Case");
+				cbTypeofContact.setValue("Client Case");
 				cbCase.setValue(editappointmentlist.getClientCaseId());
 			}
 			if (editappointmentlist.getOppertunityid() != null) {
-				cbValues.setValue("Opportunity Provider");
+				cbTypeofContact.setValue("Opportunity Provider");
 				cbOppertunity.setValue(editappointmentlist.getOppertunityid());
 			}
 			taObjectives.setValue(editappointmentlist.getObjective());
@@ -615,11 +603,10 @@ public class ClientAppointments extends BaseUI {
 	 */
 	private void loadClientsDetails() {
 		try {
-			List<ClientDM> clientList = serviceClients.getClientDetails(companyId, null, null, null, null, null, null,
-					null, "Active", "P");
-			beanClients = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			BeanContainer<Long, ClientDM> beanClients = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClients.setBeanIdProperty("clientId");
-			beanClients.addAll(clientList);
+			beanClients.addAll(serviceClients.getClientDetails(companyId, null, null, null, null, null, null, null,
+					"Active", "P"));
 			cbClient.setContainerDataSource(beanClients);
 		}
 		catch (Exception e) {
@@ -630,11 +617,10 @@ public class ClientAppointments extends BaseUI {
 	
 	private void loadClientCampaigns() {
 		try {
-			List<CampaignDM> campaignlist = serviceCampaign.getCampaignDetailList(companyId, null, null, null, null,
-					null, null, null, "P");
-			beanCampaign = new BeanContainer<Long, CampaignDM>(CampaignDM.class);
+			BeanContainer<Long, CampaignDM> beanCampaign = new BeanContainer<Long, CampaignDM>(CampaignDM.class);
 			beanCampaign.setBeanIdProperty("campaingnId");
-			beanCampaign.addAll(campaignlist);
+			beanCampaign.addAll(serviceCampaign.getCampaignDetailList(companyId, null, null, null, null, null, null,
+					null, "P"));
 			cbCampaign.setContainerDataSource(beanCampaign);
 		}
 		catch (Exception e) {
@@ -645,10 +631,9 @@ public class ClientAppointments extends BaseUI {
 	
 	private void loadLeadsDetails() {
 		try {
-			List<LeadsDM> leadList = serviceLead.getLeadsDetailsList(companyId, null, null, "Active", null, "P");
-			beanLead = new BeanContainer<Long, LeadsDM>(LeadsDM.class);
+			BeanContainer<Long, LeadsDM> beanLead = new BeanContainer<Long, LeadsDM>(LeadsDM.class);
 			beanLead.setBeanIdProperty("leadId");
-			beanLead.addAll(leadList);
+			beanLead.addAll(serviceLead.getLeadsDetailsList(companyId, null, null, "Active", null, "P"));
 			cbLead.setContainerDataSource(beanLead);
 		}
 		catch (Exception e) {
@@ -659,7 +644,8 @@ public class ClientAppointments extends BaseUI {
 	private void loadOpportunityDetails() {
 		List<OppertunitiesDM> clntOppertunity = serviceOppertunity.getClientOppertunityDetails(companyId, null, null,
 				null, null, null);
-		beanClntOppertunity = new BeanContainer<Long, OppertunitiesDM>(OppertunitiesDM.class);
+		BeanContainer<Long, OppertunitiesDM> beanClntOppertunity = new BeanContainer<Long, OppertunitiesDM>(
+				OppertunitiesDM.class);
 		beanClntOppertunity.setBeanIdProperty("oppertunityId");
 		beanClntOppertunity.addAll(clntOppertunity);
 		cbOppertunity.setContainerDataSource(beanClntOppertunity);
@@ -667,11 +653,10 @@ public class ClientAppointments extends BaseUI {
 	
 	private void loadEmployeeList() {
 		try {
-			List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null,
-					null, null, null, "F");
-			beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployee.setBeanIdProperty("employeeid");
-			beanEmployee.addAll(empList);
+			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null,
+					null, null, "P"));
 			cbEmployee.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
@@ -681,11 +666,11 @@ public class ClientAppointments extends BaseUI {
 	
 	private void loadClientContactList() {
 		try {
-			List<ClientsContactsDM> clientList = serviceClntContact.getClientContactsDetails(companyId, null, clientId,
-					null, "Active",null);
-			beanClntContact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
+			BeanContainer<Long, ClientsContactsDM> beanClntContact = new BeanContainer<Long, ClientsContactsDM>(
+					ClientsContactsDM.class);
 			beanClntContact.setBeanIdProperty("contactId");
-			beanClntContact.addAll(clientList);
+			beanClntContact.addAll(serviceClntContact.getClientContactsDetails(companyId, null, clientId, null,
+					"Active", null));
 			cbContact.setContainerDataSource(beanClntContact);
 		}
 		catch (Exception e) {
@@ -696,11 +681,10 @@ public class ClientAppointments extends BaseUI {
 	
 	private void loadClientCasesList() {
 		try {
-			List<ClientCasesDM> caseList = serviceCase.getClientCaseDetails(companyId, caseid, null, null, null,
-					"Active", "P");
-			beanClntCase = new BeanContainer<Long, ClientCasesDM>(ClientCasesDM.class);
+			BeanContainer<Long, ClientCasesDM> beanClntCase = new BeanContainer<Long, ClientCasesDM>(
+					ClientCasesDM.class);
 			beanClntCase.setBeanIdProperty("clientCaseId");
-			beanClntCase.addAll(caseList);
+			beanClntCase.addAll(serviceCase.getClientCaseDetails(companyId, caseid, null, null, null, "Active", "P"));
 			cbCase.setContainerDataSource(beanClntCase);
 		}
 		catch (Exception e) {
@@ -711,11 +695,10 @@ public class ClientAppointments extends BaseUI {
 	
 	private void loadMeetingTypeByLookUpList() {
 		try {
-			List<CompanyLookupDM> compLookUpList = serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId,
-					"Active", "CM_MTNGTYP");
-			beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompLookUp.setBeanIdProperty("lookupname");
-			beanCompLookUp.addAll(compLookUpList);
+			beanCompLookUp.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "CM_MTNGTYP"));
 			cbMeetingType.setContainerDataSource(beanCompLookUp);
 		}
 		catch (Exception e) {
@@ -724,22 +707,20 @@ public class ClientAppointments extends BaseUI {
 	}
 	
 	private void loadSchedule() {
-		List<ClientAppointmentsDM> scheduledtList = serviceAppointment.getAppointmentDetailList(companyId, null, null,
-				null, null, null, null, null, null, "F");
 		BeanContainer<Long, ClientAppointmentsDM> beanAppointment = new BeanContainer<Long, ClientAppointmentsDM>(
 				ClientAppointmentsDM.class);
 		beanAppointment.setBeanIdProperty("appointId");
-		beanAppointment.addAll(scheduledtList);
+		beanAppointment.addAll(serviceAppointment.getAppointmentDetailList(companyId, null, null, null, null, null,
+				null, null, null, "F"));
 		cbPreviewAppoint.setContainerDataSource(beanAppointment);
 	}
 	
 	private void loadPriorityByLookUpList() {
 		try {
-			List<CompanyLookupDM> priorityLookUpList = serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId,
-					"Active", "CM_MTNGPRY");
-			beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompLookUp.setBeanIdProperty("lookupname");
-			beanCompLookUp.addAll(priorityLookUpList);
+			beanCompLookUp.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "CM_MTNGPRY"));
 			cbPriority.setContainerDataSource(beanCompLookUp);
 		}
 		catch (Exception e) {
@@ -750,20 +731,20 @@ public class ClientAppointments extends BaseUI {
 	private void laodCalendarviewList() {
 		try {
 			List<ClientAppointmentsDM> appointList = serviceAppointment.getAppointmentDetailList(companyId, null, null,
-					clientId, null, null, null, null, "Active", null);
+					clientId, null, null, null, null, "Active", "F");
 			beanAppointment = new BeanItemContainer<ClientAppointmentsDM>(ClientAppointmentsDM.class);
 			beanAppointment.addAll(appointList);
 			cbPreviewAppoint.setContainerDataSource(beanAppointment);
 			for (ClientAppointmentsDM object : appointList) {
 				java.util.Calendar cal = GregorianCalendar.getInstance();
-				cal.setTime(new Date(object.getScheduleDt()));
+				cal.setTime(object.getScheduleDtInt());
 				dayEvent = new BasicEvent("*", "This is the Day", cal.getTime(), cal.getTime());
-				System.out.println("Date Utils" + cal.getTime());
 				dayEvent.setAllDay(true);
 				calendar.addEvent(dayEvent);
 			}
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			logger.info("load Calendar view Details " + e);
 		}
 	}
@@ -805,7 +786,7 @@ public class ClientAppointments extends BaseUI {
 		taObjectives.setRequired(true);
 		cbMeetingStatus.setRequired(true);
 		cbMeetingType.setRequired(true);
-		cbValues.setRequired(true);
+		cbTypeofContact.setRequired(true);
 		hlCmdBtnLayout.setVisible(false);
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(hlUserInputLayout);
@@ -818,7 +799,7 @@ public class ClientAppointments extends BaseUI {
 		taObjectives.setRequired(true);
 		cbMeetingStatus.setRequired(true);
 		cbMeetingType.setRequired(true);
-		cbValues.setRequired(true);
+		cbTypeofContact.setRequired(true);
 		hlCmdBtnLayout.setVisible(false);
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(hlUserInputLayout);
@@ -854,11 +835,11 @@ public class ClientAppointments extends BaseUI {
 		} else {
 			cbMeetingStatus.setComponentError(null);
 		}
-		if (cbValues.getValue() == null) {
-			cbValues.setComponentError(new UserError(GERPErrorCodes.CB_VALUES));
+		if (cbTypeofContact.getValue() == null) {
+			cbTypeofContact.setComponentError(new UserError(GERPErrorCodes.CB_VALUES));
 			errorflag = true;
 		} else {
-			cbValues.setComponentError(null);
+			cbTypeofContact.setComponentError(null);
 		}
 		if ((scheduleDt.getValue() != null) || (dueDate.getValue() != null)) {
 			if (scheduleDt.getValue().after(dueDate.getValue())) {
@@ -948,12 +929,12 @@ public class ClientAppointments extends BaseUI {
 		taObjectives.setRequired(false);
 		cbMeetingStatus.setRequired(false);
 		cbMeetingType.setRequired(false);
-		cbValues.setRequired(false);
+		cbTypeofContact.setRequired(false);
 		cbMeetingStatus.setComponentError(null);
 		scheduleDt.setComponentError(null);
 		taObjectives.setComponentError(null);
 		cbMeetingType.setComponentError(null);
-		cbValues.setComponentError(null);
+		cbTypeofContact.setComponentError(null);
 		hlCmdBtnLayout.setVisible(true);
 		resetFields();
 		assembleSearchLayout();
@@ -968,7 +949,7 @@ public class ClientAppointments extends BaseUI {
 		// TODO Auto-generated method stub
 		taMeetRemarks.setValue("");
 		taObjectives.setValue("");
-		cbValues.setValue(null);
+		cbTypeofContact.setValue(null);
 		cbClient.setValue(null);
 		cbClient.setComponentError(null);
 		cbCampaign.setValue(null);
@@ -983,7 +964,7 @@ public class ClientAppointments extends BaseUI {
 		cbMeetingStatus.setValue(null);
 		cbMeetingType.setValue(null);
 		cbMeetingType.setComponentError(null);
-		cbValues.setComponentError(null);
+		cbTypeofContact.setComponentError(null);
 		cbPriority.setValue(null);
 		cbPriority.setComponentError(null);
 		scheduleDt.setValue(null);

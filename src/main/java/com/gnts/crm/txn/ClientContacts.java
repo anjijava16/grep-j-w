@@ -39,7 +39,6 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.ui.UploadUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -84,18 +83,14 @@ public class ClientContacts extends BaseUI {
 	 */
 	private TextField tfContactName, tfDesignation, tftechperson, tfcommercialper, tfPhoneNo, tfMobileno, tfEmailId,
 			tfCityname;
-	private ComboBox cbClient, cbSearchstatus, cbClienSalut;
-	private BeanContainer<Long, ClientDM> beanClients = null;
-	// private BeanItemContainer<ClientsContactsDM> beanClientConatact = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompLookUp = null;
+	private ComboBox cbClient, cbStatus, cbClienSalut;
 	private BeanItemContainer<ClientsContactsDM> beanclntcontact = null;
 	private OptionGroup ogpersontype = new OptionGroup("");
 	private Long clientId, moduleId, clntContactId, employeeid;
 	private int recordCnt = 0;
 	private Logger logger = Logger.getLogger(ClientContacts.class);
-	Comments comment;
-	Documents document;
-	public static boolean filevalue = false;
+	private Comments comment;
+	private Documents document;
 	
 	// Constructor
 	public ClientContacts() {
@@ -206,9 +201,9 @@ public class ClientContacts extends BaseUI {
 		cbClienSalut.setWidth(strWidth);
 		cbClienSalut.setNullSelectionAllowed(false);
 		loadLookUpList();
-		cbSearchstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		cbSearchstatus.setItemCaptionPropertyId("desc");
-		cbSearchstatus.setWidth(strWidth);
+		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		cbStatus.setItemCaptionPropertyId("desc");
+		cbStatus.setWidth(strWidth);
 		hlSearchLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		assembleSearchLayout();
@@ -218,11 +213,10 @@ public class ClientContacts extends BaseUI {
 	
 	private void loadClientsDetails() {
 		try {
-			List<ClientDM> clntList = serviceClients.getClientDetails(companyId, clientId, null, null, null, null,
-					null, null, "Active", "P");
-			beanClients = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			BeanContainer<Long, ClientDM> beanClients = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClients.setBeanIdProperty("clientId");
-			beanClients.addAll(clntList);
+			beanClients.addAll(serviceClients.getClientDetails(companyId, clientId, null, null, null, null, null, null,
+					"Active", "P"));
 			cbClient.setContainerDataSource(beanClients);
 		}
 		catch (Exception e) {
@@ -238,11 +232,10 @@ public class ClientContacts extends BaseUI {
 	 */
 	private void loadLookUpList() {
 		try {
-			List<CompanyLookupDM> compLookUpList = serviceLookup.getCompanyLookUpByLookUp(companyId, moduleId,
-					"Active", "BS_SALUTN");
-			beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompLookUp.setBeanIdProperty("lookupname");
-			beanCompLookUp.addAll(compLookUpList);
+			beanCompLookUp.addAll(serviceLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "BS_SALUTN"));
 			cbClienSalut.setContainerDataSource(beanCompLookUp);
 		}
 		catch (Exception e) {
@@ -265,7 +258,7 @@ public class ClientContacts extends BaseUI {
 		 */
 		FormLayout1.addComponent(tfContactName);
 		FormLayout2.addComponent(cbClient);
-		FormLayout3.addComponent(cbSearchstatus);
+		FormLayout3.addComponent(cbStatus);
 		hlSearchLayout.addComponent(FormLayout1);
 		hlSearchLayout.addComponent(FormLayout2);
 		hlSearchLayout.addComponent(FormLayout3);
@@ -296,7 +289,7 @@ public class ClientContacts extends BaseUI {
 		FormLayout2.addComponent(tfMobileno);
 		FormLayout2.addComponent(tfPhoneNo);
 		tfPhoneNo.setRequired(true);
-		FormLayout2.addComponent(cbSearchstatus);
+		FormLayout2.addComponent(cbStatus);
 		FormLayout3.addComponent(hlImageLayout);
 		VerticalLayout hlUserInput = new VerticalLayout();
 		hlInput.setWidth("1175");
@@ -317,12 +310,10 @@ public class ClientContacts extends BaseUI {
 	}
 	
 	public void loadSrchRslt() {
-		// tblMstScrSrchRslt.removeAllItems();
 		List<ClientsContactsDM> clientContactList = new ArrayList<ClientsContactsDM>();
 		clientContactList = serviceClntContact.getClientContactsDetails(companyId, null, (Long) cbClient.getValue(),
-				(String) tfContactName.getValue(), (String) cbSearchstatus.getValue(), null);
+				(String) tfContactName.getValue(), (String) cbStatus.getValue(), null);
 		recordCnt = clientContactList.size();
-		System.out.println("clientContactList---->" + recordCnt);
 		beanclntcontact = new BeanItemContainer<ClientsContactsDM>(ClientsContactsDM.class);
 		beanclntcontact.addAll(clientContactList);
 		tblMstScrSrchRslt.setContainerDataSource(beanclntcontact);
@@ -337,28 +328,27 @@ public class ClientContacts extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
 		hlCmdBtnLayout.setVisible(false);
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		clntContactId = (Long) sltedRcd.getItemProperty("contactId").getValue();
-		if (sltedRcd != null) {
-			ClientsContactsDM editContactlist = beanclntcontact.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			ClientsContactsDM clientsContactsDM = beanclntcontact.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Selected Dept. Id -> "
 					+ clientId);
-			tfContactName.setValue(editContactlist.getContactName());
-			tfDesignation.setValue(editContactlist.getDesignation());
-			if (editContactlist.getTechPerson() != null) {
-				ogpersontype.setValue(editContactlist.getTechPerson());
+			clntContactId = clientsContactsDM.getContactId();
+			tfContactName.setValue(clientsContactsDM.getContactName());
+			tfDesignation.setValue(clientsContactsDM.getDesignation());
+			if (clientsContactsDM.getTechPerson() != null) {
+				ogpersontype.setValue(clientsContactsDM.getTechPerson());
 			}
-			cbClient.setValue(editContactlist.getClientId());
-			cbClienSalut.setValue(editContactlist.getContactSalut());
-			tfEmailId.setValue(editContactlist.getEmailId());
-			tfMobileno.setValue(editContactlist.getMobileNo());
-			tfPhoneNo.setValue(editContactlist.getPhoneNo());
-			cbSearchstatus.setValue(cbSearchstatus.getItemIds().iterator());
-			if (editContactlist.getContactphoto() != null) {
+			cbClient.setValue(clientsContactsDM.getClientId());
+			cbClienSalut.setValue(clientsContactsDM.getContactSalut());
+			tfEmailId.setValue(clientsContactsDM.getEmailId());
+			tfMobileno.setValue(clientsContactsDM.getMobileNo());
+			tfPhoneNo.setValue(clientsContactsDM.getPhoneNo());
+			cbStatus.setValue(clientsContactsDM.getContactStatus());
+			if (clientsContactsDM.getContactphoto() != null) {
 				hlImageLayout.removeAllComponents();
-				byte[] myimage = (byte[]) editContactlist.getContactphoto();
+				byte[] myimage = (byte[]) clientsContactsDM.getContactphoto();
 				UploadUI uploadObject = new UploadUI(hlImageLayout);
-				uploadObject.dispayImage(myimage, editContactlist.getContactName());
+				uploadObject.dispayImage(myimage, clientsContactsDM.getContactName());
 			} else {
 				try {
 					new UploadUI(hlImageLayout);
@@ -391,7 +381,7 @@ public class ClientContacts extends BaseUI {
 	
 	@Override
 	protected void resetSearchDetails() {
-		cbSearchstatus.setValue(cbSearchstatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		tfContactName.setValue("");
 		cbClient.setValue(null);
 		resetFields();
@@ -434,25 +424,6 @@ public class ClientContacts extends BaseUI {
 		} else {
 			tfContactName.setComponentError(null);
 		}
-		/*
-		 * String emailSeq = tfEmailId.getValue().toString(); if (!emailSeq.contains("@") || !emailSeq.contains(".")) {
-		 * tfEmailId.setComponentError(new UserError(GERPErrorCodes.EMAIL_VALIDATION)); errorflag = true; }
-		 */
-		/*
-		 * if (tfPhoneNo.getValue().toString() == null) { tfPhoneNo.setComponentError(new
-		 * UserError(GERPErrorCodes.NULL_PHONE_NUMBER)); } else if (tfPhoneNo.getValue() != null) { if
-		 * (!tfPhoneNo.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) { tfPhoneNo.setComponentError(new
-		 * UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION)); errorflag = true; } } if
-		 * ((tfMobileno.getValue().toString() == null)) { tfMobileno.setComponentError(new
-		 * UserError(GERPErrorCodes.NULL_PHONE_NUMBER)); } else if (tfMobileno.getValue() != null) { if
-		 * (!tfMobileno.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) tfMobileno.setComponentError(new UserError(
-		 * GERPErrorCodes.NULL_PHONE_NUMBER)); errorflag = true; }
-		 */
-		/*
-		 * if ((tfDesignation.getValue() == null) || tfDesignation.getValue().trim().length() == 0) {
-		 * tfDesignation.setComponentError(new UserError(GERPErrorCodes.NULL_DESIGNATION)); } else {
-		 * tfDesignation.setComponentError(null); }
-		 */
 		if ((cbClient.getValue() == null)) {
 			cbClient.setComponentError(new UserError(GERPErrorCodes.NULL_CLIENT_NAME));
 		} else {
@@ -500,8 +471,8 @@ public class ClientContacts extends BaseUI {
 			} else {
 				Contactobj.setContactphoto(null);
 			}
-			if (cbSearchstatus.getValue() != null) {
-				Contactobj.setContactStatus(cbSearchstatus.getValue().toString());
+			if (cbStatus.getValue() != null) {
+				Contactobj.setContactStatus(cbStatus.getValue().toString());
 			}
 			Contactobj.setLastUpdatedDt(DateUtils.getcurrentdate());
 			Contactobj.setLastUpdatedBy(userName);
@@ -560,9 +531,8 @@ public class ClientContacts extends BaseUI {
 		tfPhoneNo.setValue("");
 		tfPhoneNo.setComponentError(null);
 		hllayoutimage.removeAllComponents();
-		filevalue = false;
 		ogpersontype.setValue("Technical Person");
-		cbSearchstatus.setValue(cbSearchstatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		UI.getCurrent().getSession().setAttribute("isFileUploaded", false);
 	}
 }

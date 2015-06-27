@@ -35,8 +35,6 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
-import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -49,9 +47,9 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class ClientSubCategory extends BaseUI {
-	ClientSubCategoryService serviceClientSubCategory = (ClientSubCategoryService) SpringContextHelper
+	private ClientSubCategoryService serviceClientSubCategory = (ClientSubCategoryService) SpringContextHelper
 			.getBean("clientSubCategory");
-	ClientCategoryService BeanClientCat = (ClientCategoryService) SpringContextHelper.getBean("clientCategory");
+	private ClientCategoryService serviceClientCat = (ClientCategoryService) SpringContextHelper.getBean("clientCategory");
 	// form layout for input controls
 	private FormLayout flSubClntcatName, flClntcatName, flClntSubcatStatus;
 	// Parent layout for all the input controls
@@ -59,12 +57,11 @@ public class ClientSubCategory extends BaseUI {
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// User Input Components
-	private TextField tfSubClntcat;
+	private TextField tfSubCateName;
 	private ComboBox cbClntSubcatStatus;
 	private ComboBox cbClientCat;
 	// Bean Container
-	private BeanItemContainer<ClientSubCategoryDM> BeenSubCategoryDM = null;
-	private BeanContainer<Long, ClientCategoryDM> BeanClientCategoryDM;
+	private BeanItemContainer<ClientSubCategoryDM> beanSubCategoryDM = null;
 	// local variables declaration
 	private Long companyid;
 	private Object clientCategoryId;
@@ -90,8 +87,8 @@ public class ClientSubCategory extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Painting ClientSubCategory UI");
 		// SubCategory Name text field
-		tfSubClntcat = new GERPTextField("Client Subcategory");
-		tfSubClntcat.setMaxLength(25);
+		tfSubCateName = new GERPTextField("Client Subcategory");
+		tfSubCateName.setMaxLength(25);
 		// SubCategory status combo box
 		cbClntSubcatStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// get the list of statuses for SubCategory status field
@@ -105,7 +102,7 @@ public class ClientSubCategory extends BaseUI {
 		flClntcatName = new FormLayout();
 		flClntSubcatStatus = new FormLayout();
 		// add the user input items into appropriate form layout
-		flSubClntcatName.addComponent(tfSubClntcat);
+		flSubClntcatName.addComponent(tfSubCateName);
 		flClntcatName.addComponent(cbClientCat);
 		flClntSubcatStatus.addComponent(cbClntSubcatStatus);
 		// add the form layouts into user input layout
@@ -135,12 +132,12 @@ public class ClientSubCategory extends BaseUI {
 	
 	private void loadClientCategoryList() {
 		try {
-			List<ClientCategoryDM> clntCatList = BeanClientCat.getCrmClientCategoryList(companyid, null,
-					(String) cbClntSubcatStatus.getValue(), "F");
-			BeanClientCategoryDM = new BeanContainer<Long, ClientCategoryDM>(ClientCategoryDM.class);
-			BeanClientCategoryDM.setBeanIdProperty("clientCategoryId");
-			BeanClientCategoryDM.addAll(clntCatList);
-			cbClientCat.setContainerDataSource(BeanClientCategoryDM);
+			BeanContainer<Long, ClientCategoryDM> beanClientCategoryDM = new BeanContainer<Long, ClientCategoryDM>(
+					ClientCategoryDM.class);
+			beanClientCategoryDM.setBeanIdProperty("clientCategoryId");
+			beanClientCategoryDM.addAll(serviceClientCat.getCrmClientCategoryList(companyid, null,
+					(String) cbClntSubcatStatus.getValue(), "F"));
+			cbClientCat.setContainerDataSource(beanClientCategoryDM);
 		}
 		catch (Exception e) {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Exception "
@@ -151,17 +148,17 @@ public class ClientSubCategory extends BaseUI {
 	// get the search result from DB based on the search parameter
 	public void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<ClientSubCategoryDM> SubCatList = new ArrayList<ClientSubCategoryDM>();
+		List<ClientSubCategoryDM> subCatList = new ArrayList<ClientSubCategoryDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfSubClntcat.getValue() + ", " + (String) cbClntSubcatStatus.getValue());
-		SubCatList = serviceClientSubCategory.getClientSubCategoryList(companyid, null, tfSubClntcat.getValue(),
-				(String) cbClntSubcatStatus.getValue(), (Long)cbClientCat.getValue(), "P");
-		recordCnt = SubCatList.size();
-		BeenSubCategoryDM = new BeanItemContainer<ClientSubCategoryDM>(ClientSubCategoryDM.class);
-		BeenSubCategoryDM.addAll(SubCatList);
+				+ companyid + ", " + tfSubCateName.getValue() + ", " + (String) cbClntSubcatStatus.getValue());
+		subCatList = serviceClientSubCategory.getClientSubCategoryList(companyid, null, tfSubCateName.getValue(),
+				(String) cbClntSubcatStatus.getValue(), (Long) cbClientCat.getValue(), "P");
+		recordCnt = subCatList.size();
+		beanSubCategoryDM = new BeanItemContainer<ClientSubCategoryDM>(ClientSubCategoryDM.class);
+		beanSubCategoryDM.addAll(subCatList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the ClientSubCategory. result set");
-		tblMstScrSrchRslt.setContainerDataSource(BeenSubCategoryDM);
+		tblMstScrSrchRslt.setContainerDataSource(beanSubCategoryDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "clientSubCatId", "clientSubCatName", "clientCatName",
 				"clientSubCatStatus", "lastUpdatedDt", "lastUpdatedBy" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Client SubCategory", "Client Category", "Status",
@@ -174,8 +171,8 @@ public class ClientSubCategory extends BaseUI {
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		tfSubClntcat.setValue("");
-		tfSubClntcat.setComponentError(null);
+		tfSubCateName.setValue("");
+		tfSubCateName.setComponentError(null);
 		cbClientCat.setValue(null);
 		cbClntSubcatStatus.setValue(cbClntSubcatStatus.getItemIds().iterator().next());
 	}
@@ -185,16 +182,14 @@ public class ClientSubCategory extends BaseUI {
 	private void editSubcategory() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd.getItemProperty("clientSubCatName") != null) clientCategoryId = sltedRcd
-				.getItemProperty("clientSubCatName").getValue().toString();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Selected clientCategoryID. Id -> " + clientCategoryId);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			ClientSubCategoryDM editClientSubCat = BeenSubCategoryDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfSubClntcat.setValue(editClientSubCat.getClientSubCatName());
-			cbClntSubcatStatus.setValue(cbClntSubcatStatus.getItemIds().iterator().next());
-			cbClientCat.setValue(editClientSubCat.getClientCategoryId());
+			ClientSubCategoryDM clientSubCategoryDM = beanSubCategoryDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			clientCategoryId = clientSubCategoryDM.getClientSubCatId();
+			tfSubCateName.setValue(clientSubCategoryDM.getClientSubCatName());
+			cbClntSubcatStatus.setValue(clientSubCategoryDM.getClientSubCatStatus());
+			cbClientCat.setValue(clientSubCategoryDM.getClientCategoryId());
 		}
 	}
 	
@@ -219,7 +214,7 @@ public class ClientSubCategory extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
-		tfSubClntcat.setValue("");
+		tfSubCateName.setValue("");
 		cbClientCat.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
@@ -234,7 +229,7 @@ public class ClientSubCategory extends BaseUI {
 		// remove the components in the search layout and input controls in the
 		// same container
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		tfSubClntcat.setRequired(true);
+		tfSubCateName.setRequired(true);
 		cbClientCat.setRequired(true);
 		// reset the input controls to default value
 		loadClientCategoryList();
@@ -253,8 +248,8 @@ public class ClientSubCategory extends BaseUI {
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assembleSearchLayout();
-		tfSubClntcat.setRequired(false);
-		cbClientCat.setRequired(false); 
+		tfSubCateName.setRequired(false);
+		cbClientCat.setRequired(false);
 		tblMstScrSrchRslt.setValue(null);
 		resetFields();
 	}
@@ -263,50 +258,47 @@ public class ClientSubCategory extends BaseUI {
 	protected void editDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Invoking Edit record ");
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		tfSubClntcat.setRequired(true);
+		tfSubCateName.setRequired(true);
 		editSubcategory();
 	}
 	
 	@Override
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		tfSubClntcat.setComponentError(null);
-		if ((tfSubClntcat.getValue() == null) || tfSubClntcat.getValue().trim().length() == 0) {
-			tfSubClntcat.setComponentError(new UserError(GERPErrorCodes.NULL_CLNT_SCATGRY_NAME));
+		tfSubCateName.setComponentError(null);
+		if ((tfSubCateName.getValue() == null) || tfSubCateName.getValue().trim().length() == 0) {
+			tfSubCateName.setComponentError(new UserError(GERPErrorCodes.NULL_CLNT_SCATGRY_NAME));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + tfSubClntcat.getValue());
+					+ "Throwing ValidationException. User data is > " + tfSubCateName.getValue());
 			throw new ERPException.ValidationException();
 		}
 	}
 	
 	@Override
-	protected void saveDetails() throws ERPException.SaveException {try {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		ClientSubCategoryDM subcategoryobj = new ClientSubCategoryDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			subcategoryobj = BeenSubCategoryDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+	protected void saveDetails() throws ERPException.SaveException {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+			ClientSubCategoryDM subcategoryobj = new ClientSubCategoryDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				subcategoryobj = beanSubCategoryDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
+			if (tfSubCateName.getValue() != null) {
+				subcategoryobj.setClientSubCatName(tfSubCateName.getValue());
+			}
+			if (cbClientCat.getValue() != null) {
+				subcategoryobj.setClientCategoryId((Long) cbClientCat.getValue());
+			}
+			if (cbClntSubcatStatus.getValue() != null) {
+				subcategoryobj.setClientSubCatStatus((String) cbClntSubcatStatus.getValue());
+			}
+			subcategoryobj.setLastUpdatedDt(new Date());
+			subcategoryobj.setLastUpdatedBy(username);
+			serviceClientSubCategory.saveOrUpdateClientSubCategory(subcategoryobj);
+			resetFields();
+			loadSrchRslt();
 		}
-		if (tfSubClntcat.getValue() != null) {
-			subcategoryobj.setClientSubCatName(tfSubClntcat.getValue());
+		catch (Exception e) {
+			e.printStackTrace();
 		}
-		if (cbClientCat.getValue() != null) {
-			subcategoryobj.setClientCategoryId((Long) cbClientCat.getValue());
-		}
-		if (cbClntSubcatStatus.getValue() != null) {
-			subcategoryobj.setClientSubCatStatus((String) cbClntSubcatStatus.getValue());
-		}
-		subcategoryobj.setLastUpdatedDt(new Date());
-		System.out.println("User Name  >>>>>>>>>>>>>>>" +username);
-		subcategoryobj.setLastUpdatedBy(username);
-		
-		serviceClientSubCategory.saveOrUpdateClientSubCategory(subcategoryobj);
-		resetFields();
-		loadSrchRslt();
-	}
-	
-	catch(Exception e)
-	{
-	e.printStackTrace();
-}
 	}
 }

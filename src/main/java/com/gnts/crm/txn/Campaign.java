@@ -18,7 +18,6 @@ package com.gnts.crm.txn;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -50,8 +49,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.erputil.validations.DateValidation;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -79,7 +76,7 @@ public class Campaign extends BaseUI {
 	 */
 	private static final long serialVersionUID = 1L;
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private ProductService ServiceProduct = (ProductService) SpringContextHelper.getBean("Product");
+	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private CurrencyService servicebeanCurrency = (CurrencyService) SpringContextHelper.getBean("currency");
 	private CompanyLookupService servicecompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
@@ -87,15 +84,14 @@ public class Campaign extends BaseUI {
 	private CompanyService serviceCompany = (CompanyService) SpringContextHelper.getBean("companyBean");
 	private Long companyId, campaingnId;
 	private HorizontalLayout hlSearchLayout;
-	// public Button btnSubmit = new GERPButton("Submit", "searchbt", this);
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private VerticalLayout vlCommetTblLayout = new VerticalLayout();
 	private VerticalLayout vlDocumentLayout = new VerticalLayout();
-	HorizontalLayout hlInput = new HorizontalLayout();
+	private HorizontalLayout hlInput = new HorizontalLayout();
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4, flColumn5;
 	private String userName, strWidth = "130px";
-	Comments comment;
-	Documents document;
+	private Comments comment;
+	private Documents document;
 	/**
 	 * UI Components
 	 */
@@ -106,22 +102,14 @@ public class Campaign extends BaseUI {
 	private TextArea taComments;
 	private PopupDateField CampaignOpenDt, CampaignCloseDt, searchCampaignDt;
 	private BeanItemContainer<CampaignDM> beanCampaign = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployee = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompLookUp = null;
-	private BeanContainer<Long, CurrencyDM> beanCurrency = null;
-	private BeanItemContainer<ProductDM> beanproduct = null;
-	private EmployeeDM employee;
-	private CompanyLookupDM companyLookUp;
-	private Long moduleId, clntCampaignId, employeeid, prodid;
+	private Long moduleId, clntCampaignId, employeeid;
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private int recordCnt = 0;
 	private Logger logger = Logger.getLogger(Campaign.class);
-	public static boolean filevalue = false;
 	private String prodName;
 	private Label lblspace;
 	private Long branchID;
 	private Long roleId;
-	private String name;
 	private Long appScreenId;
 	private TextField tfExptBugt, tfActBugt, tfExptRvnu, tfActRvnu, tfExptROI, tfActROI;
 	
@@ -162,17 +150,6 @@ public class Campaign extends BaseUI {
 		cbEmployee.setWidth(strWidth);
 		cbEmployee.setNullSelectionAllowed(false);
 		loadEmployeeList();
-		cbEmployee.addValueChangeListener(new Property.ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-			
-			public void valueChange(ValueChangeEvent event) {
-				Object itemid = event.getProperty().getValue();
-				if (itemid != null) {
-					BeanItem<?> item = (BeanItem<?>) cbEmployee.getItem(itemid);
-					employee = (EmployeeDM) item.getBean();
-				}
-			}
-		});
 		cbaction.setWidth(strWidth);
 		cbaction.setItemCaptionPropertyId("firstname");
 		cbreview.setWidth(strWidth);
@@ -229,13 +206,6 @@ public class Campaign extends BaseUI {
 		cbproduct.setWidth(strWidth);
 		cbproduct.setItemCaptionPropertyId("prodname");
 		loadProductList();
-		/*
-		 * Long getCcyid = null; String currencysymbol = null; List<CompanyDM> companyList =
-		 * serviceCompany.getCompanyList(null, "Active", companyId); for (CompanyDM company : companyList) { getCcyid =
-		 * company.getCcyid(); } List<CurrencyDM> getCurrencylist = servicebeanCurrency.getCurrencyList(getCcyid, null,
-		 * null, "Active", "P"); for(CurrencyDM currency:getCurrencylist ) { currencysymbol=currency.getCcysymbol();
-		 * System.out.println(" currencysymbol=currency.getCcysymbol() >>>>>>>>>>" +currency.getCcysymbol()); }
-		 */
 		tfProduct = new GERPTextField("Product");
 		tfProduct.setMaxLength(40);
 		tfProduct.setWidth(strWidth);
@@ -283,17 +253,15 @@ public class Campaign extends BaseUI {
 		searchCampaignDt = new GERPPopupDateField("Campaign Date");
 		searchCampaignDt.setDateFormat("dd-MMM-yyyy ");
 		searchCampaignDt.addValidator(new DateValidation("Invalid date entered"));
-		List<ApprovalSchemaDM> list = serviceWrkOrdHdr.getReviewerId(companyId, appScreenId, branchID, roleId);
-		logger.info("Login ids>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-				+ serviceWrkOrdHdr.getReviewerId(companyId, appScreenId, branchID, roleId));
-		for (ApprovalSchemaDM obj : list) {
-			name = obj.getApprLevel();
-			System.out.println(" Name is >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + name);
-			if (name.equals("Reviewer")) {
+		try {
+			ApprovalSchemaDM obj = serviceWrkOrdHdr.getReviewerId(companyId, appScreenId, branchID, roleId).get(0);
+			if (obj.getApprLevel().equals("Reviewer")) {
 				cbstatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_RV_STATUS);
 			} else {
 				cbstatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_AP_STATUS);
 			}
+		}
+		catch (Exception e) {
 		}
 		lblspace = new Label();
 		hlSearchLayout = new HorizontalLayout();
@@ -484,10 +452,9 @@ public class Campaign extends BaseUI {
 		try {
 			tblMstScrSrchRslt.removeAllItems();
 			List<CampaignDM> compaingList = new ArrayList<CampaignDM>();
-			Date campaingdt = CampaignOpenDt.getValue();
 			compaingList = serviceCampaign.getCampaignDetailList(companyId, null, null,
-					(String) cbCampaignType.getValue(),(String) tfProduct.getValue(), (String)tfcampaign.getValue(), null,
-					((String) cbstatus.getValue()), "F");
+					(String) cbCampaignType.getValue(), (String) tfProduct.getValue(), (String) tfcampaign.getValue(),
+					null, ((String) cbstatus.getValue()), "F");
 			recordCnt = compaingList.size();
 			beanCampaign = new BeanItemContainer<CampaignDM>(CampaignDM.class);
 			beanCampaign.addAll(compaingList);
@@ -515,10 +482,9 @@ public class Campaign extends BaseUI {
 	 */
 	private void editCampaignDetails() {
 		logger.info("EditCampaignDetails------>+e");
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		campaingnId = (Long) sltedRcd.getItemProperty("campaingnId").getValue();
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			CampaignDM editCampaign = beanCampaign.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			campaingnId = editCampaign.getCampaingnId();
 			if (editCampaign.getActulRespCount() != null && !"null".equals(editCampaign.getActulRespCount())) {
 				tfActResponseCount.setValue(editCampaign.getActulRespCount().toString());
 			}
@@ -568,7 +534,7 @@ public class Campaign extends BaseUI {
 				}
 			}
 			Collection<?> collEmp = cbreview.getItemIds();
-			for (Iterator iterator = collEmp.iterator(); iterator.hasNext();) {
+			for (Iterator<?> iterator = collEmp.iterator(); iterator.hasNext();) {
 				Object itemId4 = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbreview.getItem(itemId4);
 				EmployeeDM editEmployee = (EmployeeDM) item.getBean();
@@ -581,7 +547,7 @@ public class Campaign extends BaseUI {
 			}
 			cbEmployee.setValue(editCampaign.getCampaignOwner());
 			Collection<?> Emp = cbaction.getItemIds();
-			for (Iterator iterator = Emp.iterator(); iterator.hasNext();) {
+			for (Iterator<?> iterator = Emp.iterator(); iterator.hasNext();) {
 				Object itemId4 = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbaction.getItem(itemId4);
 				EmployeeDM editEmployee = (EmployeeDM) item.getBean();
@@ -644,7 +610,7 @@ public class Campaign extends BaseUI {
 			tfActROI.setReadOnly(false);
 			tfActROI.setValue(currencysymbol);
 			tfActROI.setReadOnly(true);
-			beanCurrency = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
+			BeanContainer<Long, CurrencyDM> beanCurrency = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
 			beanCurrency.setBeanIdProperty("ccyid");
 			beanCurrency.addAll(getCurrencylist);
 			cbCurrencyName.setContainerDataSource(beanCurrency);
@@ -656,10 +622,9 @@ public class Campaign extends BaseUI {
 	
 	private void loadProductList() {
 		try {
-			List<ProductDM> getproductlist = ServiceProduct.getProductList(companyId, null, null, prodName, "Active",
-					null, null, "P");
-			beanproduct = new BeanItemContainer<ProductDM>(ProductDM.class);
-			beanproduct.addAll(getproductlist);
+			BeanItemContainer<ProductDM> beanproduct = new BeanItemContainer<ProductDM>(ProductDM.class);
+			beanproduct.addAll(serviceProduct
+					.getProductList(companyId, null, null, prodName, "Active", null, null, "P"));
 			cbproduct.setContainerDataSource(beanproduct);
 		}
 		catch (Exception e) {
@@ -673,7 +638,7 @@ public class Campaign extends BaseUI {
 	private void loadEmployeeList() {
 		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null,
 				null, null, "P");
-		beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployee.setBeanIdProperty("employeeid");
 		beanEmployee.addAll(empList);
 		cbaction.setContainerDataSource(beanEmployee);
@@ -683,11 +648,11 @@ public class Campaign extends BaseUI {
 	
 	private void loadCampaignTypeByLookUpList() {
 		try {
-			List<CompanyLookupDM> compLookUpList = servicecompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId,
-					"Active", "CM_CAMPTYE");
-			beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompLookUp.setBeanIdProperty("lookupname");
-			beanCompLookUp.addAll(compLookUpList);
+			beanCompLookUp.addAll(servicecompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
+					"CM_CAMPTYE"));
 			cbCampaignType.setContainerDataSource(beanCompLookUp);
 		}
 		catch (Exception e) {
@@ -786,7 +751,7 @@ public class Campaign extends BaseUI {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				campaignobj = beanCampaign.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			if (employee != null) {
+			if (cbEmployee.getValue() != null) {
 				campaignobj.setCampaignOwner((Long) cbEmployee.getValue());
 			}
 			campaignobj.setCampaignStartDate(CampaignOpenDt.getValue());
@@ -812,9 +777,6 @@ public class Campaign extends BaseUI {
 			}
 			if (tfActSalesCount.getValue() != null && tfActSalesCount.getValue().trim().length() > 0) {
 				campaignobj.setActulSalesCount(Long.valueOf(tfActSalesCount.getValue()));
-			}
-			if (companyLookUp != null) {
-				campaignobj.setCampaignType(companyLookUp.getLookupname().toString());
 			}
 			campaignobj.setCampaignType(cbCampaignType.getValue().toString());
 			campaignobj.setComments(taComments.getValue());
@@ -885,7 +847,6 @@ public class Campaign extends BaseUI {
 		tfcampaign.setRequired(false);
 		hluserInputReadonlyFalse();
 		hlUserIPContainer.removeAllComponents();
-		// hluserInputReadonlyFalse();
 		assembleSearchLayout();
 		resetFields();
 		tblMstScrSrchRslt.setVisible(true);

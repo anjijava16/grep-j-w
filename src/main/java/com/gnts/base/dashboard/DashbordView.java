@@ -83,7 +83,7 @@ public class DashbordView implements ClickListener {
 		btnWOCount.setStyleName("borderless-colored");
 		btnProductCount.setStyleName("borderless-coloredbig");
 		btnClientCount.setStyleName("borderless-coloredbig");
-		btnEnquiryDocs.setStyleName("borderless-colored");
+		btnEnquiryDocs.setStyleName("borderless-coloredmed");
 		clMainLayout.removeAllComponents();
 		lblDashboardTitle = new Label();
 		lblDashboardTitle.setContentMode(ContentMode.HTML);

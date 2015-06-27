@@ -25,19 +25,16 @@ import com.gnts.base.domain.mst.CityDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.CountryDM;
 import com.gnts.base.domain.mst.EmployeeDM;
-import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.domain.mst.StateDM;
 import com.gnts.base.service.mst.CityService;
 import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.CountryService;
 import com.gnts.base.service.mst.EmployeeService;
-import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.base.service.mst.StateService;
 import com.gnts.crm.domain.mst.ClientCategoryDM;
 import com.gnts.crm.domain.mst.ClientDM;
 import com.gnts.crm.domain.mst.ClientSubCategoryDM;
 import com.gnts.crm.domain.txn.CampaignDM;
-import com.gnts.crm.domain.txn.CommentsDM;
 import com.gnts.crm.domain.txn.LeadsDM;
 import com.gnts.crm.service.mst.ClientCategoryService;
 import com.gnts.crm.service.mst.ClientService;
@@ -48,7 +45,6 @@ import com.gnts.crm.txn.Comments;
 import com.gnts.crm.txn.Documents;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
-import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPTextArea;
@@ -60,7 +56,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -69,7 +64,6 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.server.UserError;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -81,11 +75,10 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class Client extends BaseUI {
-	CityService servicecity = (CityService) SpringContextHelper.getBean("city");
+	private CityService servicecity = (CityService) SpringContextHelper.getBean("city");
 	private StateService serviceState = (StateService) SpringContextHelper.getBean("mstate");
 	private CountryService servicecountry = (CountryService) SpringContextHelper.getBean("country");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private LeadsService serviceLead = (LeadsService) SpringContextHelper.getBean("clientLeads");
 	private ClientCategoryService serviceClientCat = (ClientCategoryService) SpringContextHelper
@@ -107,34 +100,22 @@ public class Client extends BaseUI {
 	private HorizontalLayout hlInput;
 	private VerticalLayout hlUserInput;
 	// User Input Components
-	private TextField tfClntName, tfRevenue, tfpostcd, tfphnno, tffaxno, tfEmail, tfWebsite, tfotherDetails,
+	private TextField tfClntName, tfRevenue, tfpostcd, tfphnno, tffaxno, tfEmail, tfWebsite,
 			tfclntcode;
-	private TextArea taClntAddrss;
+	private TextArea taClntAddrss,tfotherDetails;
 	private ComboBox cbClntCategory, cbClntSubCategory, cbCampaign, cbLeads, cbAssignedto, cbClientrate, cbCountry,
 			cbState, cbcity, cbclntindustry, cbClntStatus;
 	// Bean Container
-	private BeanContainer<Long, CountryDM> beanCountry = null;
-	private BeanContainer<Long, CityDM> beanCity = null;
 	private BeanItemContainer<ClientDM> beanClnt = null;
-	private BeanContainer<Long, ClientCategoryDM> beanCat;
-	private BeanContainer<Long, ClientSubCategoryDM> beanSubCat = null;
-	private BeanContainer<Long, EmployeeDM> beanemploye = null;
-	private BeanContainer<Long, CampaignDM> beancampaign = null;
-	BeanItemContainer<CommentsDM> beanCmmnt;
-	private BeanContainer<String, CompanyLookupDM> beanlook = null;
-	private BeanContainer<Long, LeadsDM> beanLead = null;
 	// local variables declaration
 	private Long companyid;
-	Long countryid, clientcatid;
-	Long stateid, lookupid;
-	Long cityid, clientsucatid;
-	private Long employeeid, clientId, moduleid, branchid;
+	private Long countryid;
+	private Long employeeid, clientId, moduleid;
 	private int recordCnt = 0;
 	private String username;
-	Comments comment;
-	Documents document;
-	public Button btndelete = new GERPButton("Delete", "delete", this);
-	ClientInformation inform;
+	private Comments comment;
+	private Documents document;
+	private ClientInformation inform;
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(Client.class);
 	private static final long serialVersionUID = 1L;
@@ -145,7 +126,6 @@ public class Client extends BaseUI {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		employeeid = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
-		// countryid = Long.valueOf(UI.getCurrent().getSession().getAttribute("countryid").toString());
 		countryid = (Long) UI.getCurrent().getSession().getAttribute("countryid");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside ClientCategory() constructor");
@@ -203,7 +183,6 @@ public class Client extends BaseUI {
 				}
 			}
 		});
-		// tfphnno.addValidator(new PhoneNumberValidation("Enter Correct phone no"));
 		tfphnno.setMaxLength(25);
 		// fax number text Field
 		tffaxno = new GERPTextField("Fax Number");
@@ -226,7 +205,7 @@ public class Client extends BaseUI {
 		tfWebsite = new GERPTextField("Website");
 		tfWebsite.setRequired(false);
 		tfWebsite.setMaxLength(25);
-		tfotherDetails = new GERPTextField("Other Details");
+		tfotherDetails = new GERPTextArea("Other Details");
 		tfotherDetails.setRequired(false);
 		tfotherDetails.setMaxLength(24);
 		cbClntSubCategory = new GERPComboBox("Sub Category");
@@ -351,18 +330,18 @@ public class Client extends BaseUI {
 		formLayout1.addComponent(tfClntName);
 		tfClntName.setRequired(true);
 		formLayout1.addComponent(taClntAddrss);
-		formLayout1.addComponent(cbClntCategory);
+		formLayout2.addComponent(cbClntCategory);
 		cbClntCategory.setRequired(true);
 		formLayout2.addComponent(cbClntSubCategory);
 		formLayout2.addComponent(cbCountry);
 		formLayout2.addComponent(cbState);
 		formLayout2.addComponent(cbcity);
-		formLayout2.addComponent(tfpostcd);
-		formLayout2.addComponent(tfphnno);
+		formLayout3.addComponent(tfpostcd);
+		formLayout3.addComponent(tfphnno);
 		formLayout3.addComponent(tfEmail);
 		cbCountry.setRequired(true);
-		formLayout4.addComponent(tffaxno);
-		formLayout4.addComponent(tfWebsite);
+		formLayout3.addComponent(tffaxno);
+		formLayout3.addComponent(tfWebsite);
 		formLayout4.addComponent(tfotherDetails);
 		formLayout4.addComponent(cbClntStatus);
 		hlInput = new HorizontalLayout();
@@ -375,14 +354,11 @@ public class Client extends BaseUI {
 		hlInput.addComponent(formLayout4);
 		hlUserInput = new VerticalLayout();
 		hlUserInput.addComponent(GERPPanelGenerator.createPanel(hlInput));
-		// maintab.addTab(hlInput, "Clients");
-		// maintab.addTab(");
 		TabSheet test3 = new TabSheet();
 		test3.addTab(vlinformTblLayout, " Client Information");
 		test3.addTab(vlCommetTblLayout, "Comments");
 		test3.addTab(vlDocumentLayout, "Documents");
 		test3.setWidth("1370");
-		// hlUserInput.addComponent(maintab);
 		hlUserInputLayout.addComponent(hlUserInput);
 		hlUserInput.addComponent(test3);
 		// build search layout
@@ -390,10 +366,9 @@ public class Client extends BaseUI {
 	
 	private void loadCountryList() {
 		try {
-			List<CountryDM> getCountrylist = servicecountry.getCountryList(null, null, null, null, "Active", "F");
-			beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+			BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 			beanCountry.setBeanIdProperty("countryID");
-			beanCountry.addAll(getCountrylist);
+			beanCountry.addAll(servicecountry.getCountryList(null, null, null, null, "Active", "P"));
 			cbCountry.setContainerDataSource(beanCountry);
 		}
 		catch (Exception e) {
@@ -403,11 +378,9 @@ public class Client extends BaseUI {
 	
 	private void loadStateList() {
 		try {
-			List<StateDM> getStateList = serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null,
-					"F");
 			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 			beanState.setBeanIdProperty("stateId");
-			beanState.addAll(getStateList);
+			beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
 			cbState.setContainerDataSource(beanState);
 		}
 		catch (Exception e) {
@@ -417,11 +390,10 @@ public class Client extends BaseUI {
 	
 	private void loadCityList() {
 		try {
-			List<CityDM> getCitylist = servicecity.getCityList(null, null, Long.valueOf(cbState.getValue().toString()),
-					"Active", companyid, "F");
-			beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
+			BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
 			beanCity.setBeanIdProperty("cityid");
-			beanCity.addAll(getCitylist);
+			beanCity.addAll(servicecity.getCityList(null, null, Long.valueOf(cbState.getValue().toString()), "Active",
+					companyid, "P"));
 			cbcity.setContainerDataSource(beanCity);
 		}
 		catch (Exception e) {
@@ -431,11 +403,10 @@ public class Client extends BaseUI {
 	
 	private void loadEmployeeList() {
 		try {
-			List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid,
-					employeeid, null, null, null, "F");
-			beanemploye = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			BeanContainer<Long, EmployeeDM> beanemploye = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanemploye.setBeanIdProperty("employeeid");
-			beanemploye.addAll(empList);
+			beanemploye.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeid, null,
+					null, null, "P"));
 			cbAssignedto.setContainerDataSource(beanemploye);
 		}
 		catch (Exception e) {
@@ -445,11 +416,10 @@ public class Client extends BaseUI {
 	
 	private void loadClientCategoryList() {
 		try {
-			List<ClientCategoryDM> clntCatList = serviceClientCat.getCrmClientCategoryList(companyid, null, "Active",
-					"F");
-			beanCat = new BeanContainer<Long, ClientCategoryDM>(ClientCategoryDM.class);
+			BeanContainer<Long, ClientCategoryDM> beanCat = new BeanContainer<Long, ClientCategoryDM>(
+					ClientCategoryDM.class);
 			beanCat.setBeanIdProperty("clientCategoryId");
-			beanCat.addAll(clntCatList);
+			beanCat.addAll(serviceClientCat.getCrmClientCategoryList(companyid, null, "Active", "P"));
 			cbClntCategory.setContainerDataSource(beanCat);
 		}
 		catch (Exception e) {
@@ -460,12 +430,11 @@ public class Client extends BaseUI {
 	
 	private void loadClientSubCategoryList() {
 		try {
-			System.out.println("Client category id " + cbClntSubCategory.getValue());
-			List<ClientSubCategoryDM> getsubcatList = serviceClientSubCat.getClientSubCategoryList(companyid, null,
-					null, "Active", (Long) cbClntCategory.getValue(), "F");
-			beanSubCat = new BeanContainer<Long, ClientSubCategoryDM>(ClientSubCategoryDM.class);
+			BeanContainer<Long, ClientSubCategoryDM> beanSubCat = new BeanContainer<Long, ClientSubCategoryDM>(
+					ClientSubCategoryDM.class);
 			beanSubCat.setBeanIdProperty("clientSubCatId");
-			beanSubCat.addAll(getsubcatList);
+			beanSubCat.addAll(serviceClientSubCat.getClientSubCategoryList(companyid, null, null, "Active",
+					(Long) cbClntCategory.getValue(), "F"));
 			cbClntSubCategory.setContainerDataSource(beanSubCat);
 		}
 		catch (Exception e) {
@@ -476,11 +445,10 @@ public class Client extends BaseUI {
 	
 	private void loadClientCampaigns() {
 		try {
-			List<CampaignDM> campaignlist = serviceCampaign.getCampaignDetailList(companyid, null, null, null, null,
-					null, null, null, "F");
-			beancampaign = new BeanContainer<Long, CampaignDM>(CampaignDM.class);
+			BeanContainer<Long, CampaignDM> beancampaign = new BeanContainer<Long, CampaignDM>(CampaignDM.class);
 			beancampaign.setBeanIdProperty("campaingnId");
-			beancampaign.addAll(campaignlist);
+			beancampaign.addAll(serviceCampaign.getCampaignDetailList(companyid, null, null, null, null, null, null,
+					null, "P"));
 			cbCampaign.setContainerDataSource(beancampaign);
 		}
 		catch (Exception e) {
@@ -491,10 +459,9 @@ public class Client extends BaseUI {
 	
 	private void loadLeadsDetails() {
 		try {
-			List<LeadsDM> leadList = serviceLead.getLeadsDetailsList(companyid, null, null, "Active", null, "P");
-			beanLead = new BeanContainer<Long, LeadsDM>(LeadsDM.class);
+			BeanContainer<Long, LeadsDM> beanLead = new BeanContainer<Long, LeadsDM>(LeadsDM.class);
 			beanLead.setBeanIdProperty("leadId");
-			beanLead.addAll(leadList);
+			beanLead.addAll(serviceLead.getLeadsDetailsList(companyid, null, null, "Active", null, "P"));
 			cbLeads.setContainerDataSource(beanLead);
 		}
 		catch (Exception e) {
@@ -505,11 +472,10 @@ public class Client extends BaseUI {
 	
 	private void loadcompanyUpList() {
 		try {
-			List<CompanyLookupDM> LookUpList = servicecompany.getCompanyLookUpByLookUp(companyid, moduleid, "Active",
-					"CM_CLNTRTG");
-			beanlook = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanlook.setBeanIdProperty("lookupname");
-			beanlook.addAll(LookUpList);
+			beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyid, moduleid, "Active", "CM_CLNTRTG"));
 			cbClientrate.setContainerDataSource(beanlook);
 		}
 		catch (Exception e) {
@@ -520,11 +486,10 @@ public class Client extends BaseUI {
 	
 	private void loadLookUpList() {
 		try {
-			List<CompanyLookupDM> LookList = servicecompany.getCompanyLookUpByLookUp(companyid, moduleid, "Active",
-					"CM_CLNTIND");
-			beanlook = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanlook.setBeanIdProperty("lookupname");
-			beanlook.addAll(LookList);
+			beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyid, moduleid, "Active", "CM_CLNTIND"));
 			cbclntindustry.setContainerDataSource(beanlook);
 		}
 		catch (Exception e) {
@@ -538,20 +503,15 @@ public class Client extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<ClientDM> ClntList = new ArrayList<ClientDM>();
-			/*
-			 * if (cbCountry.getValue() != null) { countryid = ((Long) cbCountry.getValue()); } if
-			 * (cbClntSubCategory.getValue() != null) { clientsucatid = ((Long) cbClntSubCategory.getValue()); }
-			 */
+			List<ClientDM> clntList = new ArrayList<ClientDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfClntName.getValue() + ", " + (String) cbClntStatus.getValue());
-			ClntList = serviceClients.getClientDetails(companyid, null, (Long) cbClntCategory.getValue(),
+			clntList = serviceClients.getClientDetails(companyid, null, (Long) cbClntCategory.getValue(),
 					(Long) cbClntSubCategory.getValue(), null, null, null, (String) tfClntName.getValue(),
 					(String) cbClntStatus.getValue(), "F");
-			recordCnt = ClntList.size();
-			System.out.println("LISYYYYY" + recordCnt);
+			recordCnt = clntList.size();
 			beanClnt = new BeanItemContainer<ClientDM>(ClientDM.class);
-			beanClnt.addAll(ClntList);
+			beanClnt.addAll(clntList);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Client. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanClnt);
@@ -609,13 +569,11 @@ public class Client extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlCmdBtnLayout.setVisible(false);
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		clientId = (Long) sltedRcd.getItemProperty("clientId").getValue();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Dept. Id -> "
 				+ clientId);
-		beanCmmnt = new BeanItemContainer<CommentsDM>(CommentsDM.class);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			ClientDM editClientlist = beanClnt.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			clientId = editClientlist.getClientId();
 			tfClntName.setValue(editClientlist.getClientName());
 			taClntAddrss.setValue(editClientlist.getClientAddress());
 			cbClntCategory.setValue(editClientlist.getClientCatId());
@@ -630,7 +588,6 @@ public class Client extends BaseUI {
 			if (editClientlist.getClientCode() != null) {
 				tfclntcode.setValue(editClientlist.getClientCode());
 			}
-			System.out.println("tfclntcode-->>>" + editClientlist.getClientCode());
 			cbLeads.setValue(editClientlist.getLeadId());
 			tfEmail.setValue(editClientlist.getEmailId());
 			tffaxno.setValue(editClientlist.getFaxNo());
@@ -698,11 +655,6 @@ public class Client extends BaseUI {
 		cbCountry.setRequired(true);
 		cbState.setRequired(true);
 		cbcity.setRequired(true);
-		/*
-		 * List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchid, moduleid, "CM_CLNTCD "); for
-		 * (SlnoGenDM slnoObj : slnoList) { if (slnoObj.getAutoGenYN().equals("Y")) { tfclntcode.setReadOnly(true); }
-		 * else { tfclntcode.setReadOnly(false); } }
-		 */
 	}
 	
 	@Override
@@ -731,12 +683,6 @@ public class Client extends BaseUI {
 		// reset the input controls to default value
 		hlCmdBtnLayout.setVisible(false);
 		assembleUserInputLayout();
-		/*
-		 * List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchid, moduleid, "CM_CLNTCD "); for
-		 * (SlnoGenDM slnoObj : slnoList) { if (slnoObj.getAutoGenYN().equals("Y")) { tfclntcode.setReadOnly(true); } }
-		 * if (tfclntcode.getValue() == null || tfclntcode.getValue().trim().length() == 0) {
-		 * tfclntcode.setReadOnly(false); }
-		 */
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		tfClntName.setRequired(true);
 		tblMstScrSrchRslt.setVisible(false);
@@ -793,67 +739,57 @@ public class Client extends BaseUI {
 	protected void saveDetails() throws ERPException.SaveException {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			ClientDM Clntobj = new ClientDM();
+			ClientDM clntobj = new ClientDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				Clntobj = beanClnt.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				clntobj = beanClnt.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			Clntobj.setClientCode(tfclntcode.getValue());
-			Clntobj.setCompanyId(companyid);
-			Clntobj.setClientName(tfClntName.getValue().toString());
-			Clntobj.setClientAddress(taClntAddrss.getValue());
-			Clntobj.setClientCatId((Long) cbClntCategory.getValue());
-			Clntobj.setClientSubCatId((Long) cbClntSubCategory.getValue());
-			Clntobj.setCampaignId((Long) cbCampaign.getValue());
-			Clntobj.setLeadId((Long) cbLeads.getValue());
-			System.out.println("LeadIDloader" + cbLeads.getValue());
+			clntobj.setClientCode(tfclntcode.getValue());
+			clntobj.setCompanyId(companyid);
+			clntobj.setClientName(tfClntName.getValue().toString());
+			clntobj.setClientAddress(taClntAddrss.getValue());
+			clntobj.setClientCatId((Long) cbClntCategory.getValue());
+			clntobj.setClientSubCatId((Long) cbClntSubCategory.getValue());
+			clntobj.setCampaignId((Long) cbCampaign.getValue());
+			clntobj.setLeadId((Long) cbLeads.getValue());
 			if (tfRevenue.getValue() != "" && tfRevenue.getValue().toString().trim().length() > 0) {
-				Clntobj.setRevenue(Long.valueOf(tfRevenue.getValue()));
+				clntobj.setRevenue(Long.valueOf(tfRevenue.getValue()));
 			}
-			Clntobj.setAssignedTo((Long) cbAssignedto.getValue());
-			Clntobj.setPostalCode(tfpostcd.getValue());
-			Clntobj.setPhoneNo(tfphnno.getValue());
-			Clntobj.setFaxNo(tffaxno.getValue());
-			Clntobj.setEmailId(tfEmail.getValue());
-			Clntobj.setWebsite(tfWebsite.getValue());
-			Clntobj.setOtherDetails(tfotherDetails.getValue());
+			clntobj.setAssignedTo((Long) cbAssignedto.getValue());
+			clntobj.setPostalCode(tfpostcd.getValue());
+			clntobj.setPhoneNo(tfphnno.getValue());
+			clntobj.setFaxNo(tffaxno.getValue());
+			clntobj.setEmailId(tfEmail.getValue());
+			clntobj.setWebsite(tfWebsite.getValue());
+			clntobj.setOtherDetails(tfotherDetails.getValue());
 			if (cbClientrate.getValue() != null) {
-				Clntobj.setClinetRating(cbClientrate.getValue().toString());
+				clntobj.setClinetRating(cbClientrate.getValue().toString());
 			}
 			if (cbclntindustry.getValue() != null) {
-				Clntobj.setClientIndustry(cbclntindustry.getValue().toString());
+				clntobj.setClientIndustry(cbclntindustry.getValue().toString());
 			}
 			if (cbCountry.getValue() != null) {
-				Clntobj.setCountryId((Long) cbCountry.getValue());
+				clntobj.setCountryId((Long) cbCountry.getValue());
 			}
 			logger.info(" (Long) cbCountryName.getValue() is > " + cbCountry.getValue());
 			if (cbState.getValue() != null) {
-				Clntobj.setStateId((Long.valueOf(cbState.getValue().toString())));
+				clntobj.setStateId((Long.valueOf(cbState.getValue().toString())));
 			}
 			logger.info(" (Long) cbState.getValue() is > " + cbState.getValue());
 			if (cbcity.getValue() != null) {
-				Clntobj.setCityId((Long.valueOf(cbcity.getValue().toString())));
+				clntobj.setCityId((Long.valueOf(cbcity.getValue().toString())));
 			}
 			if (cbClntStatus.getValue() != null) {
-				Clntobj.setClientSttus(cbClntStatus.getValue().toString());
+				clntobj.setClientSttus(cbClntStatus.getValue().toString());
 			}
-			Clntobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			Clntobj.setLastUpdatedBy(username);
-			serviceClients.saveOrUpdateClientsDetails(Clntobj);
-			inform.saveinformation(Clntobj.getClientId());
-			System.out.println("saveinformation..>>>" + Clntobj.getClientId());
+			clntobj.setLastUpdatedDt(DateUtils.getcurrentdate());
+			clntobj.setLastUpdatedBy(username);
+			serviceClients.saveOrUpdateClientsDetails(clntobj);
+			inform.saveinformation(clntobj.getClientId());
 			inform.resetfields();
-			comment.save(Clntobj.getClientId());
+			comment.save(clntobj.getClientId());
 			comment.resetfields();
-			document.documentsave(Clntobj.getClientId());
+			document.documentsave(clntobj.getClientId());
 			document.ResetFields();
-			/*
-			 * if (tblMstScrSrchRslt.getValue() == null) { List<SlnoGenDM> slnoList =
-			 * serviceSlnogen.getSequenceNumber(companyid, branchid, moduleid, "CM_CLNTCD");
-			 * System.out.println("iiiid===>" + companyid + "," + branchid + "," + moduleid); for (SlnoGenDM slnoObj :
-			 * slnoList) { if (slnoObj.getAutoGenYN().equals("Y")) { serviceSlnogen.updateNextSequenceNumber(companyid,
-			 * branchid, moduleid, "CM_CLNTCD"); } } }
-			 */
-			System.out.println("CLIENTS->>" + Clntobj.getClientId());
 			loadSrchRslt();
 		}
 		catch (Exception e) {

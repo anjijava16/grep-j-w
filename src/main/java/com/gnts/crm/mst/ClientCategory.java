@@ -122,21 +122,21 @@ public class ClientCategory extends BaseUI {
 	public void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<ClientCategoryDM> ClntList = new ArrayList<ClientCategoryDM>();
+		List<ClientCategoryDM> clntList = new ArrayList<ClientCategoryDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfClntcatName.getValue() + ", " + (String) cbClntcatStatus.getValue());
-		ClntList = serviceClientCat.getCrmClientCategoryList(companyid, tfClntcatName.getValue(),
+		clntList = serviceClientCat.getCrmClientCategoryList(companyid, tfClntcatName.getValue(),
 				(String) cbClntcatStatus.getValue(), "F");
-		recordCnt = ClntList.size();
+		recordCnt = clntList.size();
 		beanClentCat = new BeanItemContainer<ClientCategoryDM>(ClientCategoryDM.class);
-		beanClentCat.addAll(ClntList);
+		beanClentCat.addAll(clntList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the ClientCategory. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanClentCat);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "clientCategoryId", "clientCatName", "clientCatStatus",
 				"lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Client Category Name", "Status", "Last Updated Dt",
-				"Last Updated By" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Client Category Name", "Status",
+				"Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("clientCategoryId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
@@ -161,7 +161,7 @@ public class ClientCategory extends BaseUI {
 				+ clientCategoryId);
 		if (sltedRcd != null) {
 			tfClntcatName.setValue(sltedRcd.getItemProperty("clientCatName").getValue().toString());
-			 cbClntcatStatus.setValue(cbClntcatStatus.getItemIds().iterator().next());
+			cbClntcatStatus.setValue(sltedRcd.getItemProperty("clientCatStatus").getValue().toString());
 		}
 	}
 	
@@ -248,18 +248,18 @@ public class ClientCategory extends BaseUI {
 	@Override
 	protected void saveDetails() throws ERPException.SaveException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		ClientCategoryDM Clntcatobj = new ClientCategoryDM();
+		ClientCategoryDM clntcatobj = new ClientCategoryDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			Clntcatobj = beanClentCat.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			clntcatobj = beanClentCat.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		Clntcatobj.setCompanyId(companyid);
-		Clntcatobj.setClientCatName(tfClntcatName.getValue().toString());
+		clntcatobj.setCompanyId(companyid);
+		clntcatobj.setClientCatName(tfClntcatName.getValue().toString());
 		if (cbClntcatStatus.getValue() != null) {
-			Clntcatobj.setClientCatStatus(cbClntcatStatus.getValue().toString());
+			clntcatobj.setClientCatStatus(cbClntcatStatus.getValue().toString());
 		}
-		Clntcatobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-		Clntcatobj.setLastUpdatedBy(username);
-		serviceClientCat.saveOrUpdateCrmClientCategoryList(Clntcatobj);
+		clntcatobj.setLastUpdatedDt(DateUtils.getcurrentdate());
+		clntcatobj.setLastUpdatedBy(username);
+		serviceClientCat.saveOrUpdateCrmClientCategoryList(clntcatobj);
 		resetFields();
 		loadSrchRslt();
 	}

@@ -78,7 +78,7 @@ public class Documents implements ClickListener {
 			Long contactId, Long clntCampaingId, Long caseId) {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		moduleId = Long.valueOf(UI.getCurrent().getSession().getAttribute("moduleId").toString());
+		moduleId =(Long)(UI.getCurrent().getSession().getAttribute("moduleId"));
 		quoteId = (Long) (UI.getCurrent().getSession().getAttribute("quoteid"));
 		enquiryId = ((Long) UI.getCurrent().getSession().getAttribute("enquiryid"));
 		clntOppertunityId = oppertunityId;
@@ -96,7 +96,6 @@ public class Documents implements ClickListener {
 	 * @param clArgumentLayout
 	 * @param hlHeaderLayout
 	 */
-	@SuppressWarnings("deprecation")
 	private void buildview(VerticalLayout vlCommetTblLayout) {
 		// TODO Auto-generated method stub
 		basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
@@ -327,7 +326,6 @@ public class Documents implements ClickListener {
 	 * saveClientCommentsDetails()-->this method is used for save/update the records
 	 */
 	public void saveDocumentDetails() {
-		boolean valid = true;
 		validateAll();
 		DocumentsDM saveDocument = new DocumentsDM();
 		if (tblDocuments.getValue() != null) {
@@ -449,13 +447,12 @@ public class Documents implements ClickListener {
 		}
 	}
 	
-	public void saveclientoppurtunuity(Long oppertunityId) {
+	public void saveClientOppurtunuity(Long oppertunityId) {
 		System.out.println("saveid1-->>" + oppertunityId);
 		@SuppressWarnings("unchecked")
 		Collection<DocumentsDM> itemIds = (Collection<DocumentsDM>) tblDocuments.getVisibleItemIds();
 		for (DocumentsDM saveoppertunuity : (Collection<DocumentsDM>) itemIds) {
 			saveoppertunuity.setOppertunityId(oppertunityId);
-			System.out.println("saveid2-->>" + oppertunityId);
 			serviceDoc.saveOrUpdateDocumentsDetails(saveoppertunuity);
 		}
 	}
@@ -471,7 +468,7 @@ public class Documents implements ClickListener {
 			}
 			String editType = editDocuments.getDocumentType();
 			Collection<?> collType = cbDocumentType.getItemIds();
-			for (Iterator iterator = collType.iterator(); iterator.hasNext();) {
+			for (Iterator<?> iterator = collType.iterator(); iterator.hasNext();) {
 				Object itemId8 = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbDocumentType.getItem(itemId8);
 				CompanyLookupDM typeBean = (CompanyLookupDM) item.getBean();

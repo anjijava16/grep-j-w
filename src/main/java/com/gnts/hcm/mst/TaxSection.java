@@ -38,7 +38,6 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.mst.TaxSectionDM;
-import com.gnts.hcm.domain.mst.TaxSlapDM;
 import com.gnts.hcm.domain.mst.TaxSubSectionDM;
 import com.gnts.hcm.service.mst.TaxSectionService;
 import com.gnts.hcm.service.mst.TaxSubSectionService;
@@ -70,14 +69,14 @@ public class TaxSection extends BaseUI {
 	private FormLayout fltaxsectionCol1, fltaxsectionCol2, fltaxsectionCol3, fltaxsectionCol4, flTaxsubsectionCol1,
 			flTaxsubsectionCol2, flTaxsubsectionCol3, flTaxsubsectionCol4;
 	// Parent layout for all the input controls
-	int recordCnt = 0;
+	private int recordCnt = 0;
 	private Button btnAddTaxsubsection = new GERPButton("Add", "addbt", this);
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	private ComboBox cbSectionStatus, cbsubsecnstatus;
 	private TextField tfSectionCode, tfSectionLimit, tftaxlimit;
 	private TextArea taSectionDesc, tasubsectndesc;
-	List<TaxSubSectionDM> taxSubsectionList = new ArrayList<TaxSubSectionDM>();
+	private List<TaxSubSectionDM> taxSubsectionList = new ArrayList<TaxSubSectionDM>();
 	private BeanItemContainer<TaxSectionDM> beanTaxSectionDM = null;
 	private BeanItemContainer<TaxSubSectionDM> beanTaxSubSectionDM = null;
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
@@ -89,7 +88,7 @@ public class TaxSection extends BaseUI {
 	private Table tblTaxsubsubsection;
 	private Logger logger = Logger.getLogger(TaxSection.class);
 	private static final long serialVersionUID = 1L;
-	public Button btnDelete = new GERPButton("Delete", "delete", this);
+	private Button btnDelete = new GERPButton("Delete", "delete", this);
 	
 	// Constructor received the parameters from Login UI class
 	public TaxSection() {
@@ -385,7 +384,6 @@ public class TaxSection extends BaseUI {
 	
 	public boolean validateDtls() {
 		boolean isValid = true;
-		// Boolean errorFlag = false;
 		try {
 			Long.valueOf(tftaxlimit.getValue());
 			isValid = true;
@@ -424,7 +422,7 @@ public class TaxSection extends BaseUI {
 			}
 			taxsubsectionresetfields();
 			resetFields();
-			sectionId=0L;
+			sectionId = 0L;
 			loadSrchRslt();
 			loadTaxsubsectionRslt();
 			tblTaxsubsubsection.setColumnFooter("lastupdatedby", "No.of Records : " + 0);
@@ -506,22 +504,21 @@ public class TaxSection extends BaseUI {
 	private void editTaxSectionDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			TaxSectionDM editTaxSection = beanTaxSectionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			sectionId = editTaxSection.getSectionid();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Selected TaxSection. Id -> " + sectionId);
-			if (sltedRcd.getItemProperty("sectioncode").getValue() != null) {
-				tfSectionCode.setValue(sltedRcd.getItemProperty("sectioncode").getValue().toString());
+			if (editTaxSection.getSectioncode() != null) {
+				tfSectionCode.setValue(editTaxSection.getSectioncode());
 			}
-			if (sltedRcd.getItemProperty("sectiondesc").getValue() != null) {
-				taSectionDesc.setValue(sltedRcd.getItemProperty("sectiondesc").getValue().toString());
+			if (editTaxSection.getSectiondesc() != null) {
+				taSectionDesc.setValue(editTaxSection.getSectiondesc());
 			}
-			if (sltedRcd.getItemProperty("sectionlimit").getValue() != null) {
-				tfSectionLimit.setValue(sltedRcd.getItemProperty("sectionlimit").getValue().toString());
+			if (editTaxSection.getSectionlimit() != null) {
+				tfSectionLimit.setValue(editTaxSection.getSectionlimit().toString());
 			}
-			cbSectionStatus.setValue(sltedRcd.getItemProperty("sectionstatus").getValue().toString());
+			cbSectionStatus.setValue(editTaxSection.getSectionstatus());
 			taxSubsectionList.addAll(serviceTaxSubSection.getTaxSubSectionList(null, sectionId, null, "F"));
 		}
 		loadTaxsubsectionRslt();
@@ -540,6 +537,7 @@ public class TaxSection extends BaseUI {
 			cbsubsecnstatus.setValue(itselect.getItemProperty("subsecnstatus").getValue());
 		}
 	}
+	
 	private void deleteDtls() {
 		TaxSubSectionDM taxslapDtlObj = new TaxSubSectionDM();
 		if (tblTaxsubsubsection.getValue() != null) {

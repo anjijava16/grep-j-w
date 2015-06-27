@@ -52,7 +52,6 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.erputil.validations.PhoneNumberValidation;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -92,7 +91,6 @@ public class Leads extends BaseUI {
 	private HorizontalLayout hlSearchLayout;
 	private VerticalLayout vlCommetTblLayout = new VerticalLayout();
 	private VerticalLayout vlDocumentLayout = new VerticalLayout();
-	private BeanContainer<String, CompanyLookupDM> beanCompanylookup = null;
 	/**
 	 * UI Components
 	 */
@@ -101,26 +99,22 @@ public class Leads extends BaseUI {
 	private TextArea taAddress, taremarks;
 	private ComboBox cbCampaign, cbClientCat, cbLeadStatus, cbCity, cbState, cbCountry, cbcurrency, cblead;
 	private int recordCnt = 0;
-	private BeanContainer<Long, CampaignDM> beanCampaign = null;
 	private BeanItemContainer<LeadsDM> beanLead = null;
-	private BeanContainer<Long, ClientCategoryDM> beanClientCat = null;
-	private BeanContainer<Long, CurrencyDM> beancurency = null;
 	// Declare local variables
 	private Long employeeId;
 	private String username, strWidth = "150px";
-	private Long companyid, leadId,moduleId;
+	private Long companyid, leadId, moduleId;
 	private Long clntLeadId, countryid;
 	// intialize the logger
 	private Logger logger = Logger.getLogger(LeadsDM.class);
-	Comments comment;
-	Documents document;
+	private Comments comment;
+	private Documents document;
 	
 	// Constructor
 	public Leads() {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		//countryid = Long.valueOf(UI.getCurrent().getSession().getAttribute("countryid").toString());
 		countryid = (Long) UI.getCurrent().getSession().getAttribute("countryid");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside Lead() constructor");
 		// Loading the UI
@@ -139,6 +133,8 @@ public class Leads extends BaseUI {
 		tfFirstName.setMaxLength(25);
 		tfFirstName.setRequired(true);
 		tfFirstName.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void blur(BlurEvent event) {
 				tfFirstName.setComponentError(null);
@@ -161,6 +157,8 @@ public class Leads extends BaseUI {
 		tfCompanyName = new GERPTextField("Company Name");
 		tfCompanyName.setMaxLength(30);
 		tfCompanyName.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void blur(BlurEvent event) {
 				tfCompanyName.setComponentError(null);
@@ -210,12 +208,13 @@ public class Leads extends BaseUI {
 		tfPostalCode.setWidth(strWidth);
 		tfRevenue = new TextField("Revenue");
 		tfRevenue.setWidth(strWidth);
-		// tfRevenue.addValidator(new IntegerValidator("Enter numbers only"));
 		taAddress = new GERPTextArea("Address");
 		taAddress.setWidth(strWidth);
 		taAddress.setHeight("70px");
 		taAddress.setRequired(true);
 		taAddress.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void blur(BlurEvent event) {
 				taAddress.setComponentError(null);
@@ -351,11 +350,10 @@ public class Leads extends BaseUI {
 	 */
 	private void loadClientCampaigns() {
 		try {
-			List<CampaignDM> campaignlist = serviceCampaign.getCampaignDetailList(companyid, null, null, null, null,
-					null, null, null, "P");
-			beanCampaign = new BeanContainer<Long, CampaignDM>(CampaignDM.class);
+			BeanContainer<Long, CampaignDM> beanCampaign = new BeanContainer<Long, CampaignDM>(CampaignDM.class);
 			beanCampaign.setBeanIdProperty("campaingnId");
-			beanCampaign.addAll(campaignlist);
+			beanCampaign.addAll(serviceCampaign.getCampaignDetailList(companyid, null, null, null, null, null, null,
+					null, "P"));
 			cbCampaign.setContainerDataSource(beanCampaign);
 		}
 		catch (Exception e) {
@@ -366,10 +364,9 @@ public class Leads extends BaseUI {
 	
 	private void loadCurrencyList() {
 		try {
-			List<CurrencyDM> getCurrencylist = serviceCurrencey.getCurrencyList(null, null, null, "Active", "P");
-			beancurency = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
+			BeanContainer<Long, CurrencyDM> beancurency = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
 			beancurency.setBeanIdProperty("ccyid");
-			beancurency.addAll(getCurrencylist);
+			beancurency.addAll(serviceCurrencey.getCurrencyList(null, null, null, "Active", "P"));
 			cbcurrency.setContainerDataSource(beancurency);
 		}
 		catch (Exception e) {
@@ -379,35 +376,37 @@ public class Leads extends BaseUI {
 	
 	private void loadLookUpList() {
 		try {
-			List<CompanyLookupDM> compLookUpList = serviceCompany.getCompanyLookUpByLookUp(companyid, moduleId,
-					"Active", "CM_LEADSRC");
-			beanCompanylookup = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanylookup = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanylookup.setBeanIdProperty("lookupname");
-			beanCompanylookup.addAll(compLookUpList);
+			beanCompanylookup.addAll(serviceCompany.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"CM_LEADSRC"));
 			cblead.setContainerDataSource(beanCompanylookup);
 		}
 		catch (Exception e) {
 			logger.info("load company look up details" + e);
 		}
 	}
+	
 	private void loadLookUpListSts() {
 		try {
-			List<CompanyLookupDM> compLookUpList = serviceCompany.getCompanyLookUpByLookUp(companyid, moduleId,
-					"Active", "CM_LEADSTS");
-			beanCompanylookup = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanylookup = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanylookup.setBeanIdProperty("lookupname");
-			beanCompanylookup.addAll(compLookUpList);
+			beanCompanylookup.addAll(serviceCompany.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"CM_LEADSTS"));
 			cbLeadStatus.setContainerDataSource(beanCompanylookup);
 		}
 		catch (Exception e) {
 			logger.info("load company look up details" + e);
 		}
 	}
+	
 	private void loadClientCategoryList() {
-		List<ClientCategoryDM> clntCatList = serviceClientCat.getCrmClientCategoryList(companyid, null, "Active", "p");
-		beanClientCat = new BeanContainer<Long, ClientCategoryDM>(ClientCategoryDM.class);
+		BeanContainer<Long, ClientCategoryDM> beanClientCat = new BeanContainer<Long, ClientCategoryDM>(
+				ClientCategoryDM.class);
 		beanClientCat.setBeanIdProperty("clientCategoryId");
-		beanClientCat.addAll(clntCatList);
+		beanClientCat.addAll(serviceClientCat.getCrmClientCategoryList(companyid, null, "Active", "P"));
 		cbClientCat.setContainerDataSource(beanClientCat);
 	}
 	
@@ -429,11 +428,9 @@ public class Leads extends BaseUI {
 	// load the state name list details for form
 	private void loadStateList() {
 		try {
-			List<StateDM> getStateList = serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null,
-					"P");
 			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 			beanState.setBeanIdProperty("stateId");
-			beanState.addAll(getStateList);
+			beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
 			cbState.setContainerDataSource(beanState);
 		}
 		catch (Exception e) {
@@ -443,11 +440,9 @@ public class Leads extends BaseUI {
 	
 	// load the City name list details for form
 	private void loadCityList() {
-		List<CityDM> getcityList = serviceCity.getCityList(null, null, (Long) cbState.getValue(), "Active", companyid,
-				"P");
 		BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
 		beanCity.setBeanIdProperty("cityid");
-		beanCity.addAll(getcityList);
+		beanCity.addAll(serviceCity.getCityList(null, null, (Long) cbState.getValue(), "Active", companyid, "P"));
 		cbCity.setContainerDataSource(beanCity);
 	}
 	
@@ -476,12 +471,11 @@ public class Leads extends BaseUI {
 	private void editLead() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		clntLeadId = (Long) sltedRcd.getItemProperty("leadId").getValue();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected news. Id -> "
 				+ leadId);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			LeadsDM editleadlist = beanLead.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			clntLeadId = editleadlist.getLeadId();
 			tfCompanyName.setValue(editleadlist.getCompanyName());
 			tfFirstName.setValue(editleadlist.getFirstName());
 			taAddress.setValue(editleadlist.getAddress());
@@ -624,7 +618,7 @@ public class Leads extends BaseUI {
 			Leadobj.setAddress(taAddress.getValue());
 			Leadobj.setPhoneNo(tfPhoneNo.getValue());
 			Leadobj.setPostalCode(tfPostalCode.getValue());
-			Leadobj.setLeadSource((String)cblead.getValue());
+			Leadobj.setLeadSource((String) cblead.getValue());
 			Leadobj.setPhoneNo(Leadobj.getPhoneNo());
 			if (tfRevenue.getValue() != null) {
 				Leadobj.setRevenue(Long.valueOf(tfRevenue.getValue()));

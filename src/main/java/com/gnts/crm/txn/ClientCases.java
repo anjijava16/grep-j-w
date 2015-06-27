@@ -42,10 +42,9 @@ import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.erputil.validations.StringValidation;
-import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.service.txn.WorkOrderDtlService;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
@@ -53,9 +52,7 @@ import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.domain.txn.SmsPODtlDM;
 import com.gnts.sms.domain.txn.SmsPOHdrDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
-import com.gnts.sms.service.txn.SmsPODtlService;
 import com.gnts.sms.service.txn.SmsPOHdrService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -74,13 +71,12 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class ClientCases extends BaseUI {
+public class ClientCases extends BaseTransUI {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private SmsPODtlService servicesmspodtl = (SmsPODtlService) SpringContextHelper.getBean("SmsPODtl");
 	private WorkOrderDtlService serviceWrkOrdDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private CompanyLookupService serviceCompany = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
@@ -102,16 +98,13 @@ public class ClientCases extends BaseUI {
 	private ComboBox cbClient, cbEmployee, cbCaseCategory, cbPriority, cbSevrity, cbClntCaseStatus, cbEnquiryNo,
 			cbwoNo, cbPONo, cbprdname;
 	private TextArea taCaseDesc;
-	private BeanContainer<Long, ClientDM> beanClients = null;
 	private BeanItemContainer<ClientCasesDM> beanClntCases = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployee = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompLookUp = null;
 	private Long moduleId, employeeId, deptId, clientId;
 	private int recordCnt = 0;
 	private Logger logger = Logger.getLogger(ClientCasesDM.class);
 	private Long clientCaseId;
-	Comments comment;
-	Documents document;
+	private Comments comment;
+	private Documents document;
 	
 	public ClientCases() {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
@@ -159,10 +152,8 @@ public class ClientCases extends BaseUI {
 			private static final long serialVersionUID = 1L;
 			
 			public void valueChange(ValueChangeEvent event) {
-				Object itemid = event.getProperty().getValue();
-				if (itemid != null) {
+				if (cbprdname.getValue() != null) {
 					try {
-						SmsPODtlDM obj = (SmsPODtlDM) cbprdname.getValue();
 						if (((SmsPODtlDM) cbprdname.getValue()).getCustomField1() != null) {
 							tfpartNo.setReadOnly(false);
 							tfpartNo.setValue(((SmsPODtlDM) cbprdname.getValue()).getCustomField1());
@@ -189,12 +180,16 @@ public class ClientCases extends BaseUI {
 			}
 		});
 		cbEnquiryNo.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
-				loadClientsDetails();
-				loadworkorder();
-				loadPurchaseOrdNo();
+				if (cbEnquiryNo.getValue() != null) {
+					loadClientsDetails();
+					loadworkorder();
+					loadPurchaseOrdNo();
+				}
 			}
 		});
 		tfCaseTitle = new GERPTextField("Complaint Title");
@@ -240,7 +235,7 @@ public class ClientCases extends BaseUI {
 			}
 		});
 		loadCaseCategotyByLookUpList();
-		taCaseDesc = new GERPTextArea("Service Problem Reports");
+		taCaseDesc = new GERPTextArea("Problem Reports");
 		taCaseDesc.setWidth(strWidth);
 		taCaseDesc.setHeight("50px");
 		cbPriority = new GERPComboBox("Priority");
@@ -249,10 +244,14 @@ public class ClientCases extends BaseUI {
 		cbPriority.setWidth(strWidth);
 		loadCasePriorityByLookUpList();
 		cbPONo.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
-				loadPurchseOrdDtlList();
+				if (cbPONo.getValue() != null) {
+					loadPurchseOrdDtlList();
+				}
 			}
 		});
 		cbSevrity = new GERPComboBox("Severity");
@@ -321,7 +320,7 @@ public class ClientCases extends BaseUI {
 		tfCaseTitle.setRequired(true);
 		flColumn1.addComponent(cbEmployee);
 		cbEmployee.setRequired(true);
-		flColumn3.addComponent(cbCaseCategory);
+		flColumn2.addComponent(cbCaseCategory);
 		flColumn3.addComponent(taCaseDesc);
 		flColumn3.addComponent(cbPriority);
 		flColumn3.addComponent(cbSevrity);
@@ -331,6 +330,7 @@ public class ClientCases extends BaseUI {
 		HorizontalLayout hlInput = new HorizontalLayout();
 		hlInput.setMargin(true);
 		VerticalLayout hlUserInput = new VerticalLayout();
+		hlUserInput.setSpacing(true);
 		hlInput.addComponent(flColumn1);
 		hlInput.addComponent(flColumn2);
 		hlInput.addComponent(flColumn3);
@@ -339,7 +339,7 @@ public class ClientCases extends BaseUI {
 		TabSheet test3 = new TabSheet();
 		test3.addTab(vlCommetTblLayout, "Comments");
 		test3.addTab(vlDocumentLayout, "Documents");
-		test3.setWidth("1195");
+		test3.setWidth("1100");
 		hlUserInput.addComponent(test3);
 		hlUserInputLayout.addComponent(hlUserInput);
 		hlUserInputLayout.setSpacing(true);
@@ -381,12 +381,10 @@ public class ClientCases extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
 		hlCmdBtnLayout.setVisible(false);
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Selected Dept. Id -> "
 				+ clientCaseId);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			ClientCasesDM editCaselist = beanClntCases.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			// clientCaseId = (Long) sltedRcd.getItemProperty("clientCaseId").getValue();
 			clientCaseId = editCaselist.getClientCaseId();
 			tfCaseResult.setValue(editCaselist.getCaseresltn());
 			cbEnquiryNo.setValue(editCaselist.getEnquiryId());
@@ -399,14 +397,14 @@ public class ClientCases extends BaseUI {
 			tfDrgNo.setValue(editCaselist.getDrgno());
 			tfpartNo.setReadOnly(true);
 			tfDrgNo.setReadOnly(true);
-			Long uom = editCaselist.getProdid();
-			Collection<?> uomid = cbprdname.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long prodid = editCaselist.getProdid();
+			Collection<?> prodids = cbprdname.getItemIds();
+			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbprdname.getItem(itemId);
 				// Get the actual bean and use the data
 				SmsPODtlDM st = (SmsPODtlDM) item.getBean();
-				if (uom != null && uom.equals(st.getProductid())) {
+				if (prodid != null && prodid.equals(st.getProductid())) {
 					cbprdname.setValue(itemId);
 				}
 			}
@@ -416,11 +414,11 @@ public class ClientCases extends BaseUI {
 				taCaseDesc.setValue(editCaselist.getCaseDescription().toString());
 			}
 			logger.info("cbClient---->" + cbClient);
-			cbEmployee.setValue(sltedRcd.getItemProperty("assignedTo").getValue());
+			cbEmployee.setValue(editCaselist.getAssignedTo());
 			cbPriority.setValue(editCaselist.getCasePriority());
 			cbSevrity.setValue(editCaselist.getCaseSevrity());
-			cbCaseCategory.setValue(sltedRcd.getItemProperty("caseCategory").getValue());
-			cbClntCaseStatus.setValue(cbClntCaseStatus.getItemIds().iterator().next());
+			cbCaseCategory.setValue(editCaselist.getCaseCategory());
+			cbClntCaseStatus.setValue(editCaselist.getCaseStatus());
 		}
 		comment.loadsrch(true, null, null, null, null, null, clientCaseId);
 		document.loadsrcrslt(true, null, null, null, null, null, clientCaseId);
@@ -431,11 +429,10 @@ public class ClientCases extends BaseUI {
 			clientId = serviceEnquiryHdr
 					.getSmsEnqHdrList(null, (Long) cbEnquiryNo.getValue(), null, null, null, "P", null, null).get(0)
 					.getClientId();
-			List<ClientDM> clientList = serviceClients.getClientDetails(companyId, clientId, null, null, null, null,
-					null, null, "Active", "P");
-			beanClients = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			BeanContainer<Long, ClientDM> beanClients = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClients.setBeanIdProperty("clientId");
-			beanClients.addAll(clientList);
+			beanClients.addAll(serviceClients.getClientDetails(companyId, clientId, null, null, null, null, null, null,
+					"Active", "P"));
 			cbClient.setContainerDataSource(beanClients);
 			cbClient.setValue(clientId);
 		}
@@ -447,11 +444,10 @@ public class ClientCases extends BaseUI {
 	
 	private void loadEmployeeList() {
 		try {
-			List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, deptId, "Active", companyId,
-					employeeId, null, null, null, "F");
-			beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployee.setBeanIdProperty("employeeid");
-			beanEmployee.addAll(empList);
+			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, deptId, "Active", companyId, employeeId,
+					null, null, null, "P"));
 			cbEmployee.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
@@ -461,11 +457,10 @@ public class ClientCases extends BaseUI {
 	
 	private void loadCaseCategotyByLookUpList() {
 		try {
-			List<CompanyLookupDM> statusLookUpList = serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId,
-					"Active", "CM_CASECTG");
-			beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompLookUp.setBeanIdProperty("lookupname");
-			beanCompLookUp.addAll(statusLookUpList);
+			beanCompLookUp.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "CM_CASECTG"));
 			cbCaseCategory.setContainerDataSource(beanCompLookUp);
 		}
 		catch (Exception e) {
@@ -474,11 +469,10 @@ public class ClientCases extends BaseUI {
 	}
 	
 	private void loadCasePriorityByLookUpList() {
-		List<CompanyLookupDM> statusLookUpList = serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
-				"CM_CASEPRY");
-		beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompLookUp.setBeanIdProperty("lookupname");
-		beanCompLookUp.addAll(statusLookUpList);
+		beanCompLookUp.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "CM_CASEPRY"));
 		cbPriority.setContainerDataSource(beanCompLookUp);
 	}
 	
@@ -487,11 +481,10 @@ public class ClientCases extends BaseUI {
 	 */
 	private void loadCaseSevrityByLookUpList() {
 		try {
-			List<CompanyLookupDM> LookUpList = serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
-					"CM_CASESEV");
-			beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompLookUp.setBeanIdProperty("lookupname");
-			beanCompLookUp.addAll(LookUpList);
+			beanCompLookUp.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "CM_CASESEV"));
 			cbSevrity.setContainerDataSource(beanCompLookUp);
 		}
 		catch (Exception e) {
@@ -695,7 +688,6 @@ public class ClientCases extends BaseUI {
 		cbwoNo.setComponentError(null);
 		cbPONo.setComponentError(null);
 		cbprdname.setComponentError(null);
-		
 		cbprdname.setValue(null);
 		cbprdname.setContainerDataSource(null);
 		cbwoNo.setValue(null);
@@ -762,5 +754,10 @@ public class ClientCases extends BaseUI {
 		BeanItemContainer<SmsPODtlDM> beanPurchaseOrdDtl = new BeanItemContainer<SmsPODtlDM>(SmsPODtlDM.class);
 		beanPurchaseOrdDtl.addAll(getPurchaseOrdDtl);
 		cbprdname.setContainerDataSource(beanPurchaseOrdDtl);
+	}
+	
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
 	}
 }

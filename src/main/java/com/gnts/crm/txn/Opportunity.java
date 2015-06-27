@@ -16,9 +16,7 @@
  */
 package com.gnts.crm.txn;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.CompanyLookupDM;
@@ -45,7 +43,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
@@ -88,16 +85,11 @@ public class Opportunity extends BaseUI {
 	private ComboBox cbClient, cbEmployee, cbOppertType, cbCampaign, cbSearchOppertStatus;
 	private TextArea taRemarks;
 	private PopupDateField closingDt;
-	private BeanContainer<Long, ClientDM> beanClients = null;
 	private BeanItemContainer<OppertunitiesDM> beanClntOppertunity = new BeanItemContainer<OppertunitiesDM>(
 			OppertunitiesDM.class);
-	private BeanContainer<Long, EmployeeDM> beanEmployee = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanylookup = null;
-	private BeanContainer<Long, CompanyLookupDM> beanlookup = null;
-	private BeanContainer<Long, CampaignDM> beancampaign = null;
 	private Long moduleId, oppertunityId, employeeId;
-	Comments comment;
-	Documents document;
+	private Comments comment;
+	private Documents document;
 	private int total = 0;
 	private Logger logger = Logger.getLogger(Opportunity.class);
 	
@@ -243,7 +235,6 @@ public class Opportunity extends BaseUI {
 				(Long) cbClient.getValue(), null, tfOppertName.getValue(), cbSearchOppertStatus.getValue().toString());
 		System.out.println("STATUS" + cbSearchOppertStatus.getValue());
 		total = clntOppertunityList.size();
-		// beanClntOppertunity = new BeanItemContainer<OppertunitiesDM>(OppertunitiesDM.class);
 		beanClntOppertunity.addAll(clntOppertunityList);
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.setContainerDataSource(beanClntOppertunity);
@@ -257,10 +248,9 @@ public class Opportunity extends BaseUI {
 	private void editClientOpportunityDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Selected opportunuity. Id -> " + oppertunityId);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			OppertunitiesDM editopportunuitylist = beanClntOppertunity.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			oppertunityId = editopportunuitylist.getOppertunityId();
 			if (editopportunuitylist.getBusinessValue() != null
@@ -276,19 +266,15 @@ public class Opportunity extends BaseUI {
 			} else {
 				tfWinProb.setValue("0");
 			}
-			cbOppertType.setValue(sltedRcd.getItemProperty("oppertunityType").getValue());
+			cbOppertType.setValue(editopportunuitylist.getOppertunityType());
 			cbCampaign.setValue(editopportunuitylist.getCampaingnId());
 			cbEmployee.setValue(editopportunuitylist.getAssignedTo());
 			cbClient.setValue(editopportunuitylist.getClientId());
 			if (editopportunuitylist.getRemarks() != null && !"null".equals(editopportunuitylist.getRemarks())) {
 				taRemarks.setValue(editopportunuitylist.getRemarks());
 			}
-			SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
-			String dateInString = editopportunuitylist.getClosingDate();
-			Date date = null;
 			try {
-				date = formatter.parse(dateInString);
-				closingDt.setValue(date);
+				closingDt.setValue(editopportunuitylist.getClosingDate1());
 			}
 			catch (Exception e) {
 				logger.info("convert closing date to date" + e);
@@ -306,11 +292,11 @@ public class Opportunity extends BaseUI {
 	 */
 	private void loadOppertunityTypeByLookUpList() {
 		try {
-			List<CompanyLookupDM> compLookUpList = serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId,
-					"Active", "CM_OPRTYPE");
-			beanCompanylookup = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanylookup = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanylookup.setBeanIdProperty("lookupname");
-			beanCompanylookup.addAll(compLookUpList);
+			beanCompanylookup.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
+					"CM_OPRTYPE"));
 			cbOppertType.setContainerDataSource(beanCompanylookup);
 		}
 		catch (Exception e) {
@@ -319,21 +305,18 @@ public class Opportunity extends BaseUI {
 	}
 	
 	private void loadClientCampaigns() {
-		List<CampaignDM> campaignlist = serviceCampaign.getCampaignDetailList(companyId, null, null, null, null, null,
-				null, null, "P");
-		beancampaign = new BeanContainer<Long, CampaignDM>(CampaignDM.class);
+		BeanContainer<Long, CampaignDM> beancampaign = new BeanContainer<Long, CampaignDM>(CampaignDM.class);
 		beancampaign.setBeanIdProperty("campaingnId");
-		beancampaign.addAll(campaignlist);
+		beancampaign.addAll(serviceCampaign.getCampaignDetailList(companyId, null, null, null, null, null, null, null,
+				"P"));
 		cbCampaign.setContainerDataSource(beancampaign);
 	}
 	
 	private void loadoppertstatus() {
-		List<CompanyLookupDM> lookuplist = serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
-				"CM_OPRSTAT");
 		BeanContainer<String, CompanyLookupDM> beanlookup = new BeanContainer<String, CompanyLookupDM>(
 				CompanyLookupDM.class);
 		beanlookup.setBeanIdProperty("lookupname");
-		beanlookup.addAll(lookuplist);
+		beanlookup.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "CM_OPRSTAT"));
 		cbSearchOppertStatus.setContainerDataSource(beanlookup);
 	}
 	
@@ -342,11 +325,10 @@ public class Opportunity extends BaseUI {
 	 */
 	private void loadClientsDetails() {
 		try {
-			List<ClientDM> clientList = serviceClients.getClientDetails(companyId, null, null, null, null, null, null,
-					null, "Active", "P");
-			beanClients = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			BeanContainer<Long, ClientDM> beanClients = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClients.setBeanIdProperty("clientId");
-			beanClients.addAll(clientList);
+			beanClients.addAll(serviceClients.getClientDetails(companyId, null, null, null, null, null, null, null,
+					"Active", "P"));
 			cbClient.setContainerDataSource(beanClients);
 		}
 		catch (Exception e) {
@@ -360,11 +342,10 @@ public class Opportunity extends BaseUI {
 	 */
 	private void loadEmployeeList() {
 		try {
-			List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyId,
-					employeeId, null, null, null, "F");
-			beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployee.setBeanIdProperty("employeeid");
-			beanEmployee.addAll(empList);
+			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, employeeId,
+					null, null, null, "P"));
 			cbEmployee.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
@@ -447,43 +428,43 @@ public class Opportunity extends BaseUI {
 	@Override
 	protected void saveDetails() throws SaveException {
 		try {
-			OppertunitiesDM saveClntOpport = new OppertunitiesDM();
+			OppertunitiesDM oppertunitiesDM = new OppertunitiesDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				saveClntOpport = beanClntOppertunity.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				oppertunitiesDM = beanClntOppertunity.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			if (cbEmployee.getValue() != null) {
-				saveClntOpport.setAssignedTo((Long) cbEmployee.getValue());
+				oppertunitiesDM.setAssignedTo((Long) cbEmployee.getValue());
 			}
 			if (tfBusinessValue.getValue().toString().trim().length() > 0) {
-				saveClntOpport.setBusinessValue(Long.valueOf(tfBusinessValue.getValue()));
+				oppertunitiesDM.setBusinessValue(Long.valueOf(tfBusinessValue.getValue()));
 			}
 			if (cbClient.getValue() != null) {
-				saveClntOpport.setClientId(Long.valueOf(cbClient.getValue().toString()));
+				oppertunitiesDM.setClientId(Long.valueOf(cbClient.getValue().toString()));
 			}
 			if (cbCampaign.getValue() != null) {
-				saveClntOpport.setCampaingnId((Long) cbCampaign.getValue());
+				oppertunitiesDM.setCampaingnId((Long) cbCampaign.getValue());
 			}
-			saveClntOpport.setCompanyId(companyId);
+			oppertunitiesDM.setCompanyId(companyId);
 			if (tfOppertName.getValue().toString().trim().length() > 0) {
-				saveClntOpport.setOppertunityName(tfOppertName.getValue());
+				oppertunitiesDM.setOppertunityName(tfOppertName.getValue());
 			}
 			if (cbOppertType.getValue() != null) {
-				saveClntOpport.setOppertunityType((String) cbOppertType.getValue());
+				oppertunitiesDM.setOppertunityType((String) cbOppertType.getValue());
 			}
-			saveClntOpport.setRemarks(taRemarks.getValue());
+			oppertunitiesDM.setRemarks(taRemarks.getValue());
 			if (tfWinProb.getValue().toString().trim().length() > 0) {
-				saveClntOpport.setWinProbability(Long.valueOf(tfWinProb.getValue()));
+				oppertunitiesDM.setWinProbability(Long.valueOf(tfWinProb.getValue()));
 			}
-			saveClntOpport.setOppertunityStatus(cbSearchOppertStatus.getValue().toString());
+			oppertunitiesDM.setOppertunityStatus(cbSearchOppertStatus.getValue().toString());
 			if (cbSearchOppertStatus.getValue().equals("Won") || cbSearchOppertStatus.getValue().equals("Lost")) {
 				closingDt.setValue(DateUtils.getcurrentdate());
 			}
-			saveClntOpport.setLastUpdatedBy(userName);
-			saveClntOpport.setLastUpdatedDt(DateUtils.getcurrentdate());
-			serviceOppertunity.saveOrUpdateClientOppertunityDetails(saveClntOpport);
-			comment.saveclientoppertunuity(saveClntOpport.getOppertunityId());
+			oppertunitiesDM.setLastUpdatedBy(userName);
+			oppertunitiesDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+			serviceOppertunity.saveOrUpdateClientOppertunityDetails(oppertunitiesDM);
+			comment.saveclientoppertunuity(oppertunitiesDM.getOppertunityId());
 			comment.resetfields();
-			document.saveclientoppurtunuity(saveClntOpport.getOppertunityId());
+			document.saveClientOppurtunuity(oppertunitiesDM.getOppertunityId());
 			document.ResetFields();
 			resetFields();
 			loadSrchRslt();

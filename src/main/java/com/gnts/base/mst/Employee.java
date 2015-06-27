@@ -297,13 +297,11 @@ public class Employee extends BaseUI {
 	private PopupDateField dfempidendate;
 	private ComboBox cbempidenstatus = new GERPComboBox("Status", BASEConstants.M_BASE_USER, BASEConstants.USER_STATUS);
 	private Table tblempiden = new GERPTable();
-	public Button btnaddempiden = new GERPButton("Add", "addbt", this);
+	private Button btnaddempiden = new GERPButton("Add", "addbt", this);
 	// private Date date;
-	private String  companyCode;
+	private String companyCode;
 	private Long userId, employeeid, countryid, timezoneId;
-	List<CompanyLookupDM> lookupID;
 	private String isdCode;
-	public static boolean filevalue = false;
 	private int flag = 0, recordCntempadd = 0, recordcntempskill = 0, recordcntempdtls = 0, recordcntempcont = 0,
 			recordcntempimmt = 0, recordcntempbank = 0, recordcntempeducation = 0, recordcntempdependn = 0,
 			recordcntempidentities = 0;
@@ -395,7 +393,7 @@ public class Employee extends BaseUI {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (dfDateofBirth.getValue() != null) {
@@ -582,7 +580,7 @@ public class Employee extends BaseUI {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void blur(BlurEvent event) {
 				if (cbempdtlsmaritalstatus.getValue() != null) {
@@ -599,7 +597,7 @@ public class Employee extends BaseUI {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void blur(BlurEvent event) {
 				if (cbempdtlsbitrhcountry.getValue() != null) {
@@ -616,7 +614,7 @@ public class Employee extends BaseUI {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (dfempdtlsconfdate.getValue() != null) {
@@ -706,7 +704,7 @@ public class Employee extends BaseUI {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void blur(BlurEvent event) {
 				if (cbempdtlsemptypeid.getValue() != null) {
@@ -759,7 +757,7 @@ public class Employee extends BaseUI {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void blur(BlurEvent event) {
 				if (cbempdtlsdesignaton.getValue() != null) {
@@ -776,7 +774,7 @@ public class Employee extends BaseUI {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void blur(BlurEvent event) {
 				if (cbempdtlspayperid.getValue() != null) {
@@ -797,7 +795,7 @@ public class Employee extends BaseUI {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void blur(BlurEvent event) {
 				if (cbempdtlsnationalid.getValue() != null) {
@@ -946,7 +944,7 @@ public class Employee extends BaseUI {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (dfempimmgissuedf.getValue() != null) {
@@ -1094,7 +1092,7 @@ public class Employee extends BaseUI {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (dfempedudurtnfrm.getValue() != null) {
@@ -1548,10 +1546,10 @@ public class Employee extends BaseUI {
 		beanemployeeeducation.addAll(employeeedulist);
 		tblempedu.setSelectable(true);
 		tblempedu.setContainerDataSource(beanemployeeeducation);
-		tblempedu.setVisibleColumns(new Object[] {"qualname", "subject", "durfrm", "durto", "insname", "gradeachcd",
+		tblempedu.setVisibleColumns(new Object[] { "qualname", "subject", "durfrm", "durto", "insname", "gradeachcd",
 				"empednstatus", "lastupdatddt", "lastupdatdby" });
-		tblempedu.setColumnHeaders(new String[] {"Qualification", "Subject", "Duration From", "Duration To", "Institution Name",
-				"Grade", "Status", "Last Updated Date", "Last Updated By" });
+		tblempedu.setColumnHeaders(new String[] { "Qualification", "Subject", "Duration From", "Duration To",
+				"Institution Name", "Grade", "Status", "Last Updated Date", "Last Updated By" });
 		tblempedu.setColumnAlignment("empeduid", Align.RIGHT);
 		tblempedu.setColumnFooter("lastupdatdby", "No.of Records :" + recordcntempeducation);
 	}
@@ -2979,7 +2977,7 @@ public class Employee extends BaseUI {
 		}
 	}
 	
-		private void validationdtls() throws ValidationException {
+	private void validationdtls() throws ValidationException {
 		cbempdtlscandid.setComponentError(null);
 		cbempdtlsemptypeid.setComponentError(null);
 		cbempdtlsgradid.setComponentError(null);
@@ -4066,7 +4064,7 @@ public class Employee extends BaseUI {
 			Long earnid = pojo.getEarnId();
 			isFlat = pojo.getIsFlatPer();
 			BigDecimal earnPercent = pojo.getEarnPercent();
-			minVal = new BigDecimal(pojo.getMinVal());
+			minVal = pojo.getMinVal();
 			String onBasicGross = pojo.getOnBasicGros();
 			List<EarningsDM> earnlist = serviceEarnings.getEarningByEarnID(earnid);
 			EarningsDM earnPojo = null;
@@ -4138,7 +4136,7 @@ public class Employee extends BaseUI {
 			} else if (isFlat.equals("REM")) {
 				isRemaining = pojo.getIsFlatPer();
 				Long earnsid = pojo.getEarnId();
-				BigDecimal gradeAmount = new BigDecimal(pojo.getMinVal());
+				BigDecimal gradeAmount = pojo.getMinVal();
 				List<EarningsDM> earninglist = serviceEarnings.getEarningByEarnID(earnsid);
 				for (EarningsDM earnObj : earninglist) {
 					earningid = earnObj;
@@ -4146,15 +4144,6 @@ public class Employee extends BaseUI {
 				tatolGrossearnAmount = tatolGrossearnAmount.add(gradeAmount);
 			}
 		}
-		/*
-		 * if (companyid == 3) { } else { EmployeeEarningDM staffearnPojo1 = new EmployeeEarningDM();
-		 * staffearnPojo1.setEmployeeid(headerID); staffearnPojo1.setEarnid(earningid);
-		 * staffearnPojo1.setIsflatpercent(isRemaining); //staffearnPojo.setEarn_amount(minVal);//Get the minimum value
-		 * if flat is selected in the grade_earnings staffearnPojo1.setEarnamt(totalGrossAmt);// Get the minimum value
-		 * if flat is selected in the // grade_earnings staffearnPojo1.setEffdt(new Date());
-		 * staffearnPojo1.setStatus(Common.ACTIVE_CODE); staffearnPojo1.setLastpdateddt(new Date());
-		 * staffearnPojo1.setLastupdatedby(username); serviceEmployeeEarning.saveAndUpdate(staffearnPojo1); }
-		 */
 	}
 	
 	private void insertEmployeeDeduction(Long employeeid, Long gradeid) {
@@ -4168,8 +4157,8 @@ public class Employee extends BaseUI {
 		for (GradeDeductionDM pojo : list) {
 			Long dednid = pojo.getDednId();
 			String isFlat = pojo.getIsFlatPer();
-			BigDecimal dednpercent = new BigDecimal(pojo.getDednPercent());
-			BigDecimal minVal = new BigDecimal(pojo.getMinVal());
+			BigDecimal dednpercent = pojo.getDednPercent();
+			BigDecimal minVal = pojo.getMinVal();
 			String onBasic_Gross = pojo.getOnBasicGros();
 			System.out.println("Deuction on basic gross" + onBasic_Gross);
 			List<DeductionDM> dednlist = serviceDeduction.getDeductionListByDednId(dednid);
@@ -4195,13 +4184,6 @@ public class Employee extends BaseUI {
 				staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
 				staffDednPojo.setLastupdatedby(username);
 				serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
-				/*
-				 * if (compyid == 3) { if (dednCode.equals("PF") && minValueByGross < 6500) {
-				 * serviceStaffEarningBean.saveStaffDeduction(staffDednPojo); } if (dednCode.equals("ESI") &&
-				 * minValueByGross < 25000) { serviceStaffEarningBean.saveStaffDeduction(staffDednPojo); } else if
-				 * (!dednCode.equals("PF")) { serviceStaffEarningBean.saveStaffDeduction(staffDednPojo); } } else {
-				 * //Here we need to add(serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);) }
-				 */
 			} else if (isFlat.equalsIgnoreCase("Percent") && onBasic_Gross.equalsIgnoreCase("BASIC")) {
 				BigDecimal deductionAmt = new BigDecimal(calculateDeductionAmount(dednpercent, minValueByBasic));
 				staffDednPojo.setEmployeeid(headerID);

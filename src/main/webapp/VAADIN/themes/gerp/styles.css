@@ -9398,7 +9398,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', end
 box-shadow: none;
 background: transparent;
 color: #197de1;
-font-size: 51px;
+font-size: 40px;
 line-height: 40px;
 font-weight: bold;
 font-family: arial;
@@ -9406,7 +9406,20 @@ margin-left: -47px;
 margin-top: -35px;
 margin-bottom: -13px;
 }
-
+.gerp .v-button-borderless-coloredmed {
+	border: none;
+-webkit-box-shadow: none;
+box-shadow: none;
+background: transparent;
+color: #197de1;
+font-size: 30px;
+line-height: 40px;
+font-weight: bold;
+font-family: arial;
+margin-left: -47px;
+margin-top: -35px;
+margin-bottom: -13px;
+}
 .gerp .textalignright{
 	text-align: right;
 }
@@ -9449,3 +9462,90 @@ margin-bottom: -13px;
     padding: 2px;
 }
 
+/* For month view */
+\r
+  .v-calendar .v-calendar-event-color1 {
+	color: #4f8324;
+}
+
+.v-calendar .v-calendar-event-color1-all-day {
+	background-color: #61c114;
+}
+
+/* For week/day view */
+.v-calendar .v-calendar-event-color1 .v-calendar-event-caption {
+	color: #4f8324;
+}
+
+.v-calendar .v-calendar-event-color1 .v-calendar-event-content {
+	border-color: #61c114;
+	background-color: #daff70;
+}
+
+/**\r
+    * Blue \r
+    */
+/* For month view */
+.v-calendar .v-calendar-event-color2 {
+	color: #1c4b8b;
+}
+
+.v-calendar .v-calendar-event-color2-all-day {
+	background-color: #0a56bc;
+}
+
+/* For week/day view */
+.v-calendar .v-calendar-event-color2 .v-calendar-event-caption {
+	color: #1c4b8b;
+}
+
+.v-calendar .v-calendar-event-color2 .v-calendar-event-content {
+	border-color: #0a56bc;
+	background-color: #529bff;
+}
+
+/**\r
+    * Red \r
+    */
+
+/* For month view */
+.v-calendar .v-calendar-event-color3 {
+	color: #831d1d;
+}
+
+.v-calendar .v-calendar-event-color3-all-day {
+	background-color: #bd1a1a;
+}
+
+/* For week/day view */
+.v-calendar .v-calendar-event-color3 .v-calendar-event-caption {
+	color: #831d1d;
+}
+
+.v-calendar .v-calendar-event-color3 .v-calendar-event-content {
+	border-color: #bd1a1a;
+	background-color: #ff9d9d;
+}
+
+/**\r
+    * Orange 
+    */
+
+/* For month view */
+.v-calendar .v-calendar-event-color4 {
+	color: #8b5923;
+}
+
+.v-calendar .v-calendar-event-color4-all-day {
+	background-color: #cd6a00;
+}
+
+/* For week/day view */
+.v-calendar .v-calendar-event-color4 .v-calendar-event-caption {
+	color: #8b5923;
+}
+
+.v-calendar .v-calendar-event-color4 .v-calendar-event-content {
+	border-color: #cd6a00;
+	background-color: #faa345;
+}

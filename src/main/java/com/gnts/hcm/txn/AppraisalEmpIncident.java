@@ -37,7 +37,6 @@ import com.gnts.hcm.domain.txn.AppraisalEmpIncidentDM;
 import com.gnts.hcm.domain.txn.KpiGroupDM;
 import com.gnts.hcm.service.txn.AppraisalEmpIncidentService;
 import com.gnts.hcm.service.txn.KpiGroupService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
@@ -64,7 +63,6 @@ public class AppraisalEmpIncident extends BaseUI {
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// Bean container
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private BeanItemContainer<AppraisalEmpIncidentDM> beanAppraisalEmpIncidentDM = null;
 	// User Input Components
 	private ComboBox cbempname, cbincidenttype, cbkpigrpname, cbincidentstatus, cbindsrty;
@@ -153,41 +151,31 @@ public class AppraisalEmpIncident extends BaseUI {
 	
 	// Load Employee List
 	private void loadEmployee() {
-		List<EmployeeDM> list = servicebeanEmployee.getEmployeeList((String) cbempname.getValue(), null, null, null,
-				null, null, null, null, null, "F");
 		BeanContainer<Long, EmployeeDM> bean = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		bean.setBeanIdProperty("employeeid");
-		bean.addAll(list);
+		bean.addAll(servicebeanEmployee.getEmployeeList((String) cbempname.getValue(), null, null, null, null, null,
+				null, null, null, "P"));
 		cbempname.setContainerDataSource(bean);
 	}
 	
 	// Load Load Kpigroup Name List
 	private void loadKpiGroupNameList() {
-		List<KpiGroupDM> kpigrouplist = serviceKpiGroup.getkpigrouplist(null,null, companyId, null,"Active", "F");
 		BeanContainer<Long, KpiGroupDM> beanEmployee = new BeanContainer<Long, KpiGroupDM>(KpiGroupDM.class);
 		beanEmployee.setBeanIdProperty("kpigrpid");
-		beanEmployee.addAll(kpigrouplist);
+		beanEmployee.addAll(serviceKpiGroup.getkpigrouplist(null, null, companyId, null, "Active", "F"));
 		cbkpigrpname.setContainerDataSource(beanEmployee);
 	}
-	/*private void loadKpiGroupNameList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading KpiGroupNameList");
-		List<KpiGroupDM> kpigrouplist = servicegroupkpi.getkpigrouplist(null, null, companyid, null, "Active", "P");
-		BeanContainer<Long, KpiGroupDM> beankpigroup = new BeanContainer<Long, KpiGroupDM>(KpiGroupDM.class);
-		beankpigroup.setBeanIdProperty("kpigrpid");
-		beankpigroup.addAll(kpigrouplist);
-		cbkpigpname.setContainerDataSource(beankpigroup);
-	}*/
 	
 	// Load Incident Severity List
-	public void loadincidentseverity() {
+	private void loadincidentseverity() {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, null, "Active",
-					"HC_INCISEV");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, null, "Active",
+					"HC_INCISEV"));
 			cbindsrty.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -321,8 +309,7 @@ public class AppraisalEmpIncident extends BaseUI {
 	private void editappempincident() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Editing the selected record");
-		Item select = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (select != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			AppraisalEmpIncidentDM editappempinObj = beanAppraisalEmpIncidentDM.getItem(tblMstScrSrchRslt.getValue())
 					.getBean();
 			if (editappempinObj.getEmpid() != null) {
@@ -394,10 +381,6 @@ public class AppraisalEmpIncident extends BaseUI {
 			tfbuinessvalue.setComponentError(new UserError(GERPErrorCodes.QUNATITY_CHAR_VALIDATIONHCM));
 			errorFlag = false;
 		}
-		// if ((tfbuinessvalue.getValue() == null) || tfbuinessvalue.getValue().trim().length() == 0) {
-		// tfbuinessvalue.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
-		// errorFlag = true;
-		// }
 		logger.warn("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Throwing ValidationException. User data is > " + tfbuinessvalue.getValue() + ","
 				+ tfempagreed.getValue() + "," + cbincidenttype.getValue() + "," + cbempname.getValue() + ","
@@ -428,9 +411,6 @@ public class AppraisalEmpIncident extends BaseUI {
 		if (cbindsrty.getValue() != null) {
 			appempincidentobj.setIncidentSeverity((String) cbindsrty.getValue());
 		}
-		// if (tfbuinessvalue.getValue() != null && tfbuinessvalue.getValue().trim().length() > 0) {
-		// appempincidentobj.setBusValue(Long.valueOf(tfbuinessvalue.getValue()));
-		// }
 		appempincidentobj.setBusValue(Long.valueOf(tfbuinessvalue.getValue()));
 		appempincidentobj.setEmpAgreed(tfempagreed.getValue().toString());
 		appempincidentobj.setEmpResponse(tfempresponse.getValue().toString());

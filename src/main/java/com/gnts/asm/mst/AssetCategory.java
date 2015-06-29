@@ -37,7 +37,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Alignment;
@@ -53,7 +52,7 @@ public class AssetCategory extends BaseUI {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	AssetCategoryService assetCatgryService = (AssetCategoryService) SpringContextHelper.getBean("assetCategory");
+	private AssetCategoryService assetCatgryService = (AssetCategoryService) SpringContextHelper.getBean("assetCategory");
 	// form layout for input controls
 	private FormLayout flCategoryName, flCategoryStatus;
 	// Parent layout for all the input controls
@@ -153,8 +152,7 @@ public class AssetCategory extends BaseUI {
 	private void editAssetCatgry() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			AssetCategoryDM enqdtl = beanAssetCatgry.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			tfCategoryName.setValue(enqdtl.getCatgryName());
 			cbCatgryStatus.setValue((String) cbCatgryStatus.getValue());

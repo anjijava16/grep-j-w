@@ -141,7 +141,7 @@ public class EmployeeEntry extends BaseUI {
 					onduty.ondutysave((Long) cbEmployeeName.getValue());
 					permission.permissionsave((Long) cbEmployeeName.getValue());
 					overtime.overtimesave((Long) cbEmployeeName.getValue());
-					absent.Absentsave((Long) cbEmployeeName.getValue());
+					absent.saveAbsentDetails((Long) cbEmployeeName.getValue());
 					late.latesave((Long) cbEmployeeName.getValue());
 					new GERPSaveNotification();
 					hlSearchLayout.setVisible(true);

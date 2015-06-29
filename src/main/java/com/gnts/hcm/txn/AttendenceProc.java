@@ -49,7 +49,6 @@ import com.gnts.hcm.domain.mst.PayPeriodDM;
 import com.gnts.hcm.domain.txn.AttendenceProcDM;
 import com.gnts.hcm.service.mst.PayPeriodService;
 import com.gnts.hcm.service.txn.AttendenceProcService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -80,11 +79,9 @@ public class AttendenceProc extends BaseUI {
 	private AttendenceProcService serviceAttendanceProcess = (AttendenceProcService) SpringContextHelper
 			.getBean("AttendenceProc");
 	private Button btnsaveAttenProc = new GERPButton("Add", "add", this);
-	private BeanContainer<Long, BranchDM> beanBranch = null;
-	private BeanContainer<Long, PayPeriodDM> beanPayPeriod = null;
 	private BeanItemContainer<AttendenceProcDM> beanAttendenceProcDM = null;
-	List<AttendenceProcDM> attendProcList = new ArrayList<AttendenceProcDM>();
-	Long att_proc_id;
+	private List<AttendenceProcDM> attendProcList = new ArrayList<AttendenceProcDM>();
+	private Long attProcId;
 	// Attendance Process Component Declaration
 	private ComboBox cbPayPeried, cbBranch, cbEmployeeName;
 	private TextField tfProcessPeriod;
@@ -261,7 +258,7 @@ public class AttendenceProc extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Branch Search...");
 		List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
 		branchList.add(new BranchDM(0L, "All"));
-		beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranch.setBeanIdProperty("branchId");
 		beanBranch.addAll(branchList);
 		cbBranch.setContainerDataSource(beanBranch);
@@ -275,7 +272,7 @@ public class AttendenceProc extends BaseUI {
 		List<EmployeeDM> empList = new ArrayList<EmployeeDM>();
 		empList.add(new EmployeeDM(-1L, "All"));
 		empList.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null, null, null,
-				"F"));
+				"P"));
 		BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanLoadEmployee.setBeanIdProperty("employeeid");
 		beanLoadEmployee.addAll(empList);
@@ -288,11 +285,9 @@ public class AttendenceProc extends BaseUI {
 	private void loadPayPeriod() {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-			List<PayPeriodDM> payPeriodList = servicePayPeriod.getPayList(null, null, null, null, companyId, "Active",
-					"P");
-			beanPayPeriod = new BeanContainer<Long, PayPeriodDM>(PayPeriodDM.class);
+			BeanContainer<Long, PayPeriodDM> beanPayPeriod = new BeanContainer<Long, PayPeriodDM>(PayPeriodDM.class);
 			beanPayPeriod.setBeanIdProperty("payPeriodId");
-			beanPayPeriod.addAll(payPeriodList);
+			beanPayPeriod.addAll(servicePayPeriod.getPayList(null, null, null, null, companyId, "Active", "P"));
 			cbPayPeried.setContainerDataSource(beanPayPeriod);
 		}
 		catch (Exception e) {
@@ -478,15 +473,12 @@ public class AttendenceProc extends BaseUI {
 	
 	private void editClient() {
 		hlCmdBtnLayout.setVisible(false);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		att_proc_id = (Long) sltedRcd.getItemProperty("attProcId").getValue();
-		String status = (String) sltedRcd.getItemProperty("status").getValue();
-		System.out.println("status" + status);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			AttendenceProcDM editClientlist = beanAttendenceProcDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			if (editClientlist.getPayPeriodId() != null) {
 				cbPayPeried.setValue(editClientlist.getPayPeriodId());
 			}
+			attProcId = editClientlist.getAttProcId();
 			String startsdt = DateUtils.datetostring(editClientlist.getAllStDt());
 			String enddst = DateUtils.datetostring(editClientlist.getAllEndDt());
 			tfProcessPeriod.setReadOnly(false);
@@ -500,9 +492,9 @@ public class AttendenceProc extends BaseUI {
 	}
 	
 	protected void saveattapprove() {
-		serviceAttendanceProcess.updateapproveAtt_proc(att_proc_id, "Approved", null, userName, "ATT_PROC");
-		serviceAttendanceProcess.updateapproveAtt_proc(att_proc_id, "Approved", null, userName, "ATT_ATTEN");
-		serviceAttendanceProcess.procAttendenceApprove(companyId, (String) att_proc_id.toString(), userName);
+		serviceAttendanceProcess.updateapproveAtt_proc(attProcId, "Approved", null, userName, "ATT_PROC");
+		serviceAttendanceProcess.updateapproveAtt_proc(attProcId, "Approved", null, userName, "ATT_ATTEN");
+		serviceAttendanceProcess.procAttendenceApprove(companyId, (String) attProcId.toString(), userName);
 		loadSrchRslt();
 	}
 	

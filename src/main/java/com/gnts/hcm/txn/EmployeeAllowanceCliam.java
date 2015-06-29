@@ -31,17 +31,10 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.hcm.domain.mst.EmployeeDtlsDM;
-import com.gnts.hcm.domain.mst.GradeAllowanceDM;
 import com.gnts.hcm.domain.txn.EmployeeAllowanceClaimDM;
 import com.gnts.hcm.domain.txn.EmployeeAllowanceDM;
-import com.gnts.hcm.service.mst.EmployeeDtlsService;
-import com.gnts.hcm.service.mst.GradeAllowanceService;
 import com.gnts.hcm.service.txn.EmployeeAllowanceClaimService;
 import com.gnts.hcm.service.txn.EmployeeAllowanceService;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -50,9 +43,9 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class EmployeeAllowanceCliam extends BaseUI {
 	// Bean creation
@@ -61,10 +54,7 @@ public class EmployeeAllowanceCliam extends BaseUI {
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private EmployeeAllowanceService serviceEmpAllowance = (EmployeeAllowanceService) SpringContextHelper
 			.getBean("EmployeeAllowance");
-	private EmployeeDtlsService serviceEmpdetails = (EmployeeDtlsService) SpringContextHelper.getBean("Employeedtls");
-	private GradeAllowanceService serviceGradeAllowance = (GradeAllowanceService) SpringContextHelper
-			.getBean("GradeAllowance");
-	public Label lbl = new Label();
+	private Label lbl = new Label();
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn4, flColumn3;
 	// Parent layout for all the input controls
@@ -77,14 +67,12 @@ public class EmployeeAllowanceCliam extends BaseUI {
 	private DateField dtPaidDt, dfAlowncClaimDt;
 	// BeanItemContainer
 	private BeanItemContainer<EmployeeAllowanceClaimDM> beanEmpAllowanceDM = null;
-	private BeanContainer<Long, EmployeeDM> beanEmpDM = null;
-	private BeanContainer<Long, EmployeeAllowanceDM> beanAlwncDM = null;
 	// local variables declaration
-	private Long companyid, branchId, countryId, employeeId;
+	private Long companyid;
 	private String pkEmpAlwncClaim;
 	private int recordCnt = 0;
 	private String username;
-	Long gradeId;
+	private Long gradeId;
 	private Boolean errorFlag = false;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(EmployeeAllowanceCliam.class);
@@ -95,11 +83,6 @@ public class EmployeeAllowanceCliam extends BaseUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		branchId = Long.valueOf(UI.getCurrent().getSession().getAttribute("branchId").toString());
-		if (UI.getCurrent().getSession().getAttribute("countryid") != null) 
-			countryId = Long.valueOf(UI.getCurrent()
-				.getSession().getAttribute("countryid").toString());
-		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside EmpAllowanceCliam() constructor");
 		// Loading the UI
@@ -121,20 +104,6 @@ public class EmployeeAllowanceCliam extends BaseUI {
 		cbEmpName.setItemCaptionPropertyId("fullname");
 		cbEmpName.setWidth("150px");
 		loadEmpList();
-		/*
-		 * cbEmpName.addValueChangeListener(new ValueChangeListener() {
-		 *//**
-			 * 
-			 */
-		/*
-		 * private static final long serialVersionUID = 1L;
-		 * @Override public void valueChange(ValueChangeEvent event) { // TODO Auto-generated method stub try {
-		 * EmployeeDtlsDM employeeDtlsDM = serviceEmpdetails.getEmployeeDtls(null, ((Long) cbEmpName.getValue()), null,
-		 * null, null, null, "F", null).get(0); GradeAllowanceDM gradeAllowanceDM =
-		 * serviceGradeAllowance.getGradeAllowanceList(null, employeeDtlsDM.getGradeid(), (Long)
-		 * cbEmpAlwncName.getValue(), "Active", "F").get(0); loadAlwncList(); } catch (Exception e) {
-		 * e.printStackTrace(); } } });
-		 */
 		// Employee Allowance ComboBox
 		cbEmpAlwncName = new GERPComboBox("Employee Allowance");
 		cbEmpAlwncName.setWidth("150px");
@@ -260,8 +229,7 @@ public class EmployeeAllowanceCliam extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editEmpAlownce() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			EmployeeAllowanceClaimDM editEmpAlownce = beanEmpAllowanceDM.getItem(tblMstScrSrchRslt.getValue())
 					.getBean();
 			pkEmpAlwncClaim = editEmpAlownce.getEmpawid().toString();
@@ -269,15 +237,15 @@ public class EmployeeAllowanceCliam extends BaseUI {
 			if (editEmpAlownce.getAwclmdt() != null) {
 				dfAlowncClaimDt.setValue(editEmpAlownce.getAwclmdt1());
 			}
-			dtPaidDt.setValue((Date) itselect.getItemProperty("paiddt").getValue());
-			cbEmpAlwncName.setValue(itselect.getItemProperty("empawid").getValue());
-			tfAlwncClaimAmt.setValue(itselect.getItemProperty("awclmamt").getValue().toString());
+			dtPaidDt.setValue(editEmpAlownce.getPaiddt());
+			cbEmpAlwncName.setValue(editEmpAlownce.getEmpawid());
+			tfAlwncClaimAmt.setValue(editEmpAlownce.getAwclmamt().toString());
 			if (editEmpAlownce.getPaidpayrollid() != null) {
-				tfPaidPayrollId.setValue(itselect.getItemProperty("paidpayrollid").getValue().toString());
+				tfPaidPayrollId.setValue(editEmpAlownce.getPaidpayrollid().toString());
 			}
-			cbStatus.setValue(itselect.getItemProperty("allwclmstatus").getValue());
+			cbStatus.setValue(editEmpAlownce.getAllwclmstatus());
 			if (editEmpAlownce.getClaimremarks() != null) {
-				tfClaimRemark.setValue(itselect.getItemProperty("claimremarks").getValue().toString());
+				tfClaimRemark.setValue(editEmpAlownce.getClaimremarks());
 			}
 		}
 	}
@@ -447,28 +415,26 @@ public class EmployeeAllowanceCliam extends BaseUI {
 	
 	private void loadEmpList() {
 		try {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid,
-				null, null, null, null, "F");
-		beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmpDM.setBeanIdProperty("employeeid");
-		beanEmpDM.addAll(empList);
-		cbEmpName.setContainerDataSource(beanEmpDM);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Employee Search...");
+			BeanContainer<Long, EmployeeDM> beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmpDM.setBeanIdProperty("employeeid");
+			beanEmpDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+					null, "P"));
+			cbEmpName.setContainerDataSource(beanEmpDM);
+		}
+		catch (Exception e) {
+			logger.info("load Employee details" + e);
+		}
 	}
-	catch (Exception e){
-		logger.info("load Employee details" + e);
-	}
-}
-	
-	
 	
 	private void loadAlwncList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Allowance Search...");
-		List<EmployeeAllowanceDM> empAlwncList = serviceEmpAllowance.getempallowanceList(null,
-				(Long) cbEmpName.getValue(), gradeId, "Active", "F");
-		beanAlwncDM = new BeanContainer<Long, EmployeeAllowanceDM>(EmployeeAllowanceDM.class);
+		BeanContainer<Long, EmployeeAllowanceDM> beanAlwncDM = new BeanContainer<Long, EmployeeAllowanceDM>(
+				EmployeeAllowanceDM.class);
 		beanAlwncDM.setBeanIdProperty("empallwnid");
-		beanAlwncDM.addAll(empAlwncList);
+		beanAlwncDM.addAll(serviceEmpAllowance.getempallowanceList(null, (Long) cbEmpName.getValue(), gradeId,
+				"Active", "F"));
 		cbEmpAlwncName.setContainerDataSource(beanAlwncDM);
 	}
 }

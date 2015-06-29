@@ -36,7 +36,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
@@ -54,7 +53,7 @@ public class AssetBrand extends BaseUI {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	AssetBrandService assetBrandService = (AssetBrandService) SpringContextHelper.getBean("assetBrand");
+	private AssetBrandService assetBrandService = (AssetBrandService) SpringContextHelper.getBean("assetBrand");
 	// form layout for input controls
 	private FormLayout flBrandName, flBrandStatus;
 	// Parent layout for all the input controls
@@ -133,10 +132,10 @@ public class AssetBrand extends BaseUI {
 	protected void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<AssetBrandDM> assetList = new ArrayList<AssetBrandDM>();
-		
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfBrandName.getValue() + ", " + (String)cbBrandStatus.getValue());
-		assetList = assetBrandService.getAssetBrandList(null,tfBrandName.getValue(), (String)cbBrandStatus.getValue(), "F");
+				+ companyid + ", " + tfBrandName.getValue() + ", " + (String) cbBrandStatus.getValue());
+		assetList = assetBrandService.getAssetBrandList(null, tfBrandName.getValue(),
+				(String) cbBrandStatus.getValue(), "F");
 		recordCnt = assetList.size();
 		beanAssetbrand = new BeanItemContainer<AssetBrandDM>(AssetBrandDM.class);
 		beanAssetbrand.addAll(assetList);
@@ -165,8 +164,7 @@ public class AssetBrand extends BaseUI {
 	protected void editAssetBrand() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			AssetBrandDM enqdtl = beanAssetbrand.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			tfBrandName.setValue(enqdtl.getBrandname());
 			cbBrandStatus.setValue((String) enqdtl.getBrandstatus());
@@ -258,27 +256,22 @@ public class AssetBrand extends BaseUI {
 	// Insert and update values into the table
 	@Override
 	protected void saveDetails() throws ERPException.SaveException {
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			AssetBrandDM assetBrandObj = new AssetBrandDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				assetBrandObj = beanAssetbrand.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			}
-			assetBrandObj.setCompanyid(companyid);
-			assetBrandObj.setBrandname(tfBrandName.getValue().toString());
-			if (cbBrandStatus.getValue() != null) {
-				
-				assetBrandObj.setBrandstatus(cbBrandStatus.getValue().toString());
-			}
-			assetBrandObj.setLastupdateddate(DateUtils.getcurrentdate());
-			assetBrandObj.setLastupdatedby(username);
-			assetBrandService.saveOrUpdate(assetBrandObj);
-			// Display successful save message
-			new GERPSaveNotification();
-			resetFields();
-			loadSrchRslt();
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+		AssetBrandDM assetBrandObj = new AssetBrandDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			assetBrandObj = beanAssetbrand.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		
-			
-		
+		assetBrandObj.setCompanyid(companyid);
+		assetBrandObj.setBrandname(tfBrandName.getValue().toString());
+		if (cbBrandStatus.getValue() != null) {
+			assetBrandObj.setBrandstatus(cbBrandStatus.getValue().toString());
+		}
+		assetBrandObj.setLastupdateddate(DateUtils.getcurrentdate());
+		assetBrandObj.setLastupdatedby(username);
+		assetBrandService.saveOrUpdate(assetBrandObj);
+		// Display successful save message
+		new GERPSaveNotification();
+		resetFields();
+		loadSrchRslt();
 	}
-
+}

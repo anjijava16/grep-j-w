@@ -8,7 +8,6 @@ import com.gnts.asm.domain.txn.AssetOwnDetailsDM;
 import com.gnts.asm.service.txn.AssetOwnDetailsService;
 import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.service.mst.EmployeeService;
-import com.gnts.crm.domain.txn.CommentsDM;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
@@ -17,7 +16,6 @@ import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
@@ -50,33 +48,25 @@ public class AssetOwnDetails implements ClickListener {
 	private ComboBox cbStatus, cbUsedBy;
 	private PopupDateField dtStartDate, dtEndDate;
 	// Declaration for add and edit panel
-	VerticalLayout vlAddEditPanel = new VerticalLayout();
-	VerticalLayout vlTablePanel = new VerticalLayout();
-	HorizontalLayout hlsavecancel = new HorizontalLayout();
-	public HorizontalLayout hlHeader = new HorizontalLayout();
 	// Table Declaration
-	public Table tblAssetOwnDtls;
+	private Table tblAssetOwnDtls;
 	private Button btnAdd;
-	public Button btnSave,btndelete;
-	public Button btnCancel;
-	Button btnSearch, btnReset;
+	private Button btndelete;
 	private Label lblspace;
-	List<AssetOwnDetailsDM> usertable = new ArrayList<AssetOwnDetailsDM>();
+	private List<AssetOwnDetailsDM> usertable = new ArrayList<AssetOwnDetailsDM>();
 	// Declaration for Label
 	private BeanItemContainer<AssetOwnDetailsDM> beanAssetOwner = null;
 	private VerticalLayout vltable;
-	HorizontalLayout hlTableTitleandCaptionLayout, hlSearchLayout;
 	private FormLayout flColumn1, flColumn2;
 	private String username;
 	private Long companyid, assetOwnId;
-	AssetOwnDetailsService serviceAssetOwnDetails = (AssetOwnDetailsService) SpringContextHelper
+	private AssetOwnDetailsService serviceAssetOwnDetails = (AssetOwnDetailsService) SpringContextHelper
 			.getBean("assetOwnDetails");
 	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private static Logger logger = Logger.getLogger(AssetOwnDetails.class);
+	private Logger logger = Logger.getLogger(AssetOwnDetails.class);
 	private int total;
 	
 	public AssetOwnDetails(VerticalLayout vlOwnDetails, Long assetOwnId) {
-		// this.assetId=assetId;
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		buildView(vlOwnDetails);
@@ -115,14 +105,12 @@ public class AssetOwnDetails implements ClickListener {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				System.out.println("validation()-->"+validation());
-				if (validation()==false) {
+				if (validation() == false) {
 					saveAssetOwnerDetail();
-					//loadSrchRslt(false, null);
 				}
 			}
 		});
-		btndelete=new GERPButton("Delete", "delete",this);
+		btndelete = new GERPButton("Delete", "delete", this);
 		// Initialize label for empty space
 		lblspace = new Label();
 		// Initialization for table panel components
@@ -165,21 +153,15 @@ public class AssetOwnDetails implements ClickListener {
 		flColumn1.addComponent(btnAdd);
 		flColumn1.addComponent(btndelete);
 		flColumn2.addComponent(tblAssetOwnDtls);
-		HorizontalLayout Input = new HorizontalLayout();
-		Input.setMargin(true);
-		// Input.setWidth("1100");
-		Input.addComponent(flColumn1);
-		Input.addComponent(flColumn2);
-		// Input.addComponent(flColumn3);
-		Input.setComponentAlignment(flColumn2, Alignment.MIDDLE_LEFT);
-		// Input.setSpacing(true);
-		hlTableTitleandCaptionLayout = new HorizontalLayout();
+		HorizontalLayout hlUserInput = new HorizontalLayout();
+		hlUserInput.setMargin(true);
+		hlUserInput.addComponent(flColumn1);
+		hlUserInput.addComponent(flColumn2);
+		hlUserInput.setComponentAlignment(flColumn2, Alignment.MIDDLE_LEFT);
 		vltable = new VerticalLayout();
 		vltable.setSizeFull();
 		vltable.setMargin(true);
-		vltable.addComponent(/* GERPPanelGenerator.createPanel */(Input));
-		// vltable.addComponent(hlTableTitleandCaptionLayout);
-		// vlOwnDetails.addComponent(vlTablePanel);
+		vltable.addComponent(hlUserInput);
 		vlOwnDetails.addComponent(vltable);
 		resetfields();
 		loadSrchRslt(false, null);
@@ -188,11 +170,10 @@ public class AssetOwnDetails implements ClickListener {
 	// Load region list for pnladdedit's combo Box
 	private void loadEmployee() {
 		try {
-			List<EmployeeDM> list = servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid, null,
-					null, null, null, "F");
 			BeanContainer<Long, EmployeeDM> objAsserBrand = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			objAsserBrand.setBeanIdProperty("employeeid");
-			objAsserBrand.addAll(list);
+			objAsserBrand.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+					null, null, "P"));
 			cbUsedBy.setContainerDataSource(objAsserBrand);
 		}
 		catch (Exception e) {
@@ -202,13 +183,11 @@ public class AssetOwnDetails implements ClickListener {
 	
 	// Method for show the details in grid table while search and normal mode
 	public void loadSrchRslt(boolean fromdb, Long assetId) {
-		System.out.println("fromdb--->"+fromdb+"\nassetId-->"+assetId);
 		if (fromdb) {
 			usertable = serviceAssetOwnDetails.getAssetOwnDetailsList(assetId, null, "Active");
 		}
 		tblAssetOwnDtls.removeAllItems();
 		total = usertable.size();
-		System.out.println(" Asset own List Size" + total);
 		beanAssetOwner = new BeanItemContainer<AssetOwnDetailsDM>(AssetOwnDetailsDM.class);
 		beanAssetOwner.addAll(usertable);
 		tblAssetOwnDtls.setContainerDataSource(beanAssetOwner);
@@ -221,14 +200,13 @@ public class AssetOwnDetails implements ClickListener {
 	}
 	
 	private void editAssetOwnDetails() {
-		Item itselect = tblAssetOwnDtls.getItem(tblAssetOwnDtls.getValue());
-		if (itselect != null) {
+		if (tblAssetOwnDtls.getValue() != null) {
 			AssetOwnDetailsDM enqdtl = beanAssetOwner.getItem(tblAssetOwnDtls.getValue()).getBean();
 			tfDesc.setValue(enqdtl.getOwnershpDesc());
 			dtStartDate.setValue(enqdtl.getStartDate());
 			dtEndDate.setValue(enqdtl.getEndDate());
 			cbUsedBy.setValue(enqdtl.getUsedBy());
-			cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+			cbStatus.setValue(enqdtl.getOwnershpStatus());
 		}
 	}
 	
@@ -257,10 +235,11 @@ public class AssetOwnDetails implements ClickListener {
 		}
 		return errorflag;
 	}
+	
 	private void deletedetails() {
 		AssetOwnDetailsDM delete = new AssetOwnDetailsDM();
 		if (tblAssetOwnDtls.getValue() != null) {
-			delete=beanAssetOwner.getItem(tblAssetOwnDtls.getValue()).getBean();
+			delete = beanAssetOwner.getItem(tblAssetOwnDtls.getValue()).getBean();
 			usertable.remove(delete);
 			tfDesc.setValue("");
 			dtStartDate.setValue(null);
@@ -272,15 +251,13 @@ public class AssetOwnDetails implements ClickListener {
 	
 	@Override
 	public void buttonClick(ClickEvent event) {
-		if(btndelete==event.getButton())
-		{
+		if (btndelete == event.getButton()) {
 			deletedetails();
 		}
 	}
 	
 	// Save Method for save and update the Asset Specification details
 	private void saveAssetOwnerDetail() {
-		//validation();
 		AssetOwnDetailsDM asstowner = new AssetOwnDetailsDM();
 		if (tblAssetOwnDtls.getValue() != null) {
 			asstowner = beanAssetOwner.getItem(tblAssetOwnDtls.getValue()).getBean();
@@ -302,13 +279,11 @@ public class AssetOwnDetails implements ClickListener {
 		loadSrchRslt(false, assetOwnId);
 	}
 	
-	public void Assetownersave(Long assetId) {
-		System.out.println("saveid1-->>" + assetId);
+	public void saveAssetOwners(Long assetId) {
 		@SuppressWarnings("unchecked")
 		Collection<AssetOwnDetailsDM> itemIds = (Collection<AssetOwnDetailsDM>) tblAssetOwnDtls.getVisibleItemIds();
 		for (AssetOwnDetailsDM saveasset : (Collection<AssetOwnDetailsDM>) itemIds) {
 			saveasset.setAssetId(assetId);
-			System.out.println("saveid2-->>" + assetId);
 			serviceAssetOwnDetails.saveAndUpdateAssetOwnDetails(saveasset);
 		}
 		loadSrchRslt(false, null);

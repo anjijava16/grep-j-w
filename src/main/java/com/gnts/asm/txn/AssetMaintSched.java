@@ -42,7 +42,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
@@ -53,17 +52,17 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupDateField;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
-@SuppressWarnings("serial")
 public class AssetMaintSched extends BaseUI {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private CompanyLookupService servicecompany = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
 	private BeanItemContainer<AssetMaintSchedDM> beanMaintSched = null;
-	private BeanContainer<Long, AssetDetailsDM> beanAssetDetails = null;
-	private BeanContainer<String, CompanyLookupDM> beanlook = null;
 	// Layouts
 	private HorizontalLayout hlSearchLayout;
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
@@ -77,18 +76,12 @@ public class AssetMaintSched extends BaseUI {
 	private TextField tfFreqPerDay, tfmaindesc;
 	private PopupDateField maintenanceDt;
 	private TextArea taRemarks;
-	AssetMaintDetail assetMaintDetials;
 	// Labels
-	public TabSheet assetTab;
-	AssetDetailsDM selectAssetForSearch;
-	private Long selectAssetIdForSearch;
 	private String username, schedassetName;
-	HorizontalLayout hlNotification, hlSaveCancelLayout;
 	private AssetMaintSchedService serviceMaintSched = (AssetMaintSchedService) SpringContextHelper
 			.getBean("AssetMaintSchedul");
 	private AssetDetailsService servicebeanAssetDetails = (AssetDetailsService) SpringContextHelper
 			.getBean("assetDetails");
-	HorizontalLayout hlScreenNameLayout;
 	private Logger logger = Logger.getLogger(AssetMaintSched.class);
 	
 	// Constructor
@@ -180,16 +173,13 @@ public class AssetMaintSched extends BaseUI {
 		assembleSearchLayout();
 		resetFields();
 		loadSrchRslt();
-		
-		
 	}
 	
 	private void loadlookuplist() {
-		List<CompanyLookupDM> LookUpList = servicecompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
-				"AM_MNTFREQ");
-		beanlook = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanlook.setBeanIdProperty("lookupname");
-		beanlook.addAll(LookUpList);
+		beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "AM_MNTFREQ"));
 		cbMaintFreq.setContainerDataSource(beanlook);
 	}
 	
@@ -257,7 +247,7 @@ public class AssetMaintSched extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		// TODO Auto-generated method stub
 		try {
 			tblMstScrSrchRslt.removeAllItems();
@@ -265,10 +255,9 @@ public class AssetMaintSched extends BaseUI {
 			schedList = new ArrayList<AssetMaintSchedDM>();
 			if (cbAssetStatus != null || maintenanceDt != null) {
 				Date maintDate = maintenanceDt.getValue();
-				schedList = serviceMaintSched.getMaintScheduleList((Long) cbAssetName.getValue(), maintDate,(String) cbAssetStatus.getValue(),
-						(String) cbMaintFreq.getValue(), null);
+				schedList = serviceMaintSched.getMaintScheduleList((Long) cbAssetName.getValue(), maintDate,
+						(String) cbAssetStatus.getValue(), (String) cbMaintFreq.getValue(), null);
 				recordCnt = schedList.size();
-				System.out.println("Size..." + recordCnt);
 			}
 			beanMaintSched = new BeanItemContainer<AssetMaintSchedDM>(AssetMaintSchedDM.class);
 			beanMaintSched.addAll(schedList);
@@ -288,12 +277,12 @@ public class AssetMaintSched extends BaseUI {
 	}
 	
 	// this method use to Load AssetNamelist inside of ComboBox
-	public void loadAssetName() {
-		List<AssetDetailsDM> assetList = servicebeanAssetDetails.getAssetDetailList(companyId, null, schedassetName,
-				null, null, "Active");
-		beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(AssetDetailsDM.class);
+	private void loadAssetName() {
+		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
+				AssetDetailsDM.class);
 		beanAssetDetails.setBeanIdProperty("assetId");
-		beanAssetDetails.addAll(assetList);
+		beanAssetDetails.addAll(servicebeanAssetDetails.getAssetDetailList(companyId, null, schedassetName, null, null,
+				"Active"));
 		cbAssetName.setContainerDataSource(beanAssetDetails);
 	}
 	
@@ -301,15 +290,15 @@ public class AssetMaintSched extends BaseUI {
 		hlUserInputLayout.setVisible(true);
 		logger.info("Company ID : " + companyId + " | User Name : " + username + " > " + "Selected Dept. Id -> "
 				+ maintId);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			AssetMaintSchedDM editSched = beanMaintSched.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			cbAssetName.setValue(editSched.getAssetId());
 			maintenanceDt.setValue(editSched.getMaintainDtt());
 			cbMaintFreq.setValue(editSched.getMaintenanceFreq());
 			if (tfFreqPerDay.getValue() != null) {
 				tfFreqPerDay.setValue(editSched.getDauFreq());
-			}if (editSched.getRemarks() != null && !"null".equals(editSched.getRemarks())) {
+			}
+			if (editSched.getRemarks() != null && !"null".equals(editSched.getRemarks())) {
 				taRemarks.setValue(editSched.getRemarks());
 			}
 			tfmaindesc.setValue(editSched.getMaintaindescription());

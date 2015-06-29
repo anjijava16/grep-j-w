@@ -39,7 +39,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.AppraisalLevelsDM;
 import com.gnts.hcm.service.txn.AppraisalLevelsService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -60,11 +59,10 @@ public class AppraisalLevels extends BaseUI {
 			.getBean("companyLookUp");
 	// Bean container
 	private BeanItemContainer<AppraisalLevelsDM> beanAppraisalLevelsDM = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private TextField txlevelname;
 	private PopupDateField pfstrtdate;
 	private PopupDateField pfenddate;
-	private ComboBox cblvlstatus, cbapprasallvl,cbapprsalyr;
+	private ComboBox cblvlstatus, cbapprasallvl, cbapprsalyr;
 	private GERPTextArea taapprdetl;
 	private FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4;
 	private HorizontalLayout hlsearchlayout;
@@ -72,7 +70,6 @@ public class AppraisalLevels extends BaseUI {
 	private String username;
 	private Long companyid, moduleId;
 	private int recordCnt;
-	public static boolean filevalue = false;
 	
 	// Constructor
 	public AppraisalLevels() {
@@ -91,7 +88,7 @@ public class AppraisalLevels extends BaseUI {
 		cbapprasallvl.setItemCaptionPropertyId("lookupname");
 		loadappraisallvl();
 		cbapprsalyr = new GERPComboBox("Appraisal Year");
-		cbapprsalyr.setInputPrompt("Select Year"); 
+		cbapprsalyr.setInputPrompt("Select Year");
 		loadapprlist();
 		pfstrtdate = new GERPPopupDateField("Start Date");
 		pfstrtdate.setInputPrompt("Select Date");
@@ -157,9 +154,7 @@ public class AppraisalLevels extends BaseUI {
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.removeAllItems();
 		List<AppraisalLevelsDM> AppraisalList = new ArrayList<AppraisalLevelsDM>();
-		
 		String levelname = txlevelname.getValue().toString();
-		
 		AppraisalList = appraisallevelservice.getAppraisalLevelsList(null, (String) cbapprasallvl.getValue(),
 				levelname, (String) cblvlstatus.getValue(), "F");
 		recordCnt = AppraisalList.size();
@@ -222,11 +217,9 @@ public class AppraisalLevels extends BaseUI {
 		tblMstScrSrchRslt.setVisible(true);
 		hlCmdBtnLayout.setVisible(true);
 		hluserInputlayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			AppraisalLevelsDM editapprlvllist = beanAppraisalLevelsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			String stcode = sltedRcd.getItemProperty("levelstatus").getValue().toString();
-			cblvlstatus.setValue(stcode);
+			cblvlstatus.setValue(editapprlvllist.getLevelstatus());
 			txlevelname.setValue(editapprlvllist.getLevelname());
 			cbapprasallvl.setValue(editapprlvllist.getAppraisallevel());
 			cbapprsalyr.setValue(editapprlvllist.getAppraisalyear());
@@ -236,8 +229,8 @@ public class AppraisalLevels extends BaseUI {
 			if (editapprlvllist.getEnddate() != null) {
 				pfenddate.setValue(editapprlvllist.getEnddate());
 			}
-			if ((sltedRcd.getItemProperty("appraisaldetails").getValue() != null)) {
-				taapprdetl.setValue(sltedRcd.getItemProperty("appraisaldetails").getValue().toString());
+			if (editapprlvllist.getAppraisaldetails() != null) {
+				taapprdetl.setValue(editapprlvllist.getAppraisaldetails());
 			}
 		}
 	}
@@ -280,8 +273,8 @@ public class AppraisalLevels extends BaseUI {
 			}
 			apprlvlsobj.setCompanyid(companyid);
 			apprlvlsobj.setLevelname(txlevelname.getValue());
-			if(cbapprsalyr.getValue() != null ){ 
-			apprlvlsobj.setAppraisalyear(cbapprsalyr.getValue().toString());
+			if (cbapprsalyr.getValue() != null) {
+				apprlvlsobj.setAppraisalyear(cbapprsalyr.getValue().toString());
 			}
 			if (cbapprasallvl.getValue() != null) {
 				apprlvlsobj.setAppraisallevel(cbapprasallvl.getValue().toString());
@@ -326,7 +319,7 @@ public class AppraisalLevels extends BaseUI {
 		txlevelname.setComponentError(null);
 		cbapprasallvl.setValue(null);
 		cbapprasallvl.setComponentError(null);
-		cbapprsalyr.setValue(null); 
+		cbapprsalyr.setValue(null);
 		cbapprsalyr.setComponentError(null);
 		pfstrtdate.setValue(null);
 		pfstrtdate.setComponentError(null);
@@ -339,19 +332,20 @@ public class AppraisalLevels extends BaseUI {
 	private void loadapprlist() {
 		int i;
 		int year = 1990;
-		for(i=0;i<50;i++) {
+		for (i = 0; i < 50; i++) {
 			year = year + 1;
-		cbapprsalyr.addItem(year +"");
-		System.out.println("year is "+year);
+			cbapprsalyr.addItem(year + "");
+			System.out.println("year is " + year);
 		}
 	}
-	public void loadappraisallvl() {
+	
+	private void loadappraisallvl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading appraisal levels...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_GRDLVL");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+				"HC_GRDLVL"));
 		cbapprasallvl.setContainerDataSource(beanCompanyLookUp);
 	}
 }

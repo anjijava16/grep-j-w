@@ -12,11 +12,7 @@
  **/
 package com.gnts.hcm.txn;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -40,7 +36,6 @@ import com.gnts.hcm.domain.mst.DeductionDM;
 import com.gnts.hcm.domain.txn.EmployeeAdvanceDM;
 import com.gnts.hcm.service.mst.DeductionService;
 import com.gnts.hcm.service.txn.EmployeeAdvanceService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -49,10 +44,10 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class EmployeeAdvance extends BaseUI {
 	// Bean creation
@@ -73,9 +68,6 @@ public class EmployeeAdvance extends BaseUI {
 	private DateField dfEffective, dfDeductnStDt;
 	// BeanItemContainer
 	private BeanItemContainer<EmployeeAdvanceDM> beanAdvanceDM = null;
-	private BeanContainer<Long, EmployeeDM> beanEmpDM = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployeeDM = null;
-	private BeanContainer<Long, DeductionDM> beanDeductnDM = null;
 	// local variables declaration
 	private Long companyid;
 	private String pkEmpAdvncId;
@@ -251,21 +243,20 @@ public class EmployeeAdvance extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editEmpAdvance() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			EmployeeAdvanceDM editEmpAdvance = beanAdvanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			pkEmpAdvncId = editEmpAdvance.getEmpadvanceid().toString();
 			cbEmpName.setValue(editEmpAdvance.getEmpid());
 			cbAprveMngr.setValue(editEmpAdvance.getApprovemgr());
 			cbDeductionName.setValue(editEmpAdvance.getDednid());
-			dfEffective.setValue((Date) itselect.getItemProperty("advncedt").getValue());
-			tfAdvncAmt.setValue(itselect.getItemProperty("advnceamt").getValue().toString());
-			tfAdvncInterest.setValue(itselect.getItemProperty("advnceiterst").getValue().toString());
-			tfNoOfRepay.setValue(itselect.getItemProperty("noofpayment").getValue().toString());
-			tfEMIAmt.setValue(itselect.getItemProperty("emiamount").getValue().toString());
-			tfAdvanceReason.setValue((String) itselect.getItemProperty("advanceReason").getValue());
-			dfDeductnStDt.setValue((Date) itselect.getItemProperty("dednstartdt").getValue());
-			cbStatus.setValue(itselect.getItemProperty("advstatus").getValue());
+			dfEffective.setValue(editEmpAdvance.getAdvncedt());
+			tfAdvncAmt.setValue(editEmpAdvance.getAdvnceamt().toString());
+			tfAdvncInterest.setValue(editEmpAdvance.getAdvnceiterst().toString());
+			tfNoOfRepay.setValue(editEmpAdvance.getNoofpayment().toString());
+			tfEMIAmt.setValue(editEmpAdvance.getEmiamount().toString());
+			tfAdvanceReason.setValue(editEmpAdvance.getAdvanceReason());
+			dfDeductnStDt.setValue(editEmpAdvance.getDednstartdt());
+			cbStatus.setValue(editEmpAdvance.getAdvstatus());
 		}
 	}
 	
@@ -446,50 +437,30 @@ public class EmployeeAdvance extends BaseUI {
 		}
 	}
 	
-	public void loadEmpList() {
+	private void loadEmpList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "F");
-		beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+		BeanContainer<Long, EmployeeDM> beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmpDM.setBeanIdProperty("employeeid");
-		beanEmpDM.addAll(empList);
+		beanEmpDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null, null,
+				"P"));
 		cbEmpName.setContainerDataSource(beanEmpDM);
 	}
 	
-	public void loadEmpAprvrList() {
+	private void loadEmpAprvrList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Approver Search...");
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "F");
-		beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+		BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployeeDM.setBeanIdProperty("employeeid");
-		beanEmployeeDM.addAll(empList);
+		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+				null, "P"));
 		cbAprveMngr.setContainerDataSource(beanEmployeeDM);
 	}
 	
-	public void loadDeductionList() {
+	private void loadDeductionList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading deduction Search...");
-		List<DeductionDM> alwncList = serviceDeduction.getDuctionList(null, null, companyid, null,
-				(String) cbStatus.getValue(), "F");
-		beanDeductnDM = new BeanContainer<Long, DeductionDM>(DeductionDM.class);
+		BeanContainer<Long, DeductionDM> beanDeductnDM = new BeanContainer<Long, DeductionDM>(DeductionDM.class);
 		beanDeductnDM.setBeanIdProperty("deductionId");
-		beanDeductnDM.addAll(alwncList);
+		beanDeductnDM.addAll(serviceDeduction.getDuctionList(null, null, companyid, null, (String) cbStatus.getValue(),
+				"F"));
 		cbDeductionName.setContainerDataSource(beanDeductnDM);
-	}
-	
-	private Date addDays(Date d, int days) {
-		DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		String strDate = sdf.format(d);
-		Date parsedDate = null;
-		try {
-			parsedDate = sdf.parse(strDate);
-		}
-		catch (ParseException e) {
-			// TODO Auto-generated catch block
-			logger.warn("calculate days" + e);
-		}
-		Calendar now = Calendar.getInstance();
-		now.setTime(parsedDate);
-		now.add(Calendar.DAY_OF_MONTH, days);
-		return now.getTime();
 	}
 }

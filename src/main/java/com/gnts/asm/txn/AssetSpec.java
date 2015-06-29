@@ -23,9 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.apache.log4j.Logger;
-import com.gnts.asm.domain.txn.AssetDetailsDM;
 import com.gnts.asm.domain.txn.AssetSpecDM;
-import com.gnts.asm.service.txn.AssetDetailsService;
 import com.gnts.asm.service.txn.AssetSpecService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPButton;
@@ -62,36 +60,27 @@ public class AssetSpec implements ClickListener {
 	private ComboBox cbSpecStatus;
 	private Label lblspace;
 	// for Search
-	Button btnSearch, btnReset;
-	public// Declaration for add and edit panel
-	VerticalLayout vlAddEditPanel = new VerticalLayout();
-	VerticalLayout vlTablePanel = new VerticalLayout();
-	HorizontalLayout hlsavecancel = new HorizontalLayout();
-	HorizontalLayout hlFileDownloadLayout;
+	private Button btnSearch, btnReset;
+	private HorizontalLayout hlSaveCancel = new HorizontalLayout();
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2;
 	// Table Declaration
-	public Table tblMstScrSrchRslt;
+	private Table tblMstScrSrchRslt;
 	private Button btnAdd, btnEdit, btnHome, downloadbtn, btnAuditrRecords;
-	public Button btnadd;
-	public Button btnSave = new Button("Save", this);
-	public Button btnCancel = new Button("Cancel", this);
-	public Button btndelete=new GERPButton(" Delete","delete",this);
-	List<AssetSpecDM> usertable = new ArrayList<AssetSpecDM>();
+	private Button btnadd;
+	private Button btnSave = new Button("Save", this);
+	private Button btnCancel = new Button("Cancel", this);
+	private Button btndelete = new GERPButton(" Delete", "delete", this);
+	private List<AssetSpecDM> usertable = new ArrayList<AssetSpecDM>();
 	// Declaration for Label
 	private BeanItemContainer<AssetSpecDM> beans = null;
 	private VerticalLayout vlTableForm, vlTableLayout;
-	HorizontalLayout hlTableTitleandCaptionLayout;
 	private String username;
 	private Long companyid;
-	AssetDetailsDM assetDetails;
-	AssetSpecService serviceSpec = (AssetSpecService) SpringContextHelper.getBean("assetSpec");
-	AssetDetailsService assetDetailsBean = (AssetDetailsService) SpringContextHelper.getBean("assetDetails");
+	private AssetSpecService serviceSpec = (AssetSpecService) SpringContextHelper.getBean("assetSpec");
 	private static Logger logger = Logger.getLogger(AssetSpec.class);
 	private int total = 0;
 	private Long assetsId;
-	// public HorizontalLayout hlHeader=new HorizontalLayout();
-	public HorizontalLayout hlHeader = new HorizontalLayout();
 	
 	public AssetSpec(VerticalLayout vlAssetSpec, VerticalLayout vlTab, Long assetId) {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
@@ -123,10 +112,10 @@ public class AssetSpec implements ClickListener {
 		btnCancel.setDescription("Cancel");
 		btnCancel.setStyleName("cancelbt");
 		// btnCancel.setVisible(false);
-		hlsavecancel = new HorizontalLayout();
-		hlsavecancel.addComponent(btnSave);
-		hlsavecancel.addComponent(btnCancel);
-		hlsavecancel.setVisible(false);
+		hlSaveCancel = new HorizontalLayout();
+		hlSaveCancel.addComponent(btnSave);
+		hlSaveCancel.addComponent(btnCancel);
+		hlSaveCancel.setVisible(false);
 		// label,add,edit and download panel
 		// Initialization for btnAdd
 		btnAdd = new Button("Add", this);
@@ -141,7 +130,6 @@ public class AssetSpec implements ClickListener {
 		btnHome = new Button("Home", this);
 		btnHome.setStyleName("homebtn");
 		btnHome.setEnabled(false);
-	
 		btnadd = new GERPButton("Add", "add", this);
 		btnadd.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update for Asset Spec
@@ -153,8 +141,6 @@ public class AssetSpec implements ClickListener {
 					if (validateAll()) {
 						saveAssetSpec();
 					}
-					// new GERPSaveNotification();
-					// loadSrchRslt(false, null);
 				}
 			}
 		});
@@ -254,7 +240,6 @@ public class AssetSpec implements ClickListener {
 		}
 		tblMstScrSrchRslt.removeAllItems();
 		total = usertable.size();
-		System.out.println("List Size" + total);
 		beans = new BeanItemContainer<AssetSpecDM>(AssetSpecDM.class);
 		beans.addAll(usertable);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -270,12 +255,12 @@ public class AssetSpec implements ClickListener {
 	
 	// Method used to display selected row's values in desired text box and combo box for edit the values
 	private void editSpecification() {
-		// Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		try {
-			if (tblMstScrSrchRslt != null) {
+			if (tblMstScrSrchRslt.getValue() != null) {
 				AssetSpecDM enqdtl = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				tfSpecName.setValue(enqdtl.getSpecName());
 				tfSpecValue.setValue(enqdtl.getSpecValue());
+				cbSpecStatus.setValue(enqdtl.getSpecStatus());
 			}
 		}
 		catch (Exception e) {
@@ -308,26 +293,19 @@ public class AssetSpec implements ClickListener {
 			usertable.remove(savespec);
 		}
 		savespec.setSpecName(tfSpecName.getValue());
-		/*
-		 * else { tfSpecName.setComponentError(new UserError("Please enter Specification Name")); }
-		 */
 		savespec.setSpecValue(tfSpecValue.getValue());
-		/*
-		 * else { tfSpecValue.setComponentError(new UserError("Please enter Specification Value")); }
-		 */
 		savespec.setSpecStatus((String) cbSpecStatus.getValue());
 		savespec.setLastUpdatedBy(username);
 		savespec.setLastUpdatedDate(DateUtils.getcurrentdate());
 		usertable.add(savespec);
 		resetFields();
 		loadSrchRslt(false, assetsId);
-	
 	}
 	
 	private void deletedetails() {
 		AssetSpecDM delete = new AssetSpecDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			delete=beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			delete = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			usertable.remove(delete);
 			tfSpecName.setValue("");
 			tfSpecValue.setValue("");
@@ -335,13 +313,12 @@ public class AssetSpec implements ClickListener {
 			loadSrchRslt(false, null);
 		}
 	}
-	public void Assetsave(Long assetId) {
-		System.out.println("saveid1-->>" + assetId);
+	
+	public void saveAssetSpec(Long assetId) {
 		@SuppressWarnings("unchecked")
 		Collection<AssetSpecDM> itemIds = (Collection<AssetSpecDM>) tblMstScrSrchRslt.getVisibleItemIds();
 		for (AssetSpecDM saveasset : (Collection<AssetSpecDM>) itemIds) {
 			saveasset.setAssetId(assetId);
-			System.out.println("saveid2-->>" + assetId);
 			serviceSpec.saveDetails(saveasset);
 		}
 	}
@@ -358,8 +335,7 @@ public class AssetSpec implements ClickListener {
 	
 	@Override
 	public void buttonClick(ClickEvent event) {
-		if(btndelete==event.getButton())
-		{
+		if (btndelete == event.getButton()) {
 			deletedetails();
 		}
 	}

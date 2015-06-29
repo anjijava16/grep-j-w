@@ -46,13 +46,11 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.server.UserError;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -62,25 +60,14 @@ import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 public class AssetMaintDetail extends BaseUI {
 	private static final long serialVersionUID = 1L;
-	private BeanContainer<Long, AssetMaintSchedDM> beanMaintSched = null;
-	private BeanContainer<Long, AssetDetailsDM> beanAssetDetails = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployee = null;
 	private BeanItemContainer<AssetMaintDetailDM> beanMaintDetail = null;
-	private BeanContainer<String, VendorDM> beanvendor = null;
-	private BeanContainer<String, CompanyLookupDM> beanlook = null;
-	AssetMaintSched assetApp;
 	// Buttons
-	public Button btnSave = new Button("Save", this);
-	public Button btnCancel = new Button("Cancel", this);
 	// Layouts
 	private HorizontalLayout hlSearchLayout = new HorizontalLayout();
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
-	private VerticalLayout vlSchedule = new VerticalLayout();
-	public HorizontalLayout hlSaveandCancelButtonLayout;
 	private FormLayout flColumn1, flColumn2, flColumn3;
 	// pagination
 	private int recordCnt = 0;
@@ -90,13 +77,12 @@ public class AssetMaintDetail extends BaseUI {
 	private ComboBox cbStatus, cbMaintType, cbservicetype, cbAssetName, cbattenby, cbprepare, cbreviewby, cbMaint,
 			cbserviceby, cbcause;
 	private TabSheet tabasset;
-	TextField tfAssetName, tfcausedby;
+	private TextField tfAssetName;
 	private PopupDateField dfcompleteDate, dfservicedate, dfmainSchedule;
 	private TextArea taMaintDetails;
 	private GERPTimeField tfmaintime, tfcompletetime;
 	// Initialization Logger
-	private static Logger logger = Logger.getLogger(AssetMaintDetail.class);
-	private Long maintId;
+	private Logger logger = Logger.getLogger(AssetMaintDetail.class);
 	private AssetMaintSchedService serviceMaintSched = (AssetMaintSchedService) SpringContextHelper
 			.getBean("AssetMaintSchedul");
 	private AssetDetailsService servicebeanAssetDetails = (AssetDetailsService) SpringContextHelper
@@ -106,7 +92,6 @@ public class AssetMaintDetail extends BaseUI {
 			.getBean("assetMaintDetails");
 	private VendorService servicevendor = (VendorService) SpringContextHelper.getBean("Vendor");
 	private CompanyLookupService servicecompany = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
-	HorizontalLayout hlScreenNameLayout;
 	
 	// Constructor
 	public AssetMaintDetail() {
@@ -289,51 +274,48 @@ public class AssetMaintDetail extends BaseUI {
 	
 	// this method use to Load AssetNamelist inside of ComboBox
 	private void loadAssetName() {
-		List<AssetDetailsDM> assetList = servicebeanAssetDetails.getAssetDetailList(companyId, null, null, null, null,
-				"Active");
-		beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(AssetDetailsDM.class);
+		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
+				AssetDetailsDM.class);
 		beanAssetDetails.setBeanIdProperty("assetId");
-		beanAssetDetails.addAll(assetList);
+		beanAssetDetails
+				.addAll(servicebeanAssetDetails.getAssetDetailList(companyId, null, null, null, null, "Active"));
 		cbAssetName.setContainerDataSource(beanAssetDetails);
 	}
 	
 	// this method use to Load AssetNamelist inside of ComboBox
 	private void loadmainDescriptionName() {
-		List<AssetMaintSchedDM> assetList = serviceMaintSched.getMaintScheduleList(null, null, "Active", null, null);
-		beanMaintSched = new BeanContainer<Long, AssetMaintSchedDM>(AssetMaintSchedDM.class);
+		BeanContainer<Long, AssetMaintSchedDM> beanMaintSched = new BeanContainer<Long, AssetMaintSchedDM>(
+				AssetMaintSchedDM.class);
 		beanMaintSched.setBeanIdProperty("maintId");
-		beanMaintSched.addAll(assetList);
+		beanMaintSched.addAll(serviceMaintSched.getMaintScheduleList(null, null, "Active", null, null));
 		cbMaint.setContainerDataSource(beanMaintSched);
 	}
 	
 	// this method use to Load Vendor Name list inside of ComboBox
 	private void loadvendorlist() {
-		List<VendorDM> vendorlist = servicevendor.getVendorList(null, null, companyId, null, null, null, null, null,
-				"Active", null, "F");
-		beanvendor = new BeanContainer<String, VendorDM>(VendorDM.class);
+		BeanContainer<String, VendorDM> beanvendor = new BeanContainer<String, VendorDM>(VendorDM.class);
 		beanvendor.setBeanIdProperty("vendorId");
-		beanvendor.addAll(vendorlist);
+		beanvendor.addAll(servicevendor.getVendorList(null, null, companyId, null, null, null, null, null, "Active",
+				null, "P"));
 		cbserviceby.setContainerDataSource(beanvendor);
 	}
 	
 	// this method use to Load lookup Name list inside of ComboBox
 	private void loadlookuplist() {
-		List<CompanyLookupDM> LookUpList = servicecompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
-				"AM_MNTCAUS");
-		beanlook = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanlook.setBeanIdProperty("lookupname");
-		beanlook.addAll(LookUpList);
+		beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "AM_MNTCAUS"));
 		cbcause.setContainerDataSource(beanlook);
 	}
 	
 	// this method use to Load Employee Name list inside of ComboBox
 	private void loadEmployeeList() {
 		try {
-			List<EmployeeDM> empList = servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyId,
-					EmployeeId, null, null, null, "F");
-			beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployee.setBeanIdProperty("employeeid");
-			beanEmployee.addAll(empList);
+			beanEmployee.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyId, EmployeeId,
+					null, null, null, "P"));
 			cbprepare.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
@@ -344,10 +326,8 @@ public class AssetMaintDetail extends BaseUI {
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editMaintDetail() {
 		try {
-			Item select = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-			if (select != null) {
+			if (tblMstScrSrchRslt.getValue() != null) {
 				AssetMaintDetailDM editmaintdetail = beanMaintDetail.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				maintId = editmaintdetail.getMaintId();
 				if (cbAssetName != null) {
 					cbAssetName.setValue(editmaintdetail.getAssetId());
 				}

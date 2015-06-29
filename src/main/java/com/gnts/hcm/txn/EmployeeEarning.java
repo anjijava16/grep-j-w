@@ -209,8 +209,8 @@ public class EmployeeEarning extends BaseUI {
 								(Long) cbEarnCode.getValue(), "Active", "F").get(0);
 						System.out.println("Min=" + gradeEarningsDM.getMinVal() + "\nMax="
 								+ gradeEarningsDM.getMaxVal());
-						if (((Long.valueOf(tfEarnAmt.getValue())) < (gradeEarningsDM.getMinVal()))
-								|| ((Long.valueOf(tfEarnAmt.getValue())) > (gradeEarningsDM.getMaxVal()))) {
+						if (((new BigDecimal(tfEarnAmt.getValue())).compareTo(gradeEarningsDM.getMinVal()) > 0)
+								|| ((new BigDecimal(tfEarnAmt.getValue())).compareTo(gradeEarningsDM.getMaxVal())) < 0) {
 							tfEarnAmt.setComponentError(new UserError("Enter earn amount between "
 									+ gradeEarningsDM.getMinVal() + "\nto " + gradeEarningsDM.getMaxVal()));
 						}

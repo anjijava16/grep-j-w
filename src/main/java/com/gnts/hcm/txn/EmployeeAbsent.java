@@ -34,7 +34,6 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.EmployeeAbsentDM;
 import com.gnts.hcm.service.txn.EmployeeAbsentService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanItemContainer;
@@ -59,8 +58,11 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
-@SuppressWarnings("serial")
 public class EmployeeAbsent extends VerticalLayout implements ClickListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Declaration for add and edit panel components
 	private CheckBox cbAbsentlwpmark;
 	private PopupDateField dfAbsentdate;
@@ -69,31 +71,28 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 	private TextArea taAbsentremarks;
 	private ComboBox cbabsentstatus;
 	// for Search
-	Button btnSearch, btnReset;
+	private Button btnSearch, btnReset;
 	// Declaration for add and edit panel
-	VerticalLayout vlAddEditPanel = new VerticalLayout();
-	VerticalLayout vlTablePanel = new VerticalLayout();
-	HorizontalLayout hlsavecancel = new HorizontalLayout();
-	HorizontalLayout hlFileDownloadLayout;
+	private VerticalLayout vlTablePanel = new VerticalLayout();
+	private HorizontalLayout hlsavecancel = new HorizontalLayout();
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Table Declaration
-	public Table tblMstScrSrchRslt;
+	private Table tblMstScrSrchRslt;
 	// private Button btnAdd,btnSave,btnCancel ;
-	public Button btnadd;
-	public Button btnSave = new Button("Save", this);
-	public Button btnCancel = new Button("Cancel", this);
-	List<EmployeeAbsentDM> usertable = new ArrayList<EmployeeAbsentDM>();
+	private Button btnadd;
+	private Button btnSave = new Button("Save", this);
+	private Button btnCancel = new Button("Cancel", this);
+	private List<EmployeeAbsentDM> usertable = new ArrayList<EmployeeAbsentDM>();
 	private BeanItemContainer<EmployeeAbsentDM> beans = null;
 	private VerticalLayout vltable, vlTableForm, vlTableLayout;
-	HorizontalLayout hlTableTitleandCaptionLayout;
+	private HorizontalLayout hlTableTitleandCaptionLayout;
 	private String username;
 	private Long companyid;
 	private Long employeeid;
-	EmployeeAbsentService serviceabsent = (EmployeeAbsentService) SpringContextHelper.getBean("EmployeeAbsent");
-	private static Logger logger = Logger.getLogger(EmployeeAbsentDM.class);
+	private EmployeeAbsentService serviceabsent = (EmployeeAbsentService) SpringContextHelper.getBean("EmployeeAbsent");
+	private Logger logger = Logger.getLogger(EmployeeAbsentDM.class);
 	private int total = 0;
-	public HorizontalLayout hlHeader = new HorizontalLayout();
 	
 	public EmployeeAbsent(Long empid) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -104,7 +103,6 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 		buildView();
 	}
 	
-	@SuppressWarnings("unused")
 	private void buildView() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting EmployeeAbsent UI");
 		// Initialization for dfAbsentdate
@@ -174,7 +172,6 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 				}
 			}
 		});
-		HorizontalLayout hlTableCaptionLayout = new HorizontalLayout();
 		hlTableTitleandCaptionLayout = new HorizontalLayout();
 		// Initialization for table panel components
 		tblMstScrSrchRslt = new Table();
@@ -291,21 +288,19 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 	// Method used to display selected row's values in desired text box and combo box for edit the values
 	private void editAbsent() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Absent.......");
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			EmployeeAbsentDM Absent = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfAbsentdate.setValue(Absent.getAbsentdte());
-			tfAbsentstarthours.setTime(Absent.getStarthours());
-			tfAbsentendhours.setTime(Absent.getEndhours());
-			tfAbsenttotalhours.setValue(Absent.getTotalhours().toString());
-			if (itselect.getItemProperty("lwpmark").getValue().equals("Y")) {
+		if (tblMstScrSrchRslt.getValue() != null) {
+			EmployeeAbsentDM absent = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			dfAbsentdate.setValue(absent.getAbsentdte());
+			tfAbsentstarthours.setTime(absent.getStarthours());
+			tfAbsentendhours.setTime(absent.getEndhours());
+			tfAbsenttotalhours.setValue(absent.getTotalhours().toString());
+			if (absent.getLwpmark().equals("Y")) {
 				cbAbsentlwpmark.setValue(true);
 			} else {
 				cbAbsentlwpmark.setValue(false);
 			}
-			taAbsentremarks.setValue(Absent.getAbsentremarks());
-			String stcode = itselect.getItemProperty("absentstatus").getValue().toString();
-			cbabsentstatus.setValue(stcode);
+			taAbsentremarks.setValue(absent.getAbsentremarks());
+			cbabsentstatus.setValue(absent.getAbsentstatus());
 		}
 	}
 	
@@ -352,7 +347,7 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 		}
 	}
 	
-	public void Absentsave(Long employeeid) {
+	public void saveAbsentDetails(Long employeeid) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "EmployeeAbsent Save details......");
 		@SuppressWarnings("unchecked")

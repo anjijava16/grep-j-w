@@ -30,7 +30,6 @@ import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.DepartmentDM;
 import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.service.mst.BranchService;
-import com.gnts.base.service.mst.CompanyService;
 import com.gnts.base.service.mst.DepartmentService;
 import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.crm.domain.mst.ClientCategoryDM;
@@ -47,15 +46,13 @@ import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -63,13 +60,12 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class AssetDetails extends BaseUI {
+public class AssetDetails extends BaseTransUI {
 	/**
 	 * 
 	 */
@@ -86,41 +82,35 @@ public class AssetDetails extends BaseUI {
 	private TextArea tfAssetDetailDesc, tfRemarks, tawarrentdesc;
 	// Declaration for button
 	private Button btnEdit;
-	// Declaration for table panel
-	private Table table;
 	// VerticalLayout vlAssetDetails = new VerticalLayout();
-	HorizontalLayout hlsavecancel = new HorizontalLayout();
-	HorizontalLayout hlImage = new HorizontalLayout();
+	private HorizontalLayout hlsavecancel = new HorizontalLayout();
 	private VerticalLayout vlAssetSpec = new VerticalLayout();
 	private VerticalLayout vlOwnDetails = new VerticalLayout();
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	private String username;
 	private BeanItemContainer<AssetDetailsDM> beanAssetdetail = null;
-	public static boolean filevalue2 = false;
-	public static boolean filevalue3 = false;
-	AssetDetailsService serviceAssetDetail = (com.gnts.asm.service.txn.AssetDetailsService) SpringContextHelper
+	private AssetDetailsService serviceAssetDetail = (com.gnts.asm.service.txn.AssetDetailsService) SpringContextHelper
 			.getBean("assetDetails");
-	CompanyService companybean = (CompanyService) SpringContextHelper.getBean("companyBean");
-	AssetBrandService ServiceBrand = (AssetBrandService) SpringContextHelper.getBean("assetBrand");
-	BranchService ServiceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
-	DepartmentService Servicedepartmant = (DepartmentService) SpringContextHelper.getBean("department");
-	ClientCategoryService ServiceCategory = (ClientCategoryService) SpringContextHelper.getBean("clientCategory");
-	EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private AssetBrandService serviceBrand = (AssetBrandService) SpringContextHelper.getBean("assetBrand");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	private DepartmentService servicedepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private ClientCategoryService serviceCategory = (ClientCategoryService) SpringContextHelper
+			.getBean("clientCategory");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private int recordCnt;
-	private Long companyid, branchId, employeeid;
-	HorizontalLayout hlTableTitleandCaptionLayout, notificationHl, Hlheaderandbtn, hlSearchLayout;
+	private Long companyid, employeeid;
+	private HorizontalLayout hlSearchLayout;
 	// parent HorizontalLayout for input control
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private HorizontalLayout hlInput = new HorizontalLayout();
 	private Long assetId, assetOwnId;
-	private static Logger logger = Logger.getLogger(AssetDetails.class);
-	AssetSpec spec;
-	AssetOwnDetails owndetails;
+	private Logger logger = Logger.getLogger(AssetDetails.class);
+	private AssetSpec spec;
+	private AssetOwnDetails owndetails;
 	
 	public AssetDetails() {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		employeeid = (Long) (UI.getCurrent().getSession().getAttribute("employeeid"));
 		buildView(hlInput);
 	}
@@ -219,19 +209,20 @@ public class AssetDetails extends BaseUI {
 		loadDepartment();
 		cbDeptId.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
+			
 			public void blur(BlurEvent event) {
 				cbDeptId.setComponentError(null);
 				if (cbDeptId.getValue() != null) {
 					cbDeptId.setComponentError(null);
 				}
-		}
+			}
 		});
 		//
 		cbbranch = new GERPComboBox("Branch");
 		cbbranch.setWidth("148");
-		//cbbranch.setNullSelectionAllowed(false);
+		// cbbranch.setNullSelectionAllowed(false);
 		cbbranch.setItemCaptionPropertyId("branchName");
-//		loadBranchDetails();
+		// loadBranchDetails();
 		loadBranchList();
 		// Initialization for tfSerialNo
 		tfSerialNo = new GERPTextField("Serial No.");
@@ -403,32 +394,26 @@ public class AssetDetails extends BaseUI {
 	
 	// Load Branch list for pnlmain's combo Box
 	private void loadbrandDetails() {
-		List<AssetBrandDM> getbrandlist = ServiceBrand.getAssetBrandList(companyid, null, "Active", "P");
 		BeanContainer<Long, AssetBrandDM> beanbrand = new BeanContainer<Long, AssetBrandDM>(AssetBrandDM.class);
 		beanbrand.setBeanIdProperty("brandid");
-		beanbrand.addAll(getbrandlist);
+		beanbrand.addAll(serviceBrand.getAssetBrandList(companyid, null, "Active", "P"));
 		cbBrandId.setContainerDataSource(beanbrand);
 	}
 	
 	// Load Department list for pnladdedit's combo Box
 	private void loadDepartment() {
-		List<DepartmentDM> list = new ArrayList<DepartmentDM>();
-		list.addAll(Servicedepartmant.getDepartmentList(companyid, null, "Active", "P"));
 		BeanContainer<Long, DepartmentDM> beandept = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beandept.setBeanIdProperty("deptid");
-		beandept.addAll(list);
+		beandept.addAll(servicedepartmant.getDepartmentList(companyid, null, "Active", "P"));
 		cbDeptId.setContainerDataSource(beandept);
 	}
 	
-	
-	
 	// Load Branch List
-	public void loadBranchList() {
+	private void loadBranchList() {
 		try {
-			List<BranchDM> branchList = ServiceBranch.getBranchList(null, null, null, "Active", companyid, "P");
 			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanbranch.setBeanIdProperty("branchId");
-			beanbranch.addAll(branchList);
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
 			cbbranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
@@ -436,28 +421,11 @@ public class AssetDetails extends BaseUI {
 		}
 	}
 	
-	
-	
-	
-	
-	
-//	// Load Branch list for combo Box
-//	private void loadBranchDetails() {
-//		List<BranchDM> list = new ArrayList<BranchDM>();
-//		list.addAll(ServiceBranch.getBranchList(branchId, null, null, "Active", companyid, "P"));
-//		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-//		beanbranch.setBeanIdProperty("branchId");
-//		beanbranch.addAll(list);
-//		cbbranch.setContainerDataSource(beanbranch);
-//	}
-	
 	private void loadcategory() {
-		List<ClientCategoryDM> clientlist = new ArrayList<ClientCategoryDM>();
-		clientlist.addAll(ServiceCategory.getCrmClientCategoryList(companyid, null, "Active", "P"));
 		BeanContainer<Long, ClientCategoryDM> beanclientcat = new BeanContainer<Long, ClientCategoryDM>(
 				ClientCategoryDM.class);
 		beanclientcat.setBeanIdProperty("clientCategoryId");
-		beanclientcat.addAll(clientlist);
+		beanclientcat.addAll(serviceCategory.getCrmClientCategoryList(companyid, null, "Active", "P"));
 		cbcategory.setContainerDataSource(beanclientcat);
 	}
 	
@@ -469,6 +437,9 @@ public class AssetDetails extends BaseUI {
 		beanemployee.setBeanIdProperty("employeeid");
 		beanemployee.addAll(emplist);
 		cbaction.setContainerDataSource(beanemployee);
+		beanemployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+		beanemployee.setBeanIdProperty("employeeid");
+		beanemployee.addAll(emplist);
 		cbreview.setContainerDataSource(beanemployee);
 	}
 	
@@ -491,29 +462,7 @@ public class AssetDetails extends BaseUI {
 			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Asset Name", "Brand Name", "Department Name",
 					"Asset Details", "Status", "Last Updated Date", "Last Updated By" });
 			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
-			tblMstScrSrchRslt.addItemClickListener(new ItemClickListener() {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-				
-				public void itemClick(ItemClickEvent event) {
-					// try {
-					// TODO Auto-generated method stub
-					if (tblMstScrSrchRslt.isSelected(event.getItemId())) {
-						btnEdit.setEnabled(false);
-						btnAdd.setEnabled(true);
-					} else {
-						btnEdit.setEnabled(true);
-						btnAdd.setEnabled(false);
-					}
-					resetFields();
-					btnSave.setCaption("Save");
-					/*
-					 * } catch (Exception e) { logger.info("fn_populateAndConfig->" + e); }
-					 */
-				}
-			});
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -728,9 +677,9 @@ public class AssetDetails extends BaseUI {
 			assetdtl.setLastupdateddt(DateUtils.getcurrentdate());
 			assetdtl.setLastupdatedby(username);
 			serviceAssetDetail.saveAndUpdateAssetDetails(assetdtl);
-			spec.Assetsave(assetdtl.getAssetId());
+			spec.saveAssetSpec(assetdtl.getAssetId());
 			spec.resetFields();
-			owndetails.Assetownersave(assetdtl.getAssetId());
+			owndetails.saveAssetOwners(assetdtl.getAssetId());
 			owndetails.resetfields();
 			resetFields();
 			loadSrchRslt();
@@ -787,7 +736,7 @@ public class AssetDetails extends BaseUI {
 		cbBrandId.setValue(null);
 		cbBrandId.setRequired(false);
 		cbBrandId.setComponentError(null);
-		//cbbranch.setValue(branchId);
+		// cbbranch.setValue(branchId);
 		cbbranch.setValue(cbbranch.getItemIds().iterator().next());
 		cbDeptId.setValue(null);
 		cbDeptId.setRequired(false);
@@ -799,5 +748,11 @@ public class AssetDetails extends BaseUI {
 		cbcategory.setRequired(false);
 		cbcategory.setComponentError(null);
 		tfservicerequire.setValue("");
+	}
+
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
+		
 	}
 }

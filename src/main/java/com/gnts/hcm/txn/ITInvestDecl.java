@@ -44,8 +44,6 @@ import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.ITInvestDecDM;
 import com.gnts.hcm.service.txn.ITInvestDecService;
-import com.vaadin.client.ui.VFormLayout.ErrorFlag;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -75,7 +73,6 @@ public class ITInvestDecl extends BaseUI {
 	private TextField tfFinYear, tfSectnCode, tfInvstdAmt, tfApprvdAmt, tfVerifdBy;
 	// BeanItemContainer
 	private BeanItemContainer<ITInvestDecDM> beanITInvestDecDM = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployeeDM = null;
 	// local variables declaration
 	private Long companyId, employeeId;
 	private int recordCnt = 0;
@@ -133,11 +130,10 @@ public class ITInvestDecl extends BaseUI {
 	
 	private void loadEmployeeList() {
 		try {
-			List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyId,
-					employeeId, null, null, null, "F");
-			beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(empList);
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, employeeId,
+					null, null, null, "P"));
 			cbEmployeeName.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
@@ -285,29 +281,28 @@ public class ITInvestDecl extends BaseUI {
 	
 	private void editItInvestDeclDetails() {
 		hlUserInputLayout.setVisible(true);
-		Item rowSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (rowSelected != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			ITInvestDecDM editItinvestDeclList = beanITInvestDecDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if ((rowSelected.getItemProperty("empId").getValue() != null)) {
+			if ((editItinvestDeclList.getEmpId() != null)) {
 				cbEmployeeName.setValue(editItinvestDeclList.getEmpId());
 			}
-			if ((rowSelected.getItemProperty("finYear").getValue() != null)) {
+			if ((editItinvestDeclList.getFinYear() != null)) {
 				tfFinYear.setReadOnly(false);
 				tfFinYear.setValue(editItinvestDeclList.getFinYear());
 			}
-			if ((rowSelected.getItemProperty("secCode").getValue() != null)) {
+			if ((editItinvestDeclList.getSecCode() != null)) {
 				tfSectnCode.setValue(editItinvestDeclList.getSecCode());
 			}
 			if (editItinvestDeclList.getInvestDate() != null) {
 				dfInvstedDt.setValue(editItinvestDeclList.getInvestDate());
 			}
-			if ((rowSelected.getItemProperty("investAmt").getValue() != null)) {
+			if ((editItinvestDeclList.getInvestAmt() != null)) {
 				tfInvstdAmt.setValue(editItinvestDeclList.getInvestAmt().toString());
 			}
-			if ((rowSelected.getItemProperty("appAmt").getValue() != null)) {
+			if ((editItinvestDeclList.getAppAmt() != null)) {
 				tfApprvdAmt.setValue(editItinvestDeclList.getAppAmt().toString());
 			}
-			if ((rowSelected.getItemProperty("verifiedBy").getValue() != null)) {
+			if ((editItinvestDeclList.getVerifiedBy() != null)) {
 				tfVerifdBy.setValue(editItinvestDeclList.getVerifiedBy().toString());
 			}
 			if (editItinvestDeclList.getVerifiedDt() != null) {
@@ -316,8 +311,8 @@ public class ITInvestDecl extends BaseUI {
 			if (editItinvestDeclList.getStatus() != null) {
 				cbStatus.setValue(editItinvestDeclList.getStatus());
 			}
-			if (rowSelected.getItemProperty("proofDoc").getValue() != null) {
-				byte[] certificate = (byte[]) rowSelected.getItemProperty("proofDoc").getValue();
+			if (editItinvestDeclList.getProofDoc() != null) {
+				byte[] certificate = editItinvestDeclList.getProofDoc();
 				UploadDocumentUI test = new UploadDocumentUI(vlappdoc);
 				test.displaycertificate(certificate);
 			} else {

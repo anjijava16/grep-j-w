@@ -38,7 +38,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.ITOtherIncomeDM;
 import com.gnts.hcm.service.txn.ITOtherIncomeService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -71,7 +70,7 @@ public class ITOtherIncome extends BaseUI {
 	private Long approvedamount = 0L;
 	private int recordCnt = 0;
 	private Boolean errorFlag = false;
-	String primaryid;
+	private String primaryid;
 	// Initialize Logger
 	private Logger logger = Logger.getLogger(ITOtherIncome.class);
 	private static final long serialVersionUID = 1L;
@@ -166,11 +165,10 @@ public class ITOtherIncome extends BaseUI {
 	}
 	
 	private void loadEmployee() {
-		List<EmployeeDM> list = servicebeanEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, null,
-				null, null, null, null, null, "P");
 		BeanContainer<Long, EmployeeDM> bean = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		bean.setBeanIdProperty("employeeid");
-		bean.addAll(list);
+		bean.addAll(servicebeanEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, null,
+				null, null, null, null, null, "P"));
 		cbEmpName.setContainerDataSource(bean);
 	}
 	
@@ -239,8 +237,7 @@ public class ITOtherIncome extends BaseUI {
 	private void editItOtherIncome() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Editing the selected record");
-		Item select = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (select != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			ITOtherIncomeDM editItInComeObj = beanITOtherIncomeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			if (editItInComeObj.getEmpId() != null) {
 				cbEmpName.setValue(editItInComeObj.getEmpId());
@@ -299,7 +296,6 @@ public class ITOtherIncome extends BaseUI {
 				tfIncomeAmt.setComponentError(new UserError(GERPErrorCodes.NULL_INCOME_SALARY));
 				errorFlag = true;
 			} else {
-//				tfIncomeAmt.setComponentError(new UserError(GERPErrorCodes.Amount_CHAR_VALIDATION));
 				tfIncomeAmt.setComponentError(new UserError("Enter Income Salary"));
 				errorFlag = true;
 			}
@@ -317,7 +313,6 @@ public class ITOtherIncome extends BaseUI {
 				tfApprovedAmt.setComponentError(new UserError(GERPErrorCodes.NULL_APPROVED_AMOUNT));
 				errorFlag = true;
 			} else {
-			//	tfApprovedAmt.setComponentError(new UserError(GERPErrorCodes.Amount_CHAR_VALIDATION));
 				tfApprovedAmt.setComponentError(new UserError(GERPErrorCodes.NULL_APPROVED_AMOUNT));
 				errorFlag = true;
 			}

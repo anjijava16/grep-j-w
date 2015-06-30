@@ -197,11 +197,10 @@ public class Outpass extends BaseTransUI {
 	
 	// Load Employee List
 	private void loadEmployeeList() {
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "P");
 		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanInitiatedBy.setBeanIdProperty("employeeid");
-		beanInitiatedBy.addAll(empList);
+		beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+				null, null, "P"));
 		cbEmployee.setContainerDataSource(beanInitiatedBy);
 	}
 	
@@ -210,10 +209,9 @@ public class Outpass extends BaseTransUI {
 	 */
 	private void loadDepartmentList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P");
 		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
+		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
 		cbDepartment.setContainerDataSource(beanDepartment);
 	}
 	

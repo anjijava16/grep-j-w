@@ -76,7 +76,8 @@ public class VisitorPass extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside VisitorPass() constructor");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Inside VisitorPass() constructor");
 		buildview();
 	}
 	
@@ -165,11 +166,13 @@ public class VisitorPass extends BaseTransUI {
 		List<VisitPassDM> list = new ArrayList<VisitPassDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + null + "," + tfVisitorsName.getValue() + ", " + (String) cbStatus.getValue());
-		list = serviceVisitorPass.getVisitPasList(null, tfVisitorsName.getValue(), null, null, (String) cbStatus.getValue());
+		list = serviceVisitorPass.getVisitPasList(null, tfVisitorsName.getValue(), null, null,
+				(String) cbStatus.getValue());
 		recordCnt = list.size();
 		beanVisitpass = new BeanItemContainer<VisitPassDM>(VisitPassDM.class);
 		beanVisitpass.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the VisitorPass. result set");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Got the VisitorPass. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanVisitpass);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "visitorId", "visitDate", "visitorName", "companyName",
 				"inTime", "outTime", "lastUpdatedDt", "lastUpdatedby" });
@@ -181,11 +184,10 @@ public class VisitorPass extends BaseTransUI {
 	
 	// Load Employee List
 	private void loadEmployeeList() {
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "P");
 		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanInitiatedBy.setBeanIdProperty("employeeid");
-		beanInitiatedBy.addAll(empList);
+		beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+				null, "P"));
 		cbEmployee.setContainerDataSource(beanInitiatedBy);
 	}
 	
@@ -197,7 +199,7 @@ public class VisitorPass extends BaseTransUI {
 				+ visitorid);
 		if (tblMstScrSrchRslt.getValue() != null) {
 			VisitPassDM visitPassDM = beanVisitpass.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			visitorid=visitPassDM.getVisitorId();
+			visitorid = visitPassDM.getVisitorId();
 			dfPassDate.setValue(visitPassDM.getVisitDate());
 			cbEmployee.setValue(visitPassDM.getEmployeeId());
 			cbStatus.setValue(visitPassDM.getStatus());
@@ -277,7 +279,7 @@ public class VisitorPass extends BaseTransUI {
 		cbEmployee.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		if (tfVisitorsName.getValue() == null||tfVisitorsName.getValue().trim().length()==0) {
+		if (tfVisitorsName.getValue() == null || tfVisitorsName.getValue().trim().length() == 0) {
 			tfVisitorsName.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRYNO));
 			errorFlag = true;
 		}

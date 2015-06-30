@@ -34,7 +34,6 @@ import com.gnts.hcm.domain.mst.TaxDM;
 import com.gnts.hcm.domain.txn.TaxLimitDM;
 import com.gnts.hcm.service.mst.TaxService;
 import com.gnts.hcm.service.txn.TaxLimitService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
@@ -43,9 +42,9 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class TaxLimit extends BaseUI {
 	// Bean creation
@@ -64,8 +63,6 @@ public class TaxLimit extends BaseUI {
 	private ComboBox cbStatus, cbSectnCode, cbTaxId;
 	// BeanItemContainer
 	private BeanItemContainer<TaxLimitDM> beanTaxLimitDM = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
-	private BeanContainer<String, TaxDM> beanTax = null;
 	// local variables declaration
 	private Long companyid, moduleId;
 	private int sectionCount = 0;
@@ -100,6 +97,11 @@ public class TaxLimit extends BaseUI {
 		cbSectnCode.setRequired(true);
 		cbSectnCode.setItemCaptionPropertyId("lookupname");
 		cbSectnCode.addBlurListener(new BlurListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void blur(BlurEvent event) {
 				if (cbSectnCode.getValue() != null) {
@@ -211,16 +213,15 @@ public class TaxLimit extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editTaxLimit() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		TaxLimitDM editTaxLimit = beanTaxLimitDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		pkTaxLimitId = editTaxLimit.getTaxLimitId().toString();
-		if (itselect.getItemProperty("exemptLimit") != null && !"null".equals(itselect.getItemProperty("exemptLimit"))) {
-			tfExemptLimit.setValue(itselect.getItemProperty("exemptLimit").getValue().toString());
+		if (editTaxLimit.getExemptLimit() != null && !"null".equals(editTaxLimit.getExemptLimit())) {
+			tfExemptLimit.setValue(editTaxLimit.getExemptLimit().toString());
 		}
 		cbTaxId.setReadOnly(false);
 		cbTaxId.setValue(Long.valueOf(editTaxLimit.getTaxId()));
 		cbTaxId.setReadOnly(true);
-		cbStatus.setValue(itselect.getItemProperty("status").getValue());
+		cbStatus.setValue(editTaxLimit.getStatus());
 		cbSectnCode.setReadOnly(false);
 		cbSectnCode.setValue(editTaxLimit.getSctnCode());
 		cbSectnCode.setReadOnly(true);
@@ -357,20 +358,19 @@ public class TaxLimit extends BaseUI {
 	
 	public void loadGRDLvl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_TXSECCD");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+				"HC_TXSECCD"));
 		cbSectnCode.setContainerDataSource(beanCompanyLookUp);
 	}
 	
 	public void loadTaxList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<TaxDM> lookUpList = serviceTax.getTaxList(companyid, null, null, null, "P");
-		beanTax = new BeanContainer<String, TaxDM>(TaxDM.class);
+		BeanContainer<String, TaxDM> beanTax = new BeanContainer<String, TaxDM>(TaxDM.class);
 		beanTax.setBeanIdProperty("taxid");
-		beanTax.addAll(lookUpList);
+		beanTax.addAll(serviceTax.getTaxList(companyid, null, null, null, "P"));
 		cbTaxId.setContainerDataSource(beanTax);
 	}
 }

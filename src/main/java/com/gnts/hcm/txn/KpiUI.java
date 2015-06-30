@@ -37,7 +37,6 @@ import com.gnts.hcm.domain.txn.KpiGroupDM;
 import com.gnts.hcm.service.mst.DesignationService;
 import com.gnts.hcm.service.txn.KpiGroupService;
 import com.gnts.hcm.service.txn.KpiService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -48,21 +47,19 @@ import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
-public class KpiUI extends BaseUI{
-	
+public class KpiUI extends BaseUI {
 	private KpiService serviceKpi = (KpiService) SpringContextHelper.getBean("Kpi");
 	private KpiGroupService serviceKpiGroup = (KpiGroupService) SpringContextHelper.getBean("KpiGroup");
 	private DesignationService serviceDesignation = (DesignationService) SpringContextHelper.getBean("Designation");
-	
 	// Form layout for input controls
-	private FormLayout flColumn1, flColumn2,flColumn3,flColumn4,flColumn5,flColumn6;
+	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4, flColumn5, flColumn6;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// User Input Components
-	private TextField tfKpiName, tfMinRating,tfMaxRating;
-	private ComboBox cbKpiGrp,cbDesignnationId, cbStatus;
+	private TextField tfKpiName, tfMinRating, tfMaxRating;
+	private ComboBox cbKpiGrp, cbDesignnationId, cbStatus;
 	// Bean container
 	private BeanItemContainer<KpiDM> beanKpiDM = null;
 	private Long companyId;
@@ -77,28 +74,27 @@ public class KpiUI extends BaseUI{
 	public KpiUI() {
 		loginUserName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Inside KpiUI() constructor");
+		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+				+ "Inside KpiUI() constructor");
 		// Loading the UI
 		buildview();
 	}
 	
 	private void buildview() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Painting Keep Performance Indiator UI");
+		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+				+ "Painting Keep Performance Indiator UI");
 		// text fields
 		tfKpiName = new GERPTextField("KPI Name");
-//		tfKpiName.setWidth("100px");
 		tfMinRating = new GERPTextField("Min Rating");
 		tfMinRating.setWidth("50px");
 		tfMaxRating = new GERPTextField("Max Rating");
 		tfMaxRating.setWidth("50px");
 		// Combo Boxes
-				cbKpiGrp = new GERPComboBox("KPI Group");
+		cbKpiGrp = new GERPComboBox("KPI Group");
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbStatus.setWidth("70px");
 		cbKpiGrp.setItemCaptionPropertyId("kpigroupname");
 		loadKpiGroup();
-
-		
 		cbDesignnationId = new GERPComboBox("Designation");
 		cbDesignnationId.setItemCaptionPropertyId("designationName");
 		loadDesignation();
@@ -120,25 +116,16 @@ public class KpiUI extends BaseUI{
 		 */
 		hlSearchLayout.removeAllComponents();
 		// add the user input items into appropriate form layout
-		
-		flColumn1=new FormLayout();
-		flColumn2=new FormLayout();
-		
-		
+		flColumn1 = new FormLayout();
+		flColumn2 = new FormLayout();
 		flColumn1.addComponent(tfKpiName);
 		flColumn2.addComponent(cbStatus);
-		
-		
-		
 		// add the form layouts into user input layout
 		hlSearchLayout.setSpacing(true);
 		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn2);
-		
 		hlSearchLayout.setMargin(true);
 		hlSearchLayout.setSizeUndefined();
-		
-		
 	}
 	
 	private void assembleUserInputLayout() {
@@ -152,23 +139,18 @@ public class KpiUI extends BaseUI{
 		hlUserInputLayout.removeAllComponents();
 		// Remove all components in Search Layout
 		flColumn1 = new FormLayout();
-		flColumn2=new FormLayout();
+		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
-		flColumn4=new FormLayout();
+		flColumn4 = new FormLayout();
 		flColumn5 = new FormLayout();
-		flColumn6=new FormLayout();
+		flColumn6 = new FormLayout();
 		flColumn1.addComponent(tfKpiName);
 		flColumn2.addComponent(cbDesignnationId);
-		
 		flColumn3.addComponent(tfMinRating);
 		flColumn4.addComponent(tfMaxRating);
-		
-		
 		flColumn5.addComponent(cbKpiGrp);
 		flColumn6.addComponent(cbStatus);
-		
 		// add the form layouts into user input layout
-	
 		hlUserInputLayout.addComponent(flColumn1);
 		hlUserInputLayout.addComponent(flColumn2);
 		hlUserInputLayout.addComponent(flColumn3);
@@ -178,46 +160,45 @@ public class KpiUI extends BaseUI{
 		hlUserInputLayout.setMargin(true);
 		hlUserInputLayout.setSizeUndefined();
 		hlUserInputLayout.setSpacing(true);
-		
 	}
+	
 	// get the search result from DB based on the search parameters
 	public void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<KpiDM> kpiList = new ArrayList<KpiDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long)cbKpiGrp.getValue()+ ", "
-				+ (String) cbStatus.getValue() );
-		kpiList = serviceKpi.getKpiList(null, (Long)cbKpiGrp.getValue(), (String)tfKpiName.getValue(), null, (String) cbStatus.getValue(), "F");
+				+ companyId + ", " + (Long) cbKpiGrp.getValue() + ", " + (String) cbStatus.getValue());
+		kpiList = serviceKpi.getKpiList(null, (Long) cbKpiGrp.getValue(), (String) tfKpiName.getValue(), null,
+				(String) cbStatus.getValue(), "F");
 		recordCnt = kpiList.size();
 		beanKpiDM = new BeanItemContainer<KpiDM>(KpiDM.class);
 		beanKpiDM.addAll(kpiList);
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Got the KPI List result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanKpiDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "kpiId", "kpiName", "minRate", "maxRate",
-				"status", "lastUpdatedDt", "lastUpdatedBy"});
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "kpiId", "kpiName", "minRate", "maxRate", "status",
+				"lastUpdatedDt", "lastUpdatedBy" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "KPI Name", "Minimum Rating", "Maximum Rating",
-				"Status","Last Updated Date", "Last Updated By" });
+				"Status", "Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("kpigrpid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records:" + recordCnt);
 	}
-
+	
 	private void loadKpiGroup() {
-		List<KpiGroupDM> list = serviceKpiGroup.getkpigrouplist(null, null, companyId, null, "Active", "F");
 		BeanContainer<Long, KpiGroupDM> bean = new BeanContainer<Long, KpiGroupDM>(KpiGroupDM.class);
 		bean.setBeanIdProperty("kpigrpid");
-		bean.addAll(list);
+		bean.addAll(serviceKpiGroup.getkpigrouplist(null, null, companyId, null, "Active", "F"));
 		cbKpiGrp.setContainerDataSource(bean);
 	}
 	
 	private void loadDesignation() {
-		List<DesignationDM> list = serviceDesignation.getDesignationList(null, null, null,null, companyId, "Active", "F");
 		BeanContainer<Long, DesignationDM> bean = new BeanContainer<Long, DesignationDM>(DesignationDM.class);
 		bean.setBeanIdProperty("designationId");
-		bean.addAll(list);
+		bean.addAll(serviceDesignation.getDesignationList(null, null, null, null, companyId, "Active", "F"));
 		cbDesignnationId.setContainerDataSource(bean);
 	}
+	
 	@Override
 	protected void searchDetails() throws NoDataFoundException {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + " Invoking search");
@@ -230,9 +211,8 @@ public class KpiUI extends BaseUI{
 			lblNotification.setIcon(null);
 			lblNotification.setCaption("");
 		}
-		
 	}
-
+	
 	@Override
 	protected void resetSearchDetails() {
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
@@ -240,14 +220,13 @@ public class KpiUI extends BaseUI{
 		tfKpiName.setValue("");
 		// reload the search using the defaults
 		resetFields();
-		loadSrchRslt();	
+		loadSrchRslt();
 	}
-
+	
 	@Override
 	protected void addDetails() {
 		logger.info("Company ID :" + companyId + " | User Name : " + loginUserName + " > " + "Adding new record...");
 		// remove the components in the search layout and input controls in the same container
-		
 		tfKpiName.setRequired(true);
 		tfMaxRating.setRequired(true);
 		tfMinRating.setRequired(true);
@@ -257,22 +236,17 @@ public class KpiUI extends BaseUI{
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		// reset the input controls to default value
 		resetFields();
-		
 	}
+	
 	private void editKpi() {
-
-
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Editing the selected record");
-		
-		Item select = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (select != null) {
+		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+				+ "Editing the selected record");
+		if (tblMstScrSrchRslt.getValue() != null) {
 			KpiDM editKpiObj = beanKpiDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			if (editKpiObj.getKpiName() != null) {
 				tfKpiName.setValue(editKpiObj.getKpiName());
 			}
-			
-				cbKpiGrp.setValue(editKpiObj.getKpiGrpId());
-			
+			cbKpiGrp.setValue(editKpiObj.getKpiGrpId());
 			if (editKpiObj.getMaxRate() != null) {
 				tfMaxRating.setValue(Double.valueOf(editKpiObj.getMaxRate()).toString());
 			}
@@ -282,16 +256,10 @@ public class KpiUI extends BaseUI{
 			if (editKpiObj.getStatus() != null) {
 				cbStatus.setValue(editKpiObj.getStatus());
 			}
-				cbDesignnationId.setValue(editKpiObj.getDesigId());
-			
-		
-			
+			cbDesignnationId.setValue(editKpiObj.getDesigId());
 		}
-	
-		
-	
-		
 	}
+	
 	@Override
 	protected void editDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Invoking Edit record ");
@@ -303,134 +271,112 @@ public class KpiUI extends BaseUI{
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		editKpi();
-		
 	}
-
+	
 	@Override
 	protected void validateDetails() throws ValidationException {
-		
-
-		
-		
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Validating Data ");
 		Boolean errorFlag = false;
-		
-		if ((tfKpiName.getValue()  == null)|| tfKpiName.getValue().trim().length() == 0) {
+		if ((tfKpiName.getValue() == null) || tfKpiName.getValue().trim().length() == 0) {
 			tfKpiName.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_NAME));
 			errorFlag = true;
-		}
-		else{
+		} else {
 			tfKpiName.setComponentError(null);
 		}
-		if ((cbKpiGrp.getValue()  == null)) {
+		if ((cbKpiGrp.getValue() == null)) {
 			cbKpiGrp.setComponentError(new UserError(GERPErrorCodes.NULL_KPIGROUPNAME));
 			errorFlag = true;
-		}
-		else{
+		} else {
 			cbKpiGrp.setComponentError(null);
 		}
-		if ((cbDesignnationId.getValue()  == null)) {
+		if ((cbDesignnationId.getValue() == null)) {
 			cbDesignnationId.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_DTLS_Designation));
 			errorFlag = true;
-		}
-		else{
+		} else {
 			cbDesignnationId.setComponentError(null);
 		}
-		try{
+		try {
 			Long.valueOf(tfMinRating.getValue());
 			tfMinRating.setComponentError(null);
-		}catch(NumberFormatException e){
-
-			tfMinRating.setComponentError(new UserError(GERPErrorCodes.NUMBER));	
+		}
+		catch (NumberFormatException e) {
+			tfMinRating.setComponentError(new UserError(GERPErrorCodes.NUMBER));
 			errorFlag = true;
-		}	
-		try{
+		}
+		try {
 			Long.valueOf(tfMaxRating.getValue());
 			tfMaxRating.setComponentError(null);
-		}catch(NumberFormatException e){
-
-			tfMaxRating.setComponentError(new UserError(GERPErrorCodes.NUMBER));	
+		}
+		catch (NumberFormatException e) {
+			tfMaxRating.setComponentError(new UserError(GERPErrorCodes.NUMBER));
 			errorFlag = true;
 		}
-		
-	if((Long.valueOf(tfMaxRating.getValue()))>=(Long.valueOf(tfMinRating.getValue()))){
-			try{
+		if ((Long.valueOf(tfMaxRating.getValue())) >= (Long.valueOf(tfMinRating.getValue()))) {
+			try {
 				Long.valueOf(tfMinRating.getValue());
 				tfMinRating.setComponentError(null);
-			}catch(NumberFormatException e){
-
-				tfMinRating.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_GRP_WEIGHT));	
+			}
+			catch (NumberFormatException e) {
+				tfMinRating.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_GRP_WEIGHT));
 				errorFlag = true;
-			}			
-	}
-	else{
-		tfMinRating.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_MIN_VALUE));
-		errorFlag = true;
-	}
-	if((Long.valueOf(tfMaxRating.getValue()))>=(Long.valueOf(tfMinRating.getValue()))){
-			try{
+			}
+		} else {
+			tfMinRating.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_MIN_VALUE));
+			errorFlag = true;
+		}
+		if ((Long.valueOf(tfMaxRating.getValue())) >= (Long.valueOf(tfMinRating.getValue()))) {
+			try {
 				Long.valueOf(tfMaxRating.getValue());
 				tfMaxRating.setComponentError(null);
-			}catch(NumberFormatException e){
-
-				tfMaxRating.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_GRP_WEIGHT));	
+			}
+			catch (NumberFormatException e) {
+				tfMaxRating.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_GRP_WEIGHT));
 				errorFlag = true;
+			}
+		} else {
+			tfMaxRating.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_MAX_VALUE));
+			errorFlag = true;
 		}
-	}
-	else{
-		tfMaxRating.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_MAX_VALUE));
-		errorFlag = true;
-	}
-	
-	
-	
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
-		
-		
-		
-		
-		
 	}
-
+	
 	@Override
-	protected void saveDetails() throws SaveException{
-try{
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Saving Data... ");
-		KpiDM kpiobj = new KpiDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			kpiobj = beanKpiDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+	protected void saveDetails() throws SaveException {
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Saving Data... ");
+			KpiDM kpiobj = new KpiDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				kpiobj = beanKpiDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
+			kpiobj.setKpiName(tfKpiName.getValue());
+			kpiobj.setKpiGrpId((Long) cbKpiGrp.getValue());
+			kpiobj.setDesigId((Long) cbDesignnationId.getValue());
+			kpiobj.setMaxRate(Double.valueOf(tfMaxRating.getValue()));
+			kpiobj.setMinRate(Double.valueOf(tfMinRating.getValue()));
+			if (cbStatus.getValue() != null) {
+				kpiobj.setStatus((String) cbStatus.getValue());
+			}
+			kpiobj.setLastUpdatedDt(DateUtils.getcurrentdate());
+			kpiobj.setLastUpdatedBy(loginUserName);
+			serviceKpi.saveItInvest(kpiobj);
+			resetFields();
+			loadSrchRslt();
 		}
-		kpiobj.setKpiName(tfKpiName.getValue());
-		kpiobj.setKpiGrpId((Long)cbKpiGrp.getValue());
-		kpiobj.setDesigId((Long)cbDesignnationId.getValue());
-		kpiobj.setMaxRate(Double.valueOf(tfMaxRating.getValue()));
-		kpiobj.setMinRate(Double.valueOf(tfMinRating.getValue()));
-		if (cbStatus.getValue() != null) {
-			kpiobj.setStatus((String) cbStatus.getValue());
+		catch (Exception e) {
+			e.printStackTrace();
 		}
-		kpiobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-		kpiobj.setLastUpdatedBy(loginUserName);
-		serviceKpi.saveItInvest(kpiobj);
-		resetFields();
-		loadSrchRslt();
-}
-catch(Exception e){
-	e.printStackTrace();
-}
 	}
-
+	
 	@Override
 	protected void showAuditDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Getting audit record for Kpi Group ID " + primaryid);
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_HCM_KPI);
 		UI.getCurrent().getSession().setAttribute("audittablepk", primaryid);
-	
-		
 	}
-
+	
 	@Override
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Canceling action ");
@@ -445,9 +391,8 @@ catch(Exception e){
 		vlSrchRsltContainer.setExpandRatio(tblMstScrSrchRslt, 1);
 		resetFields();
 		loadSrchRslt();
-		
 	}
-
+	
 	@Override
 	protected void resetFields() {
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
@@ -462,6 +407,4 @@ catch(Exception e){
 		cbKpiGrp.setComponentError(null);
 		cbDesignnationId.setComponentError(null);
 	}
-	
-	
 }

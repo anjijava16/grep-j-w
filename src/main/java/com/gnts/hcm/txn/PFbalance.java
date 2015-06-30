@@ -46,7 +46,7 @@ import com.vaadin.ui.UI;
 public class PFbalance extends BaseUI {
 	private PFbalanceService servicepfbalance = (PFbalanceService) SpringContextHelper.getBean("pfbalance");
 	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	FormLayout flfinyear, flempname;
+	private FormLayout flfinyear, flempname;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
@@ -149,12 +149,11 @@ public class PFbalance extends BaseUI {
 	}
 	
 	// load employee names
-	public void loadEmpList() {
-		List<EmployeeDM> employeelist = serviceemployee.getEmployeeList(null, null, null, null, companyid, null, null,
-				null, null, "F");
+	private void loadEmpList() {
 		BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanLoadEmployee.setBeanIdProperty("employeeid");
-		beanLoadEmployee.addAll(employeelist);
+		beanLoadEmployee.addAll(serviceemployee.getEmployeeList(null, null, null, null, companyid, null, null,
+				null, null, "P"));
 		cbempname.setContainerDataSource(beanLoadEmployee);
 	}
 	

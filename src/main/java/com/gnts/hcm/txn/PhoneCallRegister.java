@@ -78,7 +78,8 @@ public class PhoneCallRegister extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside PhoneCallRegister() constructor");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Inside PhoneCallRegister() constructor");
 		buildview();
 	}
 	
@@ -172,8 +173,8 @@ public class PhoneCallRegister extends BaseTransUI {
 		beanPhoneReg.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Outpass. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanPhoneReg);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "phoneRegId", "callDate", "companyName", "interNo", "phoneTime",
-				"status", "lastUpdatedDt", "lastUpdatedBy" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "phoneRegId", "callDate", "companyName", "interNo",
+				"phoneTime", "status", "lastUpdatedDt", "lastUpdatedBy" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Company/Customer", "Intercom", "Duration",
 				"Status", "Last Updated date", "Last Updated by" });
 		tblMstScrSrchRslt.setColumnAlignment("phoneRegId", Align.RIGHT);
@@ -182,11 +183,10 @@ public class PhoneCallRegister extends BaseTransUI {
 	
 	// Load Employee List
 	private void loadEmployeeList() {
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "P");
 		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanInitiatedBy.setBeanIdProperty("employeeid");
-		beanInitiatedBy.addAll(empList);
+		beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+				null, "P"));
 		cbEmployee.setContainerDataSource(beanInitiatedBy);
 	}
 	
@@ -195,10 +195,9 @@ public class PhoneCallRegister extends BaseTransUI {
 	 */
 	private void loadDepartmentList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P");
 		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
+		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
 		cbDepartment.setContainerDataSource(beanDepartment);
 	}
 	

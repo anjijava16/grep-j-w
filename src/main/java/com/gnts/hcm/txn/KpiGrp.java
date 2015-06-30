@@ -36,7 +36,6 @@ import com.gnts.hcm.domain.mst.JobClassificationDM;
 import com.gnts.hcm.domain.txn.KpiGroupDM;
 import com.gnts.hcm.service.mst.JobClassificationService;
 import com.gnts.hcm.service.txn.KpiGroupService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -52,7 +51,7 @@ public class KpiGrp extends BaseUI {
 	private JobClassificationService serviceJobClassification = (JobClassificationService) SpringContextHelper
 			.getBean("JobClassification");
 	// Form layout for input controls
-	private FormLayout flColumn1, flColumn2,flColumn3,flColumn4;
+	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
@@ -74,7 +73,8 @@ public class KpiGrp extends BaseUI {
 	public KpiGrp() {
 		loginUserName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Inside KpiGrp() constructor");
+		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+				+ "Inside KpiGrp() constructor");
 		// Loading the UI
 		buildview();
 	}
@@ -83,7 +83,6 @@ public class KpiGrp extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Painting KpiGrp UI");
 		// text fields
 		tfKpigrpName = new GERPTextField("KPI Group Name");
-
 		tfWeightage = new GERPTextField("Weightage");
 		// Combo Boxes
 		cbJobClasfn = new GERPComboBox("Job classification");
@@ -109,20 +108,15 @@ public class KpiGrp extends BaseUI {
 		hlSearchLayout.removeAllComponents();
 		// add the user input items into appropriate form layout
 		flColumn1 = new FormLayout();
-		flColumn2=new FormLayout();
-		
+		flColumn2 = new FormLayout();
 		flColumn1.addComponent(tfKpigrpName);
 		flColumn2.addComponent(cbStatus);
-		
 		// add the form layouts into user input layout
 		hlSearchLayout.setSpacing(true);
 		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn2);
-		
 		hlSearchLayout.setMargin(true);
 		hlSearchLayout.setSizeUndefined();
-		
-		
 	}
 	
 	private void assembleUserInputLayout() {
@@ -136,15 +130,14 @@ public class KpiGrp extends BaseUI {
 		hlUserInputLayout.removeAllComponents();
 		// Remove all components in Search Layout
 		flColumn1 = new FormLayout();
-		flColumn2=new FormLayout();
+		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
-		flColumn4=new FormLayout();
+		flColumn4 = new FormLayout();
 		flColumn1.addComponent(tfKpigrpName);
 		flColumn2.addComponent(tfWeightage);
 		flColumn3.addComponent(cbJobClasfn);
 		flColumn4.addComponent(cbStatus);
 		// add the form layouts into user input layout
-	
 		hlUserInputLayout.addComponent(flColumn1);
 		hlUserInputLayout.addComponent(flColumn2);
 		hlUserInputLayout.addComponent(flColumn3);
@@ -152,40 +145,39 @@ public class KpiGrp extends BaseUI {
 		hlUserInputLayout.setMargin(true);
 		hlUserInputLayout.setSizeUndefined();
 		hlUserInputLayout.setSpacing(true);
-		
 	}
-	
 	
 	private void loadJobClassification() {
-		List<JobClassificationDM> list = serviceJobClassification.getJobClassificationList(null, null, companyId,  "Active", "F");
-		BeanContainer<Long, JobClassificationDM> bean = new BeanContainer<Long, JobClassificationDM>(JobClassificationDM.class);
+		BeanContainer<Long, JobClassificationDM> bean = new BeanContainer<Long, JobClassificationDM>(
+				JobClassificationDM.class);
 		bean.setBeanIdProperty("jobClasfnId");
-		bean.addAll(list);
+		bean.addAll(serviceJobClassification.getJobClassificationList(null, null, companyId, "Active", "F"));
 		cbJobClasfn.setContainerDataSource(bean);
 	}
+	
 	// get the search result from DB based on the search parameters
 	public void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<KpiGroupDM> kpiGrpList = new ArrayList<KpiGroupDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbJobClasfn.getValue()+ ", "
-				+ (String) cbStatus.getValue() );
-		kpiGrpList = serviceKpiGroup.getkpigrouplist(tfKpigrpName.getValue(),null, companyId, null, (String) cbStatus.getValue() , "F");
+				+ companyId + ", " + (Long) cbJobClasfn.getValue() + ", " + (String) cbStatus.getValue());
+		kpiGrpList = serviceKpiGroup.getkpigrouplist(tfKpigrpName.getValue(), null, companyId, null,
+				(String) cbStatus.getValue(), "F");
 		recordCnt = kpiGrpList.size();
 		beanKpiGroupDM = new BeanItemContainer<KpiGroupDM>(KpiGroupDM.class);
 		beanKpiGroupDM.addAll(kpiGrpList);
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Got the KPI Group List result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanKpiGroupDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "kpigrpid", "kpigroupname", "weightage",
-				"grpstatus", "lastupdateddt", "lastupdatedby"});
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "KPI Group Name", "Weightage",
-				"Status","Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "kpigrpid", "kpigroupname", "weightage", "grpstatus",
+				"lastupdateddt", "lastupdatedby" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "KPI Group Name", "Weightage", "Status",
+				"Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("kpigrpid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records:" + recordCnt);
 	}
-
+	
 	@Override
 	protected void searchDetails() throws NoDataFoundException {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + " Invoking search");
@@ -198,19 +190,17 @@ public class KpiGrp extends BaseUI {
 			lblNotification.setIcon(null);
 			lblNotification.setCaption("");
 		}
-
-		
 	}
-
+	
 	@Override
 	protected void resetSearchDetails() {
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		tfKpigrpName.setValue("");
 		// reload the search using the defaults
 		resetFields();
-		loadSrchRslt();	
-		}
-
+		loadSrchRslt();
+	}
+	
 	@Override
 	protected void addDetails() {
 		logger.info("Company ID :" + companyId + " | User Name : " + loginUserName + " > " + "Adding new record...");
@@ -222,15 +212,12 @@ public class KpiGrp extends BaseUI {
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		// reset the input controls to default value
 		resetFields();
-		
 	}
 	
 	private void editKpiGroup() {
-
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Editing the selected record");
-		
-		Item select = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (select != null) {
+		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+				+ "Editing the selected record");
+		if (tblMstScrSrchRslt.getValue() != null) {
 			KpiGroupDM editKpiGrpObj = beanKpiGroupDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			if (editKpiGrpObj.getKpigroupname() != null) {
 				tfKpigrpName.setValue(editKpiGrpObj.getKpigroupname());
@@ -242,12 +229,9 @@ public class KpiGrp extends BaseUI {
 				cbStatus.setValue(editKpiGrpObj.getGrpstatus());
 			}
 			cbJobClasfn.setValue(editKpiGrpObj.getJobclasfnid());
-			
 		}
-	
-		
 	}
-
+	
 	@Override
 	protected void editDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Invoking Edit record ");
@@ -257,94 +241,73 @@ public class KpiGrp extends BaseUI {
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		editKpiGroup();
-		
 	}
-
+	
 	@Override
 	protected void validateDetails() throws ValidationException {
-		
-		
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Validating Data ");
 		Boolean errorFlag = false;
-		
-		if ((tfKpigrpName.getValue()  == null)|| tfKpigrpName.getValue().trim().length() == 0) {
+		if ((tfKpigrpName.getValue() == null) || tfKpigrpName.getValue().trim().length() == 0) {
 			tfKpigrpName.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_GROUP_NAME));
 			errorFlag = true;
-		}
-		else{
+		} else {
 			tfKpigrpName.setComponentError(null);
 		}
-		if (cbJobClasfn.getValue()  == null) {
+		if (cbJobClasfn.getValue() == null) {
 			cbJobClasfn.setComponentError(new UserError(GERPErrorCodes.JOB_CLASSIFICATOIN));
 			errorFlag = true;
-		}
-		else{
+		} else {
 			cbJobClasfn.setComponentError(null);
 		}
-		
 		if (tfWeightage.getValue() != null) {
-			try{
+			try {
 				new BigDecimal(tfWeightage.getValue());
 				tfWeightage.setComponentError(null);
-			}catch(NumberFormatException e){
-
-				tfWeightage.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_GRP_WEIGHT));	
-				errorFlag = true;
-
-			}			
 			}
+			catch (NumberFormatException e) {
+				tfWeightage.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_GRP_WEIGHT));
+				errorFlag = true;
+			}
+		}
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
-		
-		
-		
-		
 	}
-
+	
 	@Override
 	protected void saveDetails() throws SaveException {
-		
-		try
-		{
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Saving Data... ");
-		KpiGroupDM kpiGrpobj = new KpiGroupDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			kpiGrpobj = beanKpiGroupDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Saving Data... ");
+			KpiGroupDM kpiGrpobj = new KpiGroupDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				kpiGrpobj = beanKpiGroupDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
+			kpiGrpobj.setCompanyid(companyId);
+			kpiGrpobj.setKpigroupname(tfKpigrpName.getValue());
+			kpiGrpobj.setJobclasfnid((Long) cbJobClasfn.getValue());
+			kpiGrpobj.setWeightage(new BigDecimal(tfWeightage.getValue()));
+			if (cbStatus.getValue() != null) {
+				kpiGrpobj.setGrpstatus((String) cbStatus.getValue());
+			}
+			kpiGrpobj.setLastupdateddt(DateUtils.getcurrentdate());
+			kpiGrpobj.setLastupdatedby(loginUserName);
+			serviceKpiGroup.saveAndUpdate(kpiGrpobj);
+			resetFields();
+			loadSrchRslt();
 		}
-		kpiGrpobj.setCompanyid(companyId);
-		kpiGrpobj.setKpigroupname(tfKpigrpName.getValue());
-		kpiGrpobj.setJobclasfnid((Long)cbJobClasfn.getValue());
-		
-		kpiGrpobj.setWeightage(new BigDecimal(tfWeightage.getValue()));
-		
-		
-		if (cbStatus.getValue() != null) {
-			kpiGrpobj.setGrpstatus((String) cbStatus.getValue());
+		catch (Exception e) {
+			e.printStackTrace();
 		}
-		kpiGrpobj.setLastupdateddt(DateUtils.getcurrentdate());
-		kpiGrpobj.setLastupdatedby(loginUserName);
-		serviceKpiGroup.saveAndUpdate(kpiGrpobj);
-		resetFields();
-		loadSrchRslt();
-		}
-		catch(Exception e){
-		e.printStackTrace();
-			
-		}
-		
 	}
-
+	
 	@Override
 	protected void showAuditDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Getting audit record for Kpi Group ID " + primaryid);
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_HCM_KPI_GROUP);
 		UI.getCurrent().getSession().setAttribute("audittablepk", primaryid);
-	
-		
 	}
-
+	
 	@Override
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Canceling action ");
@@ -358,19 +321,15 @@ public class KpiGrp extends BaseUI {
 		resetFields();
 		loadSrchRslt();
 	}
-
+	
 	@Override
 	protected void resetFields() {
-	
-	tfKpigrpName.setValue("");
-	tfWeightage.setValue("");
-	cbJobClasfn.setValue(null);
-	cbStatus.setValue(cbStatus.getItemIds().iterator().next());
-	tfKpigrpName.setComponentError(null);
-	tfWeightage.setComponentError(null);
-	cbJobClasfn.setComponentError(null);
+		tfKpigrpName.setValue("");
+		tfWeightage.setValue("");
+		cbJobClasfn.setValue(null);
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+		tfKpigrpName.setComponentError(null);
+		tfWeightage.setComponentError(null);
+		cbJobClasfn.setComponentError(null);
 	}
-	
-	
-	
 }

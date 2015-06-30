@@ -43,7 +43,6 @@ import com.gnts.hcm.domain.txn.JobVaccancyDM;
 import com.gnts.hcm.service.txn.JobCandidateService;
 import com.gnts.hcm.service.txn.JobInterviewService;
 import com.gnts.hcm.service.txn.JobVaccancyService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -75,13 +74,8 @@ public class JobInterview extends BaseUI {
 	private TextArea taIntrvwDesc;
 	// BeanItemContain
 	private BeanItemContainer<JobInterviewDM> beanJobInterviewDM = null;
-	private BeanContainer<Long, JobVaccancyDM> beanJobVaccancyDM = null;
-	private BeanContainer<Long, JobCandidateDM> beanJobCandidateDM = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployeeDM = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// local variables declaration
 	private Long companyid, employeeId, moduleId;
-	public static boolean filevalue = false;
 	private int recordCnt = 0;
 	private String username, jobInterviewId;
 	// Initialize logger
@@ -105,10 +99,10 @@ public class JobInterview extends BaseUI {
 		// Status ComboBox
 		cbIntrvwLevel = new GERPComboBox("Interview Level");
 		cbIntrvwLevel.setItemCaptionPropertyId("lookupname");
-		loadINTERVWLvl();
+		loadIinterviewLevels();
 		cbStatus = new GERPComboBox("Status");
 		cbStatus.setItemCaptionPropertyId("lookupname");
-		loadINTERVWSTS();
+		loadInterviewStatus();
 		taIntrvwDesc = new GERPTextArea("Interview Description");
 		taIntrvwDesc.setHeight("30");
 		taIntrvwDesc.setWidth("150");
@@ -203,34 +197,32 @@ public class JobInterview extends BaseUI {
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
 	
-	public void loadJobCandidate() {
+	private void loadJobCandidate() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Candidate Search...");
-		List<JobCandidateDM> candidatelist = serviceJobCandidate.getJobCandidateList(null, null,
-				(String) cbCandidateName.getValue(), null, null);
-		beanJobCandidateDM = new BeanContainer<Long, JobCandidateDM>(JobCandidateDM.class);
+		BeanContainer<Long, JobCandidateDM> beanJobCandidateDM = new BeanContainer<Long, JobCandidateDM>(
+				JobCandidateDM.class);
 		beanJobCandidateDM.setBeanIdProperty("candidateId");
-		beanJobCandidateDM.addAll(candidatelist);
+		beanJobCandidateDM.addAll(serviceJobCandidate.getJobCandidateList(null, null,
+				(String) cbCandidateName.getValue(), null, null));
 		cbCandidateName.setContainerDataSource(beanJobCandidateDM);
 	}
 	
-	public void loadJobVaccancy() {
+	private void loadJobVaccancy() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading JobVaccancy Search...");
-		List<JobVaccancyDM> jobvacncyList = serviceJobVaccancy.getJobVaccancyList(null, null, null, null, null, null,
-				null, "F");
-		beanJobVaccancyDM = new BeanContainer<Long, JobVaccancyDM>(JobVaccancyDM.class);
+		BeanContainer<Long, JobVaccancyDM> beanJobVaccancyDM = new BeanContainer<Long, JobVaccancyDM>(
+				JobVaccancyDM.class);
 		beanJobVaccancyDM.setBeanIdProperty("vaccancyId");
-		beanJobVaccancyDM.addAll(jobvacncyList);
+		beanJobVaccancyDM.addAll(serviceJobVaccancy.getJobVaccancyList(null, null, null, null, null, null, null, "F"));
 		cbJobTitle.setContainerDataSource(beanJobVaccancyDM);
 	}
 	
 	private void loadEmployeeList() {
 		try {
-			List<EmployeeDM> empList = servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid,
-					employeeId, null, null, null, "F");
-			beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(empList);
+			beanEmployeeDM.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid,
+					employeeId, null, null, null, "P"));
 			cbinterviewerid.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
@@ -290,22 +282,21 @@ public class JobInterview extends BaseUI {
 	
 	private void editJobIntervwdetails() {
 		hlUserInputLayout.setVisible(true);
-		Item rowSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (rowSelected != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			JobInterviewDM editjbintrvwList = beanJobInterviewDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if ((rowSelected.getItemProperty("candidateName").getValue() != null)) {
+			if ((editjbintrvwList.getCandidateid() != null)) {
 				cbCandidateName.setValue(editjbintrvwList.getCandidateid());
 			}
-			if ((rowSelected.getItemProperty("jobtitle").getValue() != null)) {
+			if ((editjbintrvwList.getVacancyid() != null)) {
 				cbJobTitle.setValue(editjbintrvwList.getVacancyid());
 			}
 			if (editjbintrvwList.getInterviewDt() != null) {
 				dfIntrvwDate.setValue(editjbintrvwList.getInterviewDt());
 			}
-			if ((rowSelected.getItemProperty("intervwdesc").getValue() != null)) {
+			if ((editjbintrvwList.getIntervwdesc() != null)) {
 				taIntrvwDesc.setValue(editjbintrvwList.getIntervwdesc().toString());
 			}
-			if ((rowSelected.getItemProperty("intervwlevel").getValue() != null)) {
+			if ((editjbintrvwList.getIntervwlevel() != null)) {
 				cbIntrvwLevel.setValue(editjbintrvwList.getIntervwlevel().toString());
 			}
 			tfIntrvwTime.setTime(editjbintrvwList.getIntervwtime());
@@ -338,28 +329,26 @@ public class JobInterview extends BaseUI {
 		cbinterviewerid.setComponentError(null);
 		cbJobTitle.setComponentError(null);
 		cbIntrvwLevel.setComponentError(null);
-		boolean errorFlag=false;
+		boolean errorFlag = false;
 		if (cbCandidateName.getValue() == null) {
 			cbCandidateName.setComponentError(new UserError(GERPErrorCodes.NULL_JOB_INTRVW));
-			errorFlag=true;
+			errorFlag = true;
 		}
 		if (cbJobTitle.getValue() == null) {
 			cbJobTitle.setComponentError(new UserError(GERPErrorCodes.NULL_JOB_VANCY_TITLE));
-			errorFlag=true;
+			errorFlag = true;
 		}
 		if (cbinterviewerid.getValue() == null) {
 			cbinterviewerid.setComponentError(new UserError(GERPErrorCodes.NULL_INTERVIEWER_ID));
-			errorFlag=true;
+			errorFlag = true;
 		}
 		if (cbIntrvwLevel.getValue() == null) {
 			cbIntrvwLevel.setComponentError(new UserError(GERPErrorCodes.NULL_INTERVIEWER_LEVEL));
-			errorFlag=true;
+			errorFlag = true;
 		}
-		if(errorFlag)
-		{
+		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
-		
 	}
 	
 	@Override
@@ -436,25 +425,23 @@ public class JobInterview extends BaseUI {
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	
-	public void loadINTERVWLvl() {
+	private void loadIinterviewLevels() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading Interview Level Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_INVWLVL");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+				"HC_INVWLVL"));
 		cbIntrvwLevel.setContainerDataSource(beanCompanyLookUp);
 	}
 	
-	public void loadINTERVWSTS() {
+	private void loadInterviewStatus() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading Interview Status Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_INVWSTS");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+				"HC_INVWSTS"));
 		cbStatus.setContainerDataSource(beanCompanyLookUp);
 	}
 }

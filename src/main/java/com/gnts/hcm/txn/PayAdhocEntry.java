@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.apache.xerces.impl.dtd.models.DFAContentModel;
 import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.erputil.BASEConstants;
@@ -41,7 +40,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.PayAdhocEntryDM;
 import com.gnts.hcm.service.txn.PayAdhocEntryService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -61,17 +59,16 @@ public class PayAdhocEntry extends BaseUI {
 	// Search Horizontal Layout
 	private HorizontalLayout hlsearchlayout = new HorizontalLayout();
 	// Add Input fields
-	public ComboBox cbEmployeeName, cbStatus;
-	public CheckBox chkentry;
-	public GERPTextField tfPayAmount;
-	public PopupDateField pdfPayDate;
-	public GERPTextArea taRemarks;
+	private ComboBox cbEmployeeName, cbStatus;
+	private CheckBox chkentry;
+	private GERPTextField tfPayAmount;
+	private PopupDateField pdfPayDate;
+	private GERPTextArea taRemarks;
 	// To add Bean Item Container bean
-	private BeanContainer<Long, EmployeeDM> beanEmployee = null;
 	private BeanItemContainer<PayAdhocEntryDM> beanPayAdhocEntryDM = null;
 	private String username;
 	private Long companyid, employeeid;
-	int recordCnt;
+	private int recordCnt;
 	private String empname;
 	private FormLayout flColumn1, flColumn2, flColumn3, flcolumn4;
 	
@@ -96,7 +93,7 @@ public class PayAdhocEntry extends BaseUI {
 		tfPayAmount = new GERPTextField("Pay Amount");
 		taRemarks = new GERPTextArea("Remark");
 		pdfPayDate = new GERPPopupDateField("Pay Date");
-		pdfPayDate.setWidth("90"); 
+		pdfPayDate.setWidth("90");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assemblesearchdetail();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
@@ -113,9 +110,9 @@ public class PayAdhocEntry extends BaseUI {
 		flColumn1.addComponent(cbEmployeeName);
 		flColumn2.addComponent(pdfPayDate);
 		flColumn2.setSpacing(true);
-		flColumn2.setMargin(true); 
+		flColumn2.setMargin(true);
 		flColumn3.addComponent(cbStatus);
-		flColumn3.setSpacing(true); 
+		flColumn3.setSpacing(true);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		hlsearchlayout.addComponent(flColumn1);
 		hlsearchlayout.addComponent(flColumn2);
@@ -160,19 +157,20 @@ public class PayAdhocEntry extends BaseUI {
 			empid = ((Long) cbEmployeeName.getValue());
 		}
 		List<PayAdhocEntryDM> PayAdhocEntryList = new ArrayList<PayAdhocEntryDM>();
-		Date payrolldt=(Date)pdfPayDate.getValue();
-		PayAdhocEntryList = servicepayadhocentry.getPayAdhocEntry(null, empid,payrolldt, (String) cbStatus.getValue(), "F");
+		Date payrolldt = (Date) pdfPayDate.getValue();
+		PayAdhocEntryList = servicepayadhocentry.getPayAdhocEntry(null, empid, payrolldt, (String) cbStatus.getValue(),
+				"F");
 		recordCnt = PayAdhocEntryList.size();
 		beanPayAdhocEntryDM = new BeanItemContainer<PayAdhocEntryDM>(PayAdhocEntryDM.class);
 		beanPayAdhocEntryDM.addAll(PayAdhocEntryList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the PayAdhocEntry result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanPayAdhocEntryDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "entIdry", "empfirstlast",  "payrollDt","paytollAmt",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "entIdry", "empfirstlast", "payrollDt", "paytollAmt",
 				"status", "lastUpdatedDt", "lastUpdatedBy" });
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " >>>>>>>>>>>>>>>>> "
 				+ "Loading Search...");
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name",  "Payroll Date","Payroll Amount",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Payroll Date", "Payroll Amount",
 				"Status", "LastUpdated Date", "LastUpdated By" });
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
@@ -180,11 +178,10 @@ public class PayAdhocEntry extends BaseUI {
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
-		List<EmployeeDM> employeelist = serviceemployee.getEmployeeList(empname, null, null, "Active", companyid,
-				employeeid, null, null, null, "F");
-		beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(employeelist);
+		beanEmployee.addAll(serviceemployee.getEmployeeList(empname, null, null, "Active", companyid, employeeid, null,
+				null, null, "P"));
 		cbEmployeeName.setContainerDataSource(beanEmployee);
 	}
 	
@@ -225,21 +222,20 @@ public class PayAdhocEntry extends BaseUI {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				payadhocobj = beanPayAdhocEntryDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			if(cbEmployeeName.getValue() != null) {
-			payadhocobj.setEmpid((Long) cbEmployeeName.getValue());
+			if (cbEmployeeName.getValue() != null) {
+				payadhocobj.setEmpid((Long) cbEmployeeName.getValue());
 			}
 			if (chkentry.getValue().equals(true)) {
 				payadhocobj.setEntryType("Y");
 			} else {
 				payadhocobj.setEntryType("N");
 			}
-			if(Long.valueOf(tfPayAmount.getValue())  != null) {
-			payadhocobj.setPaytollAmt(Long.valueOf(tfPayAmount.getValue()));
+			if (Long.valueOf(tfPayAmount.getValue()) != null) {
+				payadhocobj.setPaytollAmt(Long.valueOf(tfPayAmount.getValue()));
 			}
-			if(pdfPayDate.getValue() != null) {
+			if (pdfPayDate.getValue() != null) {
 				payadhocobj.setPayrollDt(pdfPayDate.getValue());
 			}
-			
 			if (cbStatus.getValue() != null) {
 				payadhocobj.setStatus(cbStatus.getValue().toString());
 			}
@@ -310,13 +306,11 @@ public class PayAdhocEntry extends BaseUI {
 		tblMstScrSrchRslt.setVisible(true);
 		hlCmdBtnLayout.setVisible(true);
 		hluserInputlayout.setVisible(true);
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			PayAdhocEntryDM payadhocentry = beanPayAdhocEntryDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			cbEmployeeName.setValue(payadhocentry.getEmpid());
 			tfPayAmount.setValue(payadhocentry.getPaytollAmt().toString());
-			String stcode = itselect.getItemProperty("status").getValue().toString();
-			cbStatus.setValue(stcode);
+			cbStatus.setValue(payadhocentry.getStatus());
 			if (payadhocentry.getEntryType().equals("Y")) {
 				chkentry.setValue(true);
 			} else {
@@ -325,8 +319,8 @@ public class PayAdhocEntry extends BaseUI {
 			if (payadhocentry.getPayrollDt() != null) {
 				pdfPayDate.setValue(payadhocentry.getPayrollDt1());
 			}
-			if ((itselect.getItemProperty("entryRemarks").getValue() != null)) {
-				taRemarks.setValue(itselect.getItemProperty("entryRemarks").getValue().toString());
+			if ((payadhocentry.getEntryRemarks() != null)) {
+				taRemarks.setValue(payadhocentry.getEntryRemarks());
 			}
 		}
 	}

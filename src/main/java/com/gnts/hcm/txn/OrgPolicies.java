@@ -44,7 +44,6 @@ import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.OrgPoliciesDM;
 import com.gnts.hcm.service.txn.OrgPoliciesService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -64,7 +63,6 @@ public class OrgPolicies extends BaseUI {
 	private OrgPoliciesService serviceOrgPolicies = (OrgPoliciesService) SpringContextHelper.getBean("orgpolicies");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = null;
 	private BeanItemContainer<OrgPoliciesDM> beanOrgPolicies = null;
 	// OrgPolicies Component Declaration
 	private TextField tfPolicyName;
@@ -220,11 +218,11 @@ public class OrgPolicies extends BaseUI {
 	public void loadOrgPolicisGroup() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Loading OrgPolicis Group Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
-				"HC_PLCYGRP");
-		beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("cmplookupid");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
+				"HC_PLCYGRP"));
 		cbPolicyGroup.setContainerDataSource(beanCompanyLookUp);
 	}
 	
@@ -259,24 +257,22 @@ public class OrgPolicies extends BaseUI {
 	
 	// Reset the selected row's data into OrgPolycies input components
 	private void editOrgPolyci() {
-		Item rowOrgPolyciSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (rowOrgPolyciSelected != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			OrgPoliciesDM orgPolyciesList = beanOrgPolicies.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if ((rowOrgPolyciSelected.getItemProperty("policyname").getValue()) != null) {
+			if ((orgPolyciesList.getPolicyname()) != null) {
 				tfPolicyName.setValue(orgPolyciesList.getPolicyname().toString());
 			}
-			if ((rowOrgPolyciSelected.getItemProperty("policygroup").getValue()) != null) {
+			if ((orgPolyciesList.getPolicygroup()) != null) {
 				cbPolicyGroup.setValue((String) orgPolyciesList.getPolicygroup());
 			}
-			if ((rowOrgPolyciSelected.getItemProperty("policydesc").getValue()) != null) {
+			if ((orgPolyciesList.getPolicydesc()) != null) {
 				taPolicyDesc.setValue(orgPolyciesList.getPolicydesc().toString());
 			}
-			if (("policystatus") != null) {
-				String statusCode = rowOrgPolyciSelected.getItemProperty("policystatus").getValue().toString();
-				cbPolicyStatus.setValue(statusCode);
+			if ((orgPolyciesList.getPolicystatus()) != null) {
+				cbPolicyStatus.setValue(orgPolyciesList.getPolicystatus());
 			}
-			if (rowOrgPolyciSelected.getItemProperty("policydoc").getValue() != null) {
-				byte[] certificate = (byte[]) rowOrgPolyciSelected.getItemProperty("policydoc").getValue();
+			if (orgPolyciesList.getPolicydoc() != null) {
+				byte[] certificate = orgPolyciesList.getPolicydoc();
 				UploadDocumentUI test = new UploadDocumentUI(vlDocument);
 				test.displaycertificate(certificate);
 			} else {

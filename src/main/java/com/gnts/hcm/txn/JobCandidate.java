@@ -40,7 +40,6 @@ import com.gnts.hcm.domain.txn.JobCandidateDM;
 import com.gnts.hcm.domain.txn.JobVaccancyDM;
 import com.gnts.hcm.service.txn.JobCandidateService;
 import com.gnts.hcm.service.txn.JobVaccancyService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -72,7 +71,6 @@ public class JobCandidate extends BaseUI {
 	private VerticalLayout vlresumdoc = new VerticalLayout();
 	// BeanItemContainer
 	private BeanItemContainer<JobCandidateDM> beanJobCandidateDM = null;
-	private BeanContainer<Long, JobVaccancyDM> beanJobVaccancyDM = null;
 	// local variables declaration
 	private Long companyid;
 	private int recordCnt = 0;
@@ -184,8 +182,8 @@ public class JobCandidate extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tffirstname.getValue() + ", " + tfcontactno.getValue()
 				+ (String) cbStatus.getValue());
-		jobcandidatelist = serviceJobCandidate.getJobCandidateList(null,(Long) cbjobtitle.getValue() , tffirstname.getValue(),
-				tfcontactno.getValue(), (String) cbStatus.getValue());
+		jobcandidatelist = serviceJobCandidate.getJobCandidateList(null, (Long) cbjobtitle.getValue(),
+				tffirstname.getValue(), tfcontactno.getValue(), (String) cbStatus.getValue());
 		recordCnt = jobcandidatelist.size();
 		logger.info("size" + jobcandidatelist.size());
 		beanJobCandidateDM = new BeanItemContainer<JobCandidateDM>(JobCandidateDM.class);
@@ -193,10 +191,10 @@ public class JobCandidate extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the jobcandidatelist. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanJobCandidateDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "candidateId","jobtitle", "firstName","email", "contactNo", "status",
-				"lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Job Title","First Name", "E-mail","Contact No.", "Status",
-				"Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "candidateId", "jobtitle", "firstName", "email",
+				"contactNo", "status", "lastUpdatedDt", "lastUpdatedBy" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Job Title", "First Name", "E-mail", "Contact No.",
+				"Status", "Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("candidateid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
@@ -204,11 +202,10 @@ public class JobCandidate extends BaseUI {
 	public void loadJobVaccancy() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading JobVaccancy Search...");
-		List<JobVaccancyDM> vaccancylist = serviceJobVaccancy.getJobVaccancyList(null, null, null, null, null, null,
-				null, "F");
-		beanJobVaccancyDM = new BeanContainer<Long, JobVaccancyDM>(JobVaccancyDM.class);
+		BeanContainer<Long, JobVaccancyDM> beanJobVaccancyDM = new BeanContainer<Long, JobVaccancyDM>(
+				JobVaccancyDM.class);
 		beanJobVaccancyDM.setBeanIdProperty("vaccancyId");
-		beanJobVaccancyDM.addAll(vaccancylist);
+		beanJobVaccancyDM.addAll(serviceJobVaccancy.getJobVaccancyList(null, null, null, null, null, null, null, "F"));
 		cbjobtitle.setContainerDataSource(beanJobVaccancyDM);
 	}
 	
@@ -253,35 +250,34 @@ public class JobCandidate extends BaseUI {
 	
 	public void editCandidate() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			JobCandidateDM jobcandidatelist = beanJobCandidateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (cbjobtitle != null) {
-				cbjobtitle.setValue(jobcandidatelist.getVaccancyid());
+			if (jobcandidatelist.getJobtitle() != null) {
+				cbjobtitle.setValue(jobcandidatelist.getJobtitle());
 			}
-			if ((itselect.getItemProperty("firstName").getValue() != null)) {
+			if ((jobcandidatelist.getFirstName() != null)) {
 				tffirstname.setValue(jobcandidatelist.getFirstName().toString());
 			}
-			if ((itselect.getItemProperty("lastName").getValue() != null)) {
+			if ((jobcandidatelist.getLastName() != null)) {
 				tflastname.setValue(jobcandidatelist.getLastName());
 			}
-			if ((itselect.getItemProperty("email").getValue() != null)) {
+			if ((jobcandidatelist.getEmail() != null)) {
 				tfemailid.setValue(jobcandidatelist.getEmail().toString());
 			}
-			if ((itselect.getItemProperty("contactNo").getValue() != null)) {
+			if ((jobcandidatelist.getContactNo() != null)) {
 				tfcontactno.setValue(jobcandidatelist.getContactNo());
 			}
-			if ((itselect.getItemProperty("doa").getValue() != null)) {
+			if ((jobcandidatelist.getDoa() != null)) {
 				dfDOA.setValue(jobcandidatelist.getDoa());
 			}
-			if ((itselect.getItemProperty("resumKeywrds").getValue() != null)) {
+			if ((jobcandidatelist.getResumKeywrds() != null)) {
 				taresumkywrd.setValue(jobcandidatelist.getResumKeywrds());
 			}
-			if ((itselect.getItemProperty("status").getValue() != null)) {
+			if ((jobcandidatelist.getStatus() != null)) {
 				cbStatus.setValue(jobcandidatelist.getStatus());
 			}
-			if (itselect.getItemProperty("resume").getValue() != null) {
-				byte[] certificate = (byte[]) itselect.getItemProperty("resume").getValue();
+			if (jobcandidatelist.getResume() != null) {
+				byte[] certificate = jobcandidatelist.getResume();
 				UploadDocumentUI test = new UploadDocumentUI(vlresumdoc);
 				test.displaycertificate(certificate);
 			} else {

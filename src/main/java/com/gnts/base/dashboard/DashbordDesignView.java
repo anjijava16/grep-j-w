@@ -1,5 +1,6 @@
 package com.gnts.base.dashboard;
 
+import java.util.Collection;
 import com.gnts.base.mst.Product;
 import com.gnts.base.service.mst.ProductService;
 import com.gnts.crm.mst.Client;
@@ -11,16 +12,24 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.txn.SmsEnquiry;
 import com.gnts.stt.dsn.service.txn.ECRequestService;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.server.ClientConnector;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.Runo;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 public class DashbordDesignView implements ClickListener {
 	/**
@@ -36,6 +45,12 @@ public class DashbordDesignView implements ClickListener {
 	private Button btnWOCount = new Button("7", this);
 	private Button btnProductCount = new Button("17", this);
 	private Button btnClientCount = new Button("22", this);
+	private NotificationsButton btnNotify=new NotificationsButton();
+	private Button btnTest=new Button("22222");
+	private NotificationsButton notificationsButton;
+	
+   
+    private Window notificationsWindow;
 	private SmsEnqHdrService serviceenqhdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private ECRequestService serviceECRequest = (ECRequestService) SpringContextHelper.getBean("ecRequest");
@@ -53,6 +68,8 @@ public class DashbordDesignView implements ClickListener {
 	}
 	
 	private void buildView(VerticalLayout clMainLayout, HorizontalLayout hlHeader) {
+		notificationsButton = buildNotificationsButton();
+//		HorizontalLayout tools = new HorizontalLayout(notificationsButton, btnTest);
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("dashdesign");
 		btnEnquiryCount.setCaption(serviceenqhdr.getSMSEnquiryListCount(null, null, null, null, null, null, null, null)
@@ -60,20 +77,28 @@ public class DashbordDesignView implements ClickListener {
 		btnClientCount.setCaption(serviceClients.getClientDetailscount(companyId, null, "Active", null).toString());
 		btnProductCount.setCaption(ServiceProduct.getProductscount(companyId, null, "Active", null).toString());
 		btnECRequest.setCaption(serviceECRequest.getProductscount(null, null, null, null).toString());
+		
 
-		// btnEnquiryCount.setStyleName(Runo.BUTTON_LINK);
+		//btnTest.setStyleName(Runo.BUTTON_LINK);
 		btnEnquiryCount.setStyleName("borderless-colored");
 		btnEnquiryWorkflow.setStyleName("borderless-colored");
 		btnECRequest.setStyleName("borderless-colored");
 		btnECNote.setStyleName("borderless-colored");
 		btnProductCount.setStyleName("borderless-coloredbig");
 		btnClientCount.setStyleName("borderless-coloredbig");
+		VerticalLayout root = new VerticalLayout();
+		root.addComponent(buildHeader());
 		clMainLayout.removeAllComponents();
 		lblDashboardTitle = new Label();
 		lblDashboardTitle.setContentMode(ContentMode.HTML);
 		lblDashboardTitle.setValue("&nbsp;&nbsp;<b> Design Dashboard</b>");
 		hlHeader.addComponent(lblDashboardTitle);
 		hlHeader.setComponentAlignment(lblDashboardTitle, Alignment.MIDDLE_LEFT);
+		hlHeader.addComponent(btnTest);
+		hlHeader.addComponent(notificationsButton);
+		hlHeader.setComponentAlignment(btnTest, Alignment.MIDDLE_CENTER);
+		hlHeader.setComponentAlignment(notificationsButton, Alignment.TOP_RIGHT);
+		
 		clMainLayout.addComponent(custom);
 		// MultipleAxes multipleAxes = new MultipleAxes();
 		// custom.addComponent(multipleAxes.getChart(), "marketchart");
@@ -83,8 +108,31 @@ public class DashbordDesignView implements ClickListener {
 		custom.addComponent(btnECNote, "invoicecount");
 		custom.addComponent(btnProductCount, "productCount");
 		custom.addComponent(btnClientCount, "clientCount");
+		
+		
 	}
-	
+	private Component buildHeader() {	
+		HorizontalLayout header = new HorizontalLayout();
+		header.addStyleName("viewheader");
+        header.setSpacing(true);
+
+        btnNotify = buildNotificationsButton();
+	        HorizontalLayout tools = new HorizontalLayout(btnNotify);
+	        tools.setSpacing(true);
+	        tools.addStyleName("toolbar");
+	        return header;
+	      
+	}
+	  private NotificationsButton buildNotificationsButton() {
+	        NotificationsButton result = new NotificationsButton();
+	        result.addClickListener(new ClickListener() {
+	            @Override
+	            public void buttonClick(final ClickEvent event) {
+	                openNotificationsPopup(event);
+	            }
+	        });
+	        return result;
+	    }
 	@Override
 	public void buttonClick(ClickEvent event) {
 		// TODO Auto-generated method stub
@@ -128,4 +176,39 @@ public class DashbordDesignView implements ClickListener {
 			new Client();
 		}
 	}
-}
+	
+	private void openNotificationsPopup(final ClickEvent event) {
+        VerticalLayout notificationsLayout = new VerticalLayout();
+        notificationsLayout.setMargin(true);
+        notificationsLayout.setSpacing(true);
+
+        Label title = new Label("Notifications");
+        title.addStyleName(ValoTheme.LABEL_H2);
+        title.addStyleName(ValoTheme.LABEL_SPINNER);
+        notificationsLayout.addComponent(title);      
+        
+        if (notificationsWindow == null) {
+            notificationsWindow = new Window();
+            notificationsWindow.setWidth(300.0f, Unit.PIXELS);
+            notificationsWindow.addStyleName("notifications");
+            notificationsWindow.setClosable(false);
+            notificationsWindow.setResizable(false);
+            notificationsWindow.setDraggable(false);
+            notificationsWindow.setCloseShortcut(KeyCode.ESCAPE, null);
+            notificationsWindow.setContent(notificationsLayout);
+            notificationsWindow.center();
+        }
+
+        if (!notificationsWindow.isAttached()) {
+        	notificationsWindow.setPositionX(event.getClientX());
+        	notificationsWindow.setPositionY(event.getClientY());
+            UI.getCurrent().addWindow(notificationsWindow); 
+            notificationsWindow.focus();
+        } else {
+            notificationsWindow.close();
+        }
+        System.out.println("---------------------------------<<<<<<<<<<<<<<<<<<<<<<<");      
+       }
+	}
+
+

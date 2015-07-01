@@ -1,6 +1,10 @@
 package com.gnts.base.dashboard;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import org.jfree.layout.FormatLayout;
 import com.gnts.base.mst.Product;
 import com.gnts.base.service.mst.ProductService;
 import com.gnts.crm.mst.Client;
@@ -8,8 +12,12 @@ import com.gnts.crm.service.mst.ClientService;
 import com.gnts.dsn.stt.txn.DesignDocuments;
 import com.gnts.dsn.stt.txn.ECNote;
 import com.gnts.dsn.stt.txn.ECRequest;
+import com.gnts.erputil.components.NotificationsButton;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.sms.domain.txn.SmsPOHdrDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
+import com.gnts.sms.service.txn.SmsPOHdrService;
+import com.gnts.sms.txn.SalesPO;
 import com.gnts.sms.txn.SmsEnquiry;
 import com.gnts.stt.dsn.service.txn.ECRequestService;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -24,9 +32,12 @@ import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -46,7 +57,7 @@ public class DashbordDesignView implements ClickListener {
 	private Button btnProductCount = new Button("17", this);
 	private Button btnClientCount = new Button("22", this);
 	private NotificationsButton btnNotify=new NotificationsButton();
-	private Button btnTest=new Button("22222");
+	private SmsPOHdrService servicesmsPOHdr = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
 	private NotificationsButton notificationsButton;
 	
    
@@ -94,9 +105,9 @@ public class DashbordDesignView implements ClickListener {
 		lblDashboardTitle.setValue("&nbsp;&nbsp;<b> Design Dashboard</b>");
 		hlHeader.addComponent(lblDashboardTitle);
 		hlHeader.setComponentAlignment(lblDashboardTitle, Alignment.MIDDLE_LEFT);
-		hlHeader.addComponent(btnTest);
+		
 		hlHeader.addComponent(notificationsButton);
-		hlHeader.setComponentAlignment(btnTest, Alignment.MIDDLE_CENTER);
+	
 		hlHeader.setComponentAlignment(notificationsButton, Alignment.TOP_RIGHT);
 		
 		clMainLayout.addComponent(custom);
@@ -181,11 +192,49 @@ public class DashbordDesignView implements ClickListener {
         VerticalLayout notificationsLayout = new VerticalLayout();
         notificationsLayout.setMargin(true);
         notificationsLayout.setSpacing(true);
-
-        Label title = new Label("Notifications");
-        title.addStyleName(ValoTheme.LABEL_H2);
-        title.addStyleName(ValoTheme.LABEL_SPINNER);
-        notificationsLayout.addComponent(title);      
+        
+        final Panel panel = new Panel("Notifications");
+       
+        notificationsLayout.addComponent(panel);
+        
+        List<SmsPOHdrDM> smsPOHdrList = new ArrayList<SmsPOHdrDM>();
+        SmsPOHdrDM smspohdr = new SmsPOHdrDM();
+        smspohdr.getPostatus();
+        smsPOHdrList.add(smspohdr);
+        String status;
+		smsPOHdrList = servicesmsPOHdr.getSmspohdrList(null, null, null,
+				 null, null, null,null, "F", null);
+        
+        for (SmsPOHdrDM n : smsPOHdrList) {
+        	FormLayout fmlayout = new FormLayout();
+        	GridLayout notificationLayout = new GridLayout();
+            notificationLayout.addStyleName("notification-item");
+            Label titleLabel = new Label(n.getPostatus()/*+" "+n.getLastupdatedby()+" "+n.getLastupdateddt()*/);
+            Label titleLabel1 = new Label(n.getLastupdatedby());
+            Label titleLabel2 = new Label(n.getLastupdateddt());
+            titleLabel.addStyleName("notification-title");
+            fmlayout.addComponents(titleLabel);
+            fmlayout.addComponents(titleLabel1);
+            		fmlayout.addComponents(titleLabel2);
+            notificationsLayout.addComponent(fmlayout);
+        }
+        
+        HorizontalLayout footer = new HorizontalLayout();
+        footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+        footer.setWidth("100%");
+        Button showAll = new Button("View All Notifications",
+                new ClickListener() {
+                    @Override
+                    public void buttonClick(final ClickEvent event) {
+                        Notification.show("Not implemented in this demo");
+                    }
+                });
+        
+        showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+        showAll.addStyleName(ValoTheme.BUTTON_SMALL);
+        footer.addComponent(showAll);
+        footer.setComponentAlignment(showAll, Alignment.TOP_CENTER);
+        notificationsLayout.addComponent(footer);
         
         if (notificationsWindow == null) {
             notificationsWindow = new Window();
@@ -197,18 +246,25 @@ public class DashbordDesignView implements ClickListener {
             notificationsWindow.setCloseShortcut(KeyCode.ESCAPE, null);
             notificationsWindow.setContent(notificationsLayout);
             notificationsWindow.center();
+            notificationsWindow.setHeight("400");
+            
         }
 
         if (!notificationsWindow.isAttached()) {
-        	notificationsWindow.setPositionX(event.getClientX());
+        	   notificationsWindow.setPositionX(1130);
+               //notificationsWindow.setPositionY(45);
+        	//notificationsWindow.setPositionX(event.getClientX());
         	notificationsWindow.setPositionY(event.getClientY());
             UI.getCurrent().addWindow(notificationsWindow); 
             notificationsWindow.focus();
+            
         } else {
             notificationsWindow.close();
         }
         System.out.println("---------------------------------<<<<<<<<<<<<<<<<<<<<<<<");      
        }
+		
 	}
+
 
 

@@ -545,7 +545,7 @@ public class DC extends BaseTransUI {
 		tblMstScrSrchRslt.setContainerDataSource(beanDcHdrDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] {"enqNo", "dcNo", "dcType", "techPerson","commPerson", "lastUpdateddt",
 				"lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] {"Enquiry No", "DC No", "DC Type", "Technical Per","Commercial Per","Updated Date",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] {"Enquiry No", "DC No", "DC Type", "Technical Person","Commercial Person","Updated Date",
 				"Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("dcId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
@@ -563,8 +563,8 @@ public class DC extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the DCslap. result set");
 			tblDtl.setContainerDataSource(beanDcDtlDM);
-			tblDtl.setVisibleColumns(new Object[] { "goodsType", "dcQty", "goodsDesc","status", "lastUpdateddt", "lastUpdatedby" });
-			tblDtl.setColumnHeaders(new String[] { "Goods Type", "DC Qty","Description", "Status", "Updated Date", "Updated By" });
+			tblDtl.setVisibleColumns(new Object[] { "goodsType","goodsDesc","dcQty","status", "lastUpdateddt", "lastUpdatedby" });
+			tblDtl.setColumnHeaders(new String[] { "Goods Type","Description","DC Qty","Status", "Updated Date", "Updated By" });
 			tblDtl.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCntDtl);
 		}
 		catch (Exception e) {

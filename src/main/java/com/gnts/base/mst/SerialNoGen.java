@@ -30,6 +30,7 @@ import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
@@ -38,9 +39,7 @@ import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
-import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -55,7 +54,7 @@ import com.vaadin.ui.UI;
 public class SerialNoGen extends BaseUI {
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private ModuleService serviceModule = (ModuleService) SpringContextHelper.getBean("module");
-	BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private String username;
 	private BeanItemContainer<SlnoGenDM> beanSlnoGen = null;
 	// form layout for input controls
@@ -179,12 +178,12 @@ public class SerialNoGen extends BaseUI {
 	}
 	
 	private void loadModuleList() {
-		List<ModuleDM> listt = new ArrayList<ModuleDM>();
-		listt.add(new ModuleDM(0L, "All Modules"));
-		listt.addAll(serviceModule.getModuleList(companyid));
+		List<ModuleDM> list = new ArrayList<ModuleDM>();
+		list.add(new ModuleDM(0L, "All Modules"));
+		list.addAll(serviceModule.getModuleList(companyid));
 		BeanContainer<Long, ModuleDM> beanModule = new BeanContainer<Long, ModuleDM>(ModuleDM.class);
 		beanModule.setBeanIdProperty("moduleId");
-		beanModule.addAll(listt);
+		beanModule.addAll(list);
 		cbModuleName.setContainerDataSource(beanModule);
 	}
 	
@@ -231,12 +230,12 @@ public class SerialNoGen extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		btnSave.setEnabled(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		slnoId = sltedRcd.getItemProperty("slnoId").getValue().toString();
+		
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected news. Id -> "
 				+ slnoId);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			SlnoGenDM editSlnoGenlist = beanSlnoGen.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			slnoId = editSlnoGenlist.getSlnoId().toString();
 			setReadonlyFalse();
 			tfReferenceKey.setValue(editSlnoGenlist.getRefKey());
 			tfReferenceKey.setReadOnly(true);

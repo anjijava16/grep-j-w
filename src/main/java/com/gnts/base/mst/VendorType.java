@@ -35,7 +35,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -152,15 +151,14 @@ public class VendorType extends BaseUI {
 	// fields in the input form
 	private void editVendorTypeDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
-		Item select = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (select != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			VendorTypeDM editvendorTypelist = beanVendortypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			if (editvendorTypelist.getVendortypename() != null) {
-				tfvendortypename.setValue(select.getItemProperty("vendortypename").getValue().toString());
+				tfvendortypename.setValue(editvendorTypelist.getVendortypename());
 			}
-			cbStatus.setValue(select.getItemProperty("vendortypestatus").getValue());
+			cbStatus.setValue(editvendorTypelist.getVendortypestatus());
 			cbBranchname.setValue(editvendorTypelist.getBranchid());
-			vendoreid = select.getItemProperty("vendorid").getValue().toString();
+			vendoreid = editvendorTypelist.getVendorid().toString();
 		}
 	}
 	

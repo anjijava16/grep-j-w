@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.CityDM;
 import com.gnts.base.domain.mst.CountryDM;
-import com.gnts.base.domain.mst.LookupDM;
 import com.gnts.base.domain.mst.RegionDM;
 import com.gnts.base.domain.mst.StateDM;
 import com.gnts.base.domain.mst.TimeZoneDM;
@@ -46,7 +45,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -63,11 +61,11 @@ import com.vaadin.ui.UI;
 
 public class City extends BaseUI {
 	private static final long serialVersionUID = 1L;
-	StateService serviceState = (StateService) SpringContextHelper.getBean("mstate");
-	RegionService serviceRegion = (RegionService) SpringContextHelper.getBean("mregion");
-	CityService serviceCity = (CityService) SpringContextHelper.getBean("city");
-	CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
-	TimeZoneService serviceTimezone = (TimeZoneService) SpringContextHelper.getBean("timezone");
+	private StateService serviceState = (StateService) SpringContextHelper.getBean("mstate");
+	private RegionService serviceRegion = (RegionService) SpringContextHelper.getBean("mregion");
+	private CityService serviceCity = (CityService) SpringContextHelper.getBean("city");
+	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
+	private TimeZoneService serviceTimezone = (TimeZoneService) SpringContextHelper.getBean("timezone");
 	// form layout for input controls
 	private FormLayout flcityname, flstatename, flstatus, fltier;
 	// Parent layout for all the input controls
@@ -81,11 +79,6 @@ public class City extends BaseUI {
 	private ComboBox cbcountry, cbtimezone, cbstate, cbregion;
 	// To add Bean Item Container
 	private BeanItemContainer<CityDM> citybean = null;
-	// To add Bean Container
-	private BeanContainer<Long, StateDM> beanState = null;
-	private BeanContainer<Long, RegionDM> beanRegion = null;
-	private BeanContainer<Long, CountryDM> beanCountry = null;
-	private BeanContainer<Long, TimeZoneDM> beanTime = null;
 	// local variables declaration
 	private Long companyid, countryid;
 	private String cityid, username;
@@ -98,7 +91,6 @@ public class City extends BaseUI {
 		// Get the logged in user name and company id and country id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		/*countryid = Long.valueOf(UI.getCurrent().getSession().getAttribute("countryid").toString());*/
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside City() constructor");
 		// Loading the UI
 		buildview();
@@ -195,7 +187,7 @@ public class City extends BaseUI {
 		tftier.setVisible(false);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<CityDM> CityList = new ArrayList<CityDM>();
+		List<CityDM> list = new ArrayList<CityDM>();
 		Long stateid = null;
 		if (cbstate.getValue() != null) {
 			stateid = Long.valueOf(cbstate.getValue().toString());
@@ -203,17 +195,17 @@ public class City extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfcityname.getValue() + ", " + cbstate.getValue() + ","
 				+ (String) cbstatus.getValue());
-		CityList = serviceCity.getCityList(null, tfcityname.getValue(), stateid, (String) cbstatus.getValue(),
+		list = serviceCity.getCityList(null, tfcityname.getValue(), stateid, (String) cbstatus.getValue(),
 				companyid, "F");
-		recordCnt = CityList.size();
+		recordCnt = list.size();
 		citybean = new BeanItemContainer<CityDM>(CityDM.class);
-		citybean.addAll(CityList);
+		citybean.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the City. result set");
 		tblMstScrSrchRslt.setContainerDataSource(citybean);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "cityid", "cityname", "statename", "status",
 				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "City", "State", "Status",
-				"UpdatedDate", "UpdatedBy" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "City", "State", "Status", "UpdatedDate",
+				"UpdatedBy" });
 		tblMstScrSrchRslt.setColumnAlignment("cityid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
@@ -225,21 +217,18 @@ public class City extends BaseUI {
 		cbtimezone.setVisible(true);
 		cbregion.setVisible(true);
 		tftier.setVisible(true);
-		
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			CityDM citydm1 = citybean.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cityid = citydm1.getCityid().toString();
-			String stCode = itselect.getItemProperty("status").getValue().toString();
-			cbstatus.setValue(stCode);
-			cbcountry.setValue(Long.valueOf(citydm1.getCountryid()));
+		if (tblMstScrSrchRslt.getValue() != null) {
+			CityDM cityDM = citybean.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			cityid = cityDM.getCityid().toString();
+			cbstatus.setValue(cityDM.getStatus());
+			cbcountry.setValue(Long.valueOf(cityDM.getCountryid()));
 			loadstateList();
 			cbstate.removeItem("0");
-			cbstate.setValue(Long.valueOf(citydm1.getStateId()).toString());
-			tfcityname.setValue(citydm1.getCityname());
-			cbregion.setValue(Long.valueOf(citydm1.getRegionId()).toString());
-			tftier.setValue(citydm1.getTier());
-			cbtimezone.setValue((Long) citydm1.getTimezoneid());
+			cbstate.setValue(Long.valueOf(cityDM.getStateId()).toString());
+			tfcityname.setValue(cityDM.getCityname());
+			cbregion.setValue(Long.valueOf(cityDM.getRegionId()).toString());
+			tftier.setValue(cityDM.getTier());
+			cbtimezone.setValue((Long) cityDM.getTimezoneid());
 		}
 	}
 	
@@ -259,38 +248,35 @@ public class City extends BaseUI {
 	private void loadaddStatelist(List<StateDM> getStateList) {
 		getStateList.addAll(serviceState.getStateList(null, (String) cbstatus.getValue(), (Long) cbcountry.getValue(),
 				null, "P"));
-		beanState = new BeanContainer<Long, StateDM>(StateDM.class);
+		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(getStateList);
+		beanState.addAll(serviceState.getStateList(null, (String) cbstatus.getValue(), (Long) cbcountry.getValue(),
+				null, "P"));
 		cbstate.setContainerDataSource(beanState);
 	}
 	
 	// Load Country List
 	private void loadCountry() {
-		List<CountryDM> list = serviceCountry.getCountryList(null, null, null, null, (String) cbstatus.getValue(), "T");
-		beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(list);
+		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, (String) cbstatus.getValue(), "T"));
 		cbcountry.setContainerDataSource(beanCountry);
 	}
 	
 	// Load Time Zone
 	private void loadTimezoneCode() {
-		List<TimeZoneDM> timeZoneList = new ArrayList<TimeZoneDM>();
-		timeZoneList.addAll(serviceTimezone.getTimeZoneList(null, null, "P"));
-		beanTime = new BeanContainer<Long, TimeZoneDM>(TimeZoneDM.class);
+		BeanContainer<Long, TimeZoneDM> beanTime = new BeanContainer<Long, TimeZoneDM>(TimeZoneDM.class);
 		beanTime.setBeanIdProperty("timezoneid");
-		beanTime.addAll(timeZoneList);
+		beanTime.addAll(serviceTimezone.getTimeZoneList(null, null, "P"));
 		cbtimezone.setContainerDataSource(beanTime);
 	}
 	
 	// Load region list for pnladdedit's combo Box
 	private void loadRegion() {
 		logger.info("Region  domain  --->" + (String) cbstatus.getValue());
-		List<RegionDM> list = serviceRegion.getRegionList(null, (String) cbstatus.getValue(), null, companyid, "P");
-		beanRegion = new BeanContainer<Long, RegionDM>(RegionDM.class);
+		BeanContainer<Long, RegionDM> beanRegion = new BeanContainer<Long, RegionDM>(RegionDM.class);
 		beanRegion.setBeanIdProperty("regionId");
-		beanRegion.addAll(list);
+		beanRegion.addAll(serviceRegion.getRegionList(null, (String) cbstatus.getValue(), null, companyid, "P"));
 		cbregion.setContainerDataSource(beanRegion);
 	}
 	
@@ -412,10 +398,10 @@ public class City extends BaseUI {
 			cbstate.setComponentError(new UserError(GERPErrorCodes.NULL_STATE_NAMECB));
 			errorFlag = true;
 		}
-	/*	if ((cbregion.getValue() == null)) {
-			cbregion.setComponentError(new UserError(GERPErrorCodes.NULL_REGION_NAME));
-			errorFlag = true;
-		}*/
+		/*
+		 * if ((cbregion.getValue() == null)) { cbregion.setComponentError(new
+		 * UserError(GERPErrorCodes.NULL_REGION_NAME)); errorFlag = true; }
+		 */
 		logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Throwing ValidationException. User data is > " + tfcityname.getValue());
 		if (errorFlag) {
@@ -435,13 +421,15 @@ public class City extends BaseUI {
 		if (cbstatus.getValue() != null) {
 			cityobj.setStatus((String) cbstatus.getValue());
 		}
-		if(tftier.getValue()!=""){
-		cityobj.setTier(tftier.getValue());}
+		if (tftier.getValue() != "") {
+			cityobj.setTier(tftier.getValue());
+		}
 		cityobj.setStateId(Long.valueOf(cbstate.getValue().toString()));
 		cityobj.setCountryid(Long.valueOf(cbcountry.getValue().toString()));
 		cityobj.setTimezoneid(Long.valueOf(cbtimezone.getValue().toString()));
-		if(cbregion.getValue()!=null){
-		cityobj.setRegionId(Long.valueOf(cbregion.getValue().toString()));}
+		if (cbregion.getValue() != null) {
+			cityobj.setRegionId(Long.valueOf(cbregion.getValue().toString()));
+		}
 		cityobj.setLastupdateddt(DateUtils.getcurrentdate());
 		cityobj.setLastupdatedby(username);
 		serviceCity.saveAndUpdateCitydetails(cityobj);

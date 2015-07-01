@@ -86,65 +86,55 @@ public class Payslip extends BaseTransUI {
 			.getBean("payrolldetails");
 	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private DepartmentService servicedepartment = (DepartmentService) SpringContextHelper.getBean("department");
-	private payrollEarningsService servicepayrollEarnings = (payrollEarningsService) SpringContextHelper
+	private payrollEarningsService servicePayrollEarnings = (payrollEarningsService) SpringContextHelper
 			.getBean("payrollearnings");
 	private PayrollDeductionsService servicePayrollDeductions = (PayrollDeductionsService) SpringContextHelper
 			.getBean("PayrollDeductions");
 	// form layout for input controls
-	FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4, flempname, fldeptname;
+	private FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4, flempname, fldeptname;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
-	VerticalLayout hlPageRootContainter1 = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
-	VerticalLayout hlPageRootContainter2 = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
 	private HorizontalLayout hlSearchLayout = new HorizontalLayout();
-	HorizontalLayout hlUserIPContainer1 = new HorizontalLayout();
-	public HorizontalLayout hlPageHdrContainter = (HorizontalLayout) UI.getCurrent().getSession()
+	private HorizontalLayout hlPageHdrContainter = (HorizontalLayout) UI.getCurrent().getSession()
 			.getAttribute("hlLayout");
-	HorizontalLayout hlpayED = new HorizontalLayout();
-	HorizontalLayout hlpaydet = new HorizontalLayout();
-	HorizontalLayout hldetails = new HorizontalLayout();
-	VerticalLayout vlearn = new VerticalLayout();
-	VerticalLayout vldeduct = new VerticalLayout();
-	VerticalLayout vlpaydet = new VerticalLayout();
-	VerticalLayout vlstaff = new VerticalLayout();
-	Label lblspec4 = new Label();
+	private HorizontalLayout hlpayED = new HorizontalLayout();
+	private HorizontalLayout hlpaydet = new HorizontalLayout();
+	private HorizontalLayout hldetails = new HorizontalLayout();
+	private VerticalLayout vlearn = new VerticalLayout();
+	private VerticalLayout vldeduct = new VerticalLayout();
+	private VerticalLayout vlpaydet = new VerticalLayout();
+	private VerticalLayout vlstaff = new VerticalLayout();
+	private Label lblspec4 = new Label();
 	// User Input Components
 	private TextField tfpayrollid;
 	private TextArea tfremarks;
 	private PopupDateField processDt;
 	private ComboBox cbempname, cbdeptname, cbStatus;
 	// lists
-	List<payrollEarningsDM> payslipList = null;
-	List<PayrollDeductionsDM> payslipList1 = null;
-	List<PayrollDetailsDM> payrollhdrList22 = null;
+	private List<payrollEarningsDM> payslipList = null;
 	// Bean container
 	private BeanItemContainer<PayrollHdrDM> beanPayrollHdrDM = null;
-	private BeanItemContainer<payrollEarningsDM> beanpayrollEarningsDM = null;
-	private BeanItemContainer<PayrollDeductionsDM> beanPayrollDeductionsDM = null;
 	// button declaration
-	public Button btnviewED = new GERPButton("View Earning/Deduction", "searchbt", this);
-	public Button btnclose = new GERPButton("Close", "cancelbt", this);
+	private Button btnviewED = new GERPButton("View Earning/Deduction", "searchbt", this);
+	private Button btnclose = new GERPButton("Close", "cancelbt", this);
 	// local tables
 	private Table tblHdrDtl = new GERPTable();
-	public Table tblMstScrSrchRslt1 = new Table();
-	public Table tblMstScrSrchRslt2 = new Table();
+	private Table tblMstScrSrchRslt1 = new Table();
+	private Table tblMstScrSrchRslt2 = new Table();
 	private BeanItemContainer<PayrollDetailsDM> beanPayrollDetailsDM = null;
-	List<PayrollDetailsDM> payrolldetailList = null;
 	// local variables declaration
-	private Long companyid, payrollid=0L, employeeid=0L;
+	private Long companyid, payrollid = 0L, employeeid = 0L;
 	private String userName, fullname, processdate;
 	private int recordCnt = 0;
 	// Initialize Logger
 	private Logger logger = Logger.getLogger(Payslip.class);
 	private static final long serialVersionUID = 1L;
-	private String currencysymbol;
 	private String payrolId;
 	
 	// Constructor
 	public Payslip() {
 		// Get the logged in user name and company id from the session
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
-		currencysymbol = (String) UI.getCurrent().getSession().getAttribute("currencysymbol");
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Inside Payslip() constructor");
 		// Loading the UI
@@ -326,7 +316,6 @@ public class Payslip extends BaseTransUI {
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		hlSrchContainer.setSizeFull();
 		hlSrchContainer.setSpacing(true);
-		// hlSrchContainer.setMargin(true);
 	}
 	
 	private void assembleInputUserLayout(Long employeeid) {
@@ -390,30 +379,29 @@ public class Payslip extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search.pay det..");
 		tblHdrDtl.removeAllItems();
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are");
-		payrollhdrList22 = servicePayrollDetails.getpayrolldetailsList(companyid, null, payrollid,
-				(Long) cbempname.getValue(), null);
+		List<PayrollDetailsDM> listPayrollDetails = servicePayrollDetails.getpayrolldetailsList(companyid, null,
+				payrollid, (Long) cbempname.getValue(), null);
 		tblHdrDtl.setPageLength(14);
-		recordCnt = payrollhdrList22.size();
+		recordCnt = listPayrollDetails.size();
 		beanPayrollDetailsDM = new BeanItemContainer<PayrollDetailsDM>(PayrollDetailsDM.class);
-		beanPayrollDetailsDM.addAll(payrollhdrList22);
+		beanPayrollDetailsDM.addAll(listPayrollDetails);
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Got the Taxslap. result set");
 		tblHdrDtl.setContainerDataSource(beanPayrollDetailsDM);
 		tblHdrDtl.setColumnAlignment("totalearn", Align.RIGHT);
 		tblHdrDtl.setColumnAlignment("totaldedn", Align.RIGHT);
 		tblHdrDtl.setColumnAlignment("netpay", Align.RIGHT);
 		tblHdrDtl.setVisibleColumns(new Object[] { "fullname", "totalearn", "totaldedn", "netpay" });
-		tblHdrDtl.setColumnHeaders(new String[] { "Employee Name", "Total Earnings(₹)",
-				"Total Deductions(₹)", "Net Pay(₹)" });
+		tblHdrDtl.setColumnHeaders(new String[] { "Employee Name", "Total Earnings(₹)", "Total Deductions(₹)",
+				"Net Pay(₹)" });
 		tblHdrDtl.setColumnFooter("netpay", "No.of Records : " + recordCnt);
 	}
 	
 	// load the employee list
-	public void loadEmpList() {
-		List<EmployeeDM> employeelist = serviceemployee.getEmployeeList(null, null, (Long) cbdeptname.getValue(),
-				"Active", companyid, null, null, null, null, "F");
+	private void loadEmpList() {
 		BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanLoadEmployee.setBeanIdProperty("employeeid");
-		beanLoadEmployee.addAll(employeelist);
+		beanLoadEmployee.addAll(serviceemployee.getEmployeeList(null, null, (Long) cbdeptname.getValue(), "Active",
+				companyid, null, null, null, null, "P"));
 		cbempname.setContainerDataSource(beanLoadEmployee);
 	}
 	
@@ -535,7 +523,6 @@ public class Payslip extends BaseTransUI {
 		if (select != null) {
 			PayrollHdrDM editHdrList = beanPayrollHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			payrollid = editHdrList.getPayrollid();
-			payrolldetailList = servicePayrollDetails.getpayrolldetailsList(companyid, null, payrollid, null, null);
 			processdate = editHdrList.getProcessedd();
 			Label lblspec2 = new Label("Payroll Details");
 			lblspec2.setStyleName("h4");
@@ -579,9 +566,10 @@ public class Payslip extends BaseTransUI {
 		tblMstScrSrchRslt2.removeAllItems();
 		payslipList = new ArrayList<payrollEarningsDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are");
-		payslipList = servicepayrollEarnings.getpayrollearningsList(companyid, null, payrollid, employeeid, null);
+		payslipList = servicePayrollEarnings.getpayrollearningsList(companyid, null, payrollid, employeeid, null);
 		recordCnt = payslipList.size();
-		beanpayrollEarningsDM = new BeanItemContainer<payrollEarningsDM>(payrollEarningsDM.class);
+		BeanItemContainer<payrollEarningsDM> beanpayrollEarningsDM = new BeanItemContainer<payrollEarningsDM>(
+				payrollEarningsDM.class);
 		beanpayrollEarningsDM.addAll(payslipList);
 		Long sum = 0L;
 		for (payrollEarningsDM obj : payslipList) {
@@ -611,7 +599,8 @@ public class Payslip extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are");
 		payslipList1 = servicePayrollDeductions.getpayrolldeductionsList(companyid, null, payrollid, employeeid, null);
 		recordCnt = payslipList1.size();
-		beanPayrollDeductionsDM = new BeanItemContainer<PayrollDeductionsDM>(PayrollDeductionsDM.class);
+		BeanItemContainer<PayrollDeductionsDM> beanPayrollDeductionsDM = new BeanItemContainer<PayrollDeductionsDM>(
+				PayrollDeductionsDM.class);
 		beanPayrollDeductionsDM.addAll(payslipList1);
 		Long sum1 = 0L;
 		for (PayrollDeductionsDM obj : payslipList1) {
@@ -624,8 +613,7 @@ public class Payslip extends BaseTransUI {
 		tblMstScrSrchRslt1.setContainerDataSource(beanPayrollDeductionsDM);
 		tblMstScrSrchRslt1.setColumnAlignment("dedamount", Align.RIGHT);
 		tblMstScrSrchRslt1.setVisibleColumns(new Object[] { "deddesc", "dedamount" });
-		tblMstScrSrchRslt1
-				.setColumnHeaders(new String[] { "Deduction Type", "Deduction Amount(₹)" });
+		tblMstScrSrchRslt1.setColumnHeaders(new String[] { "Deduction Type", "Deduction Amount(₹)" });
 		tblMstScrSrchRslt1.setColumnFooter("dedamount", "No.of Records : " + recordCnt);
 		tblMstScrSrchRslt1.setColumnFooter("deddesc", "Total");
 		tblMstScrSrchRslt1.setColumnFooter("dedamount", " " + sum1);
@@ -693,17 +681,14 @@ public class Payslip extends BaseTransUI {
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editpayED() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Editing the selected record");
-		Item select = tblHdrDtl.getItem(tblHdrDtl.getValue());
-		if (select != null) {
+		if (tblHdrDtl.getValue() != null) {
 			PayrollDetailsDM editdetList = beanPayrollDetailsDM.getItem(tblHdrDtl.getValue()).getBean();
 			payrollid = editdetList.getPayrollid();
 			employeeid = editdetList.getEmployeeid();
 			if (editdetList.getEmployeeid() != null) {
-				cbempname.setValue(select.getItemProperty("employeeid").getValue().toString());
+				cbempname.setValue(editdetList.getEmployeeid());
 			}
-			payslipList = servicepayrollEarnings.getpayrollearningsList(companyid, null, payrollid, employeeid, null);
-			payslipList1 = servicePayrollDeductions.getpayrolldeductionsList(companyid, null, payrollid, employeeid,
-					null);
+			payslipList = servicePayrollEarnings.getpayrollearningsList(companyid, null, payrollid, employeeid, null);
 		}
 	}
 	
@@ -713,8 +698,7 @@ public class Payslip extends BaseTransUI {
 		vlpaydet.removeAllComponents();
 		hlCmdBtnLayout.setVisible(false);
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Staff name>>>>");
-		Item select = tblHdrDtl.getItem(tblHdrDtl.getValue());
-		if (select != null) {
+		if (tblHdrDtl.getValue() != null) {
 			PayrollDetailsDM editdetList = beanPayrollDetailsDM.getItem(tblHdrDtl.getValue()).getBean();
 			fullname = editdetList.getFullname();
 			Label lblspec3 = new Label();
@@ -781,8 +765,8 @@ public class Payslip extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, String> parameterMap = new HashMap<String, String>();
-			System.out.println("processid-->"+payrollid);
-			System.out.println("employeeid-->"+employeeid);
+			System.out.println("processid-->" + payrollid);
+			System.out.println("employeeid-->" + employeeid);
 			parameterMap.put("processid", payrollid.toString());
 			parameterMap.put("staffid", employeeid.toString());
 			Report rpt = new Report(parameterMap, connection);

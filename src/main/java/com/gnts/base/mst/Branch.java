@@ -64,7 +64,7 @@ public class Branch extends BaseUI {
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private StateService serviceState = (StateService) SpringContextHelper.getBean("mstate");
 	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
-	private CityService  servicecity=(CityService)SpringContextHelper.getBean("city");
+	private CityService servicecity = (CityService) SpringContextHelper.getBean("city");
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3;
 	// Parent layout for all the input controls
@@ -77,7 +77,7 @@ public class Branch extends BaseUI {
 	private ComboBox cbCountryName, cbStateName, cbCityName, cbStatus;
 	private BeanItemContainer<BranchDM> beanBranch = null;
 	// local variables declaration
-	private Long companyid,countryId,branchName;
+	private Long companyid;
 	private String branchId;
 	private int recordCnt = 0;
 	private String username;
@@ -145,7 +145,6 @@ public class Branch extends BaseUI {
 		cbStateName = new GERPComboBox("State Name");
 		cbStateName.setWidth("148");
 		cbStateName.setItemCaptionPropertyId("stateName");
-		
 		cbCityName = new GERPComboBox("City Name");
 		cbCityName.setWidth("148");
 		cbCityName.setItemCaptionPropertyId("cityname");
@@ -206,10 +205,9 @@ public class Branch extends BaseUI {
 	// load the Country name list details for form
 	private void loadCountryList() {
 		try {
-			List<CountryDM> getCountrylist = serviceCountry.getCountryList(null, null, null, null, "Active", "F");
 			BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 			beanCountry.setBeanIdProperty("countryID");
-			beanCountry.addAll(getCountrylist);
+			beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "F"));
 			cbCountryName.setContainerDataSource(beanCountry);
 		}
 		catch (Exception e) {
@@ -220,40 +218,37 @@ public class Branch extends BaseUI {
 	
 	// load the State name list details for form
 	private void loadStateList() {
-		List<StateDM> getStateList = new ArrayList<StateDM>();
-		getStateList.addAll(serviceState.getStateList(null, "Active", (Long) cbCountryName.getValue(), companyid, "P"));
 		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(getStateList);
+		beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountryName.getValue(), companyid, "P"));
 		cbStateName.setContainerDataSource(beanState);
 	}
 	
 	// load the City name list details for form
-		private void loadCityList() {
-			List<CityDM> getcityList = new ArrayList<CityDM>();
-			getcityList.addAll(servicecity.getCityList(null, null, (Long)cbStateName.getValue(), "Active", companyid, "P"));
-			BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
-			beanCity.setBeanIdProperty("cityid");
-			beanCity.addAll(getcityList);
-			cbCityName.setContainerDataSource(beanCity);
-		}
+	private void loadCityList() {
+		BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
+		beanCity.setBeanIdProperty("cityid");
+		beanCity.addAll(servicecity.getCityList(null, null, (Long) cbStateName.getValue(), "Active", companyid, "P"));
+		cbCityName.setContainerDataSource(beanCity);
+	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<BranchDM> BranchList = new ArrayList<BranchDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfBranchName.getValue() + ",");
-		BranchList = serviceBranch.getBranchList(null, tfBranchName.getValue(), null, (String)cbStatus.getValue().toString(), companyid, "F");
+		BranchList = serviceBranch.getBranchList(null, tfBranchName.getValue(), null, (String) cbStatus.getValue()
+				.toString(), companyid, "F");
 		recordCnt = BranchList.size();
 		beanBranch = new BeanItemContainer<BranchDM>(BranchDM.class);
 		beanBranch.addAll(BranchList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Branch. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanBranch);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "branchId", "branchName", "cityName", "stateName","phoneNo", "status",
-				"lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch", "City","State", "Phone Number",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "branchId", "branchName", "cityName", "stateName",
+				"phoneNo", "status", "lastUpdatedDt", "lastUpdatedBy" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch", "City", "State", "Phone Number",
 				"Status", "Updated Date", "Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("branchId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnAlignment("phoneNo", Align.RIGHT);
@@ -290,19 +285,20 @@ public class Branch extends BaseUI {
 		branchId = sltedRcd.getItemProperty("branchId").getValue().toString();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Branch. Id -> "
 				+ branchId);
-		if (sltedRcd != null) {
-			BranchDM editbranchlist = beanBranch.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfBranchName.setValue(editbranchlist.getBranchName());
-			taBranchAddress.setValue(editbranchlist.getBranchAddress());
-			cbCountryName.setValue(Long.valueOf(editbranchlist.getCountryId()));
-			cbStateName.setValue(Long.valueOf(editbranchlist.getStateId()).toString());
-			cbCityName.setValue(Long.valueOf(editbranchlist.getCityId()).toString());
-			tfPhoneNo.setValue(editbranchlist.getPhoneNo());
-			tfEmailId.setValue(editbranchlist.getEmailId());
-			tfPostCode.setValue(editbranchlist.getPostCode());
-			tfRegNo.setValue(editbranchlist.getRegNo());
-			tfStNo.setValue(editbranchlist.getStNo());
-			tfTanNo.setValue(editbranchlist.getTanNo());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			BranchDM branchDM = beanBranch.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			branchId = branchDM.getBranchId().toString();
+			tfBranchName.setValue(branchDM.getBranchName());
+			taBranchAddress.setValue(branchDM.getBranchAddress());
+			cbCountryName.setValue(Long.valueOf(branchDM.getCountryId()));
+			cbStateName.setValue(Long.valueOf(branchDM.getStateId()).toString());
+			cbCityName.setValue(Long.valueOf(branchDM.getCityId()).toString());
+			tfPhoneNo.setValue(branchDM.getPhoneNo());
+			tfEmailId.setValue(branchDM.getEmailId());
+			tfPostCode.setValue(branchDM.getPostCode());
+			tfRegNo.setValue(branchDM.getRegNo());
+			tfStNo.setValue(branchDM.getStNo());
+			tfTanNo.setValue(branchDM.getTanNo());
 			cbStatus.setValue(cbStatus.getValue());
 		}
 	}
@@ -351,7 +347,6 @@ public class Branch extends BaseUI {
 		cbCityName.setRequired(true);
 		tfPhoneNo.setRequired(true);
 		tfEmailId.setRequired(true);
-		//tblMstScrSrchRslt.setValue(null);
 		// reset the input controls to default value
 		resetFields();
 	}
@@ -374,7 +369,6 @@ public class Branch extends BaseUI {
 		tblMstScrSrchRslt.setValue(null);
 		resetFields();
 		loadSrchRslt();
-
 	}
 	
 	@Override
@@ -390,7 +384,7 @@ public class Branch extends BaseUI {
 		tfEmailId.setRequired(true);
 		hlUserIPContainer.removeAllComponents();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		//tfBranchName.setRequired(false);
+		// tfBranchName.setRequired(false);
 		editBranch();
 	}
 	
@@ -399,7 +393,7 @@ public class Branch extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		Boolean errorFlag = false;
 		tfBranchName.setComponentError(null);
-		//tfBranchName.setComponentError(null);
+		// tfBranchName.setComponentError(null);
 		taBranchAddress.setComponentError(null);
 		cbCountryName.setComponentError(null);
 		cbStateName.setComponentError(null);
@@ -412,7 +406,8 @@ public class Branch extends BaseUI {
 					+ "Throwing ValidationException. User data is > " + tfBranchName.getValue());
 			errorFlag = true;
 		}
-		if (taBranchAddress.getValue() == "" || taBranchAddress.getValue()==null || taBranchAddress.getValue().trim().length() == 0) {
+		if (taBranchAddress.getValue() == "" || taBranchAddress.getValue() == null
+				|| taBranchAddress.getValue().trim().length() == 0) {
 			taBranchAddress.setComponentError(new UserError(GERPErrorCodes.NULL_BADDR));
 			errorFlag = true;
 		}
@@ -445,51 +440,48 @@ public class Branch extends BaseUI {
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
-		
-	
 	}
 	
 	@Override
 	protected void saveDetails() throws ERPException.SaveException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
-		BranchDM branchObj = new BranchDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			branchObj = beanBranch.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			BranchDM branchObj = new BranchDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				branchObj = beanBranch.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
+			branchObj.setBranchName(tfBranchName.getValue());
+			branchObj.setBranchAddress(taBranchAddress.getValue());
+			branchObj.setPhoneNo(tfPhoneNo.getValue());
+			branchObj.setEmailId(tfEmailId.getValue());
+			branchObj.setRegNo(tfRegNo.getValue());
+			branchObj.setTanNo(tfTanNo.getValue());
+			branchObj.setStNo(tfStNo.getValue());
+			branchObj.setTanNo(tfTanNo.getValue());
+			branchObj.setPostCode(tfPostCode.getValue());
+			branchObj.setStatus((String) cbStatus.getValue());
+			branchObj.setCompanyid(companyid);
+			if (cbCountryName.getValue() != null) {
+				branchObj.setCountryId((Long) cbCountryName.getValue());
+			}
+			if (cbStateName.getValue() != null) {
+				branchObj.setStateId(Long.valueOf(cbStateName.getValue().toString()));
+			}
+			if (cbCityName.getValue() != null) {
+				branchObj.setCityId(Long.valueOf(cbCityName.getValue().toString()));
+			}
+			if (cbStatus.getValue() != null) {
+				branchObj.setStatus(cbStatus.getValue().toString());
+			}
+			branchObj.setLastUpdatedDt(DateUtils.getcurrentdate());
+			branchObj.setLastUpdatedBy(username);
+			logger.info(" saveOrUpdateBranch() > " + branchObj);
+			serviceBranch.saveOrUpdateBranch(branchObj);
+			resetFields();
+			loadSrchRslt();
 		}
-		branchObj.setBranchName(tfBranchName.getValue());
-		branchObj.setBranchAddress(taBranchAddress.getValue());
-		branchObj.setPhoneNo(tfPhoneNo.getValue());
-		branchObj.setEmailId(tfEmailId.getValue());
-		branchObj.setRegNo(tfRegNo.getValue());
-		branchObj.setTanNo(tfTanNo.getValue());
-		branchObj.setStNo(tfStNo.getValue());
-		branchObj.setTanNo(tfTanNo.getValue());
-		branchObj.setPostCode(tfPostCode.getValue());
-		branchObj.setStatus((String) cbStatus.getValue());
-		branchObj.setCompanyid(companyid);
-		if (cbCountryName.getValue() != null) {
-			branchObj.setCountryId((Long) cbCountryName.getValue());
-		}
-		if (cbStateName.getValue() != null) {
-			branchObj.setStateId(Long.valueOf(cbStateName.getValue().toString()));
-		}
-		if (cbCityName.getValue() != null) {
-			branchObj.setCityId(Long.valueOf(cbCityName.getValue().toString()));
-		}
-		if (cbStatus.getValue() != null) {
-			branchObj.setStatus(cbStatus.getValue().toString());
-		}
-		branchObj.setLastUpdatedDt(DateUtils.getcurrentdate());
-		branchObj.setLastUpdatedBy(username);
-		logger.info(" saveOrUpdateBranch() > " + branchObj);
-		serviceBranch.saveOrUpdateBranch(branchObj);
-		resetFields();
-		loadSrchRslt();
-		}catch (Exception e)
-		{
+		catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
 }

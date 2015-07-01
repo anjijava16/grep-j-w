@@ -14,8 +14,6 @@
  */
 package com.gnts.base.mst;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -36,7 +34,6 @@ import com.gnts.erputil.components.GERPFormLayout;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPTextArea;
 import com.gnts.erputil.components.GERPTextField;
-import com.gnts.erputil.constants.GERPConstants;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
@@ -45,7 +42,6 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.ui.UploadUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -89,7 +85,6 @@ public class Company extends BaseUI {
 	private GERPAddEditHLayout hlSearchLayout;
 	// UserInput control layout
 	private HorizontalLayout hlUserInputLayout = new GERPAddEditHLayout();
-	
 	// Initialize logger
 	private static Logger logger = Logger.getLogger(Company.class);
 	public static boolean filevalue2 = false;
@@ -309,9 +304,9 @@ public class Company extends BaseUI {
 		beansCompany.addAll(companyList);
 		tblMstScrSrchRslt.setContainerDataSource(beansCompany);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "companyid", "companyname", "companycode", "companyaddress",
-				"cityName", "stateName", "countryName", "phone","companystatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Company", "Code", "Address",
-				"City", "State", "Country", "Phone Number","Status", "Updated Date", "Updated By" });
+				"cityName", "stateName", "countryName", "phone", "companystatus", "lastupdateddt", "lastupdatedby" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Company", "Code", "Address", "City", "State",
+				"Country", "Phone Number", "Status", "Updated Date", "Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("companyid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnAlignment("phone", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
@@ -320,42 +315,34 @@ public class Company extends BaseUI {
 	
 	// load the Country name list details for form
 	private void loadCountryList() {
-		List<CountryDM> countryList = new ArrayList<CountryDM>();
-		countryList.addAll(serviceCountry.getCountryList(null, null, null, null,"Active", "P"));
 		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(countryList);
+		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
 		cbCountry.setContainerDataSource(beanCountry);
 	}
 	
 	// load the State name list details for form
 	private void loadStateList() {
-		List<StateDM> getStateList = new ArrayList<StateDM>();
-		getStateList.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
 		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(getStateList);
+		beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
 		cbState.setContainerDataSource(beanState);
 	}
 	
 	// load the City name list details for form
 	private void loadCityList() {
-		List<CityDM> getCityList = new ArrayList<CityDM>();
-		getCityList.addAll(serviceCity.getCityList(null, null, Long.valueOf(cbState.getValue().toString()), "Active",
-				null, "P"));
 		BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
 		beanCity.setBeanIdProperty("cityid");
-		beanCity.addAll(getCityList);
+		beanCity.addAll(serviceCity.getCityList(null, null, Long.valueOf(cbState.getValue().toString()), "Active",
+				null, "P"));
 		cbCity.setContainerDataSource(beanCity);
 	}
 	
 	// load the Currency name list details for form
 	private void loadCurrencyList() {
-		List<CurrencyDM> getCurrencyList = new ArrayList<CurrencyDM>();
-		getCurrencyList.addAll(serviceCurrency.getCurrencyList(null, null, null, "Active", "P"));
 		BeanContainer<Long, CurrencyDM> beanCurrency = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
 		beanCurrency.setBeanIdProperty("ccyid");
-		beanCurrency.addAll(getCurrencyList);
+		beanCurrency.addAll(serviceCurrency.getCurrencyList(null, null, null, "Active", "P"));
 		cbCurrency.setContainerDataSource(beanCurrency);
 	}
 	
@@ -397,18 +384,15 @@ public class Company extends BaseUI {
 		tfPhoneNo.setComponentError(null);
 		tfEmail.setComponentError(null);
 		new UploadUI(hlimage);
-		UI.getCurrent().getSession().setAttribute("isFileUploaded",false);
-
+		UI.getCurrent().getSession().setAttribute("isFileUploaded", false);
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	protected void editCompanyDetails() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			CompanyDM editCompany = beansCompany.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			strCompanyId = editCompany.getCompanyid().toString();
-			
-			if(editCompany.getCompanylogo() !=null){
+			if (editCompany.getCompanylogo() != null) {
 				hlimage.removeAllComponents();
 				byte[] myimage = (byte[]) editCompany.getCompanylogo();
 				UploadUI uploadObject = new UploadUI(hlimage);
@@ -420,75 +404,71 @@ public class Company extends BaseUI {
 				catch (Exception e) {
 					e.printStackTrace();
 				}
-				
 			}
-			if (itselect.getItemProperty("companyaddress") != null
-					&& !"null".equals(itselect.getItemProperty("companyaddress"))) {
-				tfComapnyAddress.setValue(itselect.getItemProperty("companyaddress").getValue().toString());
+			if (editCompany.getCompanyaddress() != null) {
+				tfComapnyAddress.setValue(editCompany.getCompanyaddress());
 			}
 			tfCompanyName.setReadOnly(false);
-			tfCompanyName.setValue(itselect.getItemProperty("companyname").getValue().toString());
+			tfCompanyName.setValue(editCompany.getCompanyname());
 			tfCompanyName.setReadOnly(true);
 			if (editCompany.getCompanycode() != null) {
 				tfCompanyCode.setReadOnly(false);
-				tfCompanyCode.setValue(itselect.getItemProperty("companycode").getValue().toString());
+				tfCompanyCode.setValue(editCompany.getCompanycode());
 				tfCompanyCode.setReadOnly(true);
 			}
 			if (editCompany.getPostcode() != null) {
-				tfPostCode.setValue(itselect.getItemProperty("postcode").getValue().toString());
+				tfPostCode.setValue(editCompany.getPostcode());
 			}
 			if (editCompany.getCstno() != null) {
-				tfCstNo.setValue(itselect.getItemProperty("cstno").getValue().toString());
+				tfCstNo.setValue(editCompany.getCstno());
 			}
 			if (editCompany.getEccno() != null) {
-				tfEccNo.setValue(itselect.getItemProperty("eccno").getValue().toString());
+				tfEccNo.setValue(editCompany.getEccno());
 			}
 			if (editCompany.getEmailid() != null) {
-				tfEmail.setValue(itselect.getItemProperty("emailid").getValue().toString());
+				tfEmail.setValue(editCompany.getEmailid());
 			}
 			if (editCompany.getEmployerno() != null) {
-				tfEmpNo.setValue(itselect.getItemProperty("employerno").getValue().toString());
+				tfEmpNo.setValue(editCompany.getEmployerno());
 			}
 			if (editCompany.getEsino() != null) {
-				tfEsiNo.setValue(itselect.getItemProperty("esino").getValue().toString());
+				tfEsiNo.setValue(editCompany.getEsino());
 			}
 			if (editCompany.getFaxno() != null) {
-				tfFaxNo.setValue(itselect.getItemProperty("faxno").getValue().toString());
+				tfFaxNo.setValue(editCompany.getFaxno());
 			}
 			if (editCompany.getPanno() != null) {
-				tfPanNo.setValue(itselect.getItemProperty("panno").getValue().toString());
+				tfPanNo.setValue(editCompany.getPanno());
 			}
 			if (editCompany.getPfno() != null) {
-				tfPfNo.setValue(itselect.getItemProperty("pfno").getValue().toString());
+				tfPfNo.setValue(editCompany.getPfno());
 			}
 			if (editCompany.getPhone() != null) {
-				tfPhoneNo.setValue(itselect.getItemProperty("phone").getValue().toString());
+				tfPhoneNo.setValue(editCompany.getPhone());
 			}
 			if (editCompany.getEmailid() != null) {
-				tfEmail.setValue(itselect.getItemProperty("emailid").getValue().toString());
+				tfEmail.setValue(editCompany.getEmailid());
 			}
 			if (editCompany.getRegno() != null) {
-				tfRegNo.setValue(itselect.getItemProperty("regno").getValue().toString());
+				tfRegNo.setValue(editCompany.getRegno());
 			}
 			if (editCompany.getServicetaxno() != null) {
-				tfServTaxNo.setValue(itselect.getItemProperty("servicetaxno").getValue().toString());
+				tfServTaxNo.setValue(editCompany.getServicetaxno());
 			}
 			if (editCompany.getStno() != null) {
-				tfStNo.setValue(itselect.getItemProperty("stno").getValue().toString());
+				tfStNo.setValue(editCompany.getStno());
 			}
 			if (editCompany.getTanno() != null) {
-				tfTanNo.setValue(itselect.getItemProperty("tanno").getValue().toString());
+				tfTanNo.setValue(editCompany.getTanno());
 			}
 			if (editCompany.getTinno() != null) {
-				tfTinNo.setValue(itselect.getItemProperty("tinno").getValue().toString());
+				tfTinNo.setValue(editCompany.getTinno());
 			}
-			if (itselect.getItemProperty("website").getValue() != null
-					&& !"null".equals(itselect.getItemProperty("website").getValue())) {
-				tfWebSite.setValue(itselect.getItemProperty("website").getValue().toString());
+			if (editCompany.getWebsite() != null) {
+				tfWebSite.setValue(editCompany.getWebsite());
 			}
-			String stCode = itselect.getItemProperty("companystatus").getValue().toString();
 			cbStatus.setReadOnly(false);
-			cbStatus.setValue(stCode);
+			cbStatus.setValue(editCompany.getCompanystatus());
 			cbStatus.setReadOnly(true);
 			cbCountry.setValue(Long.valueOf(editCompany.getCountryid()));
 			cbState.setValue(Long.valueOf(editCompany.getStateid()).toString());
@@ -528,7 +508,6 @@ public class Company extends BaseUI {
 	// Method to implement about add button functionality
 	@Override
 	protected void addDetails() {
-		
 	}
 	
 	// Method to get the audit history details

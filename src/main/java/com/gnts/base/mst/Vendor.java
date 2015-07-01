@@ -14,12 +14,8 @@
 package com.gnts.base.mst;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import net.sourceforge.htmlunit.corejs.javascript.regexp.SubString;
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.taskdefs.Concat;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CityDM;
 import com.gnts.base.domain.mst.CountryDM;
@@ -46,17 +42,10 @@ import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
-import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.erputil.validations.PhoneNumberValidation;
-import com.gnts.mms.domain.mst.MaterialDM;
-import com.thoughtworks.selenium.webdriven.commands.GetValue;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
@@ -65,10 +54,10 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class Vendor extends BaseUI {
 	// Bean creation
@@ -94,11 +83,8 @@ public class Vendor extends BaseUI {
 	private ComboBox cbStatus, cbVendorTypeName, cbBranch, cbCountry, cbState, cbCity;
 	// BeanItemContainer
 	private BeanItemContainer<VendorDM> beanVendorDM = null;
-	private BeanContainer<Long, BranchDM> beanBranchDM = null;
-	private BeanContainer<Long, VendorTypeDM> beanVendorTypeDM = null;
-	private BeanContainer<Long, VendorTypeDM> beanvendrdm = null;
 	// local variables declaration
-	private Long companyid,moduleId,branchId;
+	private Long companyid, moduleId, branchId;
 	private String departId, pkvendorId;
 	private int recordCnt = 0;
 	private String username;
@@ -134,12 +120,17 @@ public class Vendor extends BaseUI {
 		// VendorCode generator text field
 		tfVendorCode = new GERPTextField("Vendor Code");
 		tfVendorName.addBlurListener(new BlurListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void blur(BlurEvent event) {
 				String venName = tfVendorName.getValue();
-				venName=venName.substring(0,4);
-				String venCode= tfVendorCode.getValue();
-				venName="/".concat(venName);
+				venName = venName.substring(0, 4);
+				String venCode = tfVendorCode.getValue();
+				venName = "/".concat(venName);
 				tfVendorCode.setReadOnly(false);
 				tfVendorCode.setValue(venCode.concat(venName));
 				tfVendorCode.setReadOnly(true);
@@ -424,86 +415,85 @@ public class Vendor extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editVendor() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		VendorDM editVendor = beanVendorDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		pkvendorId = editVendor.getVendorId().toString();
-		if (itselect.getItemProperty("vendorName") != null && !"null".equals(itselect.getItemProperty("vendorName"))) {
-			tfVendorName.setValue(itselect.getItemProperty("vendorName").getValue().toString());
+		if (editVendor.getVendorName() != null) {
+			tfVendorName.setValue(editVendor.getVendorName());
 		}
 		if (editVendor.getVendorCode() != null) {
-			tfVendorCode.setValue(itselect.getItemProperty("vendorCode").getValue().toString());
+			tfVendorCode.setValue(editVendor.getVendorCode());
 		}
 		if (editVendor.getVendorrating() != null) {
-			tfVendorRating.setValue(itselect.getItemProperty("vendorrating").getValue().toString());
+			tfVendorRating.setValue(editVendor.getVendorrating());
 		}
 		if (editVendor.getVendorAddress() != null) {
-			taAddress.setValue(itselect.getItemProperty("vendorAddress").getValue().toString());
+			taAddress.setValue(editVendor.getVendorAddress());
 		}
 		if (editVendor.getVendorPostcode() != null) {
-			tfPinCode.setValue(itselect.getItemProperty("vendorPostcode").getValue().toString());
+			tfPinCode.setValue(editVendor.getVendorPostcode().toString());
 		}
 		if (editVendor.getContactName() != null) {
-			tfContactName.setValue(itselect.getItemProperty("contactName").getValue().toString());
+			tfContactName.setValue(editVendor.getContactName());
 		}
 		if (editVendor.getContactNo() != null) {
-			tfcontactno.setValue(itselect.getItemProperty("contactNo").getValue().toString());
+			tfcontactno.setValue(editVendor.getContactNo());
 		}
 		if (editVendor.getDesidnation() != null) {
-			tfDesignation.setValue(itselect.getItemProperty("desidnation").getValue().toString());
+			tfDesignation.setValue(editVendor.getDesidnation());
 		}
 		if (editVendor.getEmailId() != null) {
-			tfEmail.setValue(itselect.getItemProperty("emailId").getValue().toString());
+			tfEmail.setValue(editVendor.getEmailId());
 		}
 		if (editVendor.getRegNo() != null) {
-			tfRegNo.setValue(itselect.getItemProperty("regNo").getValue().toString());
+			tfRegNo.setValue(editVendor.getRegNo());
 		}
 		if (editVendor.getTanNo() != null) {
-			tfTanNo.setValue(itselect.getItemProperty("tanNo").getValue().toString());
+			tfTanNo.setValue(editVendor.getTanNo());
 		}
 		if (editVendor.getStNo() != null) {
-			tfStNo.setValue(itselect.getItemProperty("stNo").getValue().toString());
+			tfStNo.setValue(editVendor.getStNo());
 		}
 		if (editVendor.getPaymentTerm() != null) {
-			tfPaymentTerm.setValue(itselect.getItemProperty("paymentTerm").getValue().toString());
+			tfPaymentTerm.setValue(editVendor.getPaymentTerm());
 		}
 		if (editVendor.getWarrentyType() != null) {
-			tfwarrantyType.setValue(itselect.getItemProperty("warrentyType").getValue().toString());
+			tfwarrantyType.setValue(editVendor.getWarrentyType());
 		}
 		if (editVendor.getDeliveryPeriod() != null) {
-			tfDeliveryPeriod.setValue(itselect.getItemProperty("deliveryPeriod").getValue().toString());
+			tfDeliveryPeriod.setValue(editVendor.getDeliveryPeriod());
 		}
 		if (editVendor.getFreightPrnct() != null) {
-			tfFright.setValue(itselect.getItemProperty("freightPrnct").getValue().toString());
+			tfFright.setValue(editVendor.getFreightPrnct().toString());
 		}
 		if (editVendor.getEdPrnct() != null) {
-			tfED.setValue(itselect.getItemProperty("edPrnct").getValue().toString());
+			tfED.setValue(editVendor.getEdPrnct().toString());
 		}
 		if (editVendor.getHedPrnct() != null) {
-			tfHED.setValue(itselect.getItemProperty("hedPrnct").getValue().toString());
+			tfHED.setValue(editVendor.getHedPrnct().toString());
 		}
 		if (editVendor.getCessPrnct() != null) {
-			tfCESS.setValue(itselect.getItemProperty("cessPrnct").getValue().toString());
+			tfCESS.setValue(editVendor.getCessPrnct().toString());
 		}
 		if (editVendor.getCstPrnct() != null) {
-			tfCST.setValue(itselect.getItemProperty("cstPrnct").getValue().toString());
+			tfCST.setValue(editVendor.getCstPrnct().toString());
 		}
 		if (editVendor.getVatPrnct() != null) {
-			tfVAT.setValue(itselect.getItemProperty("vatPrnct").getValue().toString());
+			tfVAT.setValue(editVendor.getVatPrnct().toString());
 		}
 		if (editVendor.getPackingPrnct() != null) {
-			tfPackingPercent.setValue(itselect.getItemProperty("packingPrnct").getValue().toString());
+			tfPackingPercent.setValue(editVendor.getPackingPrnct().toString());
 		}
 		if (editVendor.getBankName() != null) {
-			tfBankName.setValue(itselect.getItemProperty("bankName").getValue().toString());
+			tfBankName.setValue(editVendor.getBankName());
 		}
 		if (editVendor.getBankAddress() != null) {
-			taBankAddress.setValue(itselect.getItemProperty("bankAddress").getValue().toString());
+			taBankAddress.setValue(editVendor.getBankAddress());
 		}
 		if (editVendor.getBankACNO() != null) {
-			tfACNo.setValue(itselect.getItemProperty("bankACNO").getValue().toString());
+			tfACNo.setValue(editVendor.getBankACNO().toString());
 		}
 		if (editVendor.getBankACType() != null) {
-			tfACType.setValue(itselect.getItemProperty("bankACType").getValue().toString());
+			tfACType.setValue(editVendor.getBankACType());
 		}
 		if (ckCForm.getValue().equals(true)) {
 			editVendor.setCformREQD("Y");
@@ -522,25 +512,12 @@ public class Vendor extends BaseUI {
 		} else {
 			ckCForm.setValue(false);
 		}
-		cbStatus.setValue(itselect.getItemProperty("vendorstatus").getValue());
+		cbStatus.setValue(editVendor.getVendorstatus());
 		cbCountry.setValue(Long.valueOf(editVendor.getcountryID()));
 		cbBranch.setValue(Long.valueOf(editVendor.getBranchId()));
 		cbState.setValue(Long.valueOf(editVendor.getStateId()).toString());
 		cbVendorTypeName.setValue(Long.valueOf(editVendor.getVendorTypeId()).toString());
 		cbCity.setValue(Long.valueOf(editVendor.getCityId()).toString());
-		System.out.println("vendor name"+cbVendorTypeName.getValue());
-		/*Long matId = editVendor.getVendorTypeId();
-		Collection<?> empColId = cbVendorTypeName.getItemIds();
-		for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
-			Object itemIdClient = (Object) iteratorclient.next();
-			BeanItem<?> itemclient = (BeanItem<?>) cbVendorTypeName.getItem(itemIdClient);
-			// Get the actual bean and use the data
-			VendorTypeDM matObj = (VendorTypeDM) itemclient.getBean();
-			if (matId != null && matId.equals(matObj.getVendorid())) {
-				cbVendorTypeName.setValue(itemIdClient);
-			}
-		}
-		*/
 		tfcontactno.setComponentError(null);
 	}
 	
@@ -594,16 +571,13 @@ public class Vendor extends BaseUI {
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				tfVendorCode.setValue(slnoObj.getKeyDesc());
 				tfVendorCode.setReadOnly(true);
-				System.out.println("=+=+=+=+=+=+=>"+tfVendorCode);
-				
 			} else {
 				tfVendorCode.setReadOnly(false);
 			}
 		}
 		catch (Exception e) {
 		}
-		
-	   }
+	}
 	
 	@Override
 	protected void showAuditDetails() {
@@ -653,7 +627,6 @@ public class Vendor extends BaseUI {
 	
 	@Override
 	protected void validateDetails() throws ValidationException {
-		//try{
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		errorFlag = false;
 		tfVendorName.setComponentError(null);
@@ -685,15 +658,6 @@ public class Vendor extends BaseUI {
 			cbState.setComponentError(new UserError(GERPErrorCodes.NULL_COMPANY_STATE));
 			errorFlag = true;
 		}
-		/*if (tfcontactno.getValue().toString() == null) {
-			tfcontactno.setComponentError(new UserError(GERPErrorCodes.NULL_PHONE_NUMBER));
-			// errorFlag = true;
-		} else if (tfcontactno.getValue() != null) {
-			if (!tfcontactno.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) {
-				tfcontactno.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
-				errorFlag = true;
-			}
-		}*/
 		if (cbCity.getValue() == null) {
 			cbCity.setComponentError(new UserError(GERPErrorCodes.NULL_CITY_NAME));
 			errorFlag = true;
@@ -708,18 +672,12 @@ public class Vendor extends BaseUI {
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
-		
-		/*catch (Exception e) {
-			e.printStackTrace();
-		}
-	*/
 	}
 	
 	@Override
 	protected void saveDetails() throws SaveException {
-		try{
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			VendorDM vendorObj = new VendorDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				vendorObj = beanVendorDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
@@ -736,7 +694,6 @@ public class Vendor extends BaseUI {
 				vendorObj.setVendorTypeName((String) cbVendorTypeName.getValue());
 			}
 			// vendorObj.setVendorTypeName(cbVendorTypeName.getValue().toString());
-			
 			if (tfPinCode.getValue() != null && tfPinCode.getValue().trim().length() > 0) {
 				vendorObj.setVendorPostcode((Long.valueOf(tfPinCode.getValue())));
 			}
@@ -806,27 +763,22 @@ public class Vendor extends BaseUI {
 			resetFields();
 			loadSrchRslt();
 		}
-		
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private void loadCountryList() {
-		List<CountryDM> countryList = new ArrayList<CountryDM>();
-		countryList.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
 		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(countryList);
+		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
 		cbCountry.setContainerDataSource(beanCountry);
 	}
 	
 	private void loadStateList() {
-		List<StateDM> getStateList = new ArrayList<StateDM>();
-		getStateList.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
 		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(getStateList);
+		beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
 		cbState.setContainerDataSource(beanState);
 	}
 	
@@ -840,27 +792,18 @@ public class Vendor extends BaseUI {
 		cbCity.setContainerDataSource(beanCity);
 	}
 	
-	public void loadBranchList() {
+	private void loadBranchList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<BranchDM> branchlist = serviceBranch.getBranchList(null, null, null, null, companyid, "P");
-		beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
+		BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranchDM.setBeanIdProperty("branchId");
-		beanBranchDM.addAll(branchlist);
+		beanBranchDM.addAll(serviceBranch.getBranchList(null, null, null, null, companyid, "P"));
 		cbBranch.setContainerDataSource(beanBranchDM);
 	}
 	
-	/*
-	 * public void loadVendorTypeList() { logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-	 * + "Loading Search..."); List<VendorTypeDM> vendorTypelist = serviceVendorType.getVendorTypeList(null, null, null,
-	 * companyid); beanVendorTypeDM = new BeanContainer<Long, VendorTypeDM>(VendorTypeDM.class);
-	 * beanVendorTypeDM.setBeanIdProperty("vendorid"); beanVendorTypeDM.addAll(vendorTypelist);
-	 * cbVendorTypeName.setContainerDataSource(beanVendorTypeDM); }
-	 */
-	public void loadVendorTypeList() {
-		List<VendorTypeDM> vendorTypelist = serviceVendorType.getVendorTypeList(null, null, null, companyid);
-		beanvendrdm = new BeanContainer<Long, VendorTypeDM>(VendorTypeDM.class);
+	private void loadVendorTypeList() {
+		BeanContainer<Long, VendorTypeDM> beanvendrdm = new BeanContainer<Long, VendorTypeDM>(VendorTypeDM.class);
 		beanvendrdm.setBeanIdProperty("vendorid");
-		beanvendrdm.addAll(vendorTypelist);
+		beanvendrdm.addAll(serviceVendorType.getVendorTypeList(null, null, null, companyid));
 		cbVendorTypeName.setContainerDataSource(beanvendrdm);
 	}
 }

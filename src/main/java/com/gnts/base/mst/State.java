@@ -23,6 +23,7 @@ import com.gnts.base.service.mst.StateService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
@@ -30,11 +31,8 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
-import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.erputil.validations.StringWithSpaceValidation;
-import com.gnts.hcm.domain.mst.EarningsDM;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -50,7 +48,7 @@ public class State extends BaseUI {
 	private StateService serviceState = (StateService) SpringContextHelper.getBean("mstate");
 	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
 	// form layout for input controls
-	FormLayout flStateName, flStateCode, flCountryName, flStatus;
+	private FormLayout flStateName, flStateCode, flCountryName, flStatus;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
@@ -160,18 +158,17 @@ public class State extends BaseUI {
 	private void editStateDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
 		tfStateCode.setVisible(true);
-		Item select = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (select != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			StateDM editstatelist = beanStateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			if (editstatelist.getStateName() != null) {
-				tfStateName.setValue(select.getItemProperty("stateName").getValue().toString());
+				tfStateName.setValue(editstatelist.getStateName());
 			}
 			if (editstatelist.getStateCode() != null) {
-				tfStateCode.setValue(select.getItemProperty("stateCode").getValue().toString());
+				tfStateCode.setValue(editstatelist.getStateCode());
 			}
-			cbStatus.setValue(select.getItemProperty("stateStatus").getValue());
+			cbStatus.setValue(editstatelist.getStateStatus());
 			cbCountryName.setValue(editstatelist.getCountryId());
-			stateid = select.getItemProperty("stateId").getValue().toString();
+			stateid = editstatelist.getStateId();
 		}
 	}
 	
@@ -298,24 +295,6 @@ public class State extends BaseUI {
 			logger.warn("Company ID : " + cbCountryName + " | User Name : " + cbCountryName + " > "
 					+ "Throwing ValidationException. Holiday Name is > " + cbCountryName.getValue());
 		}
-		StateDM earningObj = new StateDM();
-		/*if (tblMstScrSrchRslt.getValue() != null) {
-			earningObj = beanStateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		}
-		if ((tfStateName.getValue() != null) && earningObj.getStateId() == null) {
-			if (serviceState.getStateList(tfStateName.getValue(),null,null,null,null).size() > 0) {
-				tfStateName.setComponentError(new UserError("State Name Already Exist"));
-				errorFlag = true;
-			}
-		}*/
-		
-		/*if (tblMstScrSrchRslt.getValue() == null) {
-			if (serviceState.getStateList(tfStateName.getValue(),null,null,null,null).size() > 0) {
-				tfStateName.setComponentError(new UserError("City Name Already Exist"));
-				//tfMaterialCode.setComponentError(new UserError("Material Code Already Exist"));
-				errorFlag = true;
-			}
-		}*/
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}

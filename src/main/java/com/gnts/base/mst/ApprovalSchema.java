@@ -47,8 +47,6 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -60,11 +58,10 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.themes.Runo;
 
 public class ApprovalSchema extends BaseUI {
 	private static final long serialVersionUID = 1L;
@@ -85,7 +82,7 @@ public class ApprovalSchema extends BaseUI {
 	private BeanItemContainer<ApprovalSchemaDM> beanApprovalSchema = null;
 	private GERPAddEditHLayout hlSearchLayout;
 	private int recordCnt;
-	private static Logger logger = Logger.getLogger(ApprovalSchema.class);
+	private Logger logger = Logger.getLogger(ApprovalSchema.class);
 	
 	// Constructor received the parameters from Login UI class
 	public ApprovalSchema() {
@@ -234,8 +231,8 @@ public class ApprovalSchema extends BaseUI {
 		tblApproSchm.setContainerDataSource(beanApprovalSchema);
 		tblApproSchm.setVisibleColumns(new Object[] { "apprSchmId", "screenName", "apprLevel", "apprLimit",
 				"apprStatus", "lastUpdatedDate", "lastUpdatedBy" });
-		tblApproSchm.setColumnHeaders(new String[] { "Ref.Id", "Screen", "Approval Level", "Limit",
-				"Status", "Updated Date", "Updated By" });
+		tblApproSchm.setColumnHeaders(new String[] { "Ref.Id", "Screen", "Approval Level", "Limit", "Status",
+				"Updated Date", "Updated By" });
 		tblApproSchm.setColumnAlignment("apprSchmId", Align.RIGHT);
 		tblApproSchm.setColumnFooter("apprStatus", "No.of Records : " + recordCnt);
 		tblApproSchm.setEditable(true);
@@ -269,19 +266,17 @@ public class ApprovalSchema extends BaseUI {
 	
 	// loading BranchDM list
 	private void loadBranchList() {
-		List<BranchDM> list = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
 		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(list);
+		beanBranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
 		cbBranch.setContainerDataSource(beanBranch);
 	}
 	
 	// loading RoleDM list
 	private void loadRoleList() {
-		List<RoleDM> listrole = serviceRole.getRoleList(null, "Active", companyid, "P");
 		BeanContainer<Long, RoleDM> beanRole = new BeanContainer<Long, RoleDM>(RoleDM.class);
 		beanRole.setBeanIdProperty("roleId");
-		beanRole.addAll(listrole);
+		beanRole.addAll(serviceRole.getRoleList(null, "Active", companyid, "P"));
 		cbRole.setContainerDataSource(beanRole);
 	}
 	

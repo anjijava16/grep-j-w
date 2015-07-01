@@ -22,7 +22,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.AccessConfigDM;
 import com.gnts.base.domain.mst.AppScreensDM;
-import com.gnts.base.domain.mst.AppScreensMenuDM;
 import com.gnts.base.domain.mst.AppScreensUserDM;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.FieldAccessConfigDM;
@@ -61,7 +60,6 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TableFieldFactory;
@@ -239,15 +237,12 @@ public class AccessConfig extends BaseUI {
 		tblScreenAccess.addContainerProperty("screenid", String.class, "");
 		System.out.println(cbRole.getValue());
 		if (cbRole.getValue() != null && cbBranch.getValue() != null) {
-			appScreenList = appsConfigBean.getMBaseAppscreenUserList(Long.valueOf(cbRole.getValue().toString()), companyid,
-					Long.valueOf(cbBranch.getValue().toString()));
+			appScreenList = appsConfigBean.getMBaseAppscreenUserList(Long.valueOf(cbRole.getValue().toString()),
+					companyid, Long.valueOf(cbBranch.getValue().toString()));
 			recordCnt = appScreenList.size();
-			Notification.show("recordCnt--->"+recordCnt);
-			System.out.println("recordCnt--->"+recordCnt);
 			if (recordCnt == 0) {
 				for (AppScreensDM appScreensDM : appsConfigBean.getMBaseAppScreenListByUserId(null)) {
-					
-					AccessConfigDM accessConfigDM=new AccessConfigDM();
+					AccessConfigDM accessConfigDM = new AccessConfigDM();
 					accessConfigDM.setScrID(appScreensDM.getScreenId());
 					accessConfigDM.setCompanyid(companyid);
 					accessConfigDM.setBranchid(Long.valueOf(cbBranch.getValue().toString()));
@@ -258,35 +253,12 @@ public class AccessConfig extends BaseUI {
 					accessConfigDM.setReviewYN("Y");
 					accessConfigDM.setApproYN("Y");
 					accessConfigDM.setRecLVL("Company");
-					accessConfigDM.setStatus("Active"); 
+					accessConfigDM.setStatus("Active");
 					serviceAccessConfig.saveAccessConfig(accessConfigDM);
-					System.out.println("id--->"+accessConfigDM.getConfigId());
-					
-					
-				/*	AppScreensMenuDM appScreensMenuDM = new AppScreensMenuDM();
-					appScreensMenuDM.setScreenId(appScreensDM.getScreenId());
-					appScreensMenuDM.setScreencode(appScreensDM.getScreencode());
-					appScreensMenuDM.setScreendesc(appScreensDM.getScreendesc());
-					appScreensMenuDM.setModuleId(appScreensDM.getModuleId());
-					appScreensMenuDM.setSortOrder(appScreensDM.getSortOrder());
-					appScreensMenuDM.setTargetClass(appScreensDM.getTargetClass());
-					appScreensMenuDM.setParentId(appScreensDM.getParentId());
-					appScreensMenuDM.setParentName(appScreensDM.getParentName());
-					appScreensMenuDM.setCompanyId(companyid);
-					appScreensMenuDM.setBranchId(Long.valueOf(cbBranch.getValue().toString()));
-					appScreensMenuDM.setRoleId(Long.valueOf(cbRole.getValue().toString()));
-					appsConfigBean.SaveorUpdate(appScreensMenuDM);*/
 				}
-				appScreenList = appsConfigBean.getMBaseAppscreenUserList(Long.valueOf(cbRole.getValue().toString()), companyid,
-						Long.valueOf(cbBranch.getValue().toString()));
-			
-				
-				
+				appScreenList = appsConfigBean.getMBaseAppscreenUserList(Long.valueOf(cbRole.getValue().toString()),
+						companyid, Long.valueOf(cbBranch.getValue().toString()));
 			}
-			for(AppScreensUserDM obj : appScreenList){
-				System.out.println("screen name--->"+obj.getScreendesc());
-			}
-			
 			for (AppScreensUserDM mBaseAppObj : appScreenList) {
 				tblScreenAccess.addItem(new Object[] { mBaseAppObj.getScreendesc(),
 						mBaseAppObj.getScreenId().toString() }, mBaseAppObj.getScreenId().intValue());
@@ -543,18 +515,16 @@ public class AccessConfig extends BaseUI {
 	}
 	
 	private void loadRoleList() {
-		List<RoleDM> listrole = servicebeanRole.getRoleList(null, "Active", companyid, "P");
 		BeanContainer<Long, RoleDM> beanRole = new BeanContainer<Long, RoleDM>(RoleDM.class);
 		beanRole.setBeanIdProperty("roleId");
-		beanRole.addAll(listrole);
+		beanRole.addAll(servicebeanRole.getRoleList(null, "Active", companyid, "P"));
 		cbRole.setContainerDataSource(beanRole);
 	}
 	
 	private void loadBranchList() {
-		List<BranchDM> list = servBranchBean.getBranchList(null, null, null, "Active", companyid, "P");
 		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(list);
+		beanBranch.addAll(servBranchBean.getBranchList(null, null, null, "Active", companyid, "P"));
 		cbBranch.setContainerDataSource(beanBranch);
 	}
 }

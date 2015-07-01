@@ -17,21 +17,18 @@
  */
 package com.gnts.base.mst;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
-import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.domain.mst.ProductCategoryDM;
 import com.gnts.base.domain.mst.ProductCategoryListDM;
 import com.gnts.base.service.mst.ProductCategoryService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPTextField;
-import com.gnts.erputil.constants.GERPConstants;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
@@ -39,7 +36,6 @@ import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
-import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.ui.UploadUI;
 import com.gnts.erputil.util.DateUtils;
 import com.vaadin.data.Item;
@@ -55,7 +51,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class ProductCategory extends BaseUI {
-	private ProductCategoryService ServiceProductCategory = (ProductCategoryService) SpringContextHelper
+	private ProductCategoryService serviceProductCategory = (ProductCategoryService) SpringContextHelper
 			.getBean("ProductCategory");
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3;
@@ -76,9 +72,7 @@ public class ProductCategory extends BaseUI {
 	private Long companyid;
 	private String cateid;
 	private int recordCnt = 0;
-	private int flag = 0;
 	private String username;
-	public static boolean filevalue1 = false;
 	// for initialize logger
 	private Logger logger = Logger.getLogger(ProductCategory.class);
 	private static final long serialVersionUID = 1L;
@@ -175,7 +169,7 @@ public class ProductCategory extends BaseUI {
 		logger.info("" + "Product Category : Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Search Parameters are " + companyid + ", " + tfProdCtgryName.getValue() + ", "
 				+ tfPrntCtgryName.getValue() + (String) cbProdCtgryStatus.getValue());
-		productList = ServiceProductCategory.getProdCategoryList(null, null,tfProdCtgryName.getValue(),
+		productList = serviceProductCategory.getProdCategoryList(null, null, tfProdCtgryName.getValue(),
 				(String) cbProdCtgryStatus.getValue(), tfPrntCtgryName.getValue(), "F");
 		recordCnt = productList.size();
 		beanProdCtgryListDM = new BeanItemContainer<ProductCategoryListDM>(ProductCategoryListDM.class);
@@ -205,40 +199,33 @@ public class ProductCategory extends BaseUI {
 		cbPrntCtgry.setValue(null);
 		tfProdCtgryName.setComponentError(null);
 		cbProdCtgryStatus.setValue(cbProdCtgryStatus.getItemIds().iterator().next());
-		//new UploadUI(hlimage);
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editProductCategory() {
-		flag=1;
 		hlUserInputLayout.setVisible(true);
-		Item rowSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		ProductCategoryListDM prodCtgryDM = beanProdCtgryListDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		if (rowSelected != null) {
-			//ProductCategoryListDM prodCtgryDM = beanProdCtgryListDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfProdCtgryName.setValue(rowSelected.getItemProperty("catename").getValue().toString());
-			if ((rowSelected.getItemProperty("parentcateid").getValue() != null)) {
+		if (tblMstScrSrchRslt.getValue() != null) {
+			ProductCategoryListDM prodCtgryDM = beanProdCtgryListDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			tfProdCtgryName.setValue(prodCtgryDM.getCatename());
+			if ((prodCtgryDM.getParentcateid() != null)) {
 				cbPrntCtgry.setValue((Long) prodCtgryDM.getParentcateid());
 			}
-			String stCode = rowSelected.getItemProperty("catestatus").getValue().toString();
-			cbProdCtgryStatus.setValue(stCode);
-			if ((rowSelected.getItemProperty("shortdesc").getValue() != null)) {
-				tfShortDesc.setValue(rowSelected.getItemProperty("shortdesc").getValue().toString());
+			cbProdCtgryStatus.setValue(prodCtgryDM.getCatestatus());
+			if ((prodCtgryDM.getShortdesc() != null)) {
+				tfShortDesc.setValue(prodCtgryDM.getShortdesc());
 			}
-			if ((rowSelected.getItemProperty("catedesc").getValue() != null)) {
-				taProdCtgryDesc.setValue(rowSelected.getItemProperty("catedesc").getValue().toString());
+			if ((prodCtgryDM.getCatedesc() != null)) {
+				taProdCtgryDesc.setValue(prodCtgryDM.getCatedesc());
+			}
+			if (prodCtgryDM.getCateimage() != null) {
+				hlimage.removeAllComponents();
+				byte[] myimage = (byte[]) prodCtgryDM.getCateimage();
+				UploadUI uploadObject = new UploadUI(hlimage);
+				uploadObject.dispayImage(myimage, prodCtgryDM.getCatename());
+			} else {
+				new UploadUI(hlimage);
 			}
 		}
-		if (prodCtgryDM.getCateimage() != null) {
-			hlimage.removeAllComponents();				
-			byte[] myimage = (byte[]) prodCtgryDM.getCateimage();
-			UploadUI uploadObject = new UploadUI(hlimage);
-			uploadObject.dispayImage(myimage,prodCtgryDM.getCatename());			
-			
-		} else {
-			new UploadUI(hlimage);
-		}
-		
 	}
 	
 	// Base class implementations
@@ -335,13 +322,11 @@ public class ProductCategory extends BaseUI {
 		resetFields();
 	}
 	
-	public void loadCategoryList() {
-		List<ProductCategoryListDM> categorylist = ServiceProductCategory.getProdCategoryList(null,null, null, null, null,
-				"P");
+	private void loadCategoryList() {
 		BeanContainer<Long, ProductCategoryListDM> beanCtgry = new BeanContainer<Long, ProductCategoryListDM>(
 				ProductCategoryListDM.class);
 		beanCtgry.setBeanIdProperty("cateid");
-		beanCtgry.addAll(categorylist);
+		beanCtgry.addAll(serviceProductCategory.getProdCategoryList(null, null, null, null, null, "P"));
 		cbPrntCtgry.setContainerDataSource(beanCtgry);
 	}
 	
@@ -349,7 +334,6 @@ public class ProductCategory extends BaseUI {
 	protected void saveDetails() throws SaveException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		ProductCategoryDM productcategoryobj = new ProductCategoryDM();
-		//productcategoryobj = beanProdCtgryListDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		if (tblMstScrSrchRslt.getValue() != null) {
 			Item rowSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 			productcategoryobj.setCateid((Long) rowSelected.getItemProperty("cateid").getValue());
@@ -372,15 +356,9 @@ public class ProductCategory extends BaseUI {
 		} else {
 			productcategoryobj.setCateimage(null);
 		}
-		/*File file = new File(GERPConstants.IMAGE_PATH);
-		FileInputStream fin = new FileInputStream(file);
-		byte fileContent[] = new byte[(int) file.length()];
-		fin.read(fileContent);
-		fin.close();*/
-		//productcategoryobj.setCateimage(fileContent);
 		productcategoryobj.setLastupdateddt(DateUtils.getcurrentdate());
 		productcategoryobj.setLastupdatedby(username);
-		ServiceProductCategory.saveorUpdateCategoryDetails(productcategoryobj);
+		serviceProductCategory.saveorUpdateCategoryDetails(productcategoryobj);
 		resetFields();
 		loadSrchRslt();
 	}

@@ -5,18 +5,12 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
-import com.gnts.base.domain.mst.DepartmentDM;
-import com.gnts.base.domain.mst.SlnoGenDM;
-import com.gnts.base.service.mst.DepartmentService;
-import com.gnts.base.service.mst.SlnoGenService;
-import com.gnts.crm.domain.mst.ClientDM;
-import com.gnts.crm.service.mst.ClientService;
+import com.gnts.asm.domain.txn.EbReadingDM;
+import com.gnts.asm.service.txn.EbReadingService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
@@ -33,18 +27,7 @@ import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.sms.domain.txn.SmsEnqHdrDM;
-import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
-import com.gnts.sms.service.txn.SmsEnqHdrService;
-import com.gnts.sms.service.txn.SmsEnquiryDtlService;
-import com.gnts.sms.txn.SmsComments;
-import com.gnts.stt.dsn.domain.txn.ECRequestDM;
-import com.gnts.stt.dsn.service.txn.ECRequestService;
 import com.vaadin.data.Item;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
@@ -61,27 +44,17 @@ import com.vaadin.ui.VerticalLayout;
 public class EBReading extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	// Bean Creation
-	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
-	private SmsEnqHdrService serviceEnqHeader = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
-	private SmsEnquiryDtlService serviceEnqDetails = (SmsEnquiryDtlService) SpringContextHelper
-			.getBean("SmsEnquiryDtl");
-	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
-	private ECRequestService serviceECRequest = (ECRequestService) SpringContextHelper.getBean("ecRequest");
-	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private EbReadingService serviceEBReading = (EbReadingService) SpringContextHelper.getBean("ebReading");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(EBReading.class);
 	// User Input Fields for EC Request
-	private TextField tfECRNumber;
-	private PopupDateField dfECRDate;
-	private ComboBox cbEnquiry;
-	private ComboBox cbClient;
-	private ComboBox cbProduct;
-	private ComboBox cbFromDept, cbToDept;
-	private TextField tfDrgNumber, tfPartNumber;
-	private TextArea taChangeDetail, taChangeReason, taTestIfAny;
+	private TextField tfMainKwHr, tfC1, tfC2, tfC3, tfC4, tfC5, tfKvaHr, tfR1, tfR2, tfR3, tfR4, tfR5, tfRkvaHrCag,
+			tfLead, tfPfc, tfPerDayUnit, tfPf, tfUnitCharge, tfAdjstCharge, tfHaltUnitCharge;
+	private PopupDateField dfRefDate;
+	private TextArea taMachineRunDetails, taRemarks;
 	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
-	private BeanItemContainer<ECRequestDM> beanECReq = null;
+	private BeanItemContainer<EbReadingDM> beanECReq = null;
 	// form layout for input controls EC Request
 	private FormLayout flcol1, flcol2, flcol3, flcol4;
 	// Search Control Layout
@@ -89,28 +62,17 @@ public class EBReading extends BaseTransUI {
 	// Parent layout for all the input controls EC Request
 	private HorizontalLayout hllayout = new HorizontalLayout();
 	private HorizontalLayout hllayout1 = new HorizontalLayout();
-	// Parent layout for all the input controls Sms Comments
-	VerticalLayout vlTableForm = new VerticalLayout();
 	// local variables declaration
-	private Long ecrid;
+	private Long ebReadingId;
 	private String username;
-	private Long companyid, moduleId;
+	private Long companyid;
 	private int recordCnt = 0;
-	private SmsComments comments;
-	private String status;
-	@SuppressWarnings("unused")
-	private Long branchId, EmployeeId, roleId, appScreenId;
 	
 	// Constructor received the parameters from Login UI class
 	public EBReading() {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
-		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
-		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
-		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside ECRequest() constructor");
 		buildview();
@@ -119,83 +81,34 @@ public class EBReading extends BaseTransUI {
 	private void buildview() {
 		logger.info("CompanyId" + companyid + "username" + username + "painting ECRequest UI");
 		// EC Request Components Definition
-		tfECRNumber = new GERPTextField("ECR Number");
-		tfECRNumber.setWidth("150");
-		tfECRNumber.setReadOnly(false);
-		tfDrgNumber = new TextField("Drg. Number");
-		tfDrgNumber.setWidth("150");
-		tfPartNumber = new TextField("Part Number");
-		tfPartNumber.setWidth("150");
-		cbClient = new GERPComboBox("Client Name");
-		cbClient.setItemCaptionPropertyId("clientName");
-		cbClient.setRequired(true);
-		cbFromDept = new GERPComboBox("From Dept.");
-		cbFromDept.setItemCaptionPropertyId("deptname");
-		loadFromDeptList();
-		cbToDept = new GERPComboBox("To Dept.");
-		cbToDept.setItemCaptionPropertyId("deptname");
-		loadToDeptList();
-		taChangeDetail = new TextArea("Change Detail");
-		taChangeDetail.setWidth("984");
-		taChangeReason = new TextArea("Reason of Change");
-		taChangeReason.setWidth("984");
-		taTestIfAny = new TextArea("Specify any Test to be Conducted");
-		taTestIfAny.setWidth("984");
-		cbEnquiry = new GERPComboBox("Enquiry No.");
-		cbEnquiry.setItemCaptionPropertyId("enquiryNo");
-		cbEnquiry.setImmediate(true);
-		cbEnquiry.setNullSelectionAllowed(false);
-		cbEnquiry.setWidth("150");
-		cbEnquiry.setRequired(true);
-		cbEnquiry.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				// TODO Auto-generated method stub
-				try {
-					loadProduct();
-				}
-				catch (Exception e) {
-				}
-				try {
-					loadSmsClientList();
-				}
-				catch (Exception e) {
-				}
-			}
-		});
-		loadEnquiryList();
-		dfECRDate = new GERPPopupDateField("Date");
-		dfECRDate.setDateFormat("dd-MMM-yyyy");
-		dfECRDate.setInputPrompt("Select Date");
-		dfECRDate.setWidth("130px");
-		cbStatus.setWidth("130");
-		cbProduct = new GERPComboBox("Product Name");
-		cbProduct.setItemCaptionPropertyId("prodname");
-		cbProduct.setWidth("150");
-		cbProduct.setRequired(true);
-		cbProduct.setImmediate(true);
-		cbProduct.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				// TODO Auto-generated method stub
-				tfPartNumber.setValue("");
-				tfDrgNumber.setValue("");
-				try {
-					if (((SmsEnquiryDtlDM) cbProduct.getValue()).getCustomField1() != null) {
-						tfPartNumber.setValue(((SmsEnquiryDtlDM) cbProduct.getValue()).getCustomField1());
-					}
-					if (((SmsEnquiryDtlDM) cbProduct.getValue()).getCustomField2() != null) {
-						tfDrgNumber.setValue(((SmsEnquiryDtlDM) cbProduct.getValue()).getCustomField2());
-					}
-				}
-				catch (Exception e) {
-				}
-			}
-		});
+		tfMainKwHr = new GERPTextField("Main KW HR");
+		tfC1 = new GERPTextField("C1");
+		tfC2 = new GERPTextField("C2");
+		tfC3 = new GERPTextField("C3");
+		tfC4 = new GERPTextField("C4");
+		tfC5 = new GERPTextField("C5");
+		tfKvaHr = new GERPTextField("KVA HR");
+		tfR1 = new GERPTextField("R1");
+		tfR2 = new GERPTextField("R2");
+		tfR3 = new GERPTextField("R3");
+		tfR4 = new GERPTextField("R4");
+		tfR5 = new GERPTextField("R5");
+		tfRkvaHrCag = new GERPTextField("RKVA HR CAG");
+		tfLead = new GERPTextField("Lead");
+		tfPfc = new GERPTextField("PFC");
+		tfPerDayUnit = new GERPTextField("Per Day Unit");
+		tfPf = new GERPTextField("PF");
+		tfUnitCharge = new GERPTextField("Unit Charge");
+		tfAdjstCharge = new GERPTextField("Adjust. Charge");
+		tfHaltUnitCharge = new GERPTextField("Half Unit Charge");
+		taMachineRunDetails = new TextArea("Machine Run Details");
+		taMachineRunDetails.setWidth("96%");
+		taRemarks = new TextArea("Remarks");
+		taRemarks.setWidth("96%");
+		dfRefDate = new GERPPopupDateField("Date");
+		dfRefDate.setDateFormat("dd-MMM-yyyy");
+		dfRefDate.setWidth("130px");
+		cbStatus.setWidth("150");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
@@ -210,7 +123,7 @@ public class EBReading extends BaseTransUI {
 		flcol1 = new FormLayout();
 		flcol2 = new FormLayout();
 		flcol3 = new FormLayout();
-		flcol2.addComponent(tfECRNumber);
+		flcol2.addComponent(dfRefDate);
 		flcol3.addComponent(cbStatus);
 		hlsearchlayout.addComponent(flcol1);
 		hlsearchlayout.addComponent(flcol2);
@@ -222,20 +135,32 @@ public class EBReading extends BaseTransUI {
 	private void assembleinputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		// Remove all components in search layout
-		tfECRNumber.setReadOnly(true);
+		tfMainKwHr.setReadOnly(true);
 		flcol1 = new FormLayout();
 		flcol2 = new FormLayout();
 		flcol3 = new FormLayout();
 		flcol4 = new FormLayout();
-		flcol1.addComponent(tfECRNumber);
-		flcol1.addComponent(dfECRDate);
-		flcol1.addComponent(cbEnquiry);
-		flcol2.addComponent(cbClient);
-		flcol2.addComponent(cbProduct);
-		flcol2.addComponent(tfDrgNumber);
-		flcol3.addComponent(tfPartNumber);
-		flcol3.addComponent(cbFromDept);
-		flcol3.addComponent(cbToDept);
+		flcol1.addComponent(tfMainKwHr);
+		flcol1.addComponent(dfRefDate);
+		flcol1.addComponent(tfC1);
+		flcol1.addComponent(tfC2);
+		flcol1.addComponent(tfC3);
+		flcol1.addComponent(tfC4);
+		flcol1.addComponent(tfC5);
+		flcol2.addComponent(tfKvaHr);
+		flcol2.addComponent(tfR1);
+		flcol2.addComponent(tfR2);
+		flcol2.addComponent(tfR3);
+		flcol2.addComponent(tfR4);
+		flcol2.addComponent(tfR5);
+		flcol3.addComponent(tfRkvaHrCag);
+		flcol3.addComponent(tfLead);
+		flcol3.addComponent(tfPfc);
+		flcol3.addComponent(tfPerDayUnit);
+		flcol3.addComponent(tfPf);
+		flcol3.addComponent(tfUnitCharge);
+		flcol4.addComponent(tfAdjstCharge);
+		flcol4.addComponent(tfHaltUnitCharge);
 		flcol4.addComponent(cbStatus);
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
@@ -251,9 +176,8 @@ public class EBReading extends BaseTransUI {
 				vlHeader.setSpacing(true);
 				vlHeader.setMargin(true);
 				vlHeader.addComponent(hllayout);
-				vlHeader.addComponent(taChangeDetail);
-				vlHeader.addComponent(taChangeReason);
-				vlHeader.addComponent(taTestIfAny);
+				vlHeader.addComponent(taMachineRunDetails);
+				vlHeader.addComponent(taRemarks);
 				addComponent(GERPPanelGenerator.createPanel(vlHeader));
 			}
 		});
@@ -265,84 +189,21 @@ public class EBReading extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<ECRequestDM> listECReq = new ArrayList<ECRequestDM>();
+		List<EbReadingDM> list = new ArrayList<EbReadingDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + null + "," + tfECRNumber.getValue() + ", " + (String) cbStatus.getValue());
-		listECReq = serviceECRequest.getECRequestList(null, tfECRNumber.getValue(), null, (String) cbStatus.getValue());
-		recordCnt = listECReq.size();
-		beanECReq = new BeanItemContainer<ECRequestDM>(ECRequestDM.class);
-		beanECReq.addAll(listECReq);
+				+ companyid + ", " + null + "," + tfMainKwHr.getValue() + ", " + (String) cbStatus.getValue());
+		list = serviceEBReading.getEbReadingDetailList(null, null, null, null);
+		recordCnt = list.size();
+		beanECReq = new BeanItemContainer<EbReadingDM>(EbReadingDM.class);
+		beanECReq.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the ECReq. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanECReq);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ecrid", "ecrNumber", "ecrDate", "drgNumber", "status",
-				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "ECR Number", "Date", "Drg. Number", "Status",
-				"Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("ecrid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
-	}
-	
-	// Load Enquiry List
-	private void loadEnquiryList() {
-		List<SmsEnqHdrDM> getsmsEnqNoHdr = new ArrayList<SmsEnqHdrDM>();
-		getsmsEnqNoHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(getsmsEnqNoHdr);
-		cbEnquiry.setContainerDataSource(beansmsenqHdr);
-	}
-	
-	// Load Product List
-	private void loadProduct() {
-		try {
-			List<SmsEnquiryDtlDM> listEnqDtls = new ArrayList<SmsEnquiryDtlDM>();
-			Long enquid = ((Long) cbEnquiry.getValue());
-			listEnqDtls.addAll(serviceEnqDetails.getsmsenquirydtllist(null, enquid, null, null, null, null));
-			BeanItemContainer<SmsEnquiryDtlDM> beanEnqDtl = new BeanItemContainer<SmsEnquiryDtlDM>(
-					SmsEnquiryDtlDM.class);
-			beanEnqDtl.addAll(listEnqDtls);
-			cbProduct.setContainerDataSource(beanEnqDtl);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	// Load Client List
-	private void loadSmsClientList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
-		List<ClientDM> clientlist = serviceClients.getClientDetails(companyid,
-				serviceEnqHeader.getSmsEnqHdrList(null, (Long) cbEnquiry.getValue(), null, null, null, "F", null, null)
-						.get(0).getClientId(), null, null, null, null, null, null, "Active", "P");
-		BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
-		beanclientDM.setBeanIdProperty("clientId");
-		beanclientDM.addAll(clientlist);
-		cbClient.setContainerDataSource(beanclientDM);
-		cbClient.setValue(cbClient.getItemIds().iterator().next());
-	}
-	
-	/*
-	 * loadFromDeptList()-->this function is used for load the Department list
-	 */
-	private void loadFromDeptList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P");
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
-		cbFromDept.setContainerDataSource(beanDepartment);
-	}
-	
-	/*
-	 * loadToDeptList()-->this function is used for load the Department list
-	 */
-	private void loadToDeptList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P");
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
-		cbToDept.setContainerDataSource(beanDepartment);
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ebReadingId", "readingDate", "mainKwHr", "kvaHr",
+				"perDayUnit", "status", "lastupdateddt", "lastupdatedby" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Main KW HR", "KVA HR", "Per Day Unit",
+				"Status", "Last Updated date", "Last Updated by" });
+		tblMstScrSrchRslt.setColumnAlignment("ebReadingId", Align.RIGHT);
+		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header
@@ -350,95 +211,26 @@ public class EBReading extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
 		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> " + ecrid);
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> " + ebReadingId);
 		if (sltedRcd != null) {
-			ECRequestDM ecRequestDM = beanECReq.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			ecrid = ecRequestDM.getEcrid();
-			tfECRNumber.setReadOnly(false);
-			tfECRNumber.setValue(ecRequestDM.getEcrNumber());
-			tfECRNumber.setReadOnly(true);
-			cbEnquiry.setValue(ecRequestDM.getEnquiryId());
-			Long prodid = ecRequestDM.getProductId();
-			Collection<?> prdids = cbProduct.getItemIds();
-			for (Iterator<?> iterator = prdids.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
-				// Get the actual bean and use the data
-				SmsEnquiryDtlDM st = (SmsEnquiryDtlDM) item.getBean();
-				if (prodid != null && prodid.equals(st.getProductid())) {
-					cbProduct.setValue(itemId);
-				}
-			}
-			cbClient.setValue(ecRequestDM.getClientId());
-			cbFromDept.setValue(ecRequestDM.getFromDeptId());
-			cbToDept.setValue(ecRequestDM.getToDeptId());
-			dfECRDate.setValue(ecRequestDM.getEcrDate());
-			if (ecRequestDM.getChangeDetail() != null) {
-				taChangeDetail.setValue(ecRequestDM.getChangeDetail());
-			}
-			if (ecRequestDM.getChangeReason() != null) {
-				taChangeReason.setValue(ecRequestDM.getChangeReason());
-			}
-			if (ecRequestDM.getIfAnyTest() != null) {
-				taTestIfAny.setValue(ecRequestDM.getIfAnyTest());
-			}
-			tfPartNumber.setValue(ecRequestDM.getPartNumber());
-			tfDrgNumber.setValue(ecRequestDM.getDrgNumber());
+			EbReadingDM ecRequestDM = beanECReq.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			ebReadingId = ecRequestDM.getEbReadingId();
 			cbStatus.setValue(ecRequestDM.getStatus());
 		}
-		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, ecrid, null, null, null,
-				status);
-		comments.loadsrch(true, null, null, null, null, null, null, null, ecrid, null, null, null, null);
 	}
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... "); //
-		ECRequestDM ecRequestDM = new ECRequestDM();
+		EbReadingDM ecRequestDM = new EbReadingDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
 			ecRequestDM = beanECReq.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		ecRequestDM.setEcrNumber(tfECRNumber.getValue());
-		ecRequestDM.setEnquiryId((Long) cbEnquiry.getValue());
-		ecRequestDM.setDrgNumber(tfDrgNumber.getValue());
-		ecRequestDM.setPartNumber(tfPartNumber.getValue());
-		ecRequestDM.setFromDeptId((Long) cbFromDept.getValue());
-		ecRequestDM.setToDeptId((Long) cbToDept.getValue());
-		if (cbProduct.getValue() != null) {
-			ecRequestDM.setProductId(((SmsEnquiryDtlDM) cbProduct.getValue()).getProductid());
-		}
-		ecRequestDM.setClientId((Long) cbClient.getValue());
-		ecRequestDM.setEcrDate(dfECRDate.getValue());
-		ecRequestDM.setChangeDetail(taChangeDetail.getValue());
-		ecRequestDM.setChangeReason(taChangeReason.getValue());
-		ecRequestDM.setIfAnyTest(taTestIfAny.getValue());
 		ecRequestDM.setStatus((String) cbStatus.getValue());
-		ecRequestDM.setLastUpdatedBy(username);
-		ecRequestDM.setLastUpdatedDate(DateUtils.getcurrentdate());
-		serviceECRequest.saveOrUpdateECRequest(ecRequestDM);
-		ecrid = ecRequestDM.getEcrid();
-		try {
-			SmsEnquiryDtlDM smsEnquiryDtlDM = (SmsEnquiryDtlDM) cbProduct.getValue();
-			smsEnquiryDtlDM.setCustomField1(tfPartNumber.getValue());
-			smsEnquiryDtlDM.setCustomField2(tfDrgNumber.getValue());
-			System.out.println(smsEnquiryDtlDM);
-			serviceEnqDetails.saveOrUpdatesmsenquirydtlDetails(smsEnquiryDtlDM);
-		}
-		catch (Exception e) {
-		}
-		if (tblMstScrSrchRslt.getValue() == null) {
-			try {
-				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "STT_ECRNO").get(0);
-				if (slnoObj.getAutoGenYN().equals("Y")) {
-					serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "STT_ECRNO");
-					System.out.println("Serial no=>" + companyid + "," + moduleId + "," + branchId);
-				}
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		comments.saveSalesEnqId(ecRequestDM.getEnquiryId(), null);
+		ecRequestDM.setLastupdatedby(username);
+		ecRequestDM.setLastupdateddt(DateUtils.getcurrentdate());
+		serviceEBReading.saveOrUpdateDetails(ecRequestDM);
+		ebReadingId = ecRequestDM.getEbReadingId();
 	}
 	
 	@Override
@@ -447,8 +239,8 @@ public class EBReading extends BaseTransUI {
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
 		cbStatus.setValue(null);
-		tfECRNumber.setValue("");
-		tfECRNumber.setReadOnly(false);
+		tfMainKwHr.setValue("");
+		tfMainKwHr.setReadOnly(false);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		// cbclient.setRequired(true);
@@ -460,26 +252,12 @@ public class EBReading extends BaseTransUI {
 	protected void addDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		// cbclient.setRequired(true);
-		tfECRNumber.setReadOnly(true);
+		tfMainKwHr.setReadOnly(true);
 		hllayout.removeAllComponents();
 		vlSrchRsltContainer.setVisible(true);
 		assembleinputLayout();
 		resetFields();
-		tfECRNumber.setReadOnly(false);
-		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "STT_ECRNO").get(0);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfECRNumber.setValue(slnoObj.getKeyDesc());
-				tfECRNumber.setReadOnly(true);
-			} else {
-				tfECRNumber.setReadOnly(false);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null);
+		tfMainKwHr.setReadOnly(false);
 	}
 	
 	@Override
@@ -496,30 +274,17 @@ public class EBReading extends BaseTransUI {
 	
 	@Override
 	protected void validateDetails() throws ValidationException {
-		cbEnquiry.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		if (cbEnquiry.getValue() == null) {
-			cbEnquiry.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRYNO));
-			errorFlag = true;
-		}
-		if (cbClient.getValue() == null) {
-			cbClient.setComponentError(new UserError(GERPErrorCodes.NULL_CLIENT_NAME));
-			errorFlag = true;
-		}
-		if (cbProduct.getValue() == null) {
-			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
-			errorFlag = true;
-		}
-		if ((dfECRDate.getValue() == null)) {
-			dfECRDate.setComponentError(new UserError(GERPErrorCodes.SELECT_DATE));
+		if ((dfRefDate.getValue() == null)) {
+			dfRefDate.setComponentError(new UserError(GERPErrorCodes.SELECT_DATE));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + dfECRDate.getValue());
+					+ "Throwing ValidationException. User data is > " + dfRefDate.getValue());
 			errorFlag = true;
 		}
 		logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Throwing ValidationException. User data is > " + null + "," + cbEnquiry.getValue() + "," + "," + ","
-				+ dfECRDate.getValue() + ",");
+				+ "Throwing ValidationException. User data is > " + null + "," + null + "," + "," + ","
+				+ dfRefDate.getValue() + ",");
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
@@ -528,9 +293,9 @@ public class EBReading extends BaseTransUI {
 	@Override
 	protected void showAuditDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Getting audit record for enquiryId " + ecrid);
+				+ "Getting audit record for enquiryId " + ebReadingId);
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_SMS_ENQUIRY_HDR);
-		UI.getCurrent().getSession().setAttribute("audittablepk", String.valueOf(ecrid));
+		UI.getCurrent().getSession().setAttribute("audittablepk", String.valueOf(ebReadingId));
 	}
 	
 	@Override
@@ -543,27 +308,20 @@ public class EBReading extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
 		loadSrchRslt();
-		tfECRNumber.setReadOnly(false);
+		tfMainKwHr.setReadOnly(false);
 	}
 	
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		tfECRNumber.setReadOnly(false);
-		tfECRNumber.setValue("");
-		tfECRNumber.setComponentError(null);
-		cbEnquiry.setComponentError(null);
-		cbEnquiry.setValue(null);
-		cbProduct.setValue(null);
-		cbClient.setValue(null);
-		cbFromDept.setValue(null);
-		cbToDept.setValue(null);
-		dfECRDate.setValue(null);
-		taChangeDetail.setValue("");
-		taChangeReason.setValue("");
-		taTestIfAny.setValue("");
+		tfMainKwHr.setReadOnly(false);
+		tfMainKwHr.setValue("");
+		tfMainKwHr.setComponentError(null);
+		dfRefDate.setValue(null);
+		taMachineRunDetails.setValue("");
+		taRemarks.setValue("");
 		cbStatus.setValue(null);
-		dfECRDate.setValue(new Date());
+		dfRefDate.setValue(new Date());
 	}
 	
 	@Override
@@ -578,7 +336,7 @@ public class EBReading extends BaseTransUI {
 			lblNotification.setIcon(null);
 			lblNotification.setCaption("");
 			assembleSearchLayout();
-			tfECRNumber.setReadOnly(false);
+			tfMainKwHr.setReadOnly(false);
 		}
 	}
 	
@@ -592,7 +350,7 @@ public class EBReading extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			parameterMap.put("ECRID", ecrid);
+			parameterMap.put("ECRID", ebReadingId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/ecr"); // ecr is the name of my jasper
 			// file.

@@ -17,6 +17,7 @@ public class GERPPopupDateField extends PopupDateField {
 		setWidth("130px");
 		setCaption(caption);
 		setDateFormat("dd-MMM-yyyy");
+		setInputPrompt("Select Date");
 		addBlurListener(new BlurListener() {
 			/**
 			 * 

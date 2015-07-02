@@ -1,5 +1,6 @@
 package com.gnts.erputil.components;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -40,8 +41,11 @@ public class GERPTimeField extends CustomField<Date> {
 	
 	public GERPTimeField() {
 		hourSelect = getSelect();
+		hourSelect.setWidth("60px");
 		minuteSelect = getSelect();
+		minuteSelect.setWidth("60px");
 		secondSelect = getSelect();
+		secondSelect.setWidth("60px");
 		root = new HorizontalLayout();
 		root.setHeight(null);
 		root.setWidth(null);
@@ -470,6 +474,10 @@ public class GERPTimeField extends CustomField<Date> {
 	
 	public Double getHorsMunitesinLong() {
 		Double hoursminutes = Double.valueOf(getHours() + "." + getMinutes());
+		return hoursminutes;
+	}
+	public BigDecimal getHorsMunitesinBigDecimal() {
+		BigDecimal hoursminutes = new BigDecimal(getHours() + "." + getMinutes());
 		return hoursminutes;
 	}
 }

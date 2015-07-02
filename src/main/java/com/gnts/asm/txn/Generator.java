@@ -2,6 +2,7 @@ package com.gnts.asm.txn;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -9,6 +10,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
+import com.gnts.asm.domain.txn.AssetDetailsDM;
+import com.gnts.asm.domain.txn.GeneratorDM;
+import com.gnts.asm.service.txn.AssetDetailsService;
+import com.gnts.asm.service.txn.GeneratorService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
@@ -26,11 +31,8 @@ import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.sms.domain.txn.SmsEnqHdrDM;
-import com.gnts.sms.service.txn.SmsEnqHdrService;
-import com.gnts.stt.dsn.domain.txn.ECRequestDM;
-import com.gnts.stt.dsn.service.txn.ECRequestService;
-import com.vaadin.data.Item;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -48,8 +50,9 @@ import com.vaadin.ui.VerticalLayout;
 public class Generator extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	// Bean Creation
-	private SmsEnqHdrService serviceEnqHeader = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
-	private ECRequestService serviceECRequest = (ECRequestService) SpringContextHelper.getBean("ecRequest");
+	private GeneratorService serviceGenerator = (GeneratorService) SpringContextHelper.getBean("generator");
+	private AssetDetailsService serviceAssetDetail = (com.gnts.asm.service.txn.AssetDetailsService) SpringContextHelper
+			.getBean("assetDetails");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(Generator.class);
 	// User Input Fields for EC Request
@@ -61,7 +64,7 @@ public class Generator extends BaseTransUI {
 	private TextArea taRunningMachineDtl, taRemarks;
 	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
-	private BeanItemContainer<ECRequestDM> beanECReq = null;
+	private BeanItemContainer<GeneratorDM> beanGenerator = null;
 	// form layout for input controls EC Request
 	private FormLayout flcol1, flcol2, flcol3, flcol4;
 	// Search Control Layout
@@ -70,7 +73,7 @@ public class Generator extends BaseTransUI {
 	private HorizontalLayout hllayout = new HorizontalLayout();
 	private HorizontalLayout hllayout1 = new HorizontalLayout();
 	// local variables declaration
-	private Long ecrid;
+	private Long generatorId;
 	private String username;
 	private Long companyid;
 	private int recordCnt = 0;
@@ -89,8 +92,6 @@ public class Generator extends BaseTransUI {
 		logger.info("CompanyId" + companyid + "username" + username + "painting Generator UI");
 		// EC Request Components Definition
 		tfDiselOpenBal = new GERPTextField("Disel Open Balance");
-		tfDiselOpenBal.setWidth("150");
-		tfDiselOpenBal.setReadOnly(false);
 		tfGenTotalTime = new GERPTextField("Generator Total time");
 		tfDiselConsBal = new GERPTextField("Disel Consuption Balance");
 		tfVolts = new GERPTextField("Volts");
@@ -100,33 +101,57 @@ public class Generator extends BaseTransUI {
 		tfDiselPurLtrs = new GERPTextField("Disel Purchase(Ltrs)");
 		tfOtherUseLtrs = new GERPTextField("Other Use(Ltrs)");
 		tfLtrPerHours = new GERPTextField("Liter per Hour");
-		tfMachineServRemain = new GERPTextField("Machine Service Remainder");
+		tfMachineServRemain = new GERPTextField("Service Remainder");
 		tfOneLtrCost = new GERPTextField("One Liter Cost");
 		tfTotalTime = new GERPTextField("Total Time");
 		tfTotalCost = new GERPTextField("Total Cost");
 		tfGenStartTime = new GERPTimeField("Start Time");
+		tfGenStartTime.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getTotalHours();
+			}
+		});
 		tfGenStopTime = new GERPTimeField("Stop Time");
+		tfGenStopTime.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getTotalHours();
+			}
+		});
 		taRunningMachineDtl = new TextArea("Running Machine Details");
-		taRunningMachineDtl.setWidth("90%");
+		taRunningMachineDtl.setWidth("98%");
 		taRemarks = new TextArea("Remarks");
-		taRemarks.setWidth("90%");
-		cbAssetName = new GERPComboBox("Enquiry No.");
-		cbAssetName.setItemCaptionPropertyId("enquiryNo");
-		cbAssetName.setImmediate(true);
-		cbAssetName.setNullSelectionAllowed(false);
-		cbAssetName.setWidth("150");
+		taRemarks.setWidth("98%");
+		cbAssetName = new GERPComboBox("Asset Name");
+		cbAssetName.setItemCaptionPropertyId("assetName");
 		cbAssetName.setRequired(true);
-		loadEnquiryList();
+		loadAssetList();
 		dfRefDate = new GERPPopupDateField("Date");
-		dfRefDate.setDateFormat("dd-MMM-yyyy");
-		dfRefDate.setInputPrompt("Select Date");
-		dfRefDate.setWidth("130px");
-		cbStatus.setWidth("130");
+		cbStatus.setWidth("150");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
 		resetFields();
 		loadSrchRslt();
+	}
+	
+	private void getTotalHours() {
+		// TODO Auto-generated method stub
+		if (tfGenStartTime.getValue() != null && tfGenStopTime.getValue() != null) {
+			if (tfGenStartTime.getHorsMunitesinBigDecimal().compareTo(tfGenStopTime.getHorsMunitesinBigDecimal()) < 0) {
+				tfTotalTime.setValue(tfGenStartTime.getHorsMunitesinBigDecimal()
+						.subtract(tfGenStopTime.getHorsMunitesinBigDecimal()).abs().toString());
+			} else {
+				tfTotalTime.setValue("0.0");
+			}
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -136,7 +161,8 @@ public class Generator extends BaseTransUI {
 		flcol1 = new FormLayout();
 		flcol2 = new FormLayout();
 		flcol3 = new FormLayout();
-		flcol2.addComponent(tfDiselOpenBal);
+		flcol1.addComponent(cbAssetName);
+		flcol2.addComponent(dfRefDate);
 		flcol3.addComponent(cbStatus);
 		hlsearchlayout.addComponent(flcol1);
 		hlsearchlayout.addComponent(flcol2);
@@ -148,29 +174,28 @@ public class Generator extends BaseTransUI {
 	private void assembleinputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		// Remove all components in search layout
-		tfDiselOpenBal.setReadOnly(true);
 		flcol1 = new FormLayout();
 		flcol2 = new FormLayout();
 		flcol3 = new FormLayout();
 		flcol4 = new FormLayout();
 		flcol1.addComponent(cbAssetName);
 		flcol1.addComponent(dfRefDate);
-		flcol1.addComponent(tfDiselOpenBal);
-		flcol1.addComponent(tfGenTotalTime);
-		flcol1.addComponent(tfDiselConsBal);
-		flcol1.addComponent(tfVolts);
-		flcol2.addComponent(tfAmps);
-		flcol2.addComponent(tfRpmHz);
-		flcol2.addComponent(tfDiselCloseBal);
-		flcol2.addComponent(tfDiselPurLtrs);
-		flcol2.addComponent(tfOtherUseLtrs);
-		flcol2.addComponent(tfLtrPerHours);
-		flcol3.addComponent(tfMachineServRemain);
-		flcol3.addComponent(tfOneLtrCost);
-		flcol3.addComponent(tfTotalCost);
-		flcol3.addComponent(tfGenStartTime);
-		flcol3.addComponent(tfGenStopTime);
-		flcol3.addComponent(tfTotalTime);
+		flcol1.addComponent(tfGenStartTime);
+		flcol1.addComponent(tfGenStopTime);
+		flcol2.addComponent(tfTotalTime);
+		flcol2.addComponent(tfDiselOpenBal);
+		flcol2.addComponent(tfGenTotalTime);
+		flcol2.addComponent(tfDiselConsBal);
+		flcol2.addComponent(tfVolts);
+		flcol3.addComponent(tfAmps);
+		flcol3.addComponent(tfRpmHz);
+		flcol3.addComponent(tfDiselCloseBal);
+		flcol3.addComponent(tfDiselPurLtrs);
+		flcol3.addComponent(tfOtherUseLtrs);
+		flcol4.addComponent(tfLtrPerHours);
+		flcol4.addComponent(tfMachineServRemain);
+		flcol4.addComponent(tfOneLtrCost);
+		flcol4.addComponent(tfTotalCost);
 		flcol4.addComponent(cbStatus);
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
@@ -199,75 +224,119 @@ public class Generator extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<ECRequestDM> listECReq = new ArrayList<ECRequestDM>();
+		List<GeneratorDM> list = new ArrayList<GeneratorDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + null + "," + tfDiselOpenBal.getValue() + ", " + (String) cbStatus.getValue());
-		listECReq = serviceECRequest.getECRequestList(null, tfDiselOpenBal.getValue(), null,
-				(String) cbStatus.getValue());
-		recordCnt = listECReq.size();
-		beanECReq = new BeanItemContainer<ECRequestDM>(ECRequestDM.class);
-		beanECReq.addAll(listECReq);
+		list = serviceGenerator.getGeneratorDetailList(null, null, null, null);
+		recordCnt = list.size();
+		beanGenerator = new BeanItemContainer<GeneratorDM>(GeneratorDM.class);
+		beanGenerator.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the ECReq. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanECReq);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ecrid", "ecrNumber", "ecrDate", "drgNumber", "status",
-				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "ECR Number", "Date", "Drg. Number", "Status",
-				"Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("ecrid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		tblMstScrSrchRslt.setContainerDataSource(beanGenerator);
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "gensetId", "assetName", "gensetDate", "genOnTime",
+				"getOffTime", "totalTime", "status", "lastupdateddt", "lastupdatedby" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Asset Name", "Date", "On Time", "Off Time",
+				"Total Time", "Status", "Last Updated date", "Last Updated by" });
+		tblMstScrSrchRslt.setColumnAlignment("gensetId", Align.RIGHT);
+		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
 	
 	// Load Enquiry List
-	private void loadEnquiryList() {
-		List<SmsEnqHdrDM> getsmsEnqNoHdr = new ArrayList<SmsEnqHdrDM>();
-		getsmsEnqNoHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(getsmsEnqNoHdr);
-		cbAssetName.setContainerDataSource(beansmsenqHdr);
+	private void loadAssetList() {
+		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
+				AssetDetailsDM.class);
+		beanAssetDetails.setBeanIdProperty("assetId");
+		beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, "GEN", null, null, null));
+		cbAssetName.setContainerDataSource(beanAssetDetails);
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header
 	private void editECRequest() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> " + ecrid);
-		if (sltedRcd != null) {
-			ECRequestDM ecRequestDM = beanECReq.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			ecrid = ecRequestDM.getEcrid();
-			tfDiselOpenBal.setReadOnly(false);
-			tfDiselOpenBal.setValue(ecRequestDM.getEcrNumber());
-			tfDiselOpenBal.setReadOnly(true);
-			cbAssetName.setValue(ecRequestDM.getEnquiryId());
-			dfRefDate.setValue(ecRequestDM.getEcrDate());
-			if (ecRequestDM.getChangeDetail() != null) {
-				taRunningMachineDtl.setValue(ecRequestDM.getChangeDetail());
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
+				+ generatorId);
+		if (tblMstScrSrchRslt.getValue() != null) {
+			GeneratorDM generatorDM = beanGenerator.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			generatorId = generatorDM.getGensetId();
+			cbAssetName.setValue(generatorDM.getAssetId());
+			dfRefDate.setValue(generatorDM.getGensetDate1());
+			tfGenStartTime.setTime(generatorDM.getGenOnTime());
+			tfGenStopTime.setTime(generatorDM.getGetOffTime());
+			tfTotalTime.setValue(generatorDM.getTotalTime());
+			if (generatorDM.getDiselOpenBalance() != null) {
+				tfDiselOpenBal.setValue(generatorDM.getDiselOpenBalance().toString());
 			}
-			if (ecRequestDM.getChangeReason() != null) {
-				taRemarks.setValue(ecRequestDM.getChangeReason());
+			if (generatorDM.getConsuptionBalance() != null) {
+				tfDiselConsBal.setValue(generatorDM.getConsuptionBalance().toString());
 			}
-			cbStatus.setValue(ecRequestDM.getStatus());
+			tfGenTotalTime.setValue(generatorDM.getTotalTime());
+			if (generatorDM.getVolts() != null) {
+				tfVolts.setValue(generatorDM.getVolts().toString());
+			}
+			if (generatorDM.getAmps() != null) {
+				tfAmps.setValue(generatorDM.getAmps().toString());
+			}
+			if (generatorDM.getRpmHz() != null) {
+				tfRpmHz.setValue(generatorDM.getRpmHz().toString());
+			}
+			if (generatorDM.getDiselCloseBalance() != null) {
+				tfDiselCloseBal.setValue(generatorDM.getDiselCloseBalance().toString());
+			}
+			if (generatorDM.getDieselPurLiters() != null) {
+				tfDiselPurLtrs.setValue(generatorDM.getDieselPurLiters().toString());
+			}
+			if (generatorDM.getOtherUseLiters() != null) {
+				tfOtherUseLtrs.setValue(generatorDM.getOtherUseLiters().toString());
+			}
+			if (generatorDM.getLiterPerHour() != null) {
+				tfLtrPerHours.setValue(generatorDM.getLiterPerHour().toString());
+			}
+			if (generatorDM.getMachineServiceRemain() != null) {
+				tfMachineServRemain.setValue(generatorDM.getMachineServiceRemain().toString());
+			}
+			if (generatorDM.getOneLiterCost() != null) {
+				tfOneLtrCost.setValue(generatorDM.getOneLiterCost().toString());
+			}
+			if (generatorDM.getTotalCost() != null) {
+				tfTotalCost.setValue(generatorDM.getTotalCost().toString());
+			}
+			cbStatus.setValue(generatorDM.getStatus());
 		}
 	}
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... "); //
-		ECRequestDM ecRequestDM = new ECRequestDM();
+		GeneratorDM generatorDM = new GeneratorDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			ecRequestDM = beanECReq.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			generatorDM = beanGenerator.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		ecRequestDM.setEcrNumber(tfDiselOpenBal.getValue());
-		ecRequestDM.setEnquiryId((Long) cbAssetName.getValue());
-		ecRequestDM.setEcrDate(dfRefDate.getValue());
-		ecRequestDM.setChangeDetail(taRunningMachineDtl.getValue());
-		ecRequestDM.setChangeReason(taRemarks.getValue());
-		ecRequestDM.setStatus((String) cbStatus.getValue());
-		ecRequestDM.setLastUpdatedBy(username);
-		ecRequestDM.setLastUpdatedDate(DateUtils.getcurrentdate());
-		serviceECRequest.saveOrUpdateECRequest(ecRequestDM);
-		ecrid = ecRequestDM.getEcrid();
+		generatorDM.setAssetId((Long) cbAssetName.getValue());
+		generatorDM.setGensetDate(dfRefDate.getValue());
+		generatorDM.setDiselOpenBalance(new BigDecimal(tfDiselOpenBal.getValue()));
+		generatorDM.setGenTotalTime(new BigDecimal(tfGenTotalTime.getValue()));
+		generatorDM.setConsuptionBalance(new BigDecimal(tfDiselConsBal.getValue()));
+		generatorDM.setVolts(new BigDecimal(tfVolts.getValue()));
+		generatorDM.setAmps(new BigDecimal(tfAmps.getValue()));
+		generatorDM.setRpmHz(new BigDecimal(tfRpmHz.getValue()));
+		generatorDM.setDiselCloseBalance(new BigDecimal(tfDiselCloseBal.getValue()));
+		generatorDM.setDieselPurLiters(new BigDecimal(tfDiselPurLtrs.getValue()));
+		generatorDM.setOtherUseLiters(new BigDecimal(tfOtherUseLtrs.getValue()));
+		generatorDM.setLiterPerHour(new BigDecimal(tfLtrPerHours.getValue()));
+		generatorDM.setMachineServiceRemain(new BigDecimal(tfMachineServRemain.getValue()));
+		generatorDM.setOneLiterCost(new BigDecimal(tfOneLtrCost.getValue()));
+		generatorDM.setTotalCost(new BigDecimal(tfTotalCost.getValue()));
+		generatorDM.setGenOnTime(tfGenStartTime.getHorsMunites());
+		generatorDM.setGetOffTime(tfGenStopTime.getHorsMunites());
+		generatorDM.setTotalTime(tfTotalTime.getValue());
+		generatorDM.setRunningMachineDetails(taRunningMachineDtl.getValue());
+		generatorDM.setRemarks(taRemarks.getValue());
+		generatorDM.setStatus((String) cbStatus.getValue());
+		generatorDM.setLastupdatedby(username);
+		generatorDM.setLastupdateddt(DateUtils.getcurrentdate());
+		serviceGenerator.saveOrUpdateDetails(generatorDM);
+		generatorId = generatorDM.getGensetId();
 	}
 	
 	@Override
@@ -277,10 +346,8 @@ public class Generator extends BaseTransUI {
 		// reset the field valued to default
 		cbStatus.setValue(null);
 		tfDiselOpenBal.setValue("");
-		tfDiselOpenBal.setReadOnly(false);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
-		// cbclient.setRequired(true);
 		// reload the search using the defaults
 		loadSrchRslt();
 	}
@@ -335,9 +402,9 @@ public class Generator extends BaseTransUI {
 	@Override
 	protected void showAuditDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Getting audit record for enquiryId " + ecrid);
+				+ "Getting audit record for enquiryId " + generatorId);
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_SMS_ENQUIRY_HDR);
-		UI.getCurrent().getSession().setAttribute("audittablepk", String.valueOf(ecrid));
+		UI.getCurrent().getSession().setAttribute("audittablepk", String.valueOf(generatorId));
 	}
 	
 	@Override
@@ -350,22 +417,32 @@ public class Generator extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
 		loadSrchRslt();
-		tfDiselOpenBal.setReadOnly(false);
 	}
 	
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		tfDiselOpenBal.setReadOnly(false);
-		tfDiselOpenBal.setValue("");
-		tfDiselOpenBal.setComponentError(null);
-		cbAssetName.setComponentError(null);
 		cbAssetName.setValue(null);
-		dfRefDate.setValue(null);
+		dfRefDate.setValue(new Date());
+		tfGenStartTime.setValue(null);
+		tfGenStopTime.setValue(null);
+		tfTotalTime.setValue("");
+		tfDiselOpenBal.setValue("");
+		tfGenTotalTime.setValue("");
+		tfDiselConsBal.setValue("");
+		tfVolts.setValue("");
+		tfAmps.setValue("");
+		tfRpmHz.setValue("");
+		tfDiselCloseBal.setValue("");
+		tfDiselPurLtrs.setValue("");
+		tfOtherUseLtrs.setValue("");
+		tfLtrPerHours.setValue("");
+		tfMachineServRemain.setValue("");
+		tfOneLtrCost.setValue("");
+		tfTotalCost.setValue("");
 		taRunningMachineDtl.setValue("");
 		taRemarks.setValue("");
 		cbStatus.setValue(null);
-		dfRefDate.setValue(new Date());
 	}
 	
 	@Override
@@ -380,7 +457,6 @@ public class Generator extends BaseTransUI {
 			lblNotification.setIcon(null);
 			lblNotification.setCaption("");
 			assembleSearchLayout();
-			tfDiselOpenBal.setReadOnly(false);
 		}
 	}
 	
@@ -394,7 +470,7 @@ public class Generator extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			parameterMap.put("ECRID", ecrid);
+			parameterMap.put("ECRID", generatorId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/ecr"); // ecr is the name of my jasper
 			// file.

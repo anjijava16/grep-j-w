@@ -28,6 +28,7 @@ import com.gnts.base.service.mst.RegionService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
@@ -35,9 +36,7 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
-import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -63,7 +62,7 @@ public class Region extends BaseUI {
 	private ComboBox cbRegionStatus = new GERPComboBox("Status", BASEConstants.M_BASE_USER, BASEConstants.USER_STATUS);
 	private BeanItemContainer<RegionDM> beanRegion = null;
 	private BeanContainer<Long, CountryDM> beanCountry = null;
-	private Long companyid,countryid;
+	private Long companyid, countryid;
 	private String regId;
 	private int recordCnt = 0;
 	private String username;
@@ -78,7 +77,7 @@ public class Region extends BaseUI {
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside Region() constructor");
 		// Loading the UI
-		countryid=(Long)UI.getCurrent().getSession().getAttribute("countryid");
+		countryid = (Long) UI.getCurrent().getSession().getAttribute("countryid");
 		buildview();
 	}
 	
@@ -110,7 +109,6 @@ public class Region extends BaseUI {
 		loadCountryname();
 		resetFields();
 		loadSrchRslt();
-		
 	}
 	
 	private void assembleSearchLayout() {
@@ -126,7 +124,7 @@ public class Region extends BaseUI {
 	// load country names
 	private void loadCountryname() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<CountryDM> loadCountrylist = serviceCountry.getCountryList(null,null, null, null, "Active", "F");
+		List<CountryDM> loadCountrylist = serviceCountry.getCountryList(null, null, null, null, "Active", "F");
 		loadCountrylist.add(new CountryDM(0L, "All Countries", null));
 		beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 		beanCountry.setBeanIdProperty("countryID");
@@ -139,10 +137,10 @@ public class Region extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<RegionDM> regionList = new ArrayList<RegionDM>();
-		regionList = serviceRegion.getRegionList(tfRegionName.getValue(), (String) cbRegionStatus.getValue(), (Long)cbCountry.getValue(),
-				companyid, "F");
+		regionList = serviceRegion.getRegionList(tfRegionName.getValue(), (String) cbRegionStatus.getValue(),
+				(Long) cbCountry.getValue(), companyid, "F");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfRegionName.getValue() + ", " + cbRegionStatus.getValue() + "," );
+				+ companyid + ", " + tfRegionName.getValue() + ", " + cbRegionStatus.getValue() + ",");
 		recordCnt = regionList.size();
 		beanRegion = new BeanItemContainer<RegionDM>(RegionDM.class);
 		beanRegion.addAll(regionList);
@@ -150,14 +148,13 @@ public class Region extends BaseUI {
 		tblMstScrSrchRslt.setContainerDataSource(beanRegion);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "regionId", "regionName", "countryname", "status",
 				"lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Region", "Country", "Status",
-				"Updated Date", "Updated By" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Region", "Country", "Status", "Updated Date",
+				"Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("regionId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
-		//tfRegionName.setRequired(false);
-		//cbCountry.setRequired(false);
+		// tfRegionName.setRequired(false);
+		// cbCountry.setRequired(false);
 	}
-	
 	
 	// Reset the field values to default values
 	@Override
@@ -168,7 +165,7 @@ public class Region extends BaseUI {
 		cbCountry.setComponentError(null);
 		cbCountry.setValue(countryid);
 		cbRegionStatus.setValue(cbRegionStatus.getItemIds().iterator().next());
-		//loadSrchRslt();
+		// loadSrchRslt();
 	}
 	
 	// Based on the selected record, the data would be populated into user input
@@ -176,19 +173,13 @@ public class Region extends BaseUI {
 	private void editRegion() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		RegionDM editRegionslist = beanRegion.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		regId = editRegionslist.getRegionId().toString();
-		if (sltedRcd.getItemProperty("regionName") != null && !"null".equals(sltedRcd.getItemProperty("regionName"))) {
-			tfRegionName.setValue(sltedRcd.getItemProperty("regionName").getValue().toString());
+		RegionDM regionDM = beanRegion.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		regId = regionDM.getRegionId().toString();
+		if (regionDM.getRegionName() != null) {
+			tfRegionName.setValue(regionDM.getRegionName());
 		}
-		/*if (tfRegionName.getValue() != null) {
-			tfRegionName.setValue(editRegionslist.getRegionName());
-		}*/
-		String stcodes = sltedRcd.getItemProperty("status").getValue().toString();
-		cbRegionStatus.setValue(stcodes);
-		cbCountry.setValue(editRegionslist.getCountryId());
-		
+		cbRegionStatus.setValue(regionDM.getStatus());
+		cbCountry.setValue(regionDM.getCountryId());
 	}
 	
 	// BaseUI searchDetails() implementation
@@ -251,7 +242,7 @@ public class Region extends BaseUI {
 		vlSrchRsltContainer.addComponent(tblMstScrSrchRslt);
 		vlSrchRsltContainer.setExpandRatio(tblMstScrSrchRslt, 1);
 		resetFields();
-		loadSrchRslt();		
+		loadSrchRslt();
 	}
 	
 	// to edit details
@@ -277,7 +268,7 @@ public class Region extends BaseUI {
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Throwing ValidationException. User data is > " + tfRegionName.getValue());
 		}
-		if ((Long)cbCountry.getValue()==0L) {
+		if ((Long) cbCountry.getValue() == 0L) {
 			cbCountry.setComponentError(new UserError(GERPErrorCodes.NULL_COMPANY_COUNTRY));
 			errorFlag = true;
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -285,7 +276,6 @@ public class Region extends BaseUI {
 		}
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
-		
 		}
 	}
 	

@@ -32,7 +32,6 @@ import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -250,10 +249,9 @@ public class Xerox extends BaseTransUI {
 	private void editXerox() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
 				+ xeroxRefId);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			XeroxDM xeroxDM = beanXerox.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			xeroxRefId = xeroxDM.getXeroxRefId();
 			cbAssetName.setValue(xeroxDM.getAssetId());

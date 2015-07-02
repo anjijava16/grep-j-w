@@ -14,6 +14,7 @@ import com.gnts.dsn.stt.txn.ECNote;
 import com.gnts.dsn.stt.txn.ECRequest;
 import com.gnts.erputil.components.NotificationsButton;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.domain.txn.SmsPOHdrDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsPOHdrService;
@@ -22,6 +23,7 @@ import com.gnts.sms.txn.SmsEnquiry;
 import com.gnts.stt.dsn.service.txn.ECRequestService;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.ClientConnector;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -57,7 +59,7 @@ public class DashbordDesignView implements ClickListener {
 	private Button btnProductCount = new Button("17", this);
 	private Button btnClientCount = new Button("22", this);
 	private NotificationsButton btnNotify=new NotificationsButton();
-	private SmsPOHdrService servicesmsPOHdr = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
+	
 	private NotificationsButton notificationsButton;
 	
    
@@ -106,8 +108,10 @@ public class DashbordDesignView implements ClickListener {
 		hlHeader.addComponent(lblDashboardTitle);
 		hlHeader.setComponentAlignment(lblDashboardTitle, Alignment.MIDDLE_LEFT);
 		
+		notificationsButton.setIcon(FontAwesome.BELL);
+		notificationsButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
 		hlHeader.addComponent(notificationsButton);
-	
+		
 		hlHeader.setComponentAlignment(notificationsButton, Alignment.TOP_RIGHT);
 		
 		clMainLayout.addComponent(custom);
@@ -134,6 +138,8 @@ public class DashbordDesignView implements ClickListener {
 	        return header;
 	      
 	}
+
+	
 	  private NotificationsButton buildNotificationsButton() {
 	        NotificationsButton result = new NotificationsButton();
 	        result.addClickListener(new ClickListener() {
@@ -192,33 +198,39 @@ public class DashbordDesignView implements ClickListener {
         VerticalLayout notificationsLayout = new VerticalLayout();
         notificationsLayout.setMargin(true);
         notificationsLayout.setSpacing(true);
-        
         final Panel panel = new Panel("Notifications");
-       
         notificationsLayout.addComponent(panel);
+        List<SmsEnqHdrDM> smsEnqHdrList = new ArrayList<SmsEnqHdrDM>();
+        SmsEnqHdrDM smspohdr = new SmsEnqHdrDM();
+        smspohdr.getEnquiryStatus();
+        smsEnqHdrList.add(smspohdr);
+ 
+        smsEnqHdrList = serviceenqhdr.getSmsEnqHdrList(null, null, null, null,"Progress", "F", null, null);
+		FormLayout fmlayout = new FormLayout();
+		VerticalLayout hrLayout = new VerticalLayout();
         
-        List<SmsPOHdrDM> smsPOHdrList = new ArrayList<SmsPOHdrDM>();
-        SmsPOHdrDM smspohdr = new SmsPOHdrDM();
-        smspohdr.getPostatus();
-        smsPOHdrList.add(smspohdr);
-        String status;
-		smsPOHdrList = servicesmsPOHdr.getSmspohdrList(null, null, null,
-				 null, null, null,null, "F", null);
-        
-        for (SmsPOHdrDM n : smsPOHdrList) {
-        	FormLayout fmlayout = new FormLayout();
-        	GridLayout notificationLayout = new GridLayout();
-            notificationLayout.addStyleName("notification-item");
-            Label titleLabel = new Label(n.getPostatus()/*+" "+n.getLastupdatedby()+" "+n.getLastupdateddt()*/);
-            Label titleLabel1 = new Label(n.getLastupdatedby());
-            Label titleLabel2 = new Label(n.getLastupdateddt());
+		
+		
+		
+		for (SmsEnqHdrDM n : smsEnqHdrList) {
+			hrLayout.addStyleName("notification-item");
+			Label titleLabel = new Label(
+				    "\n"+"<small>Status : </small><b><font color=blue><font size=4>"+n.getEnquiryStatus()+"</font></b>",ContentMode.HTML);
+           // Label titleLabel = new Label(n.getEnquiryStatus());
+            Label titleLabel1 = new Label("<small>Enquiry No: </small><font color=green>"+n.getEnquiryNo()+"</font>",ContentMode.HTML);
+            Label titleLabel2 = new Label("<small>Branch : </small><font color=green>"+n.getBranchName()+"</font>",ContentMode.HTML);
+            Label titleLabel3 = new Label("<small>Remarks : </small><font color=red>"+n.getRemarks()+"</font>",ContentMode.HTML);
+            Label titleLabel4 = new Label("<HR size=2 COLOR=yellow>",ContentMode.HTML);
             titleLabel.addStyleName("notification-title");
             fmlayout.addComponents(titleLabel);
             fmlayout.addComponents(titleLabel1);
-            		fmlayout.addComponents(titleLabel2);
-            notificationsLayout.addComponent(fmlayout);
+            fmlayout.addComponents(titleLabel2);
+            fmlayout.addComponent(titleLabel3);
+            fmlayout.addComponent(titleLabel4);
+            hrLayout.addComponent(fmlayout);
+            
         }
-        
+        notificationsLayout.addComponent(hrLayout);
         HorizontalLayout footer = new HorizontalLayout();
         footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
         footer.setWidth("100%");
@@ -238,30 +250,28 @@ public class DashbordDesignView implements ClickListener {
         
         if (notificationsWindow == null) {
             notificationsWindow = new Window();
-            notificationsWindow.setWidth(300.0f, Unit.PIXELS);
+            
+            notificationsWindow.setWidthUndefined();
             notificationsWindow.addStyleName("notifications");
             notificationsWindow.setClosable(false);
             notificationsWindow.setResizable(false);
-            notificationsWindow.setDraggable(false);
+            notificationsWindow.setDraggable(true);
             notificationsWindow.setCloseShortcut(KeyCode.ESCAPE, null);
             notificationsWindow.setContent(notificationsLayout);
-            notificationsWindow.center();
-            notificationsWindow.setHeight("400");
-            
+            notificationsWindow.setHeightUndefined();        
         }
 
         if (!notificationsWindow.isAttached()) {
-        	   notificationsWindow.setPositionX(1130);
-               //notificationsWindow.setPositionY(45);
-        	//notificationsWindow.setPositionX(event.getClientX());
-        	notificationsWindow.setPositionY(event.getClientY());
-            UI.getCurrent().addWindow(notificationsWindow); 
+          notificationsWindow.setPositionX(event.getClientX()-200);
+          notificationsWindow.setPositionY(event.getClientY());
+          notificationsWindow.setHeight("400");
+          notificationsWindow.setWidth("300");
+        	UI.getCurrent().addWindow(notificationsWindow); 
             notificationsWindow.focus();
             
         } else {
             notificationsWindow.close();
-        }
-        System.out.println("---------------------------------<<<<<<<<<<<<<<<<<<<<<<<");      
+        }     
        }
 		
 	}

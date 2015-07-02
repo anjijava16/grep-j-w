@@ -124,13 +124,16 @@ public class DashboardMMSView implements ClickListener {
 			beanmaterialstock.addAll(servicematerialstock.getMaterialStockList(null, companyId, null, null, null, null,
 					"F"));
 			tblMstScrSrchRslt.setContainerDataSource(beanmaterialstock);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialName", "stockType", "materialUOM",
-					"currentStock", "effectiveStock" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Material", "Stock Type", "UOM", "Curr. Stock",
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialName", "stockType",
+					"currentStock","parkedStock", "effectiveStock" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Material", "Stock Type","Curr. Stock","Parked",
 					"Eff. Stock" });
-			tblMstScrSrchRslt.setColumnWidth("materialName", 160);
+			tblMstScrSrchRslt.setColumnWidth("materialName", 150);
 			tblMstScrSrchRslt.setColumnWidth("currentStock", 75);
-			tblMstScrSrchRslt.setColumnWidth("effectiveStock", 75);
+			tblMstScrSrchRslt.setColumnWidth("effectiveStock", 70);
+			tblMstScrSrchRslt.setColumnWidth("parkedStock", 70);
+			tblMstScrSrchRslt.setColumnWidth("stockType", 70);
+			tblMstScrSrchRslt.setHeightUndefined();
 			tblMstScrSrchRslt.addGeneratedColumn("materialName", new ColumnGenerator() {
 				private static final long serialVersionUID = 1L;
 				

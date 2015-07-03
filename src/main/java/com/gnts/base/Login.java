@@ -31,6 +31,7 @@ import java.util.Random;
 import java.util.TimeZone;
 import javax.servlet.annotation.WebServlet;
 import org.apache.log4j.Logger;
+import com.gnts.asm.txn.AssetComplaintRegister;
 import com.gnts.base.dashboard.DashbordDesignView;
 import com.gnts.base.dashboard.DashbordView;
 import com.gnts.base.domain.mst.AppScreensDM;
@@ -129,14 +130,14 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 	private HorizontalLayout hlCollapse, hlExpand, collandexpndhl, hlLine, hlScreenName, hlHeader, hlTreeMenu;
 	private VerticalLayout vlLine, vlPasswordLayout;
 	private Image imgExpand, imgCollapse, imgPin, imgUnpin, imgGlob, imgProfile, imgHelp, imgCustomer, imgSingOut,
-			imgMonitor, imgFavorite;
+			imgMonitor, imgFavorite,imgAssetIssue;
 	private Tree treeMenu;
 	String versionVar = "BS_APPVER";
 	String copyrightVar = "BS_APPCPR";
 	String paramRefVersion;
 	String paramRefCopyright;
 	private Long loginCompanyId, userId, userLoginId, roleId, branchId, appScreenId, moduleId, employeeid, deptId,
-			quoteId, enquiryId, timezoneId, currenyId, countryid,stateId;
+			quoteId, enquiryId, timezoneId, currenyId, countryid;
 	private String currencysymbol;
 	private String systemUser;
 	private Logger logger = Logger.getLogger(Login.class.getName());
@@ -317,6 +318,13 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 		imgFavorite.setWidth("22px");
 		imgFavorite.setHeight("22px");
 		imgFavorite.addClickListener(this);
+		
+		imgAssetIssue=new Image(null, new ThemeResource("img/customerservice.png"));
+		imgAssetIssue.setDescription("Raise Ticket");
+		imgAssetIssue.setWidth("36px");
+		imgAssetIssue.setHeight("36px");
+		imgAssetIssue.addClickListener(this);
+		
 		Label userName = new Label(loginuserName);
 		imgSingOut = new Image(null, new ThemeResource("img/signout.png"));
 		imgSingOut.setDescription("Sign Out");
@@ -335,6 +343,8 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 		userLayout.setComponentAlignment(imgCustomer, Alignment.MIDDLE_CENTER);
 		userLayout.addComponent(imgFavorite);
 		userLayout.setComponentAlignment(imgFavorite, Alignment.MIDDLE_CENTER);
+		userLayout.addComponent(imgAssetIssue);
+		userLayout.setComponentAlignment(imgAssetIssue, Alignment.MIDDLE_CENTER);
 		userLayout.addComponent(imgSingOut);
 		userLayout.setComponentAlignment(imgSingOut, Alignment.MIDDLE_CENTER);
 		hlHeader.setComponentAlignment(userLayout, Alignment.MIDDLE_RIGHT);
@@ -671,8 +681,8 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 					System.out.println("Current Date" + DateUtils.getcurrentdate());
 					System.out.println("Current DateTime in GMT : " + gmtFormat.format(DateUtils.getcurrentdate()));
 					System.out.println("Adjust time" + adjustTime);
-					System.out.println("Adjuseted Date and time"
-							+ gmtFormat.format(DateUtils.getcurrentdate().getTimezoneOffset()));
+					//System.out.println("Adjuseted Date and time"
+					//		+ gmtFormat.format(DateUtils.getcurrentdate().getTimezoneOffset()));
 					// Date dstDate = new Date( gmtFormat.format(DateUtils.getcurrentdate()) +
 					// TimeZone.getTimeZone(adjustTime));
 				}
@@ -775,6 +785,10 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 			new Dashboard();
 			clContent.addComponent(clArgumentLayout);
 		}
+		if(imgAssetIssue==event.getComponent()){
+			UI.getCurrent().addWindow(new AssetComplaintRegister());
+		}
+		
 		if (imgHelp == event.getComponent()) {
 			/*
 			 * subwindow = new Window("Help"); subwindow.setWidth("580px"); subwindow.setHeight("800px");
@@ -811,6 +825,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 		return daysBetween;
 	}
 	
+	@SuppressWarnings("unused")
 	private void updateNewPassoword() {
 		String loginName = tfUsername.getValue().toString();
 		String loginPassword = pfPassword.getValue().toString();

@@ -68,18 +68,18 @@ public class AssetMaintDetail extends BaseUI {
 	// Layouts
 	private HorizontalLayout hlSearchLayout = new HorizontalLayout();
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
-	private FormLayout flColumn1, flColumn2, flColumn3;
+	private FormLayout flColumn1, flColumn2, flColumn3,flColumn4;
 	// pagination
 	private int recordCnt = 0;
 	private String userName;
-	private Long companyId, moduleId, EmployeeId;
+	private Long companyId, moduleId, employeeId;
 	// Main Field Components
 	private ComboBox cbStatus, cbMaintType, cbservicetype, cbAssetName, cbattenby, cbprepare, cbreviewby, cbMaint,
 			cbserviceby, cbcause;
 	private TabSheet tabasset;
 	private TextField tfAssetName;
 	private PopupDateField dfcompleteDate, dfservicedate, dfmainSchedule;
-	private TextArea taMaintDetails;
+	private TextArea taMaintDetails, taProblemDesc;
 	private GERPTimeField tfmaintime, tfcompletetime;
 	// Initialization Logger
 	private Logger logger = Logger.getLogger(AssetMaintDetail.class);
@@ -98,7 +98,7 @@ public class AssetMaintDetail extends BaseUI {
 		// Get the logged in user name and company id from the session
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Inside AssetMaintDetail() constructor");
 		// Loading the UI
@@ -183,6 +183,9 @@ public class AssetMaintDetail extends BaseUI {
 		taMaintDetails = new GERPTextArea("Maintenance Detail");
 		taMaintDetails.setWidth("160");
 		taMaintDetails.setMaxLength(40);
+		taProblemDesc = new GERPTextArea("Problem Desc.");
+		taProblemDesc.setWidth("160");
+		taProblemDesc.setMaxLength(40);
 		tfmaintime = new GERPTimeField("MaintainTime");
 		tfcompletetime = new GERPTimeField("Completion Time");
 		tabasset = new TabSheet();
@@ -219,6 +222,7 @@ public class AssetMaintDetail extends BaseUI {
 		flColumn1 = new FormLayout();
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
+		flColumn4 = new FormLayout();
 		// add the user input items into appropriate form layout
 		flColumn1.addComponent(cbAssetName);
 		cbAssetName.setRequired(true);
@@ -236,10 +240,12 @@ public class AssetMaintDetail extends BaseUI {
 		flColumn3.addComponent(cbserviceby);
 		flColumn3.addComponent(cbcause);
 		flColumn3.addComponent(cbStatus);
+		flColumn4.addComponent(taProblemDesc);
 		// add the user input items into appropriate Horizontal layout
 		hlUserInputLayout.addComponent(flColumn1);
 		hlUserInputLayout.addComponent(flColumn2);
 		hlUserInputLayout.addComponent(flColumn3);
+		hlUserInputLayout.addComponent(flColumn4);
 		hlUserInputLayout.setSpacing(true);
 		hlUserInputLayout.setMargin(true);
 	}
@@ -314,7 +320,7 @@ public class AssetMaintDetail extends BaseUI {
 		try {
 			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployee.setBeanIdProperty("employeeid");
-			beanEmployee.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyId, EmployeeId,
+			beanEmployee.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyId, employeeId,
 					null, null, null, "P"));
 			cbprepare.setContainerDataSource(beanEmployee);
 		}
@@ -338,16 +344,17 @@ public class AssetMaintDetail extends BaseUI {
 				if (editmaintdetail.getMaintDetails() != null && !"null".equals(editmaintdetail.getMaintDetails())) {
 					taMaintDetails.setValue(editmaintdetail.getMaintDetails());
 				}
-				cbserviceby.setValue(editmaintdetail.getServiceBy().toString());
+				cbserviceby.setValue(editmaintdetail.getServiceBy());
 				dfservicedate.setValue(editmaintdetail.getNextserviceDt());
-				if (tfmaintime != null) {
+				if (editmaintdetail.getMaintenancetime() != null) {
 					tfmaintime.setTime(editmaintdetail.getMaintenancetime());
 				}
-				if (tfcompletetime != null) {
+				if (editmaintdetail.getCompletedTime() != null) {
 					tfcompletetime.setTime(editmaintdetail.getCompletedTime());
 				}
 				dfcompleteDate.setValue(editmaintdetail.getCompleteddt());
 				dfmainSchedule.setValue(editmaintdetail.getMaintenanceDt());
+				taProblemDesc.setValue(editmaintdetail.getProblemDescription());
 				cbStatus.setValue(editmaintdetail.getMaintStatus());
 			}
 		}
@@ -452,7 +459,7 @@ public class AssetMaintDetail extends BaseUI {
 			if (tfcompletetime.getValue() != null) {
 				maintdetail.setCompletedTime(tfcompletetime.getHorsMunites());
 			}
-			maintdetail.setPreparedBy(EmployeeId);
+			maintdetail.setPreparedBy(employeeId);
 			maintdetail.setAttendedBy(null);
 			maintdetail.setReviewedBy(null);
 			if (cbcause.getValue() != null) {
@@ -464,6 +471,7 @@ public class AssetMaintDetail extends BaseUI {
 			if (cbservicetype.getValue() != null) {
 				maintdetail.setServiceType(cbservicetype.getValue().toString());
 			}
+			maintdetail.setProblemDescription(taProblemDesc.getValue());
 			maintdetail.setLastUpdatedDt(DateUtils.getcurrentdate());
 			maintdetail.setLastUpdatedBy(userName);
 			serviceAssetMaintDetails.saveOrUpdateAssetMaintDetail(maintdetail);
@@ -509,6 +517,7 @@ public class AssetMaintDetail extends BaseUI {
 		cbMaint.setValue(null);
 		cbMaint.setComponentError(null);
 		taMaintDetails.setValue("");
+		taProblemDesc.setValue("");
 		tfmaintime.setValue(null);
 		dfcompleteDate.setValue(null);
 		dfservicedate.setValue(null);

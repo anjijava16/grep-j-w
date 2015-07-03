@@ -2,6 +2,7 @@ package com.gnts.asm.txn;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -14,9 +15,9 @@ import com.gnts.asm.service.txn.EbReadingService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPNumberField;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
-import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
@@ -27,7 +28,6 @@ import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
@@ -49,7 +49,7 @@ public class EBReading extends BaseTransUI {
 	private Logger logger = Logger.getLogger(EBReading.class);
 	// User Input Fields for EC Request
 	private TextField tfMainKwHr, tfC1, tfC2, tfC3, tfC4, tfC5, tfKvaHr, tfR1, tfR2, tfR3, tfR4, tfR5, tfRkvaHrCag,
-			tfLead, tfPfc, tfPerDayUnit, tfPf, tfUnitCharge, tfAdjstCharge, tfHaltUnitCharge;
+			tfLead, tfPfc, tfPerDayUnit, tfPf, tfUnitCharge, tfAdjstCharge, tfHalfUnitCharge;
 	private PopupDateField dfRefDate;
 	private TextArea taMachineRunDetails, taRemarks;
 	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
@@ -81,26 +81,26 @@ public class EBReading extends BaseTransUI {
 	private void buildview() {
 		logger.info("CompanyId" + companyid + "username" + username + "painting ECRequest UI");
 		// EC Request Components Definition
-		tfMainKwHr = new GERPTextField("Main KW HR");
-		tfC1 = new GERPTextField("C1");
-		tfC2 = new GERPTextField("C2");
-		tfC3 = new GERPTextField("C3");
-		tfC4 = new GERPTextField("C4");
-		tfC5 = new GERPTextField("C5");
-		tfKvaHr = new GERPTextField("KVA HR");
-		tfR1 = new GERPTextField("R1");
-		tfR2 = new GERPTextField("R2");
-		tfR3 = new GERPTextField("R3");
-		tfR4 = new GERPTextField("R4");
-		tfR5 = new GERPTextField("R5");
-		tfRkvaHrCag = new GERPTextField("RKVA HR CAG");
-		tfLead = new GERPTextField("Lead");
-		tfPfc = new GERPTextField("PFC");
-		tfPerDayUnit = new GERPTextField("Per Day Unit");
-		tfPf = new GERPTextField("PF");
-		tfUnitCharge = new GERPTextField("Unit Charge");
-		tfAdjstCharge = new GERPTextField("Adjust. Charge");
-		tfHaltUnitCharge = new GERPTextField("Half Unit Charge");
+		tfMainKwHr = new GERPNumberField("Main KW HR");
+		tfC1 = new GERPNumberField("C1");
+		tfC2 = new GERPNumberField("C2");
+		tfC3 = new GERPNumberField("C3");
+		tfC4 = new GERPNumberField("C4");
+		tfC5 = new GERPNumberField("C5");
+		tfKvaHr = new GERPNumberField("KVA HR");
+		tfR1 = new GERPNumberField("R1");
+		tfR2 = new GERPNumberField("R2");
+		tfR3 = new GERPNumberField("R3");
+		tfR4 = new GERPNumberField("R4");
+		tfR5 = new GERPNumberField("R5");
+		tfRkvaHrCag = new GERPNumberField("RKVA HR CAG");
+		tfLead = new GERPNumberField("Lead");
+		tfPfc = new GERPNumberField("PFC");
+		tfPerDayUnit = new GERPNumberField("Per Day Unit");
+		tfPf = new GERPNumberField("PF");
+		tfUnitCharge = new GERPNumberField("Unit Charge");
+		tfAdjstCharge = new GERPNumberField("Adjust. Charge");
+		tfHalfUnitCharge = new GERPNumberField("Half Unit Charge");
 		taMachineRunDetails = new TextArea("Machine Run Details");
 		taMachineRunDetails.setWidth("96%");
 		taRemarks = new TextArea("Remarks");
@@ -135,12 +135,10 @@ public class EBReading extends BaseTransUI {
 	private void assembleinputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		// Remove all components in search layout
-		tfMainKwHr.setReadOnly(true);
 		flcol1 = new FormLayout();
 		flcol2 = new FormLayout();
 		flcol3 = new FormLayout();
 		flcol4 = new FormLayout();
-		flcol1.addComponent(tfMainKwHr);
 		flcol1.addComponent(dfRefDate);
 		flcol1.addComponent(tfC1);
 		flcol1.addComponent(tfC2);
@@ -159,8 +157,9 @@ public class EBReading extends BaseTransUI {
 		flcol3.addComponent(tfPerDayUnit);
 		flcol3.addComponent(tfPf);
 		flcol3.addComponent(tfUnitCharge);
+		flcol4.addComponent(tfMainKwHr);
 		flcol4.addComponent(tfAdjstCharge);
-		flcol4.addComponent(tfHaltUnitCharge);
+		flcol4.addComponent(tfHalfUnitCharge);
 		flcol4.addComponent(cbStatus);
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
@@ -207,30 +206,160 @@ public class EBReading extends BaseTransUI {
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header
-	private void editECRequest() {
+	private void editEbReading() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> " + ebReadingId);
-		if (sltedRcd != null) {
-			EbReadingDM ecRequestDM = beanECReq.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			ebReadingId = ecRequestDM.getEbReadingId();
-			cbStatus.setValue(ecRequestDM.getStatus());
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
+				+ ebReadingId);
+		if (tblMstScrSrchRslt.getValue() != null) {
+			EbReadingDM ebReadingDM = beanECReq.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			ebReadingId = ebReadingDM.getEbReadingId();
+			dfRefDate.setValue(ebReadingDM.getReadingDate1());
+			if (ebReadingDM.getC1() != null) {
+				tfC1.setValue(ebReadingDM.getC1().toString());
+			}
+			if (ebReadingDM.getC2() != null) {
+				tfC2.setValue(ebReadingDM.getC2().toString());
+			}
+			if (ebReadingDM.getC3() != null) {
+				tfC3.setValue(ebReadingDM.getC3().toString());
+			}
+			if (ebReadingDM.getC4() != null) {
+				tfC4.setValue(ebReadingDM.getC4().toString());
+			}
+			if (ebReadingDM.getC5() != null) {
+				tfC5.setValue(ebReadingDM.getC5().toString());
+			}
+			if (ebReadingDM.getKvaHr() != null) {
+				tfKvaHr.setValue(ebReadingDM.getKvaHr().toString());
+			}
+			if (ebReadingDM.getR1() != null) {
+				tfR1.setValue(ebReadingDM.getR1().toString());
+			}
+			if (ebReadingDM.getR2() != null) {
+				tfR2.setValue(ebReadingDM.getR2().toString());
+			}
+			if (ebReadingDM.getR3() != null) {
+				tfR3.setValue(ebReadingDM.getR3().toString());
+			}
+			if (ebReadingDM.getR4() != null) {
+				tfR4.setValue(ebReadingDM.getR4().toString());
+			}
+			if (ebReadingDM.getR5() != null) {
+				tfR5.setValue(ebReadingDM.getR5().toString());
+			}
+			if (ebReadingDM.getRkvaHrCag() != null) {
+				tfRkvaHrCag.setValue(ebReadingDM.getRkvaHrCag().toString());
+			}
+			if (ebReadingDM.getLead() != null) {
+				tfLead.setValue(ebReadingDM.getLead().toString());
+			}
+			if (ebReadingDM.getPfc() != null) {
+				tfPfc.setValue(ebReadingDM.getPfc().toString());
+			}
+			if (ebReadingDM.getPerDayUnit() != null) {
+				tfPerDayUnit.setValue(ebReadingDM.getPerDayUnit().toString());
+			}
+			if (ebReadingDM.getPf() != null) {
+				tfPf.setValue(ebReadingDM.getPf().toString());
+			}
+			if (ebReadingDM.getUnitCharge() != null) {
+				tfUnitCharge.setValue(ebReadingDM.getUnitCharge().toString());
+			}
+			if (ebReadingDM.getMainKwHr() != null) {
+				tfMainKwHr.setValue(ebReadingDM.getMainKwHr().toString());
+			}
+			if (ebReadingDM.getAdjustmentCharge() != null) {
+				tfAdjstCharge.setValue(ebReadingDM.getAdjustmentCharge().toString());
+			}
+			if (ebReadingDM.getHalfUnitCharge() != null) {
+				tfHalfUnitCharge.setValue(ebReadingDM.getHalfUnitCharge().toString());
+			}
+			if (ebReadingDM.getMachineRunDetails() != null) {
+				taMachineRunDetails.setValue(ebReadingDM.getMachineRunDetails());
+			}
+			if (ebReadingDM.getRemarks() != null) {
+				taRemarks.setValue(ebReadingDM.getRemarks());
+			}
+			cbStatus.setValue(ebReadingDM.getStatus());
 		}
 	}
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... "); //
-		EbReadingDM ecRequestDM = new EbReadingDM();
+		EbReadingDM ebReadingDM = new EbReadingDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			ecRequestDM = beanECReq.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			ebReadingDM = beanECReq.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		ecRequestDM.setStatus((String) cbStatus.getValue());
-		ecRequestDM.setLastupdatedby(username);
-		ecRequestDM.setLastupdateddt(DateUtils.getcurrentdate());
-		serviceEBReading.saveOrUpdateDetails(ecRequestDM);
-		ebReadingId = ecRequestDM.getEbReadingId();
+		ebReadingDM.setReadingDate(dfRefDate.getValue());
+		if (tfC1.getValue() != null) {
+			ebReadingDM.setC1(new BigDecimal(tfC1.getValue()));
+		}
+		if (tfC2.getValue() != null) {
+			ebReadingDM.setC2(new BigDecimal(tfC2.getValue()));
+		}
+		if (tfC3.getValue() != null) {
+			ebReadingDM.setC3(new BigDecimal(tfC3.getValue()));
+		}
+		if (tfC4.getValue() != null) {
+			ebReadingDM.setC4(new BigDecimal(tfC4.getValue()));
+		}
+		if (tfC5.getValue() != null) {
+			ebReadingDM.setC5(new BigDecimal(tfC5.getValue()));
+		}
+		if (tfKvaHr.getValue() != null) {
+			ebReadingDM.setKvaHr(new BigDecimal(tfKvaHr.getValue()));
+		}
+		if (tfR1.getValue() != null) {
+			ebReadingDM.setR1(new BigDecimal(tfR1.getValue()));
+		}
+		if (tfR2.getValue() != null) {
+			ebReadingDM.setR2(new BigDecimal(tfR2.getValue()));
+		}
+		if (tfR3.getValue() != null) {
+			ebReadingDM.setR3(new BigDecimal(tfR3.getValue()));
+		}
+		if (tfR4.getValue() != null) {
+			ebReadingDM.setR4(new BigDecimal(tfR4.getValue()));
+		}
+		if (tfR5.getValue() != null) {
+			ebReadingDM.setR5(new BigDecimal(tfR5.getValue()));
+		}
+		if (tfRkvaHrCag.getValue() != null) {
+			ebReadingDM.setRkvaHrCag(new BigDecimal(tfRkvaHrCag.getValue()));
+		}
+		if (tfLead.getValue() != null) {
+			ebReadingDM.setLead(new BigDecimal(tfLead.getValue()));
+		}
+		if (tfPfc.getValue() != null) {
+			ebReadingDM.setPfc(new BigDecimal(tfPfc.getValue()));
+		}
+		if (tfPerDayUnit.getValue() != null) {
+			ebReadingDM.setPerDayUnit(new BigDecimal(tfPerDayUnit.getValue()));
+		}
+		if (tfPf.getValue() != null) {
+			ebReadingDM.setPf(new BigDecimal(tfPf.getValue()));
+		}
+		if (tfUnitCharge.getValue() != null) {
+			ebReadingDM.setUnitCharge(new BigDecimal(tfUnitCharge.getValue()));
+		}
+		if (tfMainKwHr.getValue() != null) {
+			ebReadingDM.setMainKwHr(new BigDecimal(tfMainKwHr.getValue()));
+		}
+		if (tfAdjstCharge.getValue() != null) {
+			ebReadingDM.setAdjustmentCharge(new BigDecimal(tfAdjstCharge.getValue()));
+		}
+		if (tfHalfUnitCharge.getValue() != null) {
+			ebReadingDM.setHalfUnitCharge(new BigDecimal(tfHalfUnitCharge.getValue()));
+		}
+		ebReadingDM.setMachineRunDetails(taMachineRunDetails.getValue());
+		ebReadingDM.setRemarks(taRemarks.getValue());
+		ebReadingDM.setStatus((String) cbStatus.getValue());
+		ebReadingDM.setLastupdatedby(username);
+		ebReadingDM.setLastupdateddt(DateUtils.getcurrentdate());
+		serviceEBReading.saveOrUpdateDetails(ebReadingDM);
+		ebReadingId = ebReadingDM.getEbReadingId();
 	}
 	
 	@Override
@@ -240,10 +369,9 @@ public class EBReading extends BaseTransUI {
 		// reset the field valued to default
 		cbStatus.setValue(null);
 		tfMainKwHr.setValue("");
-		tfMainKwHr.setReadOnly(false);
+		dfRefDate.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
-		// cbclient.setRequired(true);
 		// reload the search using the defaults
 		loadSrchRslt();
 	}
@@ -251,13 +379,11 @@ public class EBReading extends BaseTransUI {
 	@Override
 	protected void addDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
-		// cbclient.setRequired(true);
-		tfMainKwHr.setReadOnly(true);
 		hllayout.removeAllComponents();
 		vlSrchRsltContainer.setVisible(true);
 		assembleinputLayout();
 		resetFields();
-		tfMainKwHr.setReadOnly(false);
+		dfRefDate.setValue(new Date());
 	}
 	
 	@Override
@@ -269,7 +395,7 @@ public class EBReading extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		resetFields();
-		editECRequest();
+		editEbReading();
 	}
 	
 	@Override
@@ -308,20 +434,35 @@ public class EBReading extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
 		loadSrchRslt();
-		tfMainKwHr.setReadOnly(false);
 	}
 	
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		tfMainKwHr.setReadOnly(false);
-		tfMainKwHr.setValue("");
-		tfMainKwHr.setComponentError(null);
 		dfRefDate.setValue(null);
+		tfC1.setValue("0");
+		tfC2.setValue("0");
+		tfC3.setValue("0");
+		tfC4.setValue("0");
+		tfC5.setValue("0");
+		tfKvaHr.setValue("0");
+		tfR1.setValue("0");
+		tfR2.setValue("0");
+		tfR3.setValue("0");
+		tfR4.setValue("0");
+		tfR5.setValue("0");
+		tfRkvaHrCag.setValue("0");
+		tfLead.setValue("0");
+		tfPfc.setValue("0");
+		tfPerDayUnit.setValue("0");
+		tfPf.setValue("0");
+		tfUnitCharge.setValue("0");
+		tfMainKwHr.setValue("0");
+		tfAdjstCharge.setValue("0");
+		tfHalfUnitCharge.setValue("0");
 		taMachineRunDetails.setValue("");
 		taRemarks.setValue("");
 		cbStatus.setValue(null);
-		dfRefDate.setValue(new Date());
 	}
 	
 	@Override
@@ -336,7 +477,6 @@ public class EBReading extends BaseTransUI {
 			lblNotification.setIcon(null);
 			lblNotification.setCaption("");
 			assembleSearchLayout();
-			tfMainKwHr.setReadOnly(false);
 		}
 	}
 	

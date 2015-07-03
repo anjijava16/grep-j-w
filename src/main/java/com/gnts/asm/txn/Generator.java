@@ -132,6 +132,29 @@ public class Generator extends BaseTransUI {
 		cbAssetName = new GERPComboBox("Asset Name");
 		cbAssetName.setItemCaptionPropertyId("assetName");
 		cbAssetName.setRequired(true);
+		cbAssetName.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				try {
+					GeneratorDM generatorDM = serviceGenerator.getGeneratorDetailList(null,
+							(Long) cbAssetName.getValue(), null, null).get(0);
+					if (generatorDM.getDiselCloseBalance() != null) {
+						tfDiselOpenBal.setValue(generatorDM.getDiselCloseBalance().toString());
+					}
+					if (generatorDM.getRpmHz() != null) {
+						tfRpmHz.setValue(generatorDM.getRpmHz().toString());
+					}
+				}
+				catch (Exception e) {
+					tfDiselOpenBal.setValue("0");
+					tfRpmHz.setValue("0");
+					e.printStackTrace();
+				}
+			}
+		});
 		loadAssetList();
 		dfRefDate = new GERPPopupDateField("Date");
 		cbStatus.setWidth("150");
@@ -311,6 +334,8 @@ public class Generator extends BaseTransUI {
 		GeneratorDM generatorDM = new GeneratorDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
 			generatorDM = beanGenerator.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		} else {
+			generatorDM.setIsLatest("Y");
 		}
 		generatorDM.setAssetId((Long) cbAssetName.getValue());
 		generatorDM.setGensetDate(dfRefDate.getValue());
@@ -426,20 +451,20 @@ public class Generator extends BaseTransUI {
 		dfRefDate.setValue(new Date());
 		tfGenStartTime.setValue(null);
 		tfGenStopTime.setValue(null);
-		tfTotalTime.setValue("");
-		tfDiselOpenBal.setValue("");
-		tfGenTotalTime.setValue("");
-		tfDiselConsBal.setValue("");
-		tfVolts.setValue("");
-		tfAmps.setValue("");
-		tfRpmHz.setValue("");
-		tfDiselCloseBal.setValue("");
-		tfDiselPurLtrs.setValue("");
-		tfOtherUseLtrs.setValue("");
-		tfLtrPerHours.setValue("");
+		tfTotalTime.setValue("0");
+		tfDiselOpenBal.setValue("0");
+		tfGenTotalTime.setValue("0");
+		tfDiselConsBal.setValue("0");
+		tfVolts.setValue("0");
+		tfAmps.setValue("0");
+		tfRpmHz.setValue("0");
+		tfDiselCloseBal.setValue("0");
+		tfDiselPurLtrs.setValue("0");
+		tfOtherUseLtrs.setValue("0");
+		tfLtrPerHours.setValue("0");
 		tfMachineServRemain.setValue("");
-		tfOneLtrCost.setValue("");
-		tfTotalCost.setValue("");
+		tfOneLtrCost.setValue("0");
+		tfTotalCost.setValue("0");
 		taRunningMachineDtl.setValue("");
 		taRemarks.setValue("");
 		cbStatus.setValue(null);

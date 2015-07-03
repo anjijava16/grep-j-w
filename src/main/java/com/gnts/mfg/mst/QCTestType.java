@@ -39,7 +39,6 @@ import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.mst.QCTestDefinitionDM;
 import com.gnts.mfg.domain.mst.QCTestSpecificationDM;
 import com.gnts.mfg.domain.mst.QCTestTypeDM;
-import com.gnts.mfg.domain.mst.TestConditionDM;
 import com.gnts.mfg.service.mst.QCTestDefService;
 import com.gnts.mfg.service.mst.QCTestSpecService;
 import com.gnts.mfg.service.mst.QCTestTypeService;
@@ -47,7 +46,6 @@ import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.mst.MaterialTypeDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.mst.MaterialTypeService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItem;
@@ -81,8 +79,8 @@ public class QCTestType extends BaseUI {
 	private QCTestSpecService serviceTestSpec = (QCTestSpecService) SpringContextHelper.getBean("qcTestSpec");
 	private MaterialTypeService serviceMaterialTyp = (MaterialTypeService) SpringContextHelper.getBean("materialType");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
-	List<QCTestDefinitionDM> listTstDef = null;
-	List<QCTestSpecificationDM> listTstSpec = null;
+	private List<QCTestDefinitionDM> listTstDef = null;
+	private List<QCTestSpecificationDM> listTstSpec = null;
 	private BeanItemContainer<QCTestTypeDM> beanTestType = null;
 	private BeanItemContainer<QCTestDefinitionDM> beanTestDef = null;
 	private BeanItemContainer<QCTestSpecificationDM> beanTestSpec = null;
@@ -96,7 +94,7 @@ public class QCTestType extends BaseUI {
 	private ListSelect lsMtrlName;
 	private Table tblTstdef;
 	private Button btnTstDef;
-	private FormLayout flMtrlTyp, flTstdefSts, flTstdefbtn;
+	private FormLayout flMtrlTyp, flTstdefSts;
 	//
 	private TextField tfTstRecrt, tfTstSpec, tfTstCycle;
 	private ComboBox cbTstSpecStatus;
@@ -105,15 +103,15 @@ public class QCTestType extends BaseUI {
 	private FormLayout flTstRecr, flTstCyc;
 	private String userName;
 	private Long companyid;
-	private static Logger logger = Logger.getLogger(QCTestType.class);
+	private Logger logger = Logger.getLogger(QCTestType.class);
 	private GERPAddEditHLayout hlSearchLayout;
 	private HorizontalLayout hlUserInputLayout = new GERPAddEditHLayout();
-	HorizontalLayout hlTstTyp, hlTstDef, hlTstSpec, hlTstDefNTstSpec;
-	VerticalLayout vlTstdef, vlTstSpec;
+	private HorizontalLayout hlTstTyp, hlTstDef, hlTstSpec, hlTstDefNTstSpec;
+	private VerticalLayout vlTstdef, vlTstSpec;
 	private int recordCnt, recordTestdef, recordTestSpec;
 	private String testTypeId;
-	public Button btnDeltSpec = new GERPButton("Delete", "delete", this);
-	public Button btnDeltMtrl = new GERPButton("Delete", "delete", this);
+	private Button btnDeltSpec = new GERPButton("Delete", "delete", this);
+	private Button btnDeltMtrl = new GERPButton("Delete", "delete", this);
 	
 	public QCTestType() {
 		// Get the logged in user name and company id from the session
@@ -374,7 +372,6 @@ public class QCTestType extends BaseUI {
 		hlTstTyp.setSpacing(true);
 		flMtrlTyp = new FormLayout();
 		flTstdefSts = new FormLayout();
-		flTstdefbtn = new FormLayout();
 		flMtrlTyp.addComponent(cbMtrlType);
 		flMtrlTyp.addComponent(cbTstDefStatus);
 		flTstdefSts.addComponent(lsMtrlName);
@@ -436,19 +433,15 @@ public class QCTestType extends BaseUI {
 	}
 	
 	private void loadMaterialTypList() {
-		List<MaterialTypeDM> getMtrlTypList = new ArrayList<MaterialTypeDM>();
-		getMtrlTypList = serviceMaterialTyp.getMaterialTypeList(null, null, "Active", "F");
 		BeanItemContainer<MaterialTypeDM> beanMtrlTyp = new BeanItemContainer<MaterialTypeDM>(MaterialTypeDM.class);
-		beanMtrlTyp.addAll(getMtrlTypList);
+		beanMtrlTyp.addAll(serviceMaterialTyp.getMaterialTypeList(null, null, "Active", "F"));
 		cbMtrlType.setContainerDataSource(beanMtrlTyp);
 	}
 	
 	private void loadMaterialList() {
-		List<MaterialDM> getMtrlTypList = new ArrayList<MaterialDM>();
-		getMtrlTypList = serviceMaterial.getMaterialList(null, companyid, null, null, null, null,
-				((MaterialTypeDM) cbMtrlType.getValue()).getMaterialTypeId(), null, "Active", "F");
 		BeanItemContainer<MaterialDM> beanMtrl = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanMtrl.addAll(getMtrlTypList);
+		beanMtrl.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null,
+				((MaterialTypeDM) cbMtrlType.getValue()).getMaterialTypeId(), null, "Active", "F"));
 		lsMtrlName.setContainerDataSource(beanMtrl);
 	}
 	
@@ -533,20 +526,19 @@ public class QCTestType extends BaseUI {
 	}
 	
 	private void editQCTestTypeDetails() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			QCTestTypeDM editTestType = beanTestType.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			testTypeId = editTestType.getQcTstTypIdLong().toString();
 			if (editTestType.getTstType() != null) {
-				tftstTyp.setValue(itselect.getItemProperty("tstType").getValue().toString());
+				tftstTyp.setValue(editTestType.getTstType());
 			}
 			if (editTestType.getTstMethdlgy() != null) {
-				tfTstMethdgly.setValue((String) itselect.getItemProperty("tstMethdlgy").getValue());
+				tfTstMethdgly.setValue(editTestType.getTstMethdlgy());
 			}
 			if (editTestType.getTstTypeDesc() != null) {
 				taTstDesc.setValue(editTestType.getTstTypeDesc());
 			}
-			cbTstTypeStatus.setValue(itselect.getItemProperty("tstTypStatus").getValue().toString());
+			cbTstTypeStatus.setValue(editTestType.getTstTypStatus());
 			listTstDef = serviceTestDef.getQCTestDefDetails(null, companyid, Long.valueOf(testTypeId), null, null,
 					"Active");
 			listTstSpec = serviceTestSpec.getQCTestSpecDetails(null, companyid, Long.valueOf(testTypeId), "Active");
@@ -554,8 +546,7 @@ public class QCTestType extends BaseUI {
 	}
 	
 	private void editTstDefDetails() {
-		Item itselect = tblTstdef.getItem(tblTstdef.getValue());
-		if (itselect != null) {
+		if (tblTstdef.getValue() != null) {
 			QCTestDefinitionDM editTstDefn = new QCTestDefinitionDM();
 			editTstDefn = beanTestDef.getItem(tblTstdef.getValue()).getBean();
 			Long mtrlTypId = editTstDefn.getMartlTypId();
@@ -581,19 +572,17 @@ public class QCTestType extends BaseUI {
 					lsMtrlName.select(itemId);
 				}
 			}
-			cbTstDefStatus.setValue((String) itselect.getItemProperty("tstDefStatus").getValue());
+			cbTstDefStatus.setValue(editTstDefn.getTstDefStatus());
 		}
 	}
 	
 	private void editTstSpecDetails() {
-		Item itselect = tblTstSpec.getItem(tblTstSpec.getValue());
-		if (itselect != null) {
-			QCTestSpecificationDM editTstSpec = new QCTestSpecificationDM();
-			editTstSpec = beanTestSpec.getItem(tblTstSpec.getValue()).getBean();
-			tfTstRecrt.setValue((String) itselect.getItemProperty("tstRecrmt").getValue());
-			tfTstSpec.setValue((String) itselect.getItemProperty("tstSpec").getValue());
-			tfTstCycle.setValue(Long.valueOf(editTstSpec.getTstCycles()).toString());
-			cbTstSpecStatus.setValue((String) itselect.getItemProperty("tstStatus").getValue());
+		if (tblTstSpec.getValue() != null) {
+			QCTestSpecificationDM editTstSpec = beanTestSpec.getItem(tblTstSpec.getValue()).getBean();
+			tfTstRecrt.setValue(editTstSpec.getTstRecrmt());
+			tfTstSpec.setValue(editTstSpec.getTstSpec());
+			tfTstCycle.setValue(editTstSpec.getTstCycles().toString());
+			cbTstSpecStatus.setValue(editTstSpec.getTstStatus());
 		}
 	}
 	

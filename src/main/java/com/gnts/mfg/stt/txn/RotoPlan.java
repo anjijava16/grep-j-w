@@ -346,7 +346,6 @@ public class RotoPlan extends BaseUI {
 				}
 			}
 		});
-		
 		// WOId ComboBox
 		cbWO = new GERPComboBox("WO No.");
 		cbWO.setItemCaptionPropertyId("workOrdrNo");
@@ -363,10 +362,6 @@ public class RotoPlan extends BaseUI {
 				}
 			}
 		});
-		
-		
-	
-		
 		// Product Name ComboBox
 		cbProd = new GERPComboBox("Prod.Name");
 		cbProd.setWidth("100px");
@@ -376,20 +371,6 @@ public class RotoPlan extends BaseUI {
 		cbArmProd.setWidth("130");
 		cbArmProd.setItemCaptionPropertyId("prodName");
 		loadProduct();
-		
-/*		cbArmProd.addValueChangeListener(new Property.ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-			
-			public void valueChange(ValueChangeEvent event) {
-				// Get the selected item
-				Object itemIdClient = event.getProperty().getValue();
-				BeanItem<?> itemclient = (BeanItem<?>) cbArmProd.getItem(itemIdClient);
-			
-				if (itemclient != null) {
-					loadarmWorkOrderNo();
-				}
-			}
-		});*/
 		// ARM WOID
 		cbarmwono = new GERPComboBox("WO No.");
 		cbarmwono.setItemCaptionPropertyId("workOrdrNo");
@@ -439,8 +420,8 @@ public class RotoPlan extends BaseUI {
 		beanRotoPlanarmDM.addAll(RotoPlanArmList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Rotoplan. result set");
 		tblarm.setContainerDataSource(beanRotoPlanarmDM);
-		tblarm.setVisibleColumns(new Object[] {"workOrdrNo","prodname" ,"armNo", "noOfcycle"  });
-		tblarm.setColumnHeaders(new String[] {"WO No", "Product Name" ,"Arm No", "No Of Cycle" });
+		tblarm.setVisibleColumns(new Object[] { "workOrdrNo", "prodname", "armNo", "noOfcycle" });
+		tblarm.setColumnHeaders(new String[] { "WO No", "Product Name", "Arm No", "No Of Cycle" });
 		tblarm.setColumnAlignment("rotoplanarmId", Align.RIGHT);
 		tblarm.setColumnFooter("prodname", "No.of Records : " + recordCnt);
 	}
@@ -508,7 +489,7 @@ public class RotoPlan extends BaseUI {
 		new FormLayout();
 		flArmCol1.addComponent(cbarmwono);
 		flArmCol1.addComponent(cbArmProd);
-		flArmCol1.addComponent(tfarmno);		
+		flArmCol1.addComponent(tfarmno);
 		flArmCol2.addComponent(tfnoofcycle);
 		flArmCol2.addComponent(cbArmstatus);
 		flArmCol3.addComponent(btnAddArm);
@@ -756,10 +737,10 @@ public class RotoPlan extends BaseUI {
 					cbarmwono.setValue(itemIdWOObj);
 				}
 			}
-			
-			/*if(itselect.getItemProperty("woId").getValue() !=null){
-				cbarmwono.setValue(itselect.getItemProperty("woId").getValue().toString());
-			}*/
+			/*
+			 * if(itselect.getItemProperty("woId").getValue() !=null){
+			 * cbarmwono.setValue(itselect.getItemProperty("woId").getValue().toString()); }
+			 */
 			if (itselect.getItemProperty("armNo").getValue() != null) {
 				tfarmno.setValue(itselect.getItemProperty("armNo").getValue().toString());
 			}
@@ -881,8 +862,7 @@ public class RotoPlan extends BaseUI {
 			}
 			RotoPlanArmObj.setArmNo(Long.valueOf(tfarmno.getValue()));
 			RotoPlanArmObj.setNoOfcycle(Long.valueOf(tfnoofcycle.getValue()));
-			/*RotoPlanArmObj.setWoId(Long.valueOf((cbarmwono.getValue().toString())));*/
-			
+			/* RotoPlanArmObj.setWoId(Long.valueOf((cbarmwono.getValue().toString()))); */
 			if (cbarmwono.getValue() != null) {
 				RotoPlanArmObj.setWoId(((WorkOrderHdrDM) cbarmwono.getValue()).getWorkOrdrId());
 				RotoPlanArmObj.setWorkOrdrNo(((WorkOrderHdrDM) cbarmwono.getValue()).getWorkOrdrNo());
@@ -1155,8 +1135,8 @@ public class RotoPlan extends BaseUI {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				RotoPlanObj = beanRotoPlanHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			} else {
-				List<SlnoGenDM> slnoList = serviceSlnogen
-						.getSequenceNumber(companyid, branchID, moduleId, "STT_MF_RTPLNNO");
+				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId,
+						"STT_MF_RTPLNNO");
 				for (SlnoGenDM slnoObj : slnoList) {
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						RotoPlanObj.setRotoplanrefno(slnoObj.getKeyDesc());
@@ -1191,8 +1171,8 @@ public class RotoPlan extends BaseUI {
 				serviceRotoplanarm.saveDetails(save);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSlnogen
-						.getSequenceNumber(companyid, branchID, moduleId, "STT_MF_RTPLNNO");
+				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId,
+						"STT_MF_RTPLNNO");
 				for (SlnoGenDM slnoObj : slnoList) {
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "STT_MF_RTPLNNO");
@@ -1368,7 +1348,8 @@ public class RotoPlan extends BaseUI {
 		List<WorkOrderHdrDM> getworkOrdHdr = new ArrayList<WorkOrderHdrDM>();
 		Long clientId = (((ClientDM) cbClientId.getValue()).getClientId());
 		System.out.println("clientId-->" + clientId);
-		getworkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null, "F",null,null));
+		getworkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null, "F",
+				null, null));
 		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
 		beanWrkOrdHdr.addAll(getworkOrdHdr);
 		cbWO.setContainerDataSource(beanWrkOrdHdr);
@@ -1378,9 +1359,10 @@ public class RotoPlan extends BaseUI {
 	 * loadarmWorkOrderNo()-->this function is used for load the workorderno
 	 */
 	private void loadarmWorkOrderNo() {
-		List<WorkOrderHdrDM> getworkOrdHdr = new ArrayList<WorkOrderHdrDM>();	
+		List<WorkOrderHdrDM> getworkOrdHdr = new ArrayList<WorkOrderHdrDM>();
 		System.out.println("aaaaaaaaaa--->");
-		getworkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",null,null));
+		getworkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
+				null, null));
 		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
 		beanWrkOrdHdr.addAll(getworkOrdHdr);
 		cbarmwono.setContainerDataSource(beanWrkOrdHdr);

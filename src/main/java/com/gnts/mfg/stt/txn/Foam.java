@@ -27,8 +27,6 @@ import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.service.txn.WorkOrderDtlService;
 import com.gnts.stt.mfg.domain.txn.FoamDtlDM;
 import com.gnts.stt.mfg.domain.txn.FoamHdrDM;
-import com.gnts.stt.mfg.domain.txn.FoamPlanDtlDM;
-import com.gnts.stt.mfg.domain.txn.FoamPlanShiftDM;
 import com.gnts.stt.mfg.domain.txn.FoamShiftDM;
 import com.gnts.stt.mfg.domain.txn.FoamPlanHdrDM;
 import com.gnts.stt.mfg.service.txn.FoamDtlService;
@@ -949,10 +947,9 @@ public class Foam extends BaseUI {
 	 */
 	public void loadFoamList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<FoamPlanHdrDM> lookUpList = serviceFoamHdr.getFormPlanHdrDetails(null, null, companyid, null,null);
 		beanFoamPlanHdrDM = new BeanContainer<Long, FoamPlanHdrDM>(FoamPlanHdrDM.class);
 		beanFoamPlanHdrDM.setBeanIdProperty("formplanid");
-		beanFoamPlanHdrDM.addAll(lookUpList);
+		beanFoamPlanHdrDM.addAll(serviceFoamHdr.getFormPlanHdrDetails(null, null, companyid, null,null));
 		cbFoamPlanNo.setContainerDataSource(beanFoamPlanHdrDM);
 	}
 	
@@ -961,10 +958,9 @@ public class Foam extends BaseUI {
 	 */
 	public void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
-		List<EmployeeDM> lookUpList = serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null,
-				null, null, "P");
 		beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.addAll(lookUpList);
+		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null,
+				null, null, "P"));
 		cbEmpName.setContainerDataSource(beanEmployeeDM);
 	}
 	
@@ -972,10 +968,8 @@ public class Foam extends BaseUI {
 	 * loadProductList()-->this function is used for load the product Name
 	 */
 	private void loadProductList() {
-		List<WorkOrderDtlDM> getworkOrderDtl = new ArrayList<WorkOrderDtlDM>();
-		getworkOrderDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, null, null, "F"));
 		BeanItemContainer<WorkOrderDtlDM> beanPlnDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
-		beanPlnDtl.addAll(getworkOrderDtl);
+		beanPlnDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, null, null, "F"));
 		cbProd.setContainerDataSource(beanPlnDtl);
 	}
 	private void deleteShiftDetails() {

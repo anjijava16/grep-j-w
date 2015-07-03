@@ -43,7 +43,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.mms.domain.txn.IndentDtlDM;
 import com.gnts.stt.mfg.domain.txn.AsmblyDtlDM;
 import com.gnts.stt.mfg.domain.txn.AsmblyHdrDM;
 import com.gnts.stt.mfg.domain.txn.AsmblyPlanHdrDM;
@@ -52,7 +51,6 @@ import com.gnts.stt.mfg.service.txn.AsmblyDtlService;
 import com.gnts.stt.mfg.service.txn.AsmblyHdrService;
 import com.gnts.stt.mfg.service.txn.AsmblyPlanHdrService;
 import com.gnts.stt.mfg.service.txn.AsmblyShiftService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -84,17 +82,15 @@ public class Assembly extends BaseUI {
 	private AsmblyPlanHdrService serviceAsmblyPlanHrd = (AsmblyPlanHdrService) SpringContextHelper
 			.getBean("AsmblyPlanHdr");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private ProductService ServiceProduct = (ProductService) SpringContextHelper.getBean("Product");
+	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private SlnoGenService serviceSLNo = (SlnoGenService) SpringContextHelper.getBean("slnogen");
-	List<AsmblyDtlDM> listAsmDtl = null;
-	List<AsmblyShiftDM> listAsmShift = null;
-	public Button btndelete = new GERPButton("Delete", "delete", this);
-	public Button btnShiftdelete = new GERPButton("Delete", "delete", this);
+	private List<AsmblyDtlDM> listAsmDtl = null;
+	private List<AsmblyShiftDM> listAsmShift = null;
+	private Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btnShiftdelete = new GERPButton("Delete", "delete", this);
 	private BeanItemContainer<AsmblyHdrDM> beanAsmblyHdr = null;
 	private BeanItemContainer<AsmblyDtlDM> beanAsmblyDtl = null;
 	private BeanItemContainer<AsmblyShiftDM> beanAsmblyShift = null;
-	private BeanContainer<Long, AsmblyPlanHdrDM> beanAsmPlanHdr = null;
-	private BeanItemContainer<EmployeeDM> beanEmployeeDM = null;
 	private TextField tfAsmRefNo, tfPrdctnTotlQty, tfProductQty, tfShiftName, tfAchievedQty, tfplnRefNo;
 	private TextArea taRemarks;
 	private ComboBox cbPlndQty, cbHdrStatus, cbProductName, cbDtlStatus, cbEmployeeName, cbShiftStatus;
@@ -118,10 +114,8 @@ public class Assembly extends BaseUI {
 	private Long companyid, employeeId, cmpId;
 	private Long moduleId;
 	private Long branchID, asmblyHdrId;
-	private static Logger logger = Logger.getLogger(Assembly.class);
+	private Logger logger = Logger.getLogger(Assembly.class);
 	private GERPAddEditHLayout hlSearchLayout;
-	HorizontalLayout hlTstTyp, hlTstDef, hlTstSpec, hlTstDefNTstSpec;
-	VerticalLayout vlTstdef, vlTstSpec;
 	private int recordCnt = 0;
 	private int recordShiftCnt = 0;
 	private int recordCntDtl = 0;
@@ -400,8 +394,8 @@ public class Assembly extends BaseUI {
 		List<AsmblyHdrDM> AssemblyHdrList = new ArrayList<AsmblyHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ companyid + ", " + cbPlndQty.getValue() + ", " + cbHdrStatus.getValue());
-		AssemblyHdrList = serviceAsmblyHdr.getAsmblyHdrDMs(null, null, (String)tfplnRefNo.getValue(), dfAsmDt.getValue(), null,
-				(String) cbHdrStatus.getValue(), "F");
+		AssemblyHdrList = serviceAsmblyHdr.getAsmblyHdrDMs(null, null, (String) tfplnRefNo.getValue(),
+				dfAsmDt.getValue(), null, (String) cbHdrStatus.getValue(), "F");
 		recordCnt = AssemblyHdrList.size();
 		beanAsmblyHdr = new BeanItemContainer<AsmblyHdrDM>(AsmblyHdrDM.class);
 		beanAsmblyHdr.addAll(AssemblyHdrList);
@@ -410,8 +404,8 @@ public class Assembly extends BaseUI {
 		tblMstScrSrchRslt.setContainerDataSource(beanAsmblyHdr);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "asmblyid", "asmrefno", "asmdate", "asmPlanRefno",
 				"prodtntotqty", "asmstauts", "lastupdateddate", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Asm.Ref.No", "Asm. Date",
-				"Plan Reference No.", "Production Total Qty.", "Status", "Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Asm.Ref.No", "Asm. Date", "Plan Reference No.",
+				"Production Total Qty.", "Status", "Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("asmblyid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
@@ -461,28 +455,24 @@ public class Assembly extends BaseUI {
 	}
 	
 	private void loadEmployeeList() {
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeId,
-				null, null, null, "F");
-		empList.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null, null, "F"));
-		beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.addAll(empList);
+		BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeId, null,
+				null, null, "P"));
 		cbEmployeeName.setContainerDataSource(beanEmployeeDM);
 	}
 	
 	private void loadProductList() {
-		List<ProductDM> getproductlist = new ArrayList<ProductDM>();
-		getproductlist.addAll(ServiceProduct.getProductList(null, null, null, null, "Active", null, null, "F"));
 		BeanItemContainer<ProductDM> beanProductDM = new BeanItemContainer<ProductDM>(ProductDM.class);
-		beanProductDM.addAll(getproductlist);
+		beanProductDM.addAll(serviceProduct.getProductList(null, null, null, null, "Active", null, null, "F"));
 		cbProductName.setContainerDataSource(beanProductDM);
 	}
 	
 	private void loadAsmPlan() {
-		List<AsmblyPlanHdrDM> asmPlanList = serviceAsmblyPlanHrd.getAsmblyPlanHdrDetails(null, cmpId, null, null, null,
-				"Active", "F");
-		beanAsmPlanHdr = new BeanContainer<Long, AsmblyPlanHdrDM>(AsmblyPlanHdrDM.class);
+		BeanContainer<Long, AsmblyPlanHdrDM> beanAsmPlanHdr = new BeanContainer<Long, AsmblyPlanHdrDM>(
+				AsmblyPlanHdrDM.class);
 		beanAsmPlanHdr.setBeanIdProperty("asmplnid");
-		beanAsmPlanHdr.addAll(asmPlanList);
+		beanAsmPlanHdr.addAll(serviceAsmblyPlanHrd
+				.getAsmblyPlanHdrDetails(null, cmpId, null, null, null, "Active", "F"));
 		cbPlndQty.setContainerDataSource(beanAsmPlanHdr);
 	}
 	
@@ -533,7 +523,6 @@ public class Assembly extends BaseUI {
 		tfAchievedQty.setRequired(true);
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
-		
 		hlCmdBtnLayout.setVisible(false);
 		btnAsmDtl.setCaption("Add");
 		tblAsmDtl.setVisible(true);
@@ -584,15 +573,14 @@ public class Assembly extends BaseUI {
 	protected void editAsmblyDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			AsmblyHdrDM editAssembly = beanAsmblyHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			asmblyHdrId = Long.valueOf(editAssembly.getAsmblyid());
 			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
 					+ "Selected Assembly. Id -> " + asmblyHdrId);
 			cbPlndQty.setValue(editAssembly.getAsmplnid().toString());
 			tfAsmRefNo.setReadOnly(false);
-			tfAsmRefNo.setValue((String) sltedRcd.getItemProperty("asmrefno").getValue());
+			tfAsmRefNo.setValue(editAssembly.getAsmrefno());
 			tfAsmRefNo.setReadOnly(true);
 			if (editAssembly.getAsmdate() != null) {
 				dfAsmDt.setValue(editAssembly.getAsmplndate1());
@@ -611,11 +599,10 @@ public class Assembly extends BaseUI {
 	
 	protected void editAsmblyDtls() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblAsmDtl.getItem(tblAsmDtl.getValue());
-		if (itselect != null) {
-			AsmblyDtlDM editAsmblDtlObj = new AsmblyDtlDM();
-			editAsmblDtlObj = beanAsmblyDtl.getItem(tblAsmDtl.getValue()).getBean();
-			Long prodId = editAsmblDtlObj.getProductId();
+		if (tblAsmDtl.getValue() != null) {
+			AsmblyDtlDM asmblyDtlDM = new AsmblyDtlDM();
+			asmblyDtlDM = beanAsmblyDtl.getItem(tblAsmDtl.getValue()).getBean();
+			Long prodId = asmblyDtlDM.getProductId();
 			Collection<?> prodIdCol = cbProductName.getItemIds();
 			for (Iterator<?> iterator = prodIdCol.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -625,11 +612,11 @@ public class Assembly extends BaseUI {
 				if (prodId != null && prodId.equals(st.getProdid())) {
 					cbProductName.setValue(itemId);
 				}
-				if (itselect.getItemProperty("prodtnQty").getValue() != null) {
-					tfProductQty.setValue(itselect.getItemProperty("prodtnQty").getValue().toString());
+				if (asmblyDtlDM.getProdtnQty() != null) {
+					tfProductQty.setValue(asmblyDtlDM.getProdtnQty().toString());
 				}
-				if (itselect.getItemProperty("asmdtlStatus").getValue() != null) {
-					cbDtlStatus.setValue(itselect.getItemProperty("asmdtlStatus").getValue().toString());
+				if (asmblyDtlDM.getAsmdtlStatus() != null) {
+					cbDtlStatus.setValue(asmblyDtlDM.getAsmdtlStatus());
 				}
 			}
 		}
@@ -637,11 +624,10 @@ public class Assembly extends BaseUI {
 	
 	protected void editAsmblyShift() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblAsmShift.getItem(tblAsmShift.getValue());
-		if (itselect != null) {
-			AsmblyShiftDM editAsmblShiftObj = new AsmblyShiftDM();
-			editAsmblShiftObj = beanAsmblyShift.getItem(tblAsmShift.getValue()).getBean();
-			Long empId = editAsmblShiftObj.getEmpId();
+		if (tblAsmShift.getValue() != null) {
+			AsmblyShiftDM asmblyShiftDM = new AsmblyShiftDM();
+			asmblyShiftDM = beanAsmblyShift.getItem(tblAsmShift.getValue()).getBean();
+			Long empId = asmblyShiftDM.getEmpId();
 			Collection<?> empColId = cbEmployeeName.getItemIds();
 			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
@@ -652,14 +638,14 @@ public class Assembly extends BaseUI {
 					cbEmployeeName.setValue(itemIdClient);
 				}
 			}
-			if (itselect.getItemProperty("shiftName").getValue() != null) {
-				tfShiftName.setValue(itselect.getItemProperty("shiftName").getValue().toString());
+			if (asmblyShiftDM.getShiftName() != null) {
+				tfShiftName.setValue(asmblyShiftDM.getShiftName());
 			}
-			if (itselect.getItemProperty("achivedQty").getValue() != null) {
-				tfAchievedQty.setValue(itselect.getItemProperty("achivedQty").getValue().toString());
+			if (asmblyShiftDM.getAchivedQty() != null) {
+				tfAchievedQty.setValue(asmblyShiftDM.getAchivedQty().toString());
 			}
-			if (itselect.getItemProperty("shiftStatus").getValue() != null) {
-				cbShiftStatus.setValue(itselect.getItemProperty("shiftStatus").getValue().toString());
+			if (asmblyShiftDM.getShiftStatus() != null) {
+				cbShiftStatus.setValue(asmblyShiftDM.getShiftStatus());
 			}
 		}
 	}
@@ -938,8 +924,8 @@ public class Assembly extends BaseUI {
 		listAsmShift = new ArrayList<AsmblyShiftDM>();
 		tblAsmDtl.removeAllItems();
 		tblAsmShift.removeAllItems();
-		recordCnt=0;
-		recordCntDtl=0;
+		recordCnt = 0;
+		recordCntDtl = 0;
 	}
 	
 	protected void asmblDtlResetFields() {

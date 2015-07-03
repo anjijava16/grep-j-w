@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.ProductCategoryListDM;
 import com.gnts.base.domain.mst.ProductDM;
@@ -47,13 +46,11 @@ import com.gnts.mfg.domain.mst.TestDefnDM;
 import com.gnts.mfg.domain.mst.TestGroupDM;
 import com.gnts.mfg.domain.mst.TestSpecificationDM;
 import com.gnts.mfg.domain.mst.TestTypeDM;
-import com.gnts.mfg.domain.txn.QATestDtlDM;
 import com.gnts.mfg.service.mst.TestConditionService;
 import com.gnts.mfg.service.mst.TestDefnService;
 import com.gnts.mfg.service.mst.TestGroupService;
 import com.gnts.mfg.service.mst.TestSpecificationService;
 import com.gnts.mfg.service.mst.TestTypeService;
-import com.gnts.sms.domain.txn.SmsPurEnqDtlDM;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -118,7 +115,7 @@ public class QATestType extends BaseUI {
 	private Table tblTstCondn;
 	private Button btnTstCondn;
 	//
-	TabSheet tabSheet;
+	private TabSheet tabSheet;
 	//
 	private FormLayout flTstCondn, flTstCondSpec, flTstCondSts, flTstbtnTstCondn, flbtnContdnDelt;
 	private HorizontalLayout hlTypCondn;
@@ -127,10 +124,9 @@ public class QATestType extends BaseUI {
 	private BeanItemContainer<TestDefnDM> beanTestDef = null;
 	private BeanItemContainer<TestSpecificationDM> beanTestSpec = null;
 	private BeanItemContainer<TestConditionDM> beanTestCondn = null;
-	List<TestTypeDM> listTestType = null;
-	List<TestDefnDM> listTestDefn = null;
-	List<TestSpecificationDM> listTestSpecification = null;
-	List<TestConditionDM> listTestCondition = null;
+	private List<TestDefnDM> listTestDefn = null;
+	private List<TestSpecificationDM> listTestSpecification = null;
+	private List<TestConditionDM> listTestCondition = null;
 	private TestDefnService serviceTestDefn = (TestDefnService) SpringContextHelper.getBean("testDefn");
 	private TestSpecificationService serviceTestSpecification = (TestSpecificationService) SpringContextHelper
 			.getBean("testSpec");
@@ -142,7 +138,7 @@ public class QATestType extends BaseUI {
 	private String userName;
 	private Long companyid;
 	private int recordCnt;
-	private Long testSpecId, testDefId;
+	private Long testSpecId;
 	private String testTypeId;
 	// Search control layout
 	private GERPAddEditHLayout hlSearchLayout;
@@ -150,10 +146,10 @@ public class QATestType extends BaseUI {
 	private HorizontalLayout hlUserInputLayout = new GERPAddEditHLayout();
 	private int recordTstCondn, recordTestdef, recordTstSpec;
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(QATestType.class);
-	public Button btnDeltTstDef = new GERPButton("Delete", "delete", this);
-	public Button btnDeltTstSpecf = new GERPButton("Delete", "delete", this);
-	public Button btnDeltTstCondtn = new GERPButton("Delete", "delete", this);
+	private Logger logger = Logger.getLogger(QATestType.class);
+	private Button btnDeltTstDef = new GERPButton("Delete", "delete", this);
+	private Button btnDeltTstSpecf = new GERPButton("Delete", "delete", this);
+	private Button btnDeltTstCondtn = new GERPButton("Delete", "delete", this);
 	
 	// Constructor received the parameters from Login UI class
 	public QATestType() {
@@ -639,30 +635,24 @@ public class QATestType extends BaseUI {
 	}
 	
 	private void loadTestGrpList() {
-		List<TestGroupDM> getTestGrpList = new ArrayList<TestGroupDM>();
-		getTestGrpList.addAll(serviceTestGroup.getTestGpDetails(companyid, null, "Active", "F"));
 		BeanContainer<Long, TestGroupDM> beanCity = new BeanContainer<Long, TestGroupDM>(TestGroupDM.class);
 		beanCity.setBeanIdProperty("qaTestGpID");
-		beanCity.addAll(getTestGrpList);
+		beanCity.addAll(serviceTestGroup.getTestGpDetails(companyid, null, "Active", "F"));
 		cbtstGrp.setContainerDataSource(beanCity);
 	}
 	
-	public void loadCategoryList() {
-		List<ProductCategoryListDM> prdCatrgyList = new ArrayList<ProductCategoryListDM>();
-		prdCatrgyList = serviceProductCategory.getProdCategoryList(null, null, null, "Active", null, "F");
+	private void loadCategoryList() {
 		BeanItemContainer<ProductCategoryListDM> beanProdCatgry = new BeanItemContainer<ProductCategoryListDM>(
 				ProductCategoryListDM.class);
-		beanProdCatgry.addAll(prdCatrgyList);
+		beanProdCatgry.addAll(serviceProductCategory.getProdCategoryList(null, null, null, "Active", null, "F"));
 		cbCatgry.setContainerDataSource(beanProdCatgry);
 	}
 	
-	public void loadProductList() {
-		List<ProductDM> prudList = new ArrayList<ProductDM>();
-		prudList = serviceProduct.getProductList(companyid, null, null, null, "Active",
-				((ProductCategoryListDM) cbCatgry.getValue()).getCateid(), null, "F");
-		BeanContainer<Long,ProductDM> beanProduct = new BeanContainer<Long,ProductDM>(ProductDM.class);
+	private void loadProductList() {
+		BeanContainer<Long, ProductDM> beanProduct = new BeanContainer<Long, ProductDM>(ProductDM.class);
 		beanProduct.setBeanIdProperty("prodid");
-		beanProduct.addAll(prudList);
+		beanProduct.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active",
+				((ProductCategoryListDM) cbCatgry.getValue()).getCateid(), null, "F"));
 		lsPrdList.setContainerDataSource(beanProduct);
 	}
 	
@@ -693,18 +683,17 @@ public class QATestType extends BaseUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editTestTypeDetails() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			TestTypeDM editTestType = beanTestType.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			testTypeId = editTestType.getQaTstTypId().toString();
-			tftstType.setValue(itselect.getItemProperty("tstType").getValue().toString());
-			cbtstGrp.setValue(editTestType.getQaTstGpId().toString());
-			tfTestMethdlgy.setValue((String) itselect.getItemProperty("tstMldlgy").getValue());
-			if (editTestType.getTstTypeDesc() != null) {
-				taTypeDesc.setValue(itselect.getItemProperty("tstTypeDesc").getValue().toString());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			TestTypeDM testTypeDM = beanTestType.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			testTypeId = testTypeDM.getQaTstTypId().toString();
+			tftstType.setValue(testTypeDM.getTstType());
+			cbtstGrp.setValue(testTypeDM.getQaTstGpId().toString());
+			tfTestMethdlgy.setValue(testTypeDM.getTstMldlgy());
+			if (testTypeDM.getTstTypeDesc() != null) {
+				taTypeDesc.setValue(testTypeDM.getTstTypeDesc());
 			}
-			cbStatus.setValue(itselect.getItemProperty("tstTypStatus").getValue().toString());
-			if (editTestType.getPreCondtnYN().equals("Yes")) {
+			cbStatus.setValue(testTypeDM.getTstTypStatus());
+			if (testTypeDM.getPreCondtnYN().equals("Yes")) {
 				chPreCdn.setValue(true);
 			} else {
 				chPreCdn.setValue(false);
@@ -719,11 +708,9 @@ public class QATestType extends BaseUI {
 	}
 	
 	private void editTstDefDetails() {
-		Item itselect = tblTstDef.getItem(tblTstDef.getValue());
-		if (itselect != null) {
+		if (tblTstDef.getValue() != null) {
 			TestDefnDM editTstDefn = new TestDefnDM();
 			editTstDefn = beanTestDef.getItem(tblTstDef.getValue()).getBean();
-			testDefId = editTstDefn.getQuestdefid();
 			Long catgryID = editTstDefn.getCategoryid();
 			Collection<?> catID = cbCatgry.getItemIds();
 			for (Iterator<?> iterator = catID.iterator(); iterator.hasNext();) {
@@ -747,30 +734,25 @@ public class QATestType extends BaseUI {
 					lsPrdList.select(itemId);
 				}
 			}
-			cbTstDefStatus.setValue((String) itselect.getItemProperty("tstdfnstatus").getValue());
+			cbTstDefStatus.setValue(editTstDefn.getTstdfnstatus());
 		}
 	}
 	
 	private void editTstSpecDetails() {
-		Item itselect = tblTstSpec.getItem(tblTstSpec.getValue());
-		if (itselect != null) {
-			TestSpecificationDM editTstSpec = new TestSpecificationDM();
+		if (tblTstSpec.getValue() != null) {
 			logger.info("testSpecId=editTstSpec.getTestSpecId()>>" + testSpecId);
-			editTstSpec = beanTestSpec.getItem(tblTstSpec.getValue()).getBean();
-			testSpecId = editTstSpec.getTestSpecId();
-			tfTstRecr.setValue((String) itselect.getItemProperty("testRqrmt").getValue());
-			tfTstSpec.setValue((String) itselect.getItemProperty("testSpec").getValue());
-			tfTstCyc.setValue(Long.valueOf(editTstSpec.getTestCycl()).toString());
-			cbTstSpecStatus.setValue((String) itselect.getItemProperty("tstPrmStatus").getValue());
+			TestSpecificationDM testSpecificationDM = beanTestSpec.getItem(tblTstSpec.getValue()).getBean();
+			testSpecId = testSpecificationDM.getTestSpecId();
+			tfTstRecr.setValue(testSpecificationDM.getTestRqrmt());
+			tfTstSpec.setValue(testSpecificationDM.getTestSpec());
+			tfTstCyc.setValue(Long.valueOf(testSpecificationDM.getTestCycl()).toString());
+			cbTstSpecStatus.setValue(testSpecificationDM.getTstPrmStatus());
 		}
 	}
 	
 	private void editTstCondnDetails() {
 		Item itselect = tblTstCondn.getItem(tblTstCondn.getValue());
 		if (itselect != null) {
-			@SuppressWarnings("unused")
-			TestConditionDM editTstCondn = new TestConditionDM();
-			editTstCondn = beanTestCondn.getItem(tblTstCondn.getValue()).getBean();
 			tfTstCondn.setValue((String) itselect.getItemProperty("testCondn").getValue());
 			tfTstCondnSpec.setValue((String) itselect.getItemProperty("testSpec").getValue());
 			cbTstDefStatus.setValue((String) itselect.getItemProperty("testCondnStatus").getValue());
@@ -993,7 +975,6 @@ public class QATestType extends BaseUI {
 						break;
 					}
 				}
-			
 				System.out.println("count--->" + count);
 				if (tblTstDef.getValue() != null) {
 					count = 0;
@@ -1008,37 +989,29 @@ public class QATestType extends BaseUI {
 						listTestDefn.remove(objTstDef);
 					}
 					objTstDef.setCompanyid(companyid);
-					if(cbCatgry.getValue()!=null)
-					{
-					objTstDef.setCategoryid(((ProductCategoryListDM) cbCatgry.getValue()).getCateid());
-					objTstDef.setCatgName(((ProductCategoryListDM) cbCatgry.getValue()).getCatename());
+					if (cbCatgry.getValue() != null) {
+						objTstDef.setCategoryid(((ProductCategoryListDM) cbCatgry.getValue()).getCateid());
+						objTstDef.setCatgName(((ProductCategoryListDM) cbCatgry.getValue()).getCatename());
 					}
 					if (lsPrdList.getValue() != null) {
-
-					objTstDef.setProductid(Long.valueOf(obj.trim()));
-
-					objTstDef.setProductName(serviceProduct
-							.getProductList(null, Long.valueOf(obj.trim()), null, null, null, null, null, "P")
-							.get(0).getProdname());
+						objTstDef.setProductid(Long.valueOf(obj.trim()));
+						objTstDef.setProductName(serviceProduct
+								.getProductList(null, Long.valueOf(obj.trim()), null, null, null, null, null, "P")
+								.get(0).getProdname());
 					}
 					objTstDef.setTstdfnstatus((String) cbTstDefStatus.getValue());
 					objTstDef.setLastupdateddate(DateUtils.getcurrentdate());
 					objTstDef.setLastupdatedby(userName);
 					if (cbCatgry.getValue() != null && lsPrdList.getValue() != null) {
 						listTestDefn.add(objTstDef);
-					
+					}
 				}
-			}
 			}
 			loadSrchTstDefRslt();
 			btnDefSave.setCaption("Add");
-		
 		}
 		resetTstDefDetails();
-
-		
 	}
-	
 	
 	public void resetTstDefDetails() {
 		cbCatgry.setValue(null);

@@ -48,7 +48,6 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.stt.mfg.domain.txn.ExtrudersHdrDM;
-import com.gnts.stt.mfg.domain.txn.FoamDtlDM;
 import com.gnts.stt.mfg.domain.txn.PulvizDtlDM;
 import com.gnts.stt.mfg.domain.txn.PulvizHdrDM;
 import com.gnts.stt.mfg.service.txn.ExtrudersHdrService;
@@ -106,10 +105,9 @@ public class Pulverizer extends BaseUI {
 	private GERPComboBox cbbrnchnamehdr, cbstatushdr, cbstatusdtl, cbmchnameldt, cbexredno;
 	private VerticalLayout vlinputhdr, vlinputdtl;
 	private Button btnAddPulvizDtl = new GERPButton("Add", "addbt", this);
-	public Button btndelete = new GERPButton("Delete", "delete", this);
-
+	private Button btndelete = new GERPButton("Delete", "delete", this);
 	private Table tblPulvizDtl;
-	List<PulvizDtlDM> pulvizdtllist = null;
+	private List<PulvizDtlDM> pulvizdtllist = null;
 	
 	public Pulverizer() {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
@@ -287,17 +285,17 @@ public class Pulverizer extends BaseUI {
 		hluserInputlayoutDtl.addComponent(flcolumn3dtl);
 		hluserInputlayoutDtl.addComponent(flcolumn4dtl);
 		hluserInputlayoutDtl.addComponent(flcolumn5dtl);
-		VerticalLayout vl=new VerticalLayout();
+		VerticalLayout vl = new VerticalLayout();
 		vl.addComponent(btnAddPulvizDtl);
 		vl.addComponent(btndelete);
 		hluserInputlayoutDtl.addComponent(vl);
 		hluserInputlayoutDtl.setComponentAlignment(vl, Alignment.BOTTOM_RIGHT);
-		/*btnAddPulvizDtl.setVisible(true);
-		hluserInputlayoutDtl.addComponent(btnAddPulvizDtl);
-		hluserInputlayoutDtl.setComponentAlignment(btnAddPulvizDtl, Alignment.MIDDLE_RIGHT);
-		btndelete.setVisible(true);
-		hluserInputlayoutDtl.addComponent(btndelete);
-		hluserInputlayoutDtl.setComponentAlignment(btndelete, Alignment.MIDDLE_RIGHT);*/
+		/*
+		 * btnAddPulvizDtl.setVisible(true); hluserInputlayoutDtl.addComponent(btnAddPulvizDtl);
+		 * hluserInputlayoutDtl.setComponentAlignment(btnAddPulvizDtl, Alignment.MIDDLE_RIGHT);
+		 * btndelete.setVisible(true); hluserInputlayoutDtl.addComponent(btndelete);
+		 * hluserInputlayoutDtl.setComponentAlignment(btndelete, Alignment.MIDDLE_RIGHT);
+		 */
 		hluserInputlayoutDtl.setSpacing(true);
 		hluserInputlayoutDtl.setMargin(true);
 		vlinputhdr = new VerticalLayout();
@@ -566,17 +564,17 @@ public class Pulverizer extends BaseUI {
 			errorflag = true;
 		}
 		Long prdctnQty;
-		try{
-			prdctnQty=Long.valueOf(tfmaterialid.getValue());
-			if(prdctnQty<0){
+		try {
+			prdctnQty = Long.valueOf(tfmaterialid.getValue());
+			if (prdctnQty < 0) {
 				tfmaterialid.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				errorflag = true;
-				}
-		}catch(Exception e){
+			}
+		}
+		catch (Exception e) {
 			tfmaterialid.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			errorflag = true;
 		}
-
 		if (errorflag) {
 			throw new ERPException.ValidationException();
 		}
@@ -744,9 +742,9 @@ public class Pulverizer extends BaseUI {
 			if (editpulvizdtl.getProdndate() != null) {
 				dfpulvizdtl.setValue(editpulvizdtl.getProdndate1());
 			}
-			/*if (editpulvizdtl.getProdndate() != null) {
-				dfpulvizdtl.setValue(editpulvizdtl.getProdndate1());
-			}*/
+			/*
+			 * if (editpulvizdtl.getProdndate() != null) { dfpulvizdtl.setValue(editpulvizdtl.getProdndate1()); }
+			 */
 			tfip.setValue(editpulvizdtl.getInputqty().toString());
 			tfop.setValue(editpulvizdtl.getOutputqty().toString());
 			if (editpulvizdtl.getBalanceqty() != null) {
@@ -789,65 +787,70 @@ public class Pulverizer extends BaseUI {
 			dfpulvizdtl.setComponentError(null);
 		}
 		Long input;
-		try{
-			input=Long.valueOf(tfip.getValue());
-			if(input<0){
+		try {
+			input = Long.valueOf(tfip.getValue());
+			if (input < 0) {
 				tfip.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				validpuldtl = false;
-				}
-		}catch(Exception e){
+			}
+		}
+		catch (Exception e) {
 			tfip.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			validpuldtl = false;
 		}
 		Long output;
-		try{
-			output=Long.valueOf(tfop.getValue());
-			if(output<0){
+		try {
+			output = Long.valueOf(tfop.getValue());
+			if (output < 0) {
 				tfop.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				validpuldtl = false;
-				}
-		}catch(Exception e){
+			}
+		}
+		catch (Exception e) {
 			tfop.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			validpuldtl = false;
 		}
 		Long balQty;
-		try{
-			balQty=Long.valueOf(tfbalqty.getValue());
-			if(balQty<0){
+		try {
+			balQty = Long.valueOf(tfbalqty.getValue());
+			if (balQty < 0) {
 				tfbalqty.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				validpuldtl = false;
-				}
-		}catch(Exception e){
+			}
+		}
+		catch (Exception e) {
 			tfbalqty.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			validpuldtl = false;
 		}
 		Long oee;
-		try{
-			oee=Long.valueOf(tfoee.getValue());
-			if(oee<0){
+		try {
+			oee = Long.valueOf(tfoee.getValue());
+			if (oee < 0) {
 				tfoee.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				validpuldtl = false;
-				}
-		}catch(Exception e){
+			}
+		}
+		catch (Exception e) {
 			tfoee.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			validpuldtl = false;
 		}
-
 		Long balper;
-		try{
-			balper=Long.valueOf(tfbalprcnt.getValue());
-			if(balper<0){
+		try {
+			balper = Long.valueOf(tfbalprcnt.getValue());
+			if (balper < 0) {
 				tfbalprcnt.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				validpuldtl = false;
-				}
-		}catch(Exception e){
+			}
+		}
+		catch (Exception e) {
 			tfbalprcnt.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			validpuldtl = false;
 		}
 		return validpuldtl;
 	}
+	
 	private void deleteDetails() {
-		PulvizDtlDM remove= new PulvizDtlDM();
+		PulvizDtlDM remove = new PulvizDtlDM();
 		if (tblPulvizDtl.getValue() != null) {
 			remove = beanPulvizDtlDM.getItem(tblPulvizDtl.getValue()).getBean();
 			pulvizdtllist.remove(remove);

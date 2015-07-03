@@ -86,9 +86,8 @@ public class Extruder extends BaseUI {
 	List<ExtrudersMtrlDM> extrudersMtrlList = null;
 	List<ExtrudersTempDM> extrudersTempList = null;
 	// form layout for input controls
-	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4, flHdrCol5, flHdrCol6, flMtrlCol1, flMtrlCol2,
-			flMtrlCol3, flDtlCol3, flDtlCol4, flDtlCol5, flDtlCol6, flTempCol1, flTempCol2, flExtDtlCol1, flExtDtlCol2,
-			flAsmShiftCol3;
+	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4, flHdrCol6, flMtrlCol1, flTempCol1, flExtDtlCol1,
+			flExtDtlCol2;
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
@@ -96,7 +95,7 @@ public class Extruder extends BaseUI {
 	private HorizontalLayout hlExtDtl = new HorizontalLayout();
 	private HorizontalLayout hlMtrl = new HorizontalLayout();
 	private HorizontalLayout hlDtlAdMtrlAdTemp = new HorizontalLayout();
-	private VerticalLayout vlHdr, vlHdrToTemp, vlMtrl, vlDtl, vlTemp;
+	private VerticalLayout vlHdrToTemp, vlMtrl, vlDtl, vlTemp;
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// User Input Components for Work Order Details
@@ -123,13 +122,12 @@ public class Extruder extends BaseUI {
 	private BeanContainer<Long, MaterialDM> beanMaterials = null;
 	// local variables declaration
 	private Long companyid, moduleId, branchID, employeeId;
-	private Long extHdrId, extDtl, editMtrlId, editTempId;
+	private Long extHdrId;
 	private int recordDtlCnt = 0;
 	private int recordCnt = 0;
 	private int recordMtrlCnt = 0;
 	private int recordTempCnt = 0;
 	private String username;
-	private Boolean errorFlag = false;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Extruder.class);
 	private Long appScreenId;
@@ -329,6 +327,11 @@ public class Extruder extends BaseUI {
 		cbMatName.setItemCaptionPropertyId("materialName");
 		loadMaterialList();
 		cbMatName.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (cbMatName.getValue() != null) {
@@ -449,7 +452,7 @@ public class Extruder extends BaseUI {
 		flHdrCol2 = new FormLayout();
 		flHdrCol3 = new FormLayout();
 		flHdrCol4 = new FormLayout();
-		flHdrCol5 = new FormLayout();
+		new FormLayout();
 		flHdrCol1.addComponent(cbMachineName);
 		flHdrCol1.addComponent(tfExtRefNo);
 		flHdrCol1.addComponent(dfExtDt);
@@ -491,8 +494,7 @@ public class Extruder extends BaseUI {
 		vlDtl.setMargin(true);
 		// Adding Material Components
 		flMtrlCol1 = new FormLayout();
-		flMtrlCol2 = new FormLayout();
-		flMtrlCol3 = new FormLayout();
+		new FormLayout();
 		Label lblSpc1 = new Label();
 		Label lblSpc2 = new Label();
 		lblSpc1.setHeight("17");
@@ -520,7 +522,6 @@ public class Extruder extends BaseUI {
 		vlMtrl.addComponent(tblMtrl);
 		// Adding Temp Components
 		flTempCol1 = new FormLayout();
-		flTempCol2 = new FormLayout();
 		flTempCol1.addComponent(tfZoneName);
 		flTempCol1.addComponent(tfTempValue);
 		HorizontalLayout hlTemp = new HorizontalLayout();
@@ -556,9 +557,7 @@ public class Extruder extends BaseUI {
 		List<ExtrudersHdrDM> extHdrList = new ArrayList<ExtrudersHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfExtRefNo.getValue() + ", " + cbHdrStatus.getValue());
-		Long machineId = null;
 		if (cbMachineName.getValue() != null) {
-			machineId = ((Long.valueOf(cbMachineName.getValue().toString())));
 		}
 		extHdrList = serviceExtruderHrd.getExtruderList(null, companyid, null, (Long) cbMachineName.getValue(),
 				(String) tfExTPlnRef.getValue(), dfExtDt.getValue(), null, null, (String) cbHdrStatus.getValue(), "F");
@@ -712,7 +711,7 @@ public class Extruder extends BaseUI {
 		if (itselect != null) {
 			ExtrudersDtlDM editAsmblDtlObj = new ExtrudersDtlDM();
 			editAsmblDtlObj = beanExtrudersDtlDM.getItem(tblDtl.getValue()).getBean();
-			extDtl = editAsmblDtlObj.getExtDtlId();
+			editAsmblDtlObj.getExtDtlId();
 			dfProdDt.setValue(editAsmblDtlObj.getProdDateDT());
 			tfOpQty.setValue(itselect.getItemProperty("outQty").getValue().toString());
 			if (editAsmblDtlObj.getChrgStTime() != null) {
@@ -745,7 +744,7 @@ public class Extruder extends BaseUI {
 		if (itselect != null) {
 			ExtrudersMtrlDM editMtrlObj = new ExtrudersMtrlDM();
 			editMtrlObj = beanExtrudersMtrlDM.getItem(tblMtrl.getValue()).getBean();
-			editMtrlId = editMtrlObj.getExtMtrlId();
+			editMtrlObj.getExtMtrlId();
 			Long matId = editMtrlObj.getMaterialId();
 			Collection<?> empColId = cbMatName.getItemIds();
 			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
@@ -772,7 +771,7 @@ public class Extruder extends BaseUI {
 		if (itselect != null) {
 			ExtrudersTempDM editTempObj = new ExtrudersTempDM();
 			editTempObj = beanExtrudersTempDM.getItem(tblTemp.getValue()).getBean();
-			editTempId = editTempObj.getExtTmprId();
+			editTempObj.getExtTmprId();
 			tfZoneName.setValue(itselect.getItemProperty("zoneName").getValue().toString());
 			tfTempValue.setValue(itselect.getItemProperty("temprValue").getValue().toString());
 			if (itselect.getItemProperty("status").getValue() != null) {
@@ -977,7 +976,6 @@ public class Extruder extends BaseUI {
 	@Override
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		errorFlag = false;
 		cbMachineName.setComponentError(null);
 		dfExtDt.setComponentError(null);
 		cbMaterial.setComponentError(null);
@@ -1123,7 +1121,7 @@ public class Extruder extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			ExtrudersHdrDM extruderObj = new ExtrudersHdrDM();
-			ExtrudersDtlDM extruderDtlObj = new ExtrudersDtlDM();
+			new ExtrudersDtlDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				extruderObj = beanExtrudersHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			} else {
@@ -1143,7 +1141,7 @@ public class Extruder extends BaseUI {
 				}
 			}
 			if (tblDtl.getValue() != null) {
-				extruderDtlObj = beanExtrudersDtlDM.getItem(tblDtl.getValue()).getBean();
+				beanExtrudersDtlDM.getItem(tblDtl.getValue()).getBean();
 			}
 			extruderObj.setCmpId(companyid);
 			extruderObj.setBranchId(branchID);

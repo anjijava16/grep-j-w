@@ -32,7 +32,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.mst.TestGroupDM;
 import com.gnts.mfg.service.mst.TestGroupService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Alignment;
@@ -52,12 +51,12 @@ public class TestGroup extends BaseUI {
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2;
 	// User Input Components
-	private TextField tfTestGp;
+	private TextField tfTestGroup;
 	private ComboBox cbStatus;
 	// BeanItem container of TestGroupDM
 	private BeanItemContainer<TestGroupDM> beanTestGroup = null;
 	// local variables declaration
-	private Long qaTestGpID;
+	private Long testGpID;
 	private String username;
 	private Long companyid;
 	private int recordCnt;
@@ -66,7 +65,7 @@ public class TestGroup extends BaseUI {
 	// UserInput control layout
 	private HorizontalLayout hlUserInputLayout = new GERPAddEditHLayout();
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(TestGroup.class);
+	private Logger logger = Logger.getLogger(TestGroup.class);
 	
 	// Constructor received the parameters from Login UI class
 	public TestGroup() {
@@ -81,14 +80,14 @@ public class TestGroup extends BaseUI {
 	private void buildView() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting TestGroup UI");
 		// Text field for MFG.Test group Name
-		tfTestGp = new GERPTextField("Test Group");
+		tfTestGroup = new GERPTextField("Test Group");
 		// Text field for MFG.Test group Status
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// Initializing to form layouts for TestGroup UI search layout
 		flColumn1 = new FormLayout();
 		flColumn2 = new FormLayout();
 		// Adding components into form layouts for TestGroup UI search layout
-		flColumn1.addComponent(tfTestGp);
+		flColumn1.addComponent(tfTestGroup);
 		flColumn2.addComponent(cbStatus);
 		// Adding form layouts into search layout for TestGroup UI search mode
 		hlUserInputLayout.addComponent(flColumn1);
@@ -119,7 +118,7 @@ public class TestGroup extends BaseUI {
 		List<TestGroupDM> testGrpList = new ArrayList<TestGroupDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid);
-		testGrpList = serviceTestGroup.getTestGpDetails(companyid, tfTestGp.getValue().toString(),
+		testGrpList = serviceTestGroup.getTestGpDetails(companyid, tfTestGroup.getValue().toString(),
 				(String) cbStatus.getValue(), "F");
 		recordCnt = testGrpList.size();
 		beanTestGroup = new BeanItemContainer<TestGroupDM>(TestGroupDM.class);
@@ -137,18 +136,17 @@ public class TestGroup extends BaseUI {
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		tfTestGp.setValue("");
+		tfTestGroup.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	protected void editMFGQATestGroupDetails() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			TestGroupDM editMFGQATestGroup = beanTestGroup.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfTestGp.setValue(itselect.getItemProperty("testGroup").getValue().toString());
-			cbStatus.setValue(itselect.getItemProperty("tgroupStatus").getValue().toString());
-			qaTestGpID = Long.valueOf(editMFGQATestGroup.getQaTestGpID());
+			tfTestGroup.setValue(editMFGQATestGroup.getTestGroup());
+			cbStatus.setValue(editMFGQATestGroup.gettgroupStatus());
+			testGpID = Long.valueOf(editMFGQATestGroup.getQaTestGpID());
 		}
 	}
 	
@@ -174,8 +172,8 @@ public class TestGroup extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
-		tfTestGp.setValue("");
-		tfTestGp.setComponentError(null);
+		tfTestGroup.setValue("");
+		tfTestGroup.setComponentError(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		// reload the search using the defaults
 		loadSrchRslt();
@@ -187,7 +185,7 @@ public class TestGroup extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		// Adding user input fields into userIPContainer
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		tfTestGp.setRequired(true);
+		tfTestGroup.setRequired(true);
 		// reset the input controls to default value
 		resetFields();
 	}
@@ -198,7 +196,7 @@ public class TestGroup extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Getting audit record for TestGroup. ID " + "");
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.M_MFG_QA_TEST_GROUP);
-		UI.getCurrent().getSession().setAttribute("audittablepk", qaTestGpID.toString());
+		UI.getCurrent().getSession().setAttribute("audittablepk", testGpID.toString());
 	}
 	
 	// Method to cancel and get back to the home page from edit mode
@@ -206,8 +204,8 @@ public class TestGroup extends BaseUI {
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assembleSearchLayout();
-		tfTestGp.setComponentError(null);
-		tfTestGp.setRequired(false);
+		tfTestGroup.setComponentError(null);
+		tfTestGroup.setRequired(false);
 		resetFields();
 		loadSrchRslt();
 	}
@@ -217,7 +215,7 @@ public class TestGroup extends BaseUI {
 	protected void editDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Invoking Edit record ");
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		tfTestGp.setRequired(true);
+		tfTestGroup.setRequired(true);
 		editMFGQATestGroupDetails();
 	}
 	
@@ -226,13 +224,13 @@ public class TestGroup extends BaseUI {
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		Boolean errorFlag = false;
-		tfTestGp.setComponentError(null);
-		if (tfTestGp.getValue() == null || tfTestGp.getValue().trim().length() == 0) {
-			tfTestGp.setComponentError(new UserError(GERPErrorCodes.NULL_TEST_GROUP_NAME));
+		tfTestGroup.setComponentError(null);
+		if (tfTestGroup.getValue() == null || tfTestGroup.getValue().trim().length() == 0) {
+			tfTestGroup.setComponentError(new UserError(GERPErrorCodes.NULL_TEST_GROUP_NAME));
 			errorFlag = true;
 		} else if (tblMstScrSrchRslt.getValue() == null) {
-			if (serviceTestGroup.getTestGpDetails(companyid, tfTestGp.getValue(), "Active", "F").size() > 0) {
-				tfTestGp.setComponentError(new UserError(GERPErrorCodes.EXIST_TEST_GROUP_NAME));
+			if (serviceTestGroup.getTestGpDetails(companyid, tfTestGroup.getValue(), "Active", "F").size() > 0) {
+				tfTestGroup.setComponentError(new UserError(GERPErrorCodes.EXIST_TEST_GROUP_NAME));
 				errorFlag = true;
 			}
 		}
@@ -251,7 +249,7 @@ public class TestGroup extends BaseUI {
 				testGroupObj = beanTestGroup.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			testGroupObj.setCompanyId(companyid);
-			testGroupObj.setTestGroup(tfTestGp.getValue());
+			testGroupObj.setTestGroup(tfTestGroup.getValue());
 			testGroupObj.settgroupStatus((String) cbStatus.getValue());
 			testGroupObj.setLastUpdatedDt(DateUtils.getcurrentdate());
 			testGroupObj.setLastUpdateBy(username);

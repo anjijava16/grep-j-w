@@ -62,7 +62,6 @@ public class EnquiryWorkflow implements ClickListener {
 	private GERPTextField tfBottomTopCase = new GERPTextField("Bottom/Top to be made");
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
-	private GERPTextArea taWorkflow = new GERPTextArea("Workflow");
 	// User Input Components for Sales Enquire workflow
 	private Button btnAddWorkflow = new GERPButton("Add", "add", this);
 	private Button btnDeleteWorkflow = new GERPButton("Delete", "delete", this);

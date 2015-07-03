@@ -49,7 +49,6 @@ import com.gnts.stt.mfg.domain.txn.AsmblyPlanShiftDM;
 import com.gnts.stt.mfg.service.txn.AsmblyPlanDtlService;
 import com.gnts.stt.mfg.service.txn.AsmblyPlanHdrService;
 import com.gnts.stt.mfg.service.txn.AsmblyPlanShiftService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -90,8 +89,8 @@ public class AssemblyPlan extends BaseUI {
 	private WorkOrderDtlService serviceWorkOrderDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
-	List<AsmblyPlanDtlDM> asmblPlnDtlList = null;
-	List<AsmblyPlanShiftDM> asmblyPlnShitftList = null;
+	private List<AsmblyPlanDtlDM> asmblPlnDtlList = null;
+	private List<AsmblyPlanShiftDM> asmblyPlnShitftList = null;
 	// form layout for input controls
 	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4, flDtlCol1, flDtlCol2, flDtlCol3, flDtlCol4,
 			flDtlCol5, flDtlCol6, flAsmShiftCol1, flAsmShiftCol2, flAsmShiftCol3;
@@ -107,9 +106,9 @@ public class AssemblyPlan extends BaseUI {
 	// User Input Components for Work Order Details
 	private Button btnAddDtls = new GERPButton("Add", "add", this);
 	private Button btnAddShift = new GERPButton("Add", "add", this);
-	public Button btndelete = new GERPButton("Delete", "delete", this);
-	public Button btnShiftdelete = new GERPButton("Delete", "delete", this);
-	private ComboBox cbBranch, cbStatus, cbDtlStatus, cbEmpName, cbWO, cbProd, cbClientId;
+	private Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btnShiftdelete = new GERPButton("Delete", "delete", this);
+	private ComboBox cbBranch, cbStatus, cbDtlStatus, cbEmpName, cbWorkOrder, cbProduct, cbClientId;
 	private ComboBox cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private TextField tfPlanRefNo, tfPlanHdrQty, tfShiftName, tfTargetQty, tfPlanDtlQty, tfPlnRefNo;
@@ -119,8 +118,6 @@ public class AssemblyPlan extends BaseUI {
 	private BeanItemContainer<AsmblyPlanHdrDM> beanAsmblyPlanHdrDM = null;
 	private BeanItemContainer<AsmblyPlanDtlDM> beanAsmblyPlanDtlDM = null;
 	private BeanItemContainer<AsmblyPlanShiftDM> beanAsmblyPlanShiftDM = null;
-	private BeanContainer<Long, BranchDM> beanBranchDM = null;
-	private BeanItemContainer<EmployeeDM> beanEmployeeDM = null;
 	// local variables declaration
 	private Long companyid, moduleId, branchID;
 	private String asmbPlnHdrId;
@@ -279,8 +276,8 @@ public class AssemblyPlan extends BaseUI {
 		tfTargetQty.setWidth("110");
 		tfTargetQty.setValue("0");
 		// Client Id ComboBox
-		cbWO = new GERPComboBox("WO No.");
-		cbWO.setItemCaptionPropertyId("workOrdrNo");
+		cbWorkOrder = new GERPComboBox("WO No.");
+		cbWorkOrder.setItemCaptionPropertyId("workOrdrNo");
 		cbClientId = new GERPComboBox("Client Name");
 		cbClientId.setItemCaptionPropertyId("clientName");
 		loadClientList();
@@ -297,22 +294,22 @@ public class AssemblyPlan extends BaseUI {
 			}
 		});
 		// WOId ComboBox
-		cbWO.addValueChangeListener(new Property.ValueChangeListener() {
+		cbWorkOrder.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void valueChange(ValueChangeEvent event) {
 				// Get the selected item
 				Object itemId = event.getProperty().getValue();
-				BeanItem<?> item = (BeanItem<?>) cbWO.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbWorkOrder.getItem(itemId);
 				if (item != null) {
 					loadProductList();
 				}
 			}
 		});
 		// Product Name ComboBox
-		cbProd = new GERPComboBox("Prod.Name");
-		cbProd.setWidth("130");
-		cbProd.setItemCaptionPropertyId("prodName");
+		cbProduct = new GERPComboBox("Prod.Name");
+		cbProduct.setWidth("130");
+		cbProduct.setItemCaptionPropertyId("prodName");
 		// Plan Qty. Textfield
 		tfPlanDtlQty = new GERPTextField("Plan Qty.");
 		tfPlanDtlQty.setValue("0");
@@ -397,8 +394,8 @@ public class AssemblyPlan extends BaseUI {
 		flDtlCol5 = new FormLayout();
 		flDtlCol6 = new FormLayout();
 		flDtlCol1.addComponent(cbClientId);
-		flDtlCol2.addComponent(cbWO);
-		flDtlCol3.addComponent(cbProd);
+		flDtlCol2.addComponent(cbWorkOrder);
+		flDtlCol3.addComponent(cbProduct);
 		flDtlCol4.addComponent(tfPlanDtlQty);
 		flDtlCol5.addComponent(cbDtlStatus);
 		flDtlCol6.addComponent(btnAddDtls);
@@ -434,14 +431,14 @@ public class AssemblyPlan extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<AsmblyPlanHdrDM> AssemblyPlanList = new ArrayList<AsmblyPlanHdrDM>();
+		List<AsmblyPlanHdrDM> assemblyPlanList = new ArrayList<AsmblyPlanHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfPlanRefNo.getValue() + ", " + cbHdrStatus.getValue());
-		AssemblyPlanList = serviceAsmblyPlanHrd.getAsmblyPlanHdrDetails(null, companyid, null,
+		assemblyPlanList = serviceAsmblyPlanHrd.getAsmblyPlanHdrDetails(null, companyid, null,
 				(String) tfPlnRefNo.getValue(), dfAsmPlanDt.getValue(), (String) cbHdrStatus.getValue(), "F");
-		recordCnt = AssemblyPlanList.size();
+		recordCnt = assemblyPlanList.size();
 		beanAsmblyPlanHdrDM = new BeanItemContainer<AsmblyPlanHdrDM>(AsmblyPlanHdrDM.class);
-		beanAsmblyPlanHdrDM.addAll(AssemblyPlanList);
+		beanAsmblyPlanHdrDM.addAll(assemblyPlanList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the AssemblyPlan. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanAsmblyPlanHdrDM);
@@ -519,15 +516,14 @@ public class AssemblyPlan extends BaseUI {
 	private void editAssemblyPlanHdrDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			AsmblyPlanHdrDM editAssemblyPlan = beanAsmblyPlanHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			asmbPlnHdrId = editAssemblyPlan.getAsmplnid().toString();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Selected AssemblyPlan. Id -> " + asmbPlnHdrId);
 			cbBranch.setValue(editAssemblyPlan.getBranchid());
 			tfPlanRefNo.setReadOnly(false);
-			tfPlanRefNo.setValue((String) sltedRcd.getItemProperty("asmplnreffno").getValue());
+			tfPlanRefNo.setValue(editAssemblyPlan.getAsmplnreffno());
 			tfPlanRefNo.setReadOnly(true);
 			if (editAssemblyPlan.getAsmplndate() != null) {
 				dfAsmPlanDt.setValue(editAssemblyPlan.getAsmplndate1());
@@ -548,11 +544,10 @@ public class AssemblyPlan extends BaseUI {
 	
 	private void editAsmbPlanDtls() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblAsmbPlanDtl.getItem(tblAsmbPlanDtl.getValue());
-		if (itselect != null) {
-			AsmblyPlanDtlDM editAsmblDtlObj = new AsmblyPlanDtlDM();
-			editAsmblDtlObj = beanAsmblyPlanDtlDM.getItem(tblAsmbPlanDtl.getValue()).getBean();
-			Long clientId = editAsmblDtlObj.getClientId();
+		if (tblAsmbPlanDtl.getValue() != null) {
+			AsmblyPlanDtlDM asmblyPlanDtlDM = new AsmblyPlanDtlDM();
+			asmblyPlanDtlDM = beanAsmblyPlanDtlDM.getItem(tblAsmbPlanDtl.getValue()).getBean();
+			Long clientId = asmblyPlanDtlDM.getClientId();
 			Collection<?> clientIdCol = cbClientId.getItemIds();
 			for (Iterator<?> iteratorclient = clientIdCol.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
@@ -563,44 +558,43 @@ public class AssemblyPlan extends BaseUI {
 					cbClientId.setValue(itemIdClient);
 				}
 			}
-			Long woId = editAsmblDtlObj.getWoId();
-			Collection<?> woIdCol = cbWO.getItemIds();
+			Long woId = asmblyPlanDtlDM.getWoId();
+			Collection<?> woIdCol = cbWorkOrder.getItemIds();
 			for (Iterator<?> iteratorWO = woIdCol.iterator(); iteratorWO.hasNext();) {
 				Object itemIdWOObj = (Object) iteratorWO.next();
-				BeanItem<?> itemWoBean = (BeanItem<?>) cbWO.getItem(itemIdWOObj);
+				BeanItem<?> itemWoBean = (BeanItem<?>) cbWorkOrder.getItem(itemIdWOObj);
 				// Get the actual bean and use the data
 				WorkOrderHdrDM workOrderDM = (WorkOrderHdrDM) itemWoBean.getBean();
 				if (woId != null && woId.equals(workOrderDM.getWorkOrdrId())) {
-					cbWO.setValue(itemIdWOObj);
+					cbWorkOrder.setValue(itemIdWOObj);
 				}
 			}
-			Long prodId = editAsmblDtlObj.getProductId();
-			Collection<?> prodIdCol = cbProd.getItemIds();
+			Long prodId = asmblyPlanDtlDM.getProductId();
+			Collection<?> prodIdCol = cbProduct.getItemIds();
 			for (Iterator<?> iterator = prodIdCol.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbProd.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
 				// Get the actual bean and use the data
 				WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
 				if (prodId != null && prodId.equals(st.getProdId())) {
-					cbProd.setValue(itemId);
+					cbProduct.setValue(itemId);
 				}
 			}
-			if (itselect.getItemProperty("plndQty").getValue() != null) {
-				tfPlanDtlQty.setValue(itselect.getItemProperty("plndQty").getValue().toString());
+			if (asmblyPlanDtlDM.getPlndQty() != null) {
+				tfPlanDtlQty.setValue(asmblyPlanDtlDM.getPlndQty().toString());
 			}
-			if (itselect.getItemProperty("status").getValue() != null) {
-				cbDtlStatus.setValue(itselect.getItemProperty("status").getValue().toString());
+			if (asmblyPlanDtlDM.getStatus() != null) {
+				cbDtlStatus.setValue(asmblyPlanDtlDM.getStatus());
 			}
 		}
 	}
 	
 	private void editAsmbPlanShift() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblShift.getItem(tblShift.getValue());
-		if (itselect != null) {
-			AsmblyPlanShiftDM editAsmblDtlObj = new AsmblyPlanShiftDM();
-			editAsmblDtlObj = beanAsmblyPlanShiftDM.getItem(tblShift.getValue()).getBean();
-			Long empId = editAsmblDtlObj.getEmpId();
+		if (tblShift.getValue() != null) {
+			AsmblyPlanShiftDM asmblyPlanShiftDM = new AsmblyPlanShiftDM();
+			asmblyPlanShiftDM = beanAsmblyPlanShiftDM.getItem(tblShift.getValue()).getBean();
+			Long empId = asmblyPlanShiftDM.getEmpId();
 			Collection<?> empColId = cbEmpName.getItemIds();
 			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
@@ -611,14 +605,14 @@ public class AssemblyPlan extends BaseUI {
 					cbEmpName.setValue(itemIdClient);
 				}
 			}
-			if (itselect.getItemProperty("shiftName").getValue() != null) {
-				tfShiftName.setValue(itselect.getItemProperty("shiftName").getValue().toString());
+			if (asmblyPlanShiftDM.getShiftName() != null) {
+				tfShiftName.setValue(asmblyPlanShiftDM.getShiftName());
 			}
-			if (itselect.getItemProperty("targetQty").getValue() != null) {
-				tfTargetQty.setValue(itselect.getItemProperty("targetQty").getValue().toString());
+			if (asmblyPlanShiftDM.getTargetQty() != null) {
+				tfTargetQty.setValue(asmblyPlanShiftDM.getTargetQty().toString());
 			}
-			if (itselect.getItemProperty("status").getValue() != null) {
-				cbStatus.setValue(itselect.getItemProperty("status").getValue().toString());
+			if (asmblyPlanShiftDM.getStatus() != null) {
+				cbStatus.setValue(asmblyPlanShiftDM.getStatus());
 			}
 		}
 	}
@@ -668,8 +662,8 @@ public class AssemblyPlan extends BaseUI {
 		tfShiftName.setRequired(true);
 		tfTargetQty.setRequired(true);
 		cbEmpName.setRequired(true);
-		cbWO.setRequired(true);
-		cbProd.setRequired(true);
+		cbWorkOrder.setRequired(true);
+		cbProduct.setRequired(true);
 		tfPlanDtlQty.setRequired(true);
 		cbClientId.setRequired(true);
 		// reset the input controls to default value
@@ -711,8 +705,8 @@ public class AssemblyPlan extends BaseUI {
 		tfTargetQty.setComponentError(null);
 		cbEmpName.setComponentError(null);
 		cbClientId.setComponentError(null);
-		cbWO.setComponentError(null);
-		cbProd.setComponentError(null);
+		cbWorkOrder.setComponentError(null);
+		cbProduct.setComponentError(null);
 		tfPlanDtlQty.setComponentError(null);
 		cbBranch.setRequired(false);
 		dfAsmPlanDt.setRequired(false);
@@ -720,8 +714,8 @@ public class AssemblyPlan extends BaseUI {
 		tfShiftName.setRequired(false);
 		cbEmpName.setRequired(false);
 		cbClientId.setRequired(false);
-		cbWO.setRequired(false);
-		cbProd.setRequired(false);
+		cbWorkOrder.setRequired(false);
+		cbProduct.setRequired(false);
 		tfPlanDtlQty.setRequired(false);
 		asmblDtlResetFields();
 		asmblShiftResetFields();
@@ -744,8 +738,8 @@ public class AssemblyPlan extends BaseUI {
 		dfAsmPlanDt.setRequired(true);
 		tfShiftName.setRequired(true);
 		cbEmpName.setRequired(true);
-		cbWO.setRequired(true);
-		cbProd.setRequired(true);
+		cbWorkOrder.setRequired(true);
+		cbProduct.setRequired(true);
 		tfPlanDtlQty.setRequired(true);
 		cbClientId.setRequired(true);
 		tblMstScrSrchRslt.setVisible(false);
@@ -760,13 +754,13 @@ public class AssemblyPlan extends BaseUI {
 	private void asmblDtlResetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbClientId.setValue(null);
-		cbWO.setValue(null);
-		cbProd.setValue(null);
+		cbWorkOrder.setValue(null);
+		cbProduct.setValue(null);
 		tfPlanDtlQty.setValue("0");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		cbClientId.setComponentError(null);
-		cbWO.setComponentError(null);
-		cbProd.setComponentError(null);
+		cbWorkOrder.setComponentError(null);
+		cbProduct.setComponentError(null);
 		tfPlanDtlQty.setComponentError(null);
 	}
 	
@@ -790,8 +784,8 @@ public class AssemblyPlan extends BaseUI {
 		tfShiftName.setComponentError(null);
 		cbEmpName.setComponentError(null);
 		cbClientId.setComponentError(null);
-		cbWO.setComponentError(null);
-		cbProd.setComponentError(null);
+		cbWorkOrder.setComponentError(null);
+		cbProduct.setComponentError(null);
 		tfPlanDtlQty.setComponentError(null);
 		Boolean errorFlag = false;
 		if ((cbBranch.getValue() == null)) {
@@ -846,21 +840,21 @@ public class AssemblyPlan extends BaseUI {
 			tfPlanDtlQty.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			isValid = false;
 		}
-		if ((cbWO.getValue() == null)) {
-			cbWO.setComponentError(new UserError(GERPErrorCodes.NULL_WO_PLN_NO));
+		if ((cbWorkOrder.getValue() == null)) {
+			cbWorkOrder.setComponentError(new UserError(GERPErrorCodes.NULL_WO_PLN_NO));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Throwing ValidationException. User data is > " + cbClientId.getValue());
 			isValid = false;
 		} else {
-			cbWO.setComponentError(null);
+			cbWorkOrder.setComponentError(null);
 		}
-		if ((cbProd.getValue() == null)) {
-			cbProd.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
+		if ((cbProduct.getValue() == null)) {
+			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Throwing ValidationException. User data is > " + cbClientId.getValue());
 			isValid = false;
 		} else {
-			cbProd.setComponentError(null);
+			cbProduct.setComponentError(null);
 		}
 		return isValid;
 	}
@@ -973,14 +967,14 @@ public class AssemblyPlan extends BaseUI {
 				assemblyPlanDtlObj.setClientId(((ClientDM) cbClientId.getValue()).getClientId());
 				assemblyPlanDtlObj.setClientName(((ClientDM) cbClientId.getValue()).getClientName());
 			}
-			if (cbWO.getValue() != null) {
-				assemblyPlanDtlObj.setWoId(((WorkOrderHdrDM) cbWO.getValue()).getWorkOrdrId());
-				assemblyPlanDtlObj.setWoNo(((WorkOrderHdrDM) cbWO.getValue()).getWorkOrdrNo());
+			if (cbWorkOrder.getValue() != null) {
+				assemblyPlanDtlObj.setWoId(((WorkOrderHdrDM) cbWorkOrder.getValue()).getWorkOrdrId());
+				assemblyPlanDtlObj.setWoNo(((WorkOrderHdrDM) cbWorkOrder.getValue()).getWorkOrdrNo());
 			}
 			assemblyPlanDtlObj.setPlndQty(Long.valueOf(tfPlanDtlQty.getValue()));
-			if (cbProd.getValue() != null) {
-				assemblyPlanDtlObj.setProductId(((WorkOrderDtlDM) cbProd.getValue()).getProdId());
-				assemblyPlanDtlObj.setProdName(((WorkOrderDtlDM) cbProd.getValue()).getProdName());
+			if (cbProduct.getValue() != null) {
+				assemblyPlanDtlObj.setProductId(((WorkOrderDtlDM) cbProduct.getValue()).getProdId());
+				assemblyPlanDtlObj.setProdName(((WorkOrderDtlDM) cbProduct.getValue()).getProdName());
 			}
 			if (cbDtlStatus.getValue() != null) {
 				assemblyPlanDtlObj.setStatus((String) cbDtlStatus.getValue());
@@ -1033,10 +1027,9 @@ public class AssemblyPlan extends BaseUI {
 	 */
 	public void loadBranchList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<BranchDM> lookUpList = serviceBranch.getBranchList(branchID, null, null, "Active", companyid, "P");
-		beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
+		BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranchDM.setBeanIdProperty("branchId");
-		beanBranchDM.addAll(lookUpList);
+		beanBranchDM.addAll(serviceBranch.getBranchList(branchID, null, null, "Active", companyid, "P"));
 		cbBranch.setContainerDataSource(beanBranchDM);
 	}
 	
@@ -1045,10 +1038,9 @@ public class AssemblyPlan extends BaseUI {
 	 */
 	public void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
-		List<EmployeeDM> lookUpList = serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null,
-				null, null, "P");
-		beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.addAll(lookUpList);
+		BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null, null,
+				"P"));
 		cbEmpName.setContainerDataSource(beanEmployeeDM);
 	}
 	
@@ -1056,11 +1048,9 @@ public class AssemblyPlan extends BaseUI {
 	 * loadClientList()-->this function is used for load the Client name
 	 */
 	private void loadClientList() {
-		List<ClientDM> getClientList = new ArrayList<ClientDM>();
-		getClientList.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
-				"Active", "P"));
 		BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
-		beanClient.addAll(getClientList);
+		beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null, "Active",
+				"P"));
 		cbClientId.setContainerDataSource(beanClient);
 	}
 	
@@ -1068,25 +1058,21 @@ public class AssemblyPlan extends BaseUI {
 	 * loadProductList()-->this function is used for load the product Name
 	 */
 	private void loadProductList() {
-		List<WorkOrderDtlDM> getworkOrderDtl = new ArrayList<WorkOrderDtlDM>();
-		Long workOrdHdrId = ((WorkOrderHdrDM) cbWO.getValue()).getWorkOrdrId();
-		getworkOrderDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, workOrdHdrId, null, "F"));
+		Long workOrdHdrId = ((WorkOrderHdrDM) cbWorkOrder.getValue()).getWorkOrdrId();
 		BeanItemContainer<WorkOrderDtlDM> beanPlnDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
-		beanPlnDtl.addAll(getworkOrderDtl);
-		cbProd.setContainerDataSource(beanPlnDtl);
+		beanPlnDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, workOrdHdrId, null, "F"));
+		cbProduct.setContainerDataSource(beanPlnDtl);
 	}
 	
 	/*
 	 * loadWorkOrderNo()-->this function is used for load the workorderno
 	 */
 	private void loadWorkOrderNo() {
-		List<WorkOrderHdrDM> getworkOrdHdr = new ArrayList<WorkOrderHdrDM>();
 		Long clientId = (((ClientDM) cbClientId.getValue()).getClientId());
-		System.out.println("Client is >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + clientId);
-		getworkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null, "F",null,null));
 		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
-		beanWrkOrdHdr.addAll(getworkOrdHdr);
-		cbWO.setContainerDataSource(beanWrkOrdHdr);
+		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null, "F",
+				null, null));
+		cbWorkOrder.setContainerDataSource(beanWrkOrdHdr);
 	}
 	
 	private void deleteShiftDetails() {

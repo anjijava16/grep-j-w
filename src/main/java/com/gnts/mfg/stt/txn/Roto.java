@@ -11,7 +11,6 @@ import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.EmployeeService;
-import com.gnts.base.service.mst.ProductService;
 import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.crm.domain.mst.ClientDM;
 import com.gnts.crm.service.mst.ClientService;
@@ -93,20 +92,15 @@ public class Roto extends BaseUI {
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private WorkOrderHdrService serviceWorkOrderHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private WorkOrderDtlService serviceWorkOrderDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
-	private ProductService ServiceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private RotoPlanHdrService serviceRotoplanhdr = (RotoPlanHdrService) SpringContextHelper.getBean("rotoplanhdr");
 	// User Input Components for Work Order Details
 	private BeanItemContainer<RotohdrDM> beanRotohdrDM = null;
-	private BeanItemContainer<RotoPlanDtlDM> beanRotoplanDtlDM = null;
 	private BeanItemContainer<RotoDtlDM> beanrotodtldm = null;
 	private BeanItemContainer<RotoShiftDM> beanRotoShiftDM = null;
 	private BeanItemContainer<RotoArmDM> beanRotoArmDM = null;
-	private BeanContainer<Long, BranchDM> beanBranchDM = null;
 	private BeanItemContainer<EmployeeDM> beanEmployeeDM = null;
-	private BeanContainer<Long, RotoPlanHdrDM> beanRotoPlanHdrDM = null;
-	private BeanItemContainer<RotoPlanShiftDM> beanRotoPlanShiftDM = null;
 	List<RotoPlanShiftDM> RotoPlanShiftList = null;
-	private Table tblDtl, tblShift, tblArm, tbldtl;
+	private Table tblDtl, tblShift, tblArm;
 	// Search Control Layout
 	private HorizontalLayout hlHdr = new HorizontalLayout();
 	private HorizontalLayout hlSearchLayout, hlDtlandArm, hlHdrAndShift, hlArm, hlShift, hlHdrslap;
@@ -127,7 +121,7 @@ public class Roto extends BaseUI {
 	private FormLayout flDtlCol1, flDtlCol2, flDtlCol3;
 	List<RotoPlanDtlDM> RotoplanDtlList = new ArrayList<RotoPlanDtlDM>();
 	// Roto Shift Components
-	private TextField tfshiftname, tfSfiftqty, tfachdqty;
+	private TextField tfshiftname, tfSfiftqty;
 	private ComboBox cbEmpname, cbSftStatus;
 	private FormLayout flshiftCol1, flshiftCol2, flshiftCol3;
 	List<RotoShiftDM> ShiftList = new ArrayList<RotoShiftDM>();
@@ -147,10 +141,8 @@ public class Roto extends BaseUI {
 	private Long rotoid;
 	private Long productid;
 	private Long employeeid;
-	private String workOrdrNo;
 	private int recordCnt = 0; 
 	private int recordShiftCnt = 0;
-	private int recordDtl = 0;
 	private int recordArmCnt = 0;
 	private Boolean errorFlag = false;
 	private Long rotoplanId;
@@ -375,7 +367,6 @@ public class Roto extends BaseUI {
 		// TargetQty TextField
 		tfSfiftqty = new GERPTextField("Target Qty");
 		tfSfiftqty.setValue("0");
-		tfachdqty = new GERPTextField("");
 		// Roto Dtl
 		// Client Id ComboBox
 		cbClient = new GERPComboBox("Client Name");
@@ -1034,7 +1025,6 @@ public class Roto extends BaseUI {
 				}
 			}
 			System.out.println("editRotoDtl" + editRotoDtl.getWoid().toString());
-			RotoPlanShiftDM editrotoplanshift = new RotoPlanShiftDM();
 			/*
 			 * if(editRotoDtl.getWoId() !=null){ cbarmWO.setValue(Long.valueOf(editRotoDtl.getWoId())); }
 			 */
@@ -1204,52 +1194,6 @@ public class Roto extends BaseUI {
 		}
 	}
 	
-	private boolean validateDtlDetails() {
-		boolean isValid = false;
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		if ((cbClient.getValue() == null)) {
-			cbClient.setComponentError(new UserError(GERPErrorCodes.NULL_CLIENT_NAME));
-			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + cbClient.getValue());
-			isValid = true;
-		} else {
-			cbClient.setComponentError(null);
-		}
-		if ((cbWO.getValue() == null)) {
-			cbWO.setComponentError(new UserError(GERPErrorCodes.NULL_WO_PLN_NO));
-			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + cbWO.getValue());
-			isValid = true;
-		} else {
-			cbWO.setComponentError(null);
-		}
-		if ((cbProduct.getValue() == null)) {
-			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_RTO_ARM));
-			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + cbProduct.getValue());
-			isValid = true;
-		} else {
-			cbProduct.setComponentError(null);
-		}
-		try {
-			Long.valueOf(tfArmno.getValue());
-			tfArmno.setComponentError(null);
-		}
-		catch (NumberFormatException e) {
-			tfArmno.setComponentError(new UserError(GERPErrorCodes.PRDCT_QTY_LONG));
-			isValid = true;
-		}
-		try {
-			Long.valueOf(tfcyclecount.getValue());
-			tfcyclecount.setComponentError(null);
-		}
-		catch (NumberFormatException e) {
-			tfcyclecount.setComponentError(new UserError(GERPErrorCodes.PRDCT_QTY_LONG));
-			isValid = true;
-		}
-		return isValid;
-	}
-	
 	private boolean validateShiftDetails() {
 		boolean isValid = true;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
@@ -1334,7 +1278,6 @@ public class Roto extends BaseUI {
 				rotoHdrobj.setLastupdatedby(username);
 				serviceRotohdr.saveRotohdr(rotoHdrobj);
 				
-				System.out.println("id is >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+id);
 				@SuppressWarnings("unchecked")
 				Collection<RotoDtlDM> rotoDtls = ((Collection<RotoDtlDM>) tblDtl.getVisibleItemIds());
 				for (RotoDtlDM Dtl : (Collection<RotoDtlDM>) rotoDtls) {
@@ -1375,22 +1318,6 @@ public class Roto extends BaseUI {
 			e.printStackTrace();
 		}
 	}
-	
-	/*
-	 * private void saveRotoplanDtlListDetails() { try { logger.info("Company ID : " + companyid + " | User Name : " +
-	 * username + " > " + "Saving Data... "); RotoDtlDM rotodtlobj = new RotoDtlDM(); if (tblDtl.getValue() != null) {
-	 * rotodtlobj = beanRotoDtlDM.getItem(tblDtl.getValue()).getBean(); RotoplanDtlList.remove(rotodtlobj); } if
-	 * (cbClient.getValue() != null) { rotodtlobj.setClientid(((ClientDM) cbClient.getValue()).getClientId());
-	 * rotodtlobj.setClientName(((ClientDM) cbClient.getValue()).getClientName()); } if (cbWO.getValue() != null) {
-	 * rotodtlobj.setWoid(((WorkOrderHdrDM) cbWO.getValue()).getWorkOrdrIdInt()); rotodtlobj.setWoNo(((WorkOrderHdrDM)
-	 * cbWO.getValue()).getWorkOrdrNo()); } rotodtlobj.setProdtnqty(Long.valueOf(tfRotoDtlqty.getValue())); if
-	 * (cbProduct.getValue() != null) { rotodtlobj.setProductid(((WorkOrderDtlDM) cbProduct.getValue()).getProdId());
-	 * rotodtlobj.setProdName(((WorkOrderDtlDM) cbProduct.getValue()).getProdName()); } if (cbDtlStatus.getValue() !=
-	 * null) { rotodtlobj.setRtodtlstatus(((String) cbDtlStatus.getValue())); }
-	 * rotodtlobj.setLastupdateddt(DateUtils.getcurrentdate()); rotodtlobj.setLastupdatedby(username);
-	 * RotoplanDtlList.add(rotodtlobj); loadPlanDtlRslt(); btnAddDtls.setCaption("Add"); } catch (Exception e) {
-	 * e.printStackTrace(); } RotoDtlResetFields(); }
-	 */
 	private void saverotoShiftListDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
@@ -1421,7 +1348,6 @@ public class Roto extends BaseUI {
 	}
 	
 	private void save(){
-		Notification.show("save aaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		saverotoArmListDetails();
 		@SuppressWarnings("unchecked")
 		Collection<RotoArmDM> colPlanDtls = ((Collection<RotoArmDM>) tblArm.getVisibleItemIds());
@@ -1443,7 +1369,6 @@ public class Roto extends BaseUI {
 	
 	private void saverotoArmListDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		Long cycle = 0L;
 		RotoArmDM rotoarmobj = new RotoArmDM();
 		if (tblArm.getValue() != null) {
 			rotoarmobj = beanRotoArmDM.getItem(tblArm.getValue()).getBean();
@@ -1484,25 +1409,16 @@ public class Roto extends BaseUI {
 					tfRotoHdrqty.setValue(qty + "");
 	/*		   		rotohdr.setProdtntotqty(Long.valueOf(tfRotoHdrqty.getValue()));
 					serviceRotohdr.saveRotohdr(rotohdr);*/
-					System.out.println("rrrrrrrrrrrrrrroto"+id);
-					System.out.println("qqqqqqqqqqqqqqqqqqqqqqqtyyyyyyyyyyy"+qty);
 					serviceRotohdr.updateissueqty(id, qty);
-					System.err.println("productid-->"+productid);
 					serviceRotoDtl.updateissueqty(productid, qty);
-					System.out.println("employeeid--->"+employeeid);
 					serviceRotoShift.updateissueqty(employeeid, qty);
-					
 				}
 			} else {
-				// btnAddArm.setVisible(false);
+				
 				Notification.show("cycle complete");
 			}
 		}
 		rotoarmobj.setCycleno((Long.valueOf(count++)));
-		/* tfcyclecount.setValue((Long.valueOf(count++))); */
-		/*
-		 * rotoarmobj.setCycleno(Long.valueOf(tfcyclecount.getValue()));
-		 */
 		if (cbArmproduct.getValue() != null) {
 			rotoarmobj.setProductid(((RotoPlanArmDM) cbArmproduct.getValue()).getProductId());
 			rotoarmobj.setProdname(((RotoPlanArmDM) cbArmproduct.getValue()).getProdname());
@@ -1524,35 +1440,31 @@ public class Roto extends BaseUI {
 	 * loadClientList()-->this function is used for load the Client name
 	 */
 	private void loadClientList() {
-		List<ClientDM> getClientList = new ArrayList<ClientDM>();
-		getClientList.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
-				"Active", "P"));
 		BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
-		beanClient.addAll(getClientList);
+		beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
+				"Active", "P"));
 		cbClient.setContainerDataSource(beanClient);
 	}
 	
 	/*
 	 * loadEmployeeList()-->this function is used for load the employee name
 	 */
-	public void loadEmployeeList() {
+	private void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
-		List<EmployeeDM> lookUpList = serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null,
-				null, null, "P");
-		beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.addAll(lookUpList);
+		BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null,
+				null, null, "P"));
 		cbEmpname.setContainerDataSource(beanEmployeeDM);
 	}
 	
 	/*
 	 * loadBranchList()-->this function is used for load the branch name
 	 */
-	public void loadBranchList() {
+	private void loadBranchList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<BranchDM> lookUpList = servicebeanBranch.getBranchList(null, null, null, "Active", companyid, "P");
-		beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
+		BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranchDM.setBeanIdProperty("branchId");
-		beanBranchDM.addAll(lookUpList);
+		beanBranchDM.addAll(servicebeanBranch.getBranchList(null, null, null, "Active", companyid, "P"));
 		cbbranch.setContainerDataSource(beanBranchDM);
 	}
 	
@@ -1579,7 +1491,6 @@ public class Roto extends BaseUI {
 	public void loadProduct() {
 		if (cbarmWO.getValue() != null) {
 			List<RotoPlanArmDM> getworkOrderDtl = new ArrayList<RotoPlanArmDM>();
-			Long workOrdHdrId = ((RotoPlanArmDM) cbarmWO.getValue()).getWoId();
 			getworkOrderDtl.addAll(serviceRotoplanarm.getRotoPlanArmList(null, null, null, null));
 			BeanItemContainer<RotoPlanArmDM> beanPlnDtl = new BeanItemContainer<RotoPlanArmDM>(RotoPlanArmDM.class);
 			beanPlnDtl.addAll(getworkOrderDtl);
@@ -1592,20 +1503,15 @@ public class Roto extends BaseUI {
 	 * loadWorkOrderNo()-->this function is used for load the workorderno
 	 */
 	private void loadWorkOrderNo() {
-		List<WorkOrderHdrDM> getworkOrdHdr = new ArrayList<WorkOrderHdrDM>();
 		Long clientId = (((ClientDM) cbClient.getValue()).getClientId());
-		System.out.println("clientId-->" + clientId);
-		getworkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null, "F",null,null));
 		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
-		beanWrkOrdHdr.addAll(getworkOrdHdr);
+		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null, "F",null,null));
 		cbWO.setContainerDataSource(beanWrkOrdHdr);
 	}
 	
 	private void loadarmwororderno() {
-		List<RotoPlanArmDM> rotoplanarm = new ArrayList<RotoPlanArmDM>();
-		rotoplanarm.addAll(serviceRotoplanarm.getRotoPlanArmList(null, null, null, null));
 		BeanItemContainer<RotoPlanArmDM> beanrotoplanarm = new BeanItemContainer<RotoPlanArmDM>(RotoPlanArmDM.class);
-		beanrotoplanarm.addAll(rotoplanarm);
+		beanrotoplanarm.addAll(serviceRotoplanarm.getRotoPlanArmList(null, null, null, null));
 		cbarmWO.setContainerDataSource(beanrotoplanarm);
 	}
 	
@@ -1631,9 +1537,13 @@ public class Roto extends BaseUI {
 }
 
 class CheckBoxColumnGenerator implements Table.ColumnGenerator {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Component generateCell(Table source, Object itemId, Object columnId) {
-		// Property prop = source.getItem(itemId).getItemProperty("jobId"); // if using getItemProperty(columnId) here
 		// instead of this the prop will be null
 		return new TextField("tfachdqty");
 	}

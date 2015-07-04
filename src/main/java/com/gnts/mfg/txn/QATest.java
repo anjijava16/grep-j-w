@@ -64,7 +64,6 @@ import com.gnts.mfg.service.txn.QATestCndRsltService;
 import com.gnts.mfg.service.txn.QATestDtlService;
 import com.gnts.mfg.service.txn.QATestHdrService;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -116,12 +115,11 @@ public class QATest extends BaseUI {
 	private QATestHdrService serviceQATstHdr = (QATestHdrService) SpringContextHelper.getBean("qatesthdr");
 	private QATestCndRsltService serviceQATestCndRslt = (QATestCndRsltService) SpringContextHelper
 			.getBean("qatestCndnRslt");
-	BeanItemContainer<QATestHdrDM> beanQATstHdr = null;
-	BeanItemContainer<QATestDtlDM> beanQATstDtl = null;
-	BeanItemContainer<QATestCndtnResltDM> beanQATestCndtnReslt = null;
-	List<QATestHdrDM> listQATestHdr = null;
-	List<QATestDtlDM> listQATestDtl = null;
-	List<QATestCndtnResltDM> listQATestCndtnReslt = null;
+	private BeanItemContainer<QATestHdrDM> beanQATstHdr = null;
+	private BeanItemContainer<QATestDtlDM> beanQATstDtl = null;
+	private BeanItemContainer<QATestCndtnResltDM> beanQATestCndtnReslt = null;
+	private List<QATestDtlDM> listQATestDtl = null;
+	private List<QATestCndtnResltDM> listQATestCndtnReslt = null;
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private ProductDrawingService serviceProductDrawing = (ProductDrawingService) SpringContextHelper
 			.getBean("productDrawings");
@@ -140,15 +138,15 @@ public class QATest extends BaseUI {
 	private Long moduleId;
 	private Long branchID;
 	private Long qaTstHdrId;
-	private static Logger logger = Logger.getLogger(QCTestType.class);
-	HorizontalLayout hlUserInputLayout = new HorizontalLayout();
+	private Logger logger = Logger.getLogger(QCTestType.class);
+	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private HorizontalLayout hlSearchLayout;
 	private TabSheet tabSheet;
 	private int recordCnt;
-	public Button btndelete = new GERPButton("Delete", "delete", this);
-	public Button btnSpecdelete = new GERPButton("Delete", "delete", this);
+	private Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btnSpecdelete = new GERPButton("Delete", "delete", this);
 	private Comments comment;
-	VerticalLayout vlTableForm = new VerticalLayout();
+	private VerticalLayout vlTableForm = new VerticalLayout();
 	private Long commentby;
 	
 	public QATest() {
@@ -211,12 +209,22 @@ public class QATest extends BaseUI {
 			}
 		});
 		btndelete.addClickListener(new ClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				deleteDetails();
 			}
 		});
 		btnSpecdelete.addClickListener(new ClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				deleteSpecDetails();
@@ -606,87 +614,69 @@ public class QATest extends BaseUI {
 	}
 	
 	private void loadProductDrgCodeList() {
-		List<ProductDrawingDM> getProdDrg = new ArrayList<ProductDrawingDM>();
-		getProdDrg = serviceProductDrawing.getProductDrgDetails(companyid, null, null, null, "Active");
 		BeanContainer<Long, ProductDrawingDM> beanProdDrg = new BeanContainer<Long, ProductDrawingDM>(
 				ProductDrawingDM.class);
 		beanProdDrg.setBeanIdProperty("productDrgId");
-		beanProdDrg.addAll(getProdDrg);
+		beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, null, null, "Active"));
 		cbProdDrg.setContainerDataSource(beanProdDrg);
 	}
 	
 	private void loadWorkOrdNo() {
-		List<WorkOrderHdrDM> getworkOrdHdr = new ArrayList<WorkOrderHdrDM>();
-		getworkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, "Active", "F",
-				null,null));
 		BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
 				WorkOrderHdrDM.class);
 		beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
-		beanWrkOrdHdr.addAll(getworkOrdHdr);
+		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, "Active", "F",
+				null, null));
 		cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
 	}
 	
 	private void loadProductList() {
-		List<ProductDM> getProdList = new ArrayList<ProductDM>();
-		getProdList = serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "F");
 		BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
 		beanProd.setBeanIdProperty("prodid");
-		beanProd.addAll(getProdList);
+		beanProd.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "F"));
 		cbproduct.setContainerDataSource(beanProd);
 	}
 	
 	private void loadClientList() {
-		List<ClientDM> getClientList = new ArrayList<ClientDM>();
-		getClientList.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
-				"Active", "P"));
 		BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
 		beanClient.setBeanIdProperty("clientId");
-		beanClient.addAll(getClientList);
+		beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null, "Active",
+				"P"));
 		cbClient.setContainerDataSource(beanClient);
 	}
 	
 	private void loadTestGroup() {
-		List<TestGroupDM> getTstGrp = new ArrayList<TestGroupDM>();
-		getTstGrp.addAll(serviceTestGroup.getTestGpDetails(null, null, "Active", "F"));
 		BeanContainer<Long, TestGroupDM> beanTstGrp = new BeanContainer<Long, TestGroupDM>(TestGroupDM.class);
 		beanTstGrp.setBeanIdProperty("qaTestGpID");
-		beanTstGrp.addAll(getTstGrp);
+		beanTstGrp.addAll(serviceTestGroup.getTestGpDetails(null, null, "Active", "F"));
 		cbTestGrp.setContainerDataSource(beanTstGrp);
 	}
 	
 	private void loadTesttype() {
-		List<TestTypeDM> getTstTyp = new ArrayList<TestTypeDM>();
-		getTstTyp.addAll(serviceTestType.getTestTypeDetails(null, null, null, "Active"));
 		BeanContainer<Long, TestTypeDM> beanTsttype = new BeanContainer<Long, TestTypeDM>(TestTypeDM.class);
 		beanTsttype.setBeanIdProperty("qaTstTypId");
-		beanTsttype.addAll(getTstTyp);
+		beanTsttype.addAll(serviceTestType.getTestTypeDetails(null, null, null, "Active"));
 		cbTesttype.setContainerDataSource(beanTsttype);
 	}
 	
 	private void loadTstHdrConditions() {
-		List<TestConditionDM> getCondition = new ArrayList<TestConditionDM>();
-		getCondition.addAll(serviceTestCondition.getTestCondnDetails(companyid, null, null, "Active"));
 		BeanContainer<Long, TestConditionDM> beanTstCondn = new BeanContainer<Long, TestConditionDM>(
 				TestConditionDM.class);
 		beanTstCondn.setBeanIdProperty("testCondnId");
-		beanTstCondn.addAll(getCondition);
+		beanTstCondn.addAll(serviceTestCondition.getTestCondnDetails(companyid, null, null, "Active"));
 		cbTestCondn.setContainerDataSource(beanTstCondn);
 	}
 	
 	private void loadTstDefDtlConditions() {
-		List<TestConditionDM> getCondition = new ArrayList<TestConditionDM>();
-		getCondition.addAll(serviceTestCondition.getTestCondnDetails(companyid, null, null, "Active"));
 		BeanItemContainer<TestConditionDM> beanTstCondn = new BeanItemContainer<TestConditionDM>(TestConditionDM.class);
-		beanTstCondn.addAll(getCondition);
+		beanTstCondn.addAll(serviceTestCondition.getTestCondnDetails(companyid, null, null, "Active"));
 		cbTstCondtn.setContainerDataSource(beanTstCondn);
 	}
 	
 	private void loadTstSpecification() {
-		List<TestSpecificationDM> getClientList = new ArrayList<TestSpecificationDM>();
-		getClientList.addAll(seriviceTestSpecification.getTestSpecDetails(companyid, null, "Active"));
 		BeanItemContainer<TestSpecificationDM> beanTstSpec = new BeanItemContainer<TestSpecificationDM>(
 				TestSpecificationDM.class);
-		beanTstSpec.addAll(getClientList);
+		beanTstSpec.addAll(seriviceTestSpecification.getTestSpecDetails(companyid, null, "Active"));
 		cbTstSpec.setContainerDataSource(beanTstSpec);
 	}
 	
@@ -721,15 +711,14 @@ public class QATest extends BaseUI {
 	}
 	
 	private void editQAHdrDetails() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			QATestHdrDM editQaTestHdr = beanQATstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			qaTstHdrId = editQaTestHdr.getQatestHdrid();
 			tfInspectnNo.setReadOnly(false);
-			tfInspectnNo.setValue((String) itselect.getItemProperty("inspectionno").getValue());
+			tfInspectnNo.setValue(editQaTestHdr.getInspectionno());
 			tfInspectnNo.setReadOnly(true);
-			tfPrdSlNo.setValue((String) itselect.getItemProperty("prodslno").getValue());
-			tfTstReslt.setValue((String) itselect.getItemProperty("testresult").getValue());
+			tfPrdSlNo.setValue(editQaTestHdr.getProdslno());
+			tfTstReslt.setValue(editQaTestHdr.getTestresult());
 			cbClient.setValue(editQaTestHdr.getClientid());
 			cbproduct.setValue(editQaTestHdr.getProductid());
 			cbWorkOrderNo.setValue(editQaTestHdr.getWoid().toString());
@@ -740,10 +729,10 @@ public class QATest extends BaseUI {
 			cbTestGrp.setValue(editQaTestHdr.getQatestgroupid());
 			cbTesttype.setValue(Long.valueOf(editQaTestHdr.getQattesttypeid()));
 			cbTestCondn.setValue(editQaTestHdr.getQatestcondid());
-			cbQThdrStatus.setValue((String) itselect.getItemProperty("teststatus").getValue());
+			cbQThdrStatus.setValue(editQaTestHdr.getTeststatus());
 			pdInspectionDt.setValue(editQaTestHdr.getInspectiondateDt());
 			if (editQaTestHdr.getObservation() != null) {
-				taTstObservation.setValue((String) itselect.getItemProperty("observation").getValue());
+				taTstObservation.setValue(editQaTestHdr.getObservation());
 			}
 			cbWorkOrderNo.setValue(editQaTestHdr.getWoid());
 			listQATestDtl = serviceQATstDtl.getQATestDtlDetails(null, qaTstHdrId, null, null, "Active");
@@ -754,8 +743,7 @@ public class QATest extends BaseUI {
 	}
 	
 	private void editQATstDefnDetails() {
-		Item itselect = tblQATstDtl.getItem(tblQATstDtl.getValue());
-		if (itselect != null) {
+		if (tblQATstDtl.getValue() != null) {
 			QATestDtlDM editQaTestDtl = beanQATstDtl.getItem(tblQATstDtl.getValue()).getBean();
 			Long speId = editQaTestDtl.getQatestSpecid();
 			Collection<?> specID = cbTstSpec.getItemIds();
@@ -769,17 +757,16 @@ public class QATest extends BaseUI {
 				}
 			}
 			tfTstCycle.setValue(Long.valueOf(editQaTestDtl.getTstCycleNo()).toString());
-			tfQADefntstReslt.setValue((String) itselect.getItemProperty("tstSpecResult").getValue());
-			cbQDtlStatus.setValue((String) itselect.getItemProperty("qaTstStatus").getValue());
+			tfQADefntstReslt.setValue(editQaTestDtl.getTstSpecResult());
+			cbQDtlStatus.setValue(editQaTestDtl.getQaTstStatus());
 			if (editQaTestDtl.getQaTstRemarks() != null) {
-				taQcTstDtlRemarks.setValue((String) itselect.getItemProperty("qaTstRemarks").getValue());
+				taQcTstDtlRemarks.setValue(editQaTestDtl.getQaTstRemarks());
 			}
 		}
 	}
 	
 	private void editQATstCndnRslt() {
-		Item itselect = tblCndnRslt.getItem(tblCndnRslt.getValue());
-		if (itselect != null) {
+		if (tblCndnRslt.getValue() != null) {
 			QATestCndtnResltDM editQaTestCndnRslt = beanQATestCndtnReslt.getItem(tblCndnRslt.getValue()).getBean();
 			Long cndnId = editQaTestCndnRslt.getQaTstCndnId();
 			Collection<?> cndnID = cbTstCondtn.getItemIds();
@@ -792,8 +779,8 @@ public class QATest extends BaseUI {
 					cbTstCondtn.select(itemId);
 				}
 			}
-			cbQATstCndnStatus.setValue((String) itselect.getItemProperty("condnStatus").getValue());
-			taCndnObservation.setValue((String) itselect.getItemProperty("cndnObserv").getValue());
+			cbQATstCndnStatus.setValue(editQaTestCndnRslt.getCondnStatus());
+			taCndnObservation.setValue(editQaTestCndnRslt.getCndnObserv());
 		}
 	}
 	

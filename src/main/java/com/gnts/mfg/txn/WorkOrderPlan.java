@@ -39,7 +39,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.mfg.domain.mst.TestSpecificationDM;
 import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.domain.txn.WorkOrderPlanHdrDM;
@@ -52,7 +51,6 @@ import com.gnts.mfg.service.txn.WorkOrderPlanMtrlDtlService;
 import com.gnts.mfg.service.txn.WorkOrderPlanProdDtlService;
 import com.gnts.mms.domain.mst.ProductBomDtlDM;
 import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -97,7 +95,7 @@ public class WorkOrderPlan extends BaseUI {
 	private WorkOrderHdrService serviceWorkOrderHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private WorkOrderDtlService serviceWorkOrderDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
 	// form layout for input controls for Work Order Header
-	private FormLayout flOdrHdrColumn1, flOdrHdrColumn2, flOdrHdrColumn3, flOdrHdrColumn4;
+	private FormLayout flOdrHdrColumn1, flOdrHdrColumn2, flOdrHdrColumn3;
 	// form layout for input controls for Work Order Details
 	private FormLayout flOdrDtlColumn1, flOdrDtlColumn2, flOdrDtlColumn3;
 	// User Input Components for WO.Plan Header
@@ -118,8 +116,8 @@ public class WorkOrderPlan extends BaseUI {
 	private BeanItemContainer<WorkOrderPlanHdrDM> beanWrkOdrPlnHdr = null;
 	private BeanItemContainer<WorkOrderPlanProdDtlDM> beanWrkOdrPlnPrdDtl = null;
 	private BeanItemContainer<WorkOrderPlanMtrlDtlDM> beanWrkOdrPlnMtrlDtl = null;
-	List<WorkOrderPlanMtrlDtlDM> workOdrPlnMtrlDtlList = null;
-	List<WorkOrderPlanProdDtlDM> workOdrPlnPrdDtlList;
+	private List<WorkOrderPlanMtrlDtlDM> workOdrPlnMtrlDtlList = null;
+	private List<WorkOrderPlanProdDtlDM> workOdrPlnPrdDtlList;
 	// local variables declaration
 	private String username, roleName;
 	private Long companyid, EmployeeId, moduleId, branchID, appScreenId, roleId;
@@ -135,9 +133,9 @@ public class WorkOrderPlan extends BaseUI {
 	// Initialize logger
 	private static Logger logger = Logger.getLogger(WorkOrder.class);
 	boolean flagtblPDtl = false;
-	public Button btnDtleWrkDtl = new GERPButton("Delete", "delete", this);
+	private Button btnDtleWrkDtl = new GERPButton("Delete", "delete", this);
 	private Comments comment;
-	VerticalLayout vlTableForm = new VerticalLayout();
+	private VerticalLayout vlTableForm = new VerticalLayout();
 	private Long commentby;
 	
 	// Constructor received the parameters from Login UI class
@@ -221,10 +219,8 @@ public class WorkOrderPlan extends BaseUI {
 					WorkOrderDtlDM obj = (WorkOrderDtlDM) cbPrdName.getValue();
 					tfPrdName.setValue(obj.getProductName());
 					tfWrkOdrPlnQty.setValue(obj.getPlanQty().toString());
-					// if (flagtblPDtl) {
 					loadSrchWrkOdrPlnMtrlDtlRslt(false);
 					flagtblPDtl = true;
-					// }
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -251,17 +247,6 @@ public class WorkOrderPlan extends BaseUI {
 			}
 		});
 		cbPlanDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		// Plan Detail table
-		/*
-		 * cbPrdName = new GERPComboBox("Product Name"); cbPrdName.setWidth("130");
-		 * cbPrdName.setItemCaptionPropertyId("prodName"); cbPrdName.addValueChangeListener(new
-		 * Property.ValueChangeListener() { private static final long serialVersionUID = 1L; public void
-		 * valueChange(ValueChangeEvent event) { // Get the selected item Object itemId =
-		 * event.getProperty().getValue(); BeanItem<?> item = (BeanItem<?>) cbPrdName.getItem(itemId); if (item != null)
-		 * { WorkOrderDtlDM obj = (WorkOrderDtlDM) cbPrdName.getValue(); tfPrdName.setValue(obj.getProductName());
-		 * tfWrkOdrPlnQty.setValue(obj.getPlanQty().toString()); //if (flagtblPDtl) {
-		 * loadSrchWrkOdrPlnMtrlDtlRslt(false); flagtblPDtl=true; //} } } });
-		 */
 		tfPrdName = new GERPTextField("Cust.Product Name");
 		tfPrdName.setWidth("130");
 		tfWrkOdrPlnQty = new GERPTextField("WO.Plan.Qty");
@@ -308,11 +293,8 @@ public class WorkOrderPlan extends BaseUI {
 			}
 		});
 		List<ApprovalSchemaDM> list = serviceWorkOrderPlanHdr.getReviewerId(companyid, appScreenId, branchID, roleId);
-		System.out.println(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + companyid + "," + appScreenId
-				+ "," + branchID + "," + roleId);
 		for (ApprovalSchemaDM obj : list) {
 			roleName = obj.getApprLevel();
-			System.out.println("roleName is >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + roleName);
 			if (roleName.equals("Approver")) {
 				cbPlanStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WO_PLAN_HDR, BASEConstants.APPROVE_LVL);
 			} else {
@@ -476,7 +458,6 @@ public class WorkOrderPlan extends BaseUI {
 			List<ProductBomDtlDM> wrkOrdPlnMtrlList = new ArrayList<ProductBomDtlDM>();
 			logger.info("Inside loadSrchWrkOdrPlnMtrlDtlRslt >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 			if (cbPrdName.getValue() != null) {
-				System.out.println("productiddddddddddddd>>>>>>" + productId);
 				productId = ((WorkOrderDtlDM) cbPrdName.getValue()).getProdId();
 			}
 			wrkOrdPlnMtrlList = serviceWorkOrderPlanMtrlDtl.getProductBomDtlDM(productId, "Y");
@@ -519,11 +500,6 @@ public class WorkOrderPlan extends BaseUI {
 			public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
 				if (propertyId.toString().equals("woMtrlStatus")) {
 					chIsRequired = new CheckBox();
-					/*
-					 * String type = (String) container.getItem(itemId).getItemProperty("woMtrlStatus").getValue();
-					 * System.out.println("type---->" + type); if (type.equals("true")) { chIsRequired.setValue(true); }
-					 * else { chIsRequired.setValue(false); }
-					 */
 					return chIsRequired;
 				}
 				if (propertyId.toString().equals("requiredQty")) {
@@ -545,10 +521,9 @@ public class WorkOrderPlan extends BaseUI {
 	}
 	
 	private void editWorkOrderPlnHdrDetails() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			WorkOrderPlanHdrDM editWorkOrderPlnHdr = beanWrkOdrPlnHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			Long uom = editWorkOrderPlnHdr.getBranchId();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			WorkOrderPlanHdrDM workOrderPlanHdr = beanWrkOdrPlnHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			Long uom = workOrderPlanHdr.getBranchId();
 			Collection<?> uomid = cbBranchName.getItemIds();
 			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -559,11 +534,11 @@ public class WorkOrderPlan extends BaseUI {
 					cbBranchName.setValue(itemId);
 				}
 			}
-			woPlnHdr = Long.valueOf(editWorkOrderPlnHdr.getWrkPlanId());
+			woPlnHdr = Long.valueOf(workOrderPlanHdr.getWrkPlanId());
 			tfPlanNo.setReadOnly(false);
-			tfPlanNo.setValue(itselect.getItemProperty("wrkPlanNo").getValue().toString());
+			tfPlanNo.setValue(workOrderPlanHdr.getWrkPlanNo());
 			tfPlanNo.setReadOnly(true);
-			Long workordNo = editWorkOrderPlnHdr.getWrkOrderNoID();
+			Long workordNo = workOrderPlanHdr.getWrkOrderNoID();
 			Collection<?> branchID = cbWONo.getItemIds();
 			for (Iterator<?> iterator = branchID.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -574,11 +549,11 @@ public class WorkOrderPlan extends BaseUI {
 					cbWONo.setValue(itemId);
 				}
 			}
-			planDt.setValue(editWorkOrderPlnHdr.getPlanDtInt());
-			if (editWorkOrderPlnHdr.getPlanRemarks() != null) {
-				taPlanRemrks.setValue((String) itselect.getItemProperty("planRemarks").getValue());
+			planDt.setValue(workOrderPlanHdr.getPlanDtInt());
+			if (workOrderPlanHdr.getPlanRemarks() != null) {
+				taPlanRemrks.setValue(workOrderPlanHdr.getPlanRemarks());
 			}
-			cbPlanStatus.setValue(itselect.getItemProperty("workStatus").getValue());
+			cbPlanStatus.setValue(workOrderPlanHdr.getWorkStatus());
 			workOdrPlnPrdDtlList = serviceWorkOrderPlanProdDtl.getWorkOrderPlanDtlList(null, woPlnHdr, "Active");
 		}
 		comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
@@ -588,11 +563,10 @@ public class WorkOrderPlan extends BaseUI {
 	
 	private void editWorkOrderPlnDtlDetails() {
 		logger.info("Inside of wrkorderpln details >>>>>>>>>>>>>>>. ");
-		Item itselect = tblWrkOrdPlnDtl.getItem(tblWrkOrdPlnDtl.getValue());
-		if (itselect != null) {
-			WorkOrderPlanProdDtlDM editWorkOrderPlanProdDtl = new WorkOrderPlanProdDtlDM();
-			editWorkOrderPlanProdDtl = beanWrkOdrPlnPrdDtl.getItem(tblWrkOrdPlnDtl.getValue()).getBean();
-			Long uom = editWorkOrderPlanProdDtl.getProductId();
+		if (tblWrkOrdPlnDtl.getValue() != null) {
+			WorkOrderPlanProdDtlDM workOrderPlanDtlDM = new WorkOrderPlanProdDtlDM();
+			workOrderPlanDtlDM = beanWrkOdrPlnPrdDtl.getItem(tblWrkOrdPlnDtl.getValue()).getBean();
+			Long uom = workOrderPlanDtlDM.getProductId();
 			Collection<?> uomid = cbPrdName.getItemIds();
 			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -603,38 +577,30 @@ public class WorkOrderPlan extends BaseUI {
 					cbPrdName.setValue(itemId);
 				}
 			}
-			tfPrdName.setValue((String) itselect.getItemProperty("prodName").getValue());
-			tfWrkOdrPlnQty.setValue(itselect.getItemProperty("wrkOrdPlnQty").getValue().toString());
-			cbPlanDtlStatus.setValue((String) itselect.getItemProperty("wrkOrdPlnStatus").getValue());
+			tfPrdName.setValue(workOrderPlanDtlDM.getProdName());
+			tfWrkOdrPlnQty.setValue(workOrderPlanDtlDM.getWrkOrdPlnQty().toString());
+			cbPlanDtlStatus.setValue(workOrderPlanDtlDM.getWrkOrdPlnStatus());
 		}
 	}
 	
 	private void loadWorkOrderNo() {
-		List<WorkOrderHdrDM> getworkOrdHdr = new ArrayList<WorkOrderHdrDM>();
-		getworkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
-				null, null));
 		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
-		// beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
-		beanWrkOrdHdr.addAll(getworkOrdHdr);
+		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
+				null, null));
 		cbWONo.setContainerDataSource(beanWrkOrdHdr);
 	}
 	
 	private void loadProductList() {
-		List<WorkOrderDtlDM> getworkOrderDtl = new ArrayList<WorkOrderDtlDM>();
 		Long workOrdHdrId = ((WorkOrderHdrDM) cbWONo.getValue()).getWorkOrdrId();
-		getworkOrderDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, workOrdHdrId, null, "F"));
 		BeanItemContainer<WorkOrderDtlDM> beanPlnDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
-		beanPlnDtl.addAll(getworkOrderDtl);
+		beanPlnDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, workOrdHdrId, null, "F"));
 		cbPrdName.setContainerDataSource(beanPlnDtl);
 	}
 	
 	private void loadBranchlist() {
-		List<WorkOrderHdrDM> getWrkBranchList = new ArrayList<WorkOrderHdrDM>();
-		getWrkBranchList.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
-				null, null));
-		System.out.println("Branch list is >>>>>>>>>>>>>>>>>>>>>>>>>>>> " + getWrkBranchList.size());
 		BeanItemContainer<WorkOrderHdrDM> beanWorkOrderHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
-		beanWorkOrderHdr.addAll(getWrkBranchList);
+		beanWorkOrderHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
+				null, null));
 		cbBranchName.setContainerDataSource(beanWorkOrderHdr);
 	}
 	
@@ -858,7 +824,6 @@ public class WorkOrderPlan extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assembleSearchLayout();
 		hlCmdBtnLayout.setVisible(true);
-		// cbBranchName.setReadOnly(false);
 		tfPlanNo.setReadOnly(false);
 		tblMstScrSrchRslt.setVisible(true);
 		tblWrkOrdPlnDtl.setVisible(false);

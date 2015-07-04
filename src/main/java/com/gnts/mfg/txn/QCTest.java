@@ -48,7 +48,6 @@ import com.gnts.mfg.domain.mst.QCTestSpecificationDM;
 import com.gnts.mfg.domain.mst.QCTestTypeDM;
 import com.gnts.mfg.domain.txn.QcTestDtlDM;
 import com.gnts.mfg.domain.txn.QcTestHdrDM;
-import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.mst.QCTestType;
 import com.gnts.mfg.service.mst.ProductDrawingService;
 import com.gnts.mfg.service.mst.QCTestSpecService;
@@ -120,19 +119,18 @@ public class QCTest extends BaseUI {
 	private TextField tfTstSpecReslt;
 	private TextArea taQcRemarks;
 	private GERPAddEditHLayout hlSearchLayout;
-	private FormLayout flOdrDtlColumn1, flOdrDtlColumn2, flOdrDtlColumn3, flOdrDtlColumn4, flOdrDtlColumn5,
-			flOdrDtlColumn6;
+	private FormLayout flOdrDtlColumn1, flOdrDtlColumn2, flOdrDtlColumn3;
 	private HorizontalLayout hlQCHdr, hlOdrDtl;
-	HorizontalLayout hlUserInputLayout = new HorizontalLayout();
+	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private VerticalLayout vlTstDtlNtbl, vlQcHdrNDtl;
 	private int recordCnt;
 	private Long EmployeeId;
 	private Long moduleId;
 	private Long branchID;;
 	private String testTypeId;
-	public Button btnDtete = new GERPButton("Delete", "delete", this);
+	private Button btnDtete = new GERPButton("Delete", "delete", this);
 	private Comments comment;
-	VerticalLayout vlTableForm = new VerticalLayout();
+	private VerticalLayout vlTableForm = new VerticalLayout();
 	private Long commentby;
 	
 	public QCTest() {
@@ -360,9 +358,6 @@ public class QCTest extends BaseUI {
 		flOdrDtlColumn1 = new FormLayout();
 		flOdrDtlColumn2 = new FormLayout();
 		flOdrDtlColumn3 = new FormLayout();
-		flOdrDtlColumn4 = new FormLayout();
-		flOdrDtlColumn5 = new FormLayout();
-		flOdrDtlColumn6 = new FormLayout();
 		// adding components into first column in form layout1
 		// Initialization for work order Details user input components
 		flOdrDtlColumn1.addComponent(cbTstSpec);

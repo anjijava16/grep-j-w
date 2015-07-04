@@ -22,7 +22,6 @@ import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.txn.CommentDM;
-import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.service.txn.CommentService;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
@@ -52,29 +51,23 @@ public class Comments implements ClickListener {
 	private TextArea taComments;
 	private FormLayout flMainform1, flMainform2;
 	private Table tblComments;
-	private String userName, strWidth = "160px";
-	private Button btnComments, btnEdit;
+	private String userName;
+	private Button btnComments;
 	private int total = 0;
-	List<CommentDM> commentList = new ArrayList<CommentDM>();
-	private Long companyId, woOrdid, productDrgid, qaTstId, qcTstId, qaSignOffid, wrkOdrId;
+	public List<CommentDM> commentList = new ArrayList<CommentDM>();
+	private Long companyId, woOrdid, productDrgid, qaTstId, qcTstId, qaSignOffid;
 	private Button btnSave = new GERPButton("Add", "add", this);
-	VerticalLayout vlTableForm = new VerticalLayout();
-	HorizontalLayout hluserInput = new HorizontalLayout();
-	private Long empId;
-	public Button btnDeleteCmt = new GERPButton("Delete", "delete", this);
+	private HorizontalLayout hluserInput = new HorizontalLayout();
+	private Button btnDeleteCmt = new GERPButton("Delete", "delete", this);
 	
 	public Comments(VerticalLayout vlTableForm, Long companyId, Long woOrdId, Long productDrgId, Long qaTstTypId,
 			Long qaSignOffId, Long commentby) {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		empId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
-		//empId = commentby;
 		woOrdid = woOrdId;
 		productDrgid = productDrgId;
 		qaTstId = qaTstTypId;
-		qcTstId = qcTstId;
 		qaSignOffid = qaSignOffId;
-		commentby = commentby;
 		buildview(vlTableForm);
 	}
 	
@@ -153,13 +146,10 @@ public class Comments implements ClickListener {
 			Long qaSignOffId) {
 		if (fromdb) {
 			commentList = serviceComment.getMFGCommentsDetails(commentId, companyId, woId, productDrgId, qaTstTypId,qaSignOffId);
-			System.out.println("loadcommentId---->" + commentId);
 		}
 		try {
 			tblComments.removeAllItems();
-			System.out.println("companyId---->" + companyId);
 			total = commentList.size();
-			System.out.println("LISTSIZE---1->" + commentList.size());
 			beanMfgComments = new BeanItemContainer<CommentDM>(CommentDM.class);
 			beanMfgComments.addAll(commentList);
 			tblComments.setSelectable(true);
@@ -220,34 +210,28 @@ public class Comments implements ClickListener {
 	}
 	
 	public void saveWoId(Long woId) {
-		System.out.println("woId-->>" + woId);
 		@SuppressWarnings("unchecked")
 		Collection<CommentDM> itemIds = (Collection<CommentDM>) tblComments.getVisibleItemIds();
 		for (CommentDM savecomments : (Collection<CommentDM>) itemIds) {
 			savecomments.setWoId(woId);
-			System.out.println("saveid2-->>" + woId);
 			serviceComment.saveOrUpdateMFGCommentsDetails(savecomments);
 		}
 	}
 	
 	public void saveProdDrgId(Long productDrgId) {
-		System.out.println("productDrgId-->>" + productDrgId);
 		@SuppressWarnings("unchecked")
 		Collection<CommentDM> itemIds = (Collection<CommentDM>) tblComments.getVisibleItemIds();
 		for (CommentDM savecomments : (Collection<CommentDM>) itemIds) {
 			savecomments.setProductDrgId(productDrgId);
-			System.out.println("saveid2-->>" + productDrgId);
 			serviceComment.saveOrUpdateMFGCommentsDetails(savecomments);
 		}
 	}
 	
 	public void saveqaTst(Long qaTstId) {
-		System.out.println("qaTstId-->>" + qaTstId);
 		@SuppressWarnings("unchecked")
 		Collection<CommentDM> itemIds = (Collection<CommentDM>) tblComments.getVisibleItemIds();
 		for (CommentDM savecomments : (Collection<CommentDM>) itemIds) {
 			savecomments.setQaTstId(qaTstId);
-			System.out.println("qaTstId-->>" + qaTstId);
 			serviceComment.saveOrUpdateMFGCommentsDetails(savecomments);
 		}
 		resetFields();
@@ -259,18 +243,15 @@ public class Comments implements ClickListener {
 		Collection<CommentDM> itemIds = (Collection<CommentDM>) tblComments.getVisibleItemIds();
 		for (CommentDM savecomments : (Collection<CommentDM>) itemIds) {
 			savecomments.setQcTstId(qcTstId);
-			System.out.println("save qcTstId-->>" + qcTstId);
 			serviceComment.saveOrUpdateMFGCommentsDetails(savecomments);
 		}
 	}
 	
 	public void saveqaSignOffId(Long qaSignOffId) {
-		System.out.println("save qaSignOffId->>" + qaSignOffId);
 		@SuppressWarnings("unchecked")
 		Collection<CommentDM> itemIds = (Collection<CommentDM>) tblComments.getVisibleItemIds();
 		for (CommentDM savecomments : (Collection<CommentDM>) itemIds) {
 			savecomments.setQaSignOffId(qaSignOffId);
-			System.out.println("save qaSignOffId-->>" + qaSignOffId);
 			serviceComment.saveOrUpdateMFGCommentsDetails(savecomments);
 		}
 	}
@@ -295,10 +276,6 @@ public class Comments implements ClickListener {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (tblComments.isSelected(event.getItemId())) {
-					/*
-					 * btnEdit.setEnabled(false); } else { btnEdit.setEnabled(true); } if
-					 * (tblComments.isSelected(event.getItemId())) {
-					 */
 					btnComments.setEnabled(true);
 				} else {
 					btnComments.setEnabled(false);
@@ -315,7 +292,6 @@ public class Comments implements ClickListener {
 		loadsrch(false, null, companyId, null, null, null, null);
 	}
 	public void resettbl() {
-		// commentList= new ArrayList<CommentDM>();
 		commentList = new ArrayList<CommentDM>();
 		tblComments.removeAllItems();
 	}

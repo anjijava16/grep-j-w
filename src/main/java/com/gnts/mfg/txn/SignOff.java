@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.jfree.chart.needle.MiddlePinNeedle;
 import com.gnts.base.domain.mst.ApprovalSchemaDM;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.ProductDM;
@@ -36,20 +35,16 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.mfg.domain.mst.TestSpecificationDM;
 import com.gnts.mfg.domain.txn.QATestHdrDM;
 import com.gnts.mfg.domain.txn.SignOffDtlDM;
 import com.gnts.mfg.domain.txn.SignoffHdrDM;
-import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.mst.QCTestType;
 import com.gnts.mfg.service.txn.QATestHdrService;
-import com.gnts.mfg.service.txn.QcTestHdrService;
 import com.gnts.mfg.service.txn.SignOffDtlService;
 import com.gnts.mfg.service.txn.SignoffHdrService;
 import com.gnts.mfg.service.txn.WorkOrderDtlService;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -58,11 +53,11 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -85,8 +80,8 @@ public class SignOff extends BaseUI {
 	private TextArea taRemaks;
 	private PopupDateField pdBatchDate;
 	private SignoffHdrService serviceSignoffHdr = (SignoffHdrService) SpringContextHelper.getBean("Signoffhdr");
-	List<SignoffHdrDM> listSignOffHdr = null;
-	BeanItemContainer<SignoffHdrDM> beanSignoffHdr = null;
+	private List<SignoffHdrDM> listSignOffHdr = null;
+	private BeanItemContainer<SignoffHdrDM> beanSignoffHdr = null;
 	private FormLayout flSignOffCmp1, flSignOffCmp2, flSignOffCmp3, flSignOffCmp4;
 	private HorizontalLayout hlSignOffHdr = new HorizontalLayout();
 	// SignOff Details Components Declaration
@@ -95,28 +90,26 @@ public class SignOff extends BaseUI {
 	private Button btnAdd;
 	private Table tblSignOffDtl;
 	private SignOffDtlService serviceSignoffDtl = (SignOffDtlService) SpringContextHelper.getBean("SignoffDtl");
-	List<SignOffDtlDM> listSignOffDtlDM = null;
-	BeanItemContainer<SignOffDtlDM> beanSignoffDtl = null;
+	private List<SignOffDtlDM> listSignOffDtlDM = null;
+	private BeanItemContainer<SignOffDtlDM> beanSignoffDtl = null;
 	private FormLayout flSignOffDtlCmp1, flSignOffDtlCmp2, flSignOffDtlCmp3;
 	private HorizontalLayout hlSignOffDtl = new HorizontalLayout();
-	VerticalLayout vlTableForm = new VerticalLayout();
-	HorizontalLayout hlDtlNCmt = new HorizontalLayout();
+	private VerticalLayout vlTableForm = new VerticalLayout();
+	private HorizontalLayout hlDtlNCmt = new HorizontalLayout();
 	//
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private ClientService serviceClient = (ClientService) SpringContextHelper.getBean("clients");
 	private WorkOrderHdrService serviceWorkOrderHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private WorkOrderDtlService serviceWorkOrderDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
-	private QcTestHdrService serivceQcTstHdr = (QcTestHdrService) SpringContextHelper.getBean("testhdr");
 	private SlnoGenService serviceSLNo = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private QATestHdrService serviceQATestHdr = (QATestHdrService) SpringContextHelper.getBean("qatesthdr");
-	private static Logger logger = Logger.getLogger(QCTestType.class);
+	private Logger logger = Logger.getLogger(QCTestType.class);
 	private int recordCnt;
 	private Long signOffHdrId;
 	private String userName;
 	private Long companyId;
 	private Long moduleId;
-	private Long employeeid;
 	private HorizontalLayout hlSearchLayout;
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private Long branchID;
@@ -124,7 +117,7 @@ public class SignOff extends BaseUI {
 	private Long commentby;
 	private Long appScreenId;
 	private Long roleId;
-	public Button btnDetlIns = new GERPButton("Delete", "delete", this);
+	private Button btnDetlIns = new GERPButton("Delete", "delete", this);
 	
 	public SignOff() {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
@@ -151,6 +144,11 @@ public class SignOff extends BaseUI {
 		loadClientList();
 		cbWorkOrderNo.setItemCaptionPropertyId("workOrdrNo");
 		cbClient.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				loadWorkOrderNoList();
@@ -160,6 +158,11 @@ public class SignOff extends BaseUI {
 		cbProduct = new GERPComboBox("Product Name");
 		cbProduct.setItemCaptionPropertyId("prodname");
 		cbWorkOrderNo.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				loadProductList();
@@ -435,40 +438,33 @@ public class SignOff extends BaseUI {
 	}
 	
 	private void loadClientList() {
-		List<ClientDM> getClientList = new ArrayList<ClientDM>();
-		getClientList.addAll(serviceClient.getClientDetails(companyId, null, null, null, null, null, null, null,
-				"Active", "P"));
 		BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
 		beanClient.setBeanIdProperty("clientId");
-		beanClient.addAll(getClientList);
+		beanClient.addAll(serviceClient.getClientDetails(companyId, null, null, null, null, null, null, null, "Active",
+				"P"));
 		cbClient.setContainerDataSource(beanClient);
 	}
 	
 	private void loadWorkOrderNoList() {
-		List<WorkOrderHdrDM> getworkOrdHdr = new ArrayList<WorkOrderHdrDM>();
-		getworkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyId, null, (Long) cbClient.getValue(), null,
-				null, null, "F", null,null));
 		BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
 				WorkOrderHdrDM.class);
 		beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
-		beanWrkOrdHdr.addAll(getworkOrdHdr);
+		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyId, null, (Long) cbClient.getValue(), null,
+				null, null, "F", null, null));
 		cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
 	}
 	
 	private void loadProductList() {
-		List<ProductDM> listProduct = new ArrayList<ProductDM>();
 		try {
-			listProduct = serviceProduct.getProductList(
+			BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
+			beanProd.setBeanIdProperty("prodid");
+			beanProd.addAll(serviceProduct.getProductList(
 					companyId,
 					(serviceWorkOrderDtl.getWorkOrderDtlList(
 							null,
 							(serviceWorkOrderHdr.getWorkOrderHDRList(companyId, null, null, null, null, "Approved",
-									"F", (Long) cbWorkOrderNo.getValue(),null).get(0).getWorkOrdrId()), "Approved", "F")
-							.get(0).getProdId()), null, null, "Active", null, null, "F");
-			System.out.println("Product list is >>>>>>>>>>>." + listProduct.size());
-			BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
-			beanProd.setBeanIdProperty("prodid");
-			beanProd.addAll(listProduct);
+									"F", (Long) cbWorkOrderNo.getValue(), null).get(0).getWorkOrdrId()), "Approved",
+							"F").get(0).getProdId()), null, null, "Active", null, null, "F"));
 			cbProduct.setContainerDataSource(beanProd);
 		}
 		catch (Exception e) {
@@ -477,19 +473,15 @@ public class SignOff extends BaseUI {
 	}
 	
 	private void loadBranchList() {
-		List<BranchDM> getBranchList = new ArrayList<BranchDM>();
-		getBranchList = serviceBranch.getBranchList(null, null, null, "Active", null, "F");
 		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(getBranchList);
+		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", null, "F"));
 		cbBranch.setContainerDataSource(beanbranch);
 	}
 	
 	private void loadInspectionNo() {
-		List<QATestHdrDM> getQaTstHdrList = new ArrayList<QATestHdrDM>();
-		getQaTstHdrList = serviceQATestHdr.getQaTestHdrDetails(null, companyId, null, null, null, "Active");
 		BeanItemContainer<QATestHdrDM> beanQATestHdr = new BeanItemContainer<QATestHdrDM>(QATestHdrDM.class);
-		beanQATestHdr.addAll(getQaTstHdrList);
+		beanQATestHdr.addAll(serviceQATestHdr.getQaTestHdrDetails(null, companyId, null, null, null, "Active"));
 		cbInspectionNo.setContainerDataSource(beanQATestHdr);
 	}
 	
@@ -548,21 +540,20 @@ public class SignOff extends BaseUI {
 	
 	private void editSignOffHdrDetails() {
 		try {
-			Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-			if (itselect != null) {
-				SignoffHdrDM editSignOffHdr = beanSignoffHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				signOffHdrId = editSignOffHdr.getQasignoffid();
-				cbBranch.setValue(editSignOffHdr.getBranchid());
-				cbProduct.setValue(editSignOffHdr.getProductid());
-				cbWorkOrderNo.setValue(editSignOffHdr.getWoid().toString());
-				cbClient.setValue(editSignOffHdr.getClientid());
-				cbSignOffHdrStatus.setValue((String) itselect.getItemProperty("signstatus").getValue());
-				tfbatchNo.setValue(editSignOffHdr.getBatchno());
-				tfbatchTested.setValue(Long.valueOf(editSignOffHdr.getBatchtested()).toString());
-				pdBatchDate.setValue(editSignOffHdr.getBatchdateIn());
-				tfbatchQty.setValue(Long.valueOf(editSignOffHdr.getBatchqty()).toString());
-				if (editSignOffHdr.getBatchremarks() != null) {
-					taRemaks.setValue((String) itselect.getItemProperty("batchremarks").getValue());
+			if (tblMstScrSrchRslt.getValue() != null) {
+				SignoffHdrDM signoffHdrDM = beanSignoffHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				signOffHdrId = signoffHdrDM.getQasignoffid();
+				cbBranch.setValue(signoffHdrDM.getBranchid());
+				cbProduct.setValue(signoffHdrDM.getProductid());
+				cbWorkOrderNo.setValue(signoffHdrDM.getWoid().toString());
+				cbClient.setValue(signoffHdrDM.getClientid());
+				cbSignOffHdrStatus.setValue(signoffHdrDM.getSignstatus());
+				tfbatchNo.setValue(signoffHdrDM.getBatchno());
+				tfbatchTested.setValue(Long.valueOf(signoffHdrDM.getBatchtested()).toString());
+				pdBatchDate.setValue(signoffHdrDM.getBatchdateIn());
+				tfbatchQty.setValue(Long.valueOf(signoffHdrDM.getBatchqty()).toString());
+				if (signoffHdrDM.getBatchremarks() != null) {
+					taRemaks.setValue(signoffHdrDM.getBatchremarks());
 				}
 				listSignOffDtlDM = serviceSignoffDtl.getSignoffDetails(null, signOffHdrId, null,
 						(String) cbSignOffDtStatus.getValue());
@@ -576,11 +567,10 @@ public class SignOff extends BaseUI {
 	}
 	
 	private void editSignOffDtlList() {
-		Item itselect = tblSignOffDtl.getItem(tblSignOffDtl.getValue());
-		if (itselect != null) {
-			SignOffDtlDM editSignOffDtl = new SignOffDtlDM();
-			editSignOffDtl = beanSignoffDtl.getItem(tblSignOffDtl.getValue()).getBean();
-			Long qaTestHdrId = editSignOffDtl.getQaTstId();
+		if (tblSignOffDtl.getValue() != null) {
+			SignOffDtlDM signOffDtlDM = new SignOffDtlDM();
+			signOffDtlDM = beanSignoffDtl.getItem(tblSignOffDtl.getValue()).getBean();
+			Long qaTestHdrId = signOffDtlDM.getQaTstId();
 			Collection<?> tstSpecID = cbInspectionNo.getItemIds();
 			for (Iterator<?> iterator = tstSpecID.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -591,8 +581,8 @@ public class SignOff extends BaseUI {
 					cbInspectionNo.setValue(itemId);
 				}
 			}
-			tfproductSlNo.setValue((String) itselect.getItemProperty("productSlNo").getValue());
-			cbSignOffDtStatus.setValue((String) itselect.getItemProperty("signStatus").getValue());
+			tfproductSlNo.setValue(signOffDtlDM.getProductSlNo());
+			cbSignOffDtStatus.setValue(signOffDtlDM.getSignStatus());
 		}
 	}
 	
@@ -757,7 +747,7 @@ public class SignOff extends BaseUI {
 		}
 	}
 	
-	public Boolean validateSignOffDtlDetails() {
+	private Boolean validateSignOffDtlDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "validateTstDefDetails Data ");
 		Boolean errorFlag = true;
 		if (cbInspectionNo.getValue() == null) {

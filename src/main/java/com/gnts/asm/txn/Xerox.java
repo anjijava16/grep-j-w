@@ -133,6 +133,7 @@ public class Xerox extends BaseTransUI {
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
 		resetFields();
 		loadSrchRslt();
+		btnPrint.setVisible(true);
 	}
 	
 	private void assembleSearchLayout() {
@@ -196,7 +197,8 @@ public class Xerox extends BaseTransUI {
 		List<XeroxDM> list = new ArrayList<XeroxDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + null + "," + null + ", " + (String) cbStatus.getValue());
-		list = serviceXerox.getXeroxDetailList(null, null, null, null, null, null);
+		list = serviceXerox.getXeroxDetailList(null, (Long) cbAssetName.getValue(), (Long) cbDepartment.getValue(),
+				null, null, null);
 		recordCnt = list.size();
 		beanXerox = new BeanItemContainer<XeroxDM>(XeroxDM.class);
 		beanXerox.addAll(list);
@@ -306,6 +308,8 @@ public class Xerox extends BaseTransUI {
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
 		cbStatus.setValue(null);
+		cbAssetName.setValue(null);
+		cbDepartment.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		// cbclient.setRequired(true);
@@ -431,10 +435,15 @@ public class Xerox extends BaseTransUI {
 		try {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
-			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			parameterMap.put("ECRID", xeroxRefId);
+			HashMap<String, String> parameterMap = new HashMap<String, String>();
+			if (cbAssetName.getValue() != null) {
+				parameterMap.put("assetid", cbAssetName.getValue().toString());
+			}
+			if (cbDepartment.getValue() != null) {
+				parameterMap.put("deptid", cbDepartment.getValue().toString());
+			}
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "/WEB-INF/reports/ecr"); // ecr is the name of my jasper
+			rpt.setReportName(basepath + "/WEB-INF/reports/xerox"); // xerox is the name of my jasper
 			// file.
 			rpt.callReport(basepath, "Preview");
 		}

@@ -55,7 +55,7 @@ abstract public class BaseTransUI implements ClickListener {
 	// Common buttons used across all the screens
 	public Button btnSave = new GERPButton("Save", "savebt", this);
 	public Button btnCancel = new GERPButton("Cancel", "cancelbt", this);
-	private Button btnPrint =new GERPButton("Print", "downloadbt", this);
+	public Button btnPrint =new GERPButton("Print", "downloadbt", this);
 	public Button btnAdd = new GERPButton("Add", "add", this);
 	public Button btnEdit = new GERPButton("Edit", "editbt", this);
 	public Button btnDownload = new GERPButton("Download", "downloadbt", this);

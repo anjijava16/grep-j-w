@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="generatormonth" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ed5a03a3-3f1a-4368-90ca-7487e7561d48">
+	<property name="ireport.zoom" value="1.2100000000000002"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="startdate" class="java.lang.String"/>
+	<parameter name="enddate" class="java.lang.String"/>
+	<parameter name="assetid" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT ass.asset_name,g.GENSET_DATE,g.DIESEL_OPEN_BALANCE,
+  g.TOTAL_TIME, g.DIESEL_CLOSE_BALANCE,
+  g.TOTAL_COST totalcost,g.ONE_LTRCOST,g.DIESEL_CONSUPTION_BALANCE,
+  g.DIESEL_PURCHASE_LITERS purchaselitre
+FROM t_ams_generator g,t_ams_asset_details ass
+where
+g.asset_id = ass.asset_id
+and GENSET_DATE between to_date($P{startdate},'DD-Mon-RRRR') and to_date($P{enddate},'DD-Mon-RRRR')
+and g.asset_id like COALESCE($P{assetid},'%')
+order by genset_date desc]]>
+	</queryString>
+	<field name="ASSET_NAME" class="java.lang.String"/>
+	<field name="GENSET_DATE" class="java.sql.Timestamp"/>
+	<field name="DIESEL_OPEN_BALANCE" class="java.math.BigDecimal"/>
+	<field name="TOTAL_TIME" class="java.lang.String"/>
+	<field name="DIESEL_CLOSE_BALANCE" class="java.math.BigDecimal"/>
+	<field name="TOTALCOST" class="java.math.BigDecimal"/>
+	<field name="ONE_LTRCOST" class="java.math.BigDecimal"/>
+	<field name="DIESEL_CONSUPTION_BALANCE" class="java.math.BigDecimal"/>
+	<field name="PURCHASELITRE" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="113" splitType="Stretch">
+			<line>
+				<reportElement uuid="6806382c-5356-427b-879c-118aaa461c2f" x="0" y="79" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.75"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="9dcdd9bd-ebcc-4207-8be1-a4dbda270297" x="0" y="111" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.75"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="a12273c9-15af-478d-a6b1-0061bb855bed" x="1" y="85" width="30" height="16"/>
+				<textElement verticalAlignment="Top">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8a2ac77e-b6fb-4f0d-8c96-ee8e530e0871" x="144" y="85" width="64" height="16"/>
+				<textElement verticalAlignment="Top">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1c90ef15-6e21-4b83-8073-6e774f99ae57" x="209" y="85" width="68" height="24"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Opening
+    Bal.(Ltr)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7e708980-5f5e-4586-bf34-6d2f49baa2d1" x="1" y="52" width="207" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Generator - Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="79db3e97-d1e3-4cb6-ad18-4d48e7f74bd6" x="281" y="85" width="68" height="28"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Running Hours]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6a631a06-031f-4a8f-8630-0e0f91ec2aeb" x="1" y="26" width="554" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[Malumichampatti, Coimbatore - 641 050]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="98af3512-5d09-462e-bf04-dc46410176e9" x="349" y="85" width="91" height="28"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Consumption
+     (Ltr)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="cef6449f-c16f-468e-b58d-6920ce99e532" x="442" y="85" width="54" height="28"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Closing
+  Bal.(Ltr)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4a9e2b51-00bb-41e4-802e-c8dd84574924" x="497" y="85" width="59" height="28"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Purchase
+  Qty(Ltr)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4d2bea55-da40-4a2d-96e4-8c916ac4d810" x="333" y="52" width="35" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Start Date   ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="95b05044-da2d-48ba-b547-68db1d74e7da" x="458" y="52" width="35" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[End Date    ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="288c9008-0019-4485-985d-76bc4a7dfdca" x="1" y="1" width="555" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC Tool Tech (P) Ltd.,]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="25313871-8734-4cfc-954c-e196f166150b" x="367" y="52" width="72" height="19"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{startdate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="b64ddc82-5dfe-4b6c-b475-2e34c6ef9d7b" x="492" y="52" width="63" height="19"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{enddate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="a21ccd3a-befa-49f1-a073-ebc90b1d2636" x="32" y="85" width="112" height="20"/>
+				<textElement verticalAlignment="Top">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Genset Name]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement uuid="1d74dfff-b8ec-4e6f-b678-cee247e1c1e6" x="-1" y="2" width="30" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yyyy">
+				<reportElement uuid="005f5d50-f36f-4cd0-95f7-07645e86400a" x="144" y="2" width="64" height="16"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{GENSET_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement uuid="b4c1af87-3d6d-47b5-9053-011a8b10a74e" x="209" y="2" width="67" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DIESEL_OPEN_BALANCE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="23ee3ebf-9a9f-4aee-b5c0-4ac2fd568ef4" x="281" y="2" width="68" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_TIME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="47c8a964-d93e-42a2-bf2a-aba9118269dd" x="349" y="2" width="91" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DIESEL_CONSUPTION_BALANCE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement uuid="bd70f58c-7ffb-4382-80a4-23540003d6b8" x="443" y="2" width="53" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DIESEL_CLOSE_BALANCE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement uuid="cd021425-a0ac-49f1-b674-6cbc8f99fe59" x="497" y="2" width="58" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PURCHASELITRE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="b03fc619-49fb-46a5-bfb6-b25de66bafe0" x="32" y="2" width="112" height="16"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ASSET_NAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="28" splitType="Stretch">
+			<line>
+				<reportElement uuid="95fdb274-757d-4bbb-8dcc-be17404a9f80" x="0" y="3" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.75"/>
+				</graphicElement>
+			</line>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement uuid="503fafed-155d-4797-bbe1-9403c0aef7e5" x="1" y="7" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="921251f4-12c3-4204-88aa-e2f9eaaea8d1" x="437" y="8" width="80" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="f80d9044-b4dd-4994-befa-bc4ec4eb133f" x="516" y="8" width="40" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

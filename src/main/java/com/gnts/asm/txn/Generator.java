@@ -58,7 +58,7 @@ public class Generator extends BaseTransUI {
 	// User Input Fields for EC Request
 	private TextField tfDiselOpenBal, tfGenTotalTime, tfDiselConsBal, tfVolts, tfAmps, tfRpmHz, tfDiselCloseBal,
 			tfDiselPurLtrs, tfOtherUseLtrs, tfLtrPerHours, tfMachineServRemain, tfOneLtrCost, tfTotalCost, tfTotalTime;
-	private PopupDateField dfRefDate;
+	private PopupDateField dfRefDate, dfRefEndDate;
 	private GERPTimeField tfGenStartTime, tfGenStopTime;
 	private ComboBox cbAssetName;
 	private TextArea taRunningMachineDtl, taRemarks;
@@ -140,7 +140,7 @@ public class Generator extends BaseTransUI {
 				// TODO Auto-generated method stub
 				try {
 					GeneratorDM generatorDM = serviceGenerator.getGeneratorDetailList(null,
-							(Long) cbAssetName.getValue(), null, null).get(0);
+							(Long) cbAssetName.getValue(), null, null, "Y", null).get(0);
 					if (generatorDM.getDiselCloseBalance() != null) {
 						tfDiselOpenBal.setValue(generatorDM.getDiselCloseBalance().toString());
 					}
@@ -157,12 +157,14 @@ public class Generator extends BaseTransUI {
 		});
 		loadAssetList();
 		dfRefDate = new GERPPopupDateField("Date");
+		dfRefEndDate = new GERPPopupDateField("End Date");
 		cbStatus.setWidth("150");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
 		resetFields();
 		loadSrchRslt();
+		btnPrint.setVisible(true);
 	}
 	
 	private void getTotalHours() {
@@ -186,7 +188,7 @@ public class Generator extends BaseTransUI {
 		flcol3 = new FormLayout();
 		flcol1.addComponent(cbAssetName);
 		flcol2.addComponent(dfRefDate);
-		flcol3.addComponent(cbStatus);
+		flcol3.addComponent(dfRefEndDate);
 		hlsearchlayout.addComponent(flcol1);
 		hlsearchlayout.addComponent(flcol2);
 		hlsearchlayout.addComponent(flcol3);
@@ -250,7 +252,8 @@ public class Generator extends BaseTransUI {
 		List<GeneratorDM> list = new ArrayList<GeneratorDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + null + "," + tfDiselOpenBal.getValue() + ", " + (String) cbStatus.getValue());
-		list = serviceGenerator.getGeneratorDetailList(null, null, null, null);
+		list = serviceGenerator.getGeneratorDetailList(null, (Long) cbAssetName.getValue(), dfRefDate.getValue(),
+				(String) cbStatus.getValue(), null, dfRefEndDate.getValue());
 		recordCnt = list.size();
 		beanGenerator = new BeanItemContainer<GeneratorDM>(GeneratorDM.class);
 		beanGenerator.addAll(list);
@@ -370,7 +373,9 @@ public class Generator extends BaseTransUI {
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
 		cbStatus.setValue(null);
-		tfDiselOpenBal.setValue("");
+		cbAssetName.setValue(null);
+		dfRefDate.setValue(null);
+		dfRefEndDate.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		// reload the search using the defaults
@@ -381,12 +386,11 @@ public class Generator extends BaseTransUI {
 	protected void addDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		// cbclient.setRequired(true);
-		tfDiselOpenBal.setReadOnly(true);
 		hllayout.removeAllComponents();
 		vlSrchRsltContainer.setVisible(true);
 		assembleinputLayout();
 		resetFields();
-		tfDiselOpenBal.setReadOnly(false);
+		dfRefDate.setValue(new Date());
 	}
 	
 	@Override
@@ -448,7 +452,7 @@ public class Generator extends BaseTransUI {
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbAssetName.setValue(null);
-		dfRefDate.setValue(new Date());
+		dfRefDate.setValue(null);
 		tfGenStartTime.setValue(null);
 		tfGenStopTime.setValue(null);
 		tfTotalTime.setValue("0");
@@ -494,10 +498,20 @@ public class Generator extends BaseTransUI {
 		try {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
-			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			parameterMap.put("ECRID", generatorId);
+			HashMap<String, String> parameterMap = new HashMap<String, String>();
+			try {
+				parameterMap.put("startdate", DateUtils.datetostring(dfRefDate.getValue()));
+				parameterMap.put("enddate", DateUtils.datetostring(dfRefEndDate.getValue()));
+			}
+			catch (Exception e) {
+			}
+			try {
+				parameterMap.put("assetid", cbAssetName.getValue().toString());
+			}
+			catch (Exception e) {
+			}
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "/WEB-INF/reports/ecr"); // ecr is the name of my jasper
+			rpt.setReportName(basepath + "/WEB-INF/reports/generatormonth"); // generatormonth is the name of my jasper
 			// file.
 			rpt.callReport(basepath, "Preview");
 		}

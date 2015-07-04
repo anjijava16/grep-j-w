@@ -18,7 +18,10 @@
  **/
 package com.gnts.asm.txn;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.asm.domain.txn.AssetDetailsDM;
@@ -44,13 +47,16 @@ import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
+import com.gnts.erputil.ui.Database;
+import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.server.UserError;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -60,15 +66,16 @@ import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
-public class AssetMaintDetail extends BaseUI {
+public class AssetMaintDetail extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	private BeanItemContainer<AssetMaintDetailDM> beanMaintDetail = null;
 	// Buttons
 	// Layouts
 	private HorizontalLayout hlSearchLayout = new HorizontalLayout();
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
-	private FormLayout flColumn1, flColumn2, flColumn3,flColumn4;
+	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// pagination
 	private int recordCnt = 0;
 	private String userName;
@@ -129,24 +136,24 @@ public class AssetMaintDetail extends BaseUI {
 		cbservicetype = new GERPComboBox("Service Type", BASEConstants.T_AMS_ASST_MAINT_DTLS, BASEConstants.SERVICE_TYP);
 		cbservicetype.setWidth("160");
 		// comboBox for PreparedBy
-		cbprepare = new GERPComboBox("Prepared By");
+		cbprepare = new GERPComboBox("Prepared by");
 		cbprepare.setWidth("160");
 		cbprepare.setItemCaptionPropertyId("firstname");
 		loadEmployeeList();
 		// comboBox for AttendedBy
-		cbattenby = new GERPComboBox("Attended By");
+		cbattenby = new GERPComboBox("Attended by");
 		cbattenby.setWidth("160");
 		cbattenby.setItemCaptionPropertyId("firstname");
 		loadEmployeeList();
-		cbcause = new GERPComboBox("CausedBy");
+		cbcause = new GERPComboBox("Caused by");
 		cbcause.setWidth("160");
 		cbcause.setItemCaptionPropertyId("lookupname");
 		loadlookuplist();
-		cbreviewby = new GERPComboBox("Reviewed By");
+		cbreviewby = new GERPComboBox("Reviewed by");
 		cbreviewby.setWidth("160");
 		cbreviewby.setItemCaptionPropertyId("firstname");
 		loadEmployeeList();
-		cbserviceby = new GERPComboBox("Service By");
+		cbserviceby = new GERPComboBox("Service by");
 		cbserviceby.setWidth("160");
 		cbserviceby.setNullSelectionAllowed(false);
 		cbserviceby.setItemCaptionPropertyId("vendorName");
@@ -169,23 +176,23 @@ public class AssetMaintDetail extends BaseUI {
 		// PopUpDateField for CompleteDate
 		dfcompleteDate = new GERPPopupDateField("Complete Date");
 		dfcompleteDate.setDateFormat("dd-MMM-yyyy");
-		dfcompleteDate.setWidth("160");
+		dfcompleteDate.setWidth("140");
 		// PopUpDateField for ServiceDate
 		dfservicedate = new GERPPopupDateField("Service Date");
 		dfservicedate.setDateFormat("dd-MMM-yyyy");
-		dfservicedate.setWidth("160");
+		dfservicedate.setWidth("140");
 		// PopUpDateField for MainSchedule
 		dfmainSchedule = new GERPPopupDateField("Maintain Schedule");
-		dfmainSchedule.setWidth("160");
+		dfmainSchedule.setWidth("140");
 		cbStatus = new GERPComboBox("Status", BASEConstants.T_AMS_ASST_MAINT_DTLS, BASEConstants.MAINT_STS);
 		cbStatus.setItemCaptionPropertyId("desc");
 		cbStatus.setWidth("160");
 		taMaintDetails = new GERPTextArea("Maintenance Detail");
-		taMaintDetails.setWidth("160");
-		taMaintDetails.setMaxLength(40);
+		taMaintDetails.setWidth("900");
+		taMaintDetails.setHeight("80");
 		taProblemDesc = new GERPTextArea("Problem Desc.");
-		taProblemDesc.setWidth("160");
-		taProblemDesc.setMaxLength(40);
+		taProblemDesc.setWidth("900");
+		taProblemDesc.setHeight("80");
 		tfmaintime = new GERPTimeField("MaintainTime");
 		tfcompletetime = new GERPTimeField("Completion Time");
 		tabasset = new TabSheet();
@@ -194,6 +201,7 @@ public class AssetMaintDetail extends BaseUI {
 		assembleSearchLayout();
 		resetFields();
 		loadsearchrslt();
+		btnPrint.setVisible(true);
 	}
 	
 	// Screen Search Fields
@@ -230,22 +238,31 @@ public class AssetMaintDetail extends BaseUI {
 		flColumn1.addComponent(cbMaint);
 		cbMaint.setRequired(true);
 		flColumn1.addComponent(dfmainSchedule);
-		flColumn1.addComponent(tfmaintime);
-		flColumn2.addComponent(taMaintDetails);
-		flColumn2.addComponent(dfcompleteDate);
+		flColumn2.addComponent(tfmaintime);
 		flColumn2.addComponent(tfcompletetime);
+		flColumn2.addComponent(dfcompleteDate);
 		flColumn3.addComponent(dfservicedate);
 		flColumn3.addComponent(cbservicetype);
 		flColumn3.setMargin(true);
 		flColumn3.addComponent(cbserviceby);
-		flColumn3.addComponent(cbcause);
-		flColumn3.addComponent(cbStatus);
-		flColumn4.addComponent(taProblemDesc);
+		flColumn4.addComponent(cbcause);
+		flColumn4.addComponent(cbStatus);
 		// add the user input items into appropriate Horizontal layout
-		hlUserInputLayout.addComponent(flColumn1);
-		hlUserInputLayout.addComponent(flColumn2);
-		hlUserInputLayout.addComponent(flColumn3);
-		hlUserInputLayout.addComponent(flColumn4);
+		final HorizontalLayout hlUserInputLayout1 = new HorizontalLayout();
+		hlUserInputLayout1.setSpacing(true);
+		hlUserInputLayout1.addComponent(flColumn1);
+		hlUserInputLayout1.addComponent(flColumn2);
+		hlUserInputLayout1.addComponent(flColumn3);
+		hlUserInputLayout1.addComponent(flColumn4);
+		hlUserInputLayout.addComponent(new VerticalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(hlUserInputLayout1);
+				addComponent(taProblemDesc);
+				addComponent(taMaintDetails);
+			}
+		});
 		hlUserInputLayout.setSpacing(true);
 		hlUserInputLayout.setMargin(true);
 	}
@@ -524,5 +541,44 @@ public class AssetMaintDetail extends BaseUI {
 		dfmainSchedule.setValue(null);
 		tfcompletetime.setValue(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+	}
+
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, String> parameterMap = new HashMap<String, String>();
+			try {
+				parameterMap.put("startdate", null);
+				parameterMap.put("enddate", null);
+			}
+			catch (Exception e) {
+			}
+			try {
+				parameterMap.put("assetid", cbAssetName.getValue().toString());
+			}
+			catch (Exception e) {
+			}
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "/WEB-INF/reports/maintenancedtl"); // maintenancedtl is the name of my jasper
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

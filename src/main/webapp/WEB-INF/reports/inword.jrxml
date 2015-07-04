@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="inword" pageWidth="300" pageHeight="842" columnWidth="280" leftMargin="10" rightMargin="10" topMargin="5" bottomMargin="10" isIgnorePagination="true" uuid="27e63bb1-0c73-4f56-b110-c0e616486b33">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="receipt_id" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT * FROM sweethome.tbl_t_product_inword_temp;
+
+]]>
+	</queryString>
+	<field name="sale_tempid" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="receipt_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="receipt_dt" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_value" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="request_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prod_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="receipt_qty" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prod_value" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prod_rate" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prod_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prod_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="uomweight" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="1" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="100">
+			<rectangle>
+				<reportElement uuid="807628eb-ca32-40c4-9de4-f78e87c63dd8" x="2" y="2" width="154" height="87"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Solid" lineColor="#330033"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="76ea085a-8daf-4022-a939-ebc332f34b87" x="12" y="12" width="59" height="10"/>
+				<textElement verticalAlignment="Top">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PRODUCT CODE    ]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="50d7159f-ac84-4712-a655-baad606bfa32" x="85" y="12" width="71" height="10"/>
+				<textElement verticalAlignment="Top">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{prod_code}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="67d2c224-8e41-4326-9372-3c2409f4a860" x="12" y="22" width="59" height="10"/>
+				<textElement verticalAlignment="Top">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PRODUCT NAME]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="ba36b385-ae84-456a-9f90-d9c88de1d84a" x="85" y="22" width="71" height="10"/>
+				<textElement verticalAlignment="Top">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{prod_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="092b92fe-346b-42aa-b11c-95bd8e8fe374" x="12" y="32" width="59" height="10"/>
+				<textElement verticalAlignment="Top">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MRP]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="8fd670a3-8d2b-4917-9160-79ad41db2f83" x="85" y="32" width="71" height="10"/>
+				<textElement verticalAlignment="Top">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{prod_rate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="539274ae-e5c4-4e44-ab8e-60f48308e1f6" x="12" y="42" width="59" height="10"/>
+				<textElement verticalAlignment="Top">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Net Weight]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a272ff9d-5c1b-4cae-9fb1-31430a201607" x="41" y="62" width="74" height="20"/>
+				<textElement verticalAlignment="Top">
+					<font size="5" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(Best Before 30 days)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="276683e0-9c34-4d32-8a5c-ff94170ad8af" x="12" y="52" width="59" height="10"/>
+				<textElement verticalAlignment="Top">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date of Mfd]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="dd-MMM-yy">
+				<reportElement uuid="484fe020-dcee-49b1-af60-7b49b7efef60" x="85" y="52" width="71" height="10"/>
+				<textElement verticalAlignment="Top">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{receipt_dt}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="a272ff9d-5c1b-4cae-9fb1-31430a201607" x="2" y="69" width="154" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="3" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Mfd.by:SAMPRADYA FOODS PVT LTD,Madhura Nagar,HYD-38,TS.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="76ea085a-8daf-4022-a939-ebc332f34b87" x="40" y="3" width="69" height="20"/>
+				<textElement verticalAlignment="Top">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<text><![CDATA[SAMPRADYA FOODS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8357c8ab-5a3b-484a-94fb-c53bccdd2053" x="39" y="74" width="73" height="14" forecolor="#333333"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" rotation="None">
+					<font fontName="SansSerif" size="4" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Website:                                          Call us at :040-40072727]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8357c8ab-5a3b-484a-94fb-c53bccdd2053" x="14" y="74" width="142" height="14" forecolor="#0033FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="4" isBold="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[www.sampradayafoods.in]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="700c2828-3efe-4de0-b5e7-058de63cb0d9" x="85" y="42" width="71" height="10"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{uomweight}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+</jasperReport>

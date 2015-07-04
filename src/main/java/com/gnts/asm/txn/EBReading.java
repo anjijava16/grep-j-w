@@ -114,6 +114,7 @@ public class EBReading extends BaseTransUI {
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
 		resetFields();
 		loadSrchRslt();
+		btnPrint.setVisible(true);
 	}
 	
 	private void assembleSearchLayout() {
@@ -490,9 +491,8 @@ public class EBReading extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			parameterMap.put("ECRID", ebReadingId);
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "/WEB-INF/reports/ecr"); // ecr is the name of my jasper
+			rpt.setReportName(basepath + "/WEB-INF/reports/ebreading"); // ebreading is the name of my jasper
 			// file.
 			rpt.callReport(basepath, "Preview");
 		}

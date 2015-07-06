@@ -67,7 +67,7 @@ public class ClientInformation implements ClickListener {
 	private List<ClientInformationDM> informlist = new ArrayList<ClientInformationDM>();
 	private int recordCnt = 0;
 	private String userName;
-	private Long clientid, companyId;
+	private Long clientid;
 	private Button btnadd = new GERPButton("Add", "add", this);
 	public Button btndelete = new GERPButton("Delete", "delete", this);
 	private Logger logger = Logger.getLogger(ClientInformationDM.class);
@@ -92,17 +92,17 @@ public class ClientInformation implements ClickListener {
 			public void buttonClick(ClickEvent event) {
 				if (btnadd == event.getButton()) {
 					saveClientinformDetails();
-				} 
+				}
 			}
 		});
 		cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
-		cbstatus.setWidth("150"); 
-		tfinfocode = new GERPTextField("Information Code");  
-		tainfodesc = new GERPTextArea("Description");  
-		tainfodesc.setWidth("150");  
-		tainfodesc.setHeight("40");   
-		flcolumn1 = new FormLayout(); 
+		cbstatus.setWidth("150");
+		tfinfocode = new GERPTextField("Information Code");
+		tainfodesc = new GERPTextArea("Description");
+		tainfodesc.setWidth("150");
+		tainfodesc.setHeight("40");
+		flcolumn1 = new FormLayout();
 		flcolumn2 = new FormLayout();
 		flcolumn1.addComponent(tfinfocode);
 		flcolumn1.addComponent(tainfodesc);
@@ -159,9 +159,8 @@ public class ClientInformation implements ClickListener {
 			tblinform.setPageLength(8);
 			tblinform.setContainerDataSource(beanClntinform);
 			tblinform.setColumnAlignment("commnetId", Align.RIGHT);
-			// tblinform.addItem(taComments);
-			tblinform.setVisibleColumns(new Object[] { "clientinfoid", "clntinfocode", "clntinfodesc",
-					"lastupdateddt", "lastupdatedby" });
+			tblinform.setVisibleColumns(new Object[] { "clientinfoid", "clntinfocode", "clntinfodesc", "lastupdateddt",
+					"lastupdatedby" });
 			tblinform.setColumnHeaders(new String[] { "Ref.Id", "Client Informationcode", "Description",
 					"Last Updated Date", "Last Updated By" });
 			tblinform.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
@@ -190,7 +189,6 @@ public class ClientInformation implements ClickListener {
 		try {
 			tfinfocode.setRequired(true);
 			tfinfocode.validate();
-			
 		}
 		catch (Exception e) {
 			logger.info("validaAll :information code name is empty--->" + e);
@@ -199,13 +197,11 @@ public class ClientInformation implements ClickListener {
 		try {
 			tainfodesc.setRequired(true);
 			tainfodesc.validate();
-			
 		}
 		catch (Exception e) {
 			logger.info("validaAll :description name is empty--->" + e);
 			tainfodesc.setComponentError(new UserError("Enter Description"));
 		}
-	
 	}
 	
 	public void saveClientinformDetails() {
@@ -226,21 +222,18 @@ public class ClientInformation implements ClickListener {
 			loadsrch(false, null);
 		}
 		btnadd.setCaption("Add");
-		
 	}
 	
 	private void deleteDetails() {
 		ClientInformationDM saveClntinform = new ClientInformationDM();
 		if (tblinform.getValue() != null) {
 			saveClntinform = beanClntinform.getItem(tblinform.getValue()).getBean();
-			
 			informlist.remove(saveClntinform);
 			tfinfocode.setValue("");
 			cbstatus.setValue(null);
 			tainfodesc.setValue("");
 			btnadd.setCaption("Add");
 			loadsrch(false, null);
-			
 		}
 	}
 	
@@ -254,13 +247,15 @@ public class ClientInformation implements ClickListener {
 			serviceinformation.saveOrUpdateClientInformDetails(saveinform);
 		}
 	}
+	
 	public void resetfls() {
 		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
 	}
+	
 	public void resetfields() {
 		tfinfocode.setRequired(false);
-        tainfodesc.setRequired(false);
- 		tfinfocode.setValue("");
+		tainfodesc.setRequired(false);
+		tfinfocode.setValue("");
 		tfinfocode.setComponentError(null);
 		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
 		cbstatus.setComponentError(null);
@@ -274,7 +269,7 @@ public class ClientInformation implements ClickListener {
 	public void buttonClick(ClickEvent event) {
 		if (btndelete == event.getButton()) {
 			deleteDetails();
-			cbstatus.setValue((cbstatus.getItemIds().iterator().next())); 
+			cbstatus.setValue((cbstatus.getItemIds().iterator().next()));
 		}
 	}
 }

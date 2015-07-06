@@ -31,31 +31,21 @@ import com.gnts.base.service.txn.HolidayService;
 import com.gnts.base.service.txn.OrgNewsService;
 import com.gnts.erputil.components.DummyDataGenerator;
 import com.gnts.erputil.components.GERPPanelGenerator;
-import com.gnts.erputil.components.NotificationsButton;
 import com.gnts.erputil.components.SparklineChart;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 public class Dashboard {
 	private Table tblHoliday, tblEvaluation;
@@ -69,10 +59,6 @@ public class Dashboard {
 	private Long companyId, branchId;
 	private Accordion accordion;
 	private Label lblNews, lblFormTittle;
-	private Label titleLabel;
-	private NotificationsButton notificationsButton;
-	public static final String EDIT_ID = "dashboard-edit";
-	public static final String TITLE_ID = "dashboard-title";
 	
 	public Dashboard() {
 		branchId = Long.valueOf(UI.getCurrent().getSession().getAttribute("branchId").toString());
@@ -117,17 +103,10 @@ public class Dashboard {
 		vlMainLayout.setWidth("100%");
 		vlMainLayout.setSpacing(true);
 		vlMainLayout.setMargin(true);
-		// vlMainLayout.addComponent(GERPPanelGenerator.createPanel(tblHoliday));
-		// vlMainLayout.addComponent(accordion);
-		// vlMainLayout.setComponentAlignment(accordion, Alignment.MIDDLE_LEFT);
-		// vlMainLayout.setComponentAlignment(accordion, Alignment.MIDDLE_RIGHT);
-		// vlMainLayout.setExpandRatio(vlchart, 1);
-		// clMainLayout.addComponent(buildHeader());
 		clMainLayout.addComponent(buildSparklines());
 		clMainLayout.addComponent(vlMainLayout);
 		hlHeader.addComponent(lblFormTittle);
 		hlHeader.setComponentAlignment(lblFormTittle, Alignment.MIDDLE_LEFT);
-		//hlHeader.addComponent(buildNotificationsButton());
 		hlHeader.setExpandRatio(lblFormTittle, 1);
 		populateAndConfigureTableNew();
 		populateAndConfigEval();
@@ -165,54 +144,6 @@ public class Dashboard {
 		}
 	}
 	
-	private Component buildHeader() {
-		HorizontalLayout header = new HorizontalLayout();
-		header.addStyleName("viewheader");
-		header.setSpacing(true);
-		titleLabel = new Label("Dashboard");
-		titleLabel.setId(TITLE_ID);
-		titleLabel.setSizeUndefined();
-		titleLabel.addStyleName(ValoTheme.LABEL_H1);
-		titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-		header.addComponent(titleLabel);
-		notificationsButton = buildNotificationsButton();
-		Component edit = buildEditButton();
-		HorizontalLayout tools = new HorizontalLayout(notificationsButton, edit);
-		tools.setSpacing(true);
-		tools.addStyleName("toolbar");
-		header.addComponent(tools);
-		return header;
-	}
-	
-	private NotificationsButton buildNotificationsButton() {
-		NotificationsButton result = new NotificationsButton();
-		result.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				// openNotificationsPopup(event);
-			}
-		});
-		return result;
-	}
-	
-	private Component buildEditButton() {
-		Button result = new Button();
-		result.setId(EDIT_ID);
-		result.setIcon(FontAwesome.EDIT);
-		result.addStyleName("icon-edit");
-		result.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		result.setDescription("Edit Dashboard");
-		result.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				/*
-				 * getUI().addWindow( new DashboardEdit(DashboardView.this, titleLabel .getValue()));
-				 */
-			}
-		});
-		return result;
-	}
-	
 	private Component buildSparklines() {
 		CssLayout sparks = new CssLayout();
 		sparks.addStyleName("sparks");
@@ -227,59 +158,6 @@ public class Dashboard {
 		s = new SparklineChart("Sales Rate", "%", "", DummyDataGenerator.chartColors[5], 50, 34, 100);
 		sparks.addComponent(s);
 		return GERPPanelGenerator.createPanel(sparks);
-	}
-	
-	private Component createContentWrapper(final Component content) {
-		final CssLayout slot = new CssLayout();
-		slot.setWidth("100%");
-		slot.addStyleName("dashboard-panel-slot");
-		CssLayout card = new CssLayout();
-		card.setWidth("100%");
-		card.addStyleName(ValoTheme.LAYOUT_CARD);
-		HorizontalLayout toolbar = new HorizontalLayout();
-		toolbar.addStyleName("dashboard-panel-toolbar");
-		toolbar.setWidth("100%");
-		Label caption = new Label("Holidays");
-		caption.addStyleName(ValoTheme.LABEL_H4);
-		caption.addStyleName(ValoTheme.LABEL_COLORED);
-		caption.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-		content.setCaption(null);
-		MenuBar tools = new MenuBar();
-		tools.addStyleName(ValoTheme.MENUBAR_BORDERLESS);
-		MenuItem max = tools.addItem("", FontAwesome.EXPAND, new Command() {
-			@Override
-			public void menuSelected(final MenuItem selectedItem) {
-				if (!slot.getStyleName().contains("max")) {
-					selectedItem.setIcon(FontAwesome.COMPRESS);
-					// toggleMaximized(slot, true);
-				} else {
-					slot.removeStyleName("max");
-					selectedItem.setIcon(FontAwesome.EXPAND);
-					// toggleMaximized(slot, false);
-				}
-			}
-		});
-		max.setStyleName("icon-only");
-		MenuItem root = tools.addItem("", FontAwesome.COG, null);
-		root.addItem("Configure", new Command() {
-			@Override
-			public void menuSelected(final MenuItem selectedItem) {
-				Notification.show("Not implemented in this demo");
-			}
-		});
-		root.addSeparator();
-		root.addItem("Close", new Command() {
-			@Override
-			public void menuSelected(final MenuItem selectedItem) {
-				Notification.show("Not implemented in this demo");
-			}
-		});
-		toolbar.addComponents(caption, tools);
-		toolbar.setExpandRatio(caption, 1);
-		toolbar.setComponentAlignment(caption, Alignment.MIDDLE_LEFT);
-		card.addComponents(toolbar, content);
-		slot.addComponent(card);
-		return slot;
 	}
 	
 	/**

@@ -165,7 +165,6 @@ public class ProductRPT extends BaseUI {
 		Long cateId = null;
 		Long prodId = null;
 		Long branchId = null;
-		String lookupdesc = null;
 		if (cbprntProdct.getValue() != null) {
 			prodId = ((Long.valueOf(cbprntProdct.getValue().toString())));
 		}
@@ -173,7 +172,6 @@ public class ProductRPT extends BaseUI {
 			cateId = ((Long.valueOf(cbprodCtgry.getValue().toString())));
 		}
 		if (cbbrand.getValue() != null) {
-			lookupdesc = ((cbbrand.getValue().toString()));
 		}
 		if (cbbranchname.getValue() != null) {
 			branchId = ((Long.valueOf(cbbranchname.getValue().toString())));

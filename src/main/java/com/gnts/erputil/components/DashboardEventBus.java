@@ -1,6 +1,5 @@
 package com.gnts.erputil.components;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 
@@ -10,8 +9,6 @@ import com.google.common.eventbus.SubscriberExceptionHandler;
  * relevant actions.
  */
 public class DashboardEventBus implements SubscriberExceptionHandler {
-
-    private final EventBus eventBus = new EventBus(this);
 
     public static void post(final Object event) {
       //  DashboardUI.getDashboardEventbus().eventBus.post(event);

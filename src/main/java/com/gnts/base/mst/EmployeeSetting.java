@@ -71,23 +71,18 @@ public class EmployeeSetting extends BaseUI {
 	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
 	private BranchService servicebeanBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	// Form layout for input controls
-	private FormLayout flColumn1, flColumn2, flColumn3,flColumn4;
+	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	private HorizontalLayout hlimage = new HorizontalLayout();
 	// Add User Input Controls
 	private TextField tfFirstName, tfLastName, tfPhoneNo, tfEmailid;
 	private PopupDateField dfDateofBirth;
-	private ComboBox cbDepartment, cbBranch,cbCountry;
+	private ComboBox cbDepartment, cbBranch, cbCountry;
 	private ComboBox cbEmpStatus = new GERPComboBox("Status", BASEConstants.M_BASE_USER, BASEConstants.USER_STATUS);
 	public Button btnEmpSave = new Button("Save");
-	// BeanItemContainer
-	private BeanContainer<Long, CountryDM> beanCountry = null;
-	private BeanContainer<Long, DepartmentDM> beanDepartment = null;
-	private BeanContainer<Long, BranchDM> beanBranch = null;
 	// local variables declaration
 	private Long companyid, userId;
-	private String basepath1;
 	private String username;
 	private Long employeeId;
 	public static boolean filevalue = false;
@@ -198,7 +193,6 @@ public class EmployeeSetting extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		// Remove all components in User Input Layout
 		hlSearchLayout.removeAllComponents();
-		
 		// Add components for Search Layout
 		flColumn1 = new GERPFormLayout();
 		flColumn2 = new GERPFormLayout();
@@ -215,7 +209,6 @@ public class EmployeeSetting extends BaseUI {
 		flColumn2.addComponent(cbBranch);
 		flColumn2.addComponent(cbDepartment);
 		flColumn2.addComponent(cbEmpStatus);
-		
 		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn2);
 		hlSearchLayout.addComponent(flColumn3);
@@ -241,9 +234,7 @@ public class EmployeeSetting extends BaseUI {
 		cbCountry.setValue(null);
 		cbBranch.setValue(null);
 		cbDepartment.setValue(null);
-		//new UploadUI(hlimage);
-		UI.getCurrent().getSession().setAttribute("isFileUploaded",false);
-		
+		UI.getCurrent().getSession().setAttribute("isFileUploaded", false);
 	}
 	
 	// No searchDetails() cannot be implemented
@@ -275,8 +266,8 @@ public class EmployeeSetting extends BaseUI {
 	@Override
 	protected void editDetails() {
 		List<EmployeeDM> editEmp = serviceEmployee.getEmployeeList(null, null, null, null, companyid, employeeId,
-				userId, null,null, "F");
-			if (editEmp.size() != 0) {
+				userId, null, null, "F");
+		if (editEmp.size() != 0) {
 			for (EmployeeDM empObj : editEmp) {
 				tfEmailid.setValue(empObj.getPrimaryemail());
 				tfFirstName.setValue(empObj.getFirstname());
@@ -302,20 +293,18 @@ public class EmployeeSetting extends BaseUI {
 				cbDepartment.setValue((Long) empObj.getDeptid());
 				cbBranch.setValue((Long) empObj.getBranchid());
 				cbEmpStatus.setValue(empObj.getEmpstatus());
-				
-				
 				if (empObj.getEmpphoto() != null) {
-					hlimage.removeAllComponents();	
+					hlimage.removeAllComponents();
 					byte[] myimage = (byte[]) empObj.getEmpphoto();
 					UploadUI test = new UploadUI(hlimage);
-					test.dispayImage(myimage,empObj.getFirstname());			
-					
+					test.dispayImage(myimage, empObj.getFirstname());
 				} else {
 					new UploadUI(hlimage);
 				}
 			}
 		}
 	}
+	
 	// No avalidateDetails() cannot be implemented
 	@Override
 	protected void validateDetails() throws ValidationException {
@@ -330,45 +319,45 @@ public class EmployeeSetting extends BaseUI {
 	 */
 	private void SaveEmpDetails() throws ERPException.SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		try{
-		EmployeeDM empObj = new EmployeeDM();
-		empObj.setEmployeeid(employeeId);
-		empObj.setCompanyid(companyid);
-		empObj.setUserId(userId);
-		empObj.setFirstname(tfFirstName.getValue().toString());
-		empObj.setLastname(tfLastName.getValue().toString());
-		empObj.setPrimaryphone(tfPhoneNo.getValue().toString());
-		empObj.setPrimaryemail(tfEmailid.getValue().toString());
-		if (cbEmpStatus.getValue() != null) {
-			empObj.setEmpstatus((String) cbEmpStatus.getValue());
+		try {
+			EmployeeDM empObj = new EmployeeDM();
+			empObj.setEmployeeid(employeeId);
+			empObj.setCompanyid(companyid);
+			empObj.setUserId(userId);
+			empObj.setFirstname(tfFirstName.getValue().toString());
+			empObj.setLastname(tfLastName.getValue().toString());
+			empObj.setPrimaryphone(tfPhoneNo.getValue().toString());
+			empObj.setPrimaryemail(tfEmailid.getValue().toString());
+			if (cbEmpStatus.getValue() != null) {
+				empObj.setEmpstatus((String) cbEmpStatus.getValue());
+			}
+			if (cbCountry.getValue() != null) {
+				empObj.setCountryid((Long) cbCountry.getValue());
+			}
+			if (dfDateofBirth.getValue() != null) {
+				empObj.setDob(dfDateofBirth.getValue());
+			}
+			if (cbDepartment.getValue() != null) {
+				empObj.setDeptid((Long) cbDepartment.getValue());
+			}
+			if (cbBranch.getValue() != null) {
+				empObj.setBranchid((Long) cbBranch.getValue());
+			}
+			File file = new File(GERPConstants.IMAGE_PATH);
+			FileInputStream fin = new FileInputStream(file);
+			byte fileContent[] = new byte[(int) file.length()];
+			fin.read(fileContent);
+			fin.close();
+			empObj.setEmpphoto(fileContent);
+			empObj.setLoginAccess("Y");
+			empObj.setLastupdateddt(DateUtils.getcurrentdate());
+			empObj.setLastupdatedby(username);
+			servicebeanEmployee.updateEmployeedetails(empObj);
 		}
-		if (cbCountry.getValue() != null) {
-			empObj.setCountryid((Long) cbCountry.getValue());
+		catch (Exception e) {
+			e.printStackTrace();
 		}
-		if (dfDateofBirth.getValue() != null) {
-			empObj.setDob(dfDateofBirth.getValue());
-		}
-		if (cbDepartment.getValue() != null) {
-			empObj.setDeptid((Long) cbDepartment.getValue());
-		}
-		if (cbBranch.getValue() != null) {
-			empObj.setBranchid((Long) cbBranch.getValue());
-		}
-		File file = new File(GERPConstants.IMAGE_PATH);
-		FileInputStream fin = new FileInputStream(file);
-		byte fileContent[] = new byte[(int) file.length()];
-		fin.read(fileContent);
-		fin.close();
-		empObj.setEmpphoto(fileContent);
-		
-		empObj.setLoginAccess("Y");
-		empObj.setLastupdateddt(DateUtils.getcurrentdate());
-		empObj.setLastupdatedby(username);
-		servicebeanEmployee.updateEmployeedetails(empObj);
-	}catch (Exception e){
-		e.printStackTrace();
-	}
-	resetFields();
+		resetFields();
 	}
 	
 	/*
@@ -376,10 +365,9 @@ public class EmployeeSetting extends BaseUI {
 	 */
 	public void loadCountryList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Country Search...");
-		List<CountryDM> countrylist = serviceCountry.getCountryList(null,null, null, null, "Active", "P");
-		beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(countrylist);
+		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
 		cbCountry.setContainerDataSource(beanCountry);
 	}
 	
@@ -388,11 +376,9 @@ public class EmployeeSetting extends BaseUI {
 	 */
 	public void loadDepartmentList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = servicebeandepartmant.getDepartmentList(companyid, null, null, "P");
-		departmentlist.add(new DepartmentDM(0L, "All Department"));
-		beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
+		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, null, "P"));
 		cbDepartment.setContainerDataSource(beanDepartment);
 	}
 	
@@ -401,12 +387,9 @@ public class EmployeeSetting extends BaseUI {
 	 */
 	public void loadBranchList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<BranchDM> branchlist = servicebeanBranch.getBranchList(null, null, null, null, companyid, "P");
-		beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(branchlist);
+		beanBranch.addAll(servicebeanBranch.getBranchList(null, null, null, null, companyid, "P"));
 		cbBranch.setContainerDataSource(beanBranch);
 	}
-	
-	
 }

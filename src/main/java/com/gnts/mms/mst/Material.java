@@ -107,9 +107,6 @@ public class Material extends BaseUI {
 	private BeanItemContainer<MaterialConsumersDM> beanMaterialConsumer = null;
 	private BeanItemContainer<MaterialSpecDM> beanMaterialSpec = null;
 	private BeanContainer<Long, BranchDM> beanBranch = null;
-	private BeanContainer<Long, DepartmentDM> beanDepartment = null;
-	private BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = null;
-	private BeanContainer<Long, MaterialTypeDM> beanMaterialType = null;
 	private List<MaterialOwnersDM> matOwnerList = new ArrayList<MaterialOwnersDM>();
 	private List<MaterialConsumersDM> matConsList = new ArrayList<MaterialConsumersDM>();
 	private List<MaterialSpecDM> matSpecList = new ArrayList<MaterialSpecDM>();
@@ -161,7 +158,6 @@ public class Material extends BaseUI {
 		// Material Components Definition
 		tfMaterialCode = new GERPTextField("Material Code");
 		tfMaterialCode.setWidth("150");
-		tfMaterialCode.setMaxLength(10);
 		tfMaterialName = new GERPTextField("Material Name");
 		tfMaterialName.setWidth("150");
 		cbBranch = new GERPComboBox("Branch Name");
@@ -389,21 +385,20 @@ public class Material extends BaseUI {
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.removeAllItems();
 		List<MaterialDM> materialList = new ArrayList<MaterialDM>();
-		String materialCode = tfMaterialCode.getValue().toString();
 		String materialName = tfMaterialName.getValue().toString();
 		Long branchId = null;
 		if (cbBranch.getValue() != null) {
 			branchId = ((Long) cbBranch.getValue());
 		}
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ materialCode + "," + materialName + "," + branchId + "," + cbMaterialStatus.getValue() + ","
+				+ "materialCode" + "," + materialName + "," + branchId + "," + cbMaterialStatus.getValue() + ","
 				+ companyId);
-		materialList = serviceMaterial.getMaterialList(null, companyId, (Long) cbBranch.getValue(), null,
-				(String) tfMaterialCode.getValue(), null, null, tfMaterialName.getValue(),
-				(String) cbMaterialStatus.getValue(), "F");
+		materialList = serviceMaterial.getMaterialList(null, companyId, (Long) cbBranch.getValue(), null, null, null,
+				null, tfMaterialName.getValue(), (String) cbMaterialStatus.getValue(), "F");
 		recordCnt = materialList.size();
 		beanMaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanMaterial.addAll(materialList);
+		beanMaterial.addAll(serviceMaterial.getMaterialList(null, companyId, (Long) cbBranch.getValue(), null, null,
+				null, null, tfMaterialName.getValue(), (String) cbMaterialStatus.getValue(), "F"));
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Got the Material result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanMaterial);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialId", "branchName", "materialName", "materialCode",
@@ -719,10 +714,10 @@ public class Material extends BaseUI {
 	public void loadMaterialTypeList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Loading Material Type Search...");
-		List<MaterialTypeDM> materialTypeList = serviceMaterialType.getMaterialTypeList(null, null, "Active", "F");
-		beanMaterialType = new BeanContainer<Long, MaterialTypeDM>(MaterialTypeDM.class);
+		BeanContainer<Long, MaterialTypeDM> beanMaterialType = new BeanContainer<Long, MaterialTypeDM>(
+				MaterialTypeDM.class);
 		beanMaterialType.setBeanIdProperty("materialTypeId");
-		beanMaterialType.addAll(materialTypeList);
+		beanMaterialType.addAll(serviceMaterialType.getMaterialTypeList(null, null, "Active", "F"));
 		cbMaterialType.setContainerDataSource(beanMaterialType);
 	}
 	
@@ -732,11 +727,11 @@ public class Material extends BaseUI {
 	public void loadMaterialGroupList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Loading Material UOM Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, null, "Active",
-				"MM_MTRLGRP");
-		beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("cmplookupid");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp
+				.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, null, "Active", "MM_MTRLGRP"));
 		cbMaterialGroup.setContainerDataSource(beanCompanyLookUp);
 	}
 	
@@ -746,11 +741,10 @@ public class Material extends BaseUI {
 	public void loadMaterialUOMList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Loading Material UOM Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, null, "Active",
-				"MM_UOM");
-		beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, null, "Active", "MM_UOM"));
 		cbMaterialUOM.setContainerDataSource(beanCompanyLookUp);
 	}
 	
@@ -759,9 +753,8 @@ public class Material extends BaseUI {
 	 */
 	private void loadMatOwnerBranchList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Branch Search...");
-		List<BranchDM> branchlist = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
 		BeanItemContainer<BranchDM> beanownerbranch = new BeanItemContainer<BranchDM>(BranchDM.class);
-		beanownerbranch.addAll(branchlist);
+		beanownerbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyId, "P"));
 		cbMatOwnerBranch.setContainerDataSource(beanownerbranch);
 	}
 	
@@ -770,34 +763,11 @@ public class Material extends BaseUI {
 	 */
 	private void loadMatConsBranchList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Branch Search...");
-		List<BranchDM> branchlist = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
 		BeanItemContainer<BranchDM> beanownerbranch = new BeanItemContainer<BranchDM>(BranchDM.class);
-		beanownerbranch.addAll(branchlist);
+		beanownerbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyId, "P"));
 		cbMatConsBranch.setContainerDataSource(beanownerbranch);
 	}
 	
-	// // Load Client List
-	// private void loadMatConsBranchList() {
-	// logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading client Search...");
-	// List<BranchDM> branchlist = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
-	// // beanBranch = new BeanItemContainer<BranchDM>(BranchDM.class);
-	// // beanBranch.setBeanIdProperty("branchId");
-	// beanBranch.addAll(branchlist);
-	// cbMatConsBranch.setContainerDataSource(beanBranch);
-	// }
-	// private void loadMatConsDepartmentList() {
-	// logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading client Search...");
-	// List<DepartmentDM> departmentlist = serviceDepartmant.getDepartmentList(companyId, null, "Active", "P");
-	// beanDepartment = new BeanItemContainer<DepartmentDM>(DepartmentDM.class);
-	// // beanDepartment.setBeanIdProperty("deptid");
-	// beanDepartment.addAll(departmentlist);
-	// cbMatConsDepartment.setContainerDataSource(beanDepartment);
-	// }
-	//
-	/*
-	 * loadMaterialDepartmentList()--> this function is used for load the department list to material department combo
-	 * box
-	 */
 	private void loadMaterialBranchList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Branch Search...");
 		List<BranchDM> branchlist = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
@@ -810,47 +780,31 @@ public class Material extends BaseUI {
 	
 	private void loadMaterialDepartmentList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = serviceDepartmant.getDepartmentList(companyId, null, "Active", "P");
-		beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
+		beanDepartment.addAll(serviceDepartmant.getDepartmentList(companyId, null, "Active", "P"));
 		cbDepartment.setContainerDataSource(beanDepartment);
 	}
 	
-	// //
-	/*
-	 * loadMatConsDepartmentList()--> this function is used for load the department list to material consumer department
-	 * combo box //
-	 */
 	private void loadMatConsDepartmentList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = serviceDepartmant.getDepartmentList(companyId, null, "Active", "P");
 		BeanItemContainer<DepartmentDM> beanownerdepart = new BeanItemContainer<DepartmentDM>(DepartmentDM.class);
-		beanownerdepart.addAll(departmentlist);
+		beanownerdepart.addAll(serviceDepartmant.getDepartmentList(companyId, null, "Active", "P"));
 		cbMatConsDepartment.setContainerDataSource(beanownerdepart);
 	}
 	
-	/*
-	 * loadMatOwnerDepartmentList()--> this function is used for load the material department list to material owner
-	 * department combo box
-	 */
 	private void loadMatOwnerDepartmentList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = serviceDepartmant.getDepartmentList(companyId, null, "Active", "P");
 		BeanItemContainer<DepartmentDM> beanownerdepart = new BeanItemContainer<DepartmentDM>(DepartmentDM.class);
-		beanownerdepart.addAll(departmentlist);
+		beanownerdepart.addAll(serviceDepartmant.getDepartmentList(companyId, null, "Active", "P"));
 		cbMatOwnerDept.setContainerDataSource(beanownerdepart);
 	}
 	
-	/*
-	 * loadEmployeeList()-->this function is used for load the employee list
-	 */
 	private void loadEmployeeList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		List<EmployeeDM> employeelist = serviceEmployee.getEmployeeList(null, null, null, null, companyId, null, null,
-				null, null, "F");
 		BeanItemContainer<EmployeeDM> beanEmployee = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanEmployee.addAll(employeelist);
+		beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, null, companyId, null, null, null, null,
+				"F"));
 		cbMatOwnerEmployee.setContainerDataSource(beanEmployee);
 	}
 	
@@ -873,7 +827,7 @@ public class Material extends BaseUI {
 	@Override
 	protected void resetSearchDetails() {
 		tfMaterialCode.setValue("");
-		tfMaterialCode.setReadOnly(false);
+		// tfMaterialCode.setReadOnly(false);
 		tfMaterialName.setValue("");
 		cbBranch.setValue(branchID);
 		cbMaterialStatus.setValue(cbMaterialStatus.getItemIds().iterator().next());
@@ -899,18 +853,6 @@ public class Material extends BaseUI {
 		loadSrchMatOwnerRslt(false);
 		loadSrchMatConsRslt(false);
 		loadSrchMatSpecRslt(false);
-		tfMaterialCode.setReadOnly(false);
-		tfMaterialCode.setValue("");
-		try {
-			SlnoGenDM slnoGenObj = serviceSlnogen.getSequenceNumber(companyId, branchID, moduleId, "MM_MTRLCD").get(0);
-			if (slnoGenObj.getAutoGenYN().equals("Y")) {
-				tfMaterialCode.setValue(slnoGenObj.getKeyDesc());
-				tfMaterialCode.setReadOnly(true);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
 		cbMatOwnerBranch.setComponentError(null);
 		cbMatOwnerDept.setComponentError(null);
 		cbMatOwnerEmployee.setComponentError(null);
@@ -936,9 +878,6 @@ public class Material extends BaseUI {
 		cbMatOwnerBranch.removeItem(0L);
 		cbMatConsBranch.removeItem(0L);
 		editMaterial();
-		if (tfMaterialCode.getValue() == null || tfMaterialCode.getValue().trim().length() == 0) {
-			tfMaterialCode.setReadOnly(false);
-		}
 	}
 	
 	// Reset the selected row's data into material input components
@@ -947,11 +886,6 @@ public class Material extends BaseUI {
 		if (rowMaterialSelected != null) {
 			MaterialDM editMaterialList = beanMaterial.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			materialId = editMaterialList.getMaterialId();
-			if ((rowMaterialSelected.getItemProperty("materialCode").getValue() != null)) {
-				tfMaterialCode.setReadOnly(false);
-				tfMaterialCode.setValue(editMaterialList.getMaterialCode().toString());
-				tfMaterialCode.setReadOnly(true);
-			}
 			if ((rowMaterialSelected.getItemProperty("materialName").getValue() != null)) {
 				tfMaterialName.setValue(editMaterialList.getMaterialName().toString());
 			}
@@ -1006,15 +940,6 @@ public class Material extends BaseUI {
 		cbDepartment.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Validating Data ");
-		if ((tfMaterialCode.getValue() == null) || tfMaterialCode.getValue().trim().length() == 0) {
-			List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyId, branchID, moduleId, "MM_MTRLCD");
-			for (SlnoGenDM slnoGenObj : slnoList) {
-				if (slnoGenObj.getAutoGenYN().equals("N")) {
-					tfMaterialCode.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_CODE));
-					errorFlag = true;
-				}
-			}
-		}
 		if ((tfMaterialName.getValue() == "") || tfMaterialName.getValue().trim().length() == 0) {
 			tfMaterialName.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_NAME));
 			errorFlag = true;
@@ -1415,8 +1340,6 @@ public class Material extends BaseUI {
 	@Override
 	protected void resetFields() {
 		tfMaterialCode.setComponentError(null);
-		tfMaterialCode.setReadOnly(false);
-		tfMaterialCode.setValue("");
 		cbBranch.setValue(branchID);
 		tfMaterialName.setComponentError(null);
 		cbMaterialUOM.setComponentError(null);

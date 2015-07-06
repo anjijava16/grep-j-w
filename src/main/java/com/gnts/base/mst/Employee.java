@@ -4047,6 +4047,7 @@ public class Employee extends BaseUI {
 		UI.getCurrent().getSession().setAttribute("isFileUploaded", false);
 	}
 	
+	@SuppressWarnings("unused")
 	private void insertEmployeeGradeEarning(Long employeeid, Long gradeid) {
 		List<GradeEarningsDM> list = serviceEarnings.loadGradeEarningListByGradeId(gradeid);
 		BigDecimal minValueByBasic = new BigDecimal(serviceEarnings.getMinValueByBasic(gradeid));
@@ -4054,10 +4055,7 @@ public class Employee extends BaseUI {
 		BigDecimal minVal = new BigDecimal("0");
 		BigDecimal totalGrossAmt = new BigDecimal(serviceEarnings.getMinValueByBasic(gradeid));
 		BigDecimal tatolGrossearnAmount = new BigDecimal(serviceEarnings.getMinValueByBasic(gradeid));
-		EarningsDM grossEran = null;
 		String isFlat = null;
-		String isRemaining = null;
-		EarningsDM earningid = null;
 		BigDecimal earnBasiPercent = new BigDecimal(serviceEarnings.getBasicEarnPercent(gradeid));
 		BigDecimal basicAmount = minValueByBasic.multiply(earnBasiPercent).divide(new BigDecimal("100"));
 		for (GradeEarningsDM pojo : list) {
@@ -4071,7 +4069,6 @@ public class Employee extends BaseUI {
 			for (EarningsDM ernpojo : earnlist) {
 				earnPojo = ernpojo;
 				if (ernpojo.getEarnCode().equalsIgnoreCase("ALLOW")) {
-					grossEran = ernpojo;
 				}
 			}
 			System.out.println("isFlat--->" + isFlat + "\nonBasicGross--->" + onBasicGross);
@@ -4134,12 +4131,11 @@ public class Employee extends BaseUI {
 					serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
 				}
 			} else if (isFlat.equals("REM")) {
-				isRemaining = pojo.getIsFlatPer();
+				pojo.getIsFlatPer();
 				Long earnsid = pojo.getEarnId();
 				BigDecimal gradeAmount = pojo.getMinVal();
 				List<EarningsDM> earninglist = serviceEarnings.getEarningByEarnID(earnsid);
 				for (EarningsDM earnObj : earninglist) {
-					earningid = earnObj;
 				}
 				tatolGrossearnAmount = tatolGrossearnAmount.add(gradeAmount);
 			}
@@ -4152,7 +4148,6 @@ public class Employee extends BaseUI {
 		Long minValueByGross = null;
 		Long earnpercent = serviceDeduction.getMinValueByGradeid(gradeid);
 		minValueByGross = serviceDeduction.getMinValueByGradeidOnGross(gradeid);
-		String dednCode = "";
 		minValueByBasic = Long.valueOf(Math.round(minValueByGross * earnpercent) / 100);
 		for (GradeDeductionDM pojo : list) {
 			Long dednid = pojo.getDednId();
@@ -4165,7 +4160,7 @@ public class Employee extends BaseUI {
 			DeductionDM deductionPojo = null;
 			for (DeductionDM dednpojo : dednlist) {
 				deductionPojo = dednpojo;
-				dednCode = dednpojo.getDeductionCode();
+				dednpojo.getDeductionCode();
 			}
 			// Save the T_Staff_Deduction
 			EmployeeDeductionDM staffDednPojo = new EmployeeDeductionDM();

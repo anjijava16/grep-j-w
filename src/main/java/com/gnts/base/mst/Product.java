@@ -17,8 +17,6 @@
  */
 package com.gnts.base.mst;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,11 +39,9 @@ import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPFormLayout;
 import com.gnts.erputil.components.GERPPanelGenerator;
-import com.gnts.erputil.components.GERPSaveNotification;
 import com.gnts.erputil.components.GERPTextArea;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.components.GERPTokenField;
-import com.gnts.erputil.constants.GERPConstants;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
@@ -649,19 +645,14 @@ public class Product extends BaseUI {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		tfProdName.setValue("");
-		// tfProdName.setComponentError(null);
-		// cbprntProdct.setValue(null);
-		// cbprodCtgry.setComponentError(null);
-		// cbprodCtgry.setValue(null);
 		cbbrand.setValue(null);
 		cbbranchname.setValue(null);
-		// tfprodcode.setComponentError(null);
 		tfprodcode.setValue("");
 		tasrtDesc.setValue("");
-		// cbprntProdct.setValue("");
 		taprodDesc.setValue("");
 		tfprice.setValue("0");
 		cbcurrency.setValue(null);
@@ -670,11 +661,9 @@ public class Product extends BaseUI {
 		cbVisualizer.setValue(false);
 		tadescription.setValue("");
 		tfProdName.setComponentError(null);
-		// cbprodCtgry.setComponentError(null);
 		tfcode.setComponentError(null);
 		cbbrand.setComponentError(null);
 		cbbranchname.setComponentError(null);
-		// cbprntProdct.setComponentError(null);
 		cbcurrency.setComponentError(null);
 		cbuom.setComponentError(null);
 		tfprice.setComponentError(null);
@@ -686,7 +675,6 @@ public class Product extends BaseUI {
 		tfcode.setValue("");
 		totag.setValue(null);
 		UI.getCurrent().getSession().setAttribute("isFileUploaded", false);
-		// productcolorGlry.saveDetails(null);
 	}
 	
 	protected void specResetFields() {
@@ -695,7 +683,6 @@ public class Product extends BaseUI {
 		tfcode.setComponentError(null);
 		tadescription.setValue("");
 		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
-		// btnSave.setComponentError(null);
 		loadSrchspecRslt();
 	}
 	
@@ -723,7 +710,6 @@ public class Product extends BaseUI {
 		// reset the field valued to default
 		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
 		tfProdName.setValue("");
-		// cbprodCtgry.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		// reload the search using the defaults
@@ -744,7 +730,6 @@ public class Product extends BaseUI {
 		cbbrand.setRequired(true);
 		cbbranchname.setRequired(true);
 		cbprntProdct.setRequired(true);
-		// cbcurrency.setRequired(true);
 		hlUserInputLayout.setSpacing(true);
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
@@ -769,7 +754,6 @@ public class Product extends BaseUI {
 		cbbrand.setRequired(true);
 		cbbranchname.setRequired(true);
 		cbprntProdct.setRequired(true);
-		// cbcurrency.setRequired(true);
 		hlUserInputLayout.setSpacing(true);
 		hlUserInputLayout.setSizeUndefined();
 		// reset the input controls to default value
@@ -789,7 +773,6 @@ public class Product extends BaseUI {
 		cbbrand.setComponentError(null);
 		cbbranchname.setComponentError(null);
 		cbprntProdct.setComponentError(null);
-		// cbcurrency.setComponentError(null);
 		Boolean errorFlag = false;
 		if ((tfProdName.getValue() == null) || tfProdName.getValue().trim().length() == 0) {
 			tfProdName.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
@@ -797,37 +780,6 @@ public class Product extends BaseUI {
 					+ "Throwing ValidationException. User data is > " + tfProdName.getValue());
 			errorFlag = true;
 		}
-		/*
-		 * if ((tfprodcode.getValue() == null) || tfprodcode.getValue().trim().length() == 0) {
-		 * tfprodcode.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUC_CODE)); logger.warn("Company ID : " +
-		 * companyid + " | User Name : " + username + " > " + "Throwing ValidationException. User data is > " +
-		 * tfProdName.getValue()); errorFlag = true; }
-		 */
-		/*
-		 * if (cbprodCtgry.getValue() == null) { cbprodCtgry.setComponentError(new
-		 * UserError(GERPErrorCodes.NULL_PRODUC_CATEGORY)); errorFlag = true; }
-		 */
-		/*
-		 * if (cbprntProdct.getValue() == null) { cbprntProdct.setComponentError(new
-		 * UserError(GERPErrorCodes.NULL_PAR_PRDT)); errorFlag = true; }
-		 */
-		/*
-		 * if (cbbrand.getValue() == null) { cbbrand.setComponentError(new
-		 * UserError(GERPErrorCodes.NULL_ASST_BRAND_NAME)); errorFlag = true; }
-		 */
-		/*
-		 * if (cbbranchname.getValue() == null) { cbbranchname.setComponentError(new
-		 * UserError(GERPErrorCodes.NULL_EMPLOYEE_BRANCH)); errorFlag = true; }
-		 */
-		/*
-		 * if (cbcurrency.getValue() == null) { cbcurrency.setComponentError(new
-		 * UserError(GERPErrorCodes.NULL_COMPANY_CURRENCY)); errorFlag = true; }
-		 */
-		/*
-		 * if ((tfprice.getValue() == null) || tfprice.getValue().trim().length() == 0) { tfprice.setComponentError(new
-		 * UserError(GERPErrorCodes.NULL_PRICE)); logger.warn("Company ID : " + companyid + " | User Name : " + username
-		 * + " > " + "Throwing ValidationException. User data is > " + tfProdName.getValue()); errorFlag = true; }
-		 */
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
@@ -884,16 +836,12 @@ public class Product extends BaseUI {
 			}
 			productobj.setCompanyid(companyid);
 			productobj.setProdname(tfProdName.getValue().toString());
-			/*
-			 * if (cbprntProdct.getValue() != null) { productobj.setParentprodid((Long) cbprntProdct.getValue()); }
-			 */
 			if (tfprice.getValue() != null) {
 				productobj.setPrice(Long.valueOf(tfprice.getValue().toString()));
 			}
 			if (cbcurrency.getValue() != null) {
 				productobj.setCcyid((Long) cbcurrency.getValue());
 			}
-			// productobj.setCateid((Long) cbprodCtgry.getValue());
 			if (cbuom.getValue() != null) {
 				productobj.setUom(cbuom.getValue().toString());
 			}
@@ -909,12 +857,6 @@ public class Product extends BaseUI {
 			if (cbstatus.getValue() != null) {
 				productobj.setProdstatus((String) cbstatus.getValue());
 			}
-			/*
-			 * if (cbbrand.getValue() != null) { productobj.setBrandname(cbbrand.getValue().toString()); }
-			 */
-			/*
-			 * if (cbbranchname.getValue() != null) { productobj.setBranchid((Long) cbbranchname.getValue()); }
-			 */
 			if (cbView.getValue().equals(true)) {
 				productobj.setView360yn("Y");
 			} else if (cbView.getValue().equals(false)) {
@@ -935,11 +877,6 @@ public class Product extends BaseUI {
 			} else {
 				productobj.setProdimg(null);
 			}
-			/*
-			 * File file = new File(GERPConstants.DOCUMENT_PATH); FileInputStream fio = new FileInputStream(file); byte
-			 * fileContent[] = new byte[(int) file.length()]; fio.read(fileContent); fio.close();
-			 * System.out.println("filecontent---->"+fileContent); productobj.setProddoc(fileContent);
-			 */
 			if ((Boolean) UI.getCurrent().getSession().getAttribute("isFileUploaded")) {
 				try {
 					productobj.setProddoc((byte[]) UI.getCurrent().getSession().getAttribute("docbyte"));
@@ -994,7 +931,4 @@ public class Product extends BaseUI {
 		}
 		specResetFields();
 	}
-	/*
-	 * protected void validateDetails() throws ValidationException { // TODO Auto-generated method stub }
-	 */
 }

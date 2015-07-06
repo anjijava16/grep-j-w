@@ -39,7 +39,6 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -60,7 +59,6 @@ public class AuditConfig extends BaseUI {
 	private HorizontalLayout hlSearchLayout;
 	// User Input Components
 	private ComboBox cbTableName = new GERPComboBox("Table Name");
-	private BeanItemContainer<AuditConfigDM> BeanAuditConfigDM = null;
 	CheckBox ckBox;
 	// local variables declaration
 	private int recordCnt = 0;
@@ -137,11 +135,10 @@ public class AuditConfig extends BaseUI {
 	
 	// load the lookup details for search
 	private void loadsearchAuditConfigList() {
-		List<AuditConfigDM> list = serviceAuditConfig.getColumnNameByTableName(null,(String)cbTableName.getValue(), companyId,null);
 		BeanContainer<String, AuditConfigDM> auditConfigbean = new BeanContainer<String, AuditConfigDM>(
 				AuditConfigDM.class);
 		auditConfigbean.setBeanIdProperty("tableName");
-		auditConfigbean.addAll(list);
+		auditConfigbean.addAll(serviceAuditConfig.getColumnNameByTableName(null,(String)cbTableName.getValue(), companyId,null));
 		cbTableName.setContainerDataSource(auditConfigbean);
 	}
 	
@@ -155,7 +152,7 @@ public class AuditConfig extends BaseUI {
 			auditConfigList = serviceAuditConfig.getColumnNameByTableName(null,(String) cbTableName.getValue(), companyId,null);
 			recordCnt = auditConfigList.size();
 			tblMstScrSrchRslt.setEditable(true);
-			BeanAuditConfigDM = new BeanItemContainer<AuditConfigDM>(AuditConfigDM.class);
+			BeanItemContainer<AuditConfigDM> BeanAuditConfigDM = new BeanItemContainer<AuditConfigDM>(AuditConfigDM.class);
 			for (AuditConfigDM auditList : auditConfigList) {
 				if (auditList.getOnOff().equals("ON")) {
 					auditList.setOnOff("true");

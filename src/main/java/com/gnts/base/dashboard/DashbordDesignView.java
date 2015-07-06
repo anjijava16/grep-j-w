@@ -1,10 +1,7 @@
 package com.gnts.base.dashboard;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import org.jfree.layout.FormatLayout;
 import com.gnts.base.mst.Product;
 import com.gnts.base.service.mst.ProductService;
 import com.gnts.crm.mst.Client;
@@ -12,31 +9,21 @@ import com.gnts.crm.service.mst.ClientService;
 import com.gnts.dsn.stt.txn.DesignDocuments;
 import com.gnts.dsn.stt.txn.ECNote;
 import com.gnts.dsn.stt.txn.ECRequest;
-import com.gnts.erputil.components.NotificationsButton;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
-import com.gnts.sms.domain.txn.SmsPOHdrDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
-import com.gnts.sms.service.txn.SmsPOHdrService;
-import com.gnts.sms.txn.SalesPO;
 import com.gnts.sms.txn.SmsEnquiry;
 import com.gnts.stt.dsn.service.txn.ECRequestService;
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.ClientConnector;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.Runo;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -44,13 +31,14 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 public class DashbordDesignView implements ClickListener {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Long companyId, branchId;
+	private Long companyId;
 	private Label lblDashboardTitle;
 	private Button btnEnquiryCount = new Button("100", this);
 	private Button btnEnquiryWorkflow = new Button("125", this);
@@ -59,8 +47,8 @@ public class DashbordDesignView implements ClickListener {
 	private Button btnWOCount = new Button("7", this);
 	private Button btnProductCount = new Button("17", this);
 	private Button btnClientCount = new Button("22", this);
-	private Button btnNotify = new Button("<h2>5</h2>");	
-	//private NotificationsButton notificationsButton;
+	// private Button btnNotify = new Button("<h2><font-size=4>5</font></h2>");
+	private Button btnNotify = new Button();
 	private Window notificationsWindow;
 	private SmsEnqHdrService serviceenqhdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
@@ -70,8 +58,7 @@ public class DashbordDesignView implements ClickListener {
 	HorizontalLayout hlHeader;
 	
 	public DashbordDesignView() {
-		
-		branchId = Long.valueOf(UI.getCurrent().getSession().getAttribute("branchId").toString());
+		Long.valueOf(UI.getCurrent().getSession().getAttribute("branchId").toString());
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
 		hlHeader = (HorizontalLayout) UI.getCurrent().getSession().getAttribute("hlLayout");
@@ -79,7 +66,6 @@ public class DashbordDesignView implements ClickListener {
 	}
 	
 	private void buildView(VerticalLayout clMainLayout, HorizontalLayout hlHeader) {
-	
 		btnNotify.setHtmlContentAllowed(true);
 		// HorizontalLayout tools = new HorizontalLayout(notificationsButton, btnTest);
 		hlHeader.removeAllComponents();
@@ -89,13 +75,14 @@ public class DashbordDesignView implements ClickListener {
 		btnClientCount.setCaption(serviceClients.getClientDetailscount(companyId, null, "Active", null).toString());
 		btnProductCount.setCaption(ServiceProduct.getProductscount(companyId, null, "Active", null).toString());
 		btnECRequest.setCaption(serviceECRequest.getProductscount(null, null, null, null).toString());
-		// btnTest.setStyleName(Runo.BUTTON_LINK);
 		btnEnquiryCount.setStyleName("borderless-colored");
 		btnEnquiryWorkflow.setStyleName("borderless-colored");
 		btnECRequest.setStyleName("borderless-colored");
 		btnECNote.setStyleName("borderless-colored");
 		btnProductCount.setStyleName("borderless-coloredbig");
 		btnClientCount.setStyleName("borderless-coloredbig");
+		btnNotify.setIcon(new ThemeResource("img/download.png"));
+		//btnNotify.setStyleName("myButton");
 		VerticalLayout root = new VerticalLayout();
 		root.addComponent(buildHeader());
 		clMainLayout.removeAllComponents();
@@ -104,7 +91,6 @@ public class DashbordDesignView implements ClickListener {
 		lblDashboardTitle.setValue("&nbsp;&nbsp;<b> Design Dashboard</b>");
 		hlHeader.addComponent(lblDashboardTitle);
 		hlHeader.setComponentAlignment(lblDashboardTitle, Alignment.MIDDLE_LEFT);
-	
 		hlHeader.addComponent(btnNotify);
 		hlHeader.setComponentAlignment(btnNotify, Alignment.TOP_RIGHT);
 		clMainLayout.addComponent(custom);
@@ -123,7 +109,6 @@ public class DashbordDesignView implements ClickListener {
 		header.addStyleName("viewheader");
 		header.setSpacing(true);
 		btnNotify = buildNotificationsButton();
-	
 		HorizontalLayout tools = new HorizontalLayout(btnNotify);
 		tools.setSpacing(true);
 		tools.addStyleName("toolbar");
@@ -132,6 +117,11 @@ public class DashbordDesignView implements ClickListener {
 	
 	private Button buildNotificationsButton() {
 		btnNotify.addClickListener(new ClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				openNotificationsPopup(event);
@@ -210,13 +200,10 @@ public class DashbordDesignView implements ClickListener {
 			if (n.getRemarks() != null) {
 				titleLabel3 = new Label("<small>Remarks : </small><font color=red>" + n.getRemarks() + "</font>",
 						ContentMode.HTML);
+			} else {
+				titleLabel3 = new Label("<small>Remarks : </small><font color=red> ------- </font>", ContentMode.HTML);
 			}
-			else
-			{
-				titleLabel3 = new Label("<small>Remarks : </small><font color=red> ------- </font>",
-						ContentMode.HTML);
-			}
-			Label titleLabel4 = new Label("<HR size=2 COLOR=yellow>", ContentMode.HTML);
+			Label titleLabel4 = new Label("<HR size=3 color=red>", ContentMode.HTML);
 			titleLabel.addStyleName("notification-title");
 			fmlayout.addComponents(titleLabel);
 			fmlayout.addComponents(titleLabel1);
@@ -230,9 +217,17 @@ public class DashbordDesignView implements ClickListener {
 		footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
 		footer.setWidth("100%");
 		Button showAll = new Button("View All Notifications", new ClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				Notification.show("Not implemented in this demo");
+				clMainLayout.removeAllComponents();
+				hlHeader.removeAllComponents();
+				new SmsEnquiry();
+				notificationsWindow.close();
 			}
 		});
 		showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);

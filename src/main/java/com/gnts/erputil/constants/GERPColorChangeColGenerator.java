@@ -9,6 +9,12 @@ public class GERPColorChangeColGenerator implements Table.ColumnGenerator
 {
 	
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@SuppressWarnings("rawtypes")
 	public Object generateCell(Table source, Object itemId, Object columnId) {
 		 Property prop = source.getItem(itemId).getItemProperty(columnId);
 		 try	        	

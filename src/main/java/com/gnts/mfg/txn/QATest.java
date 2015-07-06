@@ -92,8 +92,9 @@ public class QATest extends BaseUI {
 	 */
 	// QA Test Header Components
 	private static final long serialVersionUID = 1L;
-	private TextField tfInspectnNo, tfPrdSlNo, tfTstReslt;
-	private ComboBox cbClient, cbproduct, cbProdDrg, cbWorkOrderNo, cbTestGrp, cbTesttype, cbTestCondn, cbQThdrStatus;
+	private TextField tfInspectionNo, tfPrdSlNo, tfTstReslt;
+	private ComboBox cbClient, cbProduct, cbProdDrg, cbWorkOrderNo, cbTestGrp, cbTesType, cbTestCondition,
+			cbQThdrStatus;
 	private PopupDateField pdInspectionDt;
 	private TextArea taTstObservation;
 	private FormLayout flTstHdr1, flTstHdr2, flTstHdr3, flTstHdr4;
@@ -137,11 +138,10 @@ public class QATest extends BaseUI {
 	private Long EmployeeId;
 	private Long moduleId;
 	private Long branchID;
-	private Long qaTstHdrId;
+	private Long qaTestHdrId;
 	private Logger logger = Logger.getLogger(QCTestType.class);
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private HorizontalLayout hlSearchLayout;
-	private TabSheet tabSheet;
 	private int recordCnt;
 	private Button btndelete = new GERPButton("Delete", "delete", this);
 	private Button btnSpecdelete = new GERPButton("Delete", "delete", this);
@@ -163,14 +163,14 @@ public class QATest extends BaseUI {
 	
 	private void buildView() {
 		// QA Test Header Components Initialization
-		tfInspectnNo = new GERPTextField("Inspection No.");
+		tfInspectionNo = new GERPTextField("Inspection No.");
 		tfPrdSlNo = new GERPTextField("Product Sl.No");
 		tfTstReslt = new GERPTextField("Result");
 		cbClient = new GERPComboBox("Client Name");
 		cbClient.setItemCaptionPropertyId("clientName");
 		loadClientList();
-		cbproduct = new GERPComboBox("Product Name");
-		cbproduct.setItemCaptionPropertyId("prodname");
+		cbProduct = new GERPComboBox("Product Name");
+		cbProduct.setItemCaptionPropertyId("prodname");
 		loadProductList();
 		cbProdDrg = new GERPComboBox("Product Drawing No.");
 		cbProdDrg.setItemCaptionPropertyId("drawingCode");
@@ -181,16 +181,15 @@ public class QATest extends BaseUI {
 		cbTestGrp = new GERPComboBox("Test Group");
 		cbTestGrp.setItemCaptionPropertyId("testGroup");
 		loadTestGroup();
-		cbTesttype = new GERPComboBox("Test Type");
-		cbTesttype.setItemCaptionPropertyId("tstType");
+		cbTesType = new GERPComboBox("Test Type");
+		cbTesType.setItemCaptionPropertyId("tstType");
 		loadTesttype();
-		cbTestCondn = new GERPComboBox("Test Condition");
-		cbTestCondn.setItemCaptionPropertyId("testCondn");
+		cbTestCondition = new GERPComboBox("Test Condition");
+		cbTestCondition.setItemCaptionPropertyId("testCondn");
 		loadTstHdrConditions();
 		cbQThdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		pdInspectionDt = new GERPPopupDateField("Inspection Date");
 		taTstObservation = new GERPTextArea("Observation");
-		taTstObservation.setWidth("215");
 		taTstObservation.setHeight("97");
 		tblMstScrSrchRslt.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -205,13 +204,10 @@ public class QATest extends BaseUI {
 					btnAdd.setEnabled(false);
 				}
 				resetFields();
-				tfInspectnNo.setReadOnly(false);
+				tfInspectionNo.setReadOnly(false);
 			}
 		});
 		btndelete.addClickListener(new ClickListener() {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 			
 			@Override
@@ -220,9 +216,6 @@ public class QATest extends BaseUI {
 			}
 		});
 		btnSpecdelete.addClickListener(new ClickListener() {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 			
 			@Override
@@ -327,8 +320,8 @@ public class QATest extends BaseUI {
 		List<QATestHdrDM> listQcTstHdr = new ArrayList<QATestHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ companyid);
-		listQcTstHdr = serviceQATstHdr.getQaTestHdrDetails(null, companyid, (String) tfInspectnNo.getValue(),
-				(Long) cbClient.getValue(), (Long) cbproduct.getValue(), (String) cbQThdrStatus.getValue());
+		listQcTstHdr = serviceQATstHdr.getQaTestHdrDetails(null, companyid, (String) tfInspectionNo.getValue(),
+				(Long) cbClient.getValue(), (Long) cbProduct.getValue(), (String) cbQThdrStatus.getValue());
 		recordCnt = listQcTstHdr.size();
 		beanQATstHdr = new BeanItemContainer<QATestHdrDM>(QATestHdrDM.class);
 		beanQATstHdr.addAll(listQcTstHdr);
@@ -383,15 +376,15 @@ public class QATest extends BaseUI {
 		 * block. hence the same layout used as is
 		 */
 		// Initializing to form layouts for QATest UI search layout
-		tfInspectnNo.setReadOnly(false);
+		tfInspectionNo.setReadOnly(false);
 		hlSearchLayout.removeAllComponents();
 		flTstHdr1 = new FormLayout();
 		flTstHdr2 = new FormLayout();
 		flTstHdr3 = new FormLayout();
 		flTstHdr4 = new FormLayout();
-		flTstHdr1.addComponent(tfInspectnNo);
+		flTstHdr1.addComponent(tfInspectionNo);
 		flTstHdr2.addComponent(cbClient);
-		flTstHdr3.addComponent(cbproduct);
+		flTstHdr3.addComponent(cbProduct);
 		flTstHdr4.addComponent(cbQThdrStatus);
 		hlSearchLayout.addComponent(flTstHdr1);
 		hlSearchLayout.addComponent(flTstHdr2);
@@ -415,12 +408,12 @@ public class QATest extends BaseUI {
 		tfPrdSlNo.setRequired(true);
 		tfTstReslt.setRequired(true);
 		cbClient.setRequired(true);
-		cbproduct.setRequired(true);
+		cbProduct.setRequired(true);
 		cbProdDrg.setRequired(true);
 		cbWorkOrderNo.setRequired(true);
 		cbTestGrp.setRequired(true);
-		cbTesttype.setRequired(true);
-		cbTestCondn.setRequired(true);
+		cbTesType.setRequired(true);
+		cbTestCondition.setRequired(true);
 		pdInspectionDt.setRequired(true);
 		tfTstCycle.setRequired(true);
 		cbTstSpec.setRequired(true);
@@ -431,16 +424,16 @@ public class QATest extends BaseUI {
 		flTstHdr2 = new FormLayout();
 		flTstHdr3 = new FormLayout();
 		flTstHdr4 = new FormLayout();
-		flTstHdr1.addComponent(tfInspectnNo);
+		flTstHdr1.addComponent(tfInspectionNo);
 		flTstHdr1.addComponent(pdInspectionDt);
 		flTstHdr1.addComponent(cbClient);
-		flTstHdr1.addComponent(cbproduct);
+		flTstHdr1.addComponent(cbProduct);
 		flTstHdr2.addComponent(cbWorkOrderNo);
 		flTstHdr2.addComponent(cbProdDrg);
 		flTstHdr2.addComponent(tfPrdSlNo);
 		flTstHdr2.addComponent(cbTestGrp);
-		flTstHdr3.addComponent(cbTesttype);
-		flTstHdr3.addComponent(cbTestCondn);
+		flTstHdr3.addComponent(cbTesType);
+		flTstHdr3.addComponent(cbTestCondition);
 		flTstHdr3.addComponent(tfTstReslt);
 		flTstHdr3.addComponent(cbQThdrStatus);
 		flTstHdr4.addComponent(taTstObservation);
@@ -496,7 +489,7 @@ public class QATest extends BaseUI {
 		vlTstCndn.addComponent(hlTstCndnRslt);
 		vlTstCndn.addComponent(tblCndnRslt);
 		//
-		tabSheet = new TabSheet();
+		TabSheet tabSheet = new TabSheet();
 		tabSheet.setWidth("100%");
 		tabSheet.setHeight("315");
 		tabSheet.addTab(vlTstDtl, "Test Definition", null);
@@ -526,27 +519,27 @@ public class QATest extends BaseUI {
 	
 	@Override
 	protected void resetFields() {
-		tfInspectnNo.setReadOnly(false);
-		tfInspectnNo.setValue("");
-		tfInspectnNo.setReadOnly(true);
+		tfInspectionNo.setReadOnly(false);
+		tfInspectionNo.setValue("");
+		tfInspectionNo.setReadOnly(true);
 		tfPrdSlNo.setValue("");
 		tfPrdSlNo.setComponentError(null);
 		tfTstReslt.setValue("");
 		tfTstReslt.setComponentError(null);
 		cbClient.setValue(null);
 		cbClient.setComponentError(null);
-		cbproduct.setValue(null);
-		cbproduct.setComponentError(null);
+		cbProduct.setValue(null);
+		cbProduct.setComponentError(null);
 		cbProdDrg.setValue(null);
 		cbProdDrg.setComponentError(null);
 		cbWorkOrderNo.setValue(null);
 		cbWorkOrderNo.setComponentError(null);
 		cbTestGrp.setValue(null);
 		cbTestGrp.setComponentError(null);
-		cbTesttype.setValue(null);
-		cbTesttype.setComponentError(null);
-		cbTestCondn.setValue(null);
-		cbTestCondn.setComponentError(null);
+		cbTesType.setValue(null);
+		cbTesType.setComponentError(null);
+		cbTestCondition.setValue(null);
+		cbTestCondition.setComponentError(null);
 		pdInspectionDt.setValue(null);
 		pdInspectionDt.setComponentError(null);
 		cbQThdrStatus.setValue(cbQThdrStatus.getItemIds().iterator().next());
@@ -580,8 +573,8 @@ public class QATest extends BaseUI {
 	@Override
 	protected void resetSearchDetails() {
 		cbClient.setValue(null);
-		cbproduct.setValue(null);
-		tfInspectnNo.setValue("");
+		cbProduct.setValue(null);
+		tfInspectionNo.setValue("");
 		cbQThdrStatus.setValue(cbQThdrStatus.getItemIds().iterator().next());
 		loadSrchRslt();
 	}
@@ -595,14 +588,17 @@ public class QATest extends BaseUI {
 		assembleInputUserLayout();
 		resetFields();
 		resetQATestDefDtl();
-		List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "MF_QCINSNO");
-		tfInspectnNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
+		try {
+			tfInspectionNo.setReadOnly(false);
+			SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "MF_QCINSNO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfInspectnNo.setReadOnly(true);
+				tfInspectionNo.setValue(slnoObj.getKeyDesc());
+				tfInspectionNo.setReadOnly(true);
 			} else {
-				tfInspectnNo.setReadOnly(false);
+				tfInspectionNo.setReadOnly(false);
 			}
+		}
+		catch (Exception e) {
 		}
 		hlCmdBtnLayout.setVisible(false);
 		tblMstScrSrchRslt.setVisible(false);
@@ -634,7 +630,7 @@ public class QATest extends BaseUI {
 		BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
 		beanProd.setBeanIdProperty("prodid");
 		beanProd.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "F"));
-		cbproduct.setContainerDataSource(beanProd);
+		cbProduct.setContainerDataSource(beanProd);
 	}
 	
 	private void loadClientList() {
@@ -656,7 +652,7 @@ public class QATest extends BaseUI {
 		BeanContainer<Long, TestTypeDM> beanTsttype = new BeanContainer<Long, TestTypeDM>(TestTypeDM.class);
 		beanTsttype.setBeanIdProperty("qaTstTypId");
 		beanTsttype.addAll(serviceTestType.getTestTypeDetails(null, null, null, "Active"));
-		cbTesttype.setContainerDataSource(beanTsttype);
+		cbTesType.setContainerDataSource(beanTsttype);
 	}
 	
 	private void loadTstHdrConditions() {
@@ -664,7 +660,7 @@ public class QATest extends BaseUI {
 				TestConditionDM.class);
 		beanTstCondn.setBeanIdProperty("testCondnId");
 		beanTstCondn.addAll(serviceTestCondition.getTestCondnDetails(companyid, null, null, "Active"));
-		cbTestCondn.setContainerDataSource(beanTstCondn);
+		cbTestCondition.setContainerDataSource(beanTstCondn);
 	}
 	
 	private void loadTstDefDtlConditions() {
@@ -687,20 +683,11 @@ public class QATest extends BaseUI {
 		hlUserInputLayout.removeAllComponents();
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		assembleInputUserLayout();
-		List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "MF_QAINSNO");
-		tfInspectnNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfInspectnNo.setReadOnly(true);
-			} else {
-				tfInspectnNo.setReadOnly(false);
-			}
-		}
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		tblQATstDtl.setVisible(true);
-		if (tfInspectnNo.getValue() == null || tfInspectnNo.getValue().trim().length() == 0) {
-			tfInspectnNo.setReadOnly(false);
+		if (tfInspectionNo.getValue() == null || tfInspectionNo.getValue().trim().length() == 0) {
+			tfInspectionNo.setReadOnly(false);
 		}
 		resetQATestDefDtl();
 		resetQATstCndnRslt();
@@ -713,32 +700,30 @@ public class QATest extends BaseUI {
 	private void editQAHdrDetails() {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			QATestHdrDM editQaTestHdr = beanQATstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			qaTstHdrId = editQaTestHdr.getQatestHdrid();
-			tfInspectnNo.setReadOnly(false);
-			tfInspectnNo.setValue(editQaTestHdr.getInspectionno());
-			tfInspectnNo.setReadOnly(true);
+			qaTestHdrId = editQaTestHdr.getQatestHdrid();
+			tfInspectionNo.setReadOnly(false);
+			tfInspectionNo.setValue(editQaTestHdr.getInspectionno());
+			tfInspectionNo.setReadOnly(true);
 			tfPrdSlNo.setValue(editQaTestHdr.getProdslno());
 			tfTstReslt.setValue(editQaTestHdr.getTestresult());
 			cbClient.setValue(editQaTestHdr.getClientid());
-			cbproduct.setValue(editQaTestHdr.getProductid());
+			cbProduct.setValue(editQaTestHdr.getProductid());
 			cbWorkOrderNo.setValue(editQaTestHdr.getWoid().toString());
-			System.out.println("cbWorkOrderNo.getValue() >>>>>>>>" + cbWorkOrderNo.getValue());
-			logger.info("Work order no >>>>>>>>>>>>>>>" + editQaTestHdr.getWoid());
 			cbProdDrg.setValue(editQaTestHdr.getProddwgid().toString());
-			cbTesttype.setValue(editQaTestHdr.getQattesttypeid().toString());
+			cbTesType.setValue(editQaTestHdr.getQattesttypeid().toString());
 			cbTestGrp.setValue(editQaTestHdr.getQatestgroupid());
-			cbTesttype.setValue(Long.valueOf(editQaTestHdr.getQattesttypeid()));
-			cbTestCondn.setValue(editQaTestHdr.getQatestcondid());
+			cbTesType.setValue(Long.valueOf(editQaTestHdr.getQattesttypeid()));
+			cbTestCondition.setValue(editQaTestHdr.getQatestcondid());
 			cbQThdrStatus.setValue(editQaTestHdr.getTeststatus());
 			pdInspectionDt.setValue(editQaTestHdr.getInspectiondateDt());
 			if (editQaTestHdr.getObservation() != null) {
 				taTstObservation.setValue(editQaTestHdr.getObservation());
 			}
 			cbWorkOrderNo.setValue(editQaTestHdr.getWoid());
-			listQATestDtl = serviceQATstDtl.getQATestDtlDetails(null, qaTstHdrId, null, null, "Active");
-			listQATestCndtnReslt = serviceQATestCndRslt.getQATestCndtnResltDetails(null, qaTstHdrId, "Active");
+			listQATestDtl = serviceQATstDtl.getQATestDtlDetails(null, qaTestHdrId, null, null, "Active");
+			listQATestCndtnReslt = serviceQATestCndRslt.getQATestCndtnResltDetails(null, qaTestHdrId, "Active");
 			comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
-			comment.loadsrch(true, null, companyid, null, null, null, qaTstHdrId);
+			comment.loadsrch(true, null, companyid, null, null, null, qaTestHdrId);
 		}
 	}
 	
@@ -794,11 +779,11 @@ public class QATest extends BaseUI {
 		} else {
 			cbClient.setComponentError(null);
 		}
-		if (cbproduct.getValue() == null) {
-			cbproduct.setComponentError(new UserError(GERPErrorCodes.NULL_QATST_PRODUCT));
+		if (cbProduct.getValue() == null) {
+			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_QATST_PRODUCT));
 			errorFlag = true;
 		} else {
-			cbproduct.setComponentError(null);
+			cbProduct.setComponentError(null);
 		}
 		if (cbProdDrg.getValue() == null) {
 			cbProdDrg.setComponentError(new UserError(GERPErrorCodes.NULL_QATST_PRDDRG));
@@ -818,11 +803,11 @@ public class QATest extends BaseUI {
 		} else {
 			cbTestGrp.setComponentError(null);
 		}
-		if (cbTesttype.getValue() == null) {
-			cbTesttype.setComponentError(new UserError(GERPErrorCodes.NULL_QATST_TSTTYPE));
+		if (cbTesType.getValue() == null) {
+			cbTesType.setComponentError(new UserError(GERPErrorCodes.NULL_QATST_TSTTYPE));
 			errorFlag = true;
 		} else {
-			cbTesttype.setComponentError(null);
+			cbTesType.setComponentError(null);
 		}
 		if (tfPrdSlNo.getValue() == "" || tfPrdSlNo.getValue().trim().length() == 0) {
 			tfPrdSlNo.setComponentError(new UserError(GERPErrorCodes.NULL_QA_PRDSLNO));
@@ -836,11 +821,11 @@ public class QATest extends BaseUI {
 		} else {
 			tfTstReslt.setComponentError(null);
 		}
-		if (cbTestCondn.getValue() == null) {
-			cbTestCondn.setComponentError(new UserError(GERPErrorCodes.NULL_QATST_TSTCNDN));
+		if (cbTestCondition.getValue() == null) {
+			cbTestCondition.setComponentError(new UserError(GERPErrorCodes.NULL_QATST_TSTCNDN));
 			errorFlag = true;
 		} else {
-			cbTestCondn.setComponentError(null);
+			cbTestCondition.setComponentError(null);
 		}
 		if (pdInspectionDt.getValue() == null) {
 			pdInspectionDt.setComponentError(new UserError(GERPErrorCodes.NULL_QATST_INSPDT));
@@ -857,54 +842,51 @@ public class QATest extends BaseUI {
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Saving Data... ");
-			QATestHdrDM saveQaTestHdr = new QATestHdrDM();
+			QATestHdrDM qaTestHdrDM = new QATestHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				saveQaTestHdr = beanQATstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			} else {
-				List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyid, +branchID, moduleId, "MF_QAINSNO");
-				for (SlnoGenDM slnoObj : slnoList) {
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						saveQaTestHdr.setInspectionno(slnoObj.getKeyDesc());
-					}
-				}
+				qaTestHdrDM = beanQATstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			saveQaTestHdr.setCompanyid(companyid);
-			saveQaTestHdr.setProdslno(tfPrdSlNo.getValue());
-			saveQaTestHdr.setTestresult(tfTstReslt.getValue());
-			saveQaTestHdr.setClientid((Long) cbClient.getValue());
-			saveQaTestHdr.setProductid((Long) cbproduct.getValue());
-			saveQaTestHdr.setProddwgid(Long.valueOf(cbProdDrg.getValue().toString()));
-			saveQaTestHdr.setWoid(Long.valueOf(cbWorkOrderNo.getValue().toString()));
-			saveQaTestHdr.setQatestgroupid((Long) cbTestGrp.getValue());
-			saveQaTestHdr.setQattesttypeid(Long.valueOf(cbTesttype.getValue().toString()));
-			saveQaTestHdr.setQatestcondid(((Long) cbTestCondn.getValue()));
-			saveQaTestHdr.setTeststatus((String) cbQThdrStatus.getValue());
-			saveQaTestHdr.setInspectiondate(pdInspectionDt.getValue());
-			saveQaTestHdr.setObservation(taTstObservation.getValue());
-			saveQaTestHdr.setPreparedby(EmployeeId);
-			saveQaTestHdr.setActionedby(null);
-			saveQaTestHdr.setReviewedby(null);
-			saveQaTestHdr.setLastupdateddate(DateUtils.getcurrentdate());
-			saveQaTestHdr.setLastupdatedby(userName);
-			serviceQATstHdr.saveQaTestHdr(saveQaTestHdr);
+			qaTestHdrDM.setInspectionno(tfInspectionNo.getValue());
+			qaTestHdrDM.setCompanyid(companyid);
+			qaTestHdrDM.setProdslno(tfPrdSlNo.getValue());
+			qaTestHdrDM.setTestresult(tfTstReslt.getValue());
+			qaTestHdrDM.setClientid((Long) cbClient.getValue());
+			qaTestHdrDM.setProductid((Long) cbProduct.getValue());
+			qaTestHdrDM.setProddwgid(Long.valueOf(cbProdDrg.getValue().toString()));
+			qaTestHdrDM.setWoid(Long.valueOf(cbWorkOrderNo.getValue().toString()));
+			qaTestHdrDM.setQatestgroupid((Long) cbTestGrp.getValue());
+			qaTestHdrDM.setQattesttypeid(Long.valueOf(cbTesType.getValue().toString()));
+			qaTestHdrDM.setQatestcondid(((Long) cbTestCondition.getValue()));
+			qaTestHdrDM.setTeststatus((String) cbQThdrStatus.getValue());
+			qaTestHdrDM.setInspectiondate(pdInspectionDt.getValue());
+			qaTestHdrDM.setObservation(taTstObservation.getValue());
+			qaTestHdrDM.setPreparedby(EmployeeId);
+			qaTestHdrDM.setActionedby(null);
+			qaTestHdrDM.setReviewedby(null);
+			qaTestHdrDM.setLastupdateddate(DateUtils.getcurrentdate());
+			qaTestHdrDM.setLastupdatedby(userName);
+			serviceQATstHdr.saveQaTestHdr(qaTestHdrDM);
 			@SuppressWarnings("unchecked")
 			Collection<QATestDtlDM> itemIds = (Collection<QATestDtlDM>) tblQATstDtl.getVisibleItemIds();
 			for (QATestDtlDM save : (Collection<QATestDtlDM>) itemIds) {
-				save.setQaTstHdrId(Long.valueOf(saveQaTestHdr.getQatestHdrid()));
+				save.setQaTstHdrId(Long.valueOf(qaTestHdrDM.getQatestHdrid()));
 				serviceQATstDtl.saveQATestDtl(save);
 			}
 			@SuppressWarnings("unchecked")
 			Collection<QATestCndtnResltDM> itemIdss = (Collection<QATestCndtnResltDM>) tblCndnRslt.getVisibleItemIds();
 			for (QATestCndtnResltDM save : (Collection<QATestCndtnResltDM>) itemIdss) {
-				save.setQaTstHdrtId(Long.valueOf(saveQaTestHdr.getQatestHdrid()));
+				save.setQaTstHdrtId(Long.valueOf(qaTestHdrDM.getQatestHdrid()));
 				serviceQATestCndRslt.saveQATestCndtnReslt(save);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "MF_QAINSNO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "MF_QAINSNO").get(
+							0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSLNo.updateNextSequenceNumber(companyid, branchID, moduleId, "MF_QAINSNO");
 					}
+				}
+				catch (Exception e) {
 				}
 			}
 			resetFields();
@@ -913,7 +895,7 @@ public class QATest extends BaseUI {
 			loadSrchRslt();
 			loadSrchQADtlList();
 			loadSrchQACndnRsltList();
-			comment.saveqaTst(saveQaTestHdr.getQatestHdrid());
+			comment.saveqaTst(qaTestHdrDM.getQatestHdrid());
 			comment.resetFields();
 			comment.commentList = new ArrayList<CommentDM>();
 			comment.resettbl();
@@ -926,23 +908,23 @@ public class QATest extends BaseUI {
 	public void saveQaTstDtls() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
 				+ "Saving saveQaTstDtls  Data... ");
-		QATestDtlDM qaTestDTl = new QATestDtlDM();
+		QATestDtlDM qaTestDtlDM = new QATestDtlDM();
 		if (tblQATstDtl.getValue() != null) {
-			qaTestDTl = beanQATstDtl.getItem(tblQATstDtl.getValue()).getBean();
-			listQATestDtl.remove(qaTestDTl);
+			qaTestDtlDM = beanQATstDtl.getItem(tblQATstDtl.getValue()).getBean();
+			listQATestDtl.remove(qaTestDtlDM);
 		}
-		qaTestDTl.setQatestSpecid(((TestSpecificationDM) cbTstSpec.getValue()).getTestSpecId());
-		qaTestDTl.setTstSpec(((TestSpecificationDM) cbTstSpec.getValue()).getTestSpec());
-		qaTestDTl.setQaTstRemarks(taQcTstDtlRemarks.getValue());
-		qaTestDTl.setTstSpecResult(tfQADefntstReslt.getValue());
+		qaTestDtlDM.setQatestSpecid(((TestSpecificationDM) cbTstSpec.getValue()).getTestSpecId());
+		qaTestDtlDM.setTstSpec(((TestSpecificationDM) cbTstSpec.getValue()).getTestSpec());
+		qaTestDtlDM.setQaTstRemarks(taQcTstDtlRemarks.getValue());
+		qaTestDtlDM.setTstSpecResult(tfQADefntstReslt.getValue());
 		try {
 			Long.valueOf(tfTstCycle.getValue());
 			tfTstCycle.setComponentError(null);
-			qaTestDTl.setTstCycleNo(Long.valueOf(tfTstCycle.getValue()));
-			qaTestDTl.setQaTstStatus((String) cbQDtlStatus.getValue());
-			qaTestDTl.setLastUpdatedDt(DateUtils.getcurrentdate());
-			qaTestDTl.setLastUpdatedBy(userName);
-			listQATestDtl.add(qaTestDTl);
+			qaTestDtlDM.setTstCycleNo(Long.valueOf(tfTstCycle.getValue()));
+			qaTestDtlDM.setQaTstStatus((String) cbQDtlStatus.getValue());
+			qaTestDtlDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+			qaTestDtlDM.setLastUpdatedBy(userName);
+			listQATestDtl.add(qaTestDtlDM);
 		}
 		catch (NumberFormatException e) {
 			tfTstCycle.setComponentError(new UserError(GERPErrorCodes.NULL_QC_TSTSMPL));
@@ -1027,7 +1009,7 @@ public class QATest extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Canceling action ");
 		hlUserIPContainer.removeAllComponents();
 		cbClient.setRequired(false);
-		cbproduct.setRequired(false);
+		cbProduct.setRequired(false);
 		tfQADefntstReslt.setRequired(false);
 		hlCmdBtnLayout.setVisible(true);
 		tblMstScrSrchRslt.setVisible(true);

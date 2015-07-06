@@ -37,7 +37,7 @@ import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
@@ -75,7 +75,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class AssemblyPlan extends BaseUI {
+public class AssemblyPlan extends BaseTransUI {
 	// Bean Creation
 	private AsmblyPlanHdrService serviceAsmblyPlanHrd = (AsmblyPlanHdrService) SpringContextHelper
 			.getBean("AsmblyPlanHdr");
@@ -186,7 +186,7 @@ public class AssemblyPlan extends BaseUI {
 				}
 			}
 		});
-		tblShift = new GERPTable();
+		tblShift = new Table();
 		tblShift.setPageLength(5);
 		tblShift.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -670,14 +670,17 @@ public class AssemblyPlan extends BaseUI {
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		tblAsmbPlanDtl.setVisible(true);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STMF_APLNO");
-		tfPlanRefNo.setReadOnly(true);
-		for (SlnoGenDM slnoObj : slnoList) {
+		tfPlanRefNo.setReadOnly(false);
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STMF_APLNO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfPlanRefNo.setValue(slnoObj.getKeyDesc());
 				tfPlanRefNo.setReadOnly(true);
 			} else {
 				tfPlanRefNo.setReadOnly(false);
 			}
+		}
+		catch (Exception e) {
 		}
 		tblAsmbPlanDtl.setVisible(true);
 	}
@@ -899,46 +902,41 @@ public class AssemblyPlan extends BaseUI {
 		tfPlanHdrQty.setComponentError(null);
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			AsmblyPlanHdrDM assemblyPlanObj = new AsmblyPlanHdrDM();
+			AsmblyPlanHdrDM asmblyPlanHdrDM = new AsmblyPlanHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				assemblyPlanObj = beanAsmblyPlanHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			} else {
-				List<SlnoGenDM> slnoList = serviceSlnogen
-						.getSequenceNumber(companyid, branchID, moduleId, "STMF_APLNO");
-				for (SlnoGenDM slnoObj : slnoList) {
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						assemblyPlanObj.setAsmplnreffno(slnoObj.getKeyDesc());
-					}
-				}
+				asmblyPlanHdrDM = beanAsmblyPlanHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			assemblyPlanObj.setBranchid((Long.valueOf(cbBranch.getValue().toString())));
-			assemblyPlanObj.setAsmplndate(dfAsmPlanDt.getValue());
-			assemblyPlanObj.setPlannedqty(Long.valueOf(tfPlanHdrQty.getValue()));
-			assemblyPlanObj.setRemarks(taRemark.getValue());
-			assemblyPlanObj.setAsmplnstatus((String) cbStatus.getValue());
-			assemblyPlanObj.setCompanyid(companyid);
-			assemblyPlanObj.setLastupdateddate(DateUtils.getcurrentdate());
-			assemblyPlanObj.setLastupdatedby(username);
-			serviceAsmblyPlanHrd.saveAsmblyPlanHdr(assemblyPlanObj);
+			asmblyPlanHdrDM.setAsmplnreffno(tfPlanRefNo.getValue());
+			asmblyPlanHdrDM.setBranchid((Long.valueOf(cbBranch.getValue().toString())));
+			asmblyPlanHdrDM.setAsmplndate(dfAsmPlanDt.getValue());
+			asmblyPlanHdrDM.setPlannedqty(Long.valueOf(tfPlanHdrQty.getValue()));
+			asmblyPlanHdrDM.setRemarks(taRemark.getValue());
+			asmblyPlanHdrDM.setAsmplnstatus((String) cbStatus.getValue());
+			asmblyPlanHdrDM.setCompanyid(companyid);
+			asmblyPlanHdrDM.setLastupdateddate(DateUtils.getcurrentdate());
+			asmblyPlanHdrDM.setLastupdatedby(username);
+			serviceAsmblyPlanHrd.saveAsmblyPlanHdr(asmblyPlanHdrDM);
 			@SuppressWarnings("unchecked")
 			Collection<AsmblyPlanDtlDM> colPlanDtls = ((Collection<AsmblyPlanDtlDM>) tblAsmbPlanDtl.getVisibleItemIds());
 			for (AsmblyPlanDtlDM save : (Collection<AsmblyPlanDtlDM>) colPlanDtls) {
-				save.setAsmPlnId(Long.valueOf(assemblyPlanObj.getAsmplnid()));
+				save.setAsmPlnId(Long.valueOf(asmblyPlanHdrDM.getAsmplnid()));
 				serviceAsmblyPlanDtl.saveAsmPlnDtl(save);
 			}
 			@SuppressWarnings("unchecked")
 			Collection<AsmblyPlanShiftDM> colAsmbShift = ((Collection<AsmblyPlanShiftDM>) tblShift.getVisibleItemIds());
 			for (AsmblyPlanShiftDM saveShift : (Collection<AsmblyPlanShiftDM>) colAsmbShift) {
-				saveShift.setAsmplnid(Long.valueOf(assemblyPlanObj.getAsmplnid()));
+				saveShift.setAsmplnid(Long.valueOf(asmblyPlanHdrDM.getAsmplnid()));
 				serviceAsmblyPlanShift.saveAsmblyPlanShift(saveShift);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSlnogen
-						.getSequenceNumber(companyid, branchID, moduleId, "STMF_APLNO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STMF_APLNO")
+							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "STMF_APLNO");
 					}
+				}
+				catch (Exception e) {
 				}
 			}
 			asmblDtlResetFields();
@@ -1093,5 +1091,10 @@ public class AssemblyPlan extends BaseUI {
 			asmblDtlResetFields();
 			loadAsmbDtlList();
 		}
+	}
+	
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
 	}
 }

@@ -36,6 +36,7 @@ import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPTable;
 import com.gnts.erputil.components.GERPTextArea;
+import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
@@ -58,7 +59,6 @@ import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.txn.PoReceiptHdrDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.PoReceiptHdrService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -100,15 +100,15 @@ public class QCTest extends BaseUI {
 	private QCTestSpecService serviceQCTestSpec = (QCTestSpecService) SpringContextHelper.getBean("qcTestSpec");
 	private SlnoGenService serviceSLNo = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private PoReceiptHdrService servicePoReceipt = (PoReceiptHdrService) SpringContextHelper.getBean("poreceipthdr");
-	List<QcTestDtlDM> listQcTstDtl = null;
-	BeanItemContainer<QcTestHdrDM> beanQcTstHdr = null;
-	BeanItemContainer<QcTestDtlDM> beanQcTstDtl = null;
+	private List<QcTestDtlDM> listQcTstDtl = null;
+	private BeanItemContainer<QcTestHdrDM> beanQcTstHdr = null;
+	private BeanItemContainer<QcTestDtlDM> beanQcTstDtl = null;
 	private String userName;
 	private Long companyid;
-	private static Logger logger = Logger.getLogger(QCTestType.class);
+	private Logger logger = Logger.getLogger(QCTestType.class);
 	private FormLayout flOdrHdrColumn1, flOdrHdrColumn2, flOdrHdrColumn3, flOdrHdrColumn4;
 	private TextField tfInSpecNo, tfPrdSlNo, tfSamplTst, tfQtyFailed, tfQcReslt;
-	private ComboBox cbBranch, cbReceipt, cbMaterial, cbTsttyp, cbTstBy, cbProduct, cbProductDrg, cbQcHdrStatus;
+	private ComboBox cbBranch, cbReceipt, cbMaterial, cbTestType, cbTestedBy, cbProduct, cbProductDrg, cbQcHdrStatus;
 	private PopupDateField pdInspectionDt;
 	private CheckBox chVisl, chFitmnt;
 	private TextArea taTstRemarks, taObserv;
@@ -124,9 +124,9 @@ public class QCTest extends BaseUI {
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private VerticalLayout vlTstDtlNtbl, vlQcHdrNDtl;
 	private int recordCnt;
-	private Long EmployeeId;
+	private Long employeeId;
 	private Long moduleId;
-	private Long branchID;;
+	private Long branchId;;
 	private String testTypeId;
 	private Button btnDtete = new GERPButton("Delete", "delete", this);
 	private Comments comment;
@@ -137,9 +137,9 @@ public class QCTest extends BaseUI {
 		// Get the logged in user name and company id from the session
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Inside QCTest() constructor");
 		// Loading the TestType UI
 		buildView();
@@ -193,7 +193,7 @@ public class QCTest extends BaseUI {
 				}
 			}
 		});
-		tfInSpecNo = new TextField("Inspection No.");
+		tfInSpecNo = new GERPTextField("Inspection No.");
 		tblMstScrSrchRslt.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -210,63 +210,51 @@ public class QCTest extends BaseUI {
 				tfInSpecNo.setReadOnly(false);
 			}
 		});
-		tfPrdSlNo = new TextField("Product SL.No");
-		tfSamplTst = new TextField("Samples Tested");
-		tfQtyFailed = new TextField("Failed Qty");
-		tfQcReslt = new TextField("QC Result");
+		tfPrdSlNo = new GERPTextField("Product SL.No");
+		tfSamplTst = new GERPTextField("Samples Tested");
+		tfQtyFailed = new GERPTextField("Failed Qty");
+		tfQcReslt = new GERPTextField("QC Result");
 		cbBranch = new GERPComboBox("Branch Name");
 		cbBranch.setItemCaptionPropertyId("branchName");
-		cbBranch.setWidth("154");
 		loadBranchList();
 		cbReceipt = new GERPComboBox("LotNo & Date");
 		cbReceipt.setItemCaptionPropertyId("lotNdate");
-		cbReceipt.setWidth("154");
 		loadReceiptlist();
 		cbMaterial = new GERPComboBox("Material Name");
 		cbMaterial.setItemCaptionPropertyId("materialName");
-		cbMaterial.setWidth("154");
 		loadMaterialList();
-		cbTsttyp = new GERPComboBox("Test Type");
-		cbTsttyp.setItemCaptionPropertyId("tstType");
-		cbTsttyp.setWidth("154");
+		cbTestType = new GERPComboBox("Test Type");
+		cbTestType.setItemCaptionPropertyId("tstType");
 		loadTestTypeList();
-		cbTstBy = new GERPComboBox("Test By");
-		cbTstBy.setItemCaptionPropertyId("firstlastname");
-		cbTstBy.setWidth("154");
+		cbTestedBy = new GERPComboBox("Tested by");
+		cbTestedBy.setItemCaptionPropertyId("firstlastname");
 		loadTestByList();
 		cbProduct = new GERPComboBox("Product");
 		cbProduct.setItemCaptionPropertyId("prodname");
-		cbProduct.setWidth("154");
 		loadProductList();
 		cbProductDrg = new GERPComboBox("Product Drg.Code");
 		cbProductDrg.setItemCaptionPropertyId("drawingCode");
-		cbProductDrg.setWidth("154");
 		loadProductDrgCodeList();
 		cbQcHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbQcHdrStatus.setValue(cbQcHdrStatus.getItemIds().iterator().next());
 		chVisl = new CheckBox("Visual OK");
 		chFitmnt = new CheckBox("Fitment OK");
 		taQcRemarks = new GERPTextArea("Remarks");
-		taQcRemarks.setWidth("190");
 		taQcRemarks.setHeight("50");
 		taObserv = new GERPTextArea("Observation");
-		taObserv.setWidth("190");
 		taObserv.setHeight("50");
 		//
 		cbTstSpec = new GERPComboBox("Specification");
 		cbTstSpec.setItemCaptionPropertyId("tstSpec");
-		cbTstSpec.setWidth("145");
 		loadTestSpecList();
 		cbQcTstDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbQcTstDtlStatus.setValue(cbQcTstDtlStatus.getItemIds().iterator().next());
-		cbBranch.setWidth("140");
-		tfTstSpecReslt = new TextField("Result");
-		tfTstSpecReslt.setWidth("140");
+		tfTstSpecReslt = new GERPTextField("Result");
 		taTstRemarks = new GERPTextArea("Remarks");
-		taTstRemarks.setWidth("150");
 		taTstRemarks.setHeight("75");
 		//
 		pdInspectionDt = new GERPPopupDateField("Inspection Date");
+		pdInspectionDt.setWidth("130");
 		hlSearchLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		resetFields();
@@ -322,8 +310,8 @@ public class QCTest extends BaseUI {
 		cbProduct.setRequired(true);
 		cbProductDrg.setRequired(true);
 		cbReceipt.setRequired(true);
-		cbTstBy.setRequired(true);
-		cbTsttyp.setRequired(true);
+		cbTestedBy.setRequired(true);
+		cbTestType.setRequired(true);
 		pdInspectionDt.setRequired(true);
 		cbTstSpec.setRequired(true);
 		tfSamplTst.setRequired(true);
@@ -338,8 +326,8 @@ public class QCTest extends BaseUI {
 		flOdrHdrColumn1.addComponent(cbReceipt);
 		flOdrHdrColumn1.addComponent(cbMaterial);
 		// adding components into second column in form layout2
-		flOdrHdrColumn2.addComponent(cbTstBy);
-		flOdrHdrColumn2.addComponent(cbTsttyp);
+		flOdrHdrColumn2.addComponent(cbTestedBy);
+		flOdrHdrColumn2.addComponent(cbTestType);
 		flOdrHdrColumn2.addComponent(cbProduct);
 		flOdrHdrColumn2.addComponent(cbProductDrg);
 		flOdrHdrColumn2.addComponent(tfPrdSlNo);
@@ -441,82 +429,61 @@ public class QCTest extends BaseUI {
 	}
 	
 	private void loadBranchList() {
-		{
-			List<BranchDM> getBranchList = new ArrayList<BranchDM>();
-			getBranchList = serviceBranch.getBranchList(null, null, null, "Active", null, "F");
-			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-			beanbranch.setBeanIdProperty("branchId");
-			beanbranch.addAll(getBranchList);
-			cbBranch.setContainerDataSource(beanbranch);
-		}
+		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+		beanbranch.setBeanIdProperty("branchId");
+		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", null, "P"));
+		cbBranch.setContainerDataSource(beanbranch);
 	}
 	
 	private void loadProductDrgCodeList() {
-		List<ProductDrawingDM> getProdDrg = new ArrayList<ProductDrawingDM>();
-		getProdDrg = serviceProductDrawing.getProductDrgDetails(companyid, null, null, null, "Active");
 		BeanContainer<Long, ProductDrawingDM> beanProdDrg = new BeanContainer<Long, ProductDrawingDM>(
 				ProductDrawingDM.class);
-		for (ProductDrawingDM po : getProdDrg) {
-			if (po.getDrawingCode() != null) {
-				beanProdDrg.setBeanIdProperty("productDrgId");
-				beanProdDrg.addAll(getProdDrg);
-			}
-		}
+		beanProdDrg.setBeanIdProperty("productDrgId");
+		beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, null, null, "Active"));
 		cbProductDrg.setContainerDataSource(beanProdDrg);
 	}
 	
 	private void loadProductList() {
-		List<ProductDM> getProdList = new ArrayList<ProductDM>();
-		getProdList = serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "F");
 		BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
 		beanProd.setBeanIdProperty("prodid");
-		beanProd.addAll(getProdList);
+		beanProd.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "P"));
 		cbProduct.setContainerDataSource(beanProd);
 	}
 	
 	private void loadReceiptlist() {
-		List<PoReceiptHdrDM> getProdList = new ArrayList<PoReceiptHdrDM>();
-		getProdList = servicePoReceipt.getPoReceiptsHdrList(companyid, null, null, null, null, "Active", "F");
 		BeanContainer<Long, PoReceiptHdrDM> beanReceipt = new BeanContainer<Long, PoReceiptHdrDM>(PoReceiptHdrDM.class);
 		beanReceipt.setBeanIdProperty("receiptId");
-		beanReceipt.addAll(getProdList);
+		beanReceipt.addAll(servicePoReceipt.getPoReceiptsHdrList(companyid, null, null, null, null, "Active", "F"));
 		cbReceipt.setContainerDataSource(beanReceipt);
 	}
 	
 	private void loadTestTypeList() {
-		List<QCTestTypeDM> getTstTypList = new ArrayList<QCTestTypeDM>();
-		getTstTypList = serviceQCTestType.getQCTestTypeDetails(companyid, null, null, "Active");
 		BeanContainer<Long, QCTestTypeDM> beanTestTyp = new BeanContainer<Long, QCTestTypeDM>(QCTestTypeDM.class);
 		beanTestTyp.setBeanIdProperty("qcTstTypId");
-		beanTestTyp.addAll(getTstTypList);
-		cbTsttyp.setContainerDataSource(beanTestTyp);
+		beanTestTyp.addAll(serviceQCTestType.getQCTestTypeDetails(companyid, null, null, "Active"));
+		cbTestType.setContainerDataSource(beanTestTyp);
 	}
 	
 	private void loadTestByList() {
-		List<EmployeeDM> getTstBy = new ArrayList<EmployeeDM>();
-		getTstBy = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null, null, "F");
 		BeanContainer<Long, EmployeeDM> beanbranch = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanbranch.setBeanIdProperty("employeeid");
-		beanbranch.addAll(getTstBy);
-		cbTstBy.setContainerDataSource(beanbranch);
+		beanbranch.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+				null, "P"));
+		cbTestedBy.setContainerDataSource(beanbranch);
 	}
 	
 	private void loadMaterialList() {
-		List<MaterialDM> getMaterialList = new ArrayList<MaterialDM>();
-		getMaterialList = serviceMaterial
-				.getMaterialList(null, null, null, null, null, null, null, null, "Active", "F");
 		BeanContainer<Long, MaterialDM> beanMaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 		beanMaterial.setBeanIdProperty("materialId");
-		beanMaterial.addAll(getMaterialList);
+		beanMaterial.addAll(serviceMaterial.getMaterialList(null, null, null, null, null, null, null, null, "Active",
+				"P"));
 		cbMaterial.setContainerDataSource(beanMaterial);
 	}
 	
 	private void loadTestSpecList() {
-		List<QCTestSpecificationDM> getTstSpecList = new ArrayList<QCTestSpecificationDM>();
-		getTstSpecList = serviceQCTestSpec.getQCTestSpecDetails(null, companyid, null, "Active");
 		BeanItemContainer<QCTestSpecificationDM> beanTstSpec = new BeanItemContainer<QCTestSpecificationDM>(
 				QCTestSpecificationDM.class);
-		beanTstSpec.addAll(getTstSpecList);
+		beanTstSpec.addAll(serviceQCTestSpec.getQCTestSpecDetails(null, companyid, null, "Active"));
 		cbTstSpec.setContainerDataSource(beanTstSpec);
 	}
 	
@@ -535,10 +502,10 @@ public class QCTest extends BaseUI {
 		cbProductDrg.setComponentError(null);
 		cbProductDrg.setValue(null);
 		chFitmnt.setValue(false);
-		cbTstBy.setComponentError(null);
-		cbTstBy.setValue(null);
-		cbTsttyp.setComponentError(null);
-		cbTsttyp.setValue(null);
+		cbTestedBy.setComponentError(null);
+		cbTestedBy.setValue(null);
+		cbTestType.setComponentError(null);
+		cbTestType.setValue(null);
 		pdInspectionDt.setComponentError(null);
 		pdInspectionDt.setValue(null);
 		chVisl.setValue(false);
@@ -564,50 +531,49 @@ public class QCTest extends BaseUI {
 	
 	private void editQCHdrDetails() {
 		try {
-			Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-			if (itselect != null) {
-				QcTestHdrDM editTestHdr = beanQcTstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				testTypeId = editTestHdr.getQctestid().toString();
-				cbBranch.setValue(editTestHdr.getBranchid());
-				cbMaterial.setValue(editTestHdr.getMaterialid());
-				pdInspectionDt.setValue(editTestHdr.getInspectiondatedt());
-				cbTstBy.setValue(editTestHdr.getTestedby());
+			if (tblMstScrSrchRslt.getValue() != null) {
+				QcTestHdrDM qcTestHdrDM = beanQcTstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				testTypeId = qcTestHdrDM.getQctestid().toString();
+				cbBranch.setValue(qcTestHdrDM.getBranchid());
+				cbMaterial.setValue(qcTestHdrDM.getMaterialid());
+				pdInspectionDt.setValue(qcTestHdrDM.getInspectiondatedt());
+				cbTestedBy.setValue(qcTestHdrDM.getTestedby());
 				tfInSpecNo.setReadOnly(false);
-				tfInSpecNo.setValue((String) itselect.getItemProperty("inspectionno").getValue());
+				tfInSpecNo.setValue(qcTestHdrDM.getInspectionno());
 				tfInSpecNo.setReadOnly(true);
-				cbReceipt.setValue(editTestHdr.getReceiptid());
-				cbProduct.setValue(editTestHdr.getProductid());
-				cbProductDrg.setValue(editTestHdr.getProddrawgid());
-				cbTsttyp.setValue(editTestHdr.getQctesttypeid());
-				if (editTestHdr.getProdserlno() != null) {
-					tfPrdSlNo.setValue((String) itselect.getItemProperty("prodserlno").getValue());
+				cbReceipt.setValue(qcTestHdrDM.getReceiptid());
+				cbProduct.setValue(qcTestHdrDM.getProductid());
+				cbProductDrg.setValue(qcTestHdrDM.getProddrawgid());
+				cbTestType.setValue(qcTestHdrDM.getQctesttypeid());
+				if (qcTestHdrDM.getProdserlno() != null) {
+					tfPrdSlNo.setValue(qcTestHdrDM.getProdserlno());
 				}
-				if (editTestHdr.getSamplestested() != null) {
-					tfSamplTst.setValue(Long.valueOf(editTestHdr.getSamplestested()).toString());
+				if (qcTestHdrDM.getSamplestested() != null) {
+					tfSamplTst.setValue(Long.valueOf(qcTestHdrDM.getSamplestested()).toString());
 				}
-				if (editTestHdr.getQtyfailed() != null) {
-					tfQtyFailed.setValue(Long.valueOf(editTestHdr.getQtyfailed()).toString());
+				if (qcTestHdrDM.getQtyfailed() != null) {
+					tfQtyFailed.setValue(Long.valueOf(qcTestHdrDM.getQtyfailed()).toString());
 				}
-				if (editTestHdr.getQcresult() != null) {
-					tfQcReslt.setValue((String) itselect.getItemProperty("qcresult").getValue());
+				if (qcTestHdrDM.getQcresult() != null) {
+					tfQcReslt.setValue(qcTestHdrDM.getQcresult());
 				}
-				if (editTestHdr.getFitmentokyn().equals("Yes")) {
+				if (qcTestHdrDM.getFitmentokyn().equals("Yes")) {
 					chFitmnt.setValue(true);
 				} else {
 					chFitmnt.setValue(false);
 				}
-				if (editTestHdr.getVisualokyn().equals("Yes")) {
+				if (qcTestHdrDM.getVisualokyn().equals("Yes")) {
 					chVisl.setValue(true);
 				} else {
 					chVisl.setValue(false);
 				}
-				if (editTestHdr.getOthertstremark() != null) {
-					taQcRemarks.setValue((String) itselect.getItemProperty("othertstremark").getValue());
+				if (qcTestHdrDM.getOthertstremark() != null) {
+					taQcRemarks.setValue(qcTestHdrDM.getOthertstremark());
 				}
-				if (editTestHdr.getQcobervations() != null) {
-					taObserv.setValue((String) itselect.getItemProperty("qcobervations").getValue());
+				if (qcTestHdrDM.getQcobervations() != null) {
+					taObserv.setValue(qcTestHdrDM.getQcobervations());
 				}
-				cbQcHdrStatus.setValue((String) itselect.getItemProperty("qcteststatus").getValue());
+				cbQcHdrStatus.setValue(qcTestHdrDM.getQcteststatus());
 				listQcTstDtl = serviceQcTstDtl
 						.getQcTestDtlDetails(null, Long.valueOf(testTypeId), null, null, "Active");
 				comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
@@ -620,11 +586,10 @@ public class QCTest extends BaseUI {
 	}
 	
 	private void editQCDetails() {
-		Item itselect = tblQcDtlTbl.getItem(tblQcDtlTbl.getValue());
-		if (itselect != null) {
-			QcTestDtlDM editQCTstDtl = new QcTestDtlDM();
-			editQCTstDtl = beanQcTstDtl.getItem(tblQcDtlTbl.getValue()).getBean();
-			Long tstSpecId = editQCTstDtl.getQcTestSpecId();
+		if (tblQcDtlTbl.getValue() != null) {
+			QcTestDtlDM qcTestDtlDM = new QcTestDtlDM();
+			qcTestDtlDM = beanQcTstDtl.getItem(tblQcDtlTbl.getValue()).getBean();
+			Long tstSpecId = qcTestDtlDM.getQcTestSpecId();
 			Collection<?> tstSpecID = cbTstSpec.getItemIds();
 			for (Iterator<?> iterator = tstSpecID.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -635,11 +600,11 @@ public class QCTest extends BaseUI {
 					cbTstSpec.setValue(itemId);
 				}
 			}
-			tfTstSpecReslt.setValue((String) itselect.getItemProperty("testSpecRslt").getValue());
-			if (editQCTstDtl.getQcRemarks() != null) {
-				taTstRemarks.setValue((String) itselect.getItemProperty("qcRemarks").getValue());
+			tfTstSpecReslt.setValue(qcTestDtlDM.getTestSpecRslt());
+			if (qcTestDtlDM.getQcRemarks() != null) {
+				taTstRemarks.setValue(qcTestDtlDM.getQcRemarks());
 			}
-			cbQcTstDtlStatus.setValue((String) itselect.getItemProperty("qcTestStatus").getValue());
+			cbQcTstDtlStatus.setValue(qcTestDtlDM.getQcTestStatus());
 		}
 	}
 	
@@ -653,19 +618,22 @@ public class QCTest extends BaseUI {
 		assembleInputUserLayout();
 		resetFields();
 		resetQcTestDtl();
-		List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "MF_QCINSNO");
-		tfInSpecNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
+		try {
+			SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchId, moduleId, "MF_QCINSNO").get(0);
+			tfInSpecNo.setReadOnly(false);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfInSpecNo.setValue(slnoObj.getKeyDesc());
 				tfInSpecNo.setReadOnly(true);
 			} else {
 				tfInSpecNo.setReadOnly(false);
 			}
-			hlCmdBtnLayout.setVisible(false);
-			tblMstScrSrchRslt.setVisible(false);
-			tblQcDtlTbl.setVisible(true);
-			comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
 		}
+		catch (Exception e) {
+		}
+		hlCmdBtnLayout.setVisible(false);
+		tblMstScrSrchRslt.setVisible(false);
+		tblQcDtlTbl.setVisible(true);
+		comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
 	}
 	
 	// Method to get the audit history details
@@ -687,8 +655,8 @@ public class QCTest extends BaseUI {
 		cbProduct.setRequired(false);
 		cbProductDrg.setRequired(false);
 		cbReceipt.setRequired(false);
-		cbTstBy.setRequired(false);
-		cbTsttyp.setRequired(false);
+		cbTestedBy.setRequired(false);
+		cbTestType.setRequired(false);
 		pdInspectionDt.setRequired(false);
 		cbTstSpec.setRequired(false);
 		tfQcReslt.setRequired(false);
@@ -716,13 +684,6 @@ public class QCTest extends BaseUI {
 		hlUserInputLayout.removeAllComponents();
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		assembleInputUserLayout();
-		List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "MF_QCINSNO");
-		tfInSpecNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfInSpecNo.setReadOnly(true);
-			}
-		}
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		tblQcDtlTbl.setVisible(true);
@@ -768,17 +729,17 @@ public class QCTest extends BaseUI {
 		} else {
 			pdInspectionDt.setComponentError(null);
 		}
-		if (cbTstBy.getValue() == null) {
-			cbTstBy.setComponentError(new UserError(GERPErrorCodes.NULL_QC_TSTBY));
+		if (cbTestedBy.getValue() == null) {
+			cbTestedBy.setComponentError(new UserError(GERPErrorCodes.NULL_QC_TSTBY));
 			errorFlag = true;
 		} else {
-			cbTstBy.setComponentError(null);
+			cbTestedBy.setComponentError(null);
 		}
-		if (cbTsttyp.getValue() == null) {
-			cbTsttyp.setComponentError(new UserError(GERPErrorCodes.NULL_QC_TSTTYP));
+		if (cbTestType.getValue() == null) {
+			cbTestType.setComponentError(new UserError(GERPErrorCodes.NULL_QC_TSTTYP));
 			errorFlag = true;
 		} else {
-			cbTsttyp.setComponentError(null);
+			cbTestType.setComponentError(null);
 		}
 		if (cbProduct.getValue() == null) {
 			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_QC_PRODUCT));
@@ -843,20 +804,14 @@ public class QCTest extends BaseUI {
 			QcTestHdrDM qcTestHdr = new QcTestHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				qcTestHdr = beanQcTstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			} else {
-				List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyid, +branchID, moduleId, "MF_QCINSNO");
-				for (SlnoGenDM slnoObj : slnoList) {
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						qcTestHdr.setInspectionno(slnoObj.getKeyDesc());
-					}
-				}
 			}
+			qcTestHdr.setInspectionno(tfInSpecNo.getValue());
 			qcTestHdr.setCompanyid(companyid);
 			qcTestHdr.setBranchid((Long) cbBranch.getValue());
 			qcTestHdr.setInspectiondate(pdInspectionDt.getValue());
 			qcTestHdr.setMaterialid((Long) cbMaterial.getValue());
-			qcTestHdr.setTestedby((Long) cbTstBy.getValue());
-			qcTestHdr.setQctesttypeid((Long) cbTsttyp.getValue());
+			qcTestHdr.setTestedby((Long) cbTestedBy.getValue());
+			qcTestHdr.setQctesttypeid((Long) cbTestType.getValue());
 			qcTestHdr.setProductid(Long.valueOf(cbProduct.getValue().toString()));
 			qcTestHdr.setProddrawgid((Long) cbProductDrg.getValue());
 			qcTestHdr.setProdserlno((String) tfPrdSlNo.getValue());
@@ -877,7 +832,7 @@ public class QCTest extends BaseUI {
 			qcTestHdr.setQcobervations((String) taObserv.getValue());
 			qcTestHdr.setOthertstremark(taQcRemarks.getValue());
 			qcTestHdr.setQcteststatus((String) cbQcHdrStatus.getValue());
-			qcTestHdr.setPreparedby(EmployeeId);
+			qcTestHdr.setPreparedby(employeeId);
 			qcTestHdr.setActionedby(null);
 			qcTestHdr.setReviewedby(null);
 			qcTestHdr.setLastupdateddate(DateUtils.getcurrentdate());
@@ -890,11 +845,14 @@ public class QCTest extends BaseUI {
 				serviceQcTstDtl.saveQcTestDtl(save);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "MF_QCINSNO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchId, moduleId, "MF_QCINSNO").get(
+							0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSLNo.updateNextSequenceNumber(companyid, branchID, moduleId, "MF_QCINSNO");
+						serviceSLNo.updateNextSequenceNumber(companyid, branchId, moduleId, "MF_QCINSNO");
 					}
+				}
+				catch (Exception e) {
 				}
 			}
 			resetQcTestDtl();
@@ -911,19 +869,19 @@ public class QCTest extends BaseUI {
 	
 	private void saveQCTstDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Saving Data... ");
-		QcTestDtlDM qcTestDTl = new QcTestDtlDM();
+		QcTestDtlDM qcTestDtlDM = new QcTestDtlDM();
 		if (tblQcDtlTbl.getValue() != null) {
-			qcTestDTl = beanQcTstDtl.getItem(tblQcDtlTbl.getValue()).getBean();
-			listQcTstDtl.remove(qcTestDTl);
+			qcTestDtlDM = beanQcTstDtl.getItem(tblQcDtlTbl.getValue()).getBean();
+			listQcTstDtl.remove(qcTestDtlDM);
 		}
-		qcTestDTl.setQcTestSpecId(Long.valueOf(((QCTestSpecificationDM) cbTstSpec.getValue()).getQcTstSpecId()));
-		qcTestDTl.setTstSpec(((QCTestSpecificationDM) cbTstSpec.getValue()).getTstSpec());
-		qcTestDTl.setTestSpecRslt(tfTstSpecReslt.getValue());
-		qcTestDTl.setQcRemarks(taTstRemarks.getValue());
-		qcTestDTl.setQcTestStatus((String) cbQcTstDtlStatus.getValue());
-		qcTestDTl.setLastUpdatedDT(DateUtils.getcurrentdate());
-		qcTestDTl.setLastUpdatedBy(userName);
-		listQcTstDtl.add(qcTestDTl);
+		qcTestDtlDM.setQcTestSpecId(Long.valueOf(((QCTestSpecificationDM) cbTstSpec.getValue()).getQcTstSpecId()));
+		qcTestDtlDM.setTstSpec(((QCTestSpecificationDM) cbTstSpec.getValue()).getTstSpec());
+		qcTestDtlDM.setTestSpecRslt(tfTstSpecReslt.getValue());
+		qcTestDtlDM.setQcRemarks(taTstRemarks.getValue());
+		qcTestDtlDM.setQcTestStatus((String) cbQcTstDtlStatus.getValue());
+		qcTestDtlDM.setLastUpdatedDT(DateUtils.getcurrentdate());
+		qcTestDtlDM.setLastUpdatedBy(userName);
+		listQcTstDtl.add(qcTestDtlDM);
 		resetQcTestDtl();
 		loadSrchQCDtlList();
 		btnSaveTst.setCaption("Add");

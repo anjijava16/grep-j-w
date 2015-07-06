@@ -151,8 +151,13 @@ public class SignOff extends BaseUI {
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				loadWorkOrderNoList();
-				cbWorkOrderNo.setValue(cbWorkOrderNo.getItemIds().iterator().next());
+				try {
+					loadWorkOrderNoList();
+					cbWorkOrderNo.setValue(cbWorkOrderNo.getItemIds().iterator().next());
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		cbProduct = new GERPComboBox("Product Name");
@@ -165,12 +170,16 @@ public class SignOff extends BaseUI {
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				loadProductList();
-				cbProduct.setValue(cbProduct.getItemIds().iterator().next());
+				try {
+					loadProductList();
+					cbProduct.setValue(cbProduct.getItemIds().iterator().next());
+				}
+				catch (Exception e) {
+				}
 			}
 		});
-		List<ApprovalSchemaDM> list = serviceSignoffHdr.getReviewerId(companyId, appScreenId, branchID, roleId);
-		for (ApprovalSchemaDM obj : list) {
+		try {
+			ApprovalSchemaDM obj = serviceSignoffHdr.getReviewerId(companyId, appScreenId, branchID, roleId).get(0);
 			if (obj.getApprLevel().equals("Reviewer")) {
 				cbSignOffHdrStatus = new GERPComboBox("Status", BASEConstants.T_MFG_QA_SIGNOFF_HDR,
 						BASEConstants.SGN_RVER);
@@ -179,6 +188,9 @@ public class SignOff extends BaseUI {
 						BASEConstants.SGN_APVER);
 			}
 		}
+		catch (Exception e) {
+		}
+		cbSignOffHdrStatus.setWidth("150");
 		btnDetlIns.setEnabled(false);
 		btnDetlIns.addClickListener(new ClickListener() {
 			/**
@@ -192,12 +204,14 @@ public class SignOff extends BaseUI {
 			}
 		});
 		taRemaks = new GERPTextArea("Remarks");
+		taRemaks.setHeight("70");
 		pdBatchDate = new GERPPopupDateField("Batch Date");
 		//
-		tfproductSlNo = new GERPTextField("Product Sl.NO");
+		tfproductSlNo = new GERPTextField("Product Sl.No");
 		cbInspectionNo = new GERPComboBox("Inspection No.");
 		cbInspectionNo.setItemCaptionPropertyId("inspectionno");
 		cbSignOffDtStatus = new GERPComboBox("Status", BASEConstants.T_MFG_QA_SIGNOFF_HDR, BASEConstants.SGN_APVER);
+		cbSignOffDtStatus.setWidth("150");
 		loadInspectionNo();
 		cbInspectionNo.addValueChangeListener(new ValueChangeListener() {
 			/**
@@ -341,8 +355,14 @@ public class SignOff extends BaseUI {
 		flSignOffDtlCmp1.addComponent(cbInspectionNo);
 		flSignOffDtlCmp1.addComponent(tfproductSlNo);
 		flSignOffDtlCmp2.addComponent(cbSignOffDtStatus);
-		flSignOffDtlCmp2.addComponent(btnAdd);
-		flSignOffDtlCmp3.addComponent(btnDetlIns);
+		flSignOffDtlCmp2.addComponent(new HorizontalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(btnAdd);
+				addComponent(btnDetlIns);
+			}
+		});
 		//
 		hlSignOffDtl.addComponent(flSignOffDtlCmp1);
 		hlSignOffDtl.addComponent(flSignOffDtlCmp2);
@@ -389,12 +409,10 @@ public class SignOff extends BaseUI {
 		beanSignoffHdr = new BeanItemContainer<SignoffHdrDM>(SignoffHdrDM.class);
 		beanSignoffHdr.addAll(listSignOffHdr);
 		tblMstScrSrchRslt.setContainerDataSource(beanSignoffHdr);
-		tblMstScrSrchRslt
-				.setVisibleColumns(new Object[] { "qasignoffid", "batchno", "batchdate", "branchName", "clientName",
-						"productName", "workOrdNo", "batchqty", "batchtested", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Batch No.", "Batch Dt.", "Branch Name",
-				"Client Name", "Product Name", "Work Ord.No", "Batch Qty.", "Batch Tested", "Last Updated Dt.",
-				"Last Updated By" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qasignoffid", "batchno", "batchdate", "clientName",
+				"productName", "workOrdNo", "batchqty", "batchtested", "lastupdateddt", "lastupdatedby" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Batch No.", "Batch Dt.", "Client Name",
+				"Product Name", "Work Ord.No", "Batch Qty.", "Batch Tested", "Last Updated Dt.", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("qasignoffid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}

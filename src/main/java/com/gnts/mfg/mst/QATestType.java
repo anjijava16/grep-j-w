@@ -87,10 +87,10 @@ public class QATestType extends BaseUI {
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// User Input Components of TestType
-	private TextField tfTestMethdlgy, tftstType;
+	private TextField tfTestMethdlgy, tfTestType;
 	private TextArea taTypeDesc;
 	private CheckBox chPreCdn;
-	private ComboBox cbStatus, cbtstGrp;
+	private ComboBox cbStatus, cbTestGroup;
 	// Type Definition components
 	private ComboBox cbCatgry, cbTstDefStatus;
 	private ListSelect lsPrdList;
@@ -101,7 +101,7 @@ public class QATestType extends BaseUI {
 	private HorizontalLayout hlTypDef;
 	private VerticalLayout vlTypDef;
 	// Type Specification Components
-	private TextField tfTstRecr, tfTstSpec, tfTstCyc;
+	private TextField tfTstRecr, tfTstSpec, tfTestCycle;
 	private ComboBox cbTstSpecStatus;
 	private Table tblTstSpec;
 	private Button btnTstSpec;
@@ -304,8 +304,8 @@ public class QATestType extends BaseUI {
 		tfTstRecr.setWidth("140");
 		tfTstSpec = new TextField("Test Specification");
 		tfTstSpec.setWidth("140");
-		tfTstCyc = new TextField("Test Cycles");
-		tfTstCyc.setWidth("120");
+		tfTestCycle = new TextField("Test Cycles");
+		tfTestCycle.setWidth("120");
 		cbTstSpecStatus = new ComboBox("Status");
 		cbTstSpecStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbTstSpecStatus.setWidth("120");
@@ -356,7 +356,7 @@ public class QATestType extends BaseUI {
 		//
 		flTstRecr.addComponent(tfTstRecr);
 		flTstSpec.addComponent(tfTstSpec);
-		flTstCyc.addComponent(tfTstCyc);
+		flTstCyc.addComponent(tfTestCycle);
 		flTstSpecSts.addComponent(cbTstSpecStatus);
 		flbtnTstSpec.addComponent(btnTstSpec);
 		flbtnSpecDelt.addComponent(btnDeltTstSpecf);
@@ -444,11 +444,11 @@ public class QATestType extends BaseUI {
 		vlTypCondn.addComponent(tblTstCondn);
 		//
 		// TestDefn Components
-		cbtstGrp = new GERPComboBox("Test Group");
-		cbtstGrp.setItemCaptionPropertyId("testGroup");
-		cbtstGrp.setWidth("150");
+		cbTestGroup = new GERPComboBox("Test Group");
+		cbTestGroup.setItemCaptionPropertyId("testGroup");
+		cbTestGroup.setWidth("150");
 		loadTestGrpList();
-		tftstType = new GERPTextField("Type");
+		tfTestType = new GERPTextField("Type");
 		tfTestMethdlgy = new GERPTextField("Test Methodology");
 		taTypeDesc = new GERPTextArea("Description");
 		taTypeDesc.setWidth("250");
@@ -496,7 +496,7 @@ public class QATestType extends BaseUI {
 		flColumn1 = new GERPFormLayout();
 		flColumn2 = new GERPFormLayout();
 		// Adding components into form layouts for QATestType UI search layout
-		flColumn1.addComponent(tftstType);
+		flColumn1.addComponent(tfTestType);
 		flColumn2.addComponent(cbStatus);
 		// Adding form layouts into search layout for QATestType UI search mode
 		hlSearchLayout.addComponent(flColumn1);
@@ -513,14 +513,14 @@ public class QATestType extends BaseUI {
 		 * block. hence the same layout used as is
 		 */
 		// Set required fields
-		cbtstGrp.setRequired(true);
-		tftstType.setRequired(true);
+		cbTestGroup.setRequired(true);
+		tfTestType.setRequired(true);
 		tfTestMethdlgy.setRequired(true);
 		cbCatgry.setRequired(true);
 		lsPrdList.setRequired(true);
 		tfTstCondn.setRequired(true);
 		tfTstCondnSpec.setRequired(true);
-		tfTstCyc.setRequired(true);
+		tfTestCycle.setRequired(true);
 		tfTstRecr.setRequired(true);
 		tfTstSpec.setRequired(true);
 		// Removing components from search layout and re-initializing form layouts
@@ -530,8 +530,8 @@ public class QATestType extends BaseUI {
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		// adding components into first column in form layout1
-		flColumn1.addComponent(cbtstGrp);
-		flColumn1.addComponent(tftstType);
+		flColumn1.addComponent(cbTestGroup);
+		flColumn1.addComponent(tfTestType);
 		// adding components into second column in form layout2
 		flColumn2.addComponent(tfTestMethdlgy);
 		flColumn2.addComponent(chPreCdn);
@@ -569,7 +569,7 @@ public class QATestType extends BaseUI {
 		List<TestTypeDM> testTypeList = new ArrayList<TestTypeDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ companyid);
-		testTypeList = serviceTestType.getTestTypeDetails(companyid, null, tftstType.getValue().toString(), cbStatus
+		testTypeList = serviceTestType.getTestTypeDetails(companyid, null, tfTestType.getValue().toString(), cbStatus
 				.getValue().toString());
 		recordCnt = testTypeList.size();
 		beanTestType = new BeanItemContainer<TestTypeDM>(TestTypeDM.class);
@@ -638,7 +638,7 @@ public class QATestType extends BaseUI {
 		BeanContainer<Long, TestGroupDM> beanCity = new BeanContainer<Long, TestGroupDM>(TestGroupDM.class);
 		beanCity.setBeanIdProperty("qaTestGpID");
 		beanCity.addAll(serviceTestGroup.getTestGpDetails(companyid, null, "Active", "F"));
-		cbtstGrp.setContainerDataSource(beanCity);
+		cbTestGroup.setContainerDataSource(beanCity);
 	}
 	
 	private void loadCategoryList() {
@@ -662,16 +662,16 @@ public class QATestType extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
-		tftstType.setValue("");
-		tftstType.setComponentError(null);
-		cbtstGrp.setValue(null);
-		cbtstGrp.setComponentError(null);
+		tfTestType.setValue("");
+		tfTestType.setComponentError(null);
+		cbTestGroup.setValue(null);
+		cbTestGroup.setComponentError(null);
 		tfTestMethdlgy.setValue("");
 		tfTestMethdlgy.setComponentError(null);
 		taTypeDesc.setValue("");
-		tfTstCyc.setValue("0");
+		tfTestCycle.setValue("0");
 		chPreCdn.setValue(false);
-		tfTstCyc.setValue("0");
+		tfTestCycle.setValue("0");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		listTestDefn = new ArrayList<TestDefnDM>();
 		listTestSpecification = new ArrayList<TestSpecificationDM>();
@@ -686,8 +686,8 @@ public class QATestType extends BaseUI {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			TestTypeDM testTypeDM = beanTestType.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			testTypeId = testTypeDM.getQaTstTypId().toString();
-			tftstType.setValue(testTypeDM.getTstType());
-			cbtstGrp.setValue(testTypeDM.getQaTstGpId().toString());
+			tfTestType.setValue(testTypeDM.getTstType());
+			cbTestGroup.setValue(testTypeDM.getQaTstGpId().toString());
 			tfTestMethdlgy.setValue(testTypeDM.getTstMldlgy());
 			if (testTypeDM.getTstTypeDesc() != null) {
 				taTypeDesc.setValue(testTypeDM.getTstTypeDesc());
@@ -745,7 +745,7 @@ public class QATestType extends BaseUI {
 			testSpecId = testSpecificationDM.getTestSpecId();
 			tfTstRecr.setValue(testSpecificationDM.getTestRqrmt());
 			tfTstSpec.setValue(testSpecificationDM.getTestSpec());
-			tfTstCyc.setValue(Long.valueOf(testSpecificationDM.getTestCycl()).toString());
+			tfTestCycle.setValue(Long.valueOf(testSpecificationDM.getTestCycl()).toString());
 			cbTstSpecStatus.setValue(testSpecificationDM.getTstPrmStatus());
 		}
 	}
@@ -781,7 +781,7 @@ public class QATestType extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
-		tftstType.setValue("");
+		tfTestType.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		// reload the search using the defaults
 		loadSrchRslt();
@@ -821,20 +821,20 @@ public class QATestType extends BaseUI {
 		assembleSearchLayout();
 		hlCmdBtnLayout.setVisible(true);
 		tblMstScrSrchRslt.setVisible(true);
-		tftstType.setComponentError(null);
-		cbtstGrp.setComponentError(null);
+		tfTestType.setComponentError(null);
+		cbTestGroup.setComponentError(null);
 		resetTstDefDetails();
 		resetTstSpec();
 		resetTstCondn();
 		resetFields();
-		cbtstGrp.setRequired(false);
-		tftstType.setRequired(false);
+		cbTestGroup.setRequired(false);
+		tfTestType.setRequired(false);
 		tfTestMethdlgy.setRequired(false);
 		cbCatgry.setRequired(false);
 		lsPrdList.setRequired(false);
 		tfTstCondn.setRequired(false);
 		tfTstCondnSpec.setRequired(false);
-		tfTstCyc.setRequired(false);
+		tfTestCycle.setRequired(false);
 		tfTstRecr.setRequired(false);
 		tfTstSpec.setRequired(false);
 		loadSrchRslt();
@@ -862,19 +862,19 @@ public class QATestType extends BaseUI {
 	@Override
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Validating Data ");
-		tftstType.setComponentError(null);
+		tfTestType.setComponentError(null);
 		Boolean errorFlag = false;
-		if (cbtstGrp.getValue() == null) {
-			cbtstGrp.setComponentError(new UserError(GERPErrorCodes.NULL_TEST_GROUP_NAME));
+		if (cbTestGroup.getValue() == null) {
+			cbTestGroup.setComponentError(new UserError(GERPErrorCodes.NULL_TEST_GROUP_NAME));
 			errorFlag = true;
 		} else {
-			cbtstGrp.setComponentError(null);
+			cbTestGroup.setComponentError(null);
 		}
-		if (tftstType.getValue() == null || tftstType.getValue().trim().length() == 0) {
-			tftstType.setComponentError(new UserError(GERPErrorCodes.NULL_TEST_TYPE));
+		if (tfTestType.getValue() == null || tfTestType.getValue().trim().length() == 0) {
+			tfTestType.setComponentError(new UserError(GERPErrorCodes.NULL_TEST_TYPE));
 			errorFlag = true;
 		} else {
-			tftstType.setComponentError(null);
+			tfTestType.setComponentError(null);
 		}
 		if (tfTestMethdlgy.getValue() == null || tfTestMethdlgy.getValue().trim().length() == 0) {
 			tfTestMethdlgy.setComponentError(new UserError(GERPErrorCodes.NULL_TEST_METHODOLOGY));
@@ -897,8 +897,8 @@ public class QATestType extends BaseUI {
 				tstType = beanTestType.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			tstType.setCompanyId(companyid);
-			tstType.setQaTstGpId(Long.valueOf(cbtstGrp.getValue().toString()));
-			tstType.setTstType(tftstType.getValue());
+			tstType.setQaTstGpId(Long.valueOf(cbTestGroup.getValue().toString()));
+			tstType.setTstType(tfTestType.getValue());
 			tstType.setTstMldlgy(tfTestMethdlgy.getValue());
 			tstType.setTstTypeDesc(taTypeDesc.getValue());
 			tstType.setTstTypStatus((String) cbStatus.getValue());
@@ -910,6 +910,7 @@ public class QATestType extends BaseUI {
 			tstType.setLastUpdatedDt(DateUtils.getcurrentdate());
 			tstType.setLastUpdatedBy(userName);
 			serviceTestType.saveTestTypeDetails(tstType);
+			testTypeId=tstType.getQaTstTypId().toString();
 			// To save Test Definition
 			@SuppressWarnings("unchecked")
 			Collection<TestDefnDM> itemIds = (Collection<TestDefnDM>) tblTstDef.getVisibleItemIds();
@@ -1036,11 +1037,11 @@ public class QATestType extends BaseUI {
 			tfTstSpec.setComponentError(null);
 		}
 		try {
-			Long.valueOf(tfTstCyc.getValue());
-			tfTstCyc.setComponentError(null);
+			Long.valueOf(tfTestCycle.getValue());
+			tfTestCycle.setComponentError(null);
 		}
 		catch (NumberFormatException e) {
-			tfTstCyc.setComponentError(new UserError(GERPErrorCodes.NULL_TEST_CYC));
+			tfTestCycle.setComponentError(new UserError(GERPErrorCodes.NULL_TEST_CYC));
 			isValid = false;
 		}
 		return isValid;
@@ -1056,7 +1057,7 @@ public class QATestType extends BaseUI {
 		objTstSpec.setCompanyId(companyid);
 		objTstSpec.setTestRqrmt(tfTstRecr.getValue());
 		objTstSpec.setTestSpec(tfTstSpec.getValue());
-		objTstSpec.setTestCycl(Long.valueOf(tfTstCyc.getValue()));
+		objTstSpec.setTestCycl(Long.valueOf(tfTestCycle.getValue()));
 		objTstSpec.setTstPrmStatus(cbTstSpecStatus.getValue().toString());
 		objTstSpec.setLastUpdatedDt(DateUtils.getcurrentdate());
 		objTstSpec.setLastUpdatedBy(userName);
@@ -1071,8 +1072,8 @@ public class QATestType extends BaseUI {
 		tfTstRecr.setComponentError(null);
 		tfTstSpec.setValue("");
 		tfTstSpec.setComponentError(null);
-		tfTstCyc.setValue("");
-		tfTstCyc.setComponentError(null);
+		tfTestCycle.setValue("");
+		tfTestCycle.setComponentError(null);
 		cbTstSpecStatus.setValue(cbTstSpecStatus.getItemIds().iterator().next());
 	}
 	

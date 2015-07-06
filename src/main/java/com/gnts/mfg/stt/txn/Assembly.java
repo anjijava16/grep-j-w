@@ -41,7 +41,7 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.stt.mfg.domain.txn.AsmblyDtlDM;
 import com.gnts.stt.mfg.domain.txn.AsmblyHdrDM;
@@ -74,7 +74,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class Assembly extends BaseUI {
+public class Assembly extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	private AsmblyHdrService serviceAsmblyHdr = (AsmblyHdrService) SpringContextHelper.getBean("asmblyHdr");
 	private AsmblyDtlService serviceAsmblyDtl = (AsmblyDtlService) SpringContextHelper.getBean("asmblyDtl");
@@ -86,7 +86,7 @@ public class Assembly extends BaseUI {
 	private SlnoGenService serviceSLNo = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private List<AsmblyDtlDM> listAsmDtl = null;
 	private List<AsmblyShiftDM> listAsmShift = null;
-	private Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btnDelete = new GERPButton("Delete", "delete", this);
 	private Button btnShiftdelete = new GERPButton("Delete", "delete", this);
 	private BeanItemContainer<AsmblyHdrDM> beanAsmblyHdr = null;
 	private BeanItemContainer<AsmblyDtlDM> beanAsmblyDtl = null;
@@ -172,7 +172,7 @@ public class Assembly extends BaseUI {
 				}
 			}
 		});
-		tblAsmShift = new GERPTable();
+		tblAsmShift = new Table();
 		tblAsmShift.setPageLength(4);
 		tblAsmShift.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -194,13 +194,13 @@ public class Assembly extends BaseUI {
 				}
 			}
 		});
-		btndelete.addClickListener(new ClickListener() {
+		btnDelete.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (btndelete == event.getButton()) {
+				if (btnDelete == event.getButton()) {
 					deleteDetails();
 					btnAsmDtl.setCaption("Add");
 				}
@@ -338,7 +338,7 @@ public class Assembly extends BaseUI {
 		flDtlCol2.addComponent(tfProductQty);
 		flDtlCol3.addComponent(cbDtlStatus);
 		flDtlCol4.addComponent(btnAsmDtl);
-		flDtlCol4.addComponent(btndelete);
+		flDtlCol5.addComponent(btnDelete);
 		hlHdrslap = new HorizontalLayout();
 		hlHdrslap.addComponent(flDtlCol1);
 		hlHdrslap.addComponent(flDtlCol2);
@@ -526,14 +526,17 @@ public class Assembly extends BaseUI {
 		hlCmdBtnLayout.setVisible(false);
 		btnAsmDtl.setCaption("Add");
 		tblAsmDtl.setVisible(true);
-		List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "STT_ASMNO");
-		tfAsmRefNo.setReadOnly(true);
-		for (SlnoGenDM slnoObj : slnoList) {
+		try {
+			tfAsmRefNo.setReadOnly(false);
+			SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "STT_ASMNO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfAsmRefNo.setValue(slnoObj.getKeyDesc());
 				tfAsmRefNo.setReadOnly(true);
 			} else {
 				tfAsmRefNo.setReadOnly(false);
 			}
+		}
+		catch (Exception e) {
 		}
 		tblAsmDtl.setVisible(true);
 	}
@@ -552,13 +555,6 @@ public class Assembly extends BaseUI {
 		tfShiftName.setRequired(true);
 		cbEmployeeName.setRequired(true);
 		tfAchievedQty.setRequired(true);
-		List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "STT_ASMNO");
-		tfAsmRefNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfAsmRefNo.setReadOnly(true);
-			}
-		}
 		tblMstScrSrchRslt.setVisible(false);
 		if (tfAsmRefNo.getValue() == null || tfAsmRefNo.getValue().trim().length() == 0) {
 			tfAsmRefNo.setReadOnly(false);
@@ -749,14 +745,8 @@ public class Assembly extends BaseUI {
 			AsmblyHdrDM asmblyHdr = new AsmblyHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				asmblyHdr = beanAsmblyHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			} else {
-				List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "STT_ASMNO");
-				for (SlnoGenDM slnoObj : slnoList) {
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						asmblyHdr.setAsmrefno(slnoObj.getKeyDesc());
-					}
-				}
 			}
+			asmblyHdr.setAsmrefno(tfAsmRefNo.getValue());
 			asmblyHdr.setAsmplnid(Long.valueOf(cbPlndQty.getValue().toString()));
 			asmblyHdr.setAsmdate(dfAsmDt.getValue());
 			asmblyHdr.setProdtntotqty(Long.valueOf(tfPrdctnTotlQty.getValue()));
@@ -778,11 +768,14 @@ public class Assembly extends BaseUI {
 				serviceAsmblyDtl.saveAndUpdate(saveDtl);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "STT_ASMNO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "STT_ASMNO")
+							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSLNo.updateNextSequenceNumber(companyid, branchID, moduleId, "STT_ASMNO");
 					}
+				}
+				catch (Exception e) {
 				}
 			}
 			asmblDtlResetFields();
@@ -964,5 +957,11 @@ public class Assembly extends BaseUI {
 			asmblShitResetFields();
 			loadShiftRslt();
 		}
+	}
+
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
+		
 	}
 }

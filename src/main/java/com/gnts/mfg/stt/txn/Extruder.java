@@ -26,7 +26,7 @@ import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.mms.domain.mst.MaterialDM;
@@ -41,7 +41,6 @@ import com.gnts.stt.mfg.service.txn.ExtrudersDtlService;
 import com.gnts.stt.mfg.service.txn.ExtrudersHdrService;
 import com.gnts.stt.mfg.service.txn.ExtrudersMtrlService;
 import com.gnts.stt.mfg.service.txn.ExtrudersTempService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -68,7 +67,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class Extruder extends BaseUI {
+public class Extruder extends BaseTransUI {
 	// Bean Creation
 	private ExtrudersHdrService serviceExtruderHrd = (ExtrudersHdrService) SpringContextHelper.getBean("extruderHdr");
 	private ExtrudersDtlService serviceExtruderDtl = (ExtrudersDtlService) SpringContextHelper.getBean("extruderDtl");
@@ -116,10 +115,6 @@ public class Extruder extends BaseUI {
 	private BeanItemContainer<ExtrudersDtlDM> beanExtrudersDtlDM = null;
 	private BeanItemContainer<ExtrudersMtrlDM> beanExtrudersMtrlDM = null;
 	private BeanItemContainer<ExtrudersTempDM> beanExtrudersTempDM = null;
-	private BeanContainer<Long, AssetDetailsDM> beanAssetdetail = null;
-	private BeanContainer<String, MaterialStockDM> beanMaterialStockDM = null;
-	private BeanItemContainer<MaterialDM> beanMaterial = null;
-	private BeanContainer<Long, MaterialDM> beanMaterials = null;
 	// local variables declaration
 	private Long companyid, moduleId, branchID, employeeId;
 	private Long extHdrId;
@@ -134,9 +129,9 @@ public class Extruder extends BaseUI {
 	private Long roleId;
 	private String name;
 	private static final long serialVersionUID = 1L;
-	public Button btnDeletedtl = new GERPButton("Delete", "delete", this);
-	public Button btnDeleteMtrl = new GERPButton("Delete", "delete", this);
-	public Button btnDeleteZone = new GERPButton("Delete", "delete", this);
+	private Button btnDeletedtl = new GERPButton("Delete", "delete", this);
+	private Button btnDeleteMtrl = new GERPButton("Delete", "delete", this);
+	private Button btnDeleteZone = new GERPButton("Delete", "delete", this);
 	
 	// Constructor received the parameters from Login UI class
 	public Extruder() {
@@ -203,13 +198,6 @@ public class Extruder extends BaseUI {
 					btnAddDtls.setCaption("Add");
 					btnAddDtls.setStyleName("savebt");
 					asmblDtlResetFields();
-					// extMtrlResetFields();
-					// extrudersMtrlList = new ArrayList<ExtrudersMtrlDM>();
-					// extrudersTempList = new ArrayList<ExtrudersTempDM>();
-					// tblMtrl.removeAllItems();
-					// tblTemp.removeAllItems();
-					// loadMtrlRslt();
-					// loadTempRslt();
 					btnAddMtrl.setEnabled(false);
 					btnAddTemp.setEnabled(false);
 					btnDeletedtl.setEnabled(false);
@@ -301,7 +289,7 @@ public class Extruder extends BaseUI {
 		tfLotNo.setWidth("140");
 		tiHeatngTime = new GERPTimeField("Heating Time");
 		taInstruct = new TextArea("Instruction");
-		taInstruct.setWidth("155%");
+		taInstruct.setHeight("78");
 		taInstruct.setNullRepresentation("");
 		// taInstruct.setHeight("103px");
 		// Initializing Dtl
@@ -595,7 +583,7 @@ public class Extruder extends BaseUI {
 		tblDtl.setColumnWidth("chrgStTime", 70);
 		tblDtl.setColumnWidth("chrgEdTime", 80);
 		tblDtl.setColumnHeaders(new String[] { "Ref.Id", "Prodtn. Date", "O/P Qty.", "OEE %", "Start Time", "End Time" });
-		tblDtl.setColumnFooter("chrgEdTime", "No.of Rec:" + recordDtlCnt);
+		tblDtl.setColumnFooter("chrgEdTime", "Records :" + recordDtlCnt);
 	}
 	
 	private void loadMtrlRslt() {
@@ -607,8 +595,8 @@ public class Extruder extends BaseUI {
 		tblMtrl.setContainerDataSource(beanExtrudersMtrlDM);
 		tblMtrl.setVisibleColumns(new Object[] { "extDtlId", "materialName", "stockType" });
 		tblMtrl.setColumnHeaders(new String[] { "Dtl.RefId", "Material Name", "Stock Type" });
-		tblMtrl.setColumnAlignment("asmPlnShiftId", Align.RIGHT);
-		tblMtrl.setColumnFooter("stockType", "No.of Rec:" + recordMtrlCnt);
+		tblMtrl.setColumnAlignment("extDtlId", Align.RIGHT);
+		tblMtrl.setColumnFooter("stockType", "Records :" + recordMtrlCnt);
 	}
 	
 	private void loadTempRslt() {
@@ -620,8 +608,8 @@ public class Extruder extends BaseUI {
 		tblTemp.setContainerDataSource(beanExtrudersTempDM);
 		tblTemp.setVisibleColumns(new Object[] { "extDtlId", "zoneName", "temprValue" });
 		tblTemp.setColumnHeaders(new String[] { "Dtl.RefId", "Zone Name", "Temp. Value" });
-		tblTemp.setColumnAlignment("asmPlnShiftId", Align.RIGHT);
-		tblTemp.setColumnFooter("temprValue", "No.of Rec:" + recordTempCnt);
+		tblTemp.setColumnAlignment("extDtlId", Align.RIGHT);
+		tblTemp.setColumnFooter("temprValue", "Records :" + recordTempCnt);
 	}
 	
 	// Method to reset the fields
@@ -677,62 +665,59 @@ public class Extruder extends BaseUI {
 	private void editExtruderHdrDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
-			ExtrudersHdrDM editExtruder = beanExtrudersHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			extHdrId = Long.valueOf(editExtruder.getExtId());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			ExtrudersHdrDM extrudersHdrDM = beanExtrudersHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			extHdrId = Long.valueOf(extrudersHdrDM.getExtId());
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Selected Extruder. Id -> " + extHdrId);
-			cbMachineName.setValue(editExtruder.getMachineId());
+			cbMachineName.setValue(extrudersHdrDM.getMachineId());
 			tfExtRefNo.setReadOnly(false);
-			tfExtRefNo.setValue((String) sltedRcd.getItemProperty("extRefNo").getValue());
+			tfExtRefNo.setValue(extrudersHdrDM.getExtRefNo());
 			tfExtRefNo.setReadOnly(true);
-			System.out.println("(String) sltedRcd.getItemProperty(lotNo).getValue() "
-					+ (String) sltedRcd.getItemProperty("lotNo").getValue());
 			tfLotNo.setReadOnly(false);
-			tfLotNo.setValue((String) sltedRcd.getItemProperty("lotNo").getValue());
+			tfLotNo.setValue(extrudersHdrDM.getLotNo());
 			tfLotNo.setReadOnly(true);
-			dfExtDt.setValue(editExtruder.getExtDate1());
-			tfGradeNo.setValue(editExtruder.getGradeNo());
-			System.out.println("------------>" + editExtruder.getGradeNo());
-			tiHeatngTime.setTime(editExtruder.getHeatingTime());
-			taInstruct.setValue(editExtruder.getInstruction());
-			cbMaterial.setValue(editExtruder.getOpMaterialId());
-			cbHdrStatus.setValue(editExtruder.getStatus());
-			extrudersDtlList.addAll(serviceExtruderDtl.getExtrudersDtlList(null, null, extHdrId, null, null, null,
-					null, null, null, (String) cbDtlStatus.getValue(), "F"));
+			dfExtDt.setValue(extrudersHdrDM.getExtDate1());
+			tfGradeNo.setValue(extrudersHdrDM.getGradeNo());
+			tiHeatngTime.setTime(extrudersHdrDM.getHeatingTime());
+			taInstruct.setValue(extrudersHdrDM.getInstruction());
+			cbMaterial.setValue(extrudersHdrDM.getOpMaterialId());
+			cbHdrStatus.setValue(extrudersHdrDM.getStatus());
+			extrudersDtlList = serviceExtruderDtl.getExtrudersDtlList(null, null, extHdrId, null, null, null, null,
+					null, null, (String) cbDtlStatus.getValue(), "F");
 		}
 		loadAsmbDtlList();
 	}
 	
 	private void editDtls() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblDtl.getItem(tblDtl.getValue());
-		if (itselect != null) {
-			ExtrudersDtlDM editAsmblDtlObj = new ExtrudersDtlDM();
-			editAsmblDtlObj = beanExtrudersDtlDM.getItem(tblDtl.getValue()).getBean();
-			editAsmblDtlObj.getExtDtlId();
-			dfProdDt.setValue(editAsmblDtlObj.getProdDateDT());
-			tfOpQty.setValue(itselect.getItemProperty("outQty").getValue().toString());
-			if (editAsmblDtlObj.getChrgStTime() != null) {
-				tiChrgStTm.setTime(itselect.getItemProperty("chrgStTime").getValue().toString());
+		if (tblDtl.getValue() != null) {
+			ExtrudersDtlDM extrudersDtlDM = new ExtrudersDtlDM();
+			extrudersDtlDM = beanExtrudersDtlDM.getItem(tblDtl.getValue()).getBean();
+			extrudersDtlDM.getExtDtlId();
+			dfProdDt.setValue(extrudersDtlDM.getProdDateDT());
+			if (extrudersDtlDM.getOutQty() != null) {
+				tfOpQty.setValue(extrudersDtlDM.getOutQty().toString());
 			}
-			if (editAsmblDtlObj.getChrgEdTime() != null) {
-				tiChargEdTm.setTime(itselect.getItemProperty("chrgEdTime").getValue().toString());
+			if (extrudersDtlDM.getChrgStTime() != null) {
+				tiChrgStTm.setTime(extrudersDtlDM.getChrgStTime());
 			}
-			if (editAsmblDtlObj.getOeePrnct() != null) {
-				tfOeePerc.setValue(itselect.getItemProperty("oeePrnct").getValue().toString());
+			if (extrudersDtlDM.getChrgEdTime() != null) {
+				tiChargEdTm.setTime(extrudersDtlDM.getChrgEdTime());
 			}
-			if (editAsmblDtlObj.getRemarks() != null) {
-				taRemark.setValue(itselect.getItemProperty("remarks").getValue().toString());
+			if (extrudersDtlDM.getOeePrnct() != null) {
+				tfOeePerc.setValue(extrudersDtlDM.getOeePrnct().toString());
 			}
-			if (itselect.getItemProperty("status").getValue() != null) {
-				cbDtlStatus.setValue(itselect.getItemProperty("status").getValue().toString());
+			if (extrudersDtlDM.getRemarks() != null) {
+				taRemark.setValue(extrudersDtlDM.getRemarks());
 			}
-			extrudersMtrlList.addAll(serviceExtruderMtrl.getExtMtrlList(null, editAsmblDtlObj.getExtDtlId(), null,
-					null, null, "Active", "F"));
-			extrudersTempList.addAll(serviceExtruderTemp.getExtTempDetails(null, editAsmblDtlObj.getExtDtlId(), null,
-					null, "Active", "F"));
+			if (extrudersDtlDM.getStatus() != null) {
+				cbDtlStatus.setValue(extrudersDtlDM.getStatus());
+			}
+			extrudersMtrlList = serviceExtruderMtrl.getExtMtrlList(null, extrudersDtlDM.getExtDtlId(), null, null,
+					null, "Active", "F");
+			extrudersTempList = serviceExtruderTemp.getExtTempDetails(null, extrudersDtlDM.getExtDtlId(), null, null,
+					"Active", "F");
 		}
 		loadMtrlRslt();
 		loadTempRslt();
@@ -740,12 +725,11 @@ public class Extruder extends BaseUI {
 	
 	private void editMtrl() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblMtrl.getItem(tblMtrl.getValue());
-		if (itselect != null) {
-			ExtrudersMtrlDM editMtrlObj = new ExtrudersMtrlDM();
-			editMtrlObj = beanExtrudersMtrlDM.getItem(tblMtrl.getValue()).getBean();
-			editMtrlObj.getExtMtrlId();
-			Long matId = editMtrlObj.getMaterialId();
+		if (tblMtrl.getValue() != null) {
+			ExtrudersMtrlDM extrudersMtrlDM = new ExtrudersMtrlDM();
+			extrudersMtrlDM = beanExtrudersMtrlDM.getItem(tblMtrl.getValue()).getBean();
+			extrudersMtrlDM.getExtMtrlId();
+			Long matId = extrudersMtrlDM.getMaterialId();
 			Collection<?> empColId = cbMatName.getItemIds();
 			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
@@ -756,26 +740,25 @@ public class Extruder extends BaseUI {
 					cbMatName.setValue(itemIdClient);
 				}
 			}
-			cbStockType.setValue(itselect.getItemProperty("stockType").getValue().toString());
-			cbLotno.setValue(itselect.getItemProperty("lotNo").getValue());
-			tfMtrlQty.setValue(itselect.getItemProperty("materialQty").getValue().toString());
-			if (itselect.getItemProperty("status").getValue() != null) {
-				cbMtrlStatus.setValue(itselect.getItemProperty("status").getValue().toString());
+			cbStockType.setValue(extrudersMtrlDM.getStockType());
+			cbLotno.setValue(extrudersMtrlDM.getLotNo());
+			tfMtrlQty.setValue(extrudersMtrlDM.getMaterialQty().toString());
+			if (extrudersMtrlDM.getStatus() != null) {
+				cbMtrlStatus.setValue(extrudersMtrlDM.getStatus());
 			}
 		}
 	}
 	
 	private void editTemp() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblTemp.getItem(tblTemp.getValue());
-		if (itselect != null) {
-			ExtrudersTempDM editTempObj = new ExtrudersTempDM();
-			editTempObj = beanExtrudersTempDM.getItem(tblTemp.getValue()).getBean();
-			editTempObj.getExtTmprId();
-			tfZoneName.setValue(itselect.getItemProperty("zoneName").getValue().toString());
-			tfTempValue.setValue(itselect.getItemProperty("temprValue").getValue().toString());
-			if (itselect.getItemProperty("status").getValue() != null) {
-				cbTempStatus.setValue(itselect.getItemProperty("status").getValue().toString());
+		if (tblTemp.getValue() != null) {
+			ExtrudersTempDM extrudersTempDM = new ExtrudersTempDM();
+			extrudersTempDM = beanExtrudersTempDM.getItem(tblTemp.getValue()).getBean();
+			extrudersTempDM.getExtTmprId();
+			tfZoneName.setValue(extrudersTempDM.getZoneName());
+			tfTempValue.setValue(extrudersTempDM.getTemprValue());
+			if (extrudersTempDM.getStatus() != null) {
+				cbTempStatus.setValue(extrudersTempDM.getStatus());
 			}
 		}
 	}
@@ -829,29 +812,35 @@ public class Extruder extends BaseUI {
 		tfOpQty.setRequired(true);
 		tfOeePerc.setRequired(true);
 		btnAddDtls.setCaption("Add");
-		// tblDtl.setVisible(true);
 		btnAddMtrl.setCaption("Add");
-		// tblMtrl.setVisible(true);
 		btnAddTemp.setCaption("Add");
 		dfProdDt.setValue(new Date());
 		dfExtDt.setValue(new Date());
-		// tblTemp.setVisible(true);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STT_MF_EXTREFNO");
-		for (SlnoGenDM slnoObj : slnoList) {
+		try {
+			tfExtRefNo.setReadOnly(false);
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STT_MF_EXTREFNO").get(
+					0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfExtRefNo.setValue(slnoObj.getKeyDesc());
 				tfExtRefNo.setReadOnly(true);
 			} else {
 				tfExtRefNo.setReadOnly(false);
 			}
 		}
-		List<SlnoGenDM> slnoLotNoList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId,
-				"STT_MF_EXTLOTNO");
-		for (SlnoGenDM slnoObj : slnoLotNoList) {
+		catch (Exception e) {
+		}
+		try {
+			tfLotNo.setReadOnly(false);
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STT_MF_EXTLOTNO").get(
+					0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfLotNo.setValue(slnoObj.getKeyDesc());
 				tfLotNo.setReadOnly(true);
 			} else {
 				tfLotNo.setReadOnly(false);
 			}
+		}
+		catch (Exception e) {
 		}
 		tblDtl.setVisible(true);
 		tblMtrl.setVisible(true);
@@ -913,24 +902,9 @@ public class Extruder extends BaseUI {
 		tfOeePerc.setRequired(true);
 		hlCmdBtnLayout.setVisible(false);
 		// reset the input controls to default value
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STT_MF_EXTREFNO");
-		tfExtRefNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfExtRefNo.setReadOnly(true);
-			}
-		}
 		tblMstScrSrchRslt.setVisible(false);
 		if (tfExtRefNo.getValue() == null || tfExtRefNo.getValue().trim().length() == 0) {
 			tfExtRefNo.setReadOnly(false);
-		}
-		List<SlnoGenDM> slnoLotList = serviceSlnogen
-				.getSequenceNumber(companyid, branchID, moduleId, "STT_MF_EXTLOTNO");
-		tfLotNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoLotList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfLotNo.setReadOnly(true);
-			}
 		}
 		tblMstScrSrchRslt.setVisible(false);
 		if (tfLotNo.getValue() == null || tfLotNo.getValue().trim().length() == 0) {
@@ -1077,10 +1051,6 @@ public class Extruder extends BaseUI {
 		} else {
 			cbMatName.setComponentError(null);
 		}
-		/*
-		 * if (cbLotno.getValue() == null) { cbLotno.setComponentError(new UserError(GERPErrorCodes.NULL_LOT_NO));
-		 * isValid = false; } else { cbLotno.setComponentError(null); }
-		 */
 		try {
 			Long.valueOf(tfMtrlQty.getValue());
 			if (Long.valueOf(tfMtrlQty.getValue()) <= 0) {
@@ -1092,9 +1062,11 @@ public class Extruder extends BaseUI {
 			tfMtrlQty.setComponentError(null);
 		}
 		catch (NumberFormatException e) {
+			e.printStackTrace();
 			tfMtrlQty.setComponentError(new UserError(GERPErrorCodes.PRDCT_QTY_LONG));
 			isValid = false;
 		}
+		System.out.println("isValid--->" + isValid);
 		return isValid;
 	}
 	
@@ -1124,34 +1096,20 @@ public class Extruder extends BaseUI {
 			new ExtrudersDtlDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				extruderObj = beanExtrudersHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			} else {
-				List<SlnoGenDM> slnoRefList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId,
-						"STT_MF_EXTREFNO");
-				for (SlnoGenDM slnoObj : slnoRefList) {
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						extruderObj.setExtRefNo(slnoObj.getKeyDesc());
-					}
-				}
-				List<SlnoGenDM> slnoLotNo = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId,
-						"STT_MF_EXTLOTNO");
-				for (SlnoGenDM slnoObj : slnoLotNo) {
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						extruderObj.setLotNo(slnoObj.getKeyDesc());
-					}
-				}
 			}
 			if (tblDtl.getValue() != null) {
 				beanExtrudersDtlDM.getItem(tblDtl.getValue()).getBean();
 			}
+			extruderObj.setExtRefNo(tfExtRefNo.getValue());
+			extruderObj.setLotNo(tfLotNo.getValue());
 			extruderObj.setCmpId(companyid);
 			extruderObj.setBranchId(branchID);
-			extruderObj.setMachineId(Long.valueOf(cbMachineName.getValue().toString()));
+			extruderObj.setMachineId((Long) cbMachineName.getValue());
 			extruderObj.setExtDate(dfExtDt.getValue());
 			extruderObj.setGradeNo(tfGradeNo.getValue());
 			if (tiHeatngTime.getValue() != null) {
 				extruderObj.setHeatingTime(tiHeatngTime.getHorsMunites());
 			}
-			// extruderObj.setHeatingTime((Date)tiHeatngTime.getValue());
 			extruderObj.setInstruction(taInstruct.getValue());
 			extruderObj.setOpMaterialId((Long) (cbMaterial.getValue()));
 			extruderObj.setStatus(((String) cbHdrStatus.getValue()));
@@ -1161,7 +1119,7 @@ public class Extruder extends BaseUI {
 			@SuppressWarnings("unchecked")
 			Collection<ExtrudersDtlDM> colPlanDtls = ((Collection<ExtrudersDtlDM>) tblDtl.getVisibleItemIds());
 			for (ExtrudersDtlDM save : (Collection<ExtrudersDtlDM>) colPlanDtls) {
-				save.setExtId(Long.valueOf(extruderObj.getExtId()));
+				save.setExtId(extruderObj.getExtId());
 				serviceExtruderDtl.saveOrUpdate(save);
 			}
 			@SuppressWarnings("unchecked")
@@ -1175,19 +1133,25 @@ public class Extruder extends BaseUI {
 				serviceExtruderTemp.saveAndUpdate(saveTemp);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId,
-						"STT_MF_EXTREFNO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId,
+							"STT_MF_EXTREFNO").get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "STT_MF_EXTREFNO");
 					}
 				}
-				List<SlnoGenDM> slnoLotList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId,
-						"STT_MF_EXTLOTNO");
-				for (SlnoGenDM slnoObj : slnoLotList) {
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId,
+							"STT_MF_EXTLOTNO").get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "STT_MF_EXTLOTNO");
 					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 			asmblDtlResetFields();
@@ -1238,9 +1202,8 @@ public class Extruder extends BaseUI {
 	private void saveExtMtrlDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			// if (tblDtl.getValue() != null) {
-			ExtrudersDtlDM editAsmblDtlObj = new ExtrudersDtlDM();
-			editAsmblDtlObj = beanExtrudersDtlDM.getItem(tblDtl.getValue()).getBean();
+			ExtrudersDtlDM extrudersDtlDM = new ExtrudersDtlDM();
+			extrudersDtlDM = beanExtrudersDtlDM.getItem(tblDtl.getValue()).getBean();
 			ExtrudersMtrlDM extMtrlObj = new ExtrudersMtrlDM();
 			if (tblMtrl.getValue() != null) {
 				extMtrlObj = beanExtrudersMtrlDM.getItem(tblMtrl.getValue()).getBean();
@@ -1249,7 +1212,7 @@ public class Extruder extends BaseUI {
 				extMtrlObj.setMaterialId(((MaterialDM) cbMatName.getValue()).getMaterialId());
 				extMtrlObj.setMaterialName(((MaterialDM) cbMatName.getValue()).getMaterialName());
 			}
-			extMtrlObj.setExtDtlId(editAsmblDtlObj.getExtDtlId());
+			extMtrlObj.setExtDtlId(extrudersDtlDM.getExtDtlId());
 			extMtrlObj.setStockType((String) cbStockType.getValue());
 			if (cbLotno.getValue() != null) {
 				extMtrlObj.setLotNo(cbLotno.getValue().toString());
@@ -1261,7 +1224,6 @@ public class Extruder extends BaseUI {
 			extrudersMtrlList.add(extMtrlObj);
 			loadMtrlRslt();
 			btnAddMtrl.setCaption("Add");
-			// }
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1272,13 +1234,13 @@ public class Extruder extends BaseUI {
 	private void saveasmblPlnTempListDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			ExtrudersDtlDM editAsmblDtlObj = new ExtrudersDtlDM();
-			editAsmblDtlObj = beanExtrudersDtlDM.getItem(tblDtl.getValue()).getBean();
+			ExtrudersDtlDM extrudersDtlDM = new ExtrudersDtlDM();
+			extrudersDtlDM = beanExtrudersDtlDM.getItem(tblDtl.getValue()).getBean();
 			ExtrudersTempDM extruderTempObj = new ExtrudersTempDM();
 			if (tblTemp.getValue() != null) {
 				extruderTempObj = beanExtrudersTempDM.getItem(tblTemp.getValue()).getBean();
 			}
-			extruderTempObj.setExtDtlId(editAsmblDtlObj.getExtDtlId());
+			extruderTempObj.setExtDtlId(extrudersDtlDM.getExtDtlId());
 			extruderTempObj.setZoneName(tfZoneName.getValue());
 			extruderTempObj.setTemprValue(tfTempValue.getValue());
 			extruderTempObj.setStatus("Active");
@@ -1294,41 +1256,38 @@ public class Extruder extends BaseUI {
 		asmblTempResetFields();
 	}
 	
-	public void loadMachineList() {
+	private void loadMachineList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<AssetDetailsDM> lookUpList = serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null,
-				"Active");
-		beanAssetdetail = new BeanContainer<Long, AssetDetailsDM>(AssetDetailsDM.class);
+		BeanContainer<Long, AssetDetailsDM> beanAssetdetail = new BeanContainer<Long, AssetDetailsDM>(
+				AssetDetailsDM.class);
 		beanAssetdetail.setBeanIdProperty("assetId");
-		beanAssetdetail.addAll(lookUpList);
+		beanAssetdetail.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null, "Active"));
 		cbMachineName.setContainerDataSource(beanAssetdetail);
 	}
 	
 	private void loadMaterialList() {
-		List<MaterialDM> getMtrlList = serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null,
-				null, "Active", "P");
-		beanMaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanMaterial.addAll(getMtrlList);
+		BeanItemContainer<MaterialDM> beanMaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
+		beanMaterial.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
+				"Active", "P"));
 		cbMatName.setContainerDataSource(beanMaterial);
 	}
 	
 	private void loadOPMaterialList() {
-		List<MaterialDM> getMtrlList = serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null,
-				null, "Active", "P");
-		beanMaterials = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
+		BeanContainer<Long, MaterialDM> beanMaterials = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 		beanMaterials.setBeanIdProperty("materialId");
-		beanMaterials.addAll(getMtrlList);
+		beanMaterials.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
+				"Active", "P"));
 		cbMaterial.setContainerDataSource(beanMaterials);
 	}
 	
 	private void loadLotNumber() {
-		List<MaterialStockDM> getLotNoList = serviceMaterialStock.getMaterialStockList(
-				(((MaterialDM) cbMatName.getValue()).getMaterialId()), companyid, null, null, null, null, "F");
-		for (MaterialStockDM materialStockDM : getLotNoList) {
+		BeanContainer<String, MaterialStockDM> beanMaterialStockDM = new BeanContainer<String, MaterialStockDM>(
+				MaterialStockDM.class);
+		for (MaterialStockDM materialStockDM : serviceMaterialStock.getMaterialStockList(
+				(((MaterialDM) cbMatName.getValue()).getMaterialId()), companyid, null, null, null, null, "F")) {
 			if (materialStockDM.getCurrentStock() > 0) {
-				beanMaterialStockDM = new BeanContainer<String, MaterialStockDM>(MaterialStockDM.class);
 				beanMaterialStockDM.setBeanIdProperty("lotNo");
-				beanMaterialStockDM.addAll(getLotNoList);
+				beanMaterialStockDM.addBean(materialStockDM);
 				cbLotno.setContainerDataSource(beanMaterialStockDM);
 			}
 		}
@@ -1391,5 +1350,10 @@ public class Extruder extends BaseUI {
 		tfMtrlQty.setRequired(false);
 		tfZoneName.setRequired(false);
 		tfTempValue.setRequired(false);
+	}
+	
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
 	}
 }

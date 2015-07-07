@@ -93,7 +93,7 @@ public class AssemblyPlan extends BaseTransUI {
 	private List<AsmblyPlanShiftDM> asmblyPlnShitftList = null;
 	// form layout for input controls
 	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4, flDtlCol1, flDtlCol2, flDtlCol3, flDtlCol4,
-			flDtlCol5, flDtlCol6, flAsmShiftCol1, flAsmShiftCol2, flAsmShiftCol3;
+			flDtlCol5, flAsmShiftCol1, flAsmShiftCol2, flAsmShiftCol3;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private HorizontalLayout hlHdr = new HorizontalLayout();
@@ -249,6 +249,7 @@ public class AssemblyPlan extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting AssemblyPlan UI");
 		// Plan Ref.No text field
 		tfPlanRefNo = new GERPTextField("Plan Ref.No");
+		cbHdrStatus.setWidth("150px");
 		// Branch Combo Box
 		cbBranch = new GERPComboBox("Branch Name");
 		cbBranch.setItemCaptionPropertyId("branchName");
@@ -265,6 +266,7 @@ public class AssemblyPlan extends BaseTransUI {
 		taRemark.setWidth("150px");
 		// Status ComboBox
 		cbDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		cbDtlStatus.setWidth("100");
 		// Shift Name TextField
 		tfShiftName = new GERPTextField("Shift Name");
 		// Employee Name combobox
@@ -313,7 +315,7 @@ public class AssemblyPlan extends BaseTransUI {
 		// Plan Qty. Textfield
 		tfPlanDtlQty = new GERPTextField("Plan Qty.");
 		tfPlanDtlQty.setValue("0");
-		tfPlanDtlQty.setWidth("100px");
+		tfPlanDtlQty.setWidth("75px");
 		// Status ComboBox
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		hlSearchLayout = new GERPAddEditHLayout();
@@ -392,21 +394,21 @@ public class AssemblyPlan extends BaseTransUI {
 		flDtlCol3 = new FormLayout();
 		flDtlCol4 = new FormLayout();
 		flDtlCol5 = new FormLayout();
-		flDtlCol6 = new FormLayout();
 		flDtlCol1.addComponent(cbClientId);
 		flDtlCol2.addComponent(cbWorkOrder);
 		flDtlCol3.addComponent(cbProduct);
 		flDtlCol4.addComponent(tfPlanDtlQty);
 		flDtlCol5.addComponent(cbDtlStatus);
-		flDtlCol6.addComponent(btnAddDtls);
-		flDtlCol6.addComponent(btndelete);
 		hlHdrslap = new HorizontalLayout();
 		hlHdrslap.addComponent(flDtlCol1);
 		hlHdrslap.addComponent(flDtlCol2);
 		hlHdrslap.addComponent(flDtlCol3);
 		hlHdrslap.addComponent(flDtlCol4);
 		hlHdrslap.addComponent(flDtlCol5);
-		hlHdrslap.addComponent(flDtlCol6);
+		hlHdrslap.addComponent(btnAddDtls);
+		hlHdrslap.setComponentAlignment(btnAddDtls, Alignment.MIDDLE_LEFT);
+		hlHdrslap.addComponent(btndelete);
+		hlHdrslap.setComponentAlignment(btndelete, Alignment.MIDDLE_LEFT);
 		hlHdrslap.setSpacing(true);
 		hlHdrslap.setMargin(true);
 		vlHdr = new VerticalLayout();

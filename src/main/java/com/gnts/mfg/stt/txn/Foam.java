@@ -14,26 +14,24 @@ import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
-import com.gnts.erputil.components.GERPTable;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.service.txn.WorkOrderDtlService;
 import com.gnts.stt.mfg.domain.txn.FoamDtlDM;
 import com.gnts.stt.mfg.domain.txn.FoamHdrDM;
-import com.gnts.stt.mfg.domain.txn.FoamShiftDM;
 import com.gnts.stt.mfg.domain.txn.FoamPlanHdrDM;
+import com.gnts.stt.mfg.domain.txn.FoamShiftDM;
 import com.gnts.stt.mfg.service.txn.FoamDtlService;
 import com.gnts.stt.mfg.service.txn.FoamHdrService;
-import com.gnts.stt.mfg.service.txn.FoamShiftService;
 import com.gnts.stt.mfg.service.txn.FoamPlanHdrService;
-import com.vaadin.data.Item;
+import com.gnts.stt.mfg.service.txn.FoamShiftService;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -43,23 +41,22 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Table.Align;
 
-public class Foam extends BaseUI {
+public class Foam extends BaseTransUI {
 	// Bean Creation
 	private FoamHdrService serviceAsmblyPlanHrd = (FoamHdrService) SpringContextHelper.getBean("foamHdr");
 	private FoamDtlService serviceFoamDtl = (FoamDtlService) SpringContextHelper.getBean("foamDtl");
@@ -68,11 +65,11 @@ public class Foam extends BaseUI {
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private FoamPlanHdrService serviceFoamHdr = (FoamPlanHdrService) SpringContextHelper.getBean("foamplanhdr");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
-	List<FoamDtlDM> asmblPlnDtlList = null;
-	List<FoamShiftDM> asmblyPlnShitftList = null;
+	private List<FoamDtlDM> listFoamDetails = null;
+	private List<FoamShiftDM> listFoamShift = null;
 	// form layout for input controls
 	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4, flDtlCol1, flDtlCol2, flDtlCol3, flDtlCol4,
-			flDtlCol5, flDtlCol6,flDtlCol7, flAsmShiftCol1, flAsmShiftCol2, flAsmShiftCol3;
+			flDtlCol5, flDtlCol6, flDtlCol7, flAsmShiftCol1, flAsmShiftCol2, flAsmShiftCol3;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private HorizontalLayout hlHdr = new HorizontalLayout();
@@ -85,23 +82,20 @@ public class Foam extends BaseUI {
 	// User Input Components for Work Order Details
 	private Button btnAddDtls = new GERPButton("Add", "add", this);
 	private Button btnAddShift = new GERPButton("Add", "add", this);
-	public Button btndelete = new GERPButton("Delete", "delete", this);
-	public Button btnShiftdelete = new GERPButton("Delete", "delete", this);
-
-	private ComboBox cbFoamPlanNo, cbStatus, cbDtlStatus, cbEmpName, cbProd;
+	private Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btnShiftdelete = new GERPButton("Delete", "delete", this);
+	private ComboBox cbFoamPlanNo, cbStatus, cbDtlStatus, cbEmpName, cbProduct;
 	private ComboBox cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private TextField tfFoamRefNo, tfProductnQty, tfShiftName, tfTargetQty, tfPlanDtlQty, tfPlanRefNo;
 	private DateField dfFoanDt;
 	private TextArea taRemark;
-	private Table tblAsmbPlanDtl, tblShift;
+	private Table tblFoamDetail, tblFoamShift;
 	private BeanItemContainer<FoamHdrDM> beanFoamHdrDM = null;
 	private BeanItemContainer<FoamDtlDM> beanFoamDtlDM = null;
 	private BeanItemContainer<FoamShiftDM> beanFoamShiftDM = null;
-	private BeanContainer<Long, FoamPlanHdrDM> beanFoamPlanHdrDM = null;
-	private BeanItemContainer<EmployeeDM> beanEmployeeDM = null;
 	// local variables declaration
-	private Long companyid, moduleId, branchID;
+	private Long companyid, moduleId, branchId;
 	private Long asmbPlnHdrId;
 	private int recordCnt = 0;
 	private int recordShiftCnt = 0;
@@ -117,7 +111,7 @@ public class Foam extends BaseUI {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside Foam() constructor");
 		// Loading the UI
 		buildView();
@@ -132,7 +126,7 @@ public class Foam extends BaseUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (validateDtlDetails()) {
-					saveasmblPlnDtlListDetails();
+					saveFoamDetails();
 				}
 			}
 		});
@@ -143,20 +137,21 @@ public class Foam extends BaseUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (validateShiftDetails()) {
-					saveasmblPlnShiftListDetails();
+					saveFoamShiftDetails();
 				}
 			}
 		});
-		tblAsmbPlanDtl = new GERPTable();
 		tfPlanRefNo = new TextField("Plan Ref.No");
-		tblAsmbPlanDtl.setPageLength(4);
-		tblAsmbPlanDtl.addItemClickListener(new ItemClickListener() {
+		tblFoamDetail = new Table();
+		tblFoamDetail.setWidth("800px");
+		tblFoamDetail.setPageLength(4);
+		tblFoamDetail.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblAsmbPlanDtl.isSelected(event.getItemId())) {
-					tblAsmbPlanDtl.setImmediate(true);
+				if (tblFoamDetail.isSelected(event.getItemId())) {
+					tblFoamDetail.setImmediate(true);
 					btnAddDtls.setCaption("Add");
 					btnAddDtls.setStyleName("savebt");
 					asmblDtlResetFields();
@@ -168,15 +163,15 @@ public class Foam extends BaseUI {
 				}
 			}
 		});
-		tblShift = new GERPTable();
-		tblShift.setPageLength(4);
-		tblShift.addItemClickListener(new ItemClickListener() {
+		tblFoamShift = new Table();
+		tblFoamShift.setPageLength(4);
+		tblFoamShift.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblShift.isSelected(event.getItemId())) {
-					tblShift.setImmediate(true);
+				if (tblFoamShift.isSelected(event.getItemId())) {
+					tblFoamShift.setImmediate(true);
 					btnAddShift.setCaption("Add");
 					btnAddShift.setStyleName("savebt");
 					asmblShiftResetFields();
@@ -210,7 +205,7 @@ public class Foam extends BaseUI {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (btnShiftdelete== event.getButton()) {
+				if (btnShiftdelete == event.getButton()) {
 					deleteShiftDetails();
 					btnAddShift.setCaption("Add");
 				}
@@ -259,9 +254,9 @@ public class Foam extends BaseUI {
 		tfTargetQty.setValue("0");
 		// Client Id ComboBox
 		// Product Name ComboBox
-		cbProd = new GERPComboBox("Prod.Name");
-		cbProd.setWidth("130");
-		cbProd.setItemCaptionPropertyId("prodName");
+		cbProduct = new GERPComboBox("Prod.Name");
+		cbProduct.setWidth("130");
+		cbProduct.setItemCaptionPropertyId("prodName");
 		loadProductList();
 		// Plan Qty. Textfield
 		tfPlanDtlQty = new GERPTextField("Plan Qty.");
@@ -337,7 +332,7 @@ public class Foam extends BaseUI {
 		hlShift.setSpacing(true);
 		hlShift.setMargin(true);
 		vlShift.addComponent(hlShift);
-		vlShift.addComponent(tblShift);
+		vlShift.addComponent(tblFoamShift);
 		vlShift.setWidth("915px");
 		// Adding FoamSlap components
 		// Add components for User Input Layout
@@ -348,7 +343,7 @@ public class Foam extends BaseUI {
 		flDtlCol5 = new FormLayout();
 		flDtlCol6 = new FormLayout();
 		flDtlCol7 = new FormLayout();
-		flDtlCol3.addComponent(cbProd);
+		flDtlCol3.addComponent(cbProduct);
 		flDtlCol4.addComponent(tfPlanDtlQty);
 		flDtlCol5.addComponent(cbDtlStatus);
 		flDtlCol6.addComponent(btnAddDtls);
@@ -365,7 +360,7 @@ public class Foam extends BaseUI {
 		hlHdrslap.setMargin(true);
 		vlHdr = new VerticalLayout();
 		vlHdr.addComponent(hlHdrslap);
-		vlHdr.addComponent(tblAsmbPlanDtl);
+		vlHdr.addComponent(tblFoamDetail);
 		vlHdr.setSpacing(true);
 		hlHdrAndShift = new HorizontalLayout();
 		hlHdrAndShift.addComponent(GERPPanelGenerator.createPanel(hlHdr));
@@ -385,18 +380,18 @@ public class Foam extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<FoamHdrDM> FoamList = new ArrayList<FoamHdrDM>();
+		List<FoamHdrDM> listFoam = new ArrayList<FoamHdrDM>();
 		Long foamPlanId = null;
 		if (cbFoamPlanNo.getValue() != null) {
 			foamPlanId = ((Long.valueOf(cbFoamPlanNo.getValue().toString())));
 		}
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfFoamRefNo.getValue() + ", " + cbHdrStatus.getValue());
-		FoamList = serviceAsmblyPlanHrd.getFormHdrDetails(null, foamPlanId, (String)tfPlanRefNo.getValue(),
+		listFoam = serviceAsmblyPlanHrd.getFormHdrDetails(null, foamPlanId, (String) tfPlanRefNo.getValue(),
 				dfFoanDt.getValue(), (String) cbHdrStatus.getValue(), "F");
-		recordCnt = FoamList.size();
+		recordCnt = listFoam.size();
 		beanFoamHdrDM = new BeanItemContainer<FoamHdrDM>(FoamHdrDM.class);
-		beanFoamHdrDM.addAll(FoamList);
+		beanFoamHdrDM.addAll(listFoam);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Foam. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanFoamHdrDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "foamid", "formrefno", "fomdate", "fomstatus",
@@ -412,30 +407,30 @@ public class Foam extends BaseUI {
 		logger.info("Company ID : " + companyid + " | saveasmblPlnDtlListDetails User Name : " + username + " > "
 				+ "Search Parameters are " + companyid + ", " + ", " + tfProductnQty.getValue()
 				+ (String) cbStatus.getValue() + ", " + asmbPlnHdrId);
-		recordCnt = asmblPlnDtlList.size();
+		recordCnt = listFoamDetails.size();
 		beanFoamDtlDM = new BeanItemContainer<FoamDtlDM>(FoamDtlDM.class);
-		beanFoamDtlDM.addAll(asmblPlnDtlList);
+		beanFoamDtlDM.addAll(listFoamDetails);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Foamslap. result set");
-		tblAsmbPlanDtl.setContainerDataSource(beanFoamDtlDM);
-		tblAsmbPlanDtl.setVisibleColumns(new Object[] { "prodname", "productQty", "status", "lastupdateddate",
+		tblFoamDetail.setContainerDataSource(beanFoamDtlDM);
+		tblFoamDetail.setVisibleColumns(new Object[] { "prodname", "productQty", "status", "lastupdateddate",
 				"lastupdatedby" });
-		tblAsmbPlanDtl.setColumnHeaders(new String[] { "Product Name", "Planned Qty.", "Status", "Last Updated Date",
+		tblFoamDetail.setColumnHeaders(new String[] { "Product Name", "Planned Qty.", "Status", "Last Updated Date",
 				"Last Updated By" });
-		tblAsmbPlanDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		tblFoamDetail.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
 	
 	private void loadShiftRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		recordShiftCnt = asmblyPlnShitftList.size();
+		recordShiftCnt = listFoamShift.size();
 		beanFoamShiftDM = new BeanItemContainer<FoamShiftDM>(FoamShiftDM.class);
-		beanFoamShiftDM.addAll(asmblyPlnShitftList);
+		beanFoamShiftDM.addAll(listFoamShift);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Foam. result set");
-		tblShift.setContainerDataSource(beanFoamShiftDM);
-		tblShift.setVisibleColumns(new Object[] { "shiftName", "empName", "achivedQty", "status", "lastupdateddate",
+		tblFoamShift.setContainerDataSource(beanFoamShiftDM);
+		tblFoamShift.setVisibleColumns(new Object[] { "shiftName", "empName", "achivedQty", "status", "lastupdateddate",
 				"lastupdatedby" });
-		tblShift.setColumnHeaders(new String[] { "Shift Name", "Emp.Name", "Achieved Qty.", "Status",
+		tblFoamShift.setColumnHeaders(new String[] { "Shift Name", "Emp.Name", "Achieved Qty.", "Status",
 				"Last Updated Dt", "Last Updated By" });
-		tblShift.setColumnFooter("lastupdatedby", "No.of Records : " + recordShiftCnt);
+		tblFoamShift.setColumnFooter("lastupdatedby", "No.of Records : " + recordShiftCnt);
 	}
 	
 	// Method to reset the fields
@@ -465,44 +460,40 @@ public class Foam extends BaseUI {
 		tfTargetQty.setComponentError(null);
 		cbEmpName.setComponentError(null);
 		// Assembly Plan Dtls resetfields
-		cbProd.setValue(null);
+		cbProduct.setValue(null);
 		tfPlanDtlQty.setValue("0");
 		cbStatus.setValue(cbHdrStatus.getItemIds().iterator().next());
-		cbProd.setComponentError(null);
+		cbProduct.setComponentError(null);
 		tfPlanDtlQty.setComponentError(null);
-		asmblPlnDtlList = new ArrayList<FoamDtlDM>();
-		asmblyPlnShitftList = new ArrayList<FoamShiftDM>();
-		tblAsmbPlanDtl.removeAllItems();
-		tblShift.removeAllItems();
+		listFoamDetails = new ArrayList<FoamDtlDM>();
+		listFoamShift = new ArrayList<FoamShiftDM>();
+		tblFoamDetail.removeAllItems();
+		tblFoamShift.removeAllItems();
 	}
 	
 	// Method to edit the values from table into fields to update process
 	private void editFoamHdrDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			FoamHdrDM editFoam = beanFoamHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			asmbPlnHdrId = Long.valueOf(editFoam.getFoamid());
-			;
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Foam. Id -> "
 					+ asmbPlnHdrId);
-			Notification.show("" + editFoam.getFoamplanid());
 			tfFoamRefNo.setReadOnly(false);
-			tfFoamRefNo.setValue((String) sltedRcd.getItemProperty("formrefno").getValue());
+			tfFoamRefNo.setValue(editFoam.getFormrefno());
 			tfFoamRefNo.setReadOnly(true);
 			if (editFoam.getFomdate() != null) {
 				dfFoanDt.setValue(editFoam.getFomdate1());
 			}
 			tfProductnQty.setValue(editFoam.getProdtntotqty().toString());
-			if(editFoam.getRemarks()!=null)
-			{
-			taRemark.setValue(editFoam.getRemarks());
+			if (editFoam.getRemarks() != null) {
+				taRemark.setValue(editFoam.getRemarks());
 			}
 			cbHdrStatus.setValue(editFoam.getFomstatus());
-			asmblPlnDtlList.addAll(serviceFoamDtl.getFormDetails(null, asmbPlnHdrId, null,
+			listFoamDetails.addAll(serviceFoamDtl.getFormDetails(null, asmbPlnHdrId, null,
 					(String) cbStatus.getValue(), "F"));
-			asmblyPlnShitftList.addAll(serviceFoamShift.getFormShiftDetails(null, asmbPlnHdrId, null, null,
+			listFoamShift.addAll(serviceFoamShift.getFormShiftDetails(null, asmbPlnHdrId, null, null,
 					(String) cbStatus.getValue(), "F"));
 			cbFoamPlanNo.setValue(editFoam.getFoamplanid().toString());
 		}
@@ -512,37 +503,35 @@ public class Foam extends BaseUI {
 	
 	private void editAsmbPlanDtls() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblAsmbPlanDtl.getItem(tblAsmbPlanDtl.getValue());
-		if (itselect != null) {
-			FoamDtlDM editAsmblDtlObj = new FoamDtlDM();
-			editAsmblDtlObj = beanFoamDtlDM.getItem(tblAsmbPlanDtl.getValue()).getBean();
-			Long prodId = editAsmblDtlObj.getProductId();
-			Collection<?> prodIdCol = cbProd.getItemIds();
+		if (tblFoamDetail.getValue() != null) {
+			FoamDtlDM foamDtlDM = new FoamDtlDM();
+			foamDtlDM = beanFoamDtlDM.getItem(tblFoamDetail.getValue()).getBean();
+			Long prodId = foamDtlDM.getProductId();
+			Collection<?> prodIdCol = cbProduct.getItemIds();
 			for (Iterator<?> iterator = prodIdCol.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbProd.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
 				// Get the actual bean and use the data
 				WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
 				if (prodId != null && prodId.equals(st.getProdId())) {
-					cbProd.setValue(itemId);
+					cbProduct.setValue(itemId);
 				}
 			}
-			if (itselect.getItemProperty("productQty").getValue() != null) {
-				tfPlanDtlQty.setValue(itselect.getItemProperty("productQty").getValue().toString());
+			if (foamDtlDM.getProductQty() != null) {
+				tfPlanDtlQty.setValue(foamDtlDM.getProductQty().toString());
 			}
-			if (itselect.getItemProperty("status").getValue() != null) {
-				cbDtlStatus.setValue(itselect.getItemProperty("status").getValue().toString());
+			if (foamDtlDM.getStatus() != null) {
+				cbDtlStatus.setValue(foamDtlDM.getStatus());
 			}
 		}
 	}
 	
 	private void editAsmbPlanShift() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblShift.getItem(tblShift.getValue());
-		if (itselect != null) {
-			FoamShiftDM editAsmblDtlObj = new FoamShiftDM();
-			editAsmblDtlObj = beanFoamShiftDM.getItem(tblShift.getValue()).getBean();
-			Long empId = editAsmblDtlObj.getEmpId();
+		if (tblFoamShift.getValue() != null) {
+			FoamShiftDM foamShiftDM = new FoamShiftDM();
+			foamShiftDM = beanFoamShiftDM.getItem(tblFoamShift.getValue()).getBean();
+			Long empId = foamShiftDM.getEmpId();
 			Collection<?> empColId = cbEmpName.getItemIds();
 			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
@@ -553,14 +542,14 @@ public class Foam extends BaseUI {
 					cbEmpName.setValue(itemIdClient);
 				}
 			}
-			if (itselect.getItemProperty("shiftName").getValue() != null) {
-				tfShiftName.setValue(itselect.getItemProperty("shiftName").getValue().toString());
+			if (foamShiftDM.getShiftName() != null) {
+				tfShiftName.setValue(foamShiftDM.getShiftName());
 			}
-			if (itselect.getItemProperty("achivedQty").getValue() != null) {
-				tfTargetQty.setValue(itselect.getItemProperty("achivedQty").getValue().toString());
+			if (foamShiftDM.getAchivedQty() != null) {
+				tfTargetQty.setValue(foamShiftDM.getAchivedQty().toString());
 			}
-			if (itselect.getItemProperty("status").getValue() != null) {
-				cbStatus.setValue(itselect.getItemProperty("status").getValue().toString());
+			if (foamShiftDM.getStatus() != null) {
+				cbStatus.setValue(foamShiftDM.getStatus());
 			}
 		}
 	}
@@ -610,24 +599,28 @@ public class Foam extends BaseUI {
 		tfShiftName.setRequired(true);
 		tfTargetQty.setRequired(true);
 		cbEmpName.setRequired(true);
-		cbProd.setRequired(true);
+		cbProduct.setRequired(true);
 		tfPlanDtlQty.setRequired(true);
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
 		resetFields();
 		hlCmdBtnLayout.setVisible(false);
 		btnAddDtls.setCaption("Add");
-		tblAsmbPlanDtl.setVisible(true);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STT_FOAMNO");
-		tfFoamRefNo.setReadOnly(true);
-		for (SlnoGenDM slnoObj : slnoList) {
+		tblFoamDetail.setVisible(true);
+		try {
+			tfFoamRefNo.setReadOnly(false);
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "STT_FOAMNO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfFoamRefNo.setValue(slnoObj.getKeyDesc());
 				tfFoamRefNo.setReadOnly(true);
 			} else {
 				tfFoamRefNo.setReadOnly(false);
 			}
 		}
-		tblAsmbPlanDtl.setVisible(true);
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		tblFoamDetail.setVisible(true);
 	}
 	
 	// Method to get the audit history details
@@ -651,7 +644,7 @@ public class Foam extends BaseUI {
 		tfShiftName.setComponentError(null);
 		tfTargetQty.setComponentError(null);
 		cbEmpName.setComponentError(null);
-		cbProd.setComponentError(null);
+		cbProduct.setComponentError(null);
 		tfPlanDtlQty.setComponentError(null);
 		tfProductnQty.setComponentError(null);
 		cbFoamPlanNo.setRequired(false);
@@ -661,12 +654,12 @@ public class Foam extends BaseUI {
 		tfShiftName.setRequired(false);
 		tfTargetQty.setRequired(false);
 		cbEmpName.setRequired(false);
-		cbProd.setRequired(false);
+		cbProduct.setRequired(false);
 		tfPlanDtlQty.setRequired(false);
 		asmblDtlResetFields();
 		asmblShiftResetFields();
 		hlCmdBtnLayout.setVisible(true);
-		tblAsmbPlanDtl.removeAllItems();
+		tblFoamDetail.removeAllItems();
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
 		loadSrchRslt();
@@ -686,16 +679,9 @@ public class Foam extends BaseUI {
 		tfShiftName.setRequired(true);
 		tfTargetQty.setRequired(true);
 		cbEmpName.setRequired(true);
-		cbProd.setRequired(true);
+		cbProduct.setRequired(true);
 		tfPlanDtlQty.setRequired(true);
 		// reset the input controls to default value
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STT_FOAMNO");
-		tfFoamRefNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfFoamRefNo.setReadOnly(true);
-			}
-		}
 		tblMstScrSrchRslt.setVisible(false);
 		if (tfFoamRefNo.getValue() == null || tfFoamRefNo.getValue().trim().length() == 0) {
 			tfFoamRefNo.setReadOnly(false);
@@ -709,10 +695,10 @@ public class Foam extends BaseUI {
 	
 	private void asmblDtlResetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		cbProd.setValue(null);
+		cbProduct.setValue(null);
 		tfPlanDtlQty.setValue("0");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
-		cbProd.setComponentError(null);
+		cbProduct.setComponentError(null);
 		tfPlanDtlQty.setComponentError(null);
 	}
 	
@@ -737,7 +723,7 @@ public class Foam extends BaseUI {
 		tfShiftName.setComponentError(null);
 		tfTargetQty.setComponentError(null);
 		cbEmpName.setComponentError(null);
-		cbProd.setComponentError(null);
+		cbProduct.setComponentError(null);
 		tfPlanDtlQty.setComponentError(null);
 		errorFlag = false;
 		if ((cbFoamPlanNo.getValue() == null)) {
@@ -751,17 +737,17 @@ public class Foam extends BaseUI {
 			errorFlag = true;
 		}
 		Long prdctnQty;
-		try{
-			prdctnQty=Long.valueOf(tfProductnQty.getValue());
-			if(prdctnQty<0){
+		try {
+			prdctnQty = Long.valueOf(tfProductnQty.getValue());
+			if (prdctnQty < 0) {
 				tfProductnQty.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				errorFlag = true;
-				}
-		}catch(Exception e){
+			}
+		}
+		catch (Exception e) {
 			tfProductnQty.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			errorFlag = true;
 		}
-
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
@@ -770,22 +756,23 @@ public class Foam extends BaseUI {
 	private boolean validateDtlDetails() {
 		boolean isValid = true;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		if ((cbProd.getValue() == null)) {
-			cbProd.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
+		if ((cbProduct.getValue() == null)) {
+			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + cbProd.getValue());
+					+ "Throwing ValidationException. User data is > " + cbProduct.getValue());
 			isValid = false;
 		} else {
-			cbProd.setComponentError(null);
+			cbProduct.setComponentError(null);
 		}
 		Long productQty;
-		try{
-			productQty=Long.valueOf(tfPlanDtlQty.getValue());
-			if(productQty<0){
+		try {
+			productQty = Long.valueOf(tfPlanDtlQty.getValue());
+			if (productQty < 0) {
 				tfPlanDtlQty.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				isValid = false;
-				}
-		}catch(Exception e){
+			}
+		}
+		catch (Exception e) {
 			tfPlanDtlQty.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			isValid = false;
 		}
@@ -812,13 +799,14 @@ public class Foam extends BaseUI {
 			cbEmpName.setComponentError(null);
 		}
 		Long achievedQty;
-		try{
-			achievedQty=Long.valueOf(tfTargetQty.getValue());
-			if(achievedQty<0){
+		try {
+			achievedQty = Long.valueOf(tfTargetQty.getValue());
+			if (achievedQty < 0) {
 				tfTargetQty.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				isValid = false;
-				}
-		}catch(Exception e){
+			}
+		}
+		catch (Exception e) {
 			tfTargetQty.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			isValid = false;
 		}
@@ -830,52 +818,47 @@ public class Foam extends BaseUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			FoamHdrDM FoamObj = new FoamHdrDM();
+			FoamHdrDM foamHdrDM = new FoamHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				FoamObj = beanFoamHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			} else {
-				List<SlnoGenDM> slnoList = serviceSlnogen
-						.getSequenceNumber(companyid, branchID, moduleId, "STT_FOAMNO");
-				for (SlnoGenDM slnoObj : slnoList) {
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						FoamObj.setFormrefno(slnoObj.getKeyDesc());
-					}
-				}
+				foamHdrDM = beanFoamHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			FoamObj.setFoamplanid((Long.valueOf(cbFoamPlanNo.getValue().toString())));
-			FoamObj.setFomdate(dfFoanDt.getValue());
-			FoamObj.setProdtntotqty(Long.valueOf(tfProductnQty.getValue()));
-			FoamObj.setRemarks(taRemark.getValue());
-			FoamObj.setFomstatus((String) cbStatus.getValue());
-			FoamObj.setLastupdateddate(DateUtils.getcurrentdate());
-			FoamObj.setLastupdatedby(username);
-			serviceAsmblyPlanHrd.saveFormHdr(FoamObj);
+			foamHdrDM.setFormrefno(tfFoamRefNo.getValue());
+			foamHdrDM.setFoamplanid((Long.valueOf(cbFoamPlanNo.getValue().toString())));
+			foamHdrDM.setFomdate(dfFoanDt.getValue());
+			foamHdrDM.setProdtntotqty(Long.valueOf(tfProductnQty.getValue()));
+			foamHdrDM.setRemarks(taRemark.getValue());
+			foamHdrDM.setFomstatus((String) cbStatus.getValue());
+			foamHdrDM.setLastupdateddate(DateUtils.getcurrentdate());
+			foamHdrDM.setLastupdatedby(username);
+			serviceAsmblyPlanHrd.saveFormHdr(foamHdrDM);
 			@SuppressWarnings("unchecked")
-			Collection<FoamDtlDM> colPlanDtls = ((Collection<FoamDtlDM>) tblAsmbPlanDtl.getVisibleItemIds());
+			Collection<FoamDtlDM> colPlanDtls = ((Collection<FoamDtlDM>) tblFoamDetail.getVisibleItemIds());
 			for (FoamDtlDM save : (Collection<FoamDtlDM>) colPlanDtls) {
-				save.setFoamId(Long.valueOf(FoamObj.getFoamid()));
+				save.setFoamId(Long.valueOf(foamHdrDM.getFoamid()));
 				serviceFoamDtl.saveAndUpdate(save);
 			}
 			@SuppressWarnings("unchecked")
-			Collection<FoamShiftDM> colAsmbShift = ((Collection<FoamShiftDM>) tblShift.getVisibleItemIds());
+			Collection<FoamShiftDM> colAsmbShift = ((Collection<FoamShiftDM>) tblFoamShift.getVisibleItemIds());
 			for (FoamShiftDM saveShift : (Collection<FoamShiftDM>) colAsmbShift) {
-				saveShift.setFoamId(Long.valueOf(FoamObj.getFoamid()));
+				saveShift.setFoamId(Long.valueOf(foamHdrDM.getFoamid()));
 				serviceFoamShift.saveAndUpdate(saveShift);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSlnogen
-						.getSequenceNumber(companyid, branchID, moduleId, "STT_FOAMNO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "STT_FOAMNO")
+							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "STT_FOAMNO");
+						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "STT_FOAMNO");
 					}
+				}
+				catch (Exception e) {
 				}
 			}
 			asmblDtlResetFields();
 			asmblShiftResetFields();
 			resetFields();
 			loadSrchRslt();
-			asmbPlnHdrId=0L;
+			asmbPlnHdrId = 0L;
 			loadAsmbDtlList();
 			loadShiftRslt();
 		}
@@ -884,25 +867,25 @@ public class Foam extends BaseUI {
 		}
 	}
 	
-	private void saveasmblPlnDtlListDetails() {
+	private void saveFoamDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			FoamDtlDM foamDtlObj = new FoamDtlDM();
-			if (tblAsmbPlanDtl.getValue() != null) {
-				foamDtlObj = beanFoamDtlDM.getItem(tblAsmbPlanDtl.getValue()).getBean();
-				asmblPlnDtlList.remove(foamDtlObj);
+			FoamDtlDM foamDtlDM = new FoamDtlDM();
+			if (tblFoamDetail.getValue() != null) {
+				foamDtlDM = beanFoamDtlDM.getItem(tblFoamDetail.getValue()).getBean();
+				listFoamDetails.remove(foamDtlDM);
 			}
-			foamDtlObj.setProductQty(Long.valueOf(tfPlanDtlQty.getValue()));
-			if (cbProd.getValue() != null) {
-				foamDtlObj.setProductId(((WorkOrderDtlDM) cbProd.getValue()).getProdId());
-				foamDtlObj.setProdname(((WorkOrderDtlDM) cbProd.getValue()).getProdName());
+			foamDtlDM.setProductQty(Long.valueOf(tfPlanDtlQty.getValue()));
+			if (cbProduct.getValue() != null) {
+				foamDtlDM.setProductId(((WorkOrderDtlDM) cbProduct.getValue()).getProdId());
+				foamDtlDM.setProdname(((WorkOrderDtlDM) cbProduct.getValue()).getProdName());
 			}
 			if (cbDtlStatus.getValue() != null) {
-				foamDtlObj.setStatus((String) cbDtlStatus.getValue());
+				foamDtlDM.setStatus((String) cbDtlStatus.getValue());
 			}
-			foamDtlObj.setLastupdateddate(DateUtils.getcurrentdate());
-			foamDtlObj.setLastupdatedby(username);
-			asmblPlnDtlList.add(foamDtlObj);
+			foamDtlDM.setLastupdateddate(DateUtils.getcurrentdate());
+			foamDtlDM.setLastupdatedby(username);
+			listFoamDetails.add(foamDtlDM);
 			loadAsmbDtlList();
 			btnAddDtls.setCaption("Add");
 		}
@@ -912,28 +895,28 @@ public class Foam extends BaseUI {
 		asmblDtlResetFields();
 	}
 	
-	private void saveasmblPlnShiftListDetails() {
+	private void saveFoamShiftDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			FoamShiftDM foamShiftObj = new FoamShiftDM();
-			if (tblShift.getValue() != null) {
-				foamShiftObj = beanFoamShiftDM.getItem(tblShift.getValue()).getBean();
-				asmblyPlnShitftList.remove(foamShiftObj);
+			FoamShiftDM foamShiftDM = new FoamShiftDM();
+			if (tblFoamShift.getValue() != null) {
+				foamShiftDM = beanFoamShiftDM.getItem(tblFoamShift.getValue()).getBean();
+				listFoamShift.remove(foamShiftDM);
 			}
-			foamShiftObj.setShiftName(tfShiftName.getValue());
+			foamShiftDM.setShiftName(tfShiftName.getValue());
 			if (cbEmpName.getValue() != null) {
-				foamShiftObj.setEmpId(((EmployeeDM) cbEmpName.getValue()).getEmployeeid());
-				foamShiftObj.setEmpName(((EmployeeDM) cbEmpName.getValue()).getFirstname());
+				foamShiftDM.setEmpId(((EmployeeDM) cbEmpName.getValue()).getEmployeeid());
+				foamShiftDM.setEmpName(((EmployeeDM) cbEmpName.getValue()).getFirstname());
 			}
-			foamShiftObj.setAchivedQty(Long.valueOf(tfTargetQty.getValue()));
+			foamShiftDM.setAchivedQty(Long.valueOf(tfTargetQty.getValue()));
 			if (cbStatus.getValue() != null) {
-				foamShiftObj.setStatus((String) cbStatus.getValue());
+				foamShiftDM.setStatus((String) cbStatus.getValue());
 			}
-			foamShiftObj.setLastupdateddate(DateUtils.getcurrentdate());
-			foamShiftObj.setLastupdatedby(username);
-			asmblyPlnShitftList.add(foamShiftObj);
+			foamShiftDM.setLastupdateddate(DateUtils.getcurrentdate());
+			foamShiftDM.setLastupdatedby(username);
+			listFoamShift.add(foamShiftDM);
 			loadShiftRslt();
-			asmbPlnHdrId=0L;
+			asmbPlnHdrId = 0L;
 			btnAddShift.setCaption("Add");
 		}
 		catch (Exception e) {
@@ -945,22 +928,23 @@ public class Foam extends BaseUI {
 	/*
 	 * loadFoamList()-->this function is used for load the branch name
 	 */
-	public void loadFoamList() {
+	private void loadFoamList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		beanFoamPlanHdrDM = new BeanContainer<Long, FoamPlanHdrDM>(FoamPlanHdrDM.class);
+		BeanContainer<Long, FoamPlanHdrDM> beanFoamPlanHdrDM = new BeanContainer<Long, FoamPlanHdrDM>(
+				FoamPlanHdrDM.class);
 		beanFoamPlanHdrDM.setBeanIdProperty("formplanid");
-		beanFoamPlanHdrDM.addAll(serviceFoamHdr.getFormPlanHdrDetails(null, null, companyid, null,null));
+		beanFoamPlanHdrDM.addAll(serviceFoamHdr.getFormPlanHdrDetails(null, null, companyid, null, null));
 		cbFoamPlanNo.setContainerDataSource(beanFoamPlanHdrDM);
 	}
 	
 	/*
 	 * loadEmployeeList()-->this function is used for load the employee name
 	 */
-	public void loadEmployeeList() {
+	private void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
-		beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null,
-				null, null, "P"));
+		BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null, null,
+				"P"));
 		cbEmpName.setContainerDataSource(beanEmployeeDM);
 	}
 	
@@ -970,24 +954,31 @@ public class Foam extends BaseUI {
 	private void loadProductList() {
 		BeanItemContainer<WorkOrderDtlDM> beanPlnDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
 		beanPlnDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, null, null, "F"));
-		cbProd.setContainerDataSource(beanPlnDtl);
+		cbProduct.setContainerDataSource(beanPlnDtl);
 	}
+	
 	private void deleteShiftDetails() {
 		FoamShiftDM removeShift = new FoamShiftDM();
-		if (tblShift.getValue() != null) {
-			removeShift = beanFoamShiftDM.getItem(tblShift.getValue()).getBean();
-			asmblyPlnShitftList.remove(removeShift);
+		if (tblFoamShift.getValue() != null) {
+			removeShift = beanFoamShiftDM.getItem(tblFoamShift.getValue()).getBean();
+			listFoamShift.remove(removeShift);
 			asmblShiftResetFields();
 			loadShiftRslt();
 		}
 	}
+	
 	private void deleteDetails() {
-		FoamDtlDM remove= new FoamDtlDM();
-		if (tblAsmbPlanDtl.getValue() != null) {
-			remove = beanFoamDtlDM.getItem(tblAsmbPlanDtl.getValue()).getBean();
-			asmblPlnDtlList.remove(remove);
+		FoamDtlDM remove = new FoamDtlDM();
+		if (tblFoamDetail.getValue() != null) {
+			remove = beanFoamDtlDM.getItem(tblFoamDetail.getValue()).getBean();
+			listFoamDetails.remove(remove);
 			asmblDtlResetFields();
 			loadAsmbDtlList();
 		}
+	}
+	
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
 	}
 }

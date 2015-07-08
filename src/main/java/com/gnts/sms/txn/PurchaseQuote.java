@@ -184,7 +184,7 @@ public class PurchaseQuote extends BaseUI {
 		// Initialization for PurchaseQuote Details user input components
 		cbVendorName = new ComboBox("Vendor Name");
 		cbVendorName.setItemCaptionPropertyId("vendorName");
-		
+		cbVendorName.setWidth("150");
 		tfQuoteRef = new TextField("Quote Ref");
 		tfQuoteRef.setWidth("150");
 		tfvendorName = new TextField("Vendor Name");
@@ -192,10 +192,10 @@ public class PurchaseQuote extends BaseUI {
 		tfvendorName.setImmediate(true);
 		dfQuoteDt = new GERPPopupDateField("Quote Date");
 		dfQuoteDt.setInputPrompt("Select Date");
-		dfQuoteDt.setWidth("150");
+		dfQuoteDt.setWidth("130");
 		dfvalidDt = new GERPPopupDateField("Valid Date");
 		dfvalidDt.setInputPrompt("Select Date");
-		dfvalidDt.setWidth("150");
+		dfvalidDt.setWidth("130");
 		cbEnqNo = new ComboBox("Enquiry No");
 		cbEnqNo.setItemCaptionPropertyId("enquiryNo");
 		cbEnqNo.setWidth("150");

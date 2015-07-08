@@ -119,23 +119,6 @@ public class Vendor extends BaseUI {
 		loadVendorTypeList();
 		// VendorCode generator text field
 		tfVendorCode = new GERPTextField("Vendor Code");
-		tfVendorName.addBlurListener(new BlurListener() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void blur(BlurEvent event) {
-				String venName = tfVendorName.getValue();
-				venName = venName.substring(0, 4);
-				String venCode = tfVendorCode.getValue();
-				venName = "/".concat(venName);
-				tfVendorCode.setReadOnly(false);
-				tfVendorCode.setValue(venCode.concat(venName));
-				tfVendorCode.setReadOnly(true);
-			}
-		});
 		// VendorRating text field
 		tfVendorRating = new GERPTextField("Vendor Rating");
 		// ContactName text fieldPUR
@@ -565,18 +548,6 @@ public class Vendor extends BaseUI {
 		cbCountry.setRequired(true);
 		cbState.setRequired(true);
 		cbCity.setRequired(true);
-		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "BS_VNDRCD").get(0);
-			tfVendorCode.setReadOnly(false);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfVendorCode.setValue(slnoObj.getKeyDesc());
-				tfVendorCode.setReadOnly(true);
-			} else {
-				tfVendorCode.setReadOnly(false);
-			}
-		}
-		catch (Exception e) {
-		}
 	}
 	
 	@Override
@@ -691,7 +662,6 @@ public class Vendor extends BaseUI {
 			}
 			if (cbVendorTypeName.getValue() != null) {
 				vendorObj.setVendorTypeId(Long.valueOf(cbVendorTypeName.getValue().toString()));
-				vendorObj.setVendorTypeName((String) cbVendorTypeName.getValue());
 			}
 			// vendorObj.setVendorTypeName(cbVendorTypeName.getValue().toString());
 			if (tfPinCode.getValue() != null && tfPinCode.getValue().trim().length() > 0) {

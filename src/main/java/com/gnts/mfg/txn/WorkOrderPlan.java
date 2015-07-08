@@ -39,7 +39,7 @@ import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
@@ -83,7 +83,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class WorkOrderPlan extends BaseUI {
+public class WorkOrderPlan extends BaseTransUI {
 	/**
 	 * 
 	 */
@@ -114,7 +114,7 @@ public class WorkOrderPlan extends BaseUI {
 	private Table tblWrkOrdPlnDtl;
 	private Button btnsaveWrkOdrPlDtl;
 	// User Input Components for WO.Plan Material
-	private Table tblWrkOrdPlnMtrlDtl;
+	private Table tblWOPlanMaterials;
 	private TextField tfRequiredQty;
 	// BeanItem container of
 	private BeanItemContainer<WorkOrderPlanHdrDM> beanWrkOdrPlnHdr = null;
@@ -123,7 +123,7 @@ public class WorkOrderPlan extends BaseUI {
 	private List<WorkOrderPlanMtrlDtlDM> workOdrPlnMtrlDtlList = null;
 	private List<WorkOrderPlanProdDtlDM> workOdrPlnPrdDtlList;
 	// local variables declaration
-	private String username, roleName;
+	private String username;
 	private Long companyid, employeeId, moduleId, branchId, appScreenId, roleId;
 	private int recordCnt;
 	private int flag = 0;
@@ -259,9 +259,9 @@ public class WorkOrderPlan extends BaseUI {
 		tblWrkOrdPlnDtl = new GERPTable();
 		tblWrkOrdPlnDtl.setPageLength(5);
 		tblWrkOrdPlnDtl.setWidth("100%");
-		tblWrkOrdPlnMtrlDtl = new GERPTable();
-		tblWrkOrdPlnMtrlDtl.setPageLength(5);
-		tblWrkOrdPlnMtrlDtl.setWidth("100%");
+		tblWOPlanMaterials = new GERPTable();
+		tblWOPlanMaterials.setPageLength(15);
+		tblWOPlanMaterials.setWidth("100%");
 		btnsaveWrkOdrPlDtl = new GERPButton("Add", "add", this);
 		btnsaveWrkOdrPlDtl.setVisible(true);
 		btnsaveWrkOdrPlDtl.addClickListener(new ClickListener() {
@@ -297,15 +297,18 @@ public class WorkOrderPlan extends BaseUI {
 				}
 			}
 		});
-		List<ApprovalSchemaDM> list = serviceWorkOrderPlanHdr.getReviewerId(companyid, appScreenId, branchId, roleId);
-		for (ApprovalSchemaDM obj : list) {
-			roleName = obj.getApprLevel();
-			if (roleName.equals("Approver")) {
+		try {
+			ApprovalSchemaDM obj = serviceWorkOrderPlanHdr.getReviewerId(companyid, appScreenId, branchId, roleId).get(
+					0);
+			if (obj.getApprLevel().equals("Approver")) {
 				cbPlanStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WO_PLAN_HDR, BASEConstants.APPROVE_LVL);
 			} else {
 				cbPlanStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WO_PLAN_HDR, BASEConstants.REVIEWER_LVL);
 			}
 		}
+		catch (Exception e) {
+		}
+		cbPlanStatus.setWidth("150");
 		hlSearchLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		assembleSearchLayout();
@@ -389,25 +392,16 @@ public class WorkOrderPlan extends BaseUI {
 		hlOdrDtl.addComponent(flOdrDtlColumn3);
 		hlOdrDtl.setSpacing(true);
 		hlOdrDtl.setMargin(true);
-		VerticalLayout hdrAndDtl = new VerticalLayout();
-		hdrAndDtl.addComponent(hlOdrDtl);
-		hdrAndDtl.addComponent(GERPPanelGenerator.createPanel(hlOdrDtl));
-		hdrAndDtl.addComponent(tblWrkOrdPlnDtl);
-		hdrAndDtl.setWidth("100%");
-		VerticalLayout vl = new VerticalLayout();
-		vl.addComponent(hdrAndDtl);
-		vl.addComponent(GERPPanelGenerator.createPanel(hdrAndDtl));
-		vl.addComponent(tblWrkOrdPlnMtrlDtl);
-		vl.setWidth("100%");
 		//
 		VerticalLayout vlHdrNCmt = new VerticalLayout();
 		vlHdrNCmt.addComponent(GERPPanelGenerator.createPanel(hlWrkOdrHdr));
-		vlHdrNCmt.addComponent(GERPPanelGenerator.createPanel(vlTableForm));
+		vlHdrNCmt.addComponent(GERPPanelGenerator.createPanel(hlOdrDtl));
+		vlHdrNCmt.addComponent(tblWrkOrdPlnDtl);
 		vlHdrNCmt.setWidth("100%");
 		vlHdrNCmt.setSpacing(true);
 		hlWorkOdrHdl = new HorizontalLayout();
 		hlWorkOdrHdl.addComponent(vlHdrNCmt);
-		hlWorkOdrHdl.addComponent(vl);
+		hlWorkOdrHdl.addComponent(tblWOPlanMaterials);
 		hlWorkOdrHdl.setWidth("100%");
 		hlWorkOdrHdl.setSpacing(true);
 		hlWorkOdrHdl.setMargin(false);
@@ -458,7 +452,6 @@ public class WorkOrderPlan extends BaseUI {
 		int recordCntmrl;
 		if (!loadMtrlTble) {
 			List<ProductBomDtlDM> wrkOrdPlnMtrlList = new ArrayList<ProductBomDtlDM>();
-			logger.info("Inside loadSrchWrkOdrPlnMtrlDtlRslt >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 			if (cbProductName.getValue() != null) {
 				productId = ((WorkOrderDtlDM) cbProductName.getValue()).getProdId();
 			}
@@ -472,10 +465,9 @@ public class WorkOrderPlan extends BaseUI {
 				workOrdMtrllList.add(list);
 			}
 			recordCntmrl = wrkOrdPlnMtrlList.size();
-			logger.info("wrkOrdPlnMtrlList.size() >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + recordCntmrl);
 			beanWrkOdrPlnMtrlDtl = new BeanItemContainer<WorkOrderPlanMtrlDtlDM>(WorkOrderPlanMtrlDtlDM.class);
 			beanWrkOdrPlnMtrlDtl.addAll(workOrdMtrllList);
-			tblWrkOrdPlnMtrlDtl.setContainerDataSource(beanWrkOdrPlnMtrlDtl);
+			tblWOPlanMaterials.setContainerDataSource(beanWrkOdrPlnMtrlDtl);
 		} else {
 			workOdrPlnMtrlDtlList = serviceWorkOrderPlanMtrlDtl.getWrkOrdPlnMtrlDtlDetails(null, null, woPlnHdr, null);
 			recordCntmrl = workOdrPlnMtrlDtlList.size();
@@ -488,14 +480,14 @@ public class WorkOrderPlan extends BaseUI {
 					workOrderPlanMtrlDtlDM.setWoMtrlStatus("false");
 				}
 			}
-			tblWrkOrdPlnMtrlDtl.setContainerDataSource(beanWrkOdrPlnMtrlDtl);
+			tblWOPlanMaterials.setContainerDataSource(beanWrkOdrPlnMtrlDtl);
 		}
-		tblWrkOrdPlnMtrlDtl.setVisibleColumns(new Object[] { "mtrlName", "requiredQty", "woMtrlStatus" });
-		tblWrkOrdPlnMtrlDtl.setColumnHeaders(new String[] { "Material Name", "Required Quantity", "IsRequired" });
-		tblWrkOrdPlnMtrlDtl.setColumnAlignment("mtrlName", Align.LEFT);
-		tblWrkOrdPlnMtrlDtl.setColumnFooter("woMtrlStatus", "No.of Records : " + recordCntmrl);
-		tblWrkOrdPlnMtrlDtl.setEditable(true);
-		tblWrkOrdPlnMtrlDtl.setTableFieldFactory(new TableFieldFactory() {
+		tblWOPlanMaterials.setVisibleColumns(new Object[] { "mtrlName", "requiredQty", "woMtrlStatus" });
+		tblWOPlanMaterials.setColumnHeaders(new String[] { "Material Name", "Required Quantity", "IsRequired" });
+		tblWOPlanMaterials.setColumnAlignment("mtrlName", Align.LEFT);
+		tblWOPlanMaterials.setColumnFooter("woMtrlStatus", "No.of Records : " + recordCntmrl);
+		tblWOPlanMaterials.setEditable(true);
+		tblWOPlanMaterials.setTableFieldFactory(new TableFieldFactory() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
@@ -644,7 +636,7 @@ public class WorkOrderPlan extends BaseUI {
 		}
 		btnsaveWrkOdrPlDtl.setCaption("Add");
 		tblWrkOrdPlnDtl.setVisible(true);
-		tblWrkOrdPlnMtrlDtl.setVisible(true);
+		tblWOPlanMaterials.setVisible(true);
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		loadSrchWrkOdrPlnMtrlDtlRslt(false);
@@ -686,7 +678,7 @@ public class WorkOrderPlan extends BaseUI {
 		});
 		hlCmdBtnLayout.setVisible(false);
 		tblMstScrSrchRslt.setVisible(false);
-		tblWrkOrdPlnMtrlDtl.setVisible(true);
+		tblWOPlanMaterials.setVisible(true);
 		tblWrkOrdPlnDtl.setVisible(true);
 		resetFields();
 		wrkOdrPlnDtlresetFields();
@@ -760,7 +752,7 @@ public class WorkOrderPlan extends BaseUI {
 				serviceWorkOrderPlanProdDtl.saveOrUpdateWorkOrderPlanProdDtlDM(save);
 			}
 			@SuppressWarnings("unchecked")
-			Collection<WorkOrderPlanMtrlDtlDM> itemIds1 = (Collection<WorkOrderPlanMtrlDtlDM>) tblWrkOrdPlnMtrlDtl
+			Collection<WorkOrderPlanMtrlDtlDM> itemIds1 = (Collection<WorkOrderPlanMtrlDtlDM>) tblWOPlanMaterials
 					.getVisibleItemIds();
 			for (WorkOrderPlanMtrlDtlDM save : (Collection<WorkOrderPlanMtrlDtlDM>) itemIds1) {
 				save.setWoPlnId(Long.valueOf(wrkOrdPlnHdr.getWrkPlanId()));
@@ -811,8 +803,8 @@ public class WorkOrderPlan extends BaseUI {
 		tfPlanNo.setReadOnly(false);
 		tblMstScrSrchRslt.setVisible(true);
 		tblWrkOrdPlnDtl.setVisible(false);
-		tblWrkOrdPlnMtrlDtl.setVisible(false);
-		tblWrkOrdPlnMtrlDtl.removeAllItems();
+		tblWOPlanMaterials.setVisible(false);
+		tblWOPlanMaterials.removeAllItems();
 		wrkOdrPlnDtlresetFields();
 		resetFields();
 		loadSrchRslt();
@@ -840,7 +832,7 @@ public class WorkOrderPlan extends BaseUI {
 		cbPlanStatus.setRequired(false);
 		workOdrPlnPrdDtlList = new ArrayList<WorkOrderPlanProdDtlDM>();
 		workOdrPlnMtrlDtlList = new ArrayList<WorkOrderPlanMtrlDtlDM>();
-		tblWrkOrdPlnMtrlDtl.removeAllItems();
+		tblWOPlanMaterials.removeAllItems();
 		tblWrkOrdPlnDtl.removeAllItems();
 	}
 	
@@ -893,5 +885,10 @@ public class WorkOrderPlan extends BaseUI {
 			loadSrchWrkOdrPlnDtlRslt();
 			btnDtleWrkDtl.setEnabled(false);
 		}
+	}
+	
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
 	}
 }

@@ -42,7 +42,7 @@ import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.mst.ProductDrawingDM;
 import com.gnts.mfg.domain.mst.QCTestSpecificationDM;
@@ -83,7 +83,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class QCTest extends BaseUI {
+public class QCTest extends BaseTransUI {
 	/**
 	 
 	 */
@@ -938,5 +938,10 @@ public class QCTest extends BaseUI {
 			loadSrchQCDtlList();
 			btnDtete.setEnabled(false);
 		}
+	}
+	
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
 	}
 }

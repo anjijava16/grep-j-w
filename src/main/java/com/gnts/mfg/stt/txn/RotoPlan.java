@@ -190,8 +190,9 @@ public class RotoPlan extends BaseTransUI {
 			}
 		});
 		tblrotoplanDtl = new Table();
-		tblrotoplanDtl.setWidth("99%");
+		tblrotoplanDtl.setWidth("575");
 		tblrotoplanDtl.setPageLength(3);
+		tblrotoplanDtl.setFooterVisible(true);
 		tblrotoplanDtl.setSelectable(true);
 		tblrotoplanDtl.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -212,7 +213,7 @@ public class RotoPlan extends BaseTransUI {
 			}
 		});
 		tblShift = new Table();
-		tblShift.setWidth("99%");
+		tblShift.setWidth("550");
 		tblShift.setPageLength(6);
 		tblShift.setSelectable(true);
 		tblShift.addItemClickListener(new ItemClickListener() {
@@ -234,8 +235,9 @@ public class RotoPlan extends BaseTransUI {
 			}
 		});
 		tblarm = new Table();
-		tblarm.setWidth("99%");
+		tblarm.setWidth("550");
 		tblarm.setPageLength(5);
+		tblarm.setFooterVisible(true);
 		tblarm.setSelectable(true);
 		tblarm.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -296,10 +298,10 @@ public class RotoPlan extends BaseTransUI {
 		tfPlanRefNo = new GERPTextField("Plan Ref.No");
 		tfPlanRefNo.setWidth("130px");
 		tfarmno = new GERPTextField("Arm No");
-		tfarmno.setWidth("120");
+		tfarmno.setWidth("130");
 		tfarmno.setValue("0");
 		tfnoofcycle = new GERPTextField("No Of Cycle");
-		tfnoofcycle.setWidth("120");
+		tfnoofcycle.setWidth("110");
 		tfnoofcycle.setValue("0");
 		// Branch Combo Box
 		cbBranch = new GERPComboBox("Branch Name");
@@ -321,7 +323,7 @@ public class RotoPlan extends BaseTransUI {
 		// Shift Name TextField
 		tfShiftName = new GERPTextField("Shift Name");
 		// Employee Name combobox
-		cbEmpName = new GERPComboBox("Employee Name");
+		cbEmpName = new GERPComboBox("Employee");
 		cbEmpName.setItemCaptionPropertyId("fullname");
 		loadEmployeeList();
 		// TargetQty TextField
@@ -469,6 +471,7 @@ public class RotoPlan extends BaseTransUI {
 		hlSearchLayout.removeAllComponents();
 		flHdrCol1 = new FormLayout();
 		flHdrCol2 = new FormLayout();
+		flHdrCol1.setHeight("190");
 		flHdrCol1.addComponent(cbBranch);
 		flHdrCol1.addComponent(dfrotoPlanDt);
 		flHdrCol1.addComponent(tfPlanRefNo);
@@ -552,6 +555,7 @@ public class RotoPlan extends BaseTransUI {
 		hlarmAndDtl.setSpacing(true);
 		hlarmAndDtl.setHeight("100%");
 		hlHdrAndShift = new HorizontalLayout();
+		hlHdrAndShift.setSpacing(true);
 		hlHdrAndShift.addComponent(GERPPanelGenerator.createPanel(hlHdr));
 		hlHdrAndShift.addComponent(GERPPanelGenerator.createPanel(vlDtl));
 		vlHrdAndDtlAndShift = new VerticalLayout();

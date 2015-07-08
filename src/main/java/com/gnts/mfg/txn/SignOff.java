@@ -33,7 +33,7 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.txn.QATestHdrDM;
 import com.gnts.mfg.domain.txn.SignOffDtlDM;
@@ -69,7 +69,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class SignOff extends BaseUI {
+public class SignOff extends BaseTransUI {
 	/**
 	 * 
 	 */
@@ -85,7 +85,7 @@ public class SignOff extends BaseUI {
 	private FormLayout flSignOffCmp1, flSignOffCmp2, flSignOffCmp3, flSignOffCmp4;
 	private HorizontalLayout hlSignOffHdr = new HorizontalLayout();
 	// SignOff Details Components Declaration
-	private TextField tfproductSlNo;
+	private TextField tfProductSlNo;
 	private ComboBox cbInspectionNo, cbSignOffDtStatus;
 	private Button btnAdd;
 	private Table tblSignOffDtl;
@@ -112,7 +112,7 @@ public class SignOff extends BaseUI {
 	private Long moduleId;
 	private HorizontalLayout hlSearchLayout;
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
-	private Long branchID;
+	private Long branchId;
 	private Comments comment;
 	private Long commentby;
 	private Long appScreenId;
@@ -123,7 +123,7 @@ public class SignOff extends BaseUI {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		moduleId = Long.valueOf(UI.getCurrent().getSession().getAttribute("moduleId").toString());
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
 		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
 		commentby = ((Long) (UI.getCurrent().getSession().getAttribute("employeeid")));
@@ -179,7 +179,7 @@ public class SignOff extends BaseUI {
 			}
 		});
 		try {
-			ApprovalSchemaDM obj = serviceSignoffHdr.getReviewerId(companyId, appScreenId, branchID, roleId).get(0);
+			ApprovalSchemaDM obj = serviceSignoffHdr.getReviewerId(companyId, appScreenId, branchId, roleId).get(0);
 			if (obj.getApprLevel().equals("Reviewer")) {
 				cbSignOffHdrStatus = new GERPComboBox("Status", BASEConstants.T_MFG_QA_SIGNOFF_HDR,
 						BASEConstants.SGN_RVER);
@@ -207,7 +207,7 @@ public class SignOff extends BaseUI {
 		taRemaks.setHeight("70");
 		pdBatchDate = new GERPPopupDateField("Batch Date");
 		//
-		tfproductSlNo = new GERPTextField("Product Sl.No");
+		tfProductSlNo = new GERPTextField("Product Sl.No");
 		cbInspectionNo = new GERPComboBox("Inspection No.");
 		cbInspectionNo.setItemCaptionPropertyId("inspectionno");
 		cbSignOffDtStatus = new GERPComboBox("Status", BASEConstants.T_MFG_QA_SIGNOFF_HDR, BASEConstants.SGN_APVER);
@@ -222,11 +222,11 @@ public class SignOff extends BaseUI {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (cbInspectionNo.getValue() != null) {
-					tfproductSlNo.setReadOnly(false);
-					tfproductSlNo.setValue((serviceQATestHdr.getQaTestHdrDetails(
+					tfProductSlNo.setReadOnly(false);
+					tfProductSlNo.setValue((serviceQATestHdr.getQaTestHdrDetails(
 							((QATestHdrDM) cbInspectionNo.getValue()).getQatestHdrid(), companyId, null, null, null,
 							"Active").get(0).getProdslno()));
-					tfproductSlNo.setReadOnly(true);
+					tfProductSlNo.setReadOnly(true);
 				}
 			}
 		});
@@ -321,7 +321,7 @@ public class SignOff extends BaseUI {
 		cbWorkOrderNo.setRequired(true);
 		tfbatchQty.setRequired(true);
 		cbInspectionNo.setRequired(true);
-		tfproductSlNo.setRequired(true);
+		tfProductSlNo.setRequired(true);
 		tfbatchTested.setRequired(true);
 		cbSignOffDtStatus.setRequired(true);
 		cbSignOffHdrStatus.setRequired(true);
@@ -353,7 +353,7 @@ public class SignOff extends BaseUI {
 		flSignOffDtlCmp2 = new FormLayout();
 		flSignOffDtlCmp3 = new FormLayout();
 		flSignOffDtlCmp1.addComponent(cbInspectionNo);
-		flSignOffDtlCmp1.addComponent(tfproductSlNo);
+		flSignOffDtlCmp1.addComponent(tfProductSlNo);
 		flSignOffDtlCmp2.addComponent(cbSignOffDtStatus);
 		flSignOffDtlCmp2.addComponent(new HorizontalLayout() {
 			private static final long serialVersionUID = 1L;
@@ -511,13 +511,15 @@ public class SignOff extends BaseUI {
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		assembleInputUserLayout();
 		resetFields();
-		List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyId, branchID, moduleId, "MF_BATCHNO");
-		for (SlnoGenDM slnoObj : slnoList) {
+		try {
+			tfbatchNo.setReadOnly(false);
+			SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyId, branchId, moduleId, "MF_BATCHNO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfbatchNo.setValue(slnoObj.getKeyDesc());
 				tfbatchNo.setReadOnly(true);
-			} else {
-				tfbatchNo.setReadOnly(false);
 			}
+		}
+		catch (Exception e) {
 		}
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
@@ -535,21 +537,9 @@ public class SignOff extends BaseUI {
 		hlUserInputLayout.removeAllComponents();
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		assembleInputUserLayout();
-		List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyId, branchID, moduleId, "MF_QAINSNO");
-		tfbatchNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfbatchNo.setReadOnly(true);
-			} else {
-				tfbatchNo.setReadOnly(false);
-			}
-		}
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		tblSignOffDtl.setVisible(true);
-		if (tfbatchNo.getValue() == null || tfbatchNo.getValue().trim().length() == 0) {
-			tfbatchNo.setReadOnly(false);
-		}
 		resetFields();
 		editSignOffHdrDetails();
 		editSignOffDtlList();
@@ -566,7 +556,9 @@ public class SignOff extends BaseUI {
 				cbWorkOrderNo.setValue(signoffHdrDM.getWoid().toString());
 				cbClient.setValue(signoffHdrDM.getClientid());
 				cbSignOffHdrStatus.setValue(signoffHdrDM.getSignstatus());
+				tfbatchNo.setReadOnly(false);
 				tfbatchNo.setValue(signoffHdrDM.getBatchno());
+				tfbatchNo.setReadOnly(true);
 				tfbatchTested.setValue(Long.valueOf(signoffHdrDM.getBatchtested()).toString());
 				pdBatchDate.setValue(signoffHdrDM.getBatchdateIn());
 				tfbatchQty.setValue(Long.valueOf(signoffHdrDM.getBatchqty()).toString());
@@ -599,7 +591,7 @@ public class SignOff extends BaseUI {
 					cbInspectionNo.setValue(itemId);
 				}
 			}
-			tfproductSlNo.setValue(signOffDtlDM.getProductSlNo());
+			tfProductSlNo.setValue(signOffDtlDM.getProductSlNo());
 			cbSignOffDtStatus.setValue(signOffDtlDM.getSignStatus());
 		}
 	}
@@ -691,14 +683,8 @@ public class SignOff extends BaseUI {
 			SignoffHdrDM signOffHdr = new SignoffHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				signOffHdr = beanSignoffHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			} else {
-				List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyId, +branchID, moduleId, "MF_BATCHNO");
-				for (SlnoGenDM slnoObj : slnoList) {
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						signOffHdr.setBatchno(slnoObj.getKeyDesc());
-					}
-				}
 			}
+			signOffHdr.setBatchno(tfbatchNo.getValue());
 			signOffHdr.setCompanyid(companyId);
 			signOffHdr.setBranchid((Long) cbBranch.getValue());
 			signOffHdr.setBatchdate(pdBatchDate.getValue());
@@ -721,11 +707,14 @@ public class SignOff extends BaseUI {
 				serviceSignoffDtl.saveSignoffDtl(save);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSLNo.getSequenceNumber(companyId, branchID, moduleId, "MF_BATCHNO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyId, branchId, moduleId, "MF_BATCHNO").get(
+							0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSLNo.updateNextSequenceNumber(companyId, branchID, moduleId, "MF_BATCHNO");
+						serviceSLNo.updateNextSequenceNumber(companyId, branchId, moduleId, "MF_BATCHNO");
 					}
+				}
+				catch (Exception e) {
 				}
 			}
 			resetFields();
@@ -751,7 +740,7 @@ public class SignOff extends BaseUI {
 			}
 			signOffDtl.setQaTstId(((QATestHdrDM) cbInspectionNo.getValue()).getQatestHdrid());
 			signOffDtl.setInspectionNo(((QATestHdrDM) cbInspectionNo.getValue()).getInspectionno());
-			signOffDtl.setProductSlNo(tfproductSlNo.getValue());
+			signOffDtl.setProductSlNo(tfProductSlNo.getValue());
 			signOffDtl.setSignStatus((String) cbSignOffDtStatus.getValue());
 			signOffDtl.setLastUpdatedBy(userName);
 			signOffDtl.setLastUpdatedDt(DateUtils.getcurrentdate());
@@ -774,12 +763,12 @@ public class SignOff extends BaseUI {
 		} else {
 			cbInspectionNo.setComponentError(null);
 		}
-		if (tfproductSlNo.getValue() == "" || tfproductSlNo.getValue() == null
-				|| tfproductSlNo.getValue().trim().length() == 0) {
-			tfproductSlNo.setComponentError(new UserError(GERPErrorCodes.NULL_QATST_RESLT));
+		if (tfProductSlNo.getValue() == "" || tfProductSlNo.getValue() == null
+				|| tfProductSlNo.getValue().trim().length() == 0) {
+			tfProductSlNo.setComponentError(new UserError(GERPErrorCodes.NULL_QATST_RESLT));
 			errorFlag = false;
 		} else {
-			tfproductSlNo.setComponentError(null);
+			tfProductSlNo.setComponentError(null);
 		}
 		if (cbSignOffDtStatus.getValue() == null) {
 			cbSignOffDtStatus.setComponentError(new UserError(GERPErrorCodes.NULL_QC_TEST_CYC));
@@ -816,7 +805,7 @@ public class SignOff extends BaseUI {
 		tfbatchTested.setComponentError(null);
 		tfbatchQty.setComponentError(null);
 		cbInspectionNo.setComponentError(null);
-		tfproductSlNo.setComponentError(null);
+		tfProductSlNo.setComponentError(null);
 		cbSignOffDtStatus.setComponentError(null);
 		cbSignOffHdrStatus.setComponentError(null);
 		hlCmdBtnLayout.setVisible(true);
@@ -838,13 +827,12 @@ public class SignOff extends BaseUI {
 		pdBatchDate.setValue(null);
 		listSignOffDtlDM = new ArrayList<SignOffDtlDM>();
 		tblSignOffDtl.removeAllItems();
-		// comment.resetFields();
 	}
 	
-	public void resetSignOffDtlFields() {
+	private void resetSignOffDtlFields() {
 		cbInspectionNo.setValue(null);
-		tfproductSlNo.setReadOnly(false);
-		tfproductSlNo.setValue("");
+		tfProductSlNo.setReadOnly(false);
+		tfProductSlNo.setValue("");
 		cbSignOffDtStatus.setValue(null);
 	}
 	
@@ -858,5 +846,10 @@ public class SignOff extends BaseUI {
 			loadSrchSignOffDtlList();
 			btnDetlIns.setEnabled(false);
 		}
+	}
+	
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
 	}
 }

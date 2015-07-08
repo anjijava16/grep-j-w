@@ -61,7 +61,7 @@ public class VendorType extends BaseUI {
 	// Bean container
 	private BeanItemContainer<VendorTypeDM> beanVendortypeDM = null;
 	// local variables declaration
-	private Long companyId;
+	private Long companyId, branchId;
 	private String userName, vendoreid;
 	private int recordCnt = 0;
 	// Initialize Logger
@@ -72,6 +72,7 @@ public class VendorType extends BaseUI {
 	public VendorType() {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Inside VendorType() constructor");
 		// Loading the UI
@@ -86,6 +87,7 @@ public class VendorType extends BaseUI {
 		// Branch Name Combo Box
 		cbBranchname = new GERPComboBox("Branch Name");
 		cbBranchname.setItemCaptionPropertyId("branchName");
+		cbBranchname.setVisible(false);
 		loadBranchList();
 		// VendorType Status Combo Box
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
@@ -125,14 +127,10 @@ public class VendorType extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<VendorTypeDM> vendorTypeList = new ArrayList<VendorTypeDM>();
-		Long branchid = null;
-		if (cbBranchname.getValue() != null) {
-			branchid = ((Long) cbBranchname.getValue());
-		}
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ tfvendortypename.getValue() + ", " + (String) cbStatus.getValue());
 		vendorTypeList = serviceVendorType.getVendorTypeList(tfvendortypename.getValue(), (String) cbStatus.getValue(),
-				branchid, companyId);
+				null, companyId);
 		recordCnt = vendorTypeList.size();
 		beanVendortypeDM = new BeanItemContainer<VendorTypeDM>(VendorTypeDM.class);
 		beanVendortypeDM.addAll(vendorTypeList);
@@ -141,10 +139,10 @@ public class VendorType extends BaseUI {
 		tblMstScrSrchRslt.setContainerDataSource(beanVendortypeDM);
 		tblMstScrSrchRslt.setColumnAlignment("vendorid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No. of Records:" + recordCnt);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "vendorid", "vendortypename", "branchName",
-				"vendortypestatus", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Vendor Type ", "Branch", "Status",
-				"Updated Date", "Updated By" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "vendorid", "vendortypename", "vendortypestatus",
+				"lastUpdatedDt", "lastUpdatedBy" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Vendor Type ", "Status", "Updated Date",
+				"Updated By" });
 	}
 	
 	// Based on the selected record, the data would be populated into user input
@@ -181,7 +179,7 @@ public class VendorType extends BaseUI {
 		cbStatus.setValue("");
 		tfvendortypename.setComponentError(null);
 		cbBranchname.setComponentError(null);
-		cbBranchname.setValue(0L);
+		cbBranchname.setValue(branchId);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	
@@ -209,7 +207,6 @@ public class VendorType extends BaseUI {
 		tfvendortypename.setValue("");
 		cbBranchname.setComponentError(null);
 		cbBranchname.setValue(0L);
-		cbBranchname.setRequired(false);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		// reload the search using the defaults
@@ -223,7 +220,6 @@ public class VendorType extends BaseUI {
 		// same container
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		tfvendortypename.setRequired(true);
-		cbBranchname.setRequired(true);
 		// reset the input controls to default value
 		resetFields();
 	}
@@ -233,7 +229,6 @@ public class VendorType extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Invoking Edit record ");
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		tfvendortypename.setRequired(true);
-		cbBranchname.setRequired(true);
 		editVendorTypeDetails();
 	}
 	
@@ -245,12 +240,6 @@ public class VendorType extends BaseUI {
 		if ((tfvendortypename.getValue() == null) || tfvendortypename.getValue().trim().length() == 0) {
 			tfvendortypename.setComponentError(new UserError(GERPErrorCodes.NULL_VENDORTYPE_NAME));
 			errorFlag = true;
-		}
-		if ((Long)cbBranchname.getValue()==0L) {
-			cbBranchname.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_BRANCH));
-			errorFlag = true;
-			logger.warn("Company ID : " + companyId + " | User Name : " + userName + " > "
-					+ "Throwing ValidationException. Holiday Name is > " + cbBranchname.getValue());
 		}
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
@@ -270,7 +259,6 @@ public class VendorType extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Canceling action ");
 		assembleSearchLayout();
 		tfvendortypename.setRequired(false);
-		cbBranchname.setRequired(false);
 		tfvendortypename.setComponentError(null);
 		cbBranchname.setComponentError(null);
 		resetFields();

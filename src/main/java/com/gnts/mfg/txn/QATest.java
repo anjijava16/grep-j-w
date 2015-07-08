@@ -42,7 +42,7 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.mst.ProductDrawingDM;
 import com.gnts.mfg.domain.mst.TestConditionDM;
@@ -86,7 +86,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class QATest extends BaseUI {
+public class QATest extends BaseTransUI {
 	/**
 	 * 
 	 */
@@ -135,9 +135,9 @@ public class QATest extends BaseUI {
 			.getBean("testSpec");
 	private String userName;
 	private Long companyid;
-	private Long EmployeeId;
+	private Long employeeId;
 	private Long moduleId;
-	private Long branchID;
+	private Long branchId;
 	private Long qaTestHdrId;
 	private Logger logger = Logger.getLogger(QCTestType.class);
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
@@ -153,9 +153,9 @@ public class QATest extends BaseUI {
 		// Get the logged in user name and company id from the session
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Inside QATest() constructor");
 		// Loading the QATest UI
 		buildView();
@@ -491,7 +491,7 @@ public class QATest extends BaseUI {
 		//
 		TabSheet tabSheet = new TabSheet();
 		tabSheet.setWidth("100%");
-		tabSheet.setHeight("315");
+		tabSheet.setHeight("320");
 		tabSheet.addTab(vlTstDtl, "Test Definition", null);
 		tabSheet.addTab(vlTstCndn, "Test Condition Result", null);
 		tabSheet.addTab(vlTableForm, "Comments", null);
@@ -550,7 +550,7 @@ public class QATest extends BaseUI {
 		tblQATstDtl.removeAllItems();
 	}
 	
-	public void resetQATstCndnRslt() {
+	private void resetQATstCndnRslt() {
 		cbTstCondtn.setValue(null);
 		taCndnObservation.setValue("");
 		cbQATstCndnStatus.setValue(cbQATstCndnStatus.getItemIds().iterator().next());
@@ -590,7 +590,7 @@ public class QATest extends BaseUI {
 		resetQATestDefDtl();
 		try {
 			tfInspectionNo.setReadOnly(false);
-			SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "MF_QCINSNO").get(0);
+			SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchId, moduleId, "MF_QCINSNO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				tfInspectionNo.setValue(slnoObj.getKeyDesc());
 				tfInspectionNo.setReadOnly(true);
@@ -621,7 +621,7 @@ public class QATest extends BaseUI {
 		BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
 				WorkOrderHdrDM.class);
 		beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
-		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, "Active", "F",
+		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "P",
 				null, null));
 		cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
 	}
@@ -860,7 +860,7 @@ public class QATest extends BaseUI {
 			qaTestHdrDM.setTeststatus((String) cbQThdrStatus.getValue());
 			qaTestHdrDM.setInspectiondate(pdInspectionDt.getValue());
 			qaTestHdrDM.setObservation(taTstObservation.getValue());
-			qaTestHdrDM.setPreparedby(EmployeeId);
+			qaTestHdrDM.setPreparedby(employeeId);
 			qaTestHdrDM.setActionedby(null);
 			qaTestHdrDM.setReviewedby(null);
 			qaTestHdrDM.setLastupdateddate(DateUtils.getcurrentdate());
@@ -880,10 +880,10 @@ public class QATest extends BaseUI {
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
 				try {
-					SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchID, moduleId, "MF_QAINSNO").get(
+					SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchId, moduleId, "MF_QAINSNO").get(
 							0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSLNo.updateNextSequenceNumber(companyid, branchID, moduleId, "MF_QAINSNO");
+						serviceSLNo.updateNextSequenceNumber(companyid, branchId, moduleId, "MF_QAINSNO");
 					}
 				}
 				catch (Exception e) {
@@ -905,7 +905,7 @@ public class QATest extends BaseUI {
 		}
 	}
 	
-	public void saveQaTstDtls() {
+	private void saveQaTstDtls() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
 				+ "Saving saveQaTstDtls  Data... ");
 		QATestDtlDM qaTestDtlDM = new QATestDtlDM();
@@ -934,7 +934,7 @@ public class QATest extends BaseUI {
 		btnAddDtl.setCaption("Add");
 	}
 	
-	public Boolean validateTstDefDetails() {
+	private Boolean validateTstDefDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "validateTstDefDetails Data ");
 		Boolean errorFlag = true;
 		if (cbTstSpec.getValue() == null) {
@@ -959,7 +959,7 @@ public class QATest extends BaseUI {
 		return errorFlag;
 	}
 	
-	public void saveCndnReslt() {
+	private void saveCndnReslt() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
 					+ "Saving saveCndnReslt Data... ");
@@ -984,7 +984,7 @@ public class QATest extends BaseUI {
 		}
 	}
 	
-	public Boolean validateTstCndnDetails() {
+	private Boolean validateTstCndnDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "validateTstDefDetails Data ");
 		Boolean errorFlag = true;
 		if (cbTstCondtn.getValue() == null) {
@@ -1044,5 +1044,10 @@ public class QATest extends BaseUI {
 			tblQATstDtl.setValue("");
 			loadSrchQADtlList();
 		}
+	}
+	
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
 	}
 }

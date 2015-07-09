@@ -1,92 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="extruder" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="1.0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="extruder" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d0c3d0b1-0ae9-4250-a307-8da67f82bafc">
+	<property name="ireport.zoom" value="1.1000000000000008"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="headerid" class="java.lang.String"/>
+	<parameter name="headerid" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
-		<![CDATA[SELECT h.extrud_id,d.extrud_dtl_id,h.grade_no,
-  h.lot_no,h.batch_no,
-  h.regrined_flag,h.EXTRUD_REF_NO,h.EXTRUD_SECTION,
-  d.extrud_date,d.CHRG_OFF_TIME,
-  d.output_qty,d.chrg_on_time,d.chrg_on_time,
-  d.temp_z1,d.temp_z5,nvl(round(d.oee_value,2),'0') oeeevalue,
+		<![CDATA[SELECT h.extrud_id,d.extrud_dtlid,h.grade_no,
+  h.lot_no,
+  h.EXTRUD_REF_NO,
+  h.extrud_date,d.charge_endtime CHRG_OFF_TIME,
+  d.output_qty,d.charge_sttime chrg_on_time,
+  nvl(round(d.oee_prnct,2),'0') oeeevalue,
   d.remarks,mat.acc_lot_no,nvl(regexp_substr(mat.acc_lot_no,'[^,]+',1,1),'0') lldpe,
   nvl(regexp_substr(mat.acc_lot_no,'[^,]+',1,2),'0') md,
   nvl(regexp_substr(mat.acc_lot_no,'[^,]+',1,3),'0') additives,
   nvl(regexp_substr(mat.acc_lot_no,'[^,]+',1,4),'0') regrined FROM
-t_production_extrud_hdr h
-JOIN t_production_extrud_dtl d
-ON(h.EXTRUD_ID =d.extrud_id)
-join (select extrud_dtl_id,listagg(m.INPUT_QTY, ',')
-within group (order by m.extrud_dtl_id) acc_lot_no
-from t_production_extrud_mat_dtl m
-where extrud_id=$P{headerid} group by extrud_dtl_id) mat on(mat.extrud_dtl_id=d.extrud_dtl_id)
+t_stt_mfg_extrud_hdr h
+JOIN t_stt_mfg_extrud_dtl d
+ON(h.extrud_id =d.extrud_id)
+join (select extrud_dtlid,listagg(m.MATERIAL_QTY, ',')
+within group (order by m.extrud_dtlid) acc_lot_no
+from t_stt_mfg_extrud_mtrl m
+where extrud_id=$P{headerid} group by extrud_dtlid) mat on(mat.extrud_dtlid=d.extrud_dtlid)
 AND h.extrud_id=$P{headerid}]]>
 	</queryString>
-	<field name="EXTRUD_ID" class="java.math.BigDecimal">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="EXTRUD_DTL_ID" class="java.math.BigDecimal">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="GRADE_NO" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="LOT_NO" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="BATCH_NO" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="REGRINED_FLAG" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="EXTRUD_REF_NO" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="EXTRUD_SECTION" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="EXTRUD_DATE" class="java.sql.Timestamp">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="CHRG_OFF_TIME" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="OUTPUT_QTY" class="java.math.BigDecimal">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="CHRG_ON_TIME" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="TEMP_Z1" class="java.math.BigDecimal">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="TEMP_Z5" class="java.math.BigDecimal">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="OEEEVALUE" class="java.math.BigDecimal">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="REMARKS" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="ACC_LOT_NO" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="LLDPE" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="MD" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="ADDITIVES" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="REGRINED" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
+	<field name="EXTRUD_ID" class="java.math.BigDecimal"/>
+	<field name="EXTRUD_DTLID" class="java.math.BigDecimal"/>
+	<field name="GRADE_NO" class="java.lang.String"/>
+	<field name="LOT_NO" class="java.lang.String"/>
+	<field name="EXTRUD_REF_NO" class="java.lang.String"/>
+	<field name="EXTRUD_DATE" class="java.sql.Timestamp"/>
+	<field name="CHRG_OFF_TIME" class="java.lang.String"/>
+	<field name="OUTPUT_QTY" class="java.math.BigDecimal"/>
+	<field name="CHRG_ON_TIME" class="java.lang.String"/>
+	<field name="OEEEVALUE" class="java.math.BigDecimal"/>
+	<field name="REMARKS" class="java.lang.String"/>
+	<field name="ACC_LOT_NO" class="java.lang.String"/>
+	<field name="LLDPE" class="java.lang.String"/>
+	<field name="MD" class="java.lang.String"/>
+	<field name="ADDITIVES" class="java.lang.String"/>
+	<field name="REGRINED" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -99,128 +54,109 @@ AND h.extrud_id=$P{headerid}]]>
 	<columnHeader>
 		<band height="197" splitType="Stretch">
 			<staticText>
-				<reportElement x="282" y="1" width="282" height="25"/>
+				<reportElement uuid="b91d6953-e728-41a7-a1a9-ef05476dbaa0" x="1" y="1" width="801" height="25"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Bangkok" size="18" isBold="true"/>
+					<font fontName="SansSerif" size="18" isBold="true"/>
 				</textElement>
 				<text><![CDATA[SAARC Tool Tech (P) Ltd.,]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="52" width="172" height="19"/>
+				<reportElement uuid="39ff7b73-028e-474c-bed8-62d22e74ce53" x="1" y="50" width="179" height="19"/>
 				<textElement verticalAlignment="Middle">
-					<font size="12" isBold="true" isUnderline="false"/>
+					<font size="13" isBold="true" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Extruder Check Sheet Report]]></text>
 			</staticText>
-			<image>
-				<reportElement x="235" y="0" width="45" height="44"/>
-				<imageExpression class="java.lang.String"><![CDATA["logo.png"]]></imageExpression>
-			</image>
 			<staticText>
-				<reportElement x="282" y="26" width="282" height="17"/>
+				<reportElement uuid="4acf89ac-0f82-47a7-a575-e6085126bec7" x="0" y="26" width="803" height="17"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
 				<text><![CDATA[Malumichampatti, Coimbatore - 641 050]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="667" y="77" width="110" height="16"/>
+				<reportElement uuid="e334bd62-3b34-455f-abb8-4817e43b3e56" x="667" y="77" width="110" height="16"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{EXTRUD_REF_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{EXTRUD_REF_NO}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="600" y="92" width="67" height="16"/>
+				<reportElement uuid="7a9122b8-78c5-480d-85f8-ee0d4e172f5f" x="600" y="92" width="67" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Section        ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="92" width="466" height="16"/>
+				<reportElement uuid="0bb30116-1847-4676-8ea8-6adcf5bf69e5" x="1" y="92" width="466" height="16"/>
 				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[Standard Production :]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="53" y="137" width="100" height="16"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{BATCH_NO}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="667" y="92" width="110" height="16"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{EXTRUD_SECTION}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement x="1" y="107" width="52" height="16"/>
+				<reportElement uuid="e8880491-9bf6-48da-9124-0ddd920cd1df" x="1" y="107" width="52" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Grade No]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="667" y="123" width="110" height="16"/>
+				<reportElement uuid="07256f12-8d36-40de-9a45-907a28e2002f" x="53" y="107" width="111" height="16"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{REGRINED_FLAG}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="53" y="107" width="92" height="16"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{GRADE_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{GRADE_NO}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="137" width="52" height="16"/>
+				<reportElement uuid="94011ea8-2b1e-474d-8ae0-dde42d935a06" x="1" y="137" width="52" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[IG Lot No ]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="53" y="122" width="111" height="16"/>
+				<reportElement uuid="b37d0c4d-bf73-4418-890d-7faefa4c8d08" x="53" y="122" width="111" height="16"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{LOT_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{LOT_NO}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="122" width="52" height="16"/>
+				<reportElement uuid="b74fbfc2-d72b-404f-afcc-873c95d9b9b3" x="1" y="122" width="52" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Lot No  ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="600" y="107" width="67" height="16"/>
+				<reportElement uuid="257ef2a5-ecba-41f9-94d3-e8f3927fe481" x="600" y="107" width="67" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Rev No/Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="600" y="123" width="67" height="16"/>
+				<reportElement uuid="2d99236a-64f4-4e3d-b314-798e40314d2c" x="600" y="123" width="67" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Regrined No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="600" y="77" width="67" height="16"/>
+				<reportElement uuid="7f5b0aea-2e36-46e5-b963-f47b00bb9251" x="600" y="77" width="67" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Reference No          ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="77" width="466" height="16"/>
+				<reportElement uuid="c8634069-fe60-4530-8618-c836ef86cdb1" x="1" y="77" width="202" height="16"/>
 				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[Machine pre Heating Time:-  1:30 hrs]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="32" y="168" width="68" height="16"/>
+				<reportElement uuid="f72e2c3e-62bb-4acd-947e-6c055a6c311d" x="32" y="168" width="68" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Extruder Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="735" y="160" width="67" height="33"/>
+				<reportElement uuid="1627b34c-4247-4faa-9a78-4172cf5ae1cf" x="736" y="160" width="67" height="33"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
@@ -228,22 +164,22 @@ AND h.extrud_id=$P{headerid}]]>
 Sign.  ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="293" y="160" width="60" height="34"/>
+				<reportElement uuid="583c2c1f-eaca-4504-b73d-5b8788f7a21b" x="293" y="160" width="60" height="34"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Output W.t
 Kgs]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="141" y="177" width="37" height="16"/>
+				<reportElement uuid="a651c265-6a1d-4ba3-b7f7-f116ccb8652c" x="141" y="177" width="37" height="16"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[M.D]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="441" y="160" width="80" height="33"/>
+				<reportElement uuid="0ba62fd3-0d56-475f-aa83-5a93b7bc62e5" x="441" y="160" width="80" height="33"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
@@ -251,179 +187,192 @@ Kgs]]></text>
    Z1      Z5]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="168" width="23" height="16"/>
+				<reportElement uuid="d095e7ae-b98d-4fd1-921f-a870bcd49184" x="1" y="168" width="29" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[S.No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="521" y="168" width="60" height="16"/>
+				<reportElement uuid="857c76a8-ed62-45be-8a13-cdd92cf076ec" x="523" y="168" width="60" height="16"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[OEEE %]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="589" y="168" width="146" height="16"/>
+				<reportElement uuid="b9fd3f79-de88-46af-97d1-b7d5e6eafe80" x="588" y="168" width="146" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Remarks]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="180" y="177" width="58" height="16"/>
+				<reportElement uuid="59550e64-46a2-4191-a7a6-d1e1512e907d" x="180" y="177" width="58" height="16"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[ADDITIVES]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="103" y="177" width="36" height="16"/>
+				<reportElement uuid="8fbe734a-fc19-4afb-8f4e-dbb782effce4" x="103" y="177" width="36" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[LLDPE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="103" y="160" width="185" height="16"/>
+				<reportElement uuid="188fdfb8-f8b5-4799-8630-b76dc2fb1cd3" x="103" y="160" width="185" height="16"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Input Material in kgs]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="358" y="160" width="77" height="33"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement uuid="53d8ca61-7014-4082-aa1a-73a2c5fed068" x="358" y="160" width="77" height="33"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Charging time
    From   Till]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="241" y="177" width="47" height="16"/>
+				<reportElement uuid="ba770148-2038-45d4-8e9b-a037bc63f224" x="241" y="177" width="47" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Regrined]]></text>
 			</staticText>
 			<line>
-				<reportElement x="1" y="158" width="801" height="1"/>
+				<reportElement uuid="442d40f0-d99b-4e18-92b8-5140b8f882cc" x="1" y="158" width="801" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.75"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="1" y="195" width="801" height="1"/>
+				<reportElement uuid="81f75838-5d1d-4d29-b5f6-c0a8c7a109cb" x="1" y="195" width="801" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.75"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="102" y="176" width="186" height="1"/>
+				<reportElement uuid="bc19426d-7239-4ff1-8ef2-2ebc9077c015" x="102" y="176" width="186" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.75"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="288" y="159" width="1" height="36"/>
+				<reportElement uuid="02199d1a-7ab5-427b-8725-d186380bc991" x="288" y="159" width="1" height="36"/>
 				<graphicElement>
 					<pen lineWidth="0.75"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="101" y="159" width="1" height="36"/>
+				<reportElement uuid="2491d14a-54db-4367-8b36-0cc78649a90f" x="101" y="159" width="1" height="36"/>
 				<graphicElement>
 					<pen lineWidth="0.75"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="139" y="177" width="1" height="18"/>
+				<reportElement uuid="f83c9f8b-9c87-47fb-bc6a-f0ce6c8418ec" x="139" y="177" width="1" height="18"/>
 				<graphicElement>
 					<pen lineWidth="0.75"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="238" y="177" width="1" height="18"/>
+				<reportElement uuid="5780ac49-8a33-4317-82bf-cb26a0dbce18" x="238" y="177" width="1" height="18"/>
 				<graphicElement>
 					<pen lineWidth="0.75"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="179" y="177" width="1" height="18"/>
+				<reportElement uuid="07c774a5-9185-4496-b192-5afb3f4941e1" x="179" y="177" width="1" height="18"/>
 				<graphicElement>
 					<pen lineWidth="0.75"/>
 				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="330b166b-00ea-4d09-8d45-119d38ac83c8" x="30" y="159" width="1" height="36"/>
+			</line>
+			<line>
+				<reportElement uuid="cd337e9a-75de-4f41-b6a9-b5196af35a0a" x="353" y="158" width="1" height="36"/>
+			</line>
+			<line>
+				<reportElement uuid="564c1dbf-ee6d-4d73-bf1b-d66583000d3f" x="439" y="158" width="1" height="36"/>
+			</line>
+			<line>
+				<reportElement uuid="dc48a424-ce5e-4631-9499-1ff72a5b683c" x="521" y="159" width="1" height="35"/>
+			</line>
+			<line>
+				<reportElement uuid="08e2cd29-7e6e-4e83-a37a-59404cf1fe3a" x="582" y="159" width="1" height="35"/>
+			</line>
+			<line>
+				<reportElement uuid="a8c50ba2-1065-4dd4-8e3f-f7c0546fe18d" x="734" y="158" width="1" height="36"/>
 			</line>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField>
-				<reportElement x="1" y="3" width="21" height="16"/>
+				<reportElement uuid="5cc7f380-0f51-46ee-8ba3-3cac89d1f085" x="-1" y="1" width="29" height="16"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd-MMM-yyyy">
-				<reportElement x="32" y="3" width="68" height="16"/>
+				<reportElement uuid="4e88b26e-cf79-4f6e-86bc-73cd1ae9ee48" x="32" y="1" width="68" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{EXTRUD_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{EXTRUD_DATE}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="103" y="3" width="30" height="16"/>
+				<reportElement uuid="f8a9c185-647e-47b1-ab1c-833d798d48f5" x="103" y="1" width="30" height="16"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{LLDPE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{LLDPE}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="141" y="3" width="25" height="16"/>
+				<reportElement uuid="507581c4-b46c-4da8-9fbb-d0d7dee64bf2" x="141" y="1" width="37" height="16"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{MD}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{MD}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="177" y="3" width="57" height="16"/>
+				<reportElement uuid="722a4f4a-4a9e-46ae-b452-84def52b9c05" x="180" y="1" width="54" height="16"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{ADDITIVES}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ADDITIVES}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="239" y="3" width="44" height="16"/>
+				<reportElement uuid="485a82ce-75fa-4df2-aa47-4f90c0cefb98" x="241" y="1" width="47" height="16"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{REGRINED}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{REGRINED}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="293" y="3" width="55" height="16"/>
+				<reportElement uuid="ba25b45f-e501-4d82-a224-757e0edace89" x="293" y="1" width="55" height="16"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{OUTPUT_QTY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{OUTPUT_QTY}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="368" y="3" width="30" height="16"/>
+				<reportElement uuid="8908837a-ef0c-4bbf-972d-faadba9425fc" x="368" y="1" width="30" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{CHRG_ON_TIME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{CHRG_ON_TIME}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="402" y="3" width="30" height="16"/>
+				<reportElement uuid="64bc0a2a-cd06-4181-9089-90a3db578c70" x="402" y="1" width="30" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{CHRG_OFF_TIME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{CHRG_OFF_TIME}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="433" y="3" width="30" height="16"/>
+				<reportElement uuid="74210b88-a301-487a-ac4e-fdd885209979" x="523" y="1" width="60" height="16"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{TEMP_Z1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{OEEEVALUE}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="463" y="3" width="27" height="16"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{TEMP_Z5}]]></textFieldExpression>
+				<reportElement uuid="ee9bc4fc-7419-4ace-96dd-da5d0a4f547b" x="589" y="0" width="146" height="18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{REMARKS}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="521" y="3" width="51" height="16"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{OEEEVALUE}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="589" y="3" width="100" height="16"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{REMARKS}]]></textFieldExpression>
-			</textField>
+			<line>
+				<reportElement uuid="85a45232-ada2-4acd-8932-07c32f0b9159" x="-1" y="18" width="804" height="1"/>
+			</line>
 		</band>
 	</detail>
 	<columnFooter>
@@ -432,25 +381,25 @@ Kgs]]></text>
 	<pageFooter>
 		<band height="30" splitType="Stretch">
 			<line>
-				<reportElement x="1" y="4" width="801" height="1"/>
+				<reportElement uuid="3fa9bbd9-40e6-4c85-82bc-ad384fee8b30" x="1" y="4" width="801" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.75"/>
 				</graphicElement>
 			</line>
 			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement x="1" y="9" width="100" height="20"/>
+				<reportElement uuid="63f230bb-701d-4f46-9e26-6290031948c5" x="1" y="9" width="100" height="20"/>
 				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="683" y="9" width="80" height="20"/>
+				<reportElement uuid="5180151b-65cf-40c8-a2ea-019ed7ab1ab2" x="683" y="9" width="80" height="20"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="763" y="9" width="40" height="20"/>
+				<reportElement uuid="ba123146-2b69-4e5c-be7f-634816534fce" x="763" y="9" width="40" height="20"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>

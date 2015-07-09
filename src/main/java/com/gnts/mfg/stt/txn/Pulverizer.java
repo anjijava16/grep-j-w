@@ -17,9 +17,12 @@ package com.gnts.mfg.stt.txn;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -45,6 +48,8 @@ import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
+import com.gnts.erputil.ui.Database;
+import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.stt.mfg.domain.txn.ExtrudersHdrDM;
 import com.gnts.stt.mfg.domain.txn.PulvizDtlDM;
@@ -58,6 +63,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -575,6 +581,7 @@ public class Pulverizer extends BaseTransUI {
 			pulvizHdrDM.setLastupdatedby(username);
 			validatePulverizerDetails();
 			Pulvizhdrservice.saveorupdatePulvizHdr(pulvizHdrDM);
+			pulvizid=pulvizHdrDM.getPulvizid();
 			@SuppressWarnings("unchecked")
 			Collection<PulvizDtlDM> itemids = (Collection<PulvizDtlDM>) tblPulvizDtl.getVisibleItemIds();
 			for (PulvizDtlDM save : (Collection<PulvizDtlDM>) itemids) {
@@ -807,5 +814,30 @@ public class Pulverizer extends BaseTransUI {
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, String> parameterMap = new HashMap<String, String>();
+			parameterMap.put("pulvizid", pulvizid);
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "/WEB-INF/reports/pulverizer"); // pulverizer is the name of my jasper
+			// file.
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

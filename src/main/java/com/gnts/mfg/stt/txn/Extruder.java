@@ -1,9 +1,12 @@
 package com.gnts.mfg.stt.txn;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -27,6 +30,8 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
+import com.gnts.erputil.ui.Database;
+import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.mms.domain.mst.MaterialDM;
@@ -49,6 +54,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
+import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
@@ -81,9 +87,9 @@ public class Extruder extends BaseTransUI {
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private MaterialStockService serviceMaterialStock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
-	List<ExtrudersDtlDM> extrudersDtlList = new ArrayList<ExtrudersDtlDM>();
-	List<ExtrudersMtrlDM> extrudersMtrlList = null;
-	List<ExtrudersTempDM> extrudersTempList = null;
+	private List<ExtrudersDtlDM> extrudersDtlList = new ArrayList<ExtrudersDtlDM>();
+	private List<ExtrudersMtrlDM> extrudersMtrlList = null;
+	private List<ExtrudersTempDM> extrudersTempList = null;
 	// form layout for input controls
 	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4, flHdrCol6, flMtrlCol1, flTempCol1, flExtDtlCol1,
 			flExtDtlCol2;
@@ -1116,6 +1122,7 @@ public class Extruder extends BaseTransUI {
 			extruderObj.setLastUpdatedDt((DateUtils.getcurrentdate()));
 			extruderObj.setLastUpdatedBy(username);
 			serviceExtruderHrd.saveAndUpdate(extruderObj);
+			extHdrId = extruderObj.getExtId();
 			@SuppressWarnings("unchecked")
 			Collection<ExtrudersDtlDM> colPlanDtls = ((Collection<ExtrudersDtlDM>) tblDtl.getVisibleItemIds());
 			for (ExtrudersDtlDM save : (Collection<ExtrudersDtlDM>) colPlanDtls) {
@@ -1125,6 +1132,7 @@ public class Extruder extends BaseTransUI {
 			@SuppressWarnings("unchecked")
 			Collection<ExtrudersMtrlDM> colMtrl = ((Collection<ExtrudersMtrlDM>) tblMtrl.getVisibleItemIds());
 			for (ExtrudersMtrlDM saveMtrl : (Collection<ExtrudersMtrlDM>) colMtrl) {
+				saveMtrl.setExtId(extruderObj.getExtId());
 				serviceExtruderMtrl.saveOrUpdate(saveMtrl);
 			}
 			@SuppressWarnings("unchecked")
@@ -1154,10 +1162,6 @@ public class Extruder extends BaseTransUI {
 					e.printStackTrace();
 				}
 			}
-			asmblDtlResetFields();
-			resetFields();
-			loadSrchRslt();
-			SetRequiredfalse();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1167,29 +1171,29 @@ public class Extruder extends BaseTransUI {
 	private void saveExtDtl() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			ExtrudersDtlDM ExtruderDtlObj = new ExtrudersDtlDM();
+			ExtrudersDtlDM extruderDtlObj = new ExtrudersDtlDM();
 			if (tblDtl.getValue() != null) {
-				ExtruderDtlObj = beanExtrudersDtlDM.getItem(tblDtl.getValue()).getBean();
+				extruderDtlObj = beanExtrudersDtlDM.getItem(tblDtl.getValue()).getBean();
 			} else {
-				ExtruderDtlObj.setExtDtlId(Long.valueOf(serviceExtruderDtl.getSequence().toString()));
+				extruderDtlObj.setExtDtlId(Long.valueOf(serviceExtruderDtl.getSequence().toString()));
 			}
-			ExtruderDtlObj.setProdDate(dfProdDt.getValue());
-			ExtruderDtlObj.setOutQty(Long.valueOf(tfOpQty.getValue()));
+			extruderDtlObj.setProdDate(dfProdDt.getValue());
+			extruderDtlObj.setOutQty(Long.valueOf(tfOpQty.getValue()));
 			if (tiChrgStTm.getValue() != null) {
-				ExtruderDtlObj.setChrgStTime(tiChrgStTm.getHorsMunites());
+				extruderDtlObj.setChrgStTime(tiChrgStTm.getHorsMunites());
 			}
 			if (tiChargEdTm.getValue() != null) {
-				ExtruderDtlObj.setChrgEdTime(tiChargEdTm.getHorsMunites());
+				extruderDtlObj.setChrgEdTime(tiChargEdTm.getHorsMunites());
 			}
-			ExtruderDtlObj.setOeePrnct(Long.valueOf(tfOeePerc.getValue()));
-			ExtruderDtlObj.setRemarks(taRemark.getValue());
-			ExtruderDtlObj.setPreparedBy(employeeId);
-			ExtruderDtlObj.setReviewedBy(employeeId);
-			ExtruderDtlObj.setActionedBy(employeeId);
-			ExtruderDtlObj.setStatus(((String) cbDtlStatus.getValue()));
-			ExtruderDtlObj.setLastUpdatedDt((DateUtils.getcurrentdate()));
-			ExtruderDtlObj.setLastUpdatedBy(username);
-			extrudersDtlList.add(ExtruderDtlObj);
+			extruderDtlObj.setOeePrnct(Long.valueOf(tfOeePerc.getValue()));
+			extruderDtlObj.setRemarks(taRemark.getValue());
+			extruderDtlObj.setPreparedBy(employeeId);
+			extruderDtlObj.setReviewedBy(employeeId);
+			extruderDtlObj.setActionedBy(employeeId);
+			extruderDtlObj.setStatus(((String) cbDtlStatus.getValue()));
+			extruderDtlObj.setLastUpdatedDt((DateUtils.getcurrentdate()));
+			extruderDtlObj.setLastUpdatedBy(username);
+			extrudersDtlList.add(extruderDtlObj);
 			loadAsmbDtlList();
 			btnAddDtls.setCaption("Add");
 		}
@@ -1355,5 +1359,30 @@ public class Extruder extends BaseTransUI {
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
+			parameterMap.put("headerid", extHdrId);
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "/WEB-INF/reports/extruder"); // extruder is the name of my jasper
+			// file.
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

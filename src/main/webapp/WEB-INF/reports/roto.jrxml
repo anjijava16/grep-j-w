@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="roto" pageWidth="842" pageHeight="650" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8c0486eb-849c-42a8-83c1-759e7bd67ae6">
+	<property name="ireport.zoom" value="0.8264462809917359"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="rotoid" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT h.pulviz_ref_no ,
+  h.pulviz_date pulviz_ref_date,
+  d.prodn_date pulviz_date,
+  d.balance_qty pulviz_blance_mat,
+  NVL(d.oee_prcnt,0) pulviz_oee,
+  d.balance_prcnt pulviz_quality,
+  d.remarks,
+  m.asset_name,
+  d.mchn_starttime machine_on_time,
+  d.mchn_stoptime machine_off_time,
+  d.input_qty machine_input,
+  d.output_qty machine_output
+FROM t_stt_mfg_pulviz_hdr h
+,t_stt_mfg_pulviz_dtl d,t_ams_asset_details m
+where h.pulviz_id = d.pulviz_id
+and m.asset_id = d.machine_id
+AND h.pulviz_id   =$P{rotoid}]]>
+	</queryString>
+	<field name="PULVIZ_REF_NO" class="java.lang.String"/>
+	<field name="PULVIZ_REF_DATE" class="java.sql.Timestamp"/>
+	<field name="PULVIZ_DATE" class="java.sql.Timestamp"/>
+	<field name="PULVIZ_BLANCE_MAT" class="java.math.BigDecimal"/>
+	<field name="PULVIZ_OEE" class="java.math.BigDecimal"/>
+	<field name="PULVIZ_QUALITY" class="java.math.BigDecimal"/>
+	<field name="REMARKS" class="java.lang.String"/>
+	<field name="ASSET_NAME" class="java.lang.String"/>
+	<field name="MACHINE_ON_TIME" class="java.lang.String"/>
+	<field name="MACHINE_OFF_TIME" class="java.lang.String"/>
+	<field name="MACHINE_INPUT" class="java.math.BigDecimal"/>
+	<field name="MACHINE_OUTPUT" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="177" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="06f35a78-72be-4aa1-8c20-58b2499858c2" x="0" y="1" width="801" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC Tool Tech (P) Ltd.,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="02f1eafb-f917-4058-91b8-97699e72ba4e" x="1" y="72" width="172" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Roto Check Sheet]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="96eac4dd-8b9f-4012-b9d1-7fba30d56dbf" x="1" y="26" width="800" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Malumichampatti, Coimbatore - 641 050]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1cb4f9ce-3e7f-4491-a419-4d12922ff7ae" x="1" y="107" width="46" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="99f8bc36-7e23-4366-b1b9-045c3984ad85" x="605" y="44" width="82" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ref. No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="cd8d5743-66c2-420a-9966-b36ce0642ee0" x="605" y="59" width="82" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Section]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="605" y="74" width="82" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rev. No/Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="946031fa-792c-4fc4-84e3-cfef0830a84a" x="687" y="45" width="15" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="87f3e8a9-c74d-4302-b896-4b0e78cb8efa" x="687" y="59" width="15" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="687" y="74" width="15" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b8526338-ca3a-4d98-8ce3-117867e572da" x="0" y="149" width="27" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="748e6198-1632-4062-9dc3-d41919218d62" x="28" y="147" width="34" height="28"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Arm No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8684138a-4747-4c13-87ca-66495adc3d95" x="63" y="147" width="68" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[OVEN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="eeb34910-eff0-47f8-a78a-8767d61c9079" x="133" y="149" width="59" height="13"/>
+				<textElement verticalAlignment="Bottom">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Charging]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f76f2c34-05f8-4f99-9f40-2523ca2c0d6b" x="134" y="161" width="58" height="15"/>
+				<textElement verticalAlignment="Top">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="78cf821e-52c3-4f1b-808e-85b429017c59" x="224" y="147" width="59" height="15"/>
+				<textElement verticalAlignment="Bottom">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cooling]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="136ca3b3-6bbf-401e-aff8-f784b219735d" x="284" y="147" width="41" height="28"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Min]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5d0630e6-f933-4401-b6ea-b99f8959c13a" x="325" y="147" width="103" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Temperature]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a778e2fa-3a60-45ed-9797-59359b6a4fc3" x="325" y="162" width="37" height="13"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Z1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="946558f0-8db3-47d9-b4ba-4e3866395427" x="428" y="149" width="326" height="13"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Box Model]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="46551f20-6ce2-4045-9350-fca6bafe60e9" x="754" y="147" width="47" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ece913c0-48a8-4944-8987-be56e90da9c1" x="754" y="162" width="47" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty.]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="acb9de46-52a6-4d0b-962c-a42d499dcaab" x="702" y="44" width="100" height="16"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{PULVIZ_REF_NO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yyyy">
+				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="702" y="74" width="100" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{PULVIZ_REF_DATE}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="d10ca193-d061-41da-b71a-15c2551e76e7" x="0" y="148" width="802" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.75"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="30acb787-5767-4013-9605-7142c3c86913" x="0" y="175" width="801" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.75"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="40b910e3-a8cf-498b-9e57-afb7bcc4437e" x="63" y="162" width="34" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ON]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9c8f17f7-7f55-4eb3-ad7c-f9837212263e" x="224" y="162" width="59" height="13"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Time]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="3cd027b1-18cf-42ce-87e8-9f1539c5a637" x="702" y="89" width="20" height="17"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="a52136cf-2d49-47ef-bfe9-de5c93c25dd7" x="722" y="90" width="79" height="17"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="687" y="89" width="15" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="605" y="89" width="82" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Page]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="23b9efb9-0d7d-4175-b6e0-738fe361c937" x="281" y="108" width="100" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Burner On Time]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="8a0a2efd-e18b-4dea-b6d4-e803ab432bde" x="0" y="107" width="801" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="8a0a2efd-e18b-4dea-b6d4-e803ab432bde" x="1" y="127" width="801" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="1cb4f9ce-3e7f-4491-a419-4d12922ff7ae" x="1" y="128" width="61" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Grade No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="23b9efb9-0d7d-4175-b6e0-738fe361c937" x="179" y="128" width="61" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[LOT No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="23b9efb9-0d7d-4175-b6e0-738fe361c937" x="428" y="128" width="64" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Batch No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="23b9efb9-0d7d-4175-b6e0-738fe361c937" x="608" y="128" width="68" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Regrined]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="40b910e3-a8cf-498b-9e57-afb7bcc4437e" x="97" y="161" width="34" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[OFF]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="eeb34910-eff0-47f8-a78a-8767d61c9079" x="192" y="149" width="30" height="26"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Min]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a778e2fa-3a60-45ed-9797-59359b6a4fc3" x="362" y="161" width="39" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Z2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a778e2fa-3a60-45ed-9797-59359b6a4fc3" x="401" y="160" width="27" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Z3]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="02f1eafb-f917-4058-91b8-97699e72ba4e" x="0" y="45" width="254" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Quality System Procedures]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="cbf34111-848d-4ce5-9b4f-527904e2a9c8" x="284" y="0" width="41" height="18"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{MACHINE_ON_TIME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="e9999243-8fe0-410c-a17f-8fc9a821e5d5" x="63" y="0" width="34" height="18"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{MACHINE_INPUT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="1b30966b-31ef-4cb1-86c6-03d7bfaf31f5" x="224" y="0" width="59" height="17"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{MACHINE_OUTPUT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yyyy" isBlankWhenNull="true">
+				<reportElement uuid="ef4b33e6-b529-4eef-9be1-54410167a901" x="28" y="0" width="34" height="18"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{PULVIZ_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="89d5dbeb-dab3-4631-9559-b174b9860d96" x="1" y="0" width="26" height="18"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="27" splitType="Stretch">
+			<line>
+				<reportElement uuid="990686c1-cf6f-45df-a257-238a0f43f46b" x="1" y="3" width="800" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.75"/>
+				</graphicElement>
+			</line>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement uuid="dfe35b78-593a-43a1-9c59-e48e8022c8ac" x="1" y="7" width="145" height="17"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

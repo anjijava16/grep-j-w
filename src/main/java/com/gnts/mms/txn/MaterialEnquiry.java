@@ -59,7 +59,6 @@ import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.MMSVendorDtlService;
 import com.gnts.mms.service.txn.MmsEnqDtlService;
 import com.gnts.mms.service.txn.MmsEnqHdrService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -123,7 +122,6 @@ public class MaterialEnquiry extends BaseTransUI {
 	private Table tblMmsEnqDtl = new GERPTable();
 	private BeanItemContainer<MmsEnqHdrDM> beanMmsEnqHdrDM = null;
 	private BeanItemContainer<MmsEnqDtlDM> beanMmsEnqDtlDM = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// local variables declaration
 	private String enquiryid;
 	private Long companyid;
@@ -368,11 +366,6 @@ public class MaterialEnquiry extends BaseTransUI {
 		TabSheet dtlTab = new TabSheet();
 		dtlTab.addTab(vlMmsEnqHDR, "Material Enquiry Detail");
 		dtlTab.addTab(vlTableForm, "Comments");
-		/*
-		 * HorizontalLayout hlComnd = new HorizontalLayout();
-		 * hlComnd.addComponent(GERPPanelGenerator.createPanel(vlMmsEnqHDR));
-		 * hlComnd.addComponent(GERPPanelGenerator.createPanel(vlTableForm));
-		 */
 		VerticalLayout vlMmsEnqHdrdTL = new VerticalLayout();
 		vlMmsEnqHdrdTL = new VerticalLayout();
 		vlMmsEnqHdrdTL.addComponent(GERPPanelGenerator.createPanel(hlMmsEnqHDR));
@@ -433,12 +426,11 @@ public class MaterialEnquiry extends BaseTransUI {
 	}
 	
 	// Load Branch List
-	public void loadBranchList() {
+	private void loadBranchList() {
 		try {
-			List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
 			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanbranch.setBeanIdProperty("branchId");
-			beanbranch.addAll(branchList);
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
@@ -447,14 +439,14 @@ public class MaterialEnquiry extends BaseTransUI {
 	}
 	
 	// Load Uom List
-	public void loadUomList() {
+	private void loadUomList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"MM_UOM");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp
+					.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "MM_UOM"));
 			cbUom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -462,15 +454,13 @@ public class MaterialEnquiry extends BaseTransUI {
 		}
 	}
 	
-	public void loadVendorNameList() {
+	private void loadVendorNameList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading VendorNameList");
-		List<VendorDM> vendorlist = serviceVendor.getVendorList(null, null, companyid, null, null, null, null, null,
-				"Active", null, "P");
 		BeanContainer<Long, VendorDM> beanVendor = new BeanContainer<Long, VendorDM>(VendorDM.class);
 		beanVendor.setBeanIdProperty("vendorId");
-		beanVendor.addAll(vendorlist);
+		beanVendor.addAll(serviceVendor.getVendorList(null, null, companyid, null, null, null, null, null, "Active",
+				null, "P"));
 		lsVendorName.setContainerDataSource(beanVendor);
-		System.out.println("cbvenname" + lsVendorName);
 	}
 	
 	@Override
@@ -484,10 +474,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		listEnqDetails = new ArrayList<MmsEnqDtlDM>();
 		tblMmsEnqDtl.removeAllItems();
 		cbBranch.setValue(branchId);
-		// cbBranch.setComponentError(null);
-		/*
-		 * LsVendorName.setValue(null); LsVendorName.setComponentError(null);
-		 */dfDueDate.setValue(null);
+		dfDueDate.setValue(null);
 		dfEnqDate.setValue(null);
 		dfDueDate.setComponentError(null);
 		taEnqRem.setValue("");
@@ -500,27 +487,24 @@ public class MaterialEnquiry extends BaseTransUI {
 	private void editPurHdr() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected enquiryId. Id -> "
-				+ enquiryId);
-		if (sltedRcd != null) {
-			MmsEnqHdrDM editMmsPurEnqHdrlist = beanMmsEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			enquiryId = editMmsPurEnqHdrlist.getEnquiryId();
-			cbBranch.setValue(editMmsPurEnqHdrlist.getBranchId());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			MmsEnqHdrDM enqHdrDM = beanMmsEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			enquiryId = enqHdrDM.getEnquiryId();
+			cbBranch.setValue(enqHdrDM.getBranchId());
 			tfEnqNo.setReadOnly(false);
-			tfEnqNo.setValue(editMmsPurEnqHdrlist.getEnquiryNo());
+			tfEnqNo.setValue(enqHdrDM.getEnquiryNo());
 			tfEnqNo.setReadOnly(true);
-			dfEnqDate.setValue(editMmsPurEnqHdrlist.getEnquiryDate());
-			dfDueDate.setValue(editMmsPurEnqHdrlist.getDueDate());
+			dfEnqDate.setValue(enqHdrDM.getEnquiryDate());
+			dfDueDate.setValue(enqHdrDM.getDueDate());
 			for (MMSVendorDtlDM enquiryVendorDtlDM : serviceMMSVendordtl.getmaterialvdrdtl(null, enquiryId, null)) {
 				lsVendorName.select(enquiryVendorDtlDM.getVendorid());
 			}
-			cbindentno.setValue(editMmsPurEnqHdrlist.getIndentId());
-			if (editMmsPurEnqHdrlist.getEnquiryStatus() != null) {
-				cbEnqStatus.setValue(editMmsPurEnqHdrlist.getEnquiryStatus());
+			cbindentno.setValue(enqHdrDM.getIndentId());
+			if (enqHdrDM.getEnquiryStatus() != null) {
+				cbEnqStatus.setValue(enqHdrDM.getEnquiryStatus());
 			}
-			if (editMmsPurEnqHdrlist.getEnqRemark() != null) {
-				taEnqRem.setValue(editMmsPurEnqHdrlist.getEnqRemark().toString());
+			if (enqHdrDM.getEnqRemark() != null) {
+				taEnqRem.setValue(enqHdrDM.getEnqRemark().toString());
 			}
 			listEnqDetails = serviceMmsEnqDtl.getMmsEnqDtlList(null, enquiryId, null, null,
 					(String) cbEnqDtlStatus.getValue());
@@ -528,19 +512,15 @@ public class MaterialEnquiry extends BaseTransUI {
 		loadMatDtl();
 		comments = new MmsComments(vlTableForm, null, companyid, null, enquiryId, null, null, null, null, null, status);
 		comments.loadsrch(true, null, null, null, enquiryId, null, null, null, null, null);
-		System.out.println("IDDDD=>>>>>>." + enquiryId);
 	}
 	
 	private void editmmsPurDetail() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMmsEnqDtl.getItem(tblMmsEnqDtl.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected enquiry.Id -> "
-				+ enquiryId);
-		if (sltedRcd != null) {
-			MmsEnqDtlDM editMmsEnqDtllist = beanMmsEnqDtlDM.getItem(tblMmsEnqDtl.getValue()).getBean();
+		if (tblMmsEnqDtl.getValue() != null) {
+			MmsEnqDtlDM enqDtlDM = beanMmsEnqDtlDM.getItem(tblMmsEnqDtl.getValue()).getBean();
 			lsmaterial.setValue(null);
-			Long uom = editMmsEnqDtllist.getMaterialid();
+			Long uom = enqDtlDM.getMaterialid();
 			Collection<?> uomid = lsmaterial.getItemIds();
 			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -551,17 +531,17 @@ public class MaterialEnquiry extends BaseTransUI {
 					lsmaterial.select(itemId);
 				}
 			}
-			if (editMmsEnqDtllist.getMatuom() != null) {
-				cbUom.setValue(editMmsEnqDtllist.getMatuom());
+			if (enqDtlDM.getMatuom() != null) {
+				cbUom.setValue(enqDtlDM.getMatuom());
 			}
-			if (editMmsEnqDtllist.getEnquiryQty() != null) {
-				tfEnqQty.setValue(editMmsEnqDtllist.getEnquiryQty().toString());
+			if (enqDtlDM.getEnquiryQty() != null) {
+				tfEnqQty.setValue(enqDtlDM.getEnquiryQty().toString());
 			}
-			if (editMmsEnqDtllist.getRemarks() != null) {
-				taEnqDtlRem.setValue(editMmsEnqDtllist.getRemarks().toString());
+			if (enqDtlDM.getRemarks() != null) {
+				taEnqDtlRem.setValue(enqDtlDM.getRemarks().toString());
 			}
-			if (editMmsEnqDtllist.getEnqdtlsts() != null) {
-				cbEnqDtlStatus.setValue(editMmsEnqDtllist.getEnqdtlsts());
+			if (enqDtlDM.getEnqdtlsts() != null) {
+				cbEnqDtlStatus.setValue(enqDtlDM.getEnqdtlsts());
 			}
 		}
 	}
@@ -742,11 +722,10 @@ public class MaterialEnquiry extends BaseTransUI {
 			matEnqobj.setIndentId((Long) cbindentno.getValue());
 			matEnqobj.setEnquiryStatus(((String) cbEnqStatus.getValue()));
 			matEnqobj.setPreparedBy(EmployeeId);
-			
 			matEnqobj.setLastUpdateddt(DateUtils.getcurrentdate());
 			matEnqobj.setLastUpdatedby(username);
 			serviceMmsEnqHdr.saveorUpdateMmsEnqHdrDetails(matEnqobj);
-			enquiryId=matEnqobj.getEnquiryId();
+			enquiryId = matEnqobj.getEnquiryId();
 			String[] split = lsVendorName.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
 			for (String obj : split) {
 				if (obj.trim().length() > 0) {
@@ -785,7 +764,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		}
 	}
 	
-	public void saveEnqDtl() {
+	private void saveEnqDtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			int count = 0;
@@ -872,13 +851,12 @@ public class MaterialEnquiry extends BaseTransUI {
 		cbEnqDtlStatus.setValue(cbEnqDtlStatus.getItemIds().iterator().next());
 	}
 	
-	public void loadMatNameList() {
+	private void loadMatNameList() {
 		try {
-			List<MaterialDM> MatnameList = servicematerial.getMaterialList(null, companyid, null, null, null, null,
-					null, null, "Active", "P");
 			BeanContainer<Long, MaterialDM> beanVendor = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 			beanVendor.setBeanIdProperty("materialId");
-			beanVendor.addAll(MatnameList);
+			beanVendor.addAll(servicematerial.getMaterialList(null, companyid, null, null, null, null, null, null,
+					"Active", "P"));
 			lsmaterial.setContainerDataSource(beanVendor);
 		}
 		catch (Exception e) {
@@ -888,11 +866,9 @@ public class MaterialEnquiry extends BaseTransUI {
 	
 	// Load Indent No
 	private void loadindent() {
-		List<IndentHdrDM> indentHdr = serviceindent.getMmsIndentHdrList(null, null, null, companyid, null, null, null,
-				null, "F");
 		BeanContainer<Long, IndentHdrDM> beanIndent = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
 		beanIndent.setBeanIdProperty("indentId");
-		beanIndent.addAll(indentHdr);
+		beanIndent.addAll(serviceindent.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null, "F"));
 		cbindentno.setContainerDataSource(beanIndent);
 	}
 	
@@ -916,7 +892,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			System.out.println("Enquiry Id-->"+enquiryId);
+			System.out.println("Enquiry Id-->" + enquiryId);
 			parameterMap.put("ENQID", enquiryId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/mmsenquiry"); // productlist is the name of my jasper

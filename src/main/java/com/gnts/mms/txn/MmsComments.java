@@ -16,42 +16,32 @@ package com.gnts.mms.txn;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.eclipse.jdt.core.dom.rewrite.ITrackedNodePosition;
-import com.gnts.asm.domain.txn.AssetDetailsDM;
-import com.gnts.base.domain.mst.EmployeeDM;
-import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mms.domain.txn.MmsCommentsDM;
 import com.gnts.mms.service.txn.MmsCommentsService;
-import com.gnts.sms.domain.txn.SmsCommentsDM;
-import com.google.gwt.thirdparty.streamhtmlparser.util.EntityResolver.Status;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.themes.Runo;
 
 public class MmsComments implements ClickListener {
 	private static final long serialVersionUID = 1L;
 	private MmsCommentsService serviceComments = (MmsCommentsService) SpringContextHelper.getBean("mmscomments");
-	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private Table tblClntComments;
 	private HorizontalLayout hluserInput = new HorizontalLayout();;
 	private Long companyid;
@@ -59,29 +49,24 @@ public class MmsComments implements ClickListener {
 	private FormLayout flMainform1, flMainform2;
 	private String userName, strWidth = "160px";
 	private int total = 0;
-	List<MmsCommentsDM> commentList = new ArrayList<MmsCommentsDM>();
-	VerticalLayout vlTableForm = new VerticalLayout();
+	public List<MmsCommentsDM> commentList = new ArrayList<MmsCommentsDM>();
 	private TextArea taComments;
 	private BeanItemContainer<MmsCommentsDM> beanComment = null;
 	private Logger logger = Logger.getLogger(MmsCommentsDM.class);
 	private Button btnSave = new GERPButton("Add", "addbt", this);
-	private Long commentId, bomId, enquiryId, quoteId, poId, indentId, DcId, gatepassid, empid;
-	private String status;
+	private Long bomId, quoteId, poId, indentId, DcId, gatepassid, empid;
 	
 	public MmsComments(VerticalLayout vlTableForm, Long commentid, Long companyid, Long bomid, Long enquiryid,
 			Long quoteid, Long poid, Long indentid, Long dcId, Long gatepassId, String status) {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		empid = ((Long) UI.getCurrent().getSession().getAttribute("employeeId"));
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		commentId = commentid;
 		bomId = bomid;
-		enquiryId = enquiryid;
 		quoteId = quoteid;
 		poId = poid;
 		indentId = indentid;
 		DcId = dcId;
 		gatepassid = gatepassId;
-		status = status;
 		buildview(vlTableForm);
 	}
 	
@@ -99,7 +84,7 @@ public class MmsComments implements ClickListener {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (validateComments()) {
-					saveClientCommentsDetails();
+					saveCommentsDetails();
 				}
 			}
 		});
@@ -153,8 +138,6 @@ public class MmsComments implements ClickListener {
 				}
 			}
 		});
-		// setTableProperties();
-		// HorizontalLayout hluserInput = new HorizontalLayout();
 		hluserInput.addComponent(flMainform1);
 		hluserInput.addComponent(flMainform2);
 		hluserInput.setMargin(true);
@@ -172,16 +155,10 @@ public class MmsComments implements ClickListener {
 		loadsrch(false, null, null, null, null, null, null, null, null, null);
 	}
 	
-	public void editcommentDetails() {
+	private void editcommentDetails() {
 		resetfieldcm();
-		System.out.println("Edit is workinghbhhhhhhhhhhhhh");
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Editing the selected record");
-		Item CmtsRcd = tblClntComments.getItem(tblClntComments.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Selected enquiry.Id -> "
-				+ enquiryId);
-		if (CmtsRcd != null) {
+		if (tblClntComments.getValue() != null) {
 			MmsCommentsDM editcomment = beanComment.getItem(tblClntComments.getValue()).getBean();
-			commentId = editcomment.getCommentid();
 			if (editcomment.getComments() != null) {
 				taComments.setValue(editcomment.getComments());
 			}
@@ -200,12 +177,10 @@ public class MmsComments implements ClickListener {
 			Long empfirst = null;
 			commentList = serviceComments.getmmscommentsList(commentid, empfirst, companyid, bomid, enquiryid, quoteid,
 					poid, indentid, dcid, gatepassid);
-			System.out.println("loadsrchoppertunity---->" + commentId);
 		}
 		try {
 			tblClntComments.removeAllItems();
 			total = commentList.size();
-			System.out.println("LISTSIZE---->" + commentList.size());
 			beanComment = new BeanItemContainer<MmsCommentsDM>(MmsCommentsDM.class);
 			beanComment.addAll(commentList);
 			tblClntComments.setSelectable(true);
@@ -220,30 +195,6 @@ public class MmsComments implements ClickListener {
 			e.printStackTrace();
 			logger.error("error during populate values on the table, The Error is ----->" + e);
 		}
-	}
-	
-	/**
-	 * resetFields()->this method is used for reset the add/edit UI components
-	 */
-	private void setTableProperties() {
-		tblClntComments.setColumnAlignment("commentid", Align.RIGHT);
-		tblClntComments.addItemClickListener(new ItemClickListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (tblClntComments.isSelected(event.getItemId())) {
-					btnEdit.setEnabled(false);
-				} else {
-					btnEdit.setEnabled(true);
-				}
-				if (tblClntComments.isSelected(event.getItemId())) {
-					btnComments.setEnabled(true);
-				} else {
-					btnComments.setEnabled(false);
-				}
-			}
-		});
 	}
 	
 	public void resetfields() {
@@ -264,7 +215,7 @@ public class MmsComments implements ClickListener {
 	/**
 	 * saveClientCommentsDetails()-->this method is used for save/update the records
 	 */
-	public void saveClientCommentsDetails() {
+	public void saveCommentsDetails() {
 		validateComments();
 		MmsCommentsDM saveComments = new MmsCommentsDM();
 		if (tblClntComments.getValue() != null) {
@@ -274,7 +225,6 @@ public class MmsComments implements ClickListener {
 		if (taComments != null) {
 			saveComments.setComments(taComments.getValue());
 		}
-		// saveComments.setCommentBy(((EmployeeDM) cbCommentBy.getValue()).getEmployeeid());
 		saveComments.setQuoteid(quoteId);
 		saveComments.setCompanyid(companyid);
 		saveComments.setBomid(bomId);

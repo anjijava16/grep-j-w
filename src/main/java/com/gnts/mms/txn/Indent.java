@@ -54,7 +54,6 @@ import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.IndentDtlService;
 import com.gnts.mms.service.txn.IndentHdrService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -117,7 +116,6 @@ public class Indent extends BaseTransUI {
 	private Table tblDtl;
 	private BeanItemContainer<IndentHdrDM> beanIndentHdrDM = null;
 	private BeanItemContainer<IndentDtlDM> beanIndentDtlDM = null;
-	private BeanContainer<Long, BranchDM> beanBranchDM = null;
 	// local variables declaration
 	private String taxSlapId;
 	private Long companyid, employeeId;
@@ -180,7 +178,7 @@ public class Indent extends BaseTransUI {
 					btnAddDtl.setStyleName("savebt");
 					btndelete.setEnabled(true);
 					cbMatName.setComponentError(null);
-					editDtls();
+					editIntentDtls();
 				}
 			}
 		});
@@ -264,8 +262,6 @@ public class Indent extends BaseTransUI {
 				}
 			}
 		});
-		// Indent Qty.GERPTextField
-		// Balance Qty.GERPTextField
 		// Hdr Combobox
 		cbIndStatus = new GERPComboBox("Status", BASEConstants.T_SMS_INVOICE_HDR, BASEConstants.INVOICE_STATUS);
 		// Indent No text field
@@ -416,7 +412,7 @@ public class Indent extends BaseTransUI {
 	}
 	
 	// Load Uom List
-	public void loadMaterialUOMList() {
+	private void loadMaterialUOMList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading Material UOM Search...");
 		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
@@ -452,8 +448,7 @@ public class Indent extends BaseTransUI {
 	private void editHdrIndentDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			IndentHdrDM editHdrIndent = beanIndentHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			indentHdrId = editHdrIndent.getIndentId();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Tax. Id -> "
@@ -478,14 +473,13 @@ public class Indent extends BaseTransUI {
 	}
 	
 	// Method to edit the values from table into fields to update process
-	private void editDtls() {
+	private void editIntentDtls() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblDtl.getItem(tblDtl.getValue());
-		if (itselect != null) {
-			IndentDtlDM editDtl = new IndentDtlDM();
-			editDtl = beanIndentDtlDM.getItem(tblDtl.getValue()).getBean();
+		if (tblDtl.getValue() != null) {
+			IndentDtlDM indentDtlDM = new IndentDtlDM();
+			indentDtlDM = beanIndentDtlDM.getItem(tblDtl.getValue()).getBean();
 			cbMatName.setValue(null);
-			Long matId = editDtl.getMaterialId();
+			Long matId = indentDtlDM.getMaterialId();
 			Collection<?> empColId = cbMatName.getItemIds();
 			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
@@ -496,16 +490,16 @@ public class Indent extends BaseTransUI {
 					cbMatName.select(itemIdClient);
 				}
 			}
-			if (itselect.getItemProperty("indentQty").getValue() != null) {
-				tfIndQty.setValue(itselect.getItemProperty("indentQty").getValue().toString());
+			if (indentDtlDM.getIndentQty() != null) {
+				tfIndQty.setValue(indentDtlDM.getIndentQty().toString());
 			}
-			if (cbuom.getValue() != null) {
+			if (indentDtlDM.getMaterialUOM() != null) {
 				cbuom.setReadOnly(false);
-				cbuom.setValue(itselect.getItemProperty("materialUOM").getValue().toString());
+				cbuom.setValue(indentDtlDM.getMaterialUOM());
 				cbuom.setReadOnly(true);
 			}
-			if (cbDtlStatus != null) {
-				cbDtlStatus.setValue(itselect.getItemProperty("status").getValue());
+			if (indentDtlDM.getStatus() != null) {
+				cbDtlStatus.setValue(indentDtlDM.getStatus());
 			}
 		}
 	}
@@ -624,7 +618,7 @@ public class Indent extends BaseTransUI {
 		assembleInputUserLayout();
 		resetFields();
 		editHdrIndentDetails();
-		editDtls();
+		editIntentDtls();
 	}
 	
 	// reset the input values to IndentDtl
@@ -830,13 +824,12 @@ public class Indent extends BaseTransUI {
 	/*
 	 * loadBranchList()-->this function is used for load the branch name
 	 */
-	public void loadBranchList() {
+	private void loadBranchList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-			List<BranchDM> lookUpList = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
-			beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanBranchDM.setBeanIdProperty("branchId");
-			beanBranchDM.addAll(lookUpList);
+			beanBranchDM.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
 			cbBranchId.setContainerDataSource(beanBranchDM);
 		}
 		catch (Exception e) {
@@ -847,7 +840,7 @@ public class Indent extends BaseTransUI {
 	/*
 	 * loadMaterialList()-->this function is used for load the Material name
 	 */
-	public void loadMaterialList() {
+	private void loadMaterialList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading Material UOM Search...");
 		BeanContainer<Long, MaterialDM> beanMaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
@@ -860,7 +853,7 @@ public class Indent extends BaseTransUI {
 	/*
 	 * loadDepartmentList()-->this function is used for load the Department list
 	 */
-	public void loadDepartmentList() {
+	private void loadDepartmentList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
 		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beanDepartment.setBeanIdProperty("deptid");

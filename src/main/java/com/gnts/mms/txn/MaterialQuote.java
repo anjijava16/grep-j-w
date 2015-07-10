@@ -110,7 +110,6 @@ public class MaterialQuote extends BaseTransUI {
 			.getBean("mmsquotedtl");
 	private BeanItemContainer<MmsQuoteHdrDM> beanQuoteHdr = null;
 	private BeanItemContainer<MmsQuoteDtlDM> beanQuoteDtl = null;
-	private BeanItemContainer<MmsEnqDtlDM> beanMaterial = null;
 	private GERPTable tblMatQuDtl;
 	private List<MmsQuoteDtlDM> listQuoteDetails = new ArrayList<MmsQuoteDtlDM>();
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
@@ -126,7 +125,7 @@ public class MaterialQuote extends BaseTransUI {
 	// User Input Components for Sales Quote Details
 	private ComboBox cbBranch, cbStatus, cbEnqNo, cbvendorname;
 	private TextField tfQuoteNumber, tfQuoteRef, tfQuoteVersion, tfBasictotal, tfpackingPer, tfPaclingValue;
-	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer,tfvendorCode;
+	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer, tfvendorCode;
 	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
 	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal, tfDocumentCharges,
 			tfPDCCharges;
@@ -151,7 +150,7 @@ public class MaterialQuote extends BaseTransUI {
 	private HorizontalLayout hlUserInputLayout = new GERPAddEditHLayout();
 	private int recordCnt;
 	private Long quoteId;
-	private Long EmployeeId;
+	private Long employeeId;
 	private File file;
 	private Long roleId;
 	private Long branchId;
@@ -169,7 +168,7 @@ public class MaterialQuote extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
@@ -249,7 +248,6 @@ public class MaterialQuote extends BaseTransUI {
 		tfCstValue.setImmediate(true);
 		tfGrandtotal = new GERPNumberField("Grand Total");
 		tfGrandtotal.setWidth("150");
-		
 		cbvendorname = new ComboBox("Vendor Name");
 		cbvendorname.setWidth("150");
 		cbvendorname.setItemCaptionPropertyId("vendorName");
@@ -272,7 +270,6 @@ public class MaterialQuote extends BaseTransUI {
 		tfvendorCode = new TextField("Vendor Code");
 		tfvendorCode.setWidth("150");
 		tfvendorCode.setReadOnly(true);
-		
 		tfDocumentCharges = new GERPNumberField("Doc. Charges");
 		tfDocumentCharges.setWidth("150");
 		tfDocumentCharges.setImmediate(true);
@@ -850,6 +847,7 @@ public class MaterialQuote extends BaseTransUI {
 			e.printStackTrace();
 		}
 	}
+	
 	public void loadVendor() {
 		try {
 			List<VendorDM> vendorList = serviceVendor.getVendorList(null, null, companyid, null, null, null, null,
@@ -858,7 +856,6 @@ public class MaterialQuote extends BaseTransUI {
 			beanVendor.setBeanIdProperty("vendorId");
 			beanVendor.addAll(vendorList);
 			cbvendorname.setContainerDataSource(beanVendor);
-			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -928,7 +925,7 @@ public class MaterialQuote extends BaseTransUI {
 			logger.info("sms salaes enquiry no" + editsmsQuotlist.getEnquiryNo());
 			cbEnqNo.setValue(editsmsQuotlist.getEnquiryNo());
 			cbQuotationType.setValue(editsmsQuotlist.getQuotationType());
-			System.out.println("editsmsQuotlist.getQuoteNumber()-->"+editsmsQuotlist.getQuoteNumber());
+			System.out.println("editsmsQuotlist.getQuoteNumber()-->" + editsmsQuotlist.getQuoteNumber());
 			tfQuoteNumber.setReadOnly(false);
 			tfQuoteNumber.setValue(editsmsQuotlist.getQuoteNumber());
 			tfQuoteNumber.setReadOnly(true);
@@ -1112,63 +1109,11 @@ public class MaterialQuote extends BaseTransUI {
 	
 	// Calculated Values for Sales Quote Hdr validation
 	private void getCalculatedValues() {
-		if (chkCformReq.getValue()) {
-			tfVatPer.setValue("0");
-			try {
-				/*
-				 * tfCstPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "CST", "Active", "F").get(0)
-				 * .getTaxprnct().toString());
-				 */
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				tfCstPer.setValue("0");
-			}
-		} else {
-			tfCstPer.setValue("0");
-			try {
-				/*
-				 * tfVatPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "VAT", "Active", "F").get(0)
-				 * .getTaxprnct().toString());
-				 */
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				tfVatPer.setValue("0");
-			}
-		}
+		tfVatPer.setValue("0");
 		if (chkDutyExe.getValue()) {
 			tfEDPer.setValue("0");
 			tfHEDPer.setValue("0");
 			tfCessPer.setValue("0");
-		} else {
-			try {
-				/*
-				 * tfHEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "HED", "Active", "F").get(0)
-				 * .getTaxprnct().toString());
-				 */
-			}
-			catch (Exception e) {
-				tfHEDPer.setValue("0");
-			}
-			try {
-				/*
-				 * tfEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "ED", "Active", "F").get(0)
-				 * .getTaxprnct().toString());
-				 */
-			}
-			catch (Exception e) {
-				tfEDPer.setValue("0");
-			}
-			try {
-				/*
-				 * tfCessPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "CESS", "Active", "F").get(0)
-				 * .getTaxprnct().toString());
-				 */
-			}
-			catch (Exception e) {
-				tfCessPer.setValue("0");
-			}
 		}
 		BigDecimal basictotal = new BigDecimal(tfBasictotal.getValue());
 		BigDecimal packingvalue = gerPercentageValue(new BigDecimal(tfpackingPer.getValue()), basictotal);
@@ -1234,11 +1179,9 @@ public class MaterialQuote extends BaseTransUI {
 	
 	private void loadProductList(Boolean isFullList) {
 		try {
-			List<MmsEnqDtlDM> MatnameList = new ArrayList<MmsEnqDtlDM>();
-			Long enquid = ((MmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId();
-			MatnameList.addAll(serviceMmsEnqDtl.getMmsEnqDtlList(null, enquid, null, null, null));
-			beanMaterial = new BeanItemContainer<MmsEnqDtlDM>(MmsEnqDtlDM.class);
-			beanMaterial.addAll(MatnameList);
+			BeanItemContainer<MmsEnqDtlDM> beanMaterial = new BeanItemContainer<MmsEnqDtlDM>(MmsEnqDtlDM.class);
+			beanMaterial.addAll(serviceMmsEnqDtl.getMmsEnqDtlList(null,
+					((MmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId(), null, null, null));
 			cbMaterial.setContainerDataSource(beanMaterial);
 		}
 		catch (Exception e) {
@@ -1485,7 +1428,7 @@ public class MaterialQuote extends BaseTransUI {
 			if (cbStatus.getValue() != null) {
 				salesQuoteHdrobj.setStatus(cbStatus.getValue().toString());
 			}
-			salesQuoteHdrobj.setPreparedBy(EmployeeId);
+			salesQuoteHdrobj.setPreparedBy(employeeId);
 			salesQuoteHdrobj.setReviewedBy(null);
 			salesQuoteHdrobj.setActionedBy(null);
 			salesQuoteHdrobj.setLastupdateddt(DateUtils.getcurrentdate());
@@ -1758,12 +1701,11 @@ public class MaterialQuote extends BaseTransUI {
 	
 	private void loadvendorlist() {
 		try {
-			List<MMSVendorDtlDM> lookUpList = servicevendorEnq.getmaterialvdrdtl(null,
-					((MmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId(), null);
 			BeanContainer<Long, MMSVendorDtlDM> beanvndrdtl = new BeanContainer<Long, MMSVendorDtlDM>(
 					MMSVendorDtlDM.class);
 			beanvndrdtl.setBeanIdProperty("vendorid");
-			beanvndrdtl.addAll(lookUpList);
+			beanvndrdtl.addAll(servicevendorEnq.getmaterialvdrdtl(null,
+					((MmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId(), null));
 			cbvendorname.setContainerDataSource(beanvndrdtl);
 		}
 		catch (Exception e) {

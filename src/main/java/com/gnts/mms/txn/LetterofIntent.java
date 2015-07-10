@@ -109,10 +109,10 @@ public class LetterofIntent extends BaseTransUI {
 	private Long loiHdrId, moduleId, branchId;
 	private int recordCnt = 0;
 	private String username;
-	// Initialize logger 
+	// Initialize logger
 	private Logger logger = Logger.getLogger(LetterofIntent.class);
-	private Button btnConvertToPO=new GERPButton("Convert To PO","hostorybtn");
 	
+	// private Button btnConvertToPO=new GERPButton("Convert To PO","hostorybtn");
 	// Constructor received the parameters from Login UI class
 	public LetterofIntent() {
 		// Get the logged in user name and company id from the session
@@ -694,7 +694,7 @@ public class LetterofIntent extends BaseTransUI {
 			loiHeaderDM.setLastUpdatedBy(username);
 			loiHeaderDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 			serviceLOIHeader.saveOrUpdateLOIHdr(loiHeaderDM);
-			loiHdrId=loiHeaderDM.getLoiHdrId();
+			loiHdrId = loiHeaderDM.getLoiHdrId();
 			@SuppressWarnings("unchecked")
 			Collection<LOIDetailsDM> loiDetails = ((Collection<LOIDetailsDM>) tblLOIDetail.getVisibleItemIds());
 			for (LOIDetailsDM loiDetailobj : (Collection<LOIDetailsDM>) loiDetails) {
@@ -760,13 +760,12 @@ public class LetterofIntent extends BaseTransUI {
 	/*
 	 * loadBranchList()-->this function is used for load the branch name
 	 */
-	public void loadVendorNameList() {
+	private void loadVendorNameList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading VendorNameList");
-		List<VendorDM> vendorlist = serviceVendor.getVendorList(null, null, companyid, null, null, null, null, null,
-				"Active", null, "P");
 		BeanContainer<Long, VendorDM> beanVendor = new BeanContainer<Long, VendorDM>(VendorDM.class);
 		beanVendor.setBeanIdProperty("vendorId");
-		beanVendor.addAll(vendorlist);
+		beanVendor.addAll(serviceVendor.getVendorList(null, null, companyid, null, null, null, null, null, "Active",
+				null, "P"));
 		cbVendor.setContainerDataSource(beanVendor);
 	}
 	
@@ -814,7 +813,7 @@ public class LetterofIntent extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			System.out.println("indentHdrId-->"+loiHdrId);
+			System.out.println("indentHdrId-->" + loiHdrId);
 			parameterMap.put("LOIID", loiHdrId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/loi"); // productlist is the name of my jasper

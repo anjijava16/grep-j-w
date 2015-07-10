@@ -61,16 +61,15 @@ import com.gnts.mms.service.txn.DCDtlService;
 import com.gnts.mms.service.txn.DcHdrService;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
@@ -99,20 +98,18 @@ public class DC extends BaseTransUI {
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private SmsEnqHdrService serviceEnqHeader = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
-
 	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private ProductService ServiceProduct = (ProductService) SpringContextHelper.getBean("Product");
+	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
-	private BeanContainer<Long, ClientsContactsDM> beanclientcontact = null;
 	private ClientContactsService serviceClntContact = (ClientContactsService) SpringContextHelper
 			.getBean("clientContact");
-	List<DCDtlDM> DCDtlList = null;
+	private List<DCDtlDM> DCDtlList = null;
 	// form layout for input controls
 	private FormLayout flDCCol1, flDCCol2, flDCCol3, flColumn4, flDCIssueDtlCol1, flDCIssueDtlCol2, flDCIssueDtlCol3,
-			flDCIssueDtlCol4,flDCIssueDtlCol5;
-	public Button btndelete = new GERPButton("Delete", "delete", this);
+			flDCIssueDtlCol4, flDCIssueDtlCol5;
+	private Button btndelete = new GERPButton("Delete", "delete", this);
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private HorizontalLayout hlDC = new HorizontalLayout();
@@ -128,17 +125,14 @@ public class DC extends BaseTransUI {
 	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.T_SMS_INVOICE_HDR,
 			BASEConstants.INVOICE_STATUS);
 	private TextField tfDcNo, tfDCQty, rfGoodsuom;
-	private ComboBox cbVendor, cbClients, cbModeOfTrans, cbPersonName,cbEnquiry, cbGoodsType, cbMaterialId, cbProduct, cbDCType,cbwindTechPers,cbwindcommPerson;
+	private ComboBox cbVendor, cbClients, cbModeOfTrans, cbPersonName, cbEnquiry, cbGoodsType, cbMaterialId, cbProduct,
+			cbDCType, cbwindTechPers, cbwindcommPerson;
 	private DateField dfDcDt;
 	private TextArea taRemarks, taGoodsDesc;
 	private Table tblDtl;
-	private GERPTextArea taClientAddres=new GERPTextArea("Address");
-
+	private GERPTextArea taClientAddres = new GERPTextArea("Address");
 	private BeanItemContainer<DcHdrDM> beanDcHdrDM = null;
 	private BeanItemContainer<DCDtlDM> beanDcDtlDM = null;
-	private BeanContainer<String, EmployeeDM> beanPersonEmployeeDM = null;
-	private BeanContainer<Long, VendorDM> beanVendorDM = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// local variables declaration
 	private String pkDCId;
 	private Long dcHdrId;
@@ -147,11 +141,10 @@ public class DC extends BaseTransUI {
 	private int recordCnt = 0;
 	private int recordCntDtl = 0;
 	private String username;
-	Long vendorid;
 	private Boolean errorFlag = false;
 	// Initialize logger
 	private MmsComments comments;
-	VerticalLayout vlTableForm = new VerticalLayout();
+	private VerticalLayout vlTableForm = new VerticalLayout();
 	private Logger logger = Logger.getLogger(DC.class);
 	private String status;
 	private static final long serialVersionUID = 1L;
@@ -197,16 +190,11 @@ public class DC extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				loadCustomerList();
-
-				loadclientCommCont();
+				loadClientContacts();
 				loadclienTecCont();
-				
 			}
-			
 		});
-		
 		loadEnquiryList();
-	
 		tblDtl = new GERPTable();
 		tblDtl.setPageLength(7);
 		tblDtl.addItemClickListener(new ItemClickListener() {
@@ -253,11 +241,18 @@ public class DC extends BaseTransUI {
 						cbwindcommPerson.setEnabled(true);
 						cbwindTechPers.setEnabled(true);
 						cbClients.setValue(cbClients.getValue());
-						if(cbEnquiry.getValue()!=null){
-							Long clientid=serviceEnqHeader.getSmsEnqHdrList(companyid, (Long)cbEnquiry.getValue(), null, null, null, "F", null, null).get(0).getClientId();
-							if(serviceClients.getClientDetails(companyid,clientid, null, null, null, null, null, null, "Active", "F").get(0).getClientAddress()!=null){
-							taClientAddres.setValue(serviceClients.getClientDetails(companyid,clientid, null, null, null, null, null, null, "Active", "F").get(0).getClientAddress());}
+						if (cbEnquiry.getValue() != null) {
+							Long clientid = serviceEnqHeader
+									.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "F",
+											null, null).get(0).getClientId();
+							if (serviceClients
+									.getClientDetails(companyid, clientid, null, null, null, null, null, null,
+											"Active", "F").get(0).getClientAddress() != null) {
+								taClientAddres.setValue(serviceClients
+										.getClientDetails(companyid, clientid, null, null, null, null, null, null,
+												"Active", "F").get(0).getClientAddress());
 							}
+						}
 					} else if (cbDCType.getValue().equals("Vendor")) {
 						cbVendor.setValue(cbVendor.getValue());
 						cbClients.setEnabled(false);
@@ -266,13 +261,10 @@ public class DC extends BaseTransUI {
 						btndelete.setEnabled(true);
 						cbwindcommPerson.setEnabled(false);
 						cbwindTechPers.setEnabled(false);
-						
-						
 					}
 				}
 			}
 		});
-
 		btndelete.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
@@ -294,15 +286,18 @@ public class DC extends BaseTransUI {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
-				if(serviceVendor.getVendorList(null, (Long)cbVendor.getValue(), companyid, null, null, null, null, null, "Active", null, "F").get(0).getVendorAddress()!=null){
-					String vendoraddress=serviceVendor.getVendorList(null, (Long)cbVendor.getValue(), companyid, null, null, null, null, null, "Active", null, "F").get(0).getVendorAddress();
+				if (serviceVendor
+						.getVendorList(null, (Long) cbVendor.getValue(), companyid, null, null, null, null, null,
+								"Active", null, "F").get(0).getVendorAddress() != null) {
+					String vendoraddress = serviceVendor
+							.getVendorList(null, (Long) cbVendor.getValue(), companyid, null, null, null, null, null,
+									"Active", null, "F").get(0).getVendorAddress();
 					taClientAddres.setValue(vendoraddress);
-					
-					}
+				}
 				cbwindcommPerson.setEnabled(false);
 				cbwindTechPers.setEnabled(false);
 			}
@@ -315,11 +310,16 @@ public class DC extends BaseTransUI {
 				// TODO Auto-generated method stub
 				cbwindcommPerson.setEnabled(false);
 				cbwindTechPers.setEnabled(false);
-				if(serviceVendor.getVendorList(null, (Long)cbVendor.getValue(), companyid, null, null, null, null, null, "Active", null, "F").get(0).getVendorAddress()!=null){
-					String vendoraddress=serviceVendor.getVendorList(null, (Long)cbVendor.getValue(), companyid, null, null, null, null, null, "Active", null, "F").get(0).getVendorAddress();
+				if (serviceVendor
+						.getVendorList(null, (Long) cbVendor.getValue(), companyid, null, null, null, null, null,
+								"Active", null, "F").get(0).getVendorAddress() != null) {
+					String vendoraddress = serviceVendor
+							.getVendorList(null, (Long) cbVendor.getValue(), companyid, null, null, null, null, null,
+									"Active", null, "F").get(0).getVendorAddress();
 					taClientAddres.setValue(vendoraddress);
-					}			}
-		});		// Customer Name Combobox
+				}
+			}
+		}); // Customer Name Combobox
 		cbClients = new GERPComboBox("Client");
 		cbClients.setItemCaptionPropertyId("clientCode");
 		cbVendor.setEnabled(false);
@@ -385,8 +385,6 @@ public class DC extends BaseTransUI {
 		cbStatus = new GERPComboBox("Status", BASEConstants.T_SMS_INVOICE_HDR, BASEConstants.INVOICE_STATUS);
 		// DC Details
 		// Goods Type
-		// rfGoodsuom.setValue(((MaterialDM) cbMaterialId.getValue()).getMaterialUOM());
-		// rfGoodsuom.setValue(((ProductDM) cbProduct.getValue()).getUom());
 		cbGoodsType = new GERPComboBox("Goods Type");
 		cbGoodsType.addItem("Material");
 		cbGoodsType.addItem("Product");
@@ -418,7 +416,6 @@ public class DC extends BaseTransUI {
 		tfDCQty = new GERPTextField("DC Qty");
 		// Goods UOM combobox
 		rfGoodsuom = new GERPTextField("Goods UOM");
-		// loadGoodsUOM();
 		// Goods Dtl Status Combobox
 		cbGoodsStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		hlSearchLayout = new GERPAddEditHLayout();
@@ -463,7 +460,6 @@ public class DC extends BaseTransUI {
 		flDCCol1.addComponent(cbDCType);
 		dfDcDt.setWidth("130");
 		flDCCol1.addComponent(dfDcDt);
-
 		flDCCol2.addComponent(cbVendor);
 		flDCCol2.addComponent(cbClients);
 		cbwindcommPerson.setWidth("150");
@@ -477,9 +473,6 @@ public class DC extends BaseTransUI {
 		flColumn4.addComponent(taRemarks);
 		cbStatus.setWidth("150");
 		flColumn4.addComponent(cbStatus);
-		
-		
-		
 		hlDC = new HorizontalLayout();
 		hlDC.addComponent(flDCCol1);
 		hlDC.addComponent(flDCCol2);
@@ -543,10 +536,10 @@ public class DC extends BaseTransUI {
 		beanDcHdrDM.addAll(dcHdrList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the DC. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanDcHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] {"enqNo", "dcNo", "dcType", "techPerson","commPerson", "lastUpdateddt",
-				"lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] {"Enquiry No", "DC No", "DC Type", "Technical Person","Commercial Person","Updated Date",
-				"Updated By" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enqNo", "dcNo", "dcType", "techPerson", "commPerson",
+				"lastUpdateddt", "lastUpdatedby" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Enquiry No", "DC No", "DC Type", "Technical Person",
+				"Commercial Person", "Updated Date", "Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("dcId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 	}
@@ -563,8 +556,10 @@ public class DC extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the DCslap. result set");
 			tblDtl.setContainerDataSource(beanDcDtlDM);
-			tblDtl.setVisibleColumns(new Object[] { "goodsType","goodsDesc","dcQty","status", "lastUpdateddt", "lastUpdatedby" });
-			tblDtl.setColumnHeaders(new String[] { "Goods Type","Description","DC Qty","Status", "Updated Date", "Updated By" });
+			tblDtl.setVisibleColumns(new Object[] { "goodsType", "goodsDesc", "dcQty", "status", "lastUpdateddt",
+					"lastUpdatedby" });
+			tblDtl.setColumnHeaders(new String[] { "Goods Type", "Description", "DC Qty", "Status", "Updated Date",
+					"Updated By" });
 			tblDtl.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCntDtl);
 		}
 		catch (Exception e) {
@@ -612,24 +607,22 @@ public class DC extends BaseTransUI {
 	private void editHdrDCDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			DcHdrDM editHdrDC = beanDcHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			System.out.println("issueId-->" + issueId);
 			dcHdrId = editHdrDC.getDcId();
 			if (editHdrDC.getDcDate() != null) {
 				dfDcDt.setValue(editHdrDC.getDcDate1());
 			}
 			cbEnquiry.setValue(editHdrDC.getEnquiryId());
-			
-			if(editHdrDC.getCommPerson()!=null){
-				cbwindcommPerson.setValue(editHdrDC.getCommPerson());}
-				if(editHdrDC.getTechPerson()!=null){
-					cbwindTechPers.setValue(editHdrDC.getTechPerson());}
-				if(editHdrDC.getClientAddress()!=null){
-					taClientAddres.setValue(editHdrDC.getClientAddress());}
-				
-				
+			if (editHdrDC.getCommPerson() != null) {
+				cbwindcommPerson.setValue(editHdrDC.getCommPerson());
+			}
+			if (editHdrDC.getTechPerson() != null) {
+				cbwindTechPers.setValue(editHdrDC.getTechPerson());
+			}
+			if (editHdrDC.getClientAddress() != null) {
+				taClientAddres.setValue(editHdrDC.getClientAddress());
+			}
 			tfDcNo.setReadOnly(false);
 			tfDcNo.setValue(editHdrDC.getDcNo());
 			cbDCType.setValue(editHdrDC.getDcType());
@@ -650,12 +643,10 @@ public class DC extends BaseTransUI {
 	
 	private void editDtls() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblDtl.getItem(tblDtl.getValue());
-		if (itselect != null) {
-			DCDtlDM editDtl = new DCDtlDM();
-			editDtl = beanDcDtlDM.getItem(tblDtl.getValue()).getBean();
-			cbGoodsType.setValue(editDtl.getGoodsType());
-			Long matId = editDtl.getMaterialId();
+		if (tblDtl.getValue() != null) {
+			DCDtlDM dcDtlDM = beanDcDtlDM.getItem(tblDtl.getValue()).getBean();
+			cbGoodsType.setValue(dcDtlDM.getGoodsType());
+			Long matId = dcDtlDM.getMaterialId();
 			Collection<?> empColId = cbMaterialId.getItemIds();
 			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
@@ -666,7 +657,7 @@ public class DC extends BaseTransUI {
 					cbMaterialId.setValue(itemIdClient);
 				}
 			}
-			Long prodId = editDtl.getProductId();
+			Long prodId = dcDtlDM.getProductId();
 			Collection<?> empProdId = cbProduct.getItemIds();
 			for (Iterator<?> iteratorclient = empProdId.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
@@ -677,18 +668,18 @@ public class DC extends BaseTransUI {
 					cbProduct.setValue(itemIdClient);
 				}
 			}
-			if (itselect.getItemProperty("goodsDesc").getValue() != null) {
-				taGoodsDesc.setValue(itselect.getItemProperty("goodsDesc").getValue().toString());
+			if (dcDtlDM.getGoodsDesc() != null) {
+				taGoodsDesc.setValue(dcDtlDM.getGoodsDesc());
 			}
-			if (itselect.getItemProperty("dcQty").getValue() != null) {
-				tfDCQty.setValue(itselect.getItemProperty("dcQty").getValue().toString());
+			if (dcDtlDM.getDcQty() != null) {
+				tfDCQty.setValue(dcDtlDM.getDcQty().toString());
 			}
-			if (itselect.getItemProperty("goodsUOM").getValue() != null) {
+			if (dcDtlDM.getGoodsUOM() != null) {
 				rfGoodsuom.setReadOnly(false);
-				rfGoodsuom.setValue(itselect.getItemProperty("goodsUOM").getValue().toString());
+				rfGoodsuom.setValue(dcDtlDM.getGoodsUOM());
 				rfGoodsuom.setReadOnly(true);
 			}
-			cbGoodsStatus.setValue(itselect.getItemProperty("status").getValue());
+			cbGoodsStatus.setValue(dcDtlDM.getStatus());
 		}
 	}
 	
@@ -750,8 +741,8 @@ public class DC extends BaseTransUI {
 			} else {
 				tfDcNo.setReadOnly(false);
 			}
-		}catch(Exception e){
-			
+		}
+		catch (Exception e) {
 		}
 		tblDtl.setVisible(true);
 		// reset the input controls to default value
@@ -858,7 +849,6 @@ public class DC extends BaseTransUI {
 		cbProduct.setComponentError(null);
 		cbMaterialId.setComponentError(null);
 		tfDCQty.setComponentError(null);
-		
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		if (cbGoodsType.getValue() == null) {
 			cbGoodsType.setComponentError(new UserError(GERPErrorCodes.NULL_GOODS_TYPE));
@@ -915,24 +905,11 @@ public class DC extends BaseTransUI {
 		cbModeOfTrans.setComponentError(null);
 		cbPersonName.setComponentError(null);
 		cbEnquiry.setComponentError(null);
-
 		cbGoodsType.setComponentError(null);
 		tfDCQty.setComponentError(null);
 		cbProduct.setComponentError(null);
 		cbMaterialId.setComponentError(null);
 		errorFlag = false;
-		btndelete.addClickListener(new ClickListener() {
-			// Click Listener for Add and Update
-			private static final long serialVersionUID = 6551953728534136363L;
-			
-			@Override
-			public void buttonClick(ClickEvent event) {
-				if (btndelete == event.getButton()) {
-					btnAddDtl.setCaption("Add");
-					deleteDetails();
-				}
-			}
-		});
 		if (dfDcDt.getValue() == null) {
 			dfDcDt.setComponentError(new UserError(GERPErrorCodes.NULL_DC_DATE));
 			errorFlag = true;
@@ -944,7 +921,7 @@ public class DC extends BaseTransUI {
 		if (cbEnquiry.getValue() == null) {
 			cbEnquiry.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRYNO));
 			errorFlag = true;
-		}else{
+		} else {
 			cbEnquiry.setComponentError(null);
 		}
 		if (cbPersonName.getValue() == null) {
@@ -971,19 +948,20 @@ public class DC extends BaseTransUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			DcHdrDM dcHdrDM = new DcHdrDM();
-			System.out.println("Dc no" + dcHdrDM.getDcNo());
 			if (tblMstScrSrchRslt.getValue() != null) {
 				dcHdrDM = beanDcHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			} 
+			}
 			dcHdrDM.setDcNo(tfDcNo.getValue());
 			dcHdrDM.setCompanyId(companyid);
 			dcHdrDM.setBranchId(branchID);
-			if(cbwindTechPers.getValue()!=null){
-				dcHdrDM.setTechPerson(cbwindTechPers.getValue().toString());}
-				if(cbwindcommPerson.getValue()!=null){
-					dcHdrDM.setCommPerson(cbwindcommPerson.getValue().toString());}
-				dcHdrDM.setEnquiryId((Long)cbEnquiry.getValue());
-				dcHdrDM.setClientAddress(taClientAddres.getValue());
+			if (cbwindTechPers.getValue() != null) {
+				dcHdrDM.setTechPerson(cbwindTechPers.getValue().toString());
+			}
+			if (cbwindcommPerson.getValue() != null) {
+				dcHdrDM.setCommPerson(cbwindcommPerson.getValue().toString());
+			}
+			dcHdrDM.setEnquiryId((Long) cbEnquiry.getValue());
+			dcHdrDM.setClientAddress(taClientAddres.getValue());
 			dcHdrDM.setDcDate((Date) dfDcDt.getValue());
 			dcHdrDM.setDcType(cbDCType.getValue().toString());
 			if (cbVendor.getValue() != null) {
@@ -1004,7 +982,7 @@ public class DC extends BaseTransUI {
 			dcHdrDM.setLastUpdateddt(DateUtils.getcurrentdate());
 			dcHdrDM.setLastUpdatedby(username);
 			serviceDCHdr.saveOrUpdate(dcHdrDM);
-			dcHdrId=dcHdrDM.getDcId();
+			dcHdrId = dcHdrDM.getDcId();
 			@SuppressWarnings("unchecked")
 			Collection<DCDtlDM> colPlanDtls = ((Collection<DCDtlDM>) tblDtl.getVisibleItemIds());
 			for (DCDtlDM saveDtl : (Collection<DCDtlDM>) colPlanDtls) {
@@ -1023,8 +1001,6 @@ public class DC extends BaseTransUI {
 			comments.savedc(dcHdrDM.getDcId(), dcHdrDM.getDcStatus());
 			comments.resetfields();
 			resetDCDetails();
-			// resetFields();
-			//dcHdrId = 0L;
 			loadSrchRslt();
 			loadDCDtl();
 			tfDcNo.setReadOnly(false);
@@ -1038,33 +1014,33 @@ public class DC extends BaseTransUI {
 	
 	private void saveDCDtlListDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		DCDtlDM DCDtlObj = new DCDtlDM();
+		DCDtlDM dcDtlDM = new DCDtlDM();
 		if (tblDtl.getValue() != null) {
-			DCDtlObj = beanDcDtlDM.getItem(tblDtl.getValue()).getBean();
-			DCDtlList.remove(DCDtlObj);
+			dcDtlDM = beanDcDtlDM.getItem(tblDtl.getValue()).getBean();
+			DCDtlList.remove(dcDtlDM);
 		}
-		DCDtlObj.setGoodsType((String) cbGoodsType.getValue());
+		dcDtlDM.setGoodsType((String) cbGoodsType.getValue());
 		if (cbMaterialId.getValue() != null) {
-			DCDtlObj.setMaterialId(((MaterialDM) cbMaterialId.getValue()).getMaterialId());
-			DCDtlObj.setMaterialName(((MaterialDM) cbMaterialId.getValue()).getMaterialName());
+			dcDtlDM.setMaterialId(((MaterialDM) cbMaterialId.getValue()).getMaterialId());
+			dcDtlDM.setMaterialName(((MaterialDM) cbMaterialId.getValue()).getMaterialName());
 		}
 		if (cbProduct.getValue() != null) {
-			DCDtlObj.setProductId(((ProductDM) cbProduct.getValue()).getProdid());
-			DCDtlObj.setProductName(((ProductDM) cbProduct.getValue()).getProdname());
+			dcDtlDM.setProductId(((ProductDM) cbProduct.getValue()).getProdid());
+			dcDtlDM.setProductName(((ProductDM) cbProduct.getValue()).getProdname());
 		}
-		DCDtlObj.setGoodsDesc(taGoodsDesc.getValue().toString());
-		DCDtlObj.setDcQty(Long.valueOf(tfDCQty.getValue().toString()));
+		dcDtlDM.setGoodsDesc(taGoodsDesc.getValue().toString());
+		dcDtlDM.setDcQty(Long.valueOf(tfDCQty.getValue().toString()));
 		if (rfGoodsuom.getValue() != null) {
 			rfGoodsuom.setReadOnly(false);
-			DCDtlObj.setGoodsUOM(rfGoodsuom.getValue().toString());
+			dcDtlDM.setGoodsUOM(rfGoodsuom.getValue().toString());
 			rfGoodsuom.setReadOnly(true);
 		}
 		if (cbGoodsStatus.getValue() != null) {
-			DCDtlObj.setStatus((String) cbGoodsStatus.getValue());
+			dcDtlDM.setStatus((String) cbGoodsStatus.getValue());
 		}
-		DCDtlObj.setLastUpdateddt(DateUtils.getcurrentdate());
-		DCDtlObj.setLastUpdatedby(username);
-		DCDtlList.add(DCDtlObj);
+		dcDtlDM.setLastUpdateddt(DateUtils.getcurrentdate());
+		dcDtlDM.setLastUpdatedby(username);
+		DCDtlList.add(dcDtlDM);
 		loadDCDtl();
 		resetDCDetails();
 		btnAddDtl.setCaption("Add");
@@ -1085,52 +1061,52 @@ public class DC extends BaseTransUI {
 	/*
 	 * loadEmployeeList()-->this function is used for load the Employee name
 	 */
-	public void loadEmployeeList() {
+	private void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<EmployeeDM> lookUpList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null,
-				null, null, null, "P");
-		beanPersonEmployeeDM = new BeanContainer<String, EmployeeDM>(EmployeeDM.class);
+		BeanContainer<String, EmployeeDM> beanPersonEmployeeDM = new BeanContainer<String, EmployeeDM>(EmployeeDM.class);
 		beanPersonEmployeeDM.setBeanIdProperty("firstname");
-		beanPersonEmployeeDM.addAll(lookUpList);
+		beanPersonEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+				null, null, "P"));
 		cbPersonName.setContainerDataSource(beanPersonEmployeeDM);
 	}
 	
 	/*
 	 * loadVendorList()-->this function is used for load the vendor name
 	 */
-	public void loadVendorList() {
+	private void loadVendorList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<VendorDM> lookUpList = serviceVendor.getVendorList(null, null, null, null, null, null, null, null,
-				"Active", null, "F");
-		beanVendorDM = new BeanContainer<Long, VendorDM>(VendorDM.class);
+		BeanContainer<Long, VendorDM> beanVendorDM = new BeanContainer<Long, VendorDM>(VendorDM.class);
 		beanVendorDM.setBeanIdProperty("vendorId");
-		beanVendorDM.addAll(lookUpList);
+		beanVendorDM.addAll(serviceVendor.getVendorList(null, null, null, null, null, null, null, null, "Active", null,
+				"P"));
 		cbVendor.setContainerDataSource(beanVendorDM);
 	}
 	
 	/*
 	 * loadCustomerList()-->this function is used for load the customer name
 	 */
-	public void loadCustomerList() {
+	private void loadCustomerList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
-		Long clientid=serviceEnqHeader.getSmsEnqHdrList(companyid, (Long)cbEnquiry.getValue(), null, null, null, "P", null, null).get(0).getClientId();
-		List<ClientDM> clientlist = serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null,
-				null, "Active", "P");
-		BeanContainer<Long, ClientDM>beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
+		Long clientid = serviceEnqHeader
+				.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "P", null, null).get(0)
+				.getClientId();
+		BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
 		beanclientDM.setBeanIdProperty("clientId");
-		beanclientDM.addAll(clientlist);
+		beanclientDM.addAll(serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null, null,
+				"Active", "P"));
 		cbClients.setContainerDataSource(beanclientDM);
-	cbClients.setValue(clientid);
+		cbClients.setValue(clientid);
 	}
 	
 	/*
 	 * loadModeOfTransList()-->this function is used for load the ModeOfTransaction name
 	 */
-	public void loadModeOfTransList() {
+	private void loadModeOfTransList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
 				"MM_TRNSPRT");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
 		beanCompanyLookUp.addAll(lookUpList);
 		cbModeOfTrans.setContainerDataSource(beanCompanyLookUp);
@@ -1139,11 +1115,9 @@ public class DC extends BaseTransUI {
 	/*
 	 * loadProductList()-->this function is used for load the Product name
 	 */
-	public void loadProductList() {
-		List<ProductDM> getProdList = new ArrayList<ProductDM>();
-		getProdList.addAll(ServiceProduct.getProductList(null, null, null, null, "Active", null, null, "F"));
+	private void loadProductList() {
 		BeanItemContainer<ProductDM> beanProduct = new BeanItemContainer<ProductDM>(ProductDM.class);
-		beanProduct.addAll(getProdList);
+		beanProduct.addAll(serviceProduct.getProductList(null, null, null, null, "Active", null, null, "F"));
 		cbProduct.setContainerDataSource(beanProduct);
 	}
 	
@@ -1157,6 +1131,7 @@ public class DC extends BaseTransUI {
 			btndelete.setEnabled(false);
 		}
 	}
+	
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
@@ -1186,42 +1161,45 @@ public class DC extends BaseTransUI {
 			}
 		}
 	}
-	private void loadclienTecCont() {try {
-		Long enquid = ((Long) cbEnquiry.getValue());
-		Long clientId=serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null).get(0).getClientId();
-		List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null, clientId, null, "Active","Technical Person");
-		beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
-		beanclientcontact.setBeanIdProperty("contactName");
-		beanclientcontact.addAll(listclientconDtls);
-		cbwindTechPers.setContainerDataSource(beanclientcontact);
-		cbwindTechPers.setItemCaptionPropertyId("contactName");	}
-	catch (Exception e) {
-		e.printStackTrace();
-	}}
-
 	
-
-	private void loadclientCommCont() {
-
-	try {
-		Long enquid = ((Long) cbEnquiry.getValue());
-		Long clientId=serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null).get(0).getClientId();
-		List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null, clientId, null, "Active","Contact Person");
-		beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
-		beanclientcontact.setBeanIdProperty("contactName");
-		beanclientcontact.addAll(listclientconDtls);
-		cbwindcommPerson.setContainerDataSource(beanclientcontact);
-		cbwindcommPerson.setItemCaptionPropertyId("contactName");	}
-	catch (Exception e) {
-		e.printStackTrace();
+	private void loadclienTecCont() {
+		try {
+			Long enquid = ((Long) cbEnquiry.getValue());
+			Long clientId = serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null)
+					.get(0).getClientId();
+			BeanContainer<Long, ClientsContactsDM> beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(
+					ClientsContactsDM.class);
+			beanclientcontact.setBeanIdProperty("contactName");
+			beanclientcontact.addAll(serviceClntContact.getClientContactsDetails(companyid, null, clientId, null,
+					"Active", "Technical Person"));
+			cbwindTechPers.setContainerDataSource(beanclientcontact);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-}
+	
+	private void loadClientContacts() {
+		try {
+			Long enquid = ((Long) cbEnquiry.getValue());
+			Long clientId = serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null)
+					.get(0).getClientId();
+			BeanContainer<Long, ClientsContactsDM> beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(
+					ClientsContactsDM.class);
+			beanclientcontact.setBeanIdProperty("contactName");
+			beanclientcontact.addAll(serviceClntContact.getClientContactsDetails(companyid, null, clientId, null,
+					"Active", "Contact Person"));
+			cbwindcommPerson.setContainerDataSource(beanclientcontact);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void loadEnquiryList() {
-		List<SmsEnqHdrDM> getsmsEnqNoHdr = new ArrayList<SmsEnqHdrDM>();
-		getsmsEnqNoHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
 		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
 		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(getsmsEnqNoHdr);
+		beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
 		cbEnquiry.setContainerDataSource(beansmsenqHdr);
 	}
 }

@@ -120,7 +120,6 @@ public class POMMSReceipts extends BaseUI {
 	// Bean Container
 	private BeanItemContainer<PoReceiptHdrDM> beanPoReceiptHdrDM = null;
 	private BeanItemContainer<PoReceiptDtlDM> beanPoReceiptDtlDM = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private Button btndelete = new GERPButton("Delete", "delete", this);
 	// local variables declaration
 	private Long companyid, enquiryId, receiptId, EmployeeId, moduleId, branchId;
@@ -433,11 +432,9 @@ public class POMMSReceipts extends BaseUI {
 	
 	// Load Indent No
 	private void loadindent() {
-		List<IndentHdrDM> indentHdr = serviceIndent.getMmsIndentHdrList(null, null, null, companyid, null, null, null,
-				null, "F");
 		BeanContainer<Long, IndentHdrDM> beanIndent = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
 		beanIndent.setBeanIdProperty("indentId");
-		beanIndent.addAll(indentHdr);
+		beanIndent.addAll(serviceIndent.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null, "F"));
 		cbindentid.setContainerDataSource(beanIndent);
 	}
 	
@@ -451,31 +448,28 @@ public class POMMSReceipts extends BaseUI {
 	}
 	
 	// Load Uom List
-	public void loadUomList() {
+	private void loadUomList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-				"SM_UOM");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "SM_UOM"));
 		cbmaterialUOM.setContainerDataSource(beanCompanyLookUp);
 	}
 	
 	// Load Material List
-	public void loadMaterial() {
-		List<MaterialDM> ProductList = serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null,
-				null, "Active", "F");
+	private void loadMaterial() {
 		BeanItemContainer<MaterialDM> beanProduct = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanProduct.addAll(ProductList);
+		beanProduct.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
+				"Active", "F"));
 		cbMaterial.setContainerDataSource(beanProduct);
 	}
 	
 	// Load Branch List
-	public void loadBranchList() {
-		List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
+	private void loadBranchList() {
 		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(branchList);
+		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
 		cbBranch.setContainerDataSource(beanbranch);
 	}
 	
@@ -879,7 +873,7 @@ public class POMMSReceipts extends BaseUI {
 	}
 	
 	// Save Recepit Details
-	public void saveReceiptDtl() {
+	private void saveReceiptDtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			PoReceiptDtlDM receiptDtlObj = new PoReceiptDtlDM();

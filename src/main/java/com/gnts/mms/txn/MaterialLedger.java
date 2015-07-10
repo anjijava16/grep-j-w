@@ -55,13 +55,12 @@ public class MaterialLedger extends BaseUI {
 	private BranchService servicebranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private static final long serialVersionUID = 1L;
 	private HorizontalLayout hlsearch;
-	private PopupDateField dtstockletdate;
-	private ComboBox cbmaterial, cbbranch, cbstocktype;
-	private TextField tfopenqty, tfInoutflag, tfinoutqty, tfcloseqty, tfrefNo, tfislatest, tfremarks;
-	private PopupDateField dfrefdate;
+	private PopupDateField dfLedgerDate;
+	private ComboBox cbMaterial, cbBranch, cbstocktype;
+	private TextField tfopenqty, tfInoutflag, tfinoutqty, tfcloseqty, tfrefNo, tfIslatest, tfRemarks;
+	private PopupDateField dfRefdate;
 	// Bean Container
 	private BeanItemContainer<MaterialLedgerDM> beanmatrlledger = null;
-	private BeanContainer<Long, BranchDM> beanbranch;
 	private FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4;
 	// form layout for input controls
 	private FormLayout fl1, fl2, fl3, fl4;
@@ -88,18 +87,18 @@ public class MaterialLedger extends BaseUI {
 	}
 	
 	// Build the UI components
-	public void buildview() {
-		dtstockletdate = new GERPPopupDateField("Stock ledger Date");
-		dtstockletdate.setWidth("130");
-		cbmaterial = new GERPComboBox("Material");
-		cbmaterial.setItemCaptionPropertyId("materialName");
-		cbmaterial.setWidth("150");
+	private void buildview() {
+		dfLedgerDate = new GERPPopupDateField("Stock ledger Date");
+		dfLedgerDate.setWidth("130");
+		cbMaterial = new GERPComboBox("Material");
+		cbMaterial.setItemCaptionPropertyId("materialName");
+		cbMaterial.setWidth("150");
 		loadmateriallist();
 		cbstocktype = new GERPComboBox("Stock Type", BASEConstants.T_MMS_MATERIAL_STOCK, BASEConstants.STOCKTYPE);
 		cbstocktype.setWidth("150");
-		cbbranch = new GERPComboBox("Branch");
-		cbbranch.setItemCaptionPropertyId("branchName");
-		cbbranch.setWidth("150");
+		cbBranch = new GERPComboBox("Branch");
+		cbBranch.setItemCaptionPropertyId("branchName");
+		cbBranch.setWidth("150");
 		loadbranchlist();
 		tfopenqty = new GERPTextField("Open Quantity");
 		tfopenqty.setWidth("150");
@@ -111,12 +110,12 @@ public class MaterialLedger extends BaseUI {
 		tfcloseqty.setWidth("150");
 		tfrefNo = new GERPTextField("Reference No");
 		tfrefNo.setWidth("150");
-		tfislatest = new GERPTextField("Latest");
-		tfislatest.setWidth("150");
-		tfremarks = new GERPTextField("Reference Remarks");
-		tfremarks.setWidth("150");
-		dfrefdate = new GERPPopupDateField("Reference Date");
-		dfrefdate.setWidth("130");
+		tfIslatest = new GERPTextField("Latest");
+		tfIslatest.setWidth("150");
+		tfRemarks = new GERPTextField("Reference Remarks");
+		tfRemarks.setWidth("150");
+		dfRefdate = new GERPPopupDateField("Reference Date");
+		dfRefdate.setWidth("130");
 		hlsearch = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearch));
 		assembleSearchlayout();
@@ -136,9 +135,9 @@ public class MaterialLedger extends BaseUI {
 		flcolumn2 = new FormLayout();
 		flcolumn3 = new FormLayout();
 		flcolumn4 = new FormLayout();
-		flcolumn1.addComponent(cbbranch);
-		flcolumn2.addComponent(cbmaterial);
-		flcolumn3.addComponent(dtstockletdate);
+		flcolumn1.addComponent(cbBranch);
+		flcolumn2.addComponent(cbMaterial);
+		flcolumn3.addComponent(dfLedgerDate);
 		flcolumn3.setMargin(true);
 		flcolumn4.addComponent(cbstocktype);
 		hlsearch.addComponent(flcolumn1);
@@ -163,18 +162,18 @@ public class MaterialLedger extends BaseUI {
 		fl2 = new FormLayout();
 		fl3 = new FormLayout();
 		fl4 = new FormLayout();
-		fl1.addComponent(cbbranch);
-		fl1.addComponent(cbmaterial);
+		fl1.addComponent(cbBranch);
+		fl1.addComponent(cbMaterial);
 		fl1.addComponent(cbstocktype);
-		fl2.addComponent(dtstockletdate);
+		fl2.addComponent(dfLedgerDate);
 		fl2.addComponent(tfopenqty);
 		fl2.addComponent(tfInoutflag);
 		fl3.addComponent(tfinoutqty);
 		fl3.addComponent(tfcloseqty);
 		fl3.addComponent(tfrefNo);
-		fl4.addComponent(dfrefdate);
-		fl4.addComponent(tfislatest);
-		fl4.addComponent(tfremarks);
+		fl4.addComponent(dfRefdate);
+		fl4.addComponent(tfIslatest);
+		fl4.addComponent(tfRemarks);
 		hlUserInputLayout.addComponent(fl1);
 		hlUserInputLayout.addComponent(fl2);
 		hlUserInputLayout.addComponent(fl3);
@@ -187,9 +186,9 @@ public class MaterialLedger extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			stockledgeDate = dtstockletdate.getValue();
-			List<MaterialLedgerDM> materiallist = serviceledger.getMaterialLedgerList((Long) cbmaterial.getValue(),
-					null, stockledgeDate, (Long) cbbranch.getValue(), (String) cbstocktype.getValue(), null, null, "F");
+			stockledgeDate = dfLedgerDate.getValue();
+			List<MaterialLedgerDM> materiallist = serviceledger.getMaterialLedgerList((Long) cbMaterial.getValue(),
+					null, stockledgeDate, (Long) cbBranch.getValue(), (String) cbstocktype.getValue(), null, null, "F");
 			recordCnt = materiallist.size();
 			beanmatrlledger = new BeanItemContainer<MaterialLedgerDM>(MaterialLedgerDM.class);
 			beanmatrlledger.addAll(materiallist);
@@ -208,7 +207,7 @@ public class MaterialLedger extends BaseUI {
 	}
 	
 	// Loading Material List
-	public void loadmateriallist() {
+	private void loadmateriallist() {
 		try {
 			List<MaterialDM> list = new ArrayList<MaterialDM>();
 			list.add(new MaterialDM(0L, "All Materials"));
@@ -217,50 +216,49 @@ public class MaterialLedger extends BaseUI {
 			BeanContainer<Long, MaterialDM> beanmaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 			beanmaterial.setBeanIdProperty("materialId");
 			beanmaterial.addAll(list);
-			cbmaterial.setContainerDataSource(beanmaterial);
+			cbMaterial.setContainerDataSource(beanmaterial);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void setReadOnlyFalseFields() {
-		cbmaterial.setReadOnly(false);
-		cbbranch.setReadOnly(false);
+	private void setReadOnlyFalseFields() {
+		cbMaterial.setReadOnly(false);
+		cbBranch.setReadOnly(false);
 		cbstocktype.setReadOnly(false);
 		tfopenqty.setReadOnly(false);
 		tfInoutflag.setReadOnly(false);
 		tfinoutqty.setReadOnly(false);
 		tfcloseqty.setReadOnly(false);
 		tfrefNo.setReadOnly(false);
-		tfislatest.setReadOnly(false);
-		tfremarks.setReadOnly(false);
-		dfrefdate.setReadOnly(false);
-		dtstockletdate.setReadOnly(false);
+		tfIslatest.setReadOnly(false);
+		tfRemarks.setReadOnly(false);
+		dfRefdate.setReadOnly(false);
+		dfLedgerDate.setReadOnly(false);
 	}
 	
-	public void setReadOnlyTrueFields() {
-		cbmaterial.setReadOnly(true);
-		cbbranch.setReadOnly(true);
+	private void setReadOnlyTrueFields() {
+		cbMaterial.setReadOnly(true);
+		cbBranch.setReadOnly(true);
 		cbstocktype.setReadOnly(true);
 		tfopenqty.setReadOnly(true);
 		tfInoutflag.setReadOnly(true);
 		tfinoutqty.setReadOnly(true);
 		tfcloseqty.setReadOnly(true);
 		tfrefNo.setReadOnly(true);
-		tfislatest.setReadOnly(true);
-		tfremarks.setReadOnly(true);
-		dfrefdate.setReadOnly(true);
-		dtstockletdate.setReadOnly(true);
+		tfIslatest.setReadOnly(true);
+		tfRemarks.setReadOnly(true);
+		dfRefdate.setReadOnly(true);
+		dfLedgerDate.setReadOnly(true);
 	}
 	
 	// Loading Branch List
-	public void loadbranchlist() {
-		List<BranchDM> branchlist = servicebranch.getBranchList(null, null, null, "Active", companyId, "P");
-		beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+	private void loadbranchlist() {
+		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(branchlist);
-		cbbranch.setContainerDataSource(beanbranch);
+		beanbranch.addAll(servicebranch.getBranchList(null, null, null, "Active", companyId, "P"));
+		cbBranch.setContainerDataSource(beanbranch);
 	}
 	
 	// Base class implementations
@@ -286,9 +284,9 @@ public class MaterialLedger extends BaseUI {
 	
 	@Override
 	protected void resetSearchDetails() {
-		cbbranch.setValue(branchId);
-		cbmaterial.setValue(0L);
-		dtstockletdate.setValue(null);
+		cbBranch.setValue(branchId);
+		cbMaterial.setValue(0L);
+		dfLedgerDate.setValue(null);
 		cbstocktype.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
@@ -315,18 +313,18 @@ public class MaterialLedger extends BaseUI {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			MaterialLedgerDM editledgerlist = beanmatrlledger.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			setReadOnlyFalseFields();
-			cbbranch.setValue(editledgerlist.getBranchId());
-			cbmaterial.setValue(editledgerlist.getMaterialId());
+			cbBranch.setValue(editledgerlist.getBranchId());
+			cbMaterial.setValue(editledgerlist.getMaterialId());
 			cbstocktype.setValue(editledgerlist.getStockType());
 			tfopenqty.setValue(editledgerlist.getOpenQty().toString());
 			tfInoutflag.setValue(editledgerlist.getInoutFlag());
 			tfinoutqty.setValue(editledgerlist.getInoutFQty().toString());
 			tfcloseqty.setValue(editledgerlist.getCloseQty().toString());
 			tfrefNo.setValue(editledgerlist.getReferenceNo());
-			dtstockletdate.setValue(editledgerlist.getStockledgeDate1());
-			dfrefdate.setValue(editledgerlist.getReferenceDate());
-			tfislatest.setValue(editledgerlist.getIsLatest());
-			tfremarks.setValue(editledgerlist.getReferenceRemark());
+			dfLedgerDate.setValue(editledgerlist.getStockledgeDate1());
+			dfRefdate.setValue(editledgerlist.getReferenceDate());
+			tfIslatest.setValue(editledgerlist.getIsLatest());
+			tfRemarks.setValue(editledgerlist.getReferenceRemark());
 			setReadOnlyTrueFields();
 		}
 	}
@@ -361,17 +359,17 @@ public class MaterialLedger extends BaseUI {
 	@Override
 	protected void resetFields() {
 		setReadOnlyFalseFields();
-		cbmaterial.setValue(0L);
-		cbbranch.setValue(branchId);
+		cbMaterial.setValue(0L);
+		cbBranch.setValue(branchId);
 		cbstocktype.setValue(null);
-		dtstockletdate.setValue(null);
+		dfLedgerDate.setValue(null);
 		tfopenqty.setValue("");
 		tfInoutflag.setValue("");
 		tfinoutqty.setValue("");
 		tfcloseqty.setValue("");
 		tfrefNo.setValue("");
-		dfrefdate.setValue(null);
-		tfislatest.setValue("");
-		tfremarks.setValue("");
+		dfRefdate.setValue(null);
+		tfIslatest.setValue("");
+		tfRemarks.setValue("");
 	}
 }

@@ -47,7 +47,7 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.mst.ProductBomDtlDM;
@@ -56,7 +56,6 @@ import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.mst.ProductBomDtlService;
 import com.gnts.mms.service.mst.ProductBomHdrService;
 import com.gnts.mms.txn.MmsComments;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -82,7 +81,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class ProductBomHdr extends BaseUI {
+public class ProductBomHdr extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	private Logger logger = Logger.getLogger(ProductBomHdr.class);
 	private ProductBomHdrService serviceProductBomHdr = (ProductBomHdrService) SpringContextHelper
@@ -96,31 +95,27 @@ public class ProductBomHdr extends BaseUI {
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private BeanItemContainer<ProductBomDtlDM> beanProductBomDtl = null;
 	private BeanItemContainer<ProductBomHdrDM> beanProductBomHdr = null;
-	private BeanContainer<Long, ProductDM> beanProduct = null;
-	private BeanContainer<Long, BranchDM> beanBranch = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
-	private BeanContainer<Long, MaterialDM> beanMaterial = null;
-	List<ProductBomDtlDM> productBomDtlList = new ArrayList<ProductBomDtlDM>();
+	private List<ProductBomDtlDM> productBomDtlList = new ArrayList<ProductBomDtlDM>();
 	// Product Bom Hdr Component Declaration
 	private ComboBox cbProduct, cbBranch, cbBomStatus;
-	public Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btndelete = new GERPButton("Delete", "delete", this);
 	private TextField tfBomVersion;
 	// Product Bom Dtl Component Declaration
 	private ComboBox cbMaterialUOM;
 	private ListSelect cbMaterialName;
 	private ComboBox cbMaterialStatus = new GERPComboBox("Status", BASEConstants.M_BASE_USER, BASEConstants.USER_STATUS);
 	private TextField tfMaterialQty;
-	public Button btnaddBomDtl = new GERPButton("Add", "addbt", this);
+	private Button btnaddBomDtl = new GERPButton("Add", "addbt", this);
 	private Table tblBomDtl = new GERPTable();
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
-	private Long companyId, moduleId, branchID, bomId;
+	private Long companyId, moduleId, branchId, bomId;
 	private String userName;
 	private int recordCnt = 0, recordCntBomDtl = 0;
 	private MmsComments comments;
-	VerticalLayout vlTableForm = new VerticalLayout();
+	private VerticalLayout vlTableForm = new VerticalLayout();
 	private String status;
 	private Long employeeId;
 	
@@ -131,7 +126,7 @@ public class ProductBomHdr extends BaseUI {
 		moduleId = Long.valueOf(UI.getCurrent().getSession().getAttribute("moduleId").toString());
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Inside Material() constructor");
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		buildView();
 	}
 	
@@ -200,7 +195,6 @@ public class ProductBomHdr extends BaseUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				if (cbMaterialName.getValue() != null) {
-					System.out.println("UOM--->" + cbMaterialName.getValue());
 					String[] split = cbMaterialName.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "")
 							.split(",");
 					for (String obj : split) {
@@ -226,7 +220,7 @@ public class ProductBomHdr extends BaseUI {
 					btnaddBomDtl.setCaption("Add");
 					btnaddBomDtl.setStyleName("savebt");
 					btndelete.setEnabled(false);
-					BomDtlResetFields();
+					resetBOMDetailFields();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnaddBomDtl.setCaption("Update");
@@ -241,14 +235,14 @@ public class ProductBomHdr extends BaseUI {
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		resetFields();
-		BomDtlResetFields();
+		resetBOMDetailFields();
 		loadBomHdrProductList();
 		loadBomHdrBranchList();
 		loadSrchRslt();
-		cbBranch.setValue(branchID);
+		cbBranch.setValue(branchId);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.removeAllItems();
@@ -272,7 +266,7 @@ public class ProductBomHdr extends BaseUI {
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
 	
-	public void loadProductBomDtlRslt() {
+	private void loadProductBomDtlRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		tblBomDtl.setSelectable(true);
 		tblBomDtl.removeAllItems();
@@ -293,7 +287,7 @@ public class ProductBomHdr extends BaseUI {
 		tblBomDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCntBomDtl);
 	}
 	
-	public void assembleSearchLayout() {
+	private void assembleSearchLayout() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Assembling search layout");
 		cbProduct.setRequired(false);
 		cbBranch.setRequired(false);
@@ -393,38 +387,35 @@ public class ProductBomHdr extends BaseUI {
 	/*
 	 * loadMaterialList()-->this function is used for load the material type
 	 */
-	public void loadMaterialList() {
+	private void loadMaterialList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Loading Material UOM Search...");
-		List<MaterialDM> materialList = serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null,
-				null, "Active", "F");
-		beanMaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
+		BeanContainer<Long, MaterialDM> beanMaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 		beanMaterial.setBeanIdProperty("materialId");
-		beanMaterial.addAll(materialList);
+		beanMaterial.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null,
+				"Active", "P"));
 		cbMaterialName.setContainerDataSource(beanMaterial);
 	}
-
-	public void loadMaterialUOMList() {
+	
+	private void loadMaterialUOMList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Loading Material UOM Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
-				"MM_UOM");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp
+				.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "MM_UOM"));
 		cbMaterialUOM.setContainerDataSource(beanCompanyLookUp);
 	}
 	
 	/*
 	 * loadBomHdrProductList()-->this function is used for load the product list
 	 */
-	public void loadBomHdrProductList() {
+	private void loadBomHdrProductList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Product Search...");
-		List<ProductDM> productList = serviceProduct.getProductList(companyId, null, null, null, "Active", null, null,
-				"P");
-		beanProduct = new BeanContainer<Long, ProductDM>(ProductDM.class);
+		BeanContainer<Long, ProductDM> beanProduct = new BeanContainer<Long, ProductDM>(ProductDM.class);
 		beanProduct.setBeanIdProperty("prodid");
-		beanProduct.addAll(productList);
+		beanProduct.addAll(serviceProduct.getProductList(companyId, null, null, null, "Active", null, null, "P"));
 		cbProduct.setContainerDataSource(beanProduct);
 	}
 	
@@ -433,10 +424,9 @@ public class ProductBomHdr extends BaseUI {
 	 */
 	private void loadBomHdrBranchList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Branch Search...");
-		List<BranchDM> branchlist = serviceBranch.getBranchList(null, null, null, null, companyId, "P");
-		beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(branchlist);
+		beanBranch.addAll(serviceBranch.getBranchList(null, null, null, null, companyId, "P"));
 		cbBranch.setContainerDataSource(beanBranch);
 	}
 	
@@ -458,7 +448,7 @@ public class ProductBomHdr extends BaseUI {
 	@Override
 	protected void resetSearchDetails() {
 		cbProduct.setValue(null);
-		cbBranch.setValue(branchID);
+		cbBranch.setValue(branchId);
 		cbBomStatus.setValue("Draft");
 		loadSrchRslt();
 	}
@@ -498,20 +488,19 @@ public class ProductBomHdr extends BaseUI {
 	
 	// Reset the selected row's data into Product BOM Hdr input components
 	private void editProductBomHdr() {
-		Item rowProductBomHdrSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (rowProductBomHdrSelected != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			ProductBomHdrDM editProductBomHdrList = beanProductBomHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			bomId = editProductBomHdrList.getBomId();
-			if ((rowProductBomHdrSelected.getItemProperty("productName").getValue() != null)) {
+			if ((editProductBomHdrList.getProductId() != null)) {
 				cbProduct.setValue(editProductBomHdrList.getProductId());
 			}
-			if ((rowProductBomHdrSelected.getItemProperty("branchName").getValue() != null)) {
+			if ((editProductBomHdrList.getBranchId() != null)) {
 				cbBranch.setValue(editProductBomHdrList.getBranchId());
 			}
-			if ((rowProductBomHdrSelected.getItemProperty("bomVersion").getValue() != null)) {
+			if ((editProductBomHdrList.getBomVersion() != null)) {
 				tfBomVersion.setValue(editProductBomHdrList.getBomVersion().toString());
 			}
-			if ((rowProductBomHdrSelected.getItemProperty("bomStatus").getValue() != null)) {
+			if ((editProductBomHdrList.getBomStatus() != null)) {
 				cbBomStatus.setValue(editProductBomHdrList.getBomStatus());
 			}
 			productBomDtlList.addAll(serviceProductBomDtl.getProductBomDtlList(null, bomId, null, null, "F"));
@@ -597,7 +586,7 @@ public class ProductBomHdr extends BaseUI {
 		tblMstScrSrchRslt.setVisible(true);
 		assembleSearchLayout();
 		tblBomDtl.removeAllItems();
-		BomDtlResetFields();
+		resetBOMDetailFields();
 		resetFields();
 		loadSrchRslt();
 	}
@@ -629,7 +618,7 @@ public class ProductBomHdr extends BaseUI {
 	/*
 	 * saveProductBOMDetails()-->this function is used for save the product BOM details for temporary
 	 */
-	protected void saveProductBOMDetails() {
+	private void saveProductBOMDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Saving Product BOM Dtl Data... ");
 		try {
@@ -675,7 +664,7 @@ public class ProductBomHdr extends BaseUI {
 					}
 				}
 			}
-			BomDtlResetFields();
+			resetBOMDetailFields();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -685,7 +674,7 @@ public class ProductBomHdr extends BaseUI {
 	/*
 	 * BomDtlResetFields()-->this function is used for reset product bom dtl fields
 	 */
-	protected void BomDtlResetFields() {
+	private void resetBOMDetailFields() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Resetting the Product BOM Dtl UI controls");
 		cbMaterialName.setValue(null);
@@ -702,12 +691,11 @@ public class ProductBomHdr extends BaseUI {
 	 * editBomDtl()-->this function is used for restore the selected row's data to product bom dtl components
 	 */
 	private void editBomDtl() {
-		Item bomDtlSelected = tblBomDtl.getItem(tblBomDtl.getValue());
-		if (bomDtlSelected != null) {
-			ProductBomDtlDM editdtl = new ProductBomDtlDM();
-			editdtl = beanProductBomDtl.getItem(tblBomDtl.getValue()).getBean();
+		if (tblBomDtl.getValue() != null) {
+			ProductBomDtlDM productBomDtlDM = new ProductBomDtlDM();
+			productBomDtlDM = beanProductBomDtl.getItem(tblBomDtl.getValue()).getBean();
 			cbMaterialName.setValue(null);
-			Long matId = editdtl.getMaterialId();
+			Long matId = productBomDtlDM.getMaterialId();
 			Collection<?> empColId = cbMaterialName.getItemIds();
 			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
@@ -718,12 +706,12 @@ public class ProductBomHdr extends BaseUI {
 					cbMaterialName.select(itemIdClient);
 				}
 			}
-			if (bomDtlSelected.getItemProperty("materialQty").getValue() != null) {
-				tfMaterialQty.setValue(bomDtlSelected.getItemProperty("materialQty").getValue().toString());
+			if (productBomDtlDM.getMaterialQty() != null) {
+				tfMaterialQty.setValue(productBomDtlDM.getMaterialQty().toString());
 			}
-			cbMaterialStatus.setValue(bomDtlSelected.getItemProperty("materialStatus").getValue());
+			cbMaterialStatus.setValue(productBomDtlDM.getMaterialStatus());
 			cbMaterialUOM.setReadOnly(false);
-			cbMaterialUOM.setValue(bomDtlSelected.getItemProperty("materialUom").getValue().toString());
+			cbMaterialUOM.setValue(productBomDtlDM.getMaterialUom());
 			cbMaterialUOM.setReadOnly(true);
 		}
 	}
@@ -732,7 +720,7 @@ public class ProductBomHdr extends BaseUI {
 	protected void resetFields() {
 		cbProduct.setValue(null);
 		cbProduct.setComponentError(null);
-		cbBranch.setValue(branchID);
+		cbBranch.setValue(branchId);
 		cbBranch.setComponentError(null);
 		cbBomStatus.setValue("Draft");
 		tfBomVersion.setValue("");
@@ -755,9 +743,15 @@ public class ProductBomHdr extends BaseUI {
 		if (tblBomDtl.getValue() != null) {
 			save = beanProductBomDtl.getItem(tblBomDtl.getValue()).getBean();
 			productBomDtlList.remove(save);
-			BomDtlResetFields();
+			resetBOMDetailFields();
 			loadProductBomDtlRslt();
 			btndelete.setEnabled(false);
 		}
+	}
+
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
+		
 	}
 }

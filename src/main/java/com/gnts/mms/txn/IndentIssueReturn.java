@@ -207,7 +207,6 @@ public class IndentIssueReturn extends BaseUI {
 		fltaxCol3.addComponent(cbStockType);
 		flColumn4.addComponent(taRemarks);
 		flColumn4.addComponent(cbIndStatus);
-		
 		hlTax = new HorizontalLayout();
 		hlTax.addComponent(fltaxCol1);
 		hlTax.addComponent(fltaxCol2);
@@ -223,11 +222,10 @@ public class IndentIssueReturn extends BaseUI {
 	}
 	
 	private void loadMaterialNameList() {
-		List<MaterialDM> materiallist = servicematerial.getMaterialList(null, companyid, null, null, null, null, null,
-				null, "Active", "F");
 		BeanContainer<Long, MaterialDM> beanCtgry = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 		beanCtgry.setBeanIdProperty("materialId");
-		beanCtgry.addAll(materiallist);
+		beanCtgry.addAll(servicematerial.getMaterialList(null, companyid, null, null, null, null, null, null, "Active",
+				"P"));
 		cbMatName.setContainerDataSource(beanCtgry);
 	}
 	
@@ -489,10 +487,6 @@ public class IndentIssueReturn extends BaseUI {
 					+ Long.valueOf(tfissueqty.getValue())));
 		}
 		IndentIssueReturnDM save = new IndentIssueReturnDM();
-		
-		
-		
-		
 		try {
 			// for material stock
 			MaterialStockDM materialStockDM = null;
@@ -525,14 +519,13 @@ public class IndentIssueReturn extends BaseUI {
 				materialStockDM.setLastUpdateddt(DateUtils.getcurrentdate());
 				serviceMaterialStock.saveorupdatematerialstock(materialStockDM);
 			}
-		  }
+		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		try{
-			MaterialLedgerDM materialledgerDM =null; 
+		try {
+			MaterialLedgerDM materialledgerDM = null;
 			try {
-				
 				materialledgerDM = serviceledger.getMaterialLedgerList(save.getMaterialId(), null, null, null,
 						cbStockType.getValue().toString(), null, "Y", "F").get(0);
 			}
@@ -577,7 +570,6 @@ public class IndentIssueReturn extends BaseUI {
 				serviceledger.saveOrUpdateLedger(ledgerDM);
 			}
 		}
-		
 		catch (Exception e) {
 		}
 		resetFields();
@@ -601,9 +593,10 @@ public class IndentIssueReturn extends BaseUI {
 	 */
 	private void loadReturnReason() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("cmplookupid");
-		beanCompanyLookUp.addAll( serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
 				"MM_ISURTN"));
 		cbReturnReason.setContainerDataSource(beanCompanyLookUp);
 	}
@@ -615,8 +608,7 @@ public class IndentIssueReturn extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 		BeanItemContainer<IndentIssueHdrDM> beanIndentDtl = new BeanItemContainer<IndentIssueHdrDM>(
 				IndentIssueHdrDM.class);
-		beanIndentDtl.addAll(serviceIndentIssueHdr.getIndentIssueHdrList(null, companyid, null,
-				null, null, null, "F"));
+		beanIndentDtl.addAll(serviceIndentIssueHdr.getIndentIssueHdrList(null, companyid, null, null, null, null, "F"));
 		cbIssueName.setContainerDataSource(beanIndentDtl);
 	}
 }

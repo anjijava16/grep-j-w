@@ -38,7 +38,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mms.domain.mst.MaterialTypeDM;
 import com.gnts.mms.service.mst.MaterialTypeService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
@@ -175,14 +174,12 @@ public class MaterialType extends BaseUI {
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editMaterialTypeName() {
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		MaterialTypeDM editMatTypeNamelist = beanMaterialType.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		if (editMatTypeNamelist.getMaterialTypeName() != null) {
+		MaterialTypeDM materialTypeDM = beanMaterialType.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		if (materialTypeDM.getMaterialTypeName() != null) {
 			logger.info("editMaterialTypeName : " + tfMatTypeName.getValue() + "," + cbMatTypeStatus.getValue());
-			tfMatTypeName.setValue(sltedRcd.getItemProperty("materialTypeName").getValue().toString());
+			tfMatTypeName.setValue(materialTypeDM.getMaterialTypeName());
 		}
-		String stCode = sltedRcd.getItemProperty("materialTypeStatus").getValue().toString();
-		cbMatTypeStatus.setValue(stCode);
+		cbMatTypeStatus.setValue(materialTypeDM.getMaterialTypeStatus());
 	}
 	
 	@Override

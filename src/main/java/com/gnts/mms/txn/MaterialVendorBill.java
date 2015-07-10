@@ -137,7 +137,7 @@ public class MaterialVendorBill extends BaseTransUI {
 	private GERPTable tblVendorBillDtl;
 	private Button btndelete = new GERPButton("Delete", "delete", this);
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(MaterialVendorBill.class);
+	private Logger logger = Logger.getLogger(MaterialVendorBill.class);
 	
 	// Constructor received the parameters from Login UI class
 	public MaterialVendorBill() {
@@ -346,7 +346,7 @@ public class MaterialVendorBill extends BaseTransUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (DtlValidation()) {
-					SaveVendorBillDtl();
+					saveBillDetails();
 				}
 			}
 		});
@@ -423,7 +423,6 @@ public class MaterialVendorBill extends BaseTransUI {
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		FormLayout flColumn5 = new FormLayout();
-		
 		flColumn1.addComponent(cbBranch);
 		flColumn1.addComponent(cbpoNo);
 		flColumn1.addComponent(tfbillNo);
@@ -492,11 +491,11 @@ public class MaterialVendorBill extends BaseTransUI {
 		// Formlayout4 components
 		HorizontalLayout hlHdr1 = new HorizontalLayout();
 		flColumn4.addComponent(ckdutyexm);
-		//flColumn4.addComponent(ckCformRqu);
+		// flColumn4.addComponent(ckCformRqu);
 		flColumn4.addComponent(hlHdr1);
 		hlHdr1.addComponent(ckCformRqu);
 		hlHdr1.addComponent(ckPdcRqu);
-		//flColumn4.addComponent(ckPdcRqu);
+		// flColumn4.addComponent(ckPdcRqu);
 		flColumn4.addComponent(cbStatus);
 		flColumn5.addComponent(hlPODoc);
 		HorizontalLayout hlHdr = new HorizontalLayout();
@@ -661,7 +660,7 @@ public class MaterialVendorBill extends BaseTransUI {
 	
 	private void loadPoNo() {
 		List<POHdrDM> getEnNoHdr = new ArrayList<POHdrDM>();
-		getEnNoHdr.addAll(servicepoHdr.getPOHdrList(companyid, null, null, null, null, null,"F"));
+		getEnNoHdr.addAll(servicepoHdr.getPOHdrList(companyid, null, null, null, null, null, "F"));
 		BeanItemContainer<POHdrDM> beanPurPoDM = new BeanItemContainer<POHdrDM>(POHdrDM.class);
 		beanPurPoDM.addAll(getEnNoHdr);
 		cbpoNo.setContainerDataSource(beanPurPoDM);
@@ -1117,7 +1116,7 @@ public class MaterialVendorBill extends BaseTransUI {
 		}
 	}
 	
-	protected void SaveVendorBillDtl() {
+	protected void saveBillDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			int count = 0;
@@ -1403,10 +1402,9 @@ public class MaterialVendorBill extends BaseTransUI {
 			btndelete.setEnabled(false);
 		}
 	}
-
+	
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
-		
 	}
 }

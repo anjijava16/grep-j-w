@@ -39,6 +39,7 @@ import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPNumberField;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPTable;
 import com.gnts.erputil.components.GERPTextArea;
@@ -106,7 +107,6 @@ public class Material extends BaseUI {
 	private BeanItemContainer<MaterialOwnersDM> beanMaterialOwner = null;
 	private BeanItemContainer<MaterialConsumersDM> beanMaterialConsumer = null;
 	private BeanItemContainer<MaterialSpecDM> beanMaterialSpec = null;
-	private BeanContainer<Long, BranchDM> beanBranch = null;
 	private List<MaterialOwnersDM> matOwnerList = new ArrayList<MaterialOwnersDM>();
 	private List<MaterialConsumersDM> matConsList = new ArrayList<MaterialConsumersDM>();
 	private List<MaterialSpecDM> matSpecList = new ArrayList<MaterialSpecDM>();
@@ -133,13 +133,13 @@ public class Material extends BaseUI {
 	private ComboBox cbMatSpecStatus = new GERPComboBox("Status", BASEConstants.M_BASE_USER, BASEConstants.USER_STATUS);
 	private Table tblMatSpec = new GERPTable();
 	private Button btnaddMatSpec = new GERPButton("Add", "addbt", this);
-	private Button btndeletespec = new GERPButton("Delete", "delete", this);
+	private Button btnDeleteSpec = new GERPButton("Delete", "delete", this);
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	private String userName;
-	private Long companyId, moduleId, materialId, branchID;
+	private Long companyId, moduleId, materialId, branchId;
 	private int recordCnt = 0, recordCntMatOwner = 0, recordCntMatCons = 0, recordCntMatSpec = 0;
 	
 	// Constructor received the parameters from Login UI class
@@ -149,7 +149,7 @@ public class Material extends BaseUI {
 		moduleId = Long.valueOf(UI.getCurrent().getSession().getAttribute("moduleId").toString());
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Inside Material() constructor");
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		buildView();
 	}
 	
@@ -157,49 +157,32 @@ public class Material extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Painting Material UI");
 		// Material Components Definition
 		tfMaterialCode = new GERPTextField("Material Code");
-		tfMaterialCode.setWidth("150");
 		tfMaterialName = new GERPTextField("Material Name");
-		tfMaterialName.setWidth("150");
 		cbBranch = new GERPComboBox("Branch Name");
 		cbBranch.setItemCaptionPropertyId("branchName");
-		cbBranch.setWidth("150");
-		cbBranch.setImmediate(true);
-		cbBranch.setNullSelectionAllowed(false);
 		tfPartCode = new GERPTextField("Part Code");
-		tfPartCode.setWidth("150");
 		cbMaterialUOM = new GERPComboBox("Material UOM");
 		cbMaterialUOM.setItemCaptionPropertyId("lookupname");
-		cbMaterialUOM.setWidth("150");
-		tfUnitRate = new GERPTextField("Unit Rate");
-		tfUnitRate.setWidth("150");
-		tfReorderLevel = new GERPTextField("Reorder Level");
-		tfReorderLevel.setWidth("150");
+		tfUnitRate = new GERPNumberField("Unit Rate (Rs.)");
+		tfReorderLevel = new GERPNumberField("Reorder Level");
 		taVisualSpec = new GERPTextArea("Visual Spec.");
-		taVisualSpec.setWidth("150");
 		taVisualSpec.setHeight("50");
 		taRemark = new GERPTextArea("Remark");
-		taRemark.setWidth("150");
 		taRemark.setHeight("75");
 		cbMaterialStatus.setWidth("150");
 		cbMaterialType = new GERPComboBox("Material Type");
 		cbMaterialType.setItemCaptionPropertyId("materialTypeName");
-		cbMaterialType.setWidth("150");
 		cbMaterialGroup = new GERPComboBox("Material Group");
 		cbMaterialGroup.setItemCaptionPropertyId("lookupname");
-		cbMaterialGroup.setWidth("150");
 		cbDepartment = new GERPComboBox("Department");
 		cbDepartment.setItemCaptionPropertyId("deptname");
-		cbDepartment.setWidth("150");
 		// Material Owner Components Definition
 		cbMatOwnerEmployee = new GERPComboBox("Employee");
 		cbMatOwnerEmployee.setItemCaptionPropertyId("firstname");
-		cbMatOwnerEmployee.setWidth("150");
 		cbMatOwnerBranch = new GERPComboBox("Branch");
 		cbMatOwnerBranch.setItemCaptionPropertyId("branchName");
-		cbMatOwnerBranch.setWidth("150");
 		cbMatOwnerDept = new GERPComboBox("Department");
 		cbMatOwnerDept.setItemCaptionPropertyId("deptname");
-		cbMatOwnerDept.setWidth("150");
 		btnaddMatOwner.setStyleName("add");
 		btnaddMatOwner.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update for Material Owner
@@ -249,10 +232,8 @@ public class Material extends BaseUI {
 		// Material Consumer Components Definition
 		cbMatConsBranch = new GERPComboBox("Branch");
 		cbMatConsBranch.setItemCaptionPropertyId("branchName");
-		cbMatConsBranch.setWidth("150");
 		cbMatConsDepartment = new GERPComboBox("Department");
 		cbMatConsDepartment.setItemCaptionPropertyId("deptname");
-		cbMatConsDepartment.setWidth("150");
 		btnaddMatCons.setStyleName("add");
 		btnaddMatCons.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update for Material Consumer
@@ -301,7 +282,6 @@ public class Material extends BaseUI {
 		});
 		// Material Specification Components Definition
 		tfMatSpecName = new GERPTextField("Spec.Name");
-		tfMatSpecName.setWidth("150");
 		taMatSpecDesc = new TextField("Spec.Description");
 		taMatSpecDesc.setWidth("275");
 		btnaddMatSpec.setStyleName("add");
@@ -316,7 +296,7 @@ public class Material extends BaseUI {
 				}
 			}
 		});
-		btndeletespec.setEnabled(false);
+		btnDeleteSpec.setEnabled(false);
 		tblMatSpec = new GERPTable();
 		// ClickListener for Material Owner Tale
 		tblMatSpec.addItemClickListener(new ItemClickListener() {
@@ -328,24 +308,24 @@ public class Material extends BaseUI {
 					tblMatSpec.setImmediate(true);
 					btnaddMatSpec.setCaption("Add");
 					btnaddMatSpec.setStyleName("savebt");
-					btndeletespec.setEnabled(false);
+					btnDeleteSpec.setEnabled(false);
 					matSpecResetFields();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnaddMatSpec.setCaption("Update");
 					btnaddMatSpec.setStyleName("savebt");
-					btndeletespec.setEnabled(true);
+					btnDeleteSpec.setEnabled(true);
 					editMaterialSpec();
 				}
 			}
 		});
-		btndeletespec.addClickListener(new ClickListener() {
+		btnDeleteSpec.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (btndeletespec == event.getButton()) {
+				if (btnDeleteSpec == event.getButton()) {
 					deletematspec();
 				}
 			}
@@ -438,7 +418,7 @@ public class Material extends BaseUI {
 			matSpecList.remove(save);
 			matSpecResetFields();
 			loadSrchMatSpecRslt(false);
-			btndeletespec.setEnabled(false);
+			btnDeleteSpec.setEnabled(false);
 		}
 	}
 	
@@ -677,9 +657,9 @@ public class Material extends BaseUI {
 		hlMaterialSpecComponent.addComponent(flMaterialSpec2);
 		hlMaterialSpecComponent.addComponent(flMaterialSpec3);
 		hlMaterialSpecComponent.addComponent(btnaddMatSpec);
-		hlMaterialSpecComponent.addComponent(btndeletespec);
+		hlMaterialSpecComponent.addComponent(btnDeleteSpec);
 		hlMaterialSpecComponent.setComponentAlignment(btnaddMatSpec, Alignment.MIDDLE_LEFT);
-		hlMaterialSpecComponent.setComponentAlignment(btndeletespec, Alignment.MIDDLE_LEFT);
+		hlMaterialSpecComponent.setComponentAlignment(btnDeleteSpec, Alignment.MIDDLE_LEFT);
 		hlMaterialSpecComponent.setSpacing(true);
 		hlMaterialSpecComponent.setMargin(true);
 		hlMaterialSpecComponent.setSizeUndefined();
@@ -692,9 +672,11 @@ public class Material extends BaseUI {
 		TabSheet tabSheet = new TabSheet();
 		tabSheet.setWidth("100%");
 		tabSheet.setHeight("315");
+		tabSheet.addTab(vlMaterialSpecTab, "Material Specification", null);
 		tabSheet.addTab(vlMaterialOwnerTab, "Material Owner", null);
 		tabSheet.addTab(vlMaterialConsTab, "Material Consumer", null);
-		tabSheet.addTab(vlMaterialSpecTab, "Material Specification", null);
+		vlMaterialOwnerTab.setEnabled(false);
+		vlMaterialConsTab.setEnabled(false);
 		// Setting for all layout in vertical layout
 		VerticalLayout vlAllComponent = new VerticalLayout();
 		vlAllComponent.addComponent(GERPPanelGenerator.createPanel(hlMaterialComponent));
@@ -711,20 +693,20 @@ public class Material extends BaseUI {
 	/*
 	 * loadMaterialTypeList()-->this function is used for load the material type
 	 */
-	public void loadMaterialTypeList() {
+	private void loadMaterialTypeList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Loading Material Type Search...");
 		BeanContainer<Long, MaterialTypeDM> beanMaterialType = new BeanContainer<Long, MaterialTypeDM>(
 				MaterialTypeDM.class);
 		beanMaterialType.setBeanIdProperty("materialTypeId");
-		beanMaterialType.addAll(serviceMaterialType.getMaterialTypeList(null, null, "Active", "F"));
+		beanMaterialType.addAll(serviceMaterialType.getMaterialTypeList(null, null, "Active", "P"));
 		cbMaterialType.setContainerDataSource(beanMaterialType);
 	}
 	
 	/*
 	 * loadMaterialGroupList()-->this function is used for load the material group
 	 */
-	public void loadMaterialGroupList() {
+	private void loadMaterialGroupList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Loading Material UOM Search...");
 		BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(
@@ -738,7 +720,7 @@ public class Material extends BaseUI {
 	/*
 	 * loadMaterialUOMList()-->this function is used for load the material UOM type
 	 */
-	public void loadMaterialUOMList() {
+	private void loadMaterialUOMList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Loading Material UOM Search...");
 		BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(
@@ -772,7 +754,7 @@ public class Material extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Branch Search...");
 		List<BranchDM> branchlist = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
 		branchlist.add(new BranchDM(0L, "All Branch"));
-		beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranch.setBeanIdProperty("branchId");
 		beanBranch.addAll(branchlist);
 		cbBranch.setContainerDataSource(beanBranch);
@@ -804,7 +786,7 @@ public class Material extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		BeanItemContainer<EmployeeDM> beanEmployee = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
 		beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, null, companyId, null, null, null, null,
-				"F"));
+				"P"));
 		cbMatOwnerEmployee.setContainerDataSource(beanEmployee);
 	}
 	
@@ -829,7 +811,7 @@ public class Material extends BaseUI {
 		tfMaterialCode.setValue("");
 		// tfMaterialCode.setReadOnly(false);
 		tfMaterialName.setValue("");
-		cbBranch.setValue(branchID);
+		cbBranch.setValue(branchId);
 		cbMaterialStatus.setValue(cbMaterialStatus.getItemIds().iterator().next());
 		loadSrchRslt();
 	}
@@ -882,46 +864,44 @@ public class Material extends BaseUI {
 	
 	// Reset the selected row's data into material input components
 	private void editMaterial() {
-		Item rowMaterialSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (rowMaterialSelected != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			MaterialDM editMaterialList = beanMaterial.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			materialId = editMaterialList.getMaterialId();
-			if ((rowMaterialSelected.getItemProperty("materialName").getValue() != null)) {
-				tfMaterialName.setValue(editMaterialList.getMaterialName().toString());
+			if ((editMaterialList.getMaterialName() != null)) {
+				tfMaterialName.setValue(editMaterialList.getMaterialName());
 			}
-			if ((rowMaterialSelected.getItemProperty("materialGroup").getValue() != null)) {
+			if ((editMaterialList.getMaterialGroup() != null)) {
 				cbMaterialGroup.setValue((String) editMaterialList.getMaterialGroup());
 			}
-			if ((rowMaterialSelected.getItemProperty("materialTypeName").getValue() != null)) {
+			if ((editMaterialList.getMaterialTypeId() != null)) {
 				cbMaterialType.setValue(editMaterialList.getMaterialTypeId());
 			}
-			if ((rowMaterialSelected.getItemProperty("partCode").getValue() != null)) {
+			if ((editMaterialList.getPartCode() != null)) {
 				tfPartCode.setValue(editMaterialList.getPartCode().toString());
 			}
-			if ((rowMaterialSelected.getItemProperty("materialUOM").getValue() != null)) {
+			if ((editMaterialList.getMaterialUOM() != null)) {
 				cbMaterialUOM.setValue(editMaterialList.getMaterialUOM().toString());
 			}
-			if ((rowMaterialSelected.getItemProperty("unitRate").getValue() != null)) {
+			if ((editMaterialList.getUnitRate() != null)) {
 				tfUnitRate.setValue(editMaterialList.getUnitRate().toString());
 			}
-			if ((rowMaterialSelected.getItemProperty("visualSpec").getValue() != null)) {
+			if ((editMaterialList.getVisualSpec() != null)) {
 				taVisualSpec.setValue(editMaterialList.getVisualSpec().toString());
 			}
-			if ((rowMaterialSelected.getItemProperty("reorderLevel").getValue() != null)) {
+			if ((editMaterialList.getReorderLevel() != null)) {
 				tfReorderLevel.setValue(editMaterialList.getReorderLevel().toString());
 			}
-			if ((rowMaterialSelected.getItemProperty("remarks").getValue() != null)) {
+			if ((editMaterialList.getRemarks() != null)) {
 				taRemark.setValue(editMaterialList.getRemarks().toString());
 			}
-			if ((rowMaterialSelected.getItemProperty("branchName").getValue() != null)) {
+			if ((editMaterialList.getBranchId() != null)) {
 				cbBranch.setValue(editMaterialList.getBranchId());
 			}
-			if ((rowMaterialSelected.getItemProperty("deptname").getValue() != null)) {
+			if ((editMaterialList.getDeptId() != null)) {
 				cbDepartment.setValue(editMaterialList.getDeptId());
 			}
-			if (("materialStatus") != null) {
-				String stCode = rowMaterialSelected.getItemProperty("materialStatus").getValue().toString();
-				cbMaterialStatus.setValue(stCode);
+			if (editMaterialList.getMaterialStatus() != null) {
+				cbMaterialStatus.setValue(editMaterialList.getMaterialStatus());
 			}
 		}
 		loadSrchMatOwnerRslt(true);
@@ -1088,10 +1068,10 @@ public class Material extends BaseUI {
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
 				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyId, branchID, moduleId, "MM_MTRLCD")
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyId, branchId, moduleId, "MM_MTRLCD")
 							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyId, branchID, moduleId, "MM_MTRLCD");
+						serviceSlnogen.updateNextSequenceNumber(companyId, branchId, moduleId, "MM_MTRLCD");
 					}
 				}
 				catch (Exception e) {
@@ -1262,6 +1242,7 @@ public class Material extends BaseUI {
 				EmployeeDM matObj = (EmployeeDM) itemclient.getBean();
 				if (empId != null && empId.equals(matObj.getEmployeeid())) {
 					cbMatOwnerEmployee.setValue(itemIdClient);
+					break;
 				}
 			}
 			Long branchId = editmatowner.getBranchId();
@@ -1340,7 +1321,7 @@ public class Material extends BaseUI {
 	@Override
 	protected void resetFields() {
 		tfMaterialCode.setComponentError(null);
-		cbBranch.setValue(branchID);
+		cbBranch.setValue(branchId);
 		tfMaterialName.setComponentError(null);
 		cbMaterialUOM.setComponentError(null);
 		tfPartCode.setComponentError(null);
@@ -1353,10 +1334,10 @@ public class Material extends BaseUI {
 		cbMaterialUOM.setValue(null);
 		cbMaterialGroup.setValue(null);
 		tfPartCode.setValue("");
-		tfUnitRate.setValue("");
+		tfUnitRate.setValue("0");
 		cbMaterialType.setValue(null);
 		taVisualSpec.setValue("");
-		tfReorderLevel.setValue("");
+		tfReorderLevel.setValue("0");
 		taRemark.setValue("");
 		cbMaterialStatus.setValue(null);
 		cbMaterialGroup.setComponentError(null);

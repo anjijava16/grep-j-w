@@ -40,7 +40,6 @@ import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.txn.MaterialVendorGrpDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.MaterialVendorGrpService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -113,7 +112,7 @@ public class MaterialVendorGroup extends BaseUI {
 		loadSrchRslt();
 	}
 	
-	public void assemblesearchlayout() {
+	private void assemblesearchlayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		/*
 		 * Adding user input layout to the search layout as all the fields in the user input are available in the search
@@ -132,7 +131,7 @@ public class MaterialVendorGroup extends BaseUI {
 		hlsearchlayout.setMargin(true);
 	}
 	
-	public void assembleUserInputLayout() {
+	private void assembleUserInputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling User Input layout");
 		hluserInputlayout.removeAllComponents();
 		form1 = new GERPFormLayout();
@@ -185,27 +184,24 @@ public class MaterialVendorGroup extends BaseUI {
 		cbvengrpstatus.setValue(cbvengrpstatus.getItemIds().iterator().next());
 	}
 	
-	public void loadMaterialNameList() {
-		List<MaterialDM> materiallist = servicematerial.getMaterialList(null, companyid, null, null, null, null, null,
-				null, "Active", "F");
+	private void loadMaterialNameList() {
 		BeanContainer<Long, MaterialDM> beanCtgry = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 		beanCtgry.setBeanIdProperty("materialId");
-		beanCtgry.addAll(materiallist);
+		beanCtgry.addAll(servicematerial.getMaterialList(null, companyid, null, null, null, null, null, null, "Active",
+				"P"));
 		cbmatname.setContainerDataSource(beanCtgry);
 	}
 	
 	/*
 	 * loadVendorNameList()-->this function is used for load the vendor name list
 	 */
-	public void loadVendorNameList() {
+	private void loadVendorNameList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading VendorNameList");
-		List<VendorDM> vendorlist = servicevendor.getVendorList(null, null, companyid, null, null, null, null, null,
-				"Active", null, "P");
 		BeanContainer<Long, VendorDM> beanVendor = new BeanContainer<Long, VendorDM>(VendorDM.class);
 		beanVendor.setBeanIdProperty("vendorId");
-		beanVendor.addAll(vendorlist);
+		beanVendor.addAll(servicevendor.getVendorList(null, null, companyid, null, null, null, null, null, "Active",
+				null, "P"));
 		cbvenname.setContainerDataSource(beanVendor);
-		System.out.println("cbvenname" + cbvenname);
 	}
 	
 	// Based on the selected record, the data would be populated into user input
@@ -215,14 +211,13 @@ public class MaterialVendorGroup extends BaseUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Editing the selected record");
 			hluserInputlayout.setVisible(true);
-			Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-			if (sltedRcd != null) {
-				MaterialVendorGrpDM editMaterialVendorGrplist = beanMaterialVendorGrpDM.getItem(
+			if (tblMstScrSrchRslt.getValue() != null) {
+				MaterialVendorGrpDM materialVendorGrpDM = beanMaterialVendorGrpDM.getItem(
 						tblMstScrSrchRslt.getValue()).getBean();
-				materialVendorGrpId = editMaterialVendorGrplist.getMaterialVendorGrpId();
-				cbmatname.setValue(editMaterialVendorGrplist.getMaterialId());
+				materialVendorGrpId = materialVendorGrpDM.getMaterialVendorGrpId();
+				cbmatname.setValue(materialVendorGrpDM.getMaterialId());
 				cbvenname.setValue(null);
-				Long matId = Long.valueOf(editMaterialVendorGrplist.getVendorId());
+				Long matId = Long.valueOf(materialVendorGrpDM.getVendorId());
 				Collection<?> empColId = cbvenname.getItemIds();
 				for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
 					Object itemIdClient = (Object) iteratorclient.next();
@@ -233,8 +228,8 @@ public class MaterialVendorGroup extends BaseUI {
 						cbvenname.select(itemIdClient);
 					}
 				}
-				if (editMaterialVendorGrplist.getVendorGrpStatus() != null) {
-					cbvengrpstatus.setValue(sltedRcd.getItemProperty("vendorGrpStatus").getValue());
+				if (materialVendorGrpDM.getVendorGrpStatus() != null) {
+					cbvengrpstatus.setValue(materialVendorGrpDM.getVendorGrpStatus());
 				}
 			}
 		}

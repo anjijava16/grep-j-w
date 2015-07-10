@@ -103,7 +103,7 @@ public class IndentIssue extends BaseTransUI {
 	private Table tblDtl;
 	private BeanItemContainer<IndentIssueHdrDM> beanIndentIssueHdrDM = null;
 	private BeanItemContainer<IndentIssueDtlDM> beanIndentIssueDtlDM = null;
-	public Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btndelete = new GERPButton("Delete", "delete", this);
 	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
 	// local variables declaration
 	private String pkIndentId;
@@ -410,11 +410,9 @@ public class IndentIssue extends BaseTransUI {
 	
 	private void editDtls() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblDtl.getItem(tblDtl.getValue());
-		if (itselect != null) {
-			IndentIssueDtlDM editDtl = new IndentIssueDtlDM();
-			editDtl = beanIndentIssueDtlDM.getItem(tblDtl.getValue()).getBean();
-			Long matId = editDtl.getMaterialId();
+		if (tblDtl.getValue() != null) {
+			IndentIssueDtlDM indentIssueDtlDM = beanIndentIssueDtlDM.getItem(tblDtl.getValue()).getBean();
+			Long matId = indentIssueDtlDM.getMaterialId();
 			Collection<?> empColId = cbMatName.getItemIds();
 			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
@@ -425,10 +423,10 @@ public class IndentIssue extends BaseTransUI {
 					cbMatName.setValue(itemIdClient);
 				}
 			}
-			if (itselect.getItemProperty("issueQty").getValue() != null) {
-				tfIssueQty.setValue(itselect.getItemProperty("issueQty").getValue().toString());
+			if (indentIssueDtlDM.getIssueQty() != null) {
+				tfIssueQty.setValue(indentIssueDtlDM.getIssueQty().toString());
 			}
-			cbDtlStatus.setValue(itselect.getItemProperty("status").getValue());
+			cbDtlStatus.setValue(indentIssueDtlDM.getStatus());
 		}
 	}
 	
@@ -753,7 +751,6 @@ public class IndentIssue extends BaseTransUI {
 					break;
 				}
 			}
-			System.out.println("count--->" + count);
 			if (count == 0) {
 				if (((IndentDtlDM) cbMatName.getValue()).getBalenceQty() >= Long.valueOf(tfIssueQty.getValue())) {
 					IndentIssueDtlDM indentDtlObj = new IndentIssueDtlDM();
@@ -802,7 +799,7 @@ public class IndentIssue extends BaseTransUI {
 	/*
 	 * loadEmployeeList()-->this function is used for load the Employee name
 	 */
-	public void loadEmployeeList() {
+	private void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
 		BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployeeDM.setBeanIdProperty("employeeid");
@@ -814,7 +811,7 @@ public class IndentIssue extends BaseTransUI {
 	/*
 	 * loadIndentList()-->this function is used for load the IndentNo
 	 */
-	public void loadIndentList() {
+	private void loadIndentList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
 		BeanContainer<Long, IndentHdrDM> beanIndentHdrDM = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
 		beanIndentHdrDM.setBeanIdProperty("indentId");

@@ -253,12 +253,9 @@ public class AssetMaintSched extends BaseUI {
 			tblMstScrSrchRslt.removeAllItems();
 			List<AssetMaintSchedDM> schedList = null;
 			schedList = new ArrayList<AssetMaintSchedDM>();
-			if (cbAssetStatus != null || maintenanceDt != null) {
-				Date maintDate = maintenanceDt.getValue();
-				schedList = serviceMaintSched.getMaintScheduleList((Long) cbAssetName.getValue(), maintDate,
-						(String) cbAssetStatus.getValue(), (String) cbMaintFreq.getValue(), null);
-				recordCnt = schedList.size();
-			}
+			schedList = serviceMaintSched.getMaintScheduleList((Long) cbAssetName.getValue(), maintenanceDt.getValue(),
+					null, (String) cbAssetStatus.getValue(), (String) cbMaintFreq.getValue(), null);
+			recordCnt = schedList.size();
 			beanMaintSched = new BeanItemContainer<AssetMaintSchedDM>(AssetMaintSchedDM.class);
 			beanMaintSched.addAll(schedList);
 			tblMstScrSrchRslt.setContainerDataSource(beanMaintSched);

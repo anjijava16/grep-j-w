@@ -310,7 +310,7 @@ public class AssetMaintDetail extends BaseTransUI {
 		BeanContainer<Long, AssetMaintSchedDM> beanMaintSched = new BeanContainer<Long, AssetMaintSchedDM>(
 				AssetMaintSchedDM.class);
 		beanMaintSched.setBeanIdProperty("maintId");
-		beanMaintSched.addAll(serviceMaintSched.getMaintScheduleList(null, null, "Active", null, null));
+		beanMaintSched.addAll(serviceMaintSched.getMaintScheduleList(null, null,null, "Active", null, null));
 		cbMaint.setContainerDataSource(beanMaintSched);
 	}
 	

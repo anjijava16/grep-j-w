@@ -512,7 +512,7 @@ public class ClientAppointments extends BaseUI {
 		hlInput.addComponent(flColumn3);
 		hlInput.addComponent(flColumn4);
 		tabAppointment.addTab(hlInput, "Appointment");
-		tabAppointment.addTab(new CalendarMonthly(), "Monthly Calendar");
+		tabAppointment.addTab(new CalendarMonthly("APPOINMENTS"), "Monthly Calendar");
 		hlUserInputLayout.setWidth("1200");
 		hlUserInputLayout.addComponent(tabAppointment);
 		hlUserInputLayout.setSpacing(true);

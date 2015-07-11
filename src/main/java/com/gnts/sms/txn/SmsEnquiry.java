@@ -160,7 +160,7 @@ public class SmsEnquiry extends BaseTransUI {
 	private GERPComboBox cbCity = new GERPComboBox("City");
 	// User Input Fields for Sales Enquiry Specification
 	private ComboBox cbspecstatus;
-	private TextField tfspeccode;
+	private GERPComboBox tfspeccode;
 	private TextArea taspecdesc;
 	private Table tblspec = new GERPTable();
 	private BeanItemContainer<SmsEnquirySpecDM> beanpec = null;
@@ -327,14 +327,14 @@ public class SmsEnquiry extends BaseTransUI {
 		cdenqdtlstatus.setWidth("130");
 		loadEnquiryDetails(true);
 		// Sales Enquiry Specification Components Definition
-		tfspeccode = new GERPTextField("Specification Code");
-		tfspeccode.setWidth("130");
-		tfspeccode.setMaxLength(20);
+		tfspeccode = new GERPComboBox("Specification Code");
 		tfspeccode.setReadOnly(false);
 		tfspeccode.setRequired(true);
+		tfspeccode.setWidth("170");
+		loadspeccodeList();
 		taspecdesc = new GERPTextArea("Specification Description");
-		taspecdesc.setWidth("290");
-		taspecdesc.setHeight("22");
+		taspecdesc.setWidth("250");
+		taspecdesc.setHeight("50");
 		cbspecstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbspecstatus.setWidth("130");
 		loadEnquirySpec(false, null);
@@ -391,7 +391,7 @@ public class SmsEnquiry extends BaseTransUI {
 			}
 		});
 		btnspecdelete.setEnabled(false);
-		// ClickListener for Enquire Specification Tale
+		// ClickListener for Enquire Specification Table
 		tblspec.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -464,6 +464,16 @@ public class SmsEnquiry extends BaseTransUI {
 				saveNewClient();
 			}
 		});
+		
+		
+		try {
+			btnAdd.setVisible(true);
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+				btnAdd.setVisible(false);
+			}
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void deleteEnquirySpec() {
@@ -830,6 +840,22 @@ public class SmsEnquiry extends BaseTransUI {
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
 			beanCompanyLookUp.addAll(lookUpList);
 			cbmodeofenquiry.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Load Enquiry Specification List
+	public void loadspeccodeList() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
+			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"SM_SALSPEC");
+			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(lookUpList);
+			tfspeccode.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1309,7 +1335,7 @@ public class SmsEnquiry extends BaseTransUI {
 		taspecdesc.setComponentError(null);
 		Boolean errorFlag = true;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		if ((tfspeccode.getValue() == "") || tfspeccode.getValue().trim().length() == 0) {
+		if ((tfspeccode.getValue() == "") || ((String) tfspeccode.getValue()).trim().length() == 0) {
 			tfspeccode.setComponentError(new UserError(GERPErrorCodes.NULL_SPEC_CODE));
 			errorFlag = false;
 		}

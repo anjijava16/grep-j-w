@@ -1,5 +1,7 @@
 package com.gnts.base.dashboard;
 
+import java.util.ArrayList;
+import java.util.List;
 import com.gnts.base.mst.Product;
 import com.gnts.base.service.mst.ProductService;
 import com.gnts.crm.mst.Client;
@@ -8,6 +10,7 @@ import com.gnts.dsn.stt.txn.DesignDocuments;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.mfg.txn.WorkOrder;
+import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsInvoiceHdrService;
 import com.gnts.sms.service.txn.SmsPOHdrService;
@@ -16,16 +19,25 @@ import com.gnts.sms.txn.SalesPO;
 import com.gnts.sms.txn.SalesQuote;
 import com.gnts.sms.txn.SmsEnquiry;
 import com.gnts.sms.txn.SmsInvoice;
+import com.gnts.stt.dsn.domain.txn.ECRequestDM;
+import com.gnts.stt.dsn.service.txn.ECRequestService;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 public class DashbordView implements ClickListener {
 	/**
@@ -42,6 +54,8 @@ public class DashbordView implements ClickListener {
 	private Button btnProductCount = new Button("17", this);
 	private Button btnClientCount = new Button("22", this);
 	private Button btnEnquiryDocs = new Button("Documents", this);
+	private Button btnNotify = new Button();
+	private Window notificationsWindow;
 	private SmsEnqHdrService serviceenqhdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private SmsQuoteHdrService servicesmsQuoteHdr = (SmsQuoteHdrService) SpringContextHelper.getBean("smsquotehdr");
 	private SmsPOHdrService servicePurchaseOrd = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
@@ -50,6 +64,7 @@ public class DashbordView implements ClickListener {
 			.getBean("smsInvoiceheader");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private ProductService ServiceProduct = (ProductService) SpringContextHelper.getBean("Product");
+	private ECRequestService ServiceEcrequest = (ECRequestService) SpringContextHelper.getBean("ecRequestHdr");
 	VerticalLayout clMainLayout;
 	HorizontalLayout hlHeader;
 	
@@ -61,6 +76,7 @@ public class DashbordView implements ClickListener {
 	}
 	
 	private void buildView(VerticalLayout clMainLayout, HorizontalLayout hlHeader) {
+		btnNotify.setIcon(new ThemeResource("img/download.png"));
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("dashmarket");
 		btnEnquiryCount.setCaption(serviceenqhdr.getSMSEnquiryListCount(null, null, null, null, null, null, null, null)
@@ -84,12 +100,16 @@ public class DashbordView implements ClickListener {
 		btnProductCount.setStyleName("borderless-coloredbig");
 		btnClientCount.setStyleName("borderless-coloredbig");
 		btnEnquiryDocs.setStyleName("borderless-coloredmed");
+		VerticalLayout root =new VerticalLayout();
+		root.addComponent(buildHeader());
 		clMainLayout.removeAllComponents();
 		lblDashboardTitle = new Label();
 		lblDashboardTitle.setContentMode(ContentMode.HTML);
 		lblDashboardTitle.setValue("&nbsp;&nbsp;<b> Marketing Dashboard</b>");
 		hlHeader.addComponent(lblDashboardTitle);
 		hlHeader.setComponentAlignment(lblDashboardTitle, Alignment.MIDDLE_LEFT);
+		hlHeader.addComponent(btnNotify);
+		hlHeader.setComponentAlignment(btnNotify, Alignment.TOP_RIGHT);
 		clMainLayout.addComponent(custom);
 		custom.addComponent(btnEnquiryCount, "enquirycount");
 		custom.addComponent(btnQuotationCount, "quotationcount");
@@ -101,6 +121,31 @@ public class DashbordView implements ClickListener {
 		custom.addComponent(btnEnquiryDocs, "enquirydocuments");
 	}
 	
+	private Component buildHeader() {
+		HorizontalLayout header = new HorizontalLayout();
+		header.addStyleName("viewheader");
+		header.setSpacing(true);
+		btnNotify = buildNotificationsButton();
+		HorizontalLayout tools = new HorizontalLayout(btnNotify);
+		tools.setSpacing(true);
+		tools.addStyleName("toolbar");
+		return header;
+	}
+	
+	private Button buildNotificationsButton() {
+		btnNotify.addClickListener(new ClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				openNotificationsPopup(event);
+			}
+		});
+		return btnNotify;
+	}
 	@Override
 	public void buttonClick(ClickEvent event) {
 		// TODO Auto-generated method stub
@@ -159,4 +204,83 @@ public class DashbordView implements ClickListener {
 			new DesignDocuments();
 		}
 	}
+private void openNotificationsPopup(final ClickEvent event) {
+	VerticalLayout notificationsLayout = new VerticalLayout();
+	notificationsLayout.setMargin(true);
+	notificationsLayout.setSpacing(true);
+	final Panel panel = new Panel("Notifications");
+	notificationsLayout.addComponent(panel);
+	List<ECRequestDM> ecrequestDm = new ArrayList<ECRequestDM>();
+	SmsEnqHdrDM smsenqhdr = new SmsEnqHdrDM();
+	
+	ecrequestDm = ServiceEcrequest.getECRequestList(null, null,null, "Active");
+	FormLayout fmlayout = new FormLayout();
+	VerticalLayout hrLayout = new VerticalLayout();
+	for (ECRequestDM n : ecrequestDm) {
+		hrLayout.addStyleName("notification-item");
+		if(n.getPartNumber() != null & n.getDrgNumber() != null)
+		{
+			Label titleLabel = new Label("\n" + "<table style=width:100%><tr><td><small>Status : </small><font color=blue><font size=4>"+n.getStatus()+"</font></font color></td><td><small>ECR No : </small><font color=green>" + n.getEcrNumber()+ "</font></td></tr></table>",ContentMode.HTML);
+			Label titleLabel1 = new Label("<small>Enquiry No: </small><font color=green>" +n.getEnquiryNo()
+					+ "</font>", ContentMode.HTML);
+			Label titleLabel3 = new Label("<small>Drag No : </small><font color=red>" + n.getDrgNumber() + "</font>",
+					ContentMode.HTML);
+			Label titleLabel4 = new Label("<small>Part No  : </small><font color=red>" + n.getPartNumber() + "</font>",
+					ContentMode.HTML);
+			Label titleLabel5 = new Label("<HR size=3 color=red>", ContentMode.HTML);
+		titleLabel.addStyleName("notification-title");
+		fmlayout.addComponents(titleLabel);
+		fmlayout.addComponents(titleLabel1);
+		//fmlayout.addComponents(titleLabel2);
+		fmlayout.addComponent(titleLabel3);
+		fmlayout.addComponent(titleLabel4);
+		fmlayout.addComponent(titleLabel5);
+		hrLayout.addComponent(fmlayout);
+		}	
+	}
+	notificationsLayout.addComponent(hrLayout);
+	HorizontalLayout footer = new HorizontalLayout();
+	footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+	footer.setWidth("100%");
+	Button showAll = new Button("View All Notifications", new ClickListener() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		@Override
+		public void buttonClick(final ClickEvent event) {
+			clMainLayout.removeAllComponents();
+			hlHeader.removeAllComponents();
+			new SmsEnquiry();
+			notificationsWindow.close();
+		}
+	});
+	showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+	showAll.addStyleName(ValoTheme.BUTTON_SMALL);
+	footer.addComponent(showAll);
+	footer.setComponentAlignment(showAll, Alignment.TOP_CENTER);
+	notificationsLayout.addComponent(footer);
+	if (notificationsWindow == null) {
+		notificationsWindow = new Window();
+		notificationsWindow.setWidthUndefined();
+		notificationsWindow.addStyleName("notifications");
+		notificationsWindow.setClosable(false);
+		notificationsWindow.setResizable(false);
+		notificationsWindow.setDraggable(true);
+		notificationsWindow.setCloseShortcut(KeyCode.ESCAPE, null);
+		notificationsWindow.setContent(notificationsLayout);
+		notificationsWindow.setHeightUndefined();
+	}
+	if (!notificationsWindow.isAttached()) {
+		notificationsWindow.setPositionX(event.getClientX() - 200);
+		notificationsWindow.setPositionY(event.getClientY());
+		notificationsWindow.setHeight("400");
+		notificationsWindow.setWidth("300");
+		UI.getCurrent().addWindow(notificationsWindow);
+		notificationsWindow.focus();
+	} else {
+		notificationsWindow.close();
+	}
+}
 }

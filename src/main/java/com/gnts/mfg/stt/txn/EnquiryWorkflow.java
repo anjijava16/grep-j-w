@@ -7,8 +7,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
+import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.DepartmentDM;
 import com.gnts.base.domain.mst.EmployeeDM;
+import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.DepartmentService;
 import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.erputil.BASEConstants;
@@ -56,7 +58,7 @@ public class EnquiryWorkflow implements ClickListener {
 	private GERPTextField tfECRNumber = new GERPTextField("EDR Number");
 	private GERPTextField tfECNNumber = new GERPTextField("ECN Number");
 	private GERPTextField tfSIRNumber = new GERPTextField("SIR Number");
-	private GERPTextField tfExistingCase = new GERPTextField("Existing Case Model");
+	private GERPComboBox cbExistingCase;
 	private GERPTextField tfFusionedCase = new GERPTextField("Fusioned Case Model");
 	private GERPTextField tfNewDieCase = new GERPTextField("New Die Case Model");
 	private GERPTextField tfBottomTopCase = new GERPTextField("Bottom/Top to be made");
@@ -71,12 +73,15 @@ public class EnquiryWorkflow implements ClickListener {
 	private GERPPopupDateField dfCompletedDate = new GERPPopupDateField("Completed On");
 	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper
 			.getBean("enquiryWorkflow");
+	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
 	private VerticalLayout hlDocumentUpload = new VerticalLayout();
 	private BeanItemContainer<EnquiryWorkflowDM> beanWorkflow;
 	private String username;
 	private Long enquiryId, companyid,workflowId;
+	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private Logger logger = Logger.getLogger(EnquiryWorkflow.class);
 	
 	public EnquiryWorkflow(HorizontalLayout hlEnquiryWorkflow, Long enquiryId, String username) {
@@ -100,7 +105,11 @@ public class EnquiryWorkflow implements ClickListener {
 		cbPendingWith.setRequired(true);
 		cbFromDept.setRequired(true);
 		cbToDept.setRequired(true);
-		tfExistingCase.setNullRepresentation("---");
+		//tfExistingCase.setNullRepresentation("---");
+		cbExistingCase = new GERPComboBox("Existing Case Model");
+		cbExistingCase.setReadOnly(false);
+		cbExistingCase.setWidth("150");
+		loadcasemodelList();
 		tfFusionedCase.setNullRepresentation("---");
 		tfNewDieCase.setNullRepresentation("---");
 		tfBottomTopCase.setNullRepresentation("---");
@@ -141,7 +150,7 @@ public class EnquiryWorkflow implements ClickListener {
 						addComponent(new FormLayout() {
 							private static final long serialVersionUID = 1L;
 							{
-								addComponent(tfExistingCase);
+								addComponent(cbExistingCase);
 								addComponent(tfFusionedCase);
 								addComponent(tfNewDieCase);
 								addComponent(tfBottomTopCase);
@@ -214,7 +223,7 @@ public class EnquiryWorkflow implements ClickListener {
 		cbFromDept.setValue(null);
 		cbToDept.setValue(null);
 		dfReworkdate.setValue(null);
-		tfExistingCase.setValue(null);
+		cbExistingCase.setValue(null);
 		tfFusionedCase.setValue(null);
 		tfNewDieCase.setValue(null);
 		tfBottomTopCase.setValue(null);
@@ -244,7 +253,7 @@ public class EnquiryWorkflow implements ClickListener {
 		enquiryWorkflowDM.setFromDept((Long) cbFromDept.getValue());
 		enquiryWorkflowDM.setToDept((Long) cbToDept.getValue());
 		enquiryWorkflowDM.setReworkOn(dfReworkdate.getValue());
-		enquiryWorkflowDM.setExistingCaseModel(tfExistingCase.getValue());
+		enquiryWorkflowDM.setExistingCaseModel(cbExistingCase.getValue().toString());
 		enquiryWorkflowDM.setFusionedCaseModel(tfFusionedCase.getValue());
 		enquiryWorkflowDM.setNewDieCaseModel(tfNewDieCase.getValue());
 		enquiryWorkflowDM.setBottomTopCaseModel(tfBottomTopCase.getValue());
@@ -304,7 +313,7 @@ public class EnquiryWorkflow implements ClickListener {
 		cbFromDept.setValue(enquiryWorkflowDM.getFromDept());
 		cbToDept.setValue(enquiryWorkflowDM.getToDept());
 		dfReworkdate.setValue(enquiryWorkflowDM.getReworkOn());
-		tfExistingCase.setValue(enquiryWorkflowDM.getExistingCaseModel());
+		cbExistingCase.setValue(enquiryWorkflowDM.getExistingCaseModel());
 		tfFusionedCase.setValue(enquiryWorkflowDM.getFusionedCaseModel());
 		tfNewDieCase.setValue(enquiryWorkflowDM.getNewDieCaseModel());
 		tfBottomTopCase.setValue(enquiryWorkflowDM.getBottomTopCaseModel());
@@ -344,6 +353,21 @@ public class EnquiryWorkflow implements ClickListener {
 		}
 		catch (Exception e) {
 			logger.info("load loadInitiatedByList details" + e);
+		}
+	}
+	//Load Existing case models from Lookup
+	public void loadcasemodelList() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
+			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"BS_CAMOD");
+			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(lookUpList);
+			cbExistingCase.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	

@@ -9308,6 +9308,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', end
 
 .container{width:96%; float:left; height:auto; margin-bottom:30px;}
 .fullBox{width:1097px; height:154px; float:left; border:1px solid #c9c9c9; border-top:3px solid #36a9e1; background:#fff; padding:10px}
+.fullBox1{width:1097px; height:254px; float:left; border:1px solid #c9c9c9; border-top:3px solid #36a9e1; background:#fff; padding:10px}
 .smallBox1, .smallBox2, .smallBox3, .smallBox4{width:176px; height:49px; float:left; border:1px solid #c9c9c9; border-top:3px solid #53d0c0; background:#fff; padding:19px 10px; margin-right:27px;}
 .smallBox2{border-top:3px solid #f76767;}
 .smallBox3{border-top:3px solid #62a9f9;}

@@ -34,7 +34,6 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.sms.domain.txn.ProductParkedStockDM;
 import com.gnts.sms.service.txn.ProductParkedStockService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.ComboBox;
@@ -65,13 +64,11 @@ public class ProductParked extends BaseUI {
 	private TextArea taRemarks;
 	// Bean Container
 	private BeanItemContainer<ProductParkedStockDM> beanProductParkedStockDM = null;
-	private BeanContainer<Long, BranchDM> beanbranch;
 	// Local variables
 	private Long companyid;
 	private String username;
 	private Long branchId;
 	private int recordCnt = 0;
-	private Long userId;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(ProductParked.class);
 	private static final long serialVersionUID = 1L;
@@ -81,7 +78,6 @@ public class ProductParked extends BaseUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		userId = Long.valueOf(UI.getCurrent().getSession().getAttribute("userId").toString());
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside EmailLogger() constructor");
@@ -176,20 +172,20 @@ public class ProductParked extends BaseUI {
 	}
 	
 	private void viewLogger() {
-		Item rowSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (rowSelected != null) {
-			ProductParkedStockDM view = beanProductParkedStockDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			ProductParkedStockDM productParkedStockDM = beanProductParkedStockDM.getItem(tblMstScrSrchRslt.getValue())
+					.getBean();
 			setReadOnlyFalseFields();
-			cbProductse.setValue(view.getProductId());
-			cbBranchse.setValue(view.getBranchId());
-			dfParkedDate.setValue(view.getParkedDate());
-			cbStockTypese.setValue(view.getStockType().toString());
-			tfParkedQty.setValue(view.getParkedQty().toString());
-			tfUsedQty.setValue(view.getUsedQty().toString());
-			tfBalQty.setValue(view.getBalanceQty().toString());
-			tfRefNo.setValue(view.getReferenceNo());
-			dfRefDate.setValue(view.getReferenceDate());
-			taRemarks.setValue(view.getReferenceRemark());
+			cbProductse.setValue(productParkedStockDM.getProductId());
+			cbBranchse.setValue(productParkedStockDM.getBranchId());
+			dfParkedDate.setValue(productParkedStockDM.getParkedDate());
+			cbStockTypese.setValue(productParkedStockDM.getStockType().toString());
+			tfParkedQty.setValue(productParkedStockDM.getParkedQty().toString());
+			tfUsedQty.setValue(productParkedStockDM.getUsedQty().toString());
+			tfBalQty.setValue(productParkedStockDM.getBalanceQty().toString());
+			tfRefNo.setValue(productParkedStockDM.getReferenceNo());
+			dfRefDate.setValue(productParkedStockDM.getReferenceDate());
+			taRemarks.setValue(productParkedStockDM.getReferenceRemark());
 			setReadOnlyTrueFields();
 		}
 	}
@@ -221,7 +217,7 @@ public class ProductParked extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search ProductParkedStockDM
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<ProductParkedStockDM> parkedList = new ArrayList<ProductParkedStockDM>();
 		// String productStock = (String) cbStockType.getValue();
@@ -242,11 +238,11 @@ public class ProductParked extends BaseUI {
 	}
 	
 	// Load Product List
-	public void loadProdList() {
+	private void loadProdList() {
 		try {
 			List<ProductDM> list = new ArrayList<ProductDM>();
 			list.add(new ProductDM(0L, "All Products"));
-			list.addAll(serviceProduct.getProductList(companyid, null, null, null, null, null, null, "F"));
+			list.addAll(serviceProduct.getProductList(companyid, null, null, null, null, null, null, "P"));
 			BeanContainer<Long, ProductDM> beanprod = new BeanContainer<Long, ProductDM>(ProductDM.class);
 			beanprod.setBeanIdProperty("prodid");
 			beanprod.addAll(list);
@@ -258,11 +254,10 @@ public class ProductParked extends BaseUI {
 	}
 	
 	// Loading Branch List
-	public void loadbranchlist() {
-		List<BranchDM> branchlist = serviceBranch.getBranchList(null, null, null, null, companyid, "P");
-		beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+	private void loadbranchlist() {
+		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(branchlist);
+		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, null, companyid, "P"));
 		cbBranchse.setContainerDataSource(beanbranch);
 	}
 	

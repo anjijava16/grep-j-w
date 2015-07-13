@@ -22,7 +22,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -52,10 +51,8 @@ import com.gnts.sms.domain.txn.SmsInvoiceHdrDM;
 import com.gnts.sms.service.txn.ProductReturnDtlService;
 import com.gnts.sms.service.txn.ProductReturnHdrService;
 import com.gnts.sms.service.txn.SmsInvoiceHdrService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -92,10 +89,8 @@ public class ProductReturnHdr extends BaseUI {
 			.getBean("smsInvoiceheader");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private BranchService servicebeanBranch = (BranchService) SpringContextHelper.getBean("mbranch");
-	private BeanContainer<Long, BranchDM> beanBranch = null;
-	private BeanContainer<Long, SmsInvoiceHdrDM> beaninvoiece = null;
 	// Product Return Hdr Declaration
-	private ComboBox cbinvoiceid, cbbranch;
+	private ComboBox cbInvoiceid, cbbranch;
 	private TextField tfreturndoc;
 	private TextArea tfreturnremark;
 	private PopupDateField dfretdocdate;
@@ -109,9 +104,9 @@ public class ProductReturnHdr extends BaseUI {
 	private HorizontalLayout hlimage = new HorizontalLayout();
 	private ComboBox cbprdrtnstatus = new GERPComboBox("Status", BASEConstants.T_SMS_PRODUCT_RETURN_HDR,
 			BASEConstants.INV_STATUS);
-	public Button btnaddreturndtl = new GERPButton("Add", "addbt", this);
+	private Button btnaddreturndtl = new GERPButton("Add", "addbt", this);
 	private Table tblrepdtls = new GERPTable();
-	List<ProductReturnDtlDM> prodreturnlist = new ArrayList<ProductReturnDtlDM>();
+	private List<ProductReturnDtlDM> prodreturnlist = new ArrayList<ProductReturnDtlDM>();
 	private BeanItemContainer<ProductReturnHdrDM> beanproductreturn = null;
 	// Search control layout
 	private GERPAddEditHLayout hlSearchLayout;
@@ -124,7 +119,7 @@ public class ProductReturnHdr extends BaseUI {
 	private Long productreturnId;
 	private Long prodreturnid;
 	private int recordcnt = 0, recordcntdtls = 0;
-	public Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btndelete = new GERPButton("Delete", "delete", this);
 	
 	public ProductReturnHdr() {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
@@ -141,19 +136,18 @@ public class ProductReturnHdr extends BaseUI {
 		cbbranch.setNullSelectionAllowed(false);
 		cbbranch.setWidth("150");
 		loadBranchList();
-		cbinvoiceid = new GERPComboBox("Invoice No");
-		cbinvoiceid.setItemCaptionPropertyId("invoiceNo");
-		cbinvoiceid.setImmediate(true);
-		// System.out.println("cbinvoiceid--->" + cbinvoiceid.getValue());
-		loadinvoicelist();
-		cbinvoiceid.addValueChangeListener(new Property.ValueChangeListener() {
+		cbInvoiceid = new GERPComboBox("Invoice No");
+		cbInvoiceid.setItemCaptionPropertyId("invoiceNo");
+		cbInvoiceid.setImmediate(true);
+		loadInvoicelist();
+		cbInvoiceid.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// Get the selected item
 				Object itemId = event.getProperty().getValue();
-				BeanItem<?> item = (BeanItem<?>) cbinvoiceid.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbInvoiceid.getItem(itemId);
 				if (item != null) {
 					loadProduct();
 				}
@@ -162,7 +156,6 @@ public class ProductReturnHdr extends BaseUI {
 		dfretdocdate = new PopupDateField("Return Date");
 		dfretdocdate.setWidth("130");
 		tfreturndoc = new GERPTextField("Return DOC ID");
-		tfreturndoc.setWidth("150");
 		tfreturnremark = new TextArea("Return Remark");
 		tfreturnremark.setMaxLength(40);
 		tfreturnremark.setWidth("150");
@@ -201,8 +194,6 @@ public class ProductReturnHdr extends BaseUI {
 				try {
 					validatereturndtls();
 					saveprodretdtls();
-					// prodretdtlsResetfields();
-					// new GERPSaveNotification();
 				}
 				catch (Exception e) {
 				}
@@ -257,7 +248,7 @@ public class ProductReturnHdr extends BaseUI {
 		fl2 = new FormLayout();
 		fl3 = new FormLayout();
 		fl1.addComponent(cbbranch);
-		fl2.addComponent(cbinvoiceid);
+		fl2.addComponent(cbInvoiceid);
 		fl3.addComponent(cbprdstatus);
 		hlSearchLayout.addComponent(fl1);
 		hlSearchLayout.addComponent(fl2);
@@ -278,7 +269,7 @@ public class ProductReturnHdr extends BaseUI {
 		fl1.addComponent(cbbranch);
 		fl1.addComponent(dfretdocdate);
 		fl2.addComponent(tfreturndoc);
-		fl2.addComponent(cbinvoiceid);
+		fl2.addComponent(cbInvoiceid);
 		fl3.addComponent(tfreturnremark);
 		fl4.addComponent(cbprdstatus);
 		HorizontalLayout hl1 = new HorizontalLayout();
@@ -331,22 +322,19 @@ public class ProductReturnHdr extends BaseUI {
 	}
 	
 	// Load Branch List
-	public void loadBranchList() {
+	private void loadBranchList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<BranchDM> branchlist = servicebeanBranch.getBranchList(null, null, null, null, companyid, "P");
-		beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(branchlist);
+		beanBranch.addAll(servicebeanBranch.getBranchList(null, null, null, null, companyid, "P"));
 		cbbranch.setContainerDataSource(beanBranch);
 	}
 	
 	// Load Product List
-	public void loadProduct() {
+	private void loadProduct() {
 		try {
-			List<ProductDM> ProductList = serviceProduct.getProductList(companyid, null, null, null, "Active", null,
-					null, "P");
 			BeanItemContainer<ProductDM> beanProduct = new BeanItemContainer<ProductDM>(ProductDM.class);
-			beanProduct.addAll(ProductList);
+			beanProduct.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "P"));
 			cbdtlprodid.setContainerDataSource(beanProduct);
 		}
 		catch (Exception e) {
@@ -355,15 +343,15 @@ public class ProductReturnHdr extends BaseUI {
 	}
 	
 	// Load Invoice
-	public void loadinvoicelist() {
+	private void loadInvoicelist() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Invoice Search...");
 		try {
-			List<SmsInvoiceHdrDM> invlist = serviceSmsInvoiceHdr.getSmsInvoiceHeaderList(null, null, null, null, null,
-					null, companyid, "F");
-			beaninvoiece = new BeanContainer<Long, SmsInvoiceHdrDM>(SmsInvoiceHdrDM.class);
+			BeanContainer<Long, SmsInvoiceHdrDM> beaninvoiece = new BeanContainer<Long, SmsInvoiceHdrDM>(
+					SmsInvoiceHdrDM.class);
 			beaninvoiece.setBeanIdProperty("invoiceId");
-			beaninvoiece.addAll(invlist);
-			cbinvoiceid.setContainerDataSource(beaninvoiece);
+			beaninvoiece.addAll(serviceSmsInvoiceHdr.getSmsInvoiceHeaderList(null, null, null, null, null, null,
+					companyid, "P"));
+			cbInvoiceid.setContainerDataSource(beaninvoiece);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -374,7 +362,7 @@ public class ProductReturnHdr extends BaseUI {
 	private void loadSrchRslt() {
 		tblMstScrSrchRslt.removeAllItems();
 		List<ProductReturnHdrDM> prodretu = new ArrayList<ProductReturnHdrDM>();
-		prodretu = serviceProductReturnHdr.getProductReturnHdrList((Long) cbinvoiceid.getValue(), companyid, null,
+		prodretu = serviceProductReturnHdr.getProductReturnHdrList((Long) cbInvoiceid.getValue(), companyid, null,
 				(Long) cbbranch.getValue(), (String) cbprdstatus.getValue(), "F");
 		recordcnt = prodretu.size();
 		beanproductreturn = new BeanItemContainer<ProductReturnHdrDM>(ProductReturnHdrDM.class);
@@ -412,31 +400,30 @@ public class ProductReturnHdr extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "save prodloadPurDtluct Return dtsl");
-			ProductReturnDtlDM repdtlsobj = new ProductReturnDtlDM();
+			ProductReturnDtlDM returnDtlDM = new ProductReturnDtlDM();
 			if (tblrepdtls.getValue() != null) {
-				repdtlsobj = beanprodctretdtls.getItem(tblrepdtls.getValue()).getBean();
-				prodreturnlist.remove(repdtlsobj);
+				returnDtlDM = beanprodctretdtls.getItem(tblrepdtls.getValue()).getBean();
+				prodreturnlist.remove(returnDtlDM);
 			}
-			repdtlsobj.setProdid(((ProductDM) cbdtlprodid.getValue()).getProdid());
-			repdtlsobj.setProdname(((ProductDM) cbdtlprodid.getValue()).getProdname());
-			repdtlsobj.setReturnoty((Long.valueOf(tfdtlreturnqty.getValue())));
-			repdtlsobj.setStocktype((String) cbdtlstocktyp.getValue().toString());
-			repdtlsobj.setReturnremarks((String) tfdtlreturnremark.getValue().toString());
-			repdtlsobj.setPrdrtnstatus((String) cbprdrtnstatus.getValue().toString());
+			returnDtlDM.setProdid(((ProductDM) cbdtlprodid.getValue()).getProdid());
+			returnDtlDM.setProdname(((ProductDM) cbdtlprodid.getValue()).getProdname());
+			returnDtlDM.setReturnoty((Long.valueOf(tfdtlreturnqty.getValue())));
+			returnDtlDM.setStocktype((String) cbdtlstocktyp.getValue().toString());
+			returnDtlDM.setReturnremarks((String) tfdtlreturnremark.getValue().toString());
+			returnDtlDM.setPrdrtnstatus((String) cbprdrtnstatus.getValue().toString());
 			File file = new File(GERPConstants.IMAGE_PATH);
 			FileInputStream fin = new FileInputStream(file);
 			byte fileContent[] = new byte[(int) file.length()];
 			fin.read(fileContent);
 			fin.close();
-			repdtlsobj.setEvidencedoc(fileContent);
+			returnDtlDM.setEvidencedoc(fileContent);
 			file = new File(GERPConstants.DOCUMENT_PATH);
 			FileInputStream fio = new FileInputStream(file);
-			byte fileContents[] = new byte[(int) file.length()];
 			fio.read(fileContent);
 			fio.close();
-			repdtlsobj.setLastupdateddt(DateUtils.getcurrentdate());
-			repdtlsobj.setLastuupdatedby(username);
-			prodreturnlist.add(repdtlsobj);
+			returnDtlDM.setLastupdateddt(DateUtils.getcurrentdate());
+			returnDtlDM.setLastuupdatedby(username);
+			prodreturnlist.add(returnDtlDM);
 			prodretdtlsResetfields();
 			loadreturndtls(false);
 		}
@@ -467,7 +454,7 @@ public class ProductReturnHdr extends BaseUI {
 	@Override
 	protected void resetSearchDetails() {
 		cbbranch.setValue(null);
-		cbinvoiceid.setValue(null);
+		cbInvoiceid.setValue(null);
 		cbprdstatus.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
@@ -486,7 +473,7 @@ public class ProductReturnHdr extends BaseUI {
 		assembleInputUserLayout();
 		loadreturndtls(false);
 		cbbranch.setRequired(true);
-		cbinvoiceid.setRequired(true);
+		cbInvoiceid.setRequired(true);
 	}
 	
 	@Override
@@ -499,24 +486,24 @@ public class ProductReturnHdr extends BaseUI {
 		hlCmdBtnLayout.setVisible(false);
 		tblMstScrSrchRslt.setVisible(false);
 		assembleInputUserLayout();
-		editproductreturn();
+		editProductReturn();
 		loadreturndtls(false);
 		cbbranch.setRequired(true);
-		cbinvoiceid.setRequired(true);
+		cbInvoiceid.setRequired(true);
 	}
 	
-	private void editproductreturn() {
+	private void editProductReturn() {
 		try {
-			Item rowselsect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-			if (rowselsect != null) {
-				ProductReturnHdrDM proreturn = beanproductreturn.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				productreturnId = proreturn.getProductreturnId();
-				cbbranch.setValue(proreturn.getBranchId());
-				cbinvoiceid.setValue(proreturn.getInvoiceId());
-				tfreturndoc.setValue(rowselsect.getItemProperty("returnDocId").getValue().toString());
-				dfretdocdate.setValue((Date) rowselsect.getItemProperty("returnDate").getValue());
-				tfreturnremark.setValue(rowselsect.getItemProperty("returnRemarks").getValue().toString());
-				cbprdstatus.setValue(rowselsect.getItemProperty("prdrtnStatus").getValue().toString());
+			if (tblMstScrSrchRslt.getValue() != null) {
+				ProductReturnHdrDM productReturnHdrDM = beanproductreturn.getItem(tblMstScrSrchRslt.getValue())
+						.getBean();
+				productreturnId = productReturnHdrDM.getProductreturnId();
+				cbbranch.setValue(productReturnHdrDM.getBranchId());
+				cbInvoiceid.setValue(productReturnHdrDM.getInvoiceId());
+				tfreturndoc.setValue(productReturnHdrDM.getReturnDocId());
+				dfretdocdate.setValue(productReturnHdrDM.getReturnDate());
+				tfreturnremark.setValue(productReturnHdrDM.getReturnRemarks());
+				cbprdstatus.setValue(productReturnHdrDM.getPrdrtnStatus());
 				prodreturnlist = serviceprodcutreturndtl.getprodReturndtls(null, productreturnId, null, null, null);
 				System.out.println("prodreturnid->" + prodreturnid);
 			}
@@ -528,10 +515,9 @@ public class ProductReturnHdr extends BaseUI {
 	
 	private void editproductreturndtl() {
 		try {
-			Item ifselect = tblrepdtls.getItem(tblrepdtls.getValue());
-			if (ifselect != null) {
-				ProductReturnDtlDM retdtls = beanprodctretdtls.getItem(tblrepdtls.getValue()).getBean();
-				Long uom = retdtls.getProdid();
+			if (tblrepdtls.getValue() != null) {
+				ProductReturnDtlDM productReturnDtlDM = beanprodctretdtls.getItem(tblrepdtls.getValue()).getBean();
+				Long uom = productReturnDtlDM.getProdid();
 				Collection<?> uomid = cbdtlprodid.getItemIds();
 				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
 					Object itemId = (Object) iterator.next();
@@ -542,17 +528,10 @@ public class ProductReturnHdr extends BaseUI {
 						cbdtlprodid.setValue(itemId);
 					}
 				}
-				tfdtlreturnqty.setValue(ifselect.getItemProperty("returnoty").getValue().toString());
-				cbdtlstocktyp.setValue(ifselect.getItemProperty("stocktype").getValue().toString());
-				tfdtlreturnremark.setValue(ifselect.getItemProperty("returnremarks").getValue().toString());
-				cbprdrtnstatus.setValue(ifselect.getItemProperty("prdrtnstatus").getValue().toString());
-				if (ifselect.getItemProperty("evidencedoc").getValue() != null) {
-					byte[] myimage = (byte[]) ifselect.getItemProperty("evidencedoc").getValue();
-					UploadUI test = new UploadUI(hlimage);
-					// test.dispayImage(myimage);
-				} else {
-					new UploadUI(hlimage);
-				}
+				tfdtlreturnqty.setValue(productReturnDtlDM.getReturnoty().toString());
+				cbdtlstocktyp.setValue(productReturnDtlDM.getStocktype());
+				tfdtlreturnremark.setValue(productReturnDtlDM.getReturnremarks());
+				cbprdrtnstatus.setValue(productReturnDtlDM.getPrdrtnstatus());
 			}
 		}
 		catch (Exception e) {
@@ -563,14 +542,14 @@ public class ProductReturnHdr extends BaseUI {
 	@Override
 	protected void validateDetails() throws ValidationException {
 		cbbranch.setComponentError(null);
-		cbinvoiceid.setComponentError(null);
+		cbInvoiceid.setComponentError(null);
 		Boolean errorFlag = false;
 		if (cbbranch.getValue() == null) {
 			cbbranch.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_BRANCH));
 			errorFlag = true;
 		}
-		if (cbinvoiceid.getValue() == null) {
-			cbinvoiceid.setComponentError(new UserError(GERPErrorCodes.NULL_INVOICE_ADDRESS));
+		if (cbInvoiceid.getValue() == null) {
+			cbInvoiceid.setComponentError(new UserError(GERPErrorCodes.NULL_INVOICE_ADDRESS));
 			errorFlag = true;
 		}
 		if (errorFlag) {
@@ -613,7 +592,7 @@ public class ProductReturnHdr extends BaseUI {
 			}
 			rethdrobj.setCompanyId(companyid);
 			rethdrobj.setBranchId((Long) cbbranch.getValue());
-			rethdrobj.setInvoiceId((Long) cbinvoiceid.getValue());
+			rethdrobj.setInvoiceId((Long) cbInvoiceid.getValue());
 			rethdrobj.setReturnDocId(tfreturndoc.getValue());
 			rethdrobj.setReturnDate(dfretdocdate.getValue());
 			rethdrobj.setReturnRemarks(tfreturnremark.getValue());
@@ -654,12 +633,12 @@ public class ProductReturnHdr extends BaseUI {
 		hlCmdBtnLayout.setVisible(true);
 		tblMstScrSrchRslt.setVisible(true);
 		cbbranch.setRequired(false);
-		cbinvoiceid.setRequired(false);
+		cbInvoiceid.setRequired(false);
 		prodretdtlsResetfields();
 		resetFields();
 		loadSrchRslt();
 		cbbranch.setRequired(false);
-		cbinvoiceid.setRequired(false);
+		cbInvoiceid.setRequired(false);
 	}
 	
 	@Override
@@ -667,13 +646,13 @@ public class ProductReturnHdr extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting the Employee Bank UI controls");
 		cbbranch.setValue(null);
-		cbinvoiceid.setValue(null);
+		cbInvoiceid.setValue(null);
 		cbprdstatus.setValue(null);
 		tfreturndoc.setValue("");
 		dfretdocdate.setValue(null);
 		tfreturnremark.setValue("");
 		cbbranch.setComponentError(null);
-		cbinvoiceid.setComponentError(null);
+		cbInvoiceid.setComponentError(null);
 		new UploadUI(hlimage);
 		prodreturnlist = new ArrayList<ProductReturnDtlDM>();
 		tblrepdtls.removeAllItems();

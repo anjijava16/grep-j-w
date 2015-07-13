@@ -8,7 +8,6 @@ import com.gnts.base.domain.mst.ProductDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.ProductService;
 import com.gnts.erputil.components.GERPAddEditHLayout;
-import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.exceptions.ERPException;
@@ -20,15 +19,16 @@ import com.gnts.sms.domain.txn.ProductStockDM;
 import com.gnts.sms.service.txn.ProductStockService;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table.Align;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class ProductStock extends BaseUI {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Bean Creation
 	private ProductStockService serviceproductstock = (ProductStockService) SpringContextHelper.getBean("productstock");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
@@ -36,17 +36,12 @@ public class ProductStock extends BaseUI {
 	// User Input Fields for Product Stock
 	private ComboBox cbbranchid, cbproductid, cbstocktype;
 	private BeanItemContainer<ProductStockDM> beanproductstock = null;
-	BeanContainer<Long, BranchDM> beanbranch;
 	private FormLayout fl1, fl2, fl3;
-	public Button btnaddSpec = new GERPButton("Add", "addbt", this);
 	private GERPAddEditHLayout hlSearLayout;
 	// Local variables declaration
 	private Long companyid;
 	private String username;
-	private Long EmployeeId;
-	private Long moduleId;
 	private Long branchId;
-	private Long roleId, appScreenId;
 	private int recordcnt = 0;
 	// public Label lblNotification;
 	private Long productStockId;
@@ -57,11 +52,7 @@ public class ProductStock extends BaseUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
-		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
-		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
-		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside ProductStock() constructor");
 		// Loading the UI
@@ -109,23 +100,20 @@ public class ProductStock extends BaseUI {
 		hlSearLayout.setSizeUndefined();
 	}
 	
-	private void assembleInputUserLayout() {
-	}
-	
 	private void loadBranchList() {
 		List<BranchDM> branchlist = serviceBranch.getBranchList(null, null, null, null, companyid, "P");
-		beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanbranch.setBeanIdProperty("branchId");
 		beanbranch.addAll(branchlist);
 		cbbranchid.setContainerDataSource(beanbranch);
 	}
 	
 	// Load Product List
-	public void loadProduct() {
+	private void loadProduct() {
 		try {
 			List<ProductDM> list = new ArrayList<ProductDM>();
 			list.add(new ProductDM(0L, "All Products"));
-			list.addAll(serviceProduct.getProductList(companyid, null, null, null, null, null, null, "F"));
+			list.addAll(serviceProduct.getProductList(companyid, null, null, null, null, null, null, "P"));
 			BeanContainer<Long, ProductDM> beanprod = new BeanContainer<Long, ProductDM>(ProductDM.class);
 			beanprod.setBeanIdProperty("prodid");
 			beanprod.addAll(list);
@@ -141,9 +129,6 @@ public class ProductStock extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<ProductStockDM> productstock = new ArrayList<ProductStockDM>();
-		Long branchId = null;
-		Long productId = null;
-		Long stockType = null;
 		productstock = serviceproductstock.getProductStockList((Long) cbproductid.getValue(),
 				(String) cbstocktype.getValue(), productStockId, (Long) cbbranchid.getValue(), "F");
 		recordcnt = productstock.size();
@@ -156,9 +141,6 @@ public class ProductStock extends BaseUI {
 				"Parked Stock", "Effective stock", "UOM", "Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("productStockId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordcnt);
-	}
-	
-	private void editproduct() {
 	}
 	
 	@Override

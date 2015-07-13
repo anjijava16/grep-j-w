@@ -2,7 +2,9 @@ package com.gnts.base.dashboard;
 
 import org.apache.log4j.Logger;
 import com.gnts.asm.domain.txn.AssetMaintDetailDM;
+import com.gnts.asm.domain.txn.GeneratorDM;
 import com.gnts.asm.service.txn.AssetMaintDetailService;
+import com.gnts.asm.service.txn.GeneratorService;
 import com.gnts.asm.txn.AssetDetails;
 import com.gnts.asm.txn.AssetMaintDetail;
 import com.gnts.asm.txn.AssetMaintSched;
@@ -44,10 +46,12 @@ public class MaintenanceDashboardView implements ClickListener {
 	private AssetMaintDetailService serviceAssetMaintDetails = (AssetMaintDetailService) SpringContextHelper
 			.getBean("assetMaintDetails");
 	private MmsEnqHdrService serviceMmsEnqHdr = (MmsEnqHdrService) SpringContextHelper.getBean("MmsEnqHdr");
+	private GeneratorService serviceGenerator = (GeneratorService) SpringContextHelper.getBean("generator");
 	private Logger logger = Logger.getLogger(DashboardMMSView.class);
 	private Table tblAssetMaint = new Table();
 	private Table tblEnquiry = new Table();
 	private Long companyId;
+	private VerticalLayout vlGensetOilStatus = new VerticalLayout();
 	
 	public MaintenanceDashboardView() {
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
@@ -86,12 +90,14 @@ public class MaintenanceDashboardView implements ClickListener {
 		custom.addComponent(tblAssetMaint, "stockDetails");
 		custom.addComponent(btnAddMaterial, "addmaterial");
 		custom.addComponent(btnAddVendor, "addVendor");
+		custom.addComponent(vlGensetOilStatus, "gensetoilchk");
 		custom.addComponent(new CalendarMonthly("MAIN_SCHEDULE"), "maintaincedtls");
 		tblAssetMaint.setHeight("300px");
 		tblAssetMaint.setWidth("99%");
 		tblEnquiry.setHeight("250px");
 		loadMaintainceDetails();
 		loadEnquiryList();
+		loadGensetDetails();
 	}
 	
 	private void loadMaintainceDetails() {
@@ -168,6 +174,16 @@ public class MaintenanceDashboardView implements ClickListener {
 				}
 			}
 		});
+	}
+	
+	private void loadGensetDetails() {
+		vlGensetOilStatus.setSpacing(true);
+		for (GeneratorDM generatorDM : serviceGenerator.getGeneratorDetailList(null, null, null, null, "Y", null)) {
+			Label lbl = new Label(generatorDM.getAssetName() + " disel closing balance is   <span style='color:red;font-size:15px'>"+generatorDM.getDiselCloseBalance()+" Ltrs.</span>",
+					ContentMode.HTML);
+			lbl.setStyleName("innerPanel");
+			vlGensetOilStatus.addComponent(lbl);
+		}
 	}
 	
 	@Override

@@ -3,20 +3,16 @@ package com.gnts.sms.txn;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.apache.xerces.impl.dtd.models.DFAContentModel;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.ProductDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.ProductService;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
-import com.gnts.erputil.components.GERPFormLayout;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
-import com.gnts.erputil.components.GERPTextArea;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
@@ -26,18 +22,21 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.sms.domain.txn.ProductLedgerDM;
 import com.gnts.sms.service.txn.ProductLedgerService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class ProductLedger extends BaseUI {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ProductLedgerService serviceProductLedger = (ProductLedgerService) SpringContextHelper
 			.getBean("productledger");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
@@ -45,11 +44,10 @@ public class ProductLedger extends BaseUI {
 	// form layout for input controls
 	private FormLayout fl1, fl2, fl3, fl4;
 	// User Input Fields for Product Ledger
-	private ComboBox cbbranch, cbproduct, cbstocktype /* , cbcompanyname */;
+	private ComboBox cbbranch, cbproduct, cbstocktype;
 	private TextField tfopenqty, tfinoutflag, tfinoutqty, tfcloseqty, tfrefno, tfislatest, tfrefremarks;
 	private PopupDateField dfprodledgdt, dfrefdate;
 	private BeanItemContainer<ProductLedgerDM> beanprodledger = null;
-	private BeanContainer<Long, BranchDM> beanbranch;
 	// Search control layout
 	private GERPAddEditHLayout hlSearLayout;
 	// UserInput control layout
@@ -57,10 +55,7 @@ public class ProductLedger extends BaseUI {
 	// Local variables declaration
 	private Long companyid;
 	private String username;
-	private Long EmployeeId;
-	private Long moduleId;
 	private Long branchId;
-	private Long roleId, appScreenId;
 	private int recordcnt = 0;
 	private Long productledgeId;
 	// Initialize logger
@@ -70,11 +65,7 @@ public class ProductLedger extends BaseUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
-		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
-		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
-		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside ProductStock() constructor");
 		// Loading the UI
@@ -180,20 +171,19 @@ public class ProductLedger extends BaseUI {
 	}
 	
 	// Loading Branch List
-	public void loadbranchlist() {
-		List<BranchDM> branchlist = serviceBranch.getBranchList(null, null, null, null, companyid, "P");
-		beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+	private void loadbranchlist() {
+		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(branchlist);
+		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, null, companyid, "P"));
 		cbbranch.setContainerDataSource(beanbranch);
 	}
 	
 	// Load Product List
-	public void loadProduct() {
+	private void loadProduct() {
 		try {
 			List<ProductDM> list = new ArrayList<ProductDM>();
 			list.add(new ProductDM(0L, "All Products"));
-			list.addAll(serviceProduct.getProductList(companyid, null, null, null, null, null, null, "F"));
+			list.addAll(serviceProduct.getProductList(companyid, null, null, null, null, null, null, "P"));
 			BeanContainer<Long, ProductDM> beanprod = new BeanContainer<Long, ProductDM>(ProductDM.class);
 			beanprod.setBeanIdProperty("prodid");
 			beanprod.addAll(list);
@@ -268,31 +258,23 @@ public class ProductLedger extends BaseUI {
 	}
 	
 	private void editproductledger() {
-		Item iteselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (iteselect != null) {
-			ProductLedgerDM editledgerlist = beanprodledger.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbbranch.setValue(editledgerlist.getBranchId());
-			cbproduct.setValue(editledgerlist.getProductId());
-			cbstocktype.setValue(editledgerlist.getStockType());
-			tfopenqty.setValue(iteselect.getItemProperty("openQty").getValue().toString());
-			tfinoutflag.setValue(iteselect.getItemProperty("inoutFlag").getValue().toString());
-			tfinoutqty.setValue(iteselect.getItemProperty("inoutFQty").getValue().toString());
-			tfcloseqty.setValue(iteselect.getItemProperty("closeQty").getValue().toString());
-			tfrefno.setValue(iteselect.getItemProperty("referenceNo").getValue().toString());
-			dfprodledgdt.setValue((Date) iteselect.getItemProperty("productledgeDate").getValue());
-			dfrefdate.setValue((Date) iteselect.getItemProperty("referenceDate").getValue());
-			tfislatest.setValue(iteselect.getItemProperty("isLatest").getValue().toString());
-			tfrefremarks.setValue(iteselect.getItemProperty("referenceRemark").getValue().toString());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			ProductLedgerDM productLedgerDM = beanprodledger.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			cbbranch.setValue(productLedgerDM.getBranchId());
+			cbproduct.setValue(productLedgerDM.getProductId());
+			cbstocktype.setValue(productLedgerDM.getStockType());
+			tfopenqty.setValue(productLedgerDM.getOpenQty().toString());
+			tfinoutflag.setValue(productLedgerDM.getInoutFlag());
+			tfinoutqty.setValue(productLedgerDM.getInoutFQty().toString());
+			tfcloseqty.setValue(productLedgerDM.getCloseQty().toString());
+			tfrefno.setValue(productLedgerDM.getReferenceNo());
+			dfprodledgdt.setValue(productLedgerDM.getProductledgeDate());
+			dfrefdate.setValue(productLedgerDM.getReferenceDate());
+			tfislatest.setValue(productLedgerDM.getIsLatest());
+			tfrefremarks.setValue(productLedgerDM.getReferenceRemark());
 		}
 	}
 	
-	/*
-	 * private void Readonlytrue(){ logger.info("Company ID : " + companyid + " | User Name : " + username + " > " +
-	 * "Painting employee UI"); cbbranch.setReadOnly(true); cbproduct.setReadOnly(true); cbstocktype.setReadOnly(true);
-	 * tfopenqty.setReadOnly(true); tfinoutflag.setReadOnly(true); tfinoutqty.setReadOnly(true);
-	 * tfcloseqty.setReadOnly(true); tfrefno.setReadOnly(true); dfprodledgdt.setReadOnly(true);
-	 * dfrefdate.setReadOnly(true); tfislatest.setReadOnly(true); tfrefremarks.setReadOnly(true); }
-	 */
 	@Override
 	protected void validateDetails() throws ValidationException {
 		// TODO Auto-generated method stub

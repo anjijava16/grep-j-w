@@ -129,6 +129,7 @@ public class EmployeeAdvance extends BaseUI {
 		// Advance Interest TextField
 		tfAdvncInterest = new GERPTextField("Advance Interest");
 		tfAdvncInterest.setValue("0");
+		tfAdvncInterest.setVisible(false);
 		// build search layout
 		hlSearchLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));

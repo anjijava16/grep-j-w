@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.asm.domain.mst.AssetBrandDM;
+import com.gnts.asm.domain.mst.AssetCategoryDM;
 import com.gnts.asm.domain.txn.AssetDetailsDM;
 import com.gnts.asm.service.mst.AssetBrandService;
+import com.gnts.asm.service.mst.AssetCategoryService;
 import com.gnts.asm.service.txn.AssetDetailsService;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.DepartmentDM;
@@ -94,8 +96,7 @@ public class AssetDetails extends BaseTransUI {
 	private AssetBrandService serviceBrand = (AssetBrandService) SpringContextHelper.getBean("assetBrand");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private DepartmentService servicedepartmant = (DepartmentService) SpringContextHelper.getBean("department");
-	private ClientCategoryService serviceCategory = (ClientCategoryService) SpringContextHelper
-			.getBean("clientCategory");
+	private AssetCategoryService serviceAsset=(AssetCategoryService) SpringContextHelper.getBean("assetCategory");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private int recordCnt;
 	private Long companyid, employeeid;
@@ -230,7 +231,6 @@ public class AssetDetails extends BaseTransUI {
 		tfMfgSerialNo = new GERPTextField("MFG.Serial No.");
 		// Initialization for tfAssetLocation
 		tfAssetLocation = new GERPTextField("Asset Location");
-		tfAssetLocation.setRequired(true);
 		tfAssetLocation.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -333,8 +333,7 @@ public class AssetDetails extends BaseTransUI {
 		tfAssetName.setRequired(true);
 		flColumn1.addComponent(cbAssetType);
 		cbAssetType.setRequired(true);
-		flColumn1.addComponent(tfAssetLocation);
-		tfAssetLocation.setRequired(true);
+		flColumn1.addComponent(cbbranch);
 		flColumn1.addComponent(tfAssetDetailDesc);
 		flColumn1.addComponent(cbBrandId);
 		cbBrandId.setRequired(true);
@@ -344,7 +343,7 @@ public class AssetDetails extends BaseTransUI {
 		cbcategory.setRequired(true);
 		flColumn2.addComponent(cbDeptId);
 		cbDeptId.setRequired(true);
-		flColumn2.addComponent(cbbranch);
+		flColumn2.addComponent(tfAssetLocation);
 		flColumn2.addComponent(tfSerialNo);
 		flColumn2.addComponent(tfMfgSerialNo);
 		flColumn2.addComponent(tfInvoiceNo);
@@ -422,11 +421,11 @@ public class AssetDetails extends BaseTransUI {
 	}
 	
 	private void loadcategory() {
-		BeanContainer<Long, ClientCategoryDM> beanclientcat = new BeanContainer<Long, ClientCategoryDM>(
-				ClientCategoryDM.class);
-		beanclientcat.setBeanIdProperty("clientCategoryId");
-		beanclientcat.addAll(serviceCategory.getCrmClientCategoryList(companyid, null, "Active", "P"));
-		cbcategory.setContainerDataSource(beanclientcat);
+		BeanContainer<Long, AssetCategoryDM> assetCategorydm = new BeanContainer<Long, AssetCategoryDM>(
+				AssetCategoryDM.class);
+		assetCategorydm.setBeanIdProperty("catgryId");
+		assetCategorydm.addAll(serviceAsset.getAssetCategoryList(companyid, null, "Active", "P"));
+		cbcategory.setContainerDataSource(assetCategorydm);
 	}
 	
 	private void loadEmployee() {

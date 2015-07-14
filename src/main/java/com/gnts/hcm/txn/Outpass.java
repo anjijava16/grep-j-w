@@ -154,8 +154,8 @@ public class Outpass extends BaseTransUI {
 		flcol1.addComponent(cbEmployee);
 		flcol1.addComponent(cbDepartment);
 		flcol2.addComponent(tfPlace);
-		flcol2.addComponent(tfTimeOut);
 		flcol2.addComponent(tfTimeIn);
+		flcol2.addComponent(tfTimeOut);
 		flcol3.addComponent(taPurpose);
 		flcol4.addComponent(cbVehicle);
 		flcol4.addComponent(tfVehicleNo);

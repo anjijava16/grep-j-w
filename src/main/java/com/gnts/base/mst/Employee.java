@@ -716,7 +716,6 @@ public class Employee extends BaseUI {
 		cbempdtlscandid = new GERPComboBox("Candidate");
 		cbempdtlscandid.setItemCaptionPropertyId("fulname");
 		cbempdtlscandid.setWidth("200");
-		cbempdtlscandid.setRequired(true);
 		cbempdtlscandid.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -858,7 +857,6 @@ public class Employee extends BaseUI {
 		tfempcontrelationship.setWidth("200");
 		tfempcontphno = new GERPTextField("Phone No");
 		tfempcontphno.setWidth("200");
-		tfempcontphno.setRequired(true);
 		tfempcontphno.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -3476,6 +3474,7 @@ public class Employee extends BaseUI {
 			employeeedulist.remove(employeeeduobj);
 		}
 		employeeeduobj.setQufiid((Long) cbempeduqualtnid.getValue());
+		System.out.println("===============================================>>>>>"+ cbempeduqualtnid.getValue());
 		employeeeduobj.setSubject((String) tfempedusubject.getValue().toString());
 		employeeeduobj.setDurfrm((Date) dfempedudurtnfrm.getValue());
 		employeeeduobj.setDurto((Date) dfempedudurtnto.getValue());

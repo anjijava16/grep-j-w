@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.asm.domain.txn.EbReadingDM;
+import com.gnts.asm.domain.txn.GeneratorDM;
 import com.gnts.asm.service.txn.EbReadingService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
@@ -49,7 +50,7 @@ public class EBReading extends BaseTransUI {
 	private Logger logger = Logger.getLogger(EBReading.class);
 	// User Input Fields for EC Request
 	private TextField tfMainKwHr, tfC1, tfC2, tfC3, tfC4, tfC5, tfKvaHr, tfR1, tfR2, tfR3, tfR4, tfR5, tfRkvaHrCag,
-			tfLead, tfPfc, tfPerDayUnit, tfPf, tfUnitCharge, tfAdjstCharge, tfHalfUnitCharge;
+			tfLead, tfPfc, tfPerDayUnit, tfPf, tfUnitCharge, tfAdjstCharge, tfHalfUnitCharge, tfCHours,tfKvaMdr;
 	private PopupDateField dfRefDate;
 	private TextArea taMachineRunDetails, taRemarks;
 	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
@@ -87,20 +88,22 @@ public class EBReading extends BaseTransUI {
 		tfC3 = new GERPNumberField("C3");
 		tfC4 = new GERPNumberField("C4");
 		tfC5 = new GERPNumberField("C5");
-		tfKvaHr = new GERPNumberField("KVA HR");
+		tfRkvaHrCag = new GERPNumberField("RKVA HR CAG");
 		tfR1 = new GERPNumberField("R1");
 		tfR2 = new GERPNumberField("R2");
 		tfR3 = new GERPNumberField("R3");
 		tfR4 = new GERPNumberField("R4");
 		tfR5 = new GERPNumberField("R5");
-		tfRkvaHrCag = new GERPNumberField("RKVA HR CAG");
+		tfKvaHr = new GERPNumberField("KVA HR");
+		tfKvaMdr= new GERPNumberField("KVA MDR");
 		tfLead = new GERPNumberField("Lead");
 		tfPfc = new GERPNumberField("PFC");
 		tfPerDayUnit = new GERPNumberField("Per Day Unit");
 		tfPf = new GERPNumberField("PF");
 		tfUnitCharge = new GERPNumberField("Unit Charge");
 		tfAdjstCharge = new GERPNumberField("Adjust. Charge");
-		tfHalfUnitCharge = new GERPNumberField("Half Unit Charge");
+		tfHalfUnitCharge = new GERPNumberField("Peak Hours Unit");
+		tfCHours = new GERPNumberField("Consumption Hours");
 		taMachineRunDetails = new TextArea("Machine Run Details");
 		taMachineRunDetails.setWidth("96%");
 		taRemarks = new TextArea("Remarks");
@@ -146,7 +149,7 @@ public class EBReading extends BaseTransUI {
 		flcol1.addComponent(tfC3);
 		flcol1.addComponent(tfC4);
 		flcol1.addComponent(tfC5);
-		flcol2.addComponent(tfKvaHr);
+		flcol2.addComponent(tfMainKwHr);
 		flcol2.addComponent(tfR1);
 		flcol2.addComponent(tfR2);
 		flcol2.addComponent(tfR3);
@@ -154,11 +157,13 @@ public class EBReading extends BaseTransUI {
 		flcol2.addComponent(tfR5);
 		flcol3.addComponent(tfRkvaHrCag);
 		flcol3.addComponent(tfLead);
+		flcol3.addComponent(tfKvaHr);
 		flcol3.addComponent(tfPfc);
-		flcol3.addComponent(tfPerDayUnit);
-		flcol3.addComponent(tfPf);
-		flcol3.addComponent(tfUnitCharge);
-		flcol4.addComponent(tfMainKwHr);
+		flcol3.addComponent(tfCHours);
+		flcol3.addComponent(tfKvaMdr);
+		flcol4.addComponent(tfPerDayUnit);
+		flcol4.addComponent(tfPf);
+		flcol4.addComponent(tfUnitCharge);
 		flcol4.addComponent(tfAdjstCharge);
 		flcol4.addComponent(tfHalfUnitCharge);
 		flcol4.addComponent(cbStatus);
@@ -282,6 +287,12 @@ public class EBReading extends BaseTransUI {
 			if (ebReadingDM.getRemarks() != null) {
 				taRemarks.setValue(ebReadingDM.getRemarks());
 			}
+			if (ebReadingDM.getConsHours() != null) {
+				tfCHours.setValue(ebReadingDM.getConsHours().toString());
+			}
+			if (ebReadingDM.getKvaMdr() != null) {
+				tfKvaMdr.setValue(ebReadingDM.getKvaMdr().toString());
+			}
 			cbStatus.setValue(ebReadingDM.getStatus());
 		}
 	}
@@ -353,6 +364,12 @@ public class EBReading extends BaseTransUI {
 		}
 		if (tfHalfUnitCharge.getValue() != null) {
 			ebReadingDM.setHalfUnitCharge(new BigDecimal(tfHalfUnitCharge.getValue()));
+		}
+		if (tfCHours.getValue() != null) {
+			ebReadingDM.setConsHours(new BigDecimal(tfCHours.getValue()));
+		}
+		if (tfKvaMdr.getValue() != null) {
+			ebReadingDM.setKvaMdr(new BigDecimal(tfKvaMdr.getValue()));
 		}
 		ebReadingDM.setMachineRunDetails(taMachineRunDetails.getValue());
 		ebReadingDM.setRemarks(taRemarks.getValue());
@@ -441,7 +458,10 @@ public class EBReading extends BaseTransUI {
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		dfRefDate.setValue(null);
-		tfC1.setValue("0");
+		
+		EbReadingDM ebReadingDM=serviceEBReading.getEbReadingDetailList(null, null, null, "Y").get(0);
+		
+		tfC1.setValue(ebReadingDM.getC1().toString());
 		tfC2.setValue("0");
 		tfC3.setValue("0");
 		tfC4.setValue("0");
@@ -452,6 +472,8 @@ public class EBReading extends BaseTransUI {
 		tfR3.setValue("0");
 		tfR4.setValue("0");
 		tfR5.setValue("0");
+		tfKvaMdr.setValue("0");
+		tfCHours.setValue("");
 		tfRkvaHrCag.setValue("0");
 		tfLead.setValue("0");
 		tfPfc.setValue("0");

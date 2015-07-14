@@ -101,6 +101,7 @@ public class Designation extends BaseUI {
 		// Job ClassName combobox
 		cbJobClsName = new GERPComboBox("Job Classification Name");
 		cbJobClsName.setItemCaptionPropertyId("clasficatnName");
+		cbJobClsName.setVisible(false);
 		loadJobClassification();
 		// build search layout
 		hlSearchLayout = new GERPAddEditHLayout();

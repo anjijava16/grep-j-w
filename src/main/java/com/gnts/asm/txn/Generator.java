@@ -79,6 +79,7 @@ public class Generator extends BaseTransUI {
 	private String username;
 	private Long companyid;
 	private int recordCnt = 0;
+	private int timeCnt = 0;
 	
 	// Constructor received the parameters from Login UI class
 	public Generator() {
@@ -95,6 +96,7 @@ public class Generator extends BaseTransUI {
 		// EC Request Components Definition
 		tfDiselOpenBal = new GERPTextField("Disel Open Balance");
 		tfGenTotalTime = new GERPTextField("Generator Total time");
+		tfGenTotalTime.setValue("0");
 		tfDiselConsBal = new TextField("Disel Consuption Balance");
 		tfDiselConsBal.setReadOnly(false);
 		tfVolts = new GERPTextField("Volts");
@@ -142,7 +144,16 @@ public class Generator extends BaseTransUI {
 				getTotLtrCost();
 			}
 		});
-		tfTotalTime = new GERPTextField("Total Time");
+		tfTotalTime = new GERPTextField("Session Run Time");
+	/*	tfTotalTime.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getTotalTime();
+			}
+		});*/
 		tfTotalCost = new GERPTextField("Total Cost");
 		tfGenStartTime = new GERPTimeField("Start Time");
 		tfGenStartTime.addValueChangeListener(new ValueChangeListener() {
@@ -162,6 +173,7 @@ public class Generator extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				getTotalHours();
+				getTotalTime();
 			}
 		});
 		taRunningMachineDtl = new TextArea("Running Machine Details");
@@ -206,6 +218,24 @@ public class Generator extends BaseTransUI {
 		btnPrint.setVisible(true);
 	}
 	
+	private void getTotalTime() {
+		// TODO Auto-generated method stub
+		if (tfTotalTime.getValue() != null) {
+			if (timeCnt == 0) {
+				tfGenTotalTime.setValue((new BigDecimal(tfGenTotalTime.getValue())).add(
+						new BigDecimal(tfTotalTime.getValue())).toString());
+				timeCnt++;
+			} else {
+				tfGenTotalTime.setValue("0.0");
+				tfGenTotalTime.setValue((new BigDecimal(tfGenTotalTime.getValue())).add(
+						new BigDecimal(tfTotalTime.getValue())).toString());
+				timeCnt++;
+			}
+		} else {
+			tfGenTotalTime.setValue("0.0");
+		}
+	}
+	
 	private void getTotalHours() {
 		// TODO Auto-generated method stub
 		if (tfGenStartTime.getValue() != null && tfGenStopTime.getValue() != null) {
@@ -228,6 +258,7 @@ public class Generator extends BaseTransUI {
 			tfDiselPurLtrs.setValue("0");
 		}
 	}
+	
 	private void getTotLtrCost() {
 		// TODO Auto-generated method stub
 		if (tfOneLtrCost.getValue() != null && tfDiselConsBal.getValue() != null) {
@@ -239,6 +270,7 @@ public class Generator extends BaseTransUI {
 			tfTotalCost.setValue("0");
 		}
 	}
+	
 	private void getDiselConsBal() {
 		// TODO Auto-generated method stub
 		if (tfDiselOpenBal.getValue() != null && tfDiselCloseBal.getValue() != null) {
@@ -246,7 +278,8 @@ public class Generator extends BaseTransUI {
 			tfDiselConsBal.setReadOnly(false);
 			tfDiselConsBal.setValue((new BigDecimal(tfDiselOpenBal.getValue())).subtract(
 					new BigDecimal(tfDiselCloseBal.getValue())).toString());
-		//	tfLtrPerHours.setValue((new BigDecimal(tfDiselConsBal.getValue())).divide(new BigDecimal(tfTotalTime.getValue().trim().length())).toString());
+			// tfLtrPerHours.setValue((new BigDecimal(tfDiselConsBal.getValue())).divide(new
+			// BigDecimal(tfTotalTime.getValue().trim().length())).toString());
 		} else {
 			tfDiselConsBal.setValue("0");
 			tfLtrPerHours.setValue("0");
@@ -363,6 +396,7 @@ public class Generator extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header
 	private void editECRequest() {
+		timeCnt = 0;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
@@ -418,6 +452,7 @@ public class Generator extends BaseTransUI {
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
+		timeCnt = 0;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... "); //
 		GeneratorDM generatorDM = new GeneratorDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
@@ -469,6 +504,7 @@ public class Generator extends BaseTransUI {
 	
 	@Override
 	protected void addDetails() {
+		timeCnt = 0;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		// cbclient.setRequired(true);
 		hllayout.removeAllComponents();
@@ -480,6 +516,7 @@ public class Generator extends BaseTransUI {
 	
 	@Override
 	protected void editDetails() {
+		timeCnt = 0;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		hllayout.removeAllComponents();
 		vlSrchRsltContainer.setVisible(true);

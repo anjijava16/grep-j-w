@@ -16,23 +16,14 @@ package com.gnts.sms.txn;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
-import com.gnts.base.domain.mst.EmployeeDM;
-import com.gnts.base.domain.mst.ProductDM;
-import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.erputil.components.GERPButton;
-import com.gnts.erputil.components.GERPComboBox;
-import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.sms.domain.txn.PurchasePODtlDM;
 import com.gnts.sms.domain.txn.SmsCommentsDM;
-import com.gnts.sms.domain.txn.VendorBillDtlDM;
 import com.gnts.sms.service.txn.SmsCommentsService;
 import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -41,13 +32,11 @@ import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
@@ -58,25 +47,21 @@ public class SmsComments implements ClickListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	private SmsCommentsService serviceComment = (SmsCommentsService) SpringContextHelper.getBean("smsComments");
-	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private Table tblClntComments;
 	private Long companyId;
 	private Button btnComments, btnEdit;
-	private FormLayout flMainform1, flMainform2, flMainform3, flMainform4;
+	private FormLayout flMainform1, flMainform2, flMainform4;
 	private String userName, strWidth = "160px";
 	private int total = 0;
-	List<SmsCommentsDM> commentList = new ArrayList<SmsCommentsDM>();
-	VerticalLayout vlTableForm = new VerticalLayout();
+	public List<SmsCommentsDM> commentList = new ArrayList<SmsCommentsDM>();
+	public VerticalLayout vlTableForm = new VerticalLayout();
 	private TextArea taComments;
-	private TextField taUserAction;
-	private ComboBox cbCommenyBy;
-	Long commentBy;
+	public Long commentBy;
 	private BeanItemContainer<SmsCommentsDM> beanComment = null;
 	private Logger logger = Logger.getLogger(SmsCommentsDM.class);
 	private Button btnSave = new GERPButton("Add", "addbt", this);
-	private Long comentsId, enquiryId, PurchaseQuoteId, PoId, invoiceID, salesEnqId, salesQuoteid, billID, salesPoid,
-			respId, empId;
-	String status;
+	private Long comentsId, enquiryId, empId;
+	public String status;
 	
 	public SmsComments(VerticalLayout vlTableForm, Long commentId, Long companyId, Long PurEnquiryId, Long purQuoteID,
 			Long poId, Long receiptId, Long billId, Long SalesEnqId, Long salesQuoteId, Long salesPoId, Long InvoiceId,
@@ -86,15 +71,6 @@ public class SmsComments implements ClickListener {
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		comentsId = commentId;
 		enquiryId = PurEnquiryId;
-		PurchaseQuoteId = purQuoteID;
-		PoId = poId;
-		respId = receiptId;
-		billID = billId;
-		salesEnqId = SalesEnqId;
-		salesQuoteid = salesQuoteId;
-		salesPoid = salesPoId;
-		invoiceID = InvoiceId;
-		status = status;
 		buildview(vlTableForm);
 	}
 	
@@ -127,25 +103,11 @@ public class SmsComments implements ClickListener {
 		taComments.setRequired(true);
 		taComments.setWidth(strWidth);
 		taComments.setHeight("50px");
-		// taUserAction = new GERPTextField("User Action");
-		// cbCommenyBy = new GERPComboBox("Commend By");
-		// cbCommenyBy.setRequired(true);
-		// cbCommenyBy.setItemCaptionPropertyId("firstname");
-		// loadEmpList();
-		/**
-		 * add fields to header layout
-		 */
-		/**
-		 * add fields to form Layout
-		 */
 		flMainform1 = new FormLayout();
 		flMainform2 = new FormLayout();
-		flMainform3 = new FormLayout();
 		flMainform4 = new FormLayout();
 		flMainform1.setSpacing(true);
 		flMainform1.addComponent(taComments);
-		// flMainform2.addComponent(taUserAction);
-		// flMainform3.addComponent(cbCommenyBy);
 		flMainform4.addComponent(btnSave);
 		/**
 		 * declare the table and add in panel
@@ -177,7 +139,6 @@ public class SmsComments implements ClickListener {
 		HorizontalLayout hluserInput = new HorizontalLayout();
 		hluserInput.addComponent(flMainform1);
 		hluserInput.addComponent(flMainform2);
-		// hluserInput.addComponent(flMainform3);
 		hluserInput.addComponent(flMainform4);
 		hluserInput.setMargin(true);
 		hluserInput.setSpacing(true);
@@ -209,20 +170,6 @@ public class SmsComments implements ClickListener {
 			if (editcomment.getComments() != null) {
 				taComments.setValue(editcomment.getComments());
 			}
-			/*
-			 * if (editcomment.getUserActiopn() != null) { taUserAction.setValue(editcomment.getUserActiopn()); }
-			 */
-			// Long uom = editcomment.getCommentBy();
-			// Collection<?> uomid = cbCommenyBy.getItemIds();
-			// for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
-			// Object itemId = (Object) iterator.next();
-			// BeanItem<?> item = (BeanItem<?>) cbCommenyBy.getItem(itemId);
-			// // Get the actual bean and use the data
-			// EmployeeDM st = (EmployeeDM) item.getBean();
-			// if (uom != null && uom.equals(st.getEmployeeid())) {
-			// cbCommenyBy.setValue(itemId);
-			// }
-			// }
 		}
 	}
 	
@@ -236,27 +183,18 @@ public class SmsComments implements ClickListener {
 			Long receiptId, Long billId, Long SalesEnqId, Long salesQuoteId, Long salesPoId, Long InvoiceId,
 			Long commenedBy) {
 		if (fromdb) {
-			// Long empfirst = null;
-			// if (cbCommenyBy.getValue() != null) {
-			// empfirst = ((Long) cbCommenyBy.getValue());
-			// }
 			commentList = serviceComment.getSmsCommentsList(commentId, companyId, PurEnquiryId, purQuoteID, poId,
 					receiptId, billId, SalesEnqId, salesQuoteId, salesPoId, InvoiceId, null);
-			System.out.println("loadsrchoppertunity---->" + commentId);
 		}
 		try {
 			tblClntComments.removeAllItems();
 			total = commentList.size();
-			System.out.println("LISTSIZE---1->" + commentList.size());
 			beanComment = new BeanItemContainer<SmsCommentsDM>(SmsCommentsDM.class);
 			beanComment.addAll(commentList);
 			tblClntComments.setSelectable(true);
 			tblClntComments.setContainerDataSource(beanComment);
 			tblClntComments.setColumnAlignment("commnetId", Align.RIGHT);
-			/*
-			 * tblClntComments.addItem(taComments); tblClntComments.addItem(taUserAction);
-			 * tblClntComments.addItem(cbCommenyBy);
-			 */tblClntComments.setVisibleColumns(new Object[] { "comments", "userActiopn", "empName", "commentDate",
+			tblClntComments.setVisibleColumns(new Object[] { "comments", "userActiopn", "empName", "commentDate",
 					"lastUpdtDate", "lastUpdatedBy" });
 			tblClntComments.setColumnHeaders(new String[] { "Comment", "User Action", "Comment By", "Comment Date",
 					"Last Updated Date", "Last Updated By" });
@@ -268,35 +206,8 @@ public class SmsComments implements ClickListener {
 		}
 	}
 	
-	/**
-	 * resetFields()->this method is used for reset the add/edit UI components
-	 */
-	private void setTableProperties() {
-		tblClntComments.setColumnAlignment("commentId", Align.RIGHT);
-		tblClntComments.addItemClickListener(new ItemClickListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (tblClntComments.isSelected(event.getItemId())) {
-					btnEdit.setEnabled(false);
-				} else {
-					btnEdit.setEnabled(true);
-				}
-				if (tblClntComments.isSelected(event.getItemId())) {
-					btnComments.setEnabled(true);
-				} else {
-					btnComments.setEnabled(false);
-				}
-			}
-		});
-	}
-	
 	public void resetfields() {
 		taComments.setValue("");
-		// cbCommenyBy.setValue(null);
-		// taUserAction.setValue("");
-		// commentList = new ArrayList<SmsCommentsDM>();
 	}
 	
 	/**
@@ -333,123 +244,92 @@ public class SmsComments implements ClickListener {
 		}
 	}
 	
-	// load employee names
-	// public void loadEmpList() {
-	// try {
-	// List<EmployeeDM> empList = serviceemployee.getEmployeeList(null, null, null, "Active", companyId, null, null,
-	// null, null, "F");
-	// BeanItemContainer<EmployeeDM> beanProduct = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-	// beanProduct.addAll(empList);
-	// cbCommenyBy.setContainerDataSource(beanProduct);
-	// }
-	// catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
-	public void saveEnquiry(Long PuchaseEnqId, String status) {
-		System.out.println("saveid1-->>" + PuchaseEnqId);
+	public void saveEnquiry(Long puchaseEnqId, String status) {
 		@SuppressWarnings("unchecked")
 		Collection<SmsCommentsDM> itemIds = (Collection<SmsCommentsDM>) tblClntComments.getVisibleItemIds();
 		for (SmsCommentsDM savecomments : (Collection<SmsCommentsDM>) itemIds) {
-			savecomments.setPurEnquiryId(PuchaseEnqId);
+			savecomments.setPurEnquiryId(puchaseEnqId);
 			savecomments.setUserActiopn(status);
-			System.out.println("saveid2-->>" + PuchaseEnqId);
 			serviceComment.saveOrUpdateComments(savecomments);
 		}
 	}
 	
-	public void saveQuote(Long PurchaseQuoteId, String status) {
-		System.out.println("saveid1-->>" + PurchaseQuoteId);
+	public void saveQuote(Long purchaseQuoteId, String status) {
 		@SuppressWarnings("unchecked")
 		Collection<SmsCommentsDM> itemIds = (Collection<SmsCommentsDM>) tblClntComments.getVisibleItemIds();
 		for (SmsCommentsDM saveQuote : (Collection<SmsCommentsDM>) itemIds) {
-			saveQuote.setPurQuoteID(PurchaseQuoteId);
+			saveQuote.setPurQuoteID(purchaseQuoteId);
 			saveQuote.setUserActiopn(status);
-			System.out.println("saveid2-->>" + PurchaseQuoteId);
 			serviceComment.saveOrUpdateComments(saveQuote);
 		}
 	}
 	
-	public void savePurchaseOrder(Long PoId, String status) {
-		System.out.println("saveid1-->>" + PoId);
+	public void savePurchaseOrder(Long poId, String status) {
 		@SuppressWarnings("unchecked")
 		Collection<SmsCommentsDM> itemIds = (Collection<SmsCommentsDM>) tblClntComments.getVisibleItemIds();
 		for (SmsCommentsDM savepo : (Collection<SmsCommentsDM>) itemIds) {
-			savepo.setPoId(PoId);
+			savepo.setPoId(poId);
 			savepo.setUserActiopn(status);
-			System.out.println("saveid2-->>" + PoId);
 			serviceComment.saveOrUpdateComments(savepo);
 		}
 	}
 	
 	public void saveInvoice(Long invoiceID, String status) {
-		System.out.println("saveid1-->>" + invoiceID);
 		@SuppressWarnings("unchecked")
 		Collection<SmsCommentsDM> itemIds = (Collection<SmsCommentsDM>) tblClntComments.getVisibleItemIds();
 		for (SmsCommentsDM saveInvoice : (Collection<SmsCommentsDM>) itemIds) {
 			saveInvoice.setInvoiceId(invoiceID);
 			saveInvoice.setUserActiopn(status);
-			System.out.println("saveid2-->>" + invoiceID);
 			serviceComment.saveOrUpdateComments(saveInvoice);
 		}
 	}
 	
 	public void saveSalesEnqId(Long salesEnqId, String status) {
-		System.out.println("saveid1-->>" + salesEnqId);
 		@SuppressWarnings("unchecked")
 		Collection<SmsCommentsDM> itemIds = (Collection<SmsCommentsDM>) tblClntComments.getVisibleItemIds();
 		for (SmsCommentsDM saveSalesEnq : (Collection<SmsCommentsDM>) itemIds) {
 			saveSalesEnq.setSalesEnqId(salesEnqId);
 			saveSalesEnq.setUserActiopn(status);
-			System.out.println("saveid2-->>" + salesEnqId);
 			serviceComment.saveOrUpdateComments(saveSalesEnq);
 		}
 	}
 	
 	public void saveSaleQuote(Long salesQuoteid, String status) {
-		System.out.println("saveid1-->>" + salesQuoteid);
 		@SuppressWarnings("unchecked")
 		Collection<SmsCommentsDM> itemIds = (Collection<SmsCommentsDM>) tblClntComments.getVisibleItemIds();
 		for (SmsCommentsDM saveSalesQuote : (Collection<SmsCommentsDM>) itemIds) {
 			saveSalesQuote.setSalesQuoteId(salesQuoteid);
 			saveSalesQuote.setUserActiopn(status);
-			System.out.println("saveid2-->>" + salesQuoteid);
 			serviceComment.saveOrUpdateComments(saveSalesQuote);
 		}
 	}
 	
 	public void saveSalesPo(Long salesPoid, String status) {
-		System.out.println("saveid1-->>" + billID);
 		@SuppressWarnings("unchecked")
 		Collection<SmsCommentsDM> itemIds = (Collection<SmsCommentsDM>) tblClntComments.getVisibleItemIds();
 		for (SmsCommentsDM saveVendorBill : (Collection<SmsCommentsDM>) itemIds) {
 			saveVendorBill.setSalesPoId(salesPoid);
 			saveVendorBill.setUserActiopn(status);
-			System.out.println("saveid2-->>" + billID);
 			serviceComment.saveOrUpdateComments(saveVendorBill);
 		}
 	}
 	
 	public void saveReceipt(Long respId, String status) {
-		System.out.println("saveid1-->>" + respId);
 		@SuppressWarnings("unchecked")
 		Collection<SmsCommentsDM> itemIds = (Collection<SmsCommentsDM>) tblClntComments.getVisibleItemIds();
 		for (SmsCommentsDM saveReceipt : (Collection<SmsCommentsDM>) itemIds) {
 			saveReceipt.setReceiptId(respId);
 			saveReceipt.setUserActiopn(status);
-			System.out.println("saveid2-->>" + respId);
 			serviceComment.saveOrUpdateComments(saveReceipt);
 		}
 	}
 	
 	public void saveVendorBill(Long billID, String status) {
-		System.out.println("saveid1-->>" + billID);
 		@SuppressWarnings("unchecked")
 		Collection<SmsCommentsDM> itemIds = (Collection<SmsCommentsDM>) tblClntComments.getVisibleItemIds();
 		for (SmsCommentsDM saveVendorBill : (Collection<SmsCommentsDM>) itemIds) {
 			saveVendorBill.setBillId(billID);
 			saveVendorBill.setUserActiopn(status);
-			System.out.println("saveid2-->>" + billID);
 			serviceComment.saveOrUpdateComments(saveVendorBill);
 		}
 	}
@@ -459,14 +339,10 @@ public class SmsComments implements ClickListener {
 		try {
 			taComments.validate();
 			taComments.setComponentError(null);
-			/*
-			 * cbCommenyBy.validate(); cbCommenyBy.setComponentError(null);
-			 */
 		}
 		catch (Exception e) {
 			logger.info("validaAll :comments is empty--->" + e);
 			taComments.setComponentError(new UserError("Enter Comments"));
-			// cbCommenyBy.setComponentError(new UserError("Select CommendBy"));
 			valid = false;
 		}
 		return valid;

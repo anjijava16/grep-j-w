@@ -102,7 +102,7 @@ public class WorkOrder extends BaseTransUI {
 	private SmsPOHdrService servicePurchaseOrdHdr = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
 	private SmsPODtlService servicesmspodtl = (SmsPODtlService) SpringContextHelper.getBean("SmsPODtl");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
-	VerticalLayout vlCommendForm = new VerticalLayout();
+	private VerticalLayout vlCommendForm = new VerticalLayout();
 	// form layout for input controls for Work Order Header
 	private FormLayout flOdrHdrColumn1, flOdrHdrColumn2, flOdrHdrColumn3, flOdrHdrColumn4, flOdrHdrColumn5;
 	// form layout for input controls for Work Order Details
@@ -125,7 +125,7 @@ public class WorkOrder extends BaseTransUI {
 	private BeanItemContainer<WorkOrderHdrDM> beanWrkOdrHdr = null;
 	private BeanItemContainer<WorkOrderDtlDM> beanWrkOdrDtl = new BeanItemContainer<WorkOrderDtlDM>(
 			WorkOrderDtlDM.class);
-	List<WorkOrderDtlDM> workOdrDtlList;
+	private List<WorkOrderDtlDM> workOdrDtlList;
 	// local variables declaration
 	private String username;
 	private Long companyid, EmployeeId, moduleId, branchID, appScreenId, roleId;
@@ -143,8 +143,8 @@ public class WorkOrder extends BaseTransUI {
 	private static Logger logger = Logger.getLogger(WorkOrder.class);
 	private Comments comment;
 	private Long commentby;
-	String name = "";
-	public Button btnDtlWrkOrd = new GERPButton("Delete", "delete", this);
+	private String name = "";
+	private Button btnDtlWrkOrd = new GERPButton("Delete", "delete", this);
 	private GERPTextField tfCustomField1 = new GERPTextField("Part Number");
 	private GERPTextField tfCustomField2 = new GERPTextField("Drawing Number");
 	
@@ -167,7 +167,6 @@ public class WorkOrder extends BaseTransUI {
 	
 	private void buildView() {
 		workordtype.addItems("Self", "Enquiry");
-		workordtype.setStyleName("displayblock");
 		workordtype.setValue("Enquiry");
 		workordtype.setImmediate(true);
 		workordtype.addValueChangeListener(new ValueChangeListener() {

@@ -73,7 +73,6 @@ import com.gnts.sms.domain.txn.SmsEnquirySpecDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsEnquiryDtlService;
 import com.gnts.sms.service.txn.SmsEnquirySpecService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -123,9 +122,8 @@ public class SmsEnquiry extends BaseTransUI {
 	private ClientCategoryService serviceClientCat = (ClientCategoryService) SpringContextHelper
 			.getBean("clientCategory");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
-	List<SmsEnqHdrDM> enqhdrList = new ArrayList<SmsEnqHdrDM>();
-	List<SmsEnquiryDtlDM> enqdtlList = new ArrayList<SmsEnquiryDtlDM>();
-	List<SmsEnquirySpecDM> enqspecList = new ArrayList<SmsEnquirySpecDM>();
+	private List<SmsEnquiryDtlDM> enqdtlList = new ArrayList<SmsEnquiryDtlDM>();
+	private List<SmsEnquirySpecDM> enqspecList = new ArrayList<SmsEnquirySpecDM>();
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(SmsEnquiry.class);
 	// User Input Fields for Sales Enquiry Header
@@ -136,8 +134,6 @@ public class SmsEnquiry extends BaseTransUI {
 	private Button btnNewClient = new Button("");
 	private ComboBox cbEnquiryStatus = new GERPComboBox("Status", BASEConstants.T_SMS_ENQUIRY_HDR,
 			BASEConstants.PE_STATUS);
-	private BeanContainer<Long, ClientDM> beanclientDM = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private BeanItemContainer<SmsEnqHdrDM> beanhdr = null;
 	// User Input Fields for Sales Enquiry Detail
 	private ComboBox cdProduct, cdenqdtlstatus;
@@ -145,7 +141,7 @@ public class SmsEnquiry extends BaseTransUI {
 	private TextArea tarequmentdesc, tacustproddesc;
 	private GERPTextField tfCustomField1 = new GERPTextField("Part Number");
 	private GERPTextField tfCustomField2 = new GERPTextField("Drawing Number");
-	private Table tbldtl = new GERPTable();
+	private Table tblEnqDetails = new GERPTable();
 	private BeanItemContainer<SmsEnquiryDtlDM> beandtl = null;
 	// commom data
 	private Window mywindow = new Window("Add New Client");
@@ -165,11 +161,11 @@ public class SmsEnquiry extends BaseTransUI {
 	private Table tblspec = new GERPTable();
 	private BeanItemContainer<SmsEnquirySpecDM> beanpec = null;
 	// User Input Components for Sales Enquire Details
-	public Button btndetaildelete = new GERPButton("Delete", "delete", this);
-	public Button btndetailadd = new GERPButton("Add", "addbtn", this);
+	private Button btndetaildelete = new GERPButton("Delete", "delete", this);
+	private Button btndetailadd = new GERPButton("Add", "addbtn", this);
 	// User Input Components for Sales Enquire Specification
-	public Button btnaddspec = new GERPButton("Add", "addbtn", this);
-	public Button btnspecdelete = new GERPButton("Delete", "delete", this);
+	private Button btnaddspec = new GERPButton("Add", "addbtn", this);
+	private Button btnspecdelete = new GERPButton("Delete", "delete", this);
 	// form layout for input controls Sales Enquiry Header
 	private FormLayout flcol1, flcol2, flcol3, flcol4, flcol5;
 	// form layout for input controls Sales Enquiry Deatil
@@ -191,17 +187,15 @@ public class SmsEnquiry extends BaseTransUI {
 	private HorizontalLayout hlspec = new HorizontalLayout();
 	private VerticalLayout vlspec = new VerticalLayout();
 	// Parent layout for all the input controls Sms Comments
-	VerticalLayout vlTableForm = new VerticalLayout();
+	private VerticalLayout vlTableForm = new VerticalLayout();
 	// local variables declaration
-	@SuppressWarnings("unused")
-	private Long enquiryId, enquirydtlid;
+	private Long enquiryId;
 	private String username;
 	private Long companyid, moduleId;
 	private int recordCnt = 0;
 	private SmsComments comments;
 	private String status;
-	@SuppressWarnings("unused")
-	private Long branchId, EmployeeId, roleId, appScreenId;
+	private Long branchId, employeeId;
 	private TabSheet dtlTab;
 	
 	// Constructor received the parameters from Login UI class
@@ -210,10 +204,8 @@ public class SmsEnquiry extends BaseTransUI {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
-		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
-		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside SmsEnquiry() constructor");
 		buildview();
@@ -357,13 +349,13 @@ public class SmsEnquiry extends BaseTransUI {
 		});
 		btndetaildelete.setEnabled(false);
 		// Click Listener for Enquire Detail Tale
-		tbldtl.addItemClickListener(new ItemClickListener() {
+		tblEnqDetails.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tbldtl.isSelected(event.getItemId())) {
-					tbldtl.setImmediate(true);
+				if (tblEnqDetails.isSelected(event.getItemId())) {
+					tblEnqDetails.setImmediate(true);
 					btndetailadd.setCaption("Add");
 					btndetailadd.setStyleName("savebt");
 					btndetaildelete.setEnabled(false);
@@ -464,8 +456,6 @@ public class SmsEnquiry extends BaseTransUI {
 				saveNewClient();
 			}
 		});
-		
-		
 		try {
 			btnAdd.setVisible(true);
 			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
@@ -489,8 +479,8 @@ public class SmsEnquiry extends BaseTransUI {
 	
 	private void deleteDetail() {
 		SmsEnquiryDtlDM save = new SmsEnquiryDtlDM();
-		if (tbldtl.getValue() != null) {
-			save = beandtl.getItem(tbldtl.getValue()).getBean();
+		if (tblEnqDetails.getValue() != null) {
+			save = beandtl.getItem(tblEnqDetails.getValue()).getBean();
 			enqdtlList.remove(save);
 			enqDtlresetFields();
 			loadEnquiryDetails(false);
@@ -578,9 +568,9 @@ public class SmsEnquiry extends BaseTransUI {
 		hldtllayout.addComponent(fldtl4);
 		hldtllayout.addComponent(fldtl5);
 		vldtl.addComponent(GERPPanelGenerator.createPanel(hldtllayout));
-		vldtl.addComponent(tbldtl);
-		tbldtl.setWidth("1188px");
-		tbldtl.setPageLength(6);
+		vldtl.addComponent(tblEnqDetails);
+		tblEnqDetails.setWidth("1188px");
+		tblEnqDetails.setPageLength(6);
 		// tbldtl.setStyleName(Runo.TABLE_SMALL);
 		loadEnquiryDetails(true);
 		vldtl.setWidth("100%");
@@ -748,7 +738,7 @@ public class SmsEnquiry extends BaseTransUI {
 	// Load Sales Enquiry Dateil
 	private void loadEnquiryDetails(Boolean fromdb) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tbldtl.removeAllItems();
+		tblEnqDetails.removeAllItems();
 		logger.info("Company ID : "
 				+ companyid
 				+ " | User Name : "
@@ -771,12 +761,12 @@ public class SmsEnquiry extends BaseTransUI {
 		beandtl.addAll(enqdtlList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the SMSENQUIRYDTL. result set");
-		tbldtl.setContainerDataSource(beandtl);
-		tbldtl.setVisibleColumns(new Object[] { "prodname","custproddesc","enquiryqty", "uom", "customField1", "customField2",
-				"enquitydtlstatus", "lastupdateddt", "lastupdatedby" });
-		tbldtl.setColumnHeaders(new String[] { "Product Name","Description", "Enquiry Qty", "UOM", "Part No.", "Drg. No", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tbldtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		tblEnqDetails.setContainerDataSource(beandtl);
+		tblEnqDetails.setVisibleColumns(new Object[] { "prodname", "custproddesc", "enquiryqty", "uom", "customField1",
+				"customField2", "enquitydtlstatus", "lastupdateddt", "lastupdatedby" });
+		tblEnqDetails.setColumnHeaders(new String[] { "Product Name", "Description", "Enquiry Qty", "UOM", "Part No.",
+				"Drg. No", "Status", "Last Updated Date", "Last Updated By" });
+		tblEnqDetails.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
 	
 	// Load Sales Enquiry Specification
@@ -808,10 +798,9 @@ public class SmsEnquiry extends BaseTransUI {
 	// Load Branch List
 	private void loadBranchList() {
 		try {
-			List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
 			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanbranch.setBeanIdProperty("branchId");
-			beanbranch.addAll(branchList);
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
@@ -822,23 +811,22 @@ public class SmsEnquiry extends BaseTransUI {
 	// Load Client List
 	private void loadSmsClientList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
-		List<ClientDM> clientlist = serviceClients.getClientDetails(companyid, null, null, null, null, null, null,
-				null, "Active", "P");
-		beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
+		BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
 		beanclientDM.setBeanIdProperty("clientId");
-		beanclientDM.addAll(clientlist);
+		beanclientDM.addAll(serviceClients.getClientDetails(companyid, null, null, null, null, null, null, null,
+				"Active", "P"));
 		cbClient.setContainerDataSource(beanclientDM);
 	}
 	
 	// Load Mod_of_Enquiry List
-	public void loadmodofenquiryList() {
+	private void loadmodofenquiryList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"SM_ENQMOD");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"SM_ENQMOD"));
 			cbmodeofenquiry.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -847,14 +835,14 @@ public class SmsEnquiry extends BaseTransUI {
 	}
 	
 	// Load Enquiry Specification List
-	public void loadspeccodeList() {
+	private void loadspeccodeList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"SM_SALSPEC");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"SM_SALSPEC"));
 			tfspeccode.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -863,12 +851,10 @@ public class SmsEnquiry extends BaseTransUI {
 	}
 	
 	// Load Product List
-	public void loadProduct() {
+	private void loadProduct() {
 		try {
-			List<ProductDM> ProductList = serviceProduct.getProductList(companyid, null, null, null, "Active", null,
-					null, "P");
 			BeanItemContainer<ProductDM> beanProduct = new BeanItemContainer<ProductDM>(ProductDM.class);
-			beanProduct.addAll(ProductList);
+			beanProduct.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "P"));
 			cdProduct.setContainerDataSource(beanProduct);
 		}
 		catch (Exception e) {
@@ -880,10 +866,7 @@ public class SmsEnquiry extends BaseTransUI {
 	private void editSmsEnquiry() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected enquiryId. Id -> "
-				+ enquiryId);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			SmsEnqHdrDM enqhdrList1 = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			enquiryId = enqhdrList1.getEnquiryId();
 			cbBranch.setValue(enqhdrList1.getBranchId());
@@ -916,12 +899,8 @@ public class SmsEnquiry extends BaseTransUI {
 	private void editSmsDetail() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hldtllayout.setVisible(true);
-		Item sltedRcd = tbldtl.getItem(tbldtl.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected enquiryId-> "
-				+ enquiryId);
-		if (sltedRcd != null) {
-			SmsEnquiryDtlDM enqdtllist1 = beandtl.getItem(tbldtl.getValue()).getBean();
-			// cdproduct.setValue(cdproduct.getItemIds().iterator().next());
+		if (tblEnqDetails.getValue() != null) {
+			SmsEnquiryDtlDM enqdtllist1 = beandtl.getItem(tblEnqDetails.getValue()).getBean();
 			Long uom = enqdtllist1.getProductid();
 			Collection<?> uomid = cdProduct.getItemIds();
 			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
@@ -933,7 +912,6 @@ public class SmsEnquiry extends BaseTransUI {
 					cdProduct.setValue(itemId);
 				}
 			}
-			// cdproduct.setValue(enqdtllist1.getProdname().toString());
 			if (enqdtllist1.getEnquiryqty() != null) {
 				tfEnqQty.setValue(enqdtllist1.getEnquiryqty().toString());
 			}
@@ -960,10 +938,7 @@ public class SmsEnquiry extends BaseTransUI {
 	private void editSmsEnqspecification() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hldtllayout.setVisible(true);
-		Item sltedRcd = tblspec.getItem(tblspec.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected enquiryId. Id -> "
-				+ enquiryId);
-		if (sltedRcd != null) {
+		if (tblspec.getValue() != null) {
 			SmsEnquirySpecDM enqspecList = beanpec.getItem(tblspec.getValue()).getBean();
 			cbspecstatus.setValue(enqspecList.getEnqryspecstatus());
 			tfspeccode.setValue(enqspecList.getSpeccode());
@@ -1006,38 +981,38 @@ public class SmsEnquiry extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		// try {
 		validationForEnqDetails();
-		SmsEnqHdrDM hdrobj = new SmsEnqHdrDM();
+		SmsEnqHdrDM smsEnqHdrDM = new SmsEnqHdrDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			hdrobj = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			hdrobj.setEnquiryNo(tfEnquiryNo.getValue());
+			smsEnqHdrDM = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			smsEnqHdrDM.setEnquiryNo(tfEnquiryNo.getValue());
 		} else {
-			hdrobj.setEnquiryNo(SerialNumberGenerator.generateEnquiryNumber(companyid, branchId, moduleId,
+			smsEnqHdrDM.setEnquiryNo(SerialNumberGenerator.generateEnquiryNumber(companyid, branchId, moduleId,
 					"SM_ENQRYNO", (Long) cbClient.getValue()));
 		}
-		hdrobj.setCompanyId(companyid);
-		hdrobj.setEnquiryDate(dfEnquiryDate.getValue());
-		hdrobj.setDueDate(dfDueDate.getValue());
-		hdrobj.setRemarks(taRemarks.getValue().toString());
+		smsEnqHdrDM.setCompanyId(companyid);
+		smsEnqHdrDM.setEnquiryDate(dfEnquiryDate.getValue());
+		smsEnqHdrDM.setDueDate(dfDueDate.getValue());
+		smsEnqHdrDM.setRemarks(taRemarks.getValue().toString());
 		if (cbmodeofenquiry.getValue() != null) {
-			hdrobj.setModeofEnq(cbmodeofenquiry.getValue().toString());
+			smsEnqHdrDM.setModeofEnq(cbmodeofenquiry.getValue().toString());
 		}
-		hdrobj.setBranchId((Long) cbBranch.getValue());
-		hdrobj.setClientId((Long) cbClient.getValue());
-		hdrobj.setEnquiryStatus(((String) cbEnquiryStatus.getValue()));
-		hdrobj.setPreparedBy(EmployeeId);
-		hdrobj.setLastUpdateddt(DateUtils.getcurrentdate());
-		hdrobj.setLastUpdatedby(username);
-		serviceenqhdr.saveorUpdateSmsEnqHdrDetails(hdrobj);
+		smsEnqHdrDM.setBranchId((Long) cbBranch.getValue());
+		smsEnqHdrDM.setClientId((Long) cbClient.getValue());
+		smsEnqHdrDM.setEnquiryStatus(((String) cbEnquiryStatus.getValue()));
+		smsEnqHdrDM.setPreparedBy(employeeId);
+		smsEnqHdrDM.setLastUpdateddt(DateUtils.getcurrentdate());
+		smsEnqHdrDM.setLastUpdatedby(username);
+		serviceenqhdr.saveorUpdateSmsEnqHdrDetails(smsEnqHdrDM);
 		@SuppressWarnings("unchecked")
-		Collection<SmsEnquiryDtlDM> itemIds1 = (Collection<SmsEnquiryDtlDM>) tbldtl.getVisibleItemIds();
+		Collection<SmsEnquiryDtlDM> itemIds1 = (Collection<SmsEnquiryDtlDM>) tblEnqDetails.getVisibleItemIds();
 		for (SmsEnquiryDtlDM save : (Collection<SmsEnquiryDtlDM>) itemIds1) {
-			save.setEnquiryid(Long.valueOf(hdrobj.getEnquiryId().toString()));
+			save.setEnquiryid(Long.valueOf(smsEnqHdrDM.getEnquiryId().toString()));
 			serviceenqdtl.saveOrUpdatesmsenquirydtlDetails(save);
 			@SuppressWarnings("unchecked")
 			Collection<SmsEnquirySpecDM> itemIds = (Collection<SmsEnquirySpecDM>) tblspec.getVisibleItemIds();
 			for (SmsEnquirySpecDM save1 : (Collection<SmsEnquirySpecDM>) itemIds) {
 				save1.setEnquirydtlid((save.getEnquirydtlid()));
-				save1.setEnquiryid(hdrobj.getEnquiryId());
+				save1.setEnquiryid(smsEnqHdrDM.getEnquiryId());
 				System.out.println("EEEE=>" + save1.getEnquiryspecid());
 				serviceenqspec.saveOrUpdateSmsEnqSpecDetails(save1);
 			}
@@ -1052,50 +1027,42 @@ public class SmsEnquiry extends BaseTransUI {
 			}
 		}
 		tfEnquiryNo.setReadOnly(false);
-		tfEnquiryNo.setValue(hdrobj.getEnquiryNo());
+		tfEnquiryNo.setValue(smsEnqHdrDM.getEnquiryNo());
 		tfEnquiryNo.setReadOnly(true);
-		comments.saveSalesEnqId(hdrobj.getEnquiryId(), null);
+		comments.saveSalesEnqId(smsEnqHdrDM.getEnquiryId(), null);
 		enqDtlresetFields();
 		enqSpecResetfields();
 		loadSrchRslt();
 	}
 	
-	// catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
-	public void save(Long enquirydtlid) {
-	}
-	
 	// This function is used for save the Sales Enquiry details for temporary
-	public void saveEnqDtl() {
+	private void saveEnqDtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
-			SmsEnquiryDtlDM enqDtlObj = new SmsEnquiryDtlDM();
-			if (tbldtl.getValue() != null) {
-				enqDtlObj = beandtl.getItem(tbldtl.getValue()).getBean();
-				enqdtlList.remove(enqDtlObj);
+			SmsEnquiryDtlDM smsEnquiryDtlDM = new SmsEnquiryDtlDM();
+			if (tblEnqDetails.getValue() != null) {
+				smsEnquiryDtlDM = beandtl.getItem(tblEnqDetails.getValue()).getBean();
+				enqdtlList.remove(smsEnquiryDtlDM);
 			}
-			enqDtlObj.setProductid(((ProductDM) cdProduct.getValue()).getProdid());
-			enqDtlObj.setProdname(((ProductDM) cdProduct.getValue()).getProdname());
-			enqDtlObj.setCustprodcode(((ProductDM) cdProduct.getValue()).getProductcode());
-			enqDtlObj.setUom(((ProductDM) cdProduct.getValue()).getUom());
+			smsEnquiryDtlDM.setProductid(((ProductDM) cdProduct.getValue()).getProdid());
+			smsEnquiryDtlDM.setProdname(((ProductDM) cdProduct.getValue()).getProdname());
+			smsEnquiryDtlDM.setCustprodcode(((ProductDM) cdProduct.getValue()).getProductcode());
+			smsEnquiryDtlDM.setUom(((ProductDM) cdProduct.getValue()).getUom());
 			if (tfEnqQty.getValue() != null) {
-				enqDtlObj.setEnquiryqty(Long.valueOf(tfEnqQty.getValue()));
+				smsEnquiryDtlDM.setEnquiryqty(Long.valueOf(tfEnqQty.getValue()));
 			}
-			enqDtlObj.setRequirementdesc(tarequmentdesc.getValue().toString());
-			enqDtlObj.setCustproddesc(tacustproddesc.getValue().toString());
+			smsEnquiryDtlDM.setRequirementdesc(tarequmentdesc.getValue().toString());
+			smsEnquiryDtlDM.setCustproddesc(tacustproddesc.getValue().toString());
 			if (cdenqdtlstatus.getValue() != null) {
-				enqDtlObj.setEnquitydtlstatus((cdenqdtlstatus.getValue().toString()));
+				smsEnquiryDtlDM.setEnquitydtlstatus((cdenqdtlstatus.getValue().toString()));
 			}
-			enqDtlObj.setCustomField1(tfCustomField1.getValue());
-			enqDtlObj.setCustomField2(tfCustomField2.getValue());
-			enqDtlObj.setLastupdateddt(DateUtils.getcurrentdate());
-			enqDtlObj.setLastupdatedby(username);
-			enqdtlList.add(enqDtlObj);
+			smsEnquiryDtlDM.setCustomField1(tfCustomField1.getValue());
+			smsEnquiryDtlDM.setCustomField2(tfCustomField2.getValue());
+			smsEnquiryDtlDM.setLastupdateddt(DateUtils.getcurrentdate());
+			smsEnquiryDtlDM.setLastupdatedby(username);
+			enqdtlList.add(smsEnquiryDtlDM);
 			loadEnquiryDetails(false);
 			enqDtlresetFields();
-			System.out.println("SaveDtl===>");
 			btndetailadd.setCaption("Add");
 		}
 		catch (Exception e) {
@@ -1104,20 +1071,20 @@ public class SmsEnquiry extends BaseTransUI {
 	}
 	
 	// This function is used for save the Enquiry Specification's details for temporary
-	public void saveEnqSpec() {
+	private void saveEnqSpec() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		validationForEnqSpecification();
-		SmsEnquirySpecDM specobj = new SmsEnquirySpecDM();
+		SmsEnquirySpecDM smsEnquirySpecDM = new SmsEnquirySpecDM();
 		if (tblspec.getValue() != null) {
-			specobj = beanpec.getItem(tblspec.getValue()).getBean();
+			smsEnquirySpecDM = beanpec.getItem(tblspec.getValue()).getBean();
 		}
 		System.out.println("EID=>" + enquiryId);
-		specobj.setSpeccode(tfspeccode.getValue().toString());
-		specobj.setSpecdesc(taspecdesc.getValue().toString());
-		specobj.setEnqryspecstatus(((String) cbspecstatus.getValue()));
-		specobj.setLastupdateddt(DateUtils.getcurrentdate());
-		specobj.setLastupdatedby(username);
-		enqspecList.add(specobj);
+		smsEnquirySpecDM.setSpeccode(tfspeccode.getValue().toString());
+		smsEnquirySpecDM.setSpecdesc(taspecdesc.getValue().toString());
+		smsEnquirySpecDM.setEnqryspecstatus(((String) cbspecstatus.getValue()));
+		smsEnquirySpecDM.setLastupdateddt(DateUtils.getcurrentdate());
+		smsEnquirySpecDM.setLastupdatedby(username);
+		enqspecList.add(smsEnquirySpecDM);
 		enqSpecResetfields();
 		loadEnquirySpec(false, null);
 		btnaddspec.setCaption("Add");
@@ -1158,7 +1125,7 @@ public class SmsEnquiry extends BaseTransUI {
 		btndetailadd.setVisible(true);
 		btnaddspec.setCaption("Add");
 		btnaddspec.setVisible(true);
-		tbldtl.setVisible(true);
+		tblEnqDetails.setVisible(true);
 		tfspeccode.setRequired(true);
 		cbBranch.setRequired(true);
 		enqdtlList = new ArrayList<SmsEnquiryDtlDM>();
@@ -1177,7 +1144,7 @@ public class SmsEnquiry extends BaseTransUI {
 				tfEnquiryNo.setReadOnly(false);
 			}
 			tblspec.setVisible(true);
-			tbldtl.setVisible(true);
+			tblEnqDetails.setVisible(true);
 		}
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
 				null);
@@ -1192,7 +1159,7 @@ public class SmsEnquiry extends BaseTransUI {
 		hldtllayout.removeAllComponents();
 		hlspec.removeAllComponents();
 		vlSrchRsltContainer.setVisible(true);
-		tbldtl.setVisible(true);
+		tblEnqDetails.setVisible(true);
 		tblspec.setVisible(true);
 		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_ENQRYNO");
 		tfEnquiryNo.setReadOnly(false);
@@ -1267,8 +1234,8 @@ public class SmsEnquiry extends BaseTransUI {
 		}
 		// tfenqty.setComponentError(null);
 		cdProduct.setComponentError(null);
-		System.out.println("_______________---------------->" + tbldtl.size());
-		if (tbldtl.size() == 0) {
+		System.out.println("_______________---------------->" + tblEnqDetails.size());
+		if (tblEnqDetails.size() == 0) {
 			cdProduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
 			errorFlag = true;
 		}
@@ -1282,14 +1249,6 @@ public class SmsEnquiry extends BaseTransUI {
 	
 	// Validation for Sales Enquiry Detail
 	private boolean validationForEnqDetails() {
-		// cdproduct.setComponentError(null);
-		// Boolean errorFlag = true;
-		// logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		// if (cdproduct.getValue() == null) {
-		// cdproduct.setComponentError(new UserError(GERPErrorCodes.PRODUCT_NAME));
-		// errorFlag = false;
-		// }
-		// return errorFlag;
 		boolean isValid = true;
 		if (((tfEnqQty.getValue() == null) || tfEnqQty.getValue().trim().length() == 0)) {
 			tfEnqQty.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRY_QTY));
@@ -1383,7 +1342,7 @@ public class SmsEnquiry extends BaseTransUI {
 		cbClient.setValue(null);
 		dfEnquiryDate.setValue(null);
 		enqdtlList = new ArrayList<SmsEnquiryDtlDM>();
-		tbldtl.removeAllItems();
+		tblEnqDetails.removeAllItems();
 		enqspecList = new ArrayList<SmsEnquirySpecDM>();
 		dfDueDate.setValue(null);
 		cbmodeofenquiry.setValue(null);
@@ -1428,10 +1387,9 @@ public class SmsEnquiry extends BaseTransUI {
 	
 	private void loadCountryList() {
 		try {
-			List<CountryDM> getCountrylist = servicecountry.getCountryList(null, null, null, null, "Active", "F");
 			BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 			beanCountry.setBeanIdProperty("countryID");
-			beanCountry.addAll(getCountrylist);
+			beanCountry.addAll(servicecountry.getCountryList(null, null, null, null, "Active", "F"));
 			cbCountry.setContainerDataSource(beanCountry);
 		}
 		catch (Exception e) {
@@ -1441,11 +1399,9 @@ public class SmsEnquiry extends BaseTransUI {
 	
 	private void loadStateList() {
 		try {
-			List<StateDM> getStateList = serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null,
-					"F");
 			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 			beanState.setBeanIdProperty("stateId");
-			beanState.addAll(getStateList);
+			beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "F"));
 			cbState.setContainerDataSource(beanState);
 		}
 		catch (Exception e) {
@@ -1456,11 +1412,10 @@ public class SmsEnquiry extends BaseTransUI {
 	
 	private void loadCityList() {
 		try {
-			List<CityDM> getCitylist = serviceCity.getCityList(null, null, Long.valueOf(cbState.getValue().toString()),
-					"Active", companyid, "F");
 			BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
 			beanCity.setBeanIdProperty("cityid");
-			beanCity.addAll(getCitylist);
+			beanCity.addAll(serviceCity.getCityList(null, null, Long.valueOf(cbState.getValue().toString()), "Active",
+					companyid, "F"));
 			cbCity.setContainerDataSource(beanCity);
 		}
 		catch (Exception e) {
@@ -1471,12 +1426,10 @@ public class SmsEnquiry extends BaseTransUI {
 	
 	private void loadClientCategoryList() {
 		try {
-			List<ClientCategoryDM> clntCatList = serviceClientCat.getCrmClientCategoryList(companyid, null, "Active",
-					"F");
 			BeanContainer<Long, ClientCategoryDM> beanCat = new BeanContainer<Long, ClientCategoryDM>(
 					ClientCategoryDM.class);
 			beanCat.setBeanIdProperty("clientCategoryId");
-			beanCat.addAll(clntCatList);
+			beanCat.addAll(serviceClientCat.getCrmClientCategoryList(companyid, null, "Active", "F"));
 			cbClntCategory.setContainerDataSource(beanCat);
 		}
 		catch (Exception e) {

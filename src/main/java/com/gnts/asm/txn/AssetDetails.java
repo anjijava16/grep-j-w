@@ -412,7 +412,7 @@ public class AssetDetails extends BaseTransUI {
 	private void loadcategory() {
 		BeanContainer<Long, AssetCategoryDM> assetCategorydm = new BeanContainer<Long, AssetCategoryDM>(
 				AssetCategoryDM.class);
-		assetCategorydm.setBeanIdProperty("catgryId");
+		assetCategorydm.setBeanIdProperty("assetCategory");
 		assetCategorydm.addAll(serviceAsset.getAssetCategoryList(companyid, null, "Active", "P"));
 		cbcategory.setContainerDataSource(assetCategorydm);
 	}

@@ -64,7 +64,7 @@ public class DashbordView implements ClickListener {
 			.getBean("smsInvoiceheader");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private ProductService ServiceProduct = (ProductService) SpringContextHelper.getBean("Product");
-	private ECRequestService ServiceEcrequest = (ECRequestService) SpringContextHelper.getBean("ecRequestHdr");
+	private ECRequestService ServiceEcrequest = (ECRequestService) SpringContextHelper.getBean("ecRequest");
 	VerticalLayout clMainLayout;
 	HorizontalLayout hlHeader;
 	

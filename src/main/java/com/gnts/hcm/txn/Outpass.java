@@ -2,6 +2,7 @@ package com.gnts.hcm.txn;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPTextField;
+import com.gnts.erputil.components.GERPTimeField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
@@ -31,8 +33,13 @@ import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.stt.dsn.domain.txn.OutpassDM;
 import com.gnts.stt.dsn.service.txn.OutpassService;
+import com.itextpdf.text.pdf.TextField;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.FormLayout;
@@ -54,7 +61,9 @@ public class Outpass extends BaseTransUI {
 	private GERPPopupDateField dfPassDate;
 	private GERPComboBox cbEmployee;
 	private GERPComboBox cbDepartment;
-	private GERPTextField tfPlace, tfTimeIn, tfTimeOut;
+	private GERPTextField tfPlace, tfTotalKM;
+	private GERPTextField tfTotalTime;
+	private GERPTimeField tfTimeIn, tfTimeOut;
 	private GERPComboBox cbVehicle;
 	private GERPTextField tfVehicleNo, tfKMIn, tfKMOut;
 	private TextArea taPurpose;
@@ -89,24 +98,55 @@ public class Outpass extends BaseTransUI {
 		logger.info("CompanyId" + companyid + "username" + username + "painting Outpass UI");
 		// EC Request Components Definition
 		tfPlace = new GERPTextField("Place");
-		tfPlace.setWidth("150");
+		tfPlace.setWidth("170");
 		tfPlace.setReadOnly(false);
 		tfVehicleNo = new GERPTextField("Vehicle No.");
 		tfVehicleNo.setWidth("130");
-		tfKMIn = new GERPTextField("KM Out");
-		tfKMIn.setWidth("130");
-		tfKMOut = new GERPTextField("KM In");
+		tfTotalKM = new GERPTextField("Total KM");
+		tfTotalKM.setWidth("130");
+		tfKMOut = new GERPTextField("KM Out");
 		tfKMOut.setWidth("130");
+		tfKMIn = new GERPTextField("KM In");
+		tfKMIn.setWidth("130");
+		tfKMIn.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				gettotalKMCalc();
+			}
+		});
 		cbVehicle = new GERPComboBox("Vehicle");
 		cbVehicle.setWidth("130");
 		cbVehicle.addItems("Company", "Personal");
-		tfTimeOut = new GERPTextField("Time Out");
-		tfTimeIn = new GERPTextField("Time In");
+		tfTimeIn = new GERPTimeField("Time In");
+		tfTimeIn.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getTotalHours();
+			}
+		});
+		tfTimeOut = new GERPTimeField("Time Out");
+		tfTimeOut.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getTotalHours();
+			}
+		});
+		tfTotalTime = new GERPTextField("Total Time");
+		tfTotalTime.setWidth("120");
 		cbDepartment = new GERPComboBox("Department");
 		cbDepartment.setItemCaptionPropertyId("deptname");
 		loadDepartmentList();
 		taPurpose = new TextArea("Purpose");
-		taPurpose.setHeight("70px");
+		taPurpose.setHeight("50px");
 		cbEmployee = new GERPComboBox("Employee");
 		cbEmployee.setItemCaptionPropertyId("firstname");
 		cbEmployee.setImmediate(true);
@@ -153,14 +193,16 @@ public class Outpass extends BaseTransUI {
 		flcol1.addComponent(dfPassDate);
 		flcol1.addComponent(cbEmployee);
 		flcol1.addComponent(cbDepartment);
-		flcol2.addComponent(tfPlace);
-		flcol2.addComponent(tfTimeIn);
 		flcol2.addComponent(tfTimeOut);
+		flcol2.addComponent(tfTimeIn);
+		flcol2.addComponent(tfTotalTime);
+		flcol3.addComponent(tfPlace);
 		flcol3.addComponent(taPurpose);
 		flcol4.addComponent(cbVehicle);
 		flcol4.addComponent(tfVehicleNo);
 		flcol4.addComponent(tfKMOut);
 		flcol5.addComponent(tfKMIn);
+		flcol5.addComponent(tfTotalKM);
 		flcol5.addComponent(cbStatus);
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
@@ -187,9 +229,9 @@ public class Outpass extends BaseTransUI {
 		beanOutpass.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Outpass. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanOutpass);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "outpassId", "passDate", "place","vehicleNo", "outTime",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "outpassId", "passDate", "place", "vehicleNo", "outTime",
 				"inTime", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Place", "Vehicle No","Out Time",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Place", "Vehicle No", "Out Time",
 				"In Time", "Last Updated date", "Last Updated by" });
 		tblMstScrSrchRslt.setColumnAlignment("outpassId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
@@ -199,9 +241,41 @@ public class Outpass extends BaseTransUI {
 	private void loadEmployeeList() {
 		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanInitiatedBy.setBeanIdProperty("employeeid");
-		beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "P"));
+		beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+				null, "P"));
 		cbEmployee.setContainerDataSource(beanInitiatedBy);
+	}
+	
+	/*
+	 * Total time calculation.
+	 */
+	private void getTotalHours() {
+		// TODO Auto-generated method stub
+		if (tfTimeIn.getValue() != null && tfTimeOut.getValue() != null) {
+			if (tfTimeOut.getHorsMunitesinBigDecimal().compareTo(tfTimeIn.getHorsMunitesinBigDecimal()) < 0) {
+				tfTotalTime.setValue(tfTimeIn.getHorsMunitesinBigDecimal()
+						.subtract(tfTimeOut.getHorsMunitesinBigDecimal()).abs().toString());
+			} else {
+				tfTotalTime.setValue("0.0");
+			}
+		}
+	}
+	
+	/*
+	 * Total KM Calculation.
+	 */
+	private void gettotalKMCalc() {
+		try {
+			// TODO Auto-generated method stub
+			if (tfKMIn.getValue() != null && tfKMOut.getValue() != null) {
+				tfTotalKM.setValue((new BigDecimal(tfKMIn.getValue())).subtract(new BigDecimal(tfKMOut.getValue()))
+						.toString());
+			} else {
+				tfTotalKM.setValue("0.0");
+			}
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
@@ -228,13 +302,15 @@ public class Outpass extends BaseTransUI {
 			cbDepartment.setValue(outpassDM.getDeptId());
 			cbStatus.setValue(outpassDM.getStatus());
 			tfPlace.setValue(outpassDM.getPlace());
-			tfTimeOut.setValue(outpassDM.getOutTime());
-			tfTimeIn.setValue(outpassDM.getInTime());
+			tfTimeOut.setTime(outpassDM.getOutTime());
+			tfTimeIn.setTime(outpassDM.getInTime());
 			taPurpose.setValue(outpassDM.getPurpose());
 			cbVehicle.setValue(outpassDM.getVehicle());
 			tfVehicleNo.setValue(outpassDM.getVehicleNo());
-			tfKMOut.setValue(outpassDM.getKmOut());
-			tfKMIn.setValue(outpassDM.getKmIn());
+			tfKMOut.setValue(outpassDM.getKmOut().toString());
+			tfKMIn.setValue(outpassDM.getKmIn().toString());
+			tfTotalKM.setValue(outpassDM.getTotalKM().toString());
+			tfTotalTime.setValue(outpassDM.getTotalTime().toString());
 		}
 	}
 	
@@ -250,15 +326,17 @@ public class Outpass extends BaseTransUI {
 		outpassDM.setDeptId((Long) cbDepartment.getValue());
 		outpassDM.setStatus((String) cbStatus.getValue());
 		outpassDM.setPlace(tfPlace.getValue());
-		outpassDM.setOutTime(tfTimeOut.getValue());
-		outpassDM.setInTime(tfTimeIn.getValue());
+		outpassDM.setOutTime(tfTimeOut.getHorsMunites());
+		outpassDM.setInTime(tfTimeIn.getHorsMunites());
 		outpassDM.setPurpose(taPurpose.getValue());
 		outpassDM.setVehicle((String) cbVehicle.getValue());
 		outpassDM.setVehicleNo(tfVehicleNo.getValue());
-		outpassDM.setKmOut(tfKMOut.getValue());
-		outpassDM.setKmIn(tfKMIn.getValue());
+		outpassDM.setKmOut(new BigDecimal(tfKMOut.getValue()));
+		outpassDM.setKmIn(new BigDecimal(tfKMIn.getValue()));
 		outpassDM.setLastUpdatedBy(username);
 		outpassDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+		outpassDM.setTotalKM(new BigDecimal(tfTotalKM.getValue()));
+		outpassDM.setTotalTime(tfTotalTime.getValue());
 		serviceOutpass.saveOrUpdateOutpass(outpassDM);
 		outpassid = outpassDM.getOutpassId();
 		resetFields();
@@ -359,7 +437,9 @@ public class Outpass extends BaseTransUI {
 		tfVehicleNo.setValue("");
 		tfKMOut.setValue("");
 		tfKMIn.setValue("");
+		tfTotalKM.setValue("");
 		cbVehicle.setValue(null);
+		tfTotalTime.setValue("0");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	

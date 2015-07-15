@@ -196,7 +196,7 @@ public class EBReading extends BaseTransUI {
 		List<EbReadingDM> list = new ArrayList<EbReadingDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + null + "," + tfMainKwHr.getValue() + ", " + (String) cbStatus.getValue());
-		list = serviceEBReading.getEbReadingDetailList(null, null, null, null);
+		list = serviceEBReading.getEbReadingDetailList(null, null, null, null,null);
 		recordCnt = list.size();
 		beanECReq = new BeanItemContainer<EbReadingDM>(EbReadingDM.class);
 		beanECReq.addAll(list);
@@ -458,7 +458,7 @@ public class EBReading extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		dfRefDate.setValue(null);
 		
-		EbReadingDM ebReadingDM=serviceEBReading.getEbReadingDetailList(null, null, null, "Y").get(0);
+		EbReadingDM ebReadingDM=serviceEBReading.getEbReadingDetailList(null, null, null, "Y",null).get(0);
 		
 		tfC1.setValue(ebReadingDM.getC1().toString());
 		tfC2.setValue("0");

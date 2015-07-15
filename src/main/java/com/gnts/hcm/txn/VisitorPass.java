@@ -9,7 +9,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
+import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.EmployeeDM;
+import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
@@ -17,6 +19,7 @@ import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPTextField;
+import com.gnts.erputil.components.GERPTimeField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
@@ -29,8 +32,12 @@ import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.stt.dsn.domain.txn.VisitPassDM;
 import com.gnts.stt.dsn.service.txn.VisitPassService;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.FormLayout;
@@ -47,18 +54,23 @@ public class VisitorPass extends BaseTransUI {
 	private VisitPassService serviceVisitorPass = (VisitPassService) SpringContextHelper.getBean("visitPass");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(VisitorPass.class);
+	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
 	// User Input Fields for EC Request
 	private GERPPopupDateField dfPassDate;
-	private GERPComboBox cbEmployee;
-	private GERPTextField tfVisitorsName, tfTimeIn, tfTimeOut;
+	private GERPComboBox cbEmployee, cbMaterialFlw;
+	private GERPTextField tfVisitorsName;
+	private GERPTimeField tfTimeIn, tfTimeOut;
+	private GERPTextField tfTotalTime;
 	private GERPTextField tfVehicleNo, tfCompanyName, tfContactNumber;
-	private TextArea taRemarks;
+	private TextArea taRemarks, taMaterialDesc;
+	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<VisitPassDM> beanVisitpass = null;
 	// form layout for input controls EC Request
 	private FormLayout flcol1, flcol2, flcol3, flcol4;
-	// Search Control Layout
+	// Search Control LayouttaRemarksa
 	private HorizontalLayout hlsearchlayout;
 	// Parent layout for all the input controls EC Request
 	private HorizontalLayout hllayout = new HorizontalLayout();
@@ -84,6 +96,21 @@ public class VisitorPass extends BaseTransUI {
 	private void buildview() {
 		logger.info("CompanyId" + companyid + "username" + username + "painting VisitorPass UI");
 		// EC Request Components Definition
+		tfTotalTime = new GERPTextField("Total Time");
+		tfTotalTime.setWidth("150");
+		taMaterialDesc = new TextArea("Description");
+		taMaterialDesc.setHeight("90px");
+		cbMaterialFlw = new GERPComboBox("Materials");
+		cbMaterialFlw.setWidth("170");
+		loadMaterialflow();
+		cbMaterialFlw.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getmatedescription();
+			}
+		});
 		tfVisitorsName = new GERPTextField("Visitor's Name");
 		tfVisitorsName.setWidth("150");
 		tfVisitorsName.setRequired(true);
@@ -93,10 +120,28 @@ public class VisitorPass extends BaseTransUI {
 		tfCompanyName.setWidth("150");
 		tfContactNumber = new GERPTextField("Contact Number");
 		tfContactNumber.setWidth("150");
-		tfTimeOut = new GERPTextField("Time Out");
-		tfTimeIn = new GERPTextField("Time In");
+		tfTimeIn = new GERPTimeField("Time In");
+		tfTimeIn.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getTotalHours();
+			}
+		});
+		tfTimeOut = new GERPTimeField("Time Out");
+		tfTimeOut.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getTotalHours();
+			}
+		});
 		taRemarks = new TextArea("Purpose");
-		taRemarks.setHeight("70px");
+		taRemarks.setHeight("90px");
 		cbEmployee = new GERPComboBox("Person met");
 		cbEmployee.setItemCaptionPropertyId("firstname");
 		cbEmployee.setImmediate(true);
@@ -109,12 +154,43 @@ public class VisitorPass extends BaseTransUI {
 		dfPassDate.setDateFormat("dd-MMM-yyyy");
 		dfPassDate.setInputPrompt("Select Date");
 		dfPassDate.setWidth("130px");
-		cbStatus.setWidth("130");
+		cbStatus.setWidth("170");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
 		resetFields();
 		loadSrchRslt();
+	}
+	
+	/*
+	 * Load material flow type.
+	 */
+	public void loadMaterialflow() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
+			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"HC_MATFLW");
+			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(lookUpList);
+			cbMaterialFlw.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/*
+	 * Condition for product description
+	 */
+	private void getmatedescription() {
+	if (cbMaterialFlw != null) {
+			if (cbMaterialFlw.getValue().toString().equals("Inward") || cbMaterialFlw.getValue().toString().equals("Outward")) {
+				taMaterialDesc.setRequired(true);
+			} else {
+				taMaterialDesc.setRequired(false);
+		}
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -141,13 +217,16 @@ public class VisitorPass extends BaseTransUI {
 		flcol4 = new FormLayout();
 		flcol1.addComponent(dfPassDate);
 		flcol1.addComponent(tfVisitorsName);
+		flcol1.addComponent(tfContactNumber);
 		flcol1.addComponent(tfCompanyName);
-		flcol2.addComponent(tfVehicleNo);
-		flcol2.addComponent(tfTimeOut);
+		flcol1.addComponent(tfVehicleNo);
+		flcol2.addComponent(cbEmployee);
 		flcol2.addComponent(tfTimeIn);
-		flcol3.addComponent(taRemarks);
-		flcol4.addComponent(cbEmployee);
-		flcol4.addComponent(tfContactNumber);
+		flcol2.addComponent(tfTimeOut);
+		flcol2.addComponent(tfTotalTime);
+		flcol3.addComponent(cbMaterialFlw);
+		flcol3.addComponent(taMaterialDesc);
+		flcol4.addComponent(taRemarks);
 		flcol4.addComponent(cbStatus);
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
@@ -157,6 +236,21 @@ public class VisitorPass extends BaseTransUI {
 		hllayout.setMargin(true);
 		hllayout.setSpacing(true);
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hllayout));
+	}
+	
+	/*
+	 * Total time calculation.
+	 */
+	private void getTotalHours() {
+		// TODO Auto-generated method stub
+		if (tfTimeIn.getValue() != null && tfTimeOut.getValue() != null) {
+			if (tfTimeIn.getHorsMunitesinBigDecimal().compareTo(tfTimeOut.getHorsMunitesinBigDecimal()) < 0) {
+				tfTotalTime.setValue(tfTimeIn.getHorsMunitesinBigDecimal()
+						.subtract(tfTimeOut.getHorsMunitesinBigDecimal()).abs().toString());
+			} else {
+				tfTotalTime.setValue("0.0");
+			}
+		}
 	}
 	
 	// Load EC Request
@@ -204,12 +298,15 @@ public class VisitorPass extends BaseTransUI {
 			cbEmployee.setValue(visitPassDM.getEmployeeId());
 			cbStatus.setValue(visitPassDM.getStatus());
 			tfVisitorsName.setValue(visitPassDM.getVisitorName());
-			tfTimeOut.setValue(visitPassDM.getOutTime());
-			tfTimeIn.setValue(visitPassDM.getInTime());
+			tfTimeOut.setTime(visitPassDM.getOutTime());
+			tfTimeIn.setTime(visitPassDM.getInTime());
 			taRemarks.setValue(visitPassDM.getRemarks());
 			tfVehicleNo.setValue(visitPassDM.getVehicleNo());
 			tfContactNumber.setValue(visitPassDM.getContactNo());
 			tfCompanyName.setValue(visitPassDM.getCompanyName());
+			tfTotalTime.setValue(visitPassDM.getTotalTime().toString());
+			cbMaterialFlw.setValue(visitPassDM.getMateFLow());
+			taMaterialDesc.setValue(visitPassDM.getMateDesc());
 		}
 	}
 	
@@ -224,13 +321,16 @@ public class VisitorPass extends BaseTransUI {
 		visitPassDM.setEmployeeId((Long) cbEmployee.getValue());
 		visitPassDM.setStatus((String) cbStatus.getValue());
 		visitPassDM.setVisitorName(tfVisitorsName.getValue());
-		visitPassDM.setOutTime(tfTimeOut.getValue());
-		visitPassDM.setInTime(tfTimeIn.getValue());
+		visitPassDM.setOutTime(tfTimeOut.getHorsMunites());
+		visitPassDM.setInTime(tfTimeIn.getHorsMunites());
 		visitPassDM.setRemarks(taRemarks.getValue());
 		visitPassDM.setVehicleNo(tfVehicleNo.getValue());
 		visitPassDM.setContactNo(tfContactNumber.getValue());
 		visitPassDM.setCompanyName(tfCompanyName.getValue());
 		visitPassDM.setLastUpdatedby(username);
+		visitPassDM.setTotalTime(tfTotalTime.getValue());
+		visitPassDM.setMateFLow(cbMaterialFlw.getValue().toString());
+		visitPassDM.setMateDesc(taMaterialDesc.getValue());
 		visitPassDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 		serviceVisitorPass.saveOrUpdateVisitPass(visitPassDM);
 		visitorid = visitPassDM.getVisitorId();
@@ -326,11 +426,14 @@ public class VisitorPass extends BaseTransUI {
 		cbEmployee.setValue(null);
 		tfTimeIn.setValue(null);
 		tfTimeOut.setValue(null);
+		;
 		dfPassDate.setValue(null);
 		taRemarks.setValue("");
 		tfVehicleNo.setValue("");
 		tfContactNumber.setValue("");
 		tfCompanyName.setValue("");
+		tfTotalTime.setValue("0");
+		taMaterialDesc.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	

@@ -78,18 +78,12 @@ public class Xerox extends BaseTransUI {
 	private String username;
 	private Long companyid;
 	private int recordCnt = 0;
-	@SuppressWarnings("unused")
-	private Long branchId, employeeId, roleId, appScreenId;
 	
 	// Constructor received the parameters from Login UI class
 	public Xerox() {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
-		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
-		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
-		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside Xerox() constructor");
 		buildview();
 	}
@@ -312,7 +306,6 @@ public class Xerox extends BaseTransUI {
 		cbDepartment.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
-		// cbclient.setRequired(true);
 		// reload the search using the defaults
 		loadSrchRslt();
 	}
@@ -320,7 +313,6 @@ public class Xerox extends BaseTransUI {
 	@Override
 	protected void addDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
-		// cbclient.setRequired(true);
 		hllayout.removeAllComponents();
 		vlSrchRsltContainer.setVisible(true);
 		assembleinputLayout();

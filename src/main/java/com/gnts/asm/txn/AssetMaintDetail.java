@@ -350,29 +350,29 @@ public class AssetMaintDetail extends BaseTransUI {
 	private void editMaintDetail() {
 		try {
 			if (tblMstScrSrchRslt.getValue() != null) {
-				AssetMaintDetailDM editmaintdetail = beanMaintDetail.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				AssetMaintDetailDM assetMaintDetailDM = beanMaintDetail.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				if (cbAssetName != null) {
-					cbAssetName.setValue(editmaintdetail.getAssetId());
+					cbAssetName.setValue(assetMaintDetailDM.getAssetId());
 				}
-				cbMaintType.setValue(editmaintdetail.getMaintenanceType());
-				cbservicetype.setValue(editmaintdetail.getServiceType());
-				cbMaint.setValue(editmaintdetail.getAssetMaintSchdId());
-				cbcause.setValue(editmaintdetail.getCausedBy());
-				if (editmaintdetail.getMaintDetails() != null && !"null".equals(editmaintdetail.getMaintDetails())) {
-					taMaintDetails.setValue(editmaintdetail.getMaintDetails());
+				cbMaintType.setValue(assetMaintDetailDM.getMaintenanceType());
+				cbservicetype.setValue(assetMaintDetailDM.getServiceType());
+				cbMaint.setValue(assetMaintDetailDM.getAssetMaintSchdId());
+				cbcause.setValue(assetMaintDetailDM.getCausedBy());
+				if (assetMaintDetailDM.getMaintDetails() != null && !"null".equals(assetMaintDetailDM.getMaintDetails())) {
+					taMaintDetails.setValue(assetMaintDetailDM.getMaintDetails());
 				}
-				cbserviceby.setValue(editmaintdetail.getServiceBy());
-				dfservicedate.setValue(editmaintdetail.getNextserviceDt());
-				if (editmaintdetail.getMaintenancetime() != null) {
-					tfmaintime.setTime(editmaintdetail.getMaintenancetime());
+				cbserviceby.setValue(assetMaintDetailDM.getServiceBy());
+				dfservicedate.setValue(assetMaintDetailDM.getNextserviceDt());
+				if (assetMaintDetailDM.getMaintenancetime() != null) {
+					tfmaintime.setTime(assetMaintDetailDM.getMaintenancetime());
 				}
-				if (editmaintdetail.getCompletedTime() != null) {
-					tfcompletetime.setTime(editmaintdetail.getCompletedTime());
+				if (assetMaintDetailDM.getCompletedTime() != null) {
+					tfcompletetime.setTime(assetMaintDetailDM.getCompletedTime());
 				}
-				dfcompleteDate.setValue(editmaintdetail.getCompleteddt());
-				dfmainSchedule.setValue(editmaintdetail.getMaintenanceDt());
-				taProblemDesc.setValue(editmaintdetail.getProblemDescription());
-				cbStatus.setValue(editmaintdetail.getMaintStatus());
+				dfcompleteDate.setValue(assetMaintDetailDM.getCompleteddt());
+				dfmainSchedule.setValue(assetMaintDetailDM.getMaintenanceDt());
+				taProblemDesc.setValue(assetMaintDetailDM.getProblemDescription());
+				cbStatus.setValue(assetMaintDetailDM.getMaintStatus());
 			}
 		}
 		catch (Exception e) {
@@ -443,55 +443,55 @@ public class AssetMaintDetail extends BaseTransUI {
 	@Override
 	protected void saveDetails() {
 		try {
-			AssetMaintDetailDM maintdetail = new AssetMaintDetailDM();
+			AssetMaintDetailDM assetMaintDetailDM = new AssetMaintDetailDM();
 			logger.info("Saving Data---->");
 			if (tblMstScrSrchRslt.getValue() != null) {
-				maintdetail = beanMaintDetail.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				assetMaintDetailDM = beanMaintDetail.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			if (taMaintDetails.getValue() != null && taMaintDetails.getValue().trim().length() > 0) {
-				maintdetail.setMaintDetails(taMaintDetails.getValue().toString());
+				assetMaintDetailDM.setMaintDetails(taMaintDetails.getValue().toString());
 			}
 			if (cbAssetName.getValue() != null) {
-				maintdetail.setAssetId((Long) cbAssetName.getValue());
+				assetMaintDetailDM.setAssetId((Long) cbAssetName.getValue());
 			}
 			if (cbMaintType.getValue() != null) {
-				maintdetail.setMaintenanceType(cbMaintType.getValue().toString());
+				assetMaintDetailDM.setMaintenanceType(cbMaintType.getValue().toString());
 			}
 			if (tfmaintime.getValue() != null) {
-				maintdetail.setMaintenancetime(tfmaintime.getHorsMunites().toString());
+				assetMaintDetailDM.setMaintenancetime(tfmaintime.getHorsMunites().toString());
 			}
 			if (dfservicedate.getValue() != null) {
-				maintdetail.setNextserviceDt(dfservicedate.getValue());
+				assetMaintDetailDM.setNextserviceDt(dfservicedate.getValue());
 			}
 			if (dfmainSchedule.getValue() != null) {
-				maintdetail.setMaintenanceDt(dfmainSchedule.getValue());
+				assetMaintDetailDM.setMaintenanceDt(dfmainSchedule.getValue());
 			}
 			if (cbMaint.getValue() != null) {
-				maintdetail.setAssetMaintSchdId((Long) cbMaint.getValue());
+				assetMaintDetailDM.setAssetMaintSchdId((Long) cbMaint.getValue());
 			}
-			maintdetail.setMaintStatus((String) cbStatus.getValue());
+			assetMaintDetailDM.setMaintStatus((String) cbStatus.getValue());
 			if (dfcompleteDate.getValue() != null) {
-				maintdetail.setCompleteddt(dfcompleteDate.getValue());
+				assetMaintDetailDM.setCompleteddt(dfcompleteDate.getValue());
 			}
 			if (tfcompletetime.getValue() != null) {
-				maintdetail.setCompletedTime(tfcompletetime.getHorsMunites());
+				assetMaintDetailDM.setCompletedTime(tfcompletetime.getHorsMunites());
 			}
-			maintdetail.setPreparedBy(employeeId);
-			maintdetail.setAttendedBy(null);
-			maintdetail.setReviewedBy(null);
+			assetMaintDetailDM.setPreparedBy(employeeId);
+			assetMaintDetailDM.setAttendedBy(null);
+			assetMaintDetailDM.setReviewedBy(null);
 			if (cbcause.getValue() != null) {
-				maintdetail.setCausedBy((String) cbcause.getValue());
+				assetMaintDetailDM.setCausedBy((String) cbcause.getValue());
 			}
 			if (cbserviceby.getValue() != null) {
-				maintdetail.setServiceBy(String.valueOf(cbserviceby.getValue()));
+				assetMaintDetailDM.setServiceBy(String.valueOf(cbserviceby.getValue()));
 			}
 			if (cbservicetype.getValue() != null) {
-				maintdetail.setServiceType(cbservicetype.getValue().toString());
+				assetMaintDetailDM.setServiceType(cbservicetype.getValue().toString());
 			}
-			maintdetail.setProblemDescription(taProblemDesc.getValue());
-			maintdetail.setLastUpdatedDt(DateUtils.getcurrentdate());
-			maintdetail.setLastUpdatedBy(userName);
-			serviceAssetMaintDetails.saveOrUpdateAssetMaintDetail(maintdetail);
+			assetMaintDetailDM.setProblemDescription(taProblemDesc.getValue());
+			assetMaintDetailDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+			assetMaintDetailDM.setLastUpdatedBy(userName);
+			serviceAssetMaintDetails.saveOrUpdateAssetMaintDetail(assetMaintDetailDM);
 			resetFields();
 			loadsearchrslt();
 		}

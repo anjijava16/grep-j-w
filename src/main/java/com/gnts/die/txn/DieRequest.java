@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.SlnoGenDM;
@@ -16,6 +18,8 @@ import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
+import com.gnts.erputil.components.GERPTable;
+import com.gnts.erputil.components.GERPTextArea;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
@@ -28,18 +32,24 @@ import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
+import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
-import com.gnts.sms.txn.SmsComments;
+import com.gnts.sms.service.txn.SmsEnquiryDtlService;
 import com.gnts.stt.dsn.domain.txn.DieRequestDM;
 import com.gnts.stt.dsn.service.txn.DieRequestService;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
@@ -50,15 +60,15 @@ public class DieRequest extends BaseTransUI {
 	// Bean Creation
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private SmsEnqHdrService serviceEnqHeader = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
-	private DieRequestService serviceECNote = (DieRequestService) SpringContextHelper.getBean("dieRequest");
+	private DieRequestService serviceDieRequest = (DieRequestService) SpringContextHelper.getBean("dieRequest");
+	private SmsEnquiryDtlService serviceEnqDetail = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(DieRequest.class);
 	// User Input Fields for EC Request
-	private PopupDateField tfReqDate, dfCompletionDate;
-	private ComboBox cbEnquiry;
-	private ComboBox cbProduct;
-	private GERPTextField tfNoofDie, tfCustomerCode, tfDrawingNumber;
-	private TextArea taRemarks;
+	private PopupDateField dfRefDate, dfCompletionDate;
+	private ComboBox cbEnquiry, cbProduct, cbNewDie;
+	private GERPTextField tfNoofDie, tfCustomerCode, tfDrawingNumber, tfDieRefNumber;
+	private TextArea taChangeNote;
 	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<DieRequestDM> beanDieRequest = null;
@@ -69,16 +79,26 @@ public class DieRequest extends BaseTransUI {
 	// Parent layout for all the input controls EC Request
 	private HorizontalLayout hllayout = new HorizontalLayout();
 	private HorizontalLayout hllayout1 = new HorizontalLayout();
-	// Parent layout for all the input controls Sms Comments
-	private VerticalLayout vlTableForm = new VerticalLayout();
 	// local variables declaration
-	private Long ecnid;
+	private Long dieRequestId;
 	private String username;
-	private Long companyid, moduleId;
+	private Long companyid, moduleId, branchId;
 	private int recordCnt = 0;
-	private SmsComments comments;
-	private String status;
-	private Long branchId;
+	// for die section
+	private GERPComboBox cbRegisterby, cbReceivedby;
+	private GERPTextArea taTrailComments, taRectified;
+	private GERPTable tblDieSection = new GERPTable();
+	// for Mold trail request
+	private GERPTextField tfMTRefNumber;
+	private GERPPopupDateField dfMTRefDate;
+	private GERPComboBox cbInput;
+	private GERPTextArea taDescription;
+	private GERPTable tblTrailRequest = new GERPTable();
+	// Die completion report
+	private GERPTextField tfDCRefNumber;
+	private GERPComboBox cbFromDept, cbToDept;
+	private GERPPopupDateField dfDCRefDate;
+	private GERPTable tblDieCompletion;
 	
 	// Constructor received the parameters from Login UI class
 	public DieRequest() {
@@ -87,39 +107,61 @@ public class DieRequest extends BaseTransUI {
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside ECNote() constructor");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Inside DieRequest() constructor");
 		buildview();
 	}
 	
 	private void buildview() {
-		logger.info("CompanyId" + companyid + "username" + username + "painting ECNote UI");
+		logger.info("CompanyId" + companyid + "username" + username + "painting DieRequest UI");
 		// EC Request Components Definition
 		tfNoofDie = new GERPTextField("No of Die");
-		tfNoofDie.setReadOnly(false);
+		tfDieRefNumber = new GERPTextField("Ref. Number");
 		tfCustomerCode = new GERPTextField("Customer Code");
 		tfDrawingNumber = new GERPTextField("Drawing No.");
-		taRemarks = new TextArea("Remarks");
-		taRemarks.setWidth("984");
+		tfDrawingNumber.setEnabled(false);
+		cbNewDie = new GERPComboBox("New Die ?");
+		cbNewDie.addItems("Yes", "No");
+		taChangeNote = new TextArea("Change Note");
+		taChangeNote.setWidth("984");
 		cbEnquiry = new GERPComboBox("Enquiry No.");
 		cbEnquiry.setItemCaptionPropertyId("enquiryNo");
-		cbEnquiry.setImmediate(true);
-		cbEnquiry.setNullSelectionAllowed(false);
-		cbEnquiry.setWidth("150");
 		cbEnquiry.setRequired(true);
 		loadEnquiryList();
-		tfReqDate = new GERPPopupDateField("Req. Date");
-		tfReqDate.setDateFormat("dd-MMM-yyyy");
-		tfReqDate.setInputPrompt("Select Date");
-		tfReqDate.setWidth("130px");
+		cbEnquiry.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				loadProductList();
+			}
+		});
+		dfRefDate = new GERPPopupDateField("Req. Date");
 		dfCompletionDate = new GERPPopupDateField("Completion Date");
-		dfCompletionDate.setDateFormat("dd-MMM-yyyy");
-		dfCompletionDate.setInputPrompt("Select Date");
-		dfCompletionDate.setWidth("130px");
 		cbStatus.setWidth("150");
 		cbProduct = new GERPComboBox("Product Name");
 		cbProduct.setItemCaptionPropertyId("prodname");
 		cbProduct.setRequired(true);
-		cbProduct.setImmediate(true);
+		cbProduct.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (cbProduct.getValue() != null) {
+					SmsEnquiryDtlDM smsEnquiryDtlDM = (SmsEnquiryDtlDM) cbProduct.getValue();
+					tfCustomerCode.setValue(smsEnquiryDtlDM.getCustprodcode());
+					tfDrawingNumber.setValue(smsEnquiryDtlDM.getCustomField2());
+				}
+			}
+		});
+		// for die section
+		cbRegisterby = new GERPComboBox("Registered by");
+		cbReceivedby = new GERPComboBox("Received by");
+		// for mold section
+		tfMTRefNumber = new GERPTextField("Ref. Number");
+		dfMTRefDate = new GERPPopupDateField("Date");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
@@ -131,14 +173,10 @@ public class DieRequest extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		hlsearchlayout.removeAllComponents();
 		// Remove all components in search layout
-		flcol1 = new FormLayout();
-		flcol2 = new FormLayout();
-		flcol3 = new FormLayout();
-		flcol2.addComponent(tfNoofDie);
-		flcol3.addComponent(cbStatus);
+		flcol1 = new FormLayout(cbEnquiry);
+		flcol2 = new FormLayout(cbStatus);
 		hlsearchlayout.addComponent(flcol1);
 		hlsearchlayout.addComponent(flcol2);
-		hlsearchlayout.addComponent(flcol3);
 		hlsearchlayout.setMargin(true);
 		hlsearchlayout.setSizeUndefined();
 	}
@@ -146,19 +184,10 @@ public class DieRequest extends BaseTransUI {
 	private void assembleinputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		// Remove all components in search layout
-		tfNoofDie.setReadOnly(true);
-		flcol1 = new FormLayout();
-		flcol2 = new FormLayout();
-		flcol3 = new FormLayout();
-		flcol4 = new FormLayout();
-		flcol1.addComponent(tfReqDate);
-		flcol1.addComponent(tfNoofDie);
-		flcol2.addComponent(dfCompletionDate);
-		flcol2.addComponent(cbEnquiry);
-		flcol3.addComponent(cbProduct);
-		flcol3.addComponent(tfCustomerCode);
-		flcol4.addComponent(tfDrawingNumber);
-		flcol4.addComponent(cbStatus);
+		flcol1 = new FormLayout(dfRefDate, tfDieRefNumber, cbEnquiry);
+		flcol2 = new FormLayout(cbProduct, tfNoofDie, cbNewDie);
+		flcol3 = new FormLayout(dfCompletionDate, tfCustomerCode, tfDrawingNumber);
+		flcol4 = new FormLayout(cbStatus);
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
 		hllayout.addComponent(flcol2);
@@ -166,17 +195,38 @@ public class DieRequest extends BaseTransUI {
 		hllayout.addComponent(flcol4);
 		hllayout.setMargin(true);
 		hllayout.setSpacing(true);
-		hlUserIPContainer.addComponent(new VerticalLayout() {
+		TabSheet tbDieRequest = new TabSheet();
+		VerticalLayout vlHeader = new VerticalLayout(hllayout, taChangeNote);
+		vlHeader.setSpacing(true);
+		vlHeader.setMargin(true);
+		tbDieRequest.addTab(GERPPanelGenerator.createPanel(vlHeader), "Die Request");
+		// for die section
+		VerticalLayout vlDieSection = new VerticalLayout();
+		vlDieSection.addComponent(new HorizontalLayout() {
 			private static final long serialVersionUID = 1L;
 			{
-				VerticalLayout vlHeader = new VerticalLayout();
-				vlHeader.setSpacing(true);
-				vlHeader.setMargin(true);
-				vlHeader.addComponent(hllayout);
-				vlHeader.addComponent(taRemarks);
-				addComponent(GERPPanelGenerator.createPanel(vlHeader));
+				setSpacing(true);
+				addComponent(new FormLayout(cbRegisterby));
+				addComponent(new FormLayout(cbReceivedby));
 			}
 		});
+		vlDieSection.addComponent(tblDieSection);
+		tbDieRequest.addTab(vlDieSection, "Die Section");
+		// for mold trial request
+		VerticalLayout vlMoldTrialRequest = new VerticalLayout();
+		vlMoldTrialRequest.addComponent(new HorizontalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(new FormLayout(tfMTRefNumber));
+				addComponent(new FormLayout(dfMTRefDate));
+			}
+		});
+		vlMoldTrialRequest.addComponent(tblTrailRequest);
+		tbDieRequest.addTab(vlMoldTrialRequest, "Mold Trial Request");
+		tbDieRequest.addTab(new Label(), "Die Completion Report");
+		tbDieRequest.addTab(new Label(), "Bill of Matrial");
+		hlUserIPContainer.addComponent(tbDieRequest);
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 	}
@@ -186,17 +236,17 @@ public class DieRequest extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<DieRequestDM> list = new ArrayList<DieRequestDM>();
-		list = serviceECNote.getDieRequestList(null, null, null, null, null);
+		list = serviceDieRequest.getDieRequestList(null, null, null, null, null);
 		recordCnt = list.size();
 		beanDieRequest = new BeanItemContainer<DieRequestDM>(DieRequestDM.class);
 		beanDieRequest.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the ECReq. result set");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the DieReq. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanDieRequest);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "dieReqId", "enquiryId", "planCompleteDate", "productId",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "dieReqId", "enquiryNo", "refDate", "productName",
 				"noOfDie", "status", "lastUpdatedDate", "lastUpdatedBy" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry", "Date", "Product", "No of Die",
 				"Status", "Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("ecnid", Align.RIGHT);
+		tblMstScrSrchRslt.setColumnAlignment("dieReqId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
 	
@@ -206,49 +256,89 @@ public class DieRequest extends BaseTransUI {
 		beansmsenqHdr.setBeanIdProperty("enquiryId");
 		beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
 		cbEnquiry.setContainerDataSource(beansmsenqHdr);
-		cbEnquiry.setValue(cbEnquiry.getItemIds().iterator().next());
 	}
 	
-	// Method to edit the values from table into fields to update process for Sales Enquiry Header
-	private void editECNote() {
+	private void loadProductList() {
+		try {
+			BeanItemContainer<SmsEnquiryDtlDM> beanPlnDtl = new BeanItemContainer<SmsEnquiryDtlDM>(
+					SmsEnquiryDtlDM.class);
+			beanPlnDtl.addAll(serviceEnqDetail.getsmsenquirydtllist(null, (Long) cbEnquiry.getValue(), null, null,
+					null, null));
+			cbProduct.setContainerDataSource(beanPlnDtl);
+		}
+		catch (Exception e) {
+		}
+	}
+	
+	// Method to edit the values from table into fields to update process for Die Request Header
+	private void editDieRequest() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			DieRequestDM ecNoteDM = beanDieRequest.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			ecnid = ecNoteDM.getDieReqId();
-			cbStatus.setValue(ecNoteDM.getStatus());
+			DieRequestDM dieRequestDM = beanDieRequest.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			dieRequestId = dieRequestDM.getDieReqId();
+			dfRefDate.setValue(dieRequestDM.getRefDate1());
+			tfDieRefNumber.setReadOnly(false);
+			tfDieRefNumber.setValue(dieRequestDM.getDieRefNumber());
+			tfDieRefNumber.setReadOnly(true);
+			cbNewDie.setValue(dieRequestDM.getNewDie());
+			dfCompletionDate.setValue(dieRequestDM.getPlanCompleteDate());
+			cbEnquiry.setValue(dieRequestDM.getEnquiryId());
+			Long prodid = dieRequestDM.getProductId();
+			Collection<?> prodids = cbProduct.getItemIds();
+			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
+				Object itemId = (Object) iterator.next();
+				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
+				// Get the actual bean and use the data
+				SmsEnquiryDtlDM st = (SmsEnquiryDtlDM) item.getBean();
+				if (prodid != null && prodid.equals(st.getProductid())) {
+					cbProduct.setValue(itemId);
+					break;
+				} else {
+					cbProduct.setValue(null);
+				}
+			}
+			if (dieRequestDM.getNoOfDie() != null) {
+				tfNoofDie.setValue(dieRequestDM.getNoOfDie().toString());
+			}
+			tfDrawingNumber.setValue(dieRequestDM.getDieRefNumber());
+			taChangeNote.setValue(dieRequestDM.getChangeNote());
+			cbStatus.setValue(dieRequestDM.getStatus());
 		}
-		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, ecnid, null, null, null,
-				status);
-		comments.loadsrch(true, null, null, null, null, null, null, null, ecnid, null, null, null, null);
 	}
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... "); //
-		DieRequestDM ecNoteDM = new DieRequestDM();
+		DieRequestDM dieRequestDM = new DieRequestDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			ecNoteDM = beanDieRequest.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			dieRequestDM = beanDieRequest.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		ecNoteDM.setProductId((Long) cbProduct.getValue());
-		ecNoteDM.setStatus((String) cbStatus.getValue());
-		ecNoteDM.setLastUpdatedBy(username);
-		ecNoteDM.setLastUpdatedDate(DateUtils.getcurrentdate());
-		serviceECNote.saveOrUpdateDetails(ecNoteDM);
-		ecnid = ecNoteDM.getDieReqId();
+		dieRequestDM.setRefDate(dfRefDate.getValue());
+		dieRequestDM.setDieRefNumber(tfDieRefNumber.getValue());
+		dieRequestDM.setNewDie((String) cbNewDie.getValue());
+		dieRequestDM.setPlanCompleteDate(dfCompletionDate.getValue());
+		dieRequestDM.setNoOfDie(Long.valueOf(tfNoofDie.getValue()));
+		dieRequestDM.setEnquiryId((Long) cbEnquiry.getValue());
+		dieRequestDM.setProductId(((SmsEnquiryDtlDM) cbProduct.getValue()).getProductid());
+		dieRequestDM.setChangeNote(taChangeNote.getValue());
+		dieRequestDM.setStatus((String) cbStatus.getValue());
+		dieRequestDM.setLastUpdatedBy(username);
+		dieRequestDM.setLastUpdatedDate(DateUtils.getcurrentdate());
+		serviceDieRequest.saveOrUpdateDetails(dieRequestDM);
+		dieRequestId = dieRequestDM.getDieReqId();
 		if (tblMstScrSrchRslt.getValue() == null) {
 			try {
-				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "STT_ECNNO").get(0);
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "DIE_REQ_NO")
+						.get(0);
 				if (slnoObj.getAutoGenYN().equals("Y")) {
-					serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "STT_ECNNO");
-					System.out.println("Serial no=>" + companyid + "," + moduleId + "," + branchId);
+					serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "DIE_REQ_NO");
 				}
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		comments.saveSalesEnqId(ecNoteDM.getEnquiryId(), null);
 	}
 	
 	@Override
@@ -258,7 +348,6 @@ public class DieRequest extends BaseTransUI {
 		// reset the field valued to default
 		cbStatus.setValue(null);
 		tfNoofDie.setValue("");
-		tfNoofDie.setReadOnly(false);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		// reload the search using the defaults
@@ -268,27 +357,21 @@ public class DieRequest extends BaseTransUI {
 	@Override
 	protected void addDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
-		// cbclient.setRequired(true);
-		tfNoofDie.setReadOnly(true);
 		hllayout.removeAllComponents();
 		vlSrchRsltContainer.setVisible(true);
 		assembleinputLayout();
 		resetFields();
-		tfNoofDie.setReadOnly(false);
+		tfDieRefNumber.setReadOnly(false);
 		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "STT_ECNNO").get(0);
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "DIE_REQ_NO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfNoofDie.setValue(slnoObj.getKeyDesc());
-				tfNoofDie.setReadOnly(true);
-			} else {
-				tfNoofDie.setReadOnly(false);
+				tfDieRefNumber.setValue(slnoObj.getKeyDesc());
+				tfDieRefNumber.setReadOnly(true);
 			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null);
 	}
 	
 	@Override
@@ -300,7 +383,7 @@ public class DieRequest extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		resetFields();
-		editECNote();
+		editDieRequest();
 	}
 	
 	@Override
@@ -318,7 +401,7 @@ public class DieRequest extends BaseTransUI {
 		}
 		logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Throwing ValidationException. User data is > " + null + "," + cbEnquiry.getValue() + "," + "," + ","
-				+ tfReqDate.getValue() + ",");
+				+ dfRefDate.getValue() + ",");
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
@@ -327,9 +410,9 @@ public class DieRequest extends BaseTransUI {
 	@Override
 	protected void showAuditDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Getting audit record for enquiryId " + ecnid);
+				+ "Getting audit record for enquiryId " + dieRequestId);
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_SMS_ENQUIRY_HDR);
-		UI.getCurrent().getSession().setAttribute("audittablepk", String.valueOf(ecnid));
+		UI.getCurrent().getSession().setAttribute("audittablepk", String.valueOf(dieRequestId));
 	}
 	
 	@Override
@@ -342,7 +425,6 @@ public class DieRequest extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
 		loadSrchRslt();
-		tfNoofDie.setReadOnly(false);
 	}
 	
 	@Override
@@ -357,9 +439,9 @@ public class DieRequest extends BaseTransUI {
 		dfCompletionDate.setValue(null);
 		tfCustomerCode.setValue("");
 		tfDrawingNumber.setValue("");
-		taRemarks.setValue("");
+		taChangeNote.setValue("");
 		cbStatus.setValue(null);
-		tfReqDate.setValue(new Date());
+		dfRefDate.setValue(new Date());
 	}
 	
 	@Override
@@ -388,10 +470,9 @@ public class DieRequest extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			parameterMap.put("ECNID", ecnid);
+			parameterMap.put("ECNID", dieRequestId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/ecn"); // sda is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

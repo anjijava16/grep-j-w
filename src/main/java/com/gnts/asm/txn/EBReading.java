@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.asm.domain.txn.EbReadingDM;
-import com.gnts.asm.domain.txn.GeneratorDM;
 import com.gnts.asm.service.txn.EbReadingService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;

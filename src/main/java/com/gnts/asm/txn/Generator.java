@@ -145,15 +145,6 @@ public class Generator extends BaseTransUI {
 			}
 		});
 		tfTotalTime = new GERPTextField("Session Run Time");
-	/*	tfTotalTime.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				// TODO Auto-generated method stub
-				getTotalTime();
-			}
-		});*/
 		tfTotalCost = new GERPTextField("Total Cost");
 		tfGenStartTime = new GERPTimeField("Start Time");
 		tfGenStartTime.addValueChangeListener(new ValueChangeListener() {

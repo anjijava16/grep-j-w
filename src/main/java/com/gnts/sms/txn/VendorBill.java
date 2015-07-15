@@ -27,10 +27,8 @@ import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.ApprovalSchemaDM;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
-import com.gnts.base.domain.mst.ProductDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.CompanyLookupService;
-import com.gnts.base.service.mst.ProductService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
@@ -45,13 +43,11 @@ import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.sms.domain.txn.PurchasePODtlDM;
 import com.gnts.sms.domain.txn.PurchasePOHdrDM;
-import com.gnts.sms.domain.txn.PurchaseQuotDtlDM;
-import com.gnts.sms.domain.txn.PurchaseQuotHdrDM;
 import com.gnts.sms.domain.txn.VendorBillDtlDM;
 import com.gnts.sms.domain.txn.VendorBillHdrDM;
 import com.gnts.sms.service.mst.SmsTaxesService;
@@ -86,7 +82,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class VendorBill extends BaseUI {
+public class VendorBill extends BaseTransUI {
 	private VendorBillHdrService servicevendorBillHdr = (VendorBillHdrService) SpringContextHelper
 			.getBean("vendorbillheader");
 	private VendorBillDtlService servicevendorBillDtl = (VendorBillDtlService) SpringContextHelper
@@ -97,7 +93,6 @@ public class VendorBill extends BaseUI {
 			.getBean("PurchasePODtl");
 	private SmsTaxesService serviceTaxesSms = (SmsTaxesService) SpringContextHelper.getBean("SmsTaxes");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
-	ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	// form layout for input controls for Vendor Bill Header
@@ -107,7 +102,7 @@ public class VendorBill extends BaseUI {
 	// // User Input Components for Vendor Bill Details
 	private ComboBox cbBranch, cbpoNo, cbStatus;
 	private TextField tfFreightTerms, tfWarrentyTerms, tfDelTerms;
-	private TextField tfPamentTerm,tfbillNo, tfBasictotal, tfpackingPer, tfPaclingValue;
+	private TextField tfPamentTerm, tfbillNo, tfBasictotal, tfpackingPer, tfPaclingValue;
 	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
 	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
 	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal;
@@ -126,48 +121,38 @@ public class VendorBill extends BaseUI {
 	// BeanItem container
 	private BeanItemContainer<VendorBillHdrDM> beanVendorBillHdr = null;
 	private BeanItemContainer<VendorBillDtlDM> beanVendorBillDtl = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
-	List<VendorBillDtlDM> vendorDtlList = new ArrayList<VendorBillDtlDM>();
+	private List<VendorBillDtlDM> vendorDtlList = new ArrayList<VendorBillDtlDM>();
 	// local variables declaration
 	private String username;
 	private Long companyid;
 	private int recordCnt;
 	private Long QuoteId;
-	private Long EmployeeId;
-	private File file;
+	private Long employeeId;
 	private Long roleId;
 	private Long branchId;
-	private Long moduleId;
-	private Long appScreenId;
 	private Long billId;
 	private String poid;
-	private Long poId;
-	private Long vendorBillDtlId;
 	private SmsComments comments;
-	VerticalLayout vlTableForm = new VerticalLayout();
+	private VerticalLayout vlTableForm = new VerticalLayout();
 	// Search control layout
 	private GERPAddEditHLayout hlSearchLayout;
 	// UserInput control layout
 	private HorizontalLayout hlUserInputLayout = new GERPAddEditHLayout();
 	private GERPTable tblVendorBillDtl;
-	private Long pODtlId;
 	private Long screenId;
 	private String status;
-	public static boolean filevalue1 = false;
-	public Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btndelete = new GERPButton("Delete", "delete", this);
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(VendorBill.class);
+	private Logger logger = Logger.getLogger(VendorBill.class);
 	
 	// Constructor received the parameters from Login UI class
 	public VendorBill() {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
-		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
-		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside VendorBill() constructor");
 		// Loading the VendorBill UI
@@ -198,19 +183,19 @@ public class VendorBill extends BaseUI {
 					tfFreightTerms.setValue(((PurchasePOHdrDM) cbpoNo.getValue()).getFrnghtTerms());
 					tfWarrentyTerms.setValue(((PurchasePOHdrDM) cbpoNo.getValue()).getWrntyTerms());
 					tfDelTerms.setValue(((PurchasePOHdrDM) cbpoNo.getValue()).getDlvryTerms());
-					if(((PurchasePOHdrDM) cbpoNo.getValue()).getDutyExempt().equals("Y")){
+					if (((PurchasePOHdrDM) cbpoNo.getValue()).getDutyExempt().equals("Y")) {
 						ckdutyexm.setValue(true);
-					}else{
+					} else {
 						ckdutyexm.setValue(false);
 					}
-					if(((PurchasePOHdrDM) cbpoNo.getValue()).getCformReqd().equals("Y")){
+					if (((PurchasePOHdrDM) cbpoNo.getValue()).getCformReqd().equals("Y")) {
 						ckCformRqu.setValue(true);
-					}else{
+					} else {
 						ckCformRqu.setValue(false);
 					}
-					if(((PurchasePOHdrDM) cbpoNo.getValue()).getpDCReqd().equals("Y")){
+					if (((PurchasePOHdrDM) cbpoNo.getValue()).getpDCReqd().equals("Y")) {
 						ckPdcRqu.setValue(true);
-					}else{
+					} else {
 						ckPdcRqu.setValue(false);
 					}
 				}
@@ -280,13 +265,15 @@ public class VendorBill extends BaseUI {
 		cbBranch.setWidth("150");
 		cbBranch.setItemCaptionPropertyId("branchName");
 		loadBranchList();
-		List<ApprovalSchemaDM> list = servicevendorBillHdr.getReviewerId(companyid, screenId, branchId, roleId);
-		for (ApprovalSchemaDM obj : list) {
+		try {
+			ApprovalSchemaDM obj = servicevendorBillHdr.getReviewerId(companyid, screenId, branchId, roleId).get(0);
 			if (obj.getApprLevel().equals("Reviewer")) {
 				cbStatus = new GERPComboBox("Status", BASEConstants.T_SMS_VENDOR_BILL_HDR, BASEConstants.VBR_STATUS);
 			} else {
 				cbStatus = new GERPComboBox("Status", BASEConstants.T_SMS_VENDOR_BILL_HDR, BASEConstants.VB_STATUS);
 			}
+		}
+		catch (Exception e) {
 		}
 		cbStatus.setWidth("120");
 		// VendorBill Detail Comp
@@ -295,6 +282,11 @@ public class VendorBill extends BaseUI {
 		cbproduct.setWidth("150");
 		cbproduct.setImmediate(true);
 		cbproduct.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
@@ -307,7 +299,7 @@ public class VendorBill extends BaseUI {
 					tfUnitRate.setValue(((PurchasePODtlDM) cbproduct.getValue()).getUnitRate() + "");
 					tfBasicValue.setReadOnly(false);
 					tfBasicValue.setValue(((PurchasePODtlDM) cbproduct.getValue()).getBasicValue() + "");
-					}
+				}
 			}
 		});
 		cbMatUom = new ComboBox("Material Uom");
@@ -353,8 +345,8 @@ public class VendorBill extends BaseUI {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (DtlValidation()) {
-					SaveVendorBillDtl();
+				if (validateBillDetail()) {
+					saveVendorBillDetails();
 				}
 			}
 		});
@@ -624,7 +616,7 @@ public class VendorBill extends BaseUI {
 	}
 	
 	// Load Branch List
-	public void loadBranchList() {
+	private void loadBranchList() {
 		try {
 			List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
 			branchList.add(new BranchDM(0L, "All Branches"));
@@ -639,14 +631,14 @@ public class VendorBill extends BaseUI {
 	}
 	
 	// Load Uom
-	public void loadUomList() {
+	private void loadUomList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"SM_UOM");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp
+					.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "SM_UOM"));
 			cbMatUom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -655,7 +647,7 @@ public class VendorBill extends BaseUI {
 	}
 	
 	// Load Product
-	public void loadProduct() {
+	private void loadProduct() {
 		try {
 			List<PurchasePODtlDM> getQuoteDtl = new ArrayList<PurchasePODtlDM>();
 			Long poId = ((PurchasePOHdrDM) cbpoNo.getValue()).getPoId();
@@ -669,10 +661,6 @@ public class VendorBill extends BaseUI {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
-	
 	
 	// Load PoNo
 	private void loadPoNo() {
@@ -753,13 +741,6 @@ public class VendorBill extends BaseUI {
 			if ((editVendorBillHdrlist.getDeliveryTerms() != null)) {
 				tfDelTerms.setValue(editVendorBillHdrlist.getDeliveryTerms());
 			}
-			// if (sltedRcd.getItemProperty("vendorRefdoc").getValue() != null) {
-			// byte[] certificate = (byte[]) sltedRcd.getItemProperty("vendorRefdoc").getValue();
-			// UploadDocumentUI test = new UploadDocumentUI(hlPODoc);
-			// test.displaycertificate(certificate);
-			// } else {
-			// new UploadDocumentUI(hlPODoc);
-			// }
 			Long uom = editVendorBillHdrlist.getPoId();
 			Collection<?> uomid = cbpoNo.getItemIds();
 			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
@@ -797,13 +778,9 @@ public class VendorBill extends BaseUI {
 	
 	private void editVendorBillDtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		Item sltedRcd = tblVendorBillDtl.getItem(tblVendorBillDtl.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected QuoteId -> "
-				+ QuoteId);
-		if (sltedRcd != null) {
-			VendorBillDtlDM editVendorBillDtllist = beanVendorBillDtl.getItem(tblVendorBillDtl.getValue()).getBean();
-			vendorBillDtlId = editVendorBillDtllist.getBillDtlId();
-			Long uom = editVendorBillDtllist.getProductId();
+		if (tblVendorBillDtl.getValue() != null) {
+			VendorBillDtlDM vendorBillDtlDM = beanVendorBillDtl.getItem(tblVendorBillDtl.getValue()).getBean();
+			Long uom = vendorBillDtlDM.getProductId();
 			Collection<?> uomid = cbproduct.getItemIds();
 			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -814,33 +791,24 @@ public class VendorBill extends BaseUI {
 					cbproduct.setValue(itemId);
 				}
 			}
-			if (editVendorBillDtllist.getReceiptQty() != null) {
-				tfreceiptQnty.setValue(editVendorBillDtllist.getReceiptQty().toString());
+			if (vendorBillDtlDM.getReceiptQty() != null) {
+				tfreceiptQnty.setValue(vendorBillDtlDM.getReceiptQty().toString());
 			}
-			if (editVendorBillDtllist.getRejectQty() != null) {
-				tfrejectQty.setValue(editVendorBillDtllist.getRejectQty().toString());
+			if (vendorBillDtlDM.getRejectQty() != null) {
+				tfrejectQty.setValue(vendorBillDtlDM.getRejectQty().toString());
 			}
-			tfUnitRate.setValue(editVendorBillDtllist.getUnitRate().toString());
-			tfBasicValue.setValue(editVendorBillDtllist.getBasicValue().toString());
-			cbMatUom.setValue(editVendorBillDtllist.getProductUom());
-			if (editVendorBillDtllist.getRecpDtlStatus() != null) {
-				cbDtlStatus.setValue(editVendorBillDtllist.getRecpDtlStatus());
+			tfUnitRate.setValue(vendorBillDtlDM.getUnitRate().toString());
+			tfBasicValue.setValue(vendorBillDtlDM.getBasicValue().toString());
+			cbMatUom.setValue(vendorBillDtlDM.getProductUom());
+			if (vendorBillDtlDM.getRecpDtlStatus() != null) {
+				cbDtlStatus.setValue(vendorBillDtlDM.getRecpDtlStatus());
 			}
-			if (editVendorBillDtllist.getRejectReason() != null) {
-				tarejectReason.setValue(editVendorBillDtllist.getRejectReason());
+			if (vendorBillDtlDM.getRejectReason() != null) {
+				tarejectReason.setValue(vendorBillDtlDM.getRejectReason());
 			}
-			if (editVendorBillDtllist.getDebitNoteVal() != null) {
-				tfDebitValue.setValue(editVendorBillDtllist.getDebitNoteVal().toString());
+			if (vendorBillDtlDM.getDebitNoteVal() != null) {
+				tfDebitValue.setValue(vendorBillDtlDM.getDebitNoteVal().toString());
 			}
-			// if (hldtlDoc != null) {
-			// if (sltedRcd.getItemProperty("receiptEvd").getValue() != null) {
-			// byte[] certificate = (byte[]) sltedRcd.getItemProperty("receiptEvd").getValue();
-			// UploadDocumentUI test = new UploadDocumentUI(hldtlDoc);
-			// test.displaycertificate(certificate);
-			// } else {
-			// new UploadDocumentUI(hldtlDoc);
-			// }
-			// }
 		}
 	}
 	
@@ -962,9 +930,7 @@ public class VendorBill extends BaseUI {
 		tfUnitRate.setComponentError(null);
 		tfBasicValue.setComponentError(null);
 		cbproduct.setComponentError(null);
-		System.out.println("_______________---------------->"+tblVendorBillDtl.size());
-		if(tblVendorBillDtl.size()==0){
-			
+		if (tblVendorBillDtl.size() == 0) {
 			cbMatUom.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
 			tfreceiptQnty.setComponentError(new UserError(GERPErrorCodes.RECEIPT_QTY));
 			tfrejectQty.setComponentError(new UserError(GERPErrorCodes.REGECT_QTY));
@@ -972,16 +938,14 @@ public class VendorBill extends BaseUI {
 			tfBasicValue.setComponentError(new UserError(GERPErrorCodes.BASIC_VALUE));
 			cbproduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
 			errorFlag = true;
-			
-			}
-		// DtlValidation();
+		}
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
 	}
 	
 	// VendorBill Validation
-	private boolean DtlValidation() {
+	private boolean validateBillDetail() {
 		boolean isValid = true;
 		if (cbMatUom.getValue() == null) {
 			cbMatUom.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
@@ -1101,7 +1065,7 @@ public class VendorBill extends BaseUI {
 			fio.read(fileContent);
 			fio.close();
 			VendorBillHdrobj.setVendorRefdoc(fileContents);
-			VendorBillHdrobj.setPreparedBy(EmployeeId);
+			VendorBillHdrobj.setPreparedBy(employeeId);
 			VendorBillHdrobj.setReviewedBy(null);
 			VendorBillHdrobj.setActionedBy(null);
 			VendorBillHdrobj.setLastUpdtDate(DateUtils.getcurrentdate());
@@ -1124,7 +1088,7 @@ public class VendorBill extends BaseUI {
 		}
 	}
 	
-	protected void SaveVendorBillDtl() {
+	private void saveVendorBillDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			int count = 0;
@@ -1134,7 +1098,6 @@ public class VendorBill extends BaseUI {
 					break;
 				}
 			}
-			System.out.println("count--->" + count);
 			if (count == 0) {
 				VendorBillDtlDM vendorDtlDtlobj = new VendorBillDtlDM();
 				if (tblVendorBillDtl.getValue() != null) {
@@ -1301,7 +1264,6 @@ public class VendorBill extends BaseUI {
 		tfFreightTerms.setValue("");
 		cbproduct.setValue(null);
 		cbStatus.setValue(null);
-		// cbBranch.setValue(cbBranch.getItemIds().iterator().next());
 		dfbillDt.setValue(new Date());
 		taRemark.setValue("");
 		cbBranch.setComponentError(null);
@@ -1315,7 +1277,7 @@ public class VendorBill extends BaseUI {
 		cbproduct.setContainerDataSource(null);
 	}
 	
-	protected void vendorBillResetFields() {
+	private void vendorBillResetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbproduct.setValue(null);
 		tfUnitRate.setValue("0");
@@ -1390,10 +1352,10 @@ public class VendorBill extends BaseUI {
 	}
 	
 	private void deleteDetails() {
-		VendorBillDtlDM save = new VendorBillDtlDM();
+		VendorBillDtlDM vendorBillDtlDM = new VendorBillDtlDM();
 		if (tblVendorBillDtl.getValue() != null) {
-			save = beanVendorBillDtl.getItem(tblVendorBillDtl.getValue()).getBean();
-			vendorDtlList.remove(save);
+			vendorBillDtlDM = beanVendorBillDtl.getItem(tblVendorBillDtl.getValue()).getBean();
+			vendorDtlList.remove(vendorBillDtlDM);
 			vendorBillResetFields();
 			loadVendorDtl();
 			btndelete.setEnabled(false);
@@ -1402,5 +1364,10 @@ public class VendorBill extends BaseUI {
 	
 	private BigDecimal gerPercentageValue(BigDecimal percent, BigDecimal value) {
 		return (percent.multiply(value).divide(new BigDecimal("100"))).setScale(2, RoundingMode.CEILING);
+	}
+	
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
 	}
 }

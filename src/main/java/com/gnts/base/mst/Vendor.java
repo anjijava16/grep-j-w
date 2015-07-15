@@ -19,14 +19,12 @@ import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CityDM;
 import com.gnts.base.domain.mst.CountryDM;
-import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.domain.mst.StateDM;
 import com.gnts.base.domain.mst.VendorDM;
 import com.gnts.base.domain.mst.VendorTypeDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.CityService;
 import com.gnts.base.service.mst.CountryService;
-import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.base.service.mst.StateService;
 import com.gnts.base.service.mst.VendorService;
 import com.gnts.base.service.mst.VendorTypeService;
@@ -67,7 +65,6 @@ public class Vendor extends BaseUI {
 	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
 	private CityService serviceCity = (CityService) SpringContextHelper.getBean("city");
 	private StateService serviceState = (StateService) SpringContextHelper.getBean("mstate");
-	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn4, flColumn3;
 	// Parent layout for all the input controls
@@ -84,7 +81,7 @@ public class Vendor extends BaseUI {
 	// BeanItemContainer
 	private BeanItemContainer<VendorDM> beanVendorDM = null;
 	// local variables declaration
-	private Long companyid, moduleId, branchId;
+	private Long companyid;
 	private String departId, pkvendorId;
 	private int recordCnt = 0;
 	private String username;
@@ -98,8 +95,6 @@ public class Vendor extends BaseUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
-		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside Vendor() constructor");
 		// Loading the UI
 		buildview();
@@ -663,7 +658,6 @@ public class Vendor extends BaseUI {
 			if (cbVendorTypeName.getValue() != null) {
 				vendorObj.setVendorTypeId(Long.valueOf(cbVendorTypeName.getValue().toString()));
 			}
-			// vendorObj.setVendorTypeName(cbVendorTypeName.getValue().toString());
 			if (tfPinCode.getValue() != null && tfPinCode.getValue().trim().length() > 0) {
 				vendorObj.setVendorPostcode((Long.valueOf(tfPinCode.getValue())));
 			}
@@ -753,12 +747,10 @@ public class Vendor extends BaseUI {
 	}
 	
 	private void loadCityList() {
-		List<CityDM> getCityList = new ArrayList<CityDM>();
-		getCityList.addAll(serviceCity.getCityList(null, null, ((Long.valueOf((String) cbState.getValue()))), "Active",
-				null, "P"));
 		BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
 		beanCity.setBeanIdProperty("cityid");
-		beanCity.addAll(getCityList);
+		beanCity.addAll(serviceCity.getCityList(null, null, ((Long.valueOf((String) cbState.getValue()))), "Active",
+				null, "P"));
 		cbCity.setContainerDataSource(beanCity);
 	}
 	

@@ -34,8 +34,6 @@ import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.DepartmentService;
 import com.gnts.base.service.mst.EmployeeService;
-import com.gnts.crm.domain.mst.ClientCategoryDM;
-import com.gnts.crm.service.mst.ClientCategoryService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
@@ -50,7 +48,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
@@ -96,7 +93,7 @@ public class AssetDetails extends BaseTransUI {
 	private AssetBrandService serviceBrand = (AssetBrandService) SpringContextHelper.getBean("assetBrand");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private DepartmentService servicedepartmant = (DepartmentService) SpringContextHelper.getBean("department");
-	private AssetCategoryService serviceAsset=(AssetCategoryService) SpringContextHelper.getBean("assetCategory");
+	private AssetCategoryService serviceAsset = (AssetCategoryService) SpringContextHelper.getBean("assetCategory");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private int recordCnt;
 	private Long companyid, employeeid;
@@ -221,15 +218,10 @@ public class AssetDetails extends BaseTransUI {
 		//
 		cbbranch = new GERPComboBox("Branch");
 		cbbranch.setWidth("148");
-		// cbbranch.setNullSelectionAllowed(false);
 		cbbranch.setItemCaptionPropertyId("branchName");
-		// loadBranchDetails();
 		loadBranchList();
-		// Initialization for tfSerialNo
 		tfSerialNo = new GERPTextField("Serial No.");
-		// Initialization for tfMfgSerialNo
 		tfMfgSerialNo = new GERPTextField("MFG.Serial No.");
-		// Initialization for tfAssetLocation
 		tfAssetLocation = new GERPTextField("Asset Location");
 		tfAssetLocation.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
@@ -374,11 +366,8 @@ public class AssetDetails extends BaseTransUI {
 		hlInput.setSpacing(true);
 		hlInput.setMargin(true);
 		vlUserInput.addComponent(GERPPanelGenerator.createPanel(hlInput));
-		// tabSheet.addTab(hlInput, "Asset Details");
 		tabSheet.addTab(vlAssetSpec, "Asset Spec");
-		System.out.println("ASSET------>" + vlAssetSpec);
 		tabSheet.addTab(vlOwnDetails, "Asset Own Details");
-		System.out.println("ASSETOWNER------>" + vlOwnDetails);
 		tabSheet.setSizeFull();
 		vlUserInput.addComponent(tabSheet);
 		vlUserInput.setWidth("1180");
@@ -461,7 +450,6 @@ public class AssetDetails extends BaseTransUI {
 			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Asset Name", "Brand Name", "Department Name",
 					"Asset Details", "Status", "Last Updated Date", "Last Updated By" });
 			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
-			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -474,46 +462,43 @@ public class AssetDetails extends BaseTransUI {
 	private void editAssetDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		assetId = (Long) sltedRcd.getItemProperty("assetId").getValue();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Dept. Id -> "
-				+ assetId);
-		if (sltedRcd != null) {
-			AssetDetailsDM editassetlist = beanAssetdetail.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfAssetName.setValue(editassetlist.getAssetName());
-			cbAssetType.setValue(editassetlist.getAssetType());
-			cbBrandId.setValue(editassetlist.getBrandId());
-			cbDeptId.setValue(editassetlist.getDeptId());
-			cbbranch.setValue(editassetlist.getBranchId());
-			if (editassetlist.getAssetdetails() != null && !"null".equals(editassetlist.getAssetdetails())) {
-				tfAssetDetailDesc.setValue(editassetlist.getAssetdetails());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			AssetDetailsDM assetDetailsDM = beanAssetdetail.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			assetId = assetDetailsDM.getAssetId();
+			tfAssetName.setValue(assetDetailsDM.getAssetName());
+			cbAssetType.setValue(assetDetailsDM.getAssetType());
+			cbBrandId.setValue(assetDetailsDM.getBrandId());
+			cbDeptId.setValue(assetDetailsDM.getDeptId());
+			cbbranch.setValue(assetDetailsDM.getBranchId());
+			if (assetDetailsDM.getAssetdetails() != null && !"null".equals(assetDetailsDM.getAssetdetails())) {
+				tfAssetDetailDesc.setValue(assetDetailsDM.getAssetdetails());
 			}
-			tfSerialNo.setValue(editassetlist.getSerialno());
-			tfMfgSerialNo.setValue(editassetlist.getMfgserialno());
-			tfAssetLocation.setValue(editassetlist.getAssetlocation());
+			tfSerialNo.setValue(assetDetailsDM.getSerialno());
+			tfMfgSerialNo.setValue(assetDetailsDM.getMfgserialno());
+			tfAssetLocation.setValue(assetDetailsDM.getAssetlocation());
 			if (tfPurchaseValue.getValue() != null) {
-				tfPurchaseValue.setValue(editassetlist.getPurchasevalue().toString());
+				tfPurchaseValue.setValue(assetDetailsDM.getPurchasevalue().toString());
 			}
-			dtPurchaseDate.setValue(editassetlist.getPurchasedate());
-			dtLastServiceDate.setValue(editassetlist.getLastservicedt());
-			dtNextServiceDate.setValue(editassetlist.getNextservicedt());
-			dtWarrentyDate.setValue(editassetlist.getWarrentyenddt());
-			tfSalvageValue.setValue(editassetlist.getSalvagevalue().toString());
-			cbreview.setValue(editassetlist.getActionedby());
-			cbaction.setValue(editassetlist.getReviewedby());
-			tfLifeInYears.setValue(editassetlist.getLifeinyears().toString());
-			tfLifeInMonths.setValue(editassetlist.getLifeinmonths().toString());
-			tfLicenseInfo.setValue(editassetlist.getLicenseinfo());
-			tfInvoiceNo.setValue(editassetlist.getInvoiceno());
-			if (editassetlist.getRemarks() != null && !"null".equals(editassetlist.getRemarks())) {
-				tfRemarks.setValue(editassetlist.getRemarks());
+			dtPurchaseDate.setValue(assetDetailsDM.getPurchasedate());
+			dtLastServiceDate.setValue(assetDetailsDM.getLastservicedt());
+			dtNextServiceDate.setValue(assetDetailsDM.getNextservicedt());
+			dtWarrentyDate.setValue(assetDetailsDM.getWarrentyenddt());
+			tfSalvageValue.setValue(assetDetailsDM.getSalvagevalue().toString());
+			cbreview.setValue(assetDetailsDM.getActionedby());
+			cbaction.setValue(assetDetailsDM.getReviewedby());
+			tfLifeInYears.setValue(assetDetailsDM.getLifeinyears().toString());
+			tfLifeInMonths.setValue(assetDetailsDM.getLifeinmonths().toString());
+			tfLicenseInfo.setValue(assetDetailsDM.getLicenseinfo());
+			tfInvoiceNo.setValue(assetDetailsDM.getInvoiceno());
+			if (assetDetailsDM.getRemarks() != null && !"null".equals(assetDetailsDM.getRemarks())) {
+				tfRemarks.setValue(assetDetailsDM.getRemarks());
 			}
-			if (editassetlist.getWarrentydesc() != null && !"null".equals(editassetlist.getWarrentydesc())) {
-				tawarrentdesc.setValue(editassetlist.getWarrentydesc());
+			if (assetDetailsDM.getWarrentydesc() != null && !"null".equals(assetDetailsDM.getWarrentydesc())) {
+				tawarrentdesc.setValue(assetDetailsDM.getWarrentydesc());
 			}
-			cbcategory.setValue(editassetlist.getCatgryId());
-			tfservicerequire.setValue(editassetlist.getServicereqd());
-			cbAssetStatus.setValue(editassetlist.getAssetstatus());
+			cbcategory.setValue(assetDetailsDM.getCatgryId());
+			tfservicerequire.setValue(assetDetailsDM.getServicereqd());
+			cbAssetStatus.setValue(assetDetailsDM.getAssetstatus());
 		}
 		spec.loadSrchRslt(true, assetId);
 		owndetails.loadSrchRslt(true, assetId);
@@ -550,7 +535,6 @@ public class AssetDetails extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(false);
 		hlUserIPContainer.addComponent((hlUserInputLayout));
 		tfAssetName.setRequired(true);
-		// hlInput.removeAllComponents();
 		spec = new AssetSpec(vlAssetSpec, null, assetId);
 		owndetails = new AssetOwnDetails(vlOwnDetails, assetOwnId);
 		tblMstScrSrchRslt.setVisible(false);
@@ -565,7 +549,7 @@ public class AssetDetails extends BaseTransUI {
 		// reset the input controls to default value
 		hlUserIPContainer.removeAllComponents();
 		assembleUserInputLayout();
-		hlUserIPContainer.addComponent/* (GERPPanelGenerator.createPanel */(hlUserInputLayout);
+		hlUserIPContainer.addComponent(hlUserInputLayout);
 		spec = new AssetSpec(vlAssetSpec, null, assetId);
 		owndetails = new AssetOwnDetails(vlOwnDetails, assetOwnId);
 		editAssetDetails();
@@ -622,63 +606,63 @@ public class AssetDetails extends BaseTransUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			AssetDetailsDM assetdtl = new AssetDetailsDM();
+			AssetDetailsDM assetDetailsDM = new AssetDetailsDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				assetdtl = beanAssetdetail.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				assetDetailsDM = beanAssetdetail.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			assetdtl.setAssetName(tfAssetName.getValue());
-			assetdtl.setAssetdetails(tfAssetDetailDesc.getValue());
-			assetdtl.setAssetType(cbAssetType.getValue().toString());
+			assetDetailsDM.setAssetName(tfAssetName.getValue());
+			assetDetailsDM.setAssetdetails(tfAssetDetailDesc.getValue());
+			assetDetailsDM.setAssetType(cbAssetType.getValue().toString());
 			if (cbBrandId.getValue() != null) {
-				assetdtl.setBrandId(Long.valueOf(cbBrandId.getValue().toString()));
+				assetDetailsDM.setBrandId(Long.valueOf(cbBrandId.getValue().toString()));
 			}
 			if (cbbranch.getValue() != null) {
-				assetdtl.setBranchId(Long.valueOf(cbbranch.getValue().toString()));
+				assetDetailsDM.setBranchId(Long.valueOf(cbbranch.getValue().toString()));
 			}
 			if (cbDeptId.getValue() != null) {
-				assetdtl.setDeptId(Long.valueOf(cbDeptId.getValue().toString()));
+				assetDetailsDM.setDeptId(Long.valueOf(cbDeptId.getValue().toString()));
 			}
-			assetdtl.setCatgryId((Long) cbcategory.getValue());
-			assetdtl.setWarrentydesc(tawarrentdesc.getValue());
-			assetdtl.setServicereqd(tfservicerequire.getValue());
-			assetdtl.setSerialno(tfSerialNo.getValue());
-			assetdtl.setMfgserialno(tfMfgSerialNo.getValue());
-			assetdtl.setAssetlocation(tfAssetLocation.getValue());
-			assetdtl.setPurchasedate(dtPurchaseDate.getValue());
-			assetdtl.setPurchasevalue(Long.valueOf(tfPurchaseValue.getValue()));
-			assetdtl.setInvoiceno(tfInvoiceNo.getValue());
-			assetdtl.setWarrentyenddt(dtWarrentyDate.getValue());
+			assetDetailsDM.setCatgryId((Long) cbcategory.getValue());
+			assetDetailsDM.setWarrentydesc(tawarrentdesc.getValue());
+			assetDetailsDM.setServicereqd(tfservicerequire.getValue());
+			assetDetailsDM.setSerialno(tfSerialNo.getValue());
+			assetDetailsDM.setMfgserialno(tfMfgSerialNo.getValue());
+			assetDetailsDM.setAssetlocation(tfAssetLocation.getValue());
+			assetDetailsDM.setPurchasedate(dtPurchaseDate.getValue());
+			assetDetailsDM.setPurchasevalue(Long.valueOf(tfPurchaseValue.getValue()));
+			assetDetailsDM.setInvoiceno(tfInvoiceNo.getValue());
+			assetDetailsDM.setWarrentyenddt(dtWarrentyDate.getValue());
 			try {
 				if (tfSalvageValue.getValue() != null && tfSalvageValue.getValue().trim().length() > 0) {
-					assetdtl.setSalvagevalue(new Long(tfSalvageValue.getValue()));
+					assetDetailsDM.setSalvagevalue(new Long(tfSalvageValue.getValue()));
 				}
 				if (tfLifeInYears.getValue() != null && tfLifeInYears.getValue().trim().length() > 0) {
-					assetdtl.setLifeinyears(new Long(tfLifeInYears.getValue()));
+					assetDetailsDM.setLifeinyears(new Long(tfLifeInYears.getValue()));
 				}
 				if (tfLifeInMonths.getValue() != null && tfLifeInMonths.getValue().trim().length() > 0) {
-					assetdtl.setLifeinmonths(new Long(tfLifeInMonths.getValue()));
+					assetDetailsDM.setLifeinmonths(new Long(tfLifeInMonths.getValue()));
 				}
 				if (tfLicenseInfo.getValue() != null && tfLicenseInfo.getValue().trim().length() > 0) {
-					assetdtl.setLicenseinfo(tfLicenseInfo.getValue());
+					assetDetailsDM.setLicenseinfo(tfLicenseInfo.getValue());
 				}
-				assetdtl.setRemarks(tfRemarks.getValue());
-				assetdtl.setActionedby((Long) cbaction.getValue());
-				assetdtl.setPreparedby(employeeid);
-				assetdtl.setReviewedby((Long) cbreview.getValue());
+				assetDetailsDM.setRemarks(tfRemarks.getValue());
+				assetDetailsDM.setActionedby((Long) cbaction.getValue());
+				assetDetailsDM.setPreparedby(employeeid);
+				assetDetailsDM.setReviewedby((Long) cbreview.getValue());
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-			assetdtl.setLastservicedt(dtLastServiceDate.getValue());
-			assetdtl.setNextservicedt(dtNextServiceDate.getValue());
-			assetdtl.setAssetstatus((String) cbAssetStatus.getValue());
-			assetdtl.setCompanyid(companyid);
-			assetdtl.setLastupdateddt(DateUtils.getcurrentdate());
-			assetdtl.setLastupdatedby(username);
-			serviceAssetDetail.saveAndUpdateAssetDetails(assetdtl);
-			spec.saveAssetSpec(assetdtl.getAssetId());
+			assetDetailsDM.setLastservicedt(dtLastServiceDate.getValue());
+			assetDetailsDM.setNextservicedt(dtNextServiceDate.getValue());
+			assetDetailsDM.setAssetstatus((String) cbAssetStatus.getValue());
+			assetDetailsDM.setCompanyid(companyid);
+			assetDetailsDM.setLastupdateddt(DateUtils.getcurrentdate());
+			assetDetailsDM.setLastupdatedby(username);
+			serviceAssetDetail.saveAndUpdateAssetDetails(assetDetailsDM);
+			spec.saveAssetSpec(assetDetailsDM.getAssetId());
 			spec.resetFields();
-			owndetails.saveAssetOwners(assetdtl.getAssetId());
+			owndetails.saveAssetOwners(assetDetailsDM.getAssetId());
 			owndetails.resetfields();
 			resetFields();
 			loadSrchRslt();
@@ -748,10 +732,9 @@ public class AssetDetails extends BaseTransUI {
 		cbcategory.setComponentError(null);
 		tfservicerequire.setValue("");
 	}
-
+	
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
-		
 	}
 }

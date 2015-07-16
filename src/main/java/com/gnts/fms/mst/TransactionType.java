@@ -158,7 +158,6 @@ public class TransactionType extends BaseUI {
 					+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + ",  Active ," + companyId
 					+ "Selected Transaction Type Id -> " + transtypeid);
 			tfTranstypeName.setValue(sltedRcd.getItemProperty("transtypename").getValue().toString());
-			System.out.println("cbcr----------------->" + sltedRcd.getItemProperty("crdr").getValue().toString());
 			String credr = sltedRcd.getItemProperty("crdr").getValue().toString();
 			if (credr.equals("Credit")) {
 				credr = "C";

@@ -45,7 +45,6 @@ import com.gnts.fms.domain.txn.AccountsDM;
 import com.gnts.fms.domain.txn.FundRequestDM;
 import com.gnts.fms.service.txn.AccountsService;
 import com.gnts.fms.service.txn.FundRequestService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -83,9 +82,9 @@ public class FundRequest extends BaseUI {
 	private String loginUserName;
 	private Long companyId, empId;
 	private int recordCnt;
-	String primaryid;
+	private String primaryid;
 	private BeanItemContainer<FundRequestDM> beansFundRequestDM = null;
-	private static Logger logger = Logger.getLogger(FundRequest.class);
+	private Logger logger = Logger.getLogger(FundRequest.class);
 	
 	// Constructor
 	public FundRequest() {
@@ -192,31 +191,27 @@ public class FundRequest extends BaseUI {
 	
 	// For Load Active Branch Details based on Company
 	private void loadBranchList() {
-		List<BranchDM> list = serviceBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId,
-				"P");
 		BeanContainer<Long, BranchDM> bean = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		bean.setBeanIdProperty("branchId");
-		bean.addAll(list);
+		bean.addAll(serviceBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId, "P"));
 		cbBranchName.setContainerDataSource(bean);
 	}
 	
 	// For Load Active Account Type Details based on Company
 	private void loadAccountTypeList() {
-		List<AccountsDM> list = serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null);
 		BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
-		bean.addAll(list);
+		bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
 		cbAccountReference.setContainerDataSource(bean);
 	}
 	
 	private void editFundReq() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			FundRequestDM fundReqList = beansFundRequestDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			primaryid = (itselect.getItemProperty("fundrqstId").getValue().toString());
-			if (fundReqList.getFundrqsrDt() != null) {
-				dfFundReqDt.setValue(fundReqList.getFundrqsrDt());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			FundRequestDM fundRequestDM = beansFundRequestDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			primaryid = fundRequestDM.getFundrqstId().toString();
+			if (fundRequestDM.getFundrqsrDt() != null) {
+				dfFundReqDt.setValue(fundRequestDM.getFundrqsrDt());
 			}
-			Long uom = fundReqList.getAccountId();
+			Long uom = fundRequestDM.getAccountId();
 			Collection<?> uomid = cbAccountReference.getItemIds();
 			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -227,19 +222,19 @@ public class FundRequest extends BaseUI {
 					cbAccountReference.setValue(itemId);
 				}
 			}
-			if (fundReqList.getBranchId() != null) {
-				cbBranchName.setValue(fundReqList.getBranchId());
+			if (fundRequestDM.getBranchId() != null) {
+				cbBranchName.setValue(fundRequestDM.getBranchId());
 			}
-			if (fundReqList.getReqdAmt() != null) {
-				tfReqAmt.setValue(fundReqList.getReqdAmt().toString());
+			if (fundRequestDM.getReqdAmt() != null) {
+				tfReqAmt.setValue(fundRequestDM.getReqdAmt().toString());
 			}
-			if (fundReqList.getReqDtl() != null) {
-				tfReqDtl.setValue(fundReqList.getReqDtl());
+			if (fundRequestDM.getReqDtl() != null) {
+				tfReqDtl.setValue(fundRequestDM.getReqDtl());
 			}
-			if (fundReqList.getApprvAmt() != null) {
-				tfApprvAmt.setValue(fundReqList.getApprvAmt().toString());
+			if (fundRequestDM.getApprvAmt() != null) {
+				tfApprvAmt.setValue(fundRequestDM.getApprvAmt().toString());
 			}
-			cbStatus.setValue(fundReqList.getRqstStatus());
+			cbStatus.setValue(fundRequestDM.getRqstStatus());
 		}
 	}
 	

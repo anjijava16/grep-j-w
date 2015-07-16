@@ -20,66 +20,34 @@ package com.gnts.fms.mst;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import com.gnts.erputil.ui.BaseUI;
-import com.gnts.erputil.components.GERPAddEditHLayout;
-import com.gnts.erputil.components.GERPPanelGenerator;
-import javax.swing.ComboBoxEditor;
 import org.apache.log4j.Logger;
-import org.vaadin.haijian.CSVExporter;
-import org.vaadin.haijian.ExcelExporter;
-import org.vaadin.haijian.PdfExporter;
-import com.gnts.erputil.components.GERPComboBox;
-import com.gnts.erputil.constants.GERPErrorCodes;
-import com.gnts.base.domain.mst.CountryDM;
 import com.gnts.base.domain.mst.DepartmentDM;
 import com.gnts.base.service.mst.DepartmentService;
-import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.AuditRecordsApp;
-import com.gnts.erputil.domain.StatusDM;
+import com.gnts.erputil.BASEConstants;
+import com.gnts.erputil.components.GERPAddEditHLayout;
+import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPPanelGenerator;
+import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
-import com.gnts.erputil.BASEConstants;
+import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.fms.domain.mst.PNCCentersDM;
 import com.gnts.fms.domain.mst.PNCDeptMapDM;
 import com.gnts.fms.service.mst.PNCCentersService;
 import com.gnts.fms.service.mst.PNCDeptMapService;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.server.UserError;
-import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table.Align;
+import com.vaadin.ui.UI;
 
 public class PNCDeptMap extends BaseUI {
 	private static final long serialVersionUID = 1L;
@@ -124,7 +92,6 @@ public class PNCDeptMap extends BaseUI {
 		/*
 		 * For Load Active PNC Center based on Company
 		 */
-		// cbPNCCenters.setInputPrompt(Common.SELECT_PROMPT);
 		cbPNCCenters.setNullSelectionAllowed(false);
 		cbPNCCenters.setItemCaptionPropertyId("pnccode");
 		loadPNCCenterList();
@@ -193,9 +160,9 @@ public class PNCDeptMap extends BaseUI {
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Got the PNCCenter. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanPNCDeptMapDM);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "pncmapid","departmentname", "status",
-					"lastupdateddt", "lastupdatedby", });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id","Department Name", "Status",
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "pncmapid", "departmentname", "status", "lastupdateddt",
+					"lastupdatedby", });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Department Name", "Status",
 					"Last Updated Date", "Last Updated By" });
 			tblMstScrSrchRslt.setColumnAlignment("pncmapid", Align.RIGHT);
 			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
@@ -210,19 +177,16 @@ public class PNCDeptMap extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		pncDeptMap = sltedRcd.getItemProperty("pncmapid").getValue().toString();
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Selected PNCDeptMap. Id -> " + pncDeptMap);
-		if (sltedRcd != null) {
-			PNCDeptMapDM editPNCDeptList = beanPNCDeptMapDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (editPNCDeptList.getPncid() != null) {
-				cbPNCCenters.setValue(editPNCDeptList.getPncid());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			PNCDeptMapDM pncDeptMapDM = beanPNCDeptMapDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			pncDeptMap = pncDeptMapDM.getPncmapid().toString();
+			if (pncDeptMapDM.getPncid() != null) {
+				cbPNCCenters.setValue(pncDeptMapDM.getPncid());
 			}
-			if (editPNCDeptList.getDeptid() != null) {
-				cbDepartmentName.setValue(editPNCDeptList.getDeptid());
+			if (pncDeptMapDM.getDeptid() != null) {
+				cbDepartmentName.setValue(pncDeptMapDM.getDeptid());
 			}
-			cbstatus.setValue(sltedRcd.getItemProperty("status").getValue().toString());
+			cbstatus.setValue(pncDeptMapDM.getStatus());
 		}
 	}
 	
@@ -230,10 +194,9 @@ public class PNCDeptMap extends BaseUI {
 	 * For Load Active Account Type Details based on Company
 	 */
 	private void loadDepartmentList() {
-		List<DepartmentDM> list = serviceDepartment.getDepartmentList(companyId, null, "Active", "T");
 		BeanContainer<Long, DepartmentDM> bean = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		bean.setBeanIdProperty("deptid");
-		bean.addAll(list);
+		bean.addAll(serviceDepartment.getDepartmentList(companyId, null, "Active", "P"));
 		cbDepartmentName.setContainerDataSource(bean);
 	}
 	
@@ -241,10 +204,9 @@ public class PNCDeptMap extends BaseUI {
 	 * For Load Active Account Type Details based on Company
 	 */
 	private void loadPNCCenterList() {
-		List<PNCCentersDM> list = servicepnccnter.getCenterTypeList(null, companyId, (String) cbstatus.getValue(), "T");
 		BeanContainer<Long, PNCCentersDM> bean = new BeanContainer<Long, PNCCentersDM>(PNCCentersDM.class);
 		bean.setBeanIdProperty("pncid");
-		bean.addAll(list);
+		bean.addAll(servicepnccnter.getCenterTypeList(null, companyId, (String) cbstatus.getValue(), "T"));
 		cbPNCCenters.setContainerDataSource(bean);
 	}
 	

@@ -6,11 +6,11 @@ import com.gnts.base.mst.Product;
 import com.gnts.base.service.mst.ProductService;
 import com.gnts.crm.mst.Client;
 import com.gnts.crm.service.mst.ClientService;
+import com.gnts.die.txn.DieRequest;
 import com.gnts.dsn.stt.txn.DesignDocuments;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.mfg.txn.WorkOrder;
-import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsInvoiceHdrService;
 import com.gnts.sms.service.txn.SmsPOHdrService;
@@ -28,7 +28,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.FormLayout;
@@ -38,6 +37,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 public class DashbordView implements ClickListener {
 	/**
@@ -54,6 +54,7 @@ public class DashbordView implements ClickListener {
 	private Button btnProductCount = new Button("17", this);
 	private Button btnClientCount = new Button("22", this);
 	private Button btnEnquiryDocs = new Button("Documents", this);
+	private Button btnDieRequest = new Button("10", this);
 	private Button btnNotify = new Button();
 	private Window notificationsWindow;
 	private SmsEnqHdrService serviceenqhdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
@@ -100,7 +101,8 @@ public class DashbordView implements ClickListener {
 		btnProductCount.setStyleName("borderless-coloredbig");
 		btnClientCount.setStyleName("borderless-coloredbig");
 		btnEnquiryDocs.setStyleName("borderless-coloredmed");
-		VerticalLayout root =new VerticalLayout();
+		btnDieRequest.setStyleName("borderless-coloredbig");
+		VerticalLayout root = new VerticalLayout();
 		root.addComponent(buildHeader());
 		clMainLayout.removeAllComponents();
 		lblDashboardTitle = new Label();
@@ -119,6 +121,7 @@ public class DashbordView implements ClickListener {
 		custom.addComponent(btnProductCount, "productCount");
 		custom.addComponent(btnClientCount, "clientCount");
 		custom.addComponent(btnEnquiryDocs, "enquirydocuments");
+		custom.addComponent(btnDieRequest, "dieRequest");
 	}
 	
 	private Component buildHeader() {
@@ -146,6 +149,7 @@ public class DashbordView implements ClickListener {
 		});
 		return btnNotify;
 	}
+	
 	@Override
 	public void buttonClick(ClickEvent event) {
 		// TODO Auto-generated method stub
@@ -203,84 +207,92 @@ public class DashbordView implements ClickListener {
 			UI.getCurrent().getSession().setAttribute("screenName", "Enquiry Docuemnts");
 			new DesignDocuments();
 		}
-	}
-private void openNotificationsPopup(final ClickEvent event) {
-	VerticalLayout notificationsLayout = new VerticalLayout();
-	notificationsLayout.setMargin(true);
-	notificationsLayout.setSpacing(true);
-	final Panel panel = new Panel("Notifications");
-	notificationsLayout.addComponent(panel);
-	List<ECRequestDM> ecrequestDm = new ArrayList<ECRequestDM>();
-	SmsEnqHdrDM smsenqhdr = new SmsEnqHdrDM();
-	
-	ecrequestDm = ServiceEcrequest.getECRequestList(null, null,null, "Active");
-	FormLayout fmlayout = new FormLayout();
-	VerticalLayout hrLayout = new VerticalLayout();
-	for (ECRequestDM n : ecrequestDm) {
-		hrLayout.addStyleName("notification-item");
-		if(n.getPartNumber() != null & n.getDrgNumber() != null)
-		{
-			Label titleLabel = new Label("\n" + "<table style=width:100%><tr><td><small>Status : </small><font color=blue><font size=4>"+n.getStatus()+"</font></font color></td><td><small>ECR No : </small><font color=green>" + n.getEcrNumber()+ "</font></td></tr></table>",ContentMode.HTML);
-			Label titleLabel1 = new Label("<small>Enquiry No: </small><font color=green>" +n.getEnquiryNo()
-					+ "</font>", ContentMode.HTML);
-			Label titleLabel3 = new Label("<small>Drag No : </small><font color=red>" + n.getDrgNumber() + "</font>",
-					ContentMode.HTML);
-			Label titleLabel4 = new Label("<small>Part No  : </small><font color=red>" + n.getPartNumber() + "</font>",
-					ContentMode.HTML);
-			Label titleLabel5 = new Label("<HR size=3 color=red>", ContentMode.HTML);
-		titleLabel.addStyleName("notification-title");
-		fmlayout.addComponents(titleLabel);
-		fmlayout.addComponents(titleLabel1);
-		//fmlayout.addComponents(titleLabel2);
-		fmlayout.addComponent(titleLabel3);
-		fmlayout.addComponent(titleLabel4);
-		fmlayout.addComponent(titleLabel5);
-		hrLayout.addComponent(fmlayout);
-		}	
-	}
-	notificationsLayout.addComponent(hrLayout);
-	HorizontalLayout footer = new HorizontalLayout();
-	footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-	footer.setWidth("100%");
-	Button showAll = new Button("View All Notifications", new ClickListener() {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		
-		@Override
-		public void buttonClick(final ClickEvent event) {
+		if (event.getButton() == btnDieRequest) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
-			new SmsEnquiry();
+			UI.getCurrent().getSession().setAttribute("IS_DIE_ENQ", true);
+			UI.getCurrent().getSession().setAttribute("screenName", "Die Request");
+			new DieRequest();
+		}
+	}
+	
+	private void openNotificationsPopup(final ClickEvent event) {
+		VerticalLayout notificationsLayout = new VerticalLayout();
+		notificationsLayout.setMargin(true);
+		notificationsLayout.setSpacing(true);
+		final Panel panel = new Panel("Notifications");
+		notificationsLayout.addComponent(panel);
+		List<ECRequestDM> ecrequestDm = new ArrayList<ECRequestDM>();
+		ecrequestDm = ServiceEcrequest.getECRequestList(null, null, null, "Active");
+		FormLayout fmlayout = new FormLayout();
+		VerticalLayout hrLayout = new VerticalLayout();
+		for (ECRequestDM n : ecrequestDm) {
+			hrLayout.addStyleName("notification-item");
+			if (n.getPartNumber() != null & n.getDrgNumber() != null) {
+				Label titleLabel = new Label("\n"
+						+ "<table style=width:100%><tr><td><small>Status : </small><font color=blue><font size=4>"
+						+ n.getStatus() + "</font></font color></td><td><small>ECR No : </small><font color=green>"
+						+ n.getEcrNumber() + "</font></td></tr></table>", ContentMode.HTML);
+				Label titleLabel1 = new Label("<small>Enquiry No: </small><font color=green>" + n.getEnquiryNo()
+						+ "</font>", ContentMode.HTML);
+				Label titleLabel3 = new Label("<small>Drag No : </small><font color=red>" + n.getDrgNumber()
+						+ "</font>", ContentMode.HTML);
+				Label titleLabel4 = new Label("<small>Part No  : </small><font color=red>" + n.getPartNumber()
+						+ "</font>", ContentMode.HTML);
+				Label titleLabel5 = new Label("<HR size=3 color=red>", ContentMode.HTML);
+				titleLabel.addStyleName("notification-title");
+				fmlayout.addComponents(titleLabel);
+				fmlayout.addComponents(titleLabel1);
+				// fmlayout.addComponents(titleLabel2);
+				fmlayout.addComponent(titleLabel3);
+				fmlayout.addComponent(titleLabel4);
+				fmlayout.addComponent(titleLabel5);
+				hrLayout.addComponent(fmlayout);
+			}
+		}
+		notificationsLayout.addComponent(hrLayout);
+		HorizontalLayout footer = new HorizontalLayout();
+		footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+		footer.setWidth("100%");
+		Button showAll = new Button("View All Notifications", new ClickListener() {
+			/**
+		 * 
+		 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				clMainLayout.removeAllComponents();
+				hlHeader.removeAllComponents();
+				new SmsEnquiry();
+				notificationsWindow.close();
+			}
+		});
+		showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+		showAll.addStyleName(ValoTheme.BUTTON_SMALL);
+		footer.addComponent(showAll);
+		footer.setComponentAlignment(showAll, Alignment.TOP_CENTER);
+		notificationsLayout.addComponent(footer);
+		if (notificationsWindow == null) {
+			notificationsWindow = new Window();
+			notificationsWindow.setWidthUndefined();
+			notificationsWindow.addStyleName("notifications");
+			notificationsWindow.setClosable(false);
+			notificationsWindow.setResizable(false);
+			notificationsWindow.setDraggable(true);
+			notificationsWindow.setCloseShortcut(KeyCode.ESCAPE, null);
+			notificationsWindow.setContent(notificationsLayout);
+			notificationsWindow.setHeightUndefined();
+		}
+		if (!notificationsWindow.isAttached()) {
+			notificationsWindow.setPositionX(event.getClientX() - 200);
+			notificationsWindow.setPositionY(event.getClientY());
+			notificationsWindow.setHeight("400");
+			notificationsWindow.setWidth("300");
+			UI.getCurrent().addWindow(notificationsWindow);
+			notificationsWindow.focus();
+		} else {
 			notificationsWindow.close();
 		}
-	});
-	showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-	showAll.addStyleName(ValoTheme.BUTTON_SMALL);
-	footer.addComponent(showAll);
-	footer.setComponentAlignment(showAll, Alignment.TOP_CENTER);
-	notificationsLayout.addComponent(footer);
-	if (notificationsWindow == null) {
-		notificationsWindow = new Window();
-		notificationsWindow.setWidthUndefined();
-		notificationsWindow.addStyleName("notifications");
-		notificationsWindow.setClosable(false);
-		notificationsWindow.setResizable(false);
-		notificationsWindow.setDraggable(true);
-		notificationsWindow.setCloseShortcut(KeyCode.ESCAPE, null);
-		notificationsWindow.setContent(notificationsLayout);
-		notificationsWindow.setHeightUndefined();
 	}
-	if (!notificationsWindow.isAttached()) {
-		notificationsWindow.setPositionX(event.getClientX() - 200);
-		notificationsWindow.setPositionY(event.getClientY());
-		notificationsWindow.setHeight("400");
-		notificationsWindow.setWidth("300");
-		UI.getCurrent().addWindow(notificationsWindow);
-		notificationsWindow.focus();
-	} else {
-		notificationsWindow.close();
-	}
-}
 }

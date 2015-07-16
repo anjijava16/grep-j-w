@@ -40,7 +40,6 @@ import com.gnts.fms.domain.mst.BankBranchDM;
 import com.gnts.fms.domain.mst.BankDM;
 import com.gnts.fms.service.mst.BankBranchService;
 import com.gnts.fms.service.mst.BankService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -285,26 +284,25 @@ public class BankBranch extends BaseUI {
 	private void editBankBranch() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		bankbrnchid = sltedRcd.getItemProperty("bankbrnchid").getValue().toString();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected BankBranch. Id -> "
 				+ bankbrnchid);
-		if (sltedRcd != null) {
-			BankBranchDM editBankBranchlist = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbBankName.setValue(editBankBranchlist.getBankid());
-			tfIFSCCode.setValue(editBankBranchlist.getIfsccode());
-			tfMICRCode.setValue(editBankBranchlist.getMicrcode());
-			tfAddress1.setValue(editBankBranchlist.getAddress1());
-			tfAddress2.setValue(editBankBranchlist.getAddress2());
-			cbCountry.setValue(editBankBranchlist.getCountryid());
-			cbState.setValue(editBankBranchlist.getStateid().toString());
-			cbCity.setValue(editBankBranchlist.getCityid().toString());
-			tfPhoneno.setValue(editBankBranchlist.getPhno().toString());
-			tfEmail.setValue(editBankBranchlist.getEmailid());
-			cbStatus.setValue(editBankBranchlist.getBranchstatus());
-			cbCountry.setValue(editBankBranchlist.getCountryid());
-			cbState.setValue(editBankBranchlist.getStateid());
-			cbCity.setValue(editBankBranchlist.getCityid());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			BankBranchDM bankBranchDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			bankbrnchid = bankBranchDM.getBankbrnchid().toString();
+			cbBankName.setValue(bankBranchDM.getBankid());
+			tfIFSCCode.setValue(bankBranchDM.getIfsccode());
+			tfMICRCode.setValue(bankBranchDM.getMicrcode());
+			tfAddress1.setValue(bankBranchDM.getAddress1());
+			tfAddress2.setValue(bankBranchDM.getAddress2());
+			cbCountry.setValue(bankBranchDM.getCountryid());
+			cbState.setValue(bankBranchDM.getStateid().toString());
+			cbCity.setValue(bankBranchDM.getCityid().toString());
+			tfPhoneno.setValue(bankBranchDM.getPhno().toString());
+			tfEmail.setValue(bankBranchDM.getEmailid());
+			cbStatus.setValue(bankBranchDM.getBranchstatus());
+			cbCountry.setValue(bankBranchDM.getCountryid());
+			cbState.setValue(bankBranchDM.getStateid());
+			cbCity.setValue(bankBranchDM.getCityid());
 		}
 	}
 	
@@ -474,10 +472,9 @@ public class BankBranch extends BaseUI {
 	
 	private void loadBankList() {
 		try {
-			List<BankDM> getBankList = bankbean.getBanklist(null, null, null, "Active", "P");
 			BeanContainer<Long, BankDM> bean = new BeanContainer<Long, BankDM>(BankDM.class);
 			bean.setBeanIdProperty("bankid");
-			bean.addAll(getBankList);
+			bean.addAll(bankbean.getBanklist(null, null, null, "Active", "P"));
 			cbBankName.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
@@ -487,28 +484,23 @@ public class BankBranch extends BaseUI {
 	}
 	
 	private void loadCountryList() {
-		List<CountryDM> list = serviceCountry.getCountryList(null, null, null, null, "Active", "P");
 		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(list);
+		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
 		cbCountry.setContainerDataSource(beanCountry);
 	}
 	
 	private void loadStateList() {
-		List<StateDM> getStateList = new ArrayList<StateDM>();
-		getStateList.addAll(serviceState.getStateList(null, "Active", null, companyid, "P"));
 		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(getStateList);
+		beanState.addAll(serviceState.getStateList(null, "Active", null, companyid, "P"));
 		cbState.setContainerDataSource(beanState);
 	}
 	
 	private void loadCityList() {
-		List<CityDM> list = new ArrayList<CityDM>();
-		list.addAll(citybean.getCityList(null, null, null, "Active", companyid, "P"));
 		BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
 		beanCity.setBeanIdProperty("cityid");
-		beanCity.addAll(list);
+		beanCity.addAll(citybean.getCityList(null, null, null, "Active", companyid, "P"));
 		cbCity.setContainerDataSource(beanCity);
 	}
 }

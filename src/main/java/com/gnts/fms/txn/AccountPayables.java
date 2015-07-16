@@ -45,7 +45,6 @@ import com.gnts.fms.domain.txn.AccountPayablesDM;
 import com.gnts.fms.domain.txn.AccountsDM;
 import com.gnts.fms.service.txn.AccountPayablesService;
 import com.gnts.fms.service.txn.AccountsService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -89,9 +88,9 @@ public class AccountPayables extends BaseUI {
 	private String loginUserName;
 	private Long companyId, empId;
 	private int recordCnt;
-	String primaryid;
+	private String primaryid;
 	private BeanItemContainer<AccountPayablesDM> beansAccountPayablesDM = null;
-	private static Logger logger = Logger.getLogger(AccountPayables.class);
+	private Logger logger = Logger.getLogger(AccountPayables.class);
 	
 	// Constructor
 	public AccountPayables() {
@@ -204,27 +203,23 @@ public class AccountPayables extends BaseUI {
 	
 	// For Load Active Branch Details based on Company
 	private void loadBranchList() {
-		List<BranchDM> list = serviceBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId,
-				"P");
 		BeanContainer<Long, BranchDM> bean = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		bean.setBeanIdProperty("branchId");
-		bean.addAll(list);
+		bean.addAll(serviceBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId, "P"));
 		cbBranchName.setContainerDataSource(bean);
 	}
 	
 	// For Load Active Account Type Details based on Company
 	private void loadAccountTypeList() {
-		List<AccountsDM> list = serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null);
 		BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
-		bean.addAll(list);
+		bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
 		cbAccountReference.setContainerDataSource(bean);
 	}
 	
 	private void editActPayables() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			AccountPayablesDM actpayablesList = beansAccountPayablesDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			primaryid = (itselect.getItemProperty("accPayableId").getValue().toString());
+			primaryid = actpayablesList.getAccPayableId().toString();
 			if (actpayablesList.getBranchId() != null) {
 				cbBranchName.setValue(actpayablesList.getBranchId());
 			}
@@ -338,17 +333,6 @@ public class AccountPayables extends BaseUI {
 			cbAccountReference.setComponentError(new UserError(GERPErrorCodes.NULL_FMS_ACCOUNT_REF));
 			errorFlag = true;
 		}
-		// if (tfInvoiceAmt.getValue() == "0") {
-		// tfInvoiceAmt.setComponentError(new UserError(GERPErrorCodes.NULL_FMS_INVOICEAMT));
-		// errorFlag = true;
-		// } else {
-		// tfInvoiceAmt.setComponentError(null);
-		// }
-		// if (cbActionedBy.getValue() == null){
-		// cbActionedBy.setComponentError(new UserError(GERPErrorCodes.NULL_FMS_ACTIONEDBY));
-		// errorFlag = true;
-		// }
-		//
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}

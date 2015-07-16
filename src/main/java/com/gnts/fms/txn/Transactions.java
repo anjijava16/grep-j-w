@@ -29,10 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.CompanyLookupDM;
-import com.gnts.base.domain.mst.DepartmentDM;
 import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.service.mst.CompanyLookupService;
-import com.gnts.base.service.mst.DepartmentService;
 import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
@@ -61,9 +59,6 @@ import com.gnts.fms.domain.txn.TransactionsDM;
 import com.gnts.fms.service.mst.TransactionTypeService;
 import com.gnts.fms.service.txn.AccountsService;
 import com.gnts.fms.service.txn.TransactionsService;
-import com.gnts.pms.domain.mst.ProjectDM;
-import com.gnts.pms.service.mst.ProjectService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -92,12 +87,10 @@ public class Transactions extends BaseTransUI {
 	private TransactionsService serviceTransactions = (TransactionsService) SpringContextHelper.getBean("transaction");
 	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private AccountsService serviceAccounttype = (AccountsService) SpringContextHelper.getBean("accounts");
-	private DepartmentService serviceDepartment = (DepartmentService) SpringContextHelper.getBean("department");
 	private TransactionTypeService serviceTransType = (TransactionTypeService) SpringContextHelper.getBean("transtype");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private ProjectService serviceprojects = (ProjectService) SpringContextHelper.getBean("MProjects");
-	public Button btnaddamt = new GERPButton("Add", "addbt", this);
+	private Button btnaddamt = new GERPButton("Add", "addbt", this);
 	private PopupDateField dfTransactionDate = new GERPPopupDateField("Transaction Date");
 	private ComboBox cbAccountReference = new GERPComboBox("Account Ref.");
 	private ComboBox cbApproveManager = new GERPComboBox("Approve Name");
@@ -126,7 +119,6 @@ public class Transactions extends BaseTransUI {
 	private Long companyId, empId, transactionId;
 	private int recordCnt;
 	private BeanItemContainer<TransactionsDM> beanTransactionDM = null;
-	BeanItemContainer<AccountsDM> Account = new BeanItemContainer<AccountsDM>(AccountsDM.class);
 	private Logger logger = Logger.getLogger(Transactions.class);
 	
 	public Transactions() {
@@ -136,7 +128,6 @@ public class Transactions extends BaseTransUI {
 		loginUserName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		empId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
-		System.out.println("empIdd---------------------->" + empId);
 		// Loading the UI
 		buildView();
 	}
@@ -161,11 +152,11 @@ public class Transactions extends BaseTransUI {
 		cbAccountReference.setItemCaptionPropertyId("accountname");
 		loadAccountTypeList();
 		cbDepartmentName.setItemCaptionPropertyId("ccyname");
-		//loadDepartmentList();
+		// loadDepartmentList();
 		cbTransactionType.setItemCaptionPropertyId("transtypename");
 		loadMTranstypeList();
 		cbProjectName.setItemCaptionPropertyId("projectName");
-		//loadProjectList();
+		// loadProjectList();
 		tfChequeNumber.setMaxLength(30);
 		cbPaymentMode.setItemCaptionPropertyId("lookupname");
 		loadPaymentmodeList();
@@ -176,7 +167,6 @@ public class Transactions extends BaseTransUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
-					savespecAmt();
 					new GERPSaveNotification();
 				}
 				catch (Exception e) {
@@ -201,8 +191,6 @@ public class Transactions extends BaseTransUI {
 				tfVoucherNo.setReadOnly(false);
 				tfVoucherNo.setValue("");
 				if (cbAccountReference.getValue() != null) {
-					System.out.println("self auto gen------------------------>"
-							+ ((AccountsDM) cbAccountReference.getValue()).getSelfapproveyn());
 					if (((AccountsDM) cbAccountReference.getValue()).getGenerateVoucherYN() != null
 							&& ((AccountsDM) cbAccountReference.getValue()).getGenerateVoucherYN().equals("Y")) {
 						RandomNoGenerator randomGen = new RandomNoGenerator();
@@ -224,38 +212,24 @@ public class Transactions extends BaseTransUI {
 	
 	// For Load Active Employee Details based on Company
 	private void loadEmployeeList() {
-		List<EmployeeDM> list = servicebeanEmployee.getEmployeeList(null, null, null, (String) cbStatus.getValue(),
-				companyId, null, null, null, null, "T");
 		BeanContainer<Long, EmployeeDM> employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		employeebeans.setBeanIdProperty("employeeid");
-		employeebeans.addAll(list);
+		employeebeans.addAll(servicebeanEmployee.getEmployeeList(null, null, null, (String) cbStatus.getValue(),
+				companyId, null, null, null, null, "P"));
 		cbApproveManager.setContainerDataSource(employeebeans);
 	}
 	
 	// For Load Active Account Type Details based on Company
 	private void loadAccountTypeList() {
-		List<AccountsDM> list = serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null);
 		BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
-		bean.addAll(list);
+		bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
 		cbAccountReference.setContainerDataSource(bean);
-	}
-	
-	// For Load Active Account Type Details based on Company
-	private void loadDepartmentList() {
-		List<DepartmentDM> list = serviceDepartment.getDepartmentList(companyId, null, (String) cbStatus.getValue(),
-				"P");
-		BeanContainer<Long, DepartmentDM> bean = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		bean.setBeanIdProperty("deptid");
-		bean.addAll(list);
-		cbDepartmentName.setContainerDataSource(bean);
 	}
 	
 	// For Load Active Transaction Type Details based on Company
 	private void loadMTranstypeList() {
-		List<TransactionTypeDM> list = serviceTransType.getTransactionTypeList(companyId, null,
-				(String) cbStatus.getValue(), null, null);
 		BeanItemContainer<TransactionTypeDM> bean = new BeanItemContainer<TransactionTypeDM>(TransactionTypeDM.class);
-		bean.addAll(list);
+		bean.addAll(serviceTransType.getTransactionTypeList(companyId, null, (String) cbStatus.getValue(), null, null));
 		cbTransactionType.setContainerDataSource(bean);
 	}
 	
@@ -263,23 +237,12 @@ public class Transactions extends BaseTransUI {
 	private void loadPaymentmodeList() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Loading Gender Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyId,
-				SessionForModule.getModuleId("FMS"), "Active", "FM_PAYMODE");
 		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
 				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId,
+				SessionForModule.getModuleId("FMS"), "Active", "FM_PAYMODE"));
 		cbPaymentMode.setContainerDataSource(beanCompanyLookUp);
-	}
-	
-	// For Load Active Project Details based on Company
-	private void loadProjectList() {
-		List<ProjectDM> list = serviceprojects
-				.getProjectList(null, null, companyId, null, (String) cbStatus.getValue());
-		BeanContainer<Long, ProjectDM> bean = new BeanContainer<Long, ProjectDM>(ProjectDM.class);
-		bean.setBeanIdProperty("projectId");
-		bean.addAll(list);
-		cbProjectName.setContainerDataSource(bean);
 	}
 	
 	private void assembleSearchLayout() {
@@ -321,7 +284,6 @@ public class Transactions extends BaseTransUI {
 		flFormLayout1.addComponent(tfTransactionAmount);
 		flFormLayout2.addComponent(cbPaymentMode);
 		flFormLayout2.addComponent(tfAccount);
-		// flFormLayout2.addComponent(dfChequeDate);
 		flFormLayout2.addComponent(tfRefDetails);
 		flFormLayout3.addComponent(tfInstrumentRemarks);
 		flFormLayout4.addComponent(tfApproverRemarks);
@@ -355,7 +317,6 @@ public class Transactions extends BaseTransUI {
 		transList = serviceTransactions.getTransactionDetails(companyId, null, null, (String) cbStatus.getValue(),
 				null, (String) cbPaymentMode.getValue(), (Long) cbAccountReference.getValue());
 		recordCnt = transList.size();
-		System.out.println("recordCnt---->" + recordCnt);
 		beanTransactionDM = new BeanItemContainer<TransactionsDM>(TransactionsDM.class);
 		beanTransactionDM.addAll(transList);
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
@@ -371,10 +332,9 @@ public class Transactions extends BaseTransUI {
 	}
 	
 	private void editTransactions() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			TransactionsDM transList = beanTransactionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			transactionId=(Long) itselect.getItemProperty("accTxnId").getValue();
+			transactionId = transList.getAccTxnId();
 			if (transList.getTransdt() != null) {
 				try {
 					dfTransactionDate.setValue(transList.getTransdt());
@@ -581,7 +541,7 @@ public class Transactions extends BaseTransUI {
 			tranObj.setLastupdatedby(loginUserName);
 			tranObj.setVoucherNo(tfVoucherNo.getValue());
 			serviceTransactions.saveTransactionDetails(tranObj);
-			transactionId=tranObj.getAccTxnId();
+			transactionId = tranObj.getAccTxnId();
 			serviceTransactions.updateAccountBalance(((AccountsDM) cbAccountReference.getValue()).getAccountId(),
 					closebalance, parkedamount);
 			resetFields();
@@ -591,21 +551,6 @@ public class Transactions extends BaseTransUI {
 			logger.info("Save Method------------------------->" + e);
 			e.printStackTrace();
 		}
-	}
-	
-	protected void savespecAmt() {/*
-								 * logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " +
-								 * "Saving Data... "); try { AccountPayablesDM acountPayableObj = new
-								 * AccountPayablesDM(); if (tblspec.getValue() != null) { acountPayableObj =
-								 * beanAccountPayablesDM.getItem(tblspec.getValue()).getBean(); }
-								 * acountPayableObj.setCompanyId(companyId); acountPayableObj.setPaidAmt(new
-								 * BigDecimal(tfPaidAmt.getValue())); acountPayableObj.setBalanceAmt(new
-								 * BigDecimal(tfBalAmt.getValue())); acountPayableObj.setLastUpadatedBy(loginUserName);
-								 * specList.add(productspecobj); BeanItemContainer<ProductSpecificationDM>
-								 * beanProdSpecDM = new BeanItemContainer<ProductSpecificationDM>(
-								 * ProductSpecificationDM.class); beanProdSpecDM.addAll(specList); loadSrchspecRslt(); }
-								 * catch (Exception e) { e.printStackTrace(); } specResetFields();
-								 */
 	}
 	
 	@Override
@@ -669,7 +614,6 @@ public class Transactions extends BaseTransUI {
 			parameterMap.put("TXNID", transactionId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/cashvoucher"); // pif is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

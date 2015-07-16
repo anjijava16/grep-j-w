@@ -33,11 +33,8 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.fms.domain.mst.PNCCentersDM;
 import com.gnts.fms.domain.mst.PNCDeptMapDM;
-import com.gnts.fms.domain.txn.AccountOwnersDM;
 import com.gnts.fms.service.mst.PNCCentersService;
 import com.gnts.fms.service.mst.PNCDeptMapService;
-import com.ibm.icu.impl.duration.impl.DataRecord.EPluralization;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -160,8 +157,8 @@ public class PNCCenters extends BaseUI {
 		tblMstScrSrchRslt.setContainerDataSource(beanPNCCenter);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "pncid", "pnccode", "status", "lastupdateddt",
 				"lastupdatedby", });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "PNC Code", "Status",
-				"Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "PNC Code", "Status", "Last Updated Date",
+				"Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("pncid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
@@ -181,21 +178,17 @@ public class PNCCenters extends BaseUI {
 	private void editPNCCenter() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		pkPNCId = (Long) sltedRcd.getItemProperty("pncid").getValue();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected PNCCenter. Id -> "
-				+ pkPNCId);
-		if (sltedRcd != null) {
-			PNCCentersDM editPNCCenter = beanPNCCenter.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfPNCCode.setValue(sltedRcd.getItemProperty("pnccode").getValue().toString());
-			if (editPNCCenter.getPncdesc() != null) {
-				tfPNCDesc.setValue(editPNCCenter.getPncdesc());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			PNCCentersDM pncCentersDM = beanPNCCenter.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			pkPNCId = pncCentersDM.getPncid();
+			tfPNCCode.setValue(pncCentersDM.getPnccode());
+			if (pncCentersDM.getPncdesc() != null) {
+				tfPNCDesc.setValue(pncCentersDM.getPncdesc());
 			}
-			cbPNCStatus.setValue(sltedRcd.getItemProperty("status").getValue().toString());
+			cbPNCStatus.setValue(pncCentersDM.getStatus());
 		}
 		lSDeptName.setValue(null);
 		List<PNCDeptMapDM> listPncDept = servicePNCDeptMap.getDeptMapList(pkPNCId, null, companyid, "Active");
-		logger.info("pncid------------------------->" + pkPNCId);
 		for (PNCDeptMapDM accOwner : listPncDept) {
 			lSDeptName.select(accOwner.getDeptid());
 		}
@@ -288,28 +281,25 @@ public class PNCCenters extends BaseUI {
 	@Override
 	protected void saveDetails() throws ERPException.SaveException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		PNCCentersDM pncObj = new PNCCentersDM();
+		PNCCentersDM pncCentersDM = new PNCCentersDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			pncObj = beanPNCCenter.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			pncCentersDM = beanPNCCenter.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		pncObj.setCompanyid(companyid);
-		pncObj.setPnccode(tfPNCCode.getValue().toString());
-		pncObj.setPncdesc(tfPNCDesc.getValue().toString());
+		pncCentersDM.setCompanyid(companyid);
+		pncCentersDM.setPnccode(tfPNCCode.getValue().toString());
+		pncCentersDM.setPncdesc(tfPNCDesc.getValue().toString());
 		if (cbPNCStatus.getValue() != null) {
-			pncObj.setStatus((String) cbPNCStatus.getValue());
+			pncCentersDM.setStatus((String) cbPNCStatus.getValue());
 		}
-		pncObj.setLastupdateddt(DateUtils.getcurrentdate());
-		pncObj.setLastupdatedby(username);
-		servicePNCCenter.saveDetails(pncObj);
-		logger.info("User Dept. Name> split------------" + lSDeptName.getValue().toString());
+		pncCentersDM.setLastupdateddt(DateUtils.getcurrentdate());
+		pncCentersDM.setLastupdatedby(username);
+		servicePNCCenter.saveDetails(pncCentersDM);
 		String[] split = lSDeptName.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
 		servicePNCDeptMap.deletePncDeptmap(pkPNCId);
-		logger.info("delete------------------->" + pkPNCId);
 		for (String obj : split) {
-			logger.info("Dept. Name> split------------" + obj);
 			if (obj.trim().length() > 0) {
 				PNCDeptMapDM pncDeptMapList = new PNCDeptMapDM();
-				pncDeptMapList.setPncid(pncObj.getPncid());
+				pncDeptMapList.setPncid(pncCentersDM.getPncid());
 				pncDeptMapList.setCompanyid(companyid);
 				pncDeptMapList.setDeptid(Long.valueOf(obj.trim()));
 				pncDeptMapList.setStatus("Active");
@@ -326,10 +316,9 @@ public class PNCCenters extends BaseUI {
 	 * For Load Active Account Type Details based on Company
 	 */
 	private void loadDepartmentList() {
-		List<DepartmentDM> list = serviceDepartment.getDepartmentList(companyId, null, "Active", "T");
 		BeanContainer<Long, DepartmentDM> bean = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		bean.setBeanIdProperty("deptid");
-		bean.addAll(list);
+		bean.addAll(serviceDepartment.getDepartmentList(companyId, null, "Active", "P"));
 		lSDeptName.setContainerDataSource(bean);
 	}
 }

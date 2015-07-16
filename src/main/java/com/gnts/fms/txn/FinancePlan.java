@@ -56,7 +56,6 @@ import com.gnts.fms.service.mst.TransactionTypeService;
 import com.gnts.fms.service.txn.FinancePlanService;
 import com.gnts.pms.domain.mst.ProjectDM;
 import com.gnts.pms.service.mst.ProjectService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -106,10 +105,10 @@ public class FinancePlan extends BaseUI {
 	private String loginUserName;
 	private Long companyId;
 	private int recordCnt;
-	String primaryid;
+	private String primaryid;
 	private Long empId;
 	private BeanItemContainer<FinancePlanDM> beansFinancePlanDM = null;
-	private static Logger logger = Logger.getLogger(FinancePlan.class);
+	private Logger logger = Logger.getLogger(FinancePlan.class);
 	
 	// Constructor
 	public FinancePlan() {
@@ -117,8 +116,6 @@ public class FinancePlan extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Inside FinancePlan() constructor");
 		loginUserName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
-		// moduleId = ()
-		// (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		// Loading the UI
 		empId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
@@ -251,82 +248,68 @@ public class FinancePlan extends BaseUI {
 	
 	// For Load Active Payment mode Details based on Company
 	private void loadFbCategoryList() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Loading Gender Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyId,
-				SessionForModule.getModuleId("FMS"), "Active", "FM_FPCTGRY");
 		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
 				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId,
+				SessionForModule.getModuleId("FMS"), "Active", "FM_FPCTGRY"));
 		cbFpCategory.setContainerDataSource(beanCompanyLookUp);
 	}
 	
 	// For Load Active Account Type Details based on Company
 	private void loadDepartmentList() {
-		List<DepartmentDM> list = serviceDepartment.getDepartmentList(companyId, null, (String) cbStatus.getValue(),
-				"P");
 		BeanContainer<Long, DepartmentDM> bean = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		bean.setBeanIdProperty("deptid");
-		bean.addAll(list);
+		bean.addAll(serviceDepartment.getDepartmentList(companyId, null, (String) cbStatus.getValue(), "P"));
 		cbDepartmentName.setContainerDataSource(bean);
 	}
 	
 	// For Load Active Employee Details based on Company
 	private void loadOwnerList() {
-		List<EmployeeDM> list = servicebeanEmployee.getEmployeeList(null, null, null, (String) cbStatus.getValue(),
-				companyId, null, null, null, null, "T");
 		BeanContainer<Long, EmployeeDM> employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		employeebeans.setBeanIdProperty("employeeid");
-		employeebeans.addAll(list);
+		employeebeans.addAll(servicebeanEmployee.getEmployeeList(null, null, null, (String) cbStatus.getValue(),
+				companyId, null, null, null, null, "P"));
 		cbOwnerName.setContainerDataSource(employeebeans);
 	}
 	
 	// For Load Active Transaction Type Details based on Company
 	private void loadMTranstypeList() {
-		List<TransactionTypeDM> list = serviceTransType.getTransactionTypeList(companyId, null,
-				(String) cbStatus.getValue(), null,null);
 		BeanContainer<Long, TransactionTypeDM> bean = new BeanContainer<Long, TransactionTypeDM>(
 				TransactionTypeDM.class);
 		bean.setBeanIdProperty("transtypeid");
-		bean.addAll(list);
+		bean.addAll(serviceTransType.getTransactionTypeList(companyId, null, (String) cbStatus.getValue(), null, null));
 		cbTransactionType.setContainerDataSource(bean);
 	}
 	
 	// For Load Active Project Details based on Company
 	private void loadProjectList() {
-		List<ProjectDM> list = serviceprojects
-				.getProjectList(null, null, companyId, null, (String) cbStatus.getValue());
 		BeanContainer<Long, ProjectDM> bean = new BeanContainer<Long, ProjectDM>(ProjectDM.class);
 		bean.setBeanIdProperty("projectId");
-		bean.addAll(list);
+		bean.addAll(serviceprojects.getProjectList(null, null, companyId, null, (String) cbStatus.getValue()));
 		cbProjectName.setContainerDataSource(bean);
 	}
 	
 	// For Load Active Account Type Details based on Company
 	private void loadCurrencyList() {
-		List<CurrencyDM> list = serviceCurrency.getCurrencyList(null, null, null, (String) cbStatus.getValue(), "T");
 		BeanContainer<Long, CurrencyDM> bean = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
 		bean.setBeanIdProperty("ccyid");
-		bean.addAll(list);
+		bean.addAll(serviceCurrency.getCurrencyList(null, null, null, (String) cbStatus.getValue(), "T"));
 		cbCurrency.setContainerDataSource(bean);
 	}
 	
 	// For Load Active Branch Details based on Company
 	private void loadBranchList() {
-		List<BranchDM> list = serviceBankBranch.getBranchList(null, null, null, (String) cbStatus.getValue(),
-				companyId, "P");
 		BeanContainer<Long, BranchDM> bean = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		bean.setBeanIdProperty("branchId");
-		bean.addAll(list);
+		bean.addAll(serviceBankBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId, "P"));
 		cbBranchName.setContainerDataSource(bean);
 	}
 	
 	private void editFinancePlan() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			FinancePlanDM finPlanList = beansFinancePlanDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			primaryid = (itselect.getItemProperty("fpid").getValue().toString());
+			primaryid = finPlanList.getFpid().toString();
 			if (finPlanList.getFpdesc() != null) {
 				tfFpDescription.setValue(finPlanList.getFpdesc());
 			}
@@ -366,7 +349,6 @@ public class FinancePlan extends BaseUI {
 			if (finPlanList.getRemarks() != null) {
 				tfRemarks.setValue(finPlanList.getRemarks());
 			}
-			// cbStatus.setValue(itselect.getItemProperty("fpstatus").getValue().toString());
 			finPlanList.setFpstatus(((String) cbStatus.getValue()));
 		}
 	}

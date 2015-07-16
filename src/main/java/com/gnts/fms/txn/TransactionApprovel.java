@@ -62,7 +62,7 @@ import com.vaadin.ui.Window;
 public class TransactionApprovel implements ClickListener {
 	private static final long serialVersionUID = 1L;
 	private Button btnCancel, btnSave, btnDownload;
-	private Table tblTransactions;
+	private Table tblTransactions = new Table();
 	private CheckBox chkApproveAll = new CheckBox("Approve All");
 	private VerticalLayout vlMainPanel = new VerticalLayout();
 	private VerticalLayout vlSearchPanel = new VerticalLayout();
@@ -83,7 +83,7 @@ public class TransactionApprovel implements ClickListener {
 	private Window notifications = new Window();
 	private ExcelExporter excelexporter = new ExcelExporter();
 	private CSVExporter csvexporter = new CSVExporter();
-	private PdfExporter pdfexporter = new PdfExporter();
+	private PdfExporter pdfexporter = new PdfExporter(tblTransactions);
 	private Logger logger = Logger.getLogger(TransactionApprovel.class);
 	
 	public TransactionApprovel() {
@@ -109,24 +109,12 @@ public class TransactionApprovel implements ClickListener {
 		btnSave = new Button("Save", this);
 		btnDownload = new Button("Download", this);
 		btnBack = new Button("Home", this);
-		/**
-		 * set the descriptions for buttons
-		 */
-		// btnSave.setDescription("Save Transactions");
-		/**
-		 * set the style for buttons
-		 */
-		/*
-		 * btnCancel.setDescription("Cancel"); btnDownload.setDescription("Download");
-		 */
 		btnCancel.addStyleName("cancelbt");
 		btnDownload.addStyleName("downloadbt");
 		btnSave.addStyleName("savebt");
 		btnBack.setStyleName("link");
 		btnHome = new Button("Home", this);
 		btnHome.setStyleName("homebtn");
-		// btnHome.setEnabled(false);
-		// btnDownload.setDescription("Download");
 		btnDownload.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -186,7 +174,7 @@ public class TransactionApprovel implements ClickListener {
 		hlAddEdit.setComponentAlignment(hlFileDownload, Alignment.MIDDLE_RIGHT);
 		hlAddEdit.setHeight("28px");
 		// table declaration
-		tblTransactions = new Table();
+		
 		tblTransactions.setSizeFull();
 		tblTransactions.setSelectable(true);
 		tblTransactions.setColumnCollapsingAllowed(true);

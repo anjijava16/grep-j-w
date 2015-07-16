@@ -11,7 +11,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
+import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.SlnoGenDM;
+import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
@@ -44,17 +46,19 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table.Align;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+/**
+ * @author soundar
+ * 
+ */
 public class DieRequest extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	// Bean Creation
@@ -62,14 +66,16 @@ public class DieRequest extends BaseTransUI {
 	private SmsEnqHdrService serviceEnqHeader = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private DieRequestService serviceDieRequest = (DieRequestService) SpringContextHelper.getBean("dieRequest");
 	private SmsEnquiryDtlService serviceEnqDetail = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
+	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(DieRequest.class);
 	// User Input Fields for EC Request
 	private PopupDateField dfRefDate, dfCompletionDate;
-	private ComboBox cbEnquiry, cbProduct, cbNewDie;
+	private GERPComboBox cbEnquiry, cbProduct, cbNewDie;
 	private GERPTextField tfNoofDie, tfCustomerCode, tfDrawingNumber, tfDieRefNumber;
-	private TextArea taChangeNote;
-	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
+	private GERPTextArea taChangeNote;
+	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<DieRequestDM> beanDieRequest = null;
 	// form layout for input controls EC Request
@@ -86,19 +92,20 @@ public class DieRequest extends BaseTransUI {
 	private int recordCnt = 0;
 	// for die section
 	private GERPComboBox cbRegisterby, cbReceivedby;
-	private GERPTextArea taTrailComments, taRectified;
-	private GERPTable tblDieSection = new GERPTable();
+	private GERPTextArea taTrailComments, taCmtsRectified;
 	// for Mold trail request
 	private GERPTextField tfMTRefNumber;
 	private GERPPopupDateField dfMTRefDate;
-	private GERPComboBox cbInput;
-	private GERPTextArea taDescription;
+	private GERPComboBox cbMTInput;
+	private GERPTextField tfMTDescription;
 	private GERPTable tblTrailRequest = new GERPTable();
 	// Die completion report
 	private GERPTextField tfDCRefNumber;
 	private GERPComboBox cbFromDept, cbToDept;
 	private GERPPopupDateField dfDCRefDate;
-	private GERPTable tblDieCompletion;
+	private GERPComboBox cbDCDescription, cbDCResult;
+	private GERPTextField taDCRemarks;
+	private GERPTable tblDieCompletion = new GERPTable();
 	
 	// Constructor received the parameters from Login UI class
 	public DieRequest() {
@@ -122,7 +129,7 @@ public class DieRequest extends BaseTransUI {
 		tfDrawingNumber.setEnabled(false);
 		cbNewDie = new GERPComboBox("New Die ?");
 		cbNewDie.addItems("Yes", "No");
-		taChangeNote = new TextArea("Change Note");
+		taChangeNote = new GERPTextArea("Change Note");
 		taChangeNote.setWidth("984");
 		cbEnquiry = new GERPComboBox("Enquiry No.");
 		cbEnquiry.setItemCaptionPropertyId("enquiryNo");
@@ -159,9 +166,31 @@ public class DieRequest extends BaseTransUI {
 		// for die section
 		cbRegisterby = new GERPComboBox("Registered by");
 		cbReceivedby = new GERPComboBox("Received by");
+		taTrailComments = new GERPTextArea("Trail Performance & Comments(by Roto)");
+		taTrailComments.setWidth("984");
+		taCmtsRectified = new GERPTextArea("Comments Rectified");
+		taCmtsRectified.setWidth("984");
 		// for mold section
 		tfMTRefNumber = new GERPTextField("Ref. Number");
 		dfMTRefDate = new GERPPopupDateField("Date");
+		cbMTInput = new GERPComboBox("Detail of Input");
+		loadInputTypes();
+		cbMTInput.setWidth("250");
+		tfMTDescription = new GERPTextField("Decription");
+		tfMTDescription.setWidth("350");
+		tblTrailRequest.setPageLength(12);
+		// for die completion
+		tfDCRefNumber = new GERPTextField("Report Number");
+		dfDCRefDate = new GERPPopupDateField("Date");
+		cbFromDept = new GERPComboBox("From ");
+		cbToDept = new GERPComboBox("To ");
+		cbDCDescription = new GERPComboBox("Description");
+		loadDCDescriptions();
+		cbDCResult = new GERPComboBox("Result");
+		loadDCResults();
+		taDCRemarks = new GERPTextField("Remarks");
+		taDCRemarks.setWidth("300");
+		tblDieCompletion.setPageLength(12);
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
@@ -202,6 +231,8 @@ public class DieRequest extends BaseTransUI {
 		tbDieRequest.addTab(GERPPanelGenerator.createPanel(vlHeader), "Die Request");
 		// for die section
 		VerticalLayout vlDieSection = new VerticalLayout();
+		vlDieSection.setSpacing(true);
+		vlDieSection.setMargin(true);
 		vlDieSection.addComponent(new HorizontalLayout() {
 			private static final long serialVersionUID = 1L;
 			{
@@ -210,25 +241,77 @@ public class DieRequest extends BaseTransUI {
 				addComponent(new FormLayout(cbReceivedby));
 			}
 		});
-		vlDieSection.addComponent(tblDieSection);
+		vlDieSection.addComponent(taTrailComments);
+		vlDieSection.addComponent(taCmtsRectified);
 		tbDieRequest.addTab(vlDieSection, "Die Section");
 		// for mold trial request
 		VerticalLayout vlMoldTrialRequest = new VerticalLayout();
-		vlMoldTrialRequest.addComponent(new HorizontalLayout() {
+		vlMoldTrialRequest.addComponent(GERPPanelGenerator.createPanel(new HorizontalLayout() {
 			private static final long serialVersionUID = 1L;
 			{
 				setSpacing(true);
+				setMargin(true);
 				addComponent(new FormLayout(tfMTRefNumber));
 				addComponent(new FormLayout(dfMTRefDate));
 			}
-		});
-		vlMoldTrialRequest.addComponent(tblTrailRequest);
+		}));
+		vlMoldTrialRequest.addComponent(GERPPanelGenerator.createPanel(new VerticalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				setMargin(true);
+				addComponent(new HorizontalLayout() {
+					private static final long serialVersionUID = 1L;
+					{
+						setSpacing(true);
+						addComponent(new FormLayout(cbMTInput));
+						addComponent(new FormLayout(tfMTDescription));
+					}
+				});
+				addComponent(tblTrailRequest);
+			}
+		}));
 		tbDieRequest.addTab(vlMoldTrialRequest, "Mold Trial Request");
-		tbDieRequest.addTab(new Label(), "Die Completion Report");
+		VerticalLayout vlDieCompletion = new VerticalLayout();
+		vlDieCompletion.addComponent(GERPPanelGenerator.createPanel(new HorizontalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				setMargin(true);
+				addComponent(new FormLayout(tfDCRefNumber));
+				addComponent(new FormLayout(dfDCRefDate));
+				addComponent(new FormLayout(cbFromDept));
+				addComponent(new FormLayout(cbToDept));
+			}
+		}));
+		vlDieCompletion.addComponent(GERPPanelGenerator.createPanel(new VerticalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				setMargin(true);
+				addComponent(new HorizontalLayout() {
+					private static final long serialVersionUID = 1L;
+					{
+						setSpacing(true);
+						addComponent(new FormLayout(cbDCDescription));
+						addComponent(new FormLayout(cbDCResult));
+						addComponent(new FormLayout(taDCRemarks));
+					}
+				});
+				addComponent(tblDieCompletion);
+			}
+		}));
+		tbDieRequest.addTab(vlDieCompletion, "Die Completion Report");
 		tbDieRequest.addTab(new Label(), "Bill of Matrial");
 		hlUserIPContainer.addComponent(tbDieRequest);
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
+		// for disable tabs
+		if (UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ") == null
+				|| (Boolean) UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ")) {
+			// vlDieSection.setEnabled(false);
+			// vlMoldTrialRequest.setEnabled(false);
+		}
 	}
 	
 	// Load EC Request
@@ -256,6 +339,34 @@ public class DieRequest extends BaseTransUI {
 		beansmsenqHdr.setBeanIdProperty("enquiryId");
 		beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
 		cbEnquiry.setContainerDataSource(beansmsenqHdr);
+	}
+	
+	private void loadInputTypes() {
+		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+				"DIE_MTR_INPUT");
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
+		beanCompanyLookUp.setBeanIdProperty("lookupname");
+		beanCompanyLookUp.addAll(lookUpList);
+		cbMTInput.setContainerDataSource(beanCompanyLookUp);
+	}
+	
+	private void loadDCDescriptions() {
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
+		beanCompanyLookUp.setBeanIdProperty("lookupname");
+		beanCompanyLookUp.addAll(serviceCompanyLookup
+				.getCompanyLookUpByLookUp(companyid, null, "Active", "DIE_DC_DESC"));
+		cbDCDescription.setContainerDataSource(beanCompanyLookUp);
+	}
+	
+	private void loadDCResults() {
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
+		beanCompanyLookUp.setBeanIdProperty("lookupname");
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+				"DIE_DC_RESULT"));
+		cbDCResult.setContainerDataSource(beanCompanyLookUp);
 	}
 	
 	private void loadProductList() {

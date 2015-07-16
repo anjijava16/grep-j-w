@@ -54,7 +54,6 @@ import com.gnts.fms.service.mst.BankBranchService;
 import com.gnts.fms.service.mst.BankService;
 import com.gnts.fms.service.txn.AccountOwnersService;
 import com.gnts.fms.service.txn.AccountsService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -118,10 +117,9 @@ public class Accounts extends BaseUI {
 	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private ListSelect lsAccountOwners = new ListSelect("Account Owners");
-	public Long accId;
+	private Long accId;
 	// BeanItemContainer
 	private BeanItemContainer<AccountsDM> beanAccountsDM = null;
-	// private BeanItemContainer<AccountOwnersDM> beanAccountOwnersDM = null;
 	// Local variables declaration
 	private Long companyId;
 	private int recordCnt = 0;
@@ -204,8 +202,6 @@ public class Accounts extends BaseUI {
 		flFormLayout2 = new FormLayout();
 		flFormLayout3 = new FormLayout();
 		flFormLayout1.addComponent(tfAccountNumber);
-		// tfAccountNumber.setReadOnly(false);
-		// tfAccountNumber.setValue("");
 		flFormLayout2.addComponent(tfAccountName);
 		flFormLayout3.addComponent(cbStatus);
 		hlSearchLayout.addComponent(flFormLayout1);
@@ -251,7 +247,6 @@ public class Accounts extends BaseUI {
 		flFormLayout3.addComponent(cbApprovelAuth);
 		flFormLayout3.addComponent(cbApproveManager);
 		flFormLayout3.addComponent(cbParentAccId);
-		// flFormLayout3.addComponent(ckSelfApprovel);
 		flFormLayout3.addComponent(tfRemarks);
 		flFormLayout3.addComponent(cbStatus);
 		flFormLayout3.setSpacing(true);
@@ -272,7 +267,7 @@ public class Accounts extends BaseUI {
 	 */
 	private void loadEmployeeList() {
 		List<EmployeeDM> list = servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null,
-				null, null, "T");
+				null, null, "P");
 		BeanContainer<Long, EmployeeDM> employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		employeebeans.setBeanIdProperty("employeeid");
 		employeebeans.addAll(list);
@@ -291,10 +286,9 @@ public class Accounts extends BaseUI {
 	 * For Load Active Account Type Details based on Company
 	 */
 	private void loadAccountTypeList() {
-		List<AccountTypeDM> list = serviceAccounttype.getAccountTypeList(companyId, null, "Active");
 		BeanContainer<Long, AccountTypeDM> bean = new BeanContainer<Long, AccountTypeDM>(AccountTypeDM.class);
 		bean.setBeanIdProperty("accttypeid");
-		bean.addAll(list);
+		bean.addAll(serviceAccounttype.getAccountTypeList(companyId, null, "Active"));
 		cbAccountType.setContainerDataSource(bean);
 	}
 	
@@ -302,10 +296,9 @@ public class Accounts extends BaseUI {
 	 * For Load Active Account Type Details based on Company
 	 */
 	private void loadCurrencyList() {
-		List<CurrencyDM> list = serviceCurrency.getCurrencyList(null, null, null, "Active", "T");
 		BeanContainer<Long, CurrencyDM> bean = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
 		bean.setBeanIdProperty("ccyid");
-		bean.addAll(list);
+		bean.addAll(serviceCurrency.getCurrencyList(null, null, null, "Active", "T"));
 		cbCurrency.setContainerDataSource(bean);
 	}
 	
@@ -313,10 +306,9 @@ public class Accounts extends BaseUI {
 	 * For Load Active Bank Branch Details based on Company
 	 */
 	private void loadBankBranchList() {
-		List<BankBranchDM> list = serviceBankBranch.getBankBranchlist(null, null, null, companyId, "Active", "T");
 		BeanContainer<Long, BankBranchDM> bean = new BeanContainer<Long, BankBranchDM>(BankBranchDM.class);
 		bean.setBeanIdProperty("bankbrnchid");
-		bean.addAll(list);
+		bean.addAll(serviceBankBranch.getBankBranchlist(null, null, null, companyId, "Active", "T"));
 		cbBankBranch.setContainerDataSource(bean);
 	}
 	
@@ -324,10 +316,9 @@ public class Accounts extends BaseUI {
 	 * For Load Active Bank Details based on Company
 	 */
 	private void loadBankList() {
-		List<BankDM> list = serviceBank.getBanklist(null, null, companyId, "Active", "T");
 		BeanContainer<Long, BankDM> beanBank = new BeanContainer<Long, BankDM>(BankDM.class);
 		beanBank.setBeanIdProperty("bankid");
-		beanBank.addAll(list);
+		beanBank.addAll(serviceBank.getBanklist(null, null, companyId, "Active", "T"));
 		cbBankName.setContainerDataSource(beanBank);
 	}
 	
@@ -335,11 +326,10 @@ public class Accounts extends BaseUI {
 	 * For Load Active Vendor Details based on Company
 	 */
 	private void loadVendorList() {
-		List<VendorDM> list = serviceVendor.getVendorList(null, null, companyId, null, null, null, null, null,
-				"Active", null, "P");
 		BeanContainer<Long, VendorDM> beanBank = new BeanContainer<Long, VendorDM>(VendorDM.class);
 		beanBank.setBeanIdProperty("vendorId");
-		beanBank.addAll(list);
+		beanBank.addAll(serviceVendor.getVendorList(null, null, companyId, null, null, null, null, null, "Active",
+				null, "P"));
 		cbVendorName.setContainerDataSource(beanBank);
 	}
 	
@@ -347,13 +337,9 @@ public class Accounts extends BaseUI {
 	 * For Load Active Client Details based on Company
 	 */
 	private void loadClientList() {
-		List<ClientDM> list = serviceClient.getClientDetails(companyId, null, null, null, null, null, null, null,
-				"Active", "T");
-		// getClientDetails(companyId, null, null, null, null, null, null, "Active",
-		// "T");
 		BeanContainer<Long, ClientDM> bean = new BeanContainer<Long, ClientDM>(ClientDM.class);
 		bean.setBeanIdProperty("clientId");
-		bean.addAll(list);
+		bean.addAll(serviceClient.getClientDetails(companyId, null, null, null, null, null, null, null, "Active", "T"));
 		cbClientName.setContainerDataSource(bean);
 	}
 	
@@ -361,11 +347,10 @@ public class Accounts extends BaseUI {
 	 * For Load Active Parent Account Details based on Company
 	 */
 	private void loadParentAccountList() {
-		List<AccountsDM> list = serviceAccounts.getAccountsList(companyId, accId, null, "Active", null, null,
-				cbAccountGrp.getValue().toString());
 		BeanContainer<Long, AccountsDM> bean = new BeanContainer<Long, AccountsDM>(AccountsDM.class);
 		bean.setBeanIdProperty("accountId");
-		bean.addAll(list);
+		bean.addAll(serviceAccounts.getAccountsList(companyId, accId, null, "Active", null, null, cbAccountGrp
+				.getValue().toString()));
 		cbParentAccId.setContainerDataSource(bean);
 	}
 	
@@ -393,10 +378,9 @@ public class Accounts extends BaseUI {
 	}
 	
 	private void editAccounts() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			AccountsDM accountsList = beanAccountsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			accId = ((Long) itselect.getItemProperty("accountId").getValue());
+			accId = accountsList.getAccountId();
 			if (accountsList.getAccGroup() != null) {
 				cbAccountGrp.setValue(accountsList.getAccGroup());
 			}
@@ -406,8 +390,10 @@ public class Accounts extends BaseUI {
 			if (accountsList.getAccountdt() != null) {
 				dfAccountDate.setValue(accountsList.getAccountdt());
 			}
+			tffinanceYr.setReadOnly(false);
 			if (accountsList.getFinanceyear() != null) {
 				tffinanceYr.setValue(accountsList.getFinanceyear());
+				tffinanceYr.setReadOnly(true);
 			}
 			if (accountsList.getGenerateVoucherYN().equals("Y")) {
 				ckGenerateVoucheryn.setValue(true);
@@ -450,7 +436,7 @@ public class Accounts extends BaseUI {
 				tfCurrentBalance.setValue(accountsList.getCurrentBalance().toString());
 				tfCurrentBalance.setReadOnly(true);
 			}
-			String amrm = itselect.getItemProperty("approveauthRMAM").getValue().toString();
+			String amrm = accountsList.getApproveauthRMAM();
 			if (amrm.equals("Account Mgr.")) {
 				amrm = "AM";
 			} else {
@@ -479,8 +465,7 @@ public class Accounts extends BaseUI {
 			tfAccountNumber.setReadOnly(false);
 			tfAccountNumber.setValue(accountsList.getAccountno());
 			tfAccountNumber.setReadOnly(true);
-			String stCode = itselect.getItemProperty("acctstatus").getValue().toString();
-			cbStatus.setValue(stCode);
+			cbStatus.setValue(accountsList.getAcctstatus());
 			lsAccountOwners.setValue(null);
 			List<AccountOwnersDM> listAccOwner = serviceAccountOwner.getAccountOwnerList(null, accId, null, "Active");
 			for (AccountOwnersDM accOwner : listAccOwner) {
@@ -514,12 +499,10 @@ public class Accounts extends BaseUI {
 		dfAccountDate.setValue(null);
 		cbAccountType.setReadOnly(false);
 		cbAccountType.setValue(null);
-		// cbAccountType.setReadOnly(true);
 		cbOwnerName.setValue(null);
 		cbBankBranch.setValue(null);
 		cbCurrency.setReadOnly(false);
 		cbCurrency.setValue(null);
-		// cbCurrency.setReadOnly(true);
 		tfOpenBalance.setReadOnly(false);
 		tfOpenBalance.setValue("0");
 		tfOpenBalance.setReadOnly(true);
@@ -806,24 +789,17 @@ public class Accounts extends BaseUI {
 		dfAccountDate.setValue(null);
 		cbAccountType.setReadOnly(false);
 		cbAccountType.setValue(null);
-		// cbAccountType.setReadOnly(true);
 		cbOwnerName.setValue(null);
 		cbBankName.setValue(null);
 		cbBankBranch.setValue(null);
 		cbCurrency.setReadOnly(false);
 		cbCurrency.setValue(null);
-		// tfOpenBalance.setValue("0");
-		// tffinanceYr.setValue(serviceParameter.getParameterValue("FM_FINYEAR", companyId, null));
-		// tffinanceYr.setReadOnly(true);
 		ckGenerateVoucheryn.setValue(false);
-		// cbBankName.setValue(null);
 		cbVendorName.setValue(null);
 		cbClientName.setValue(null);
 		tfRemarks.setValue("");
-		// tfCurrentBalance.setValue("0");
 		cbApprovelAuth.setValue(null);
 		ckSelfApprovel.setValue(false);
-		// tfParkedAmt.setValue("0");
 		cbCurrency.setValue(null);
 		cbApprovelAuth.setValue(null);
 		cbApproveManager.setValue(null);

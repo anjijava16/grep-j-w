@@ -18,22 +18,20 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.erputil.BASEConstants;
-import com.gnts.erputil.components.GERPPanelGenerator;
-import com.gnts.erputil.util.DateUtils;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
-import com.gnts.erputil.domain.StatusDM;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.util.DateUtils;
 import com.gnts.fms.domain.mst.BankDM;
 import com.gnts.fms.service.mst.BankService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
@@ -86,7 +84,6 @@ public class Bank extends BaseUI {
 		// Bank Short Name Text Field
 		tfShortName = new GERPTextField("Bank Short Name");
 		tfShortName.setMaxLength(25);
-		
 		// create form layouts to hold the input items
 		flBankName = new FormLayout();
 		flShortName = new FormLayout();
@@ -121,7 +118,6 @@ public class Bank extends BaseUI {
 		hlSearchLayout.removeAllComponents();
 		// Add components for User Input Layout
 		hlUserInputLayout.addComponent(flBankName);
-		
 		hlUserInputLayout.addComponent(flShortName);
 		hlUserInputLayout.addComponent(flStatus);
 		hlUserInputLayout.setSpacing(true);
@@ -132,19 +128,19 @@ public class Bank extends BaseUI {
 	public void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<BankDM> bankList = new ArrayList<BankDM>();
-		
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfBankname.getValue() + ", " + (String) cbBankStatus.getValue());
-		bankList = serviceBank.getBanklist(null, tfBankname.getValue(), companyId, (String) cbBankStatus.getValue(), "F");
+		bankList = serviceBank.getBanklist(null, tfBankname.getValue(), companyId, (String) cbBankStatus.getValue(),
+				"F");
 		recordCnt = bankList.size();
 		beanBankDM = new BeanItemContainer<BankDM>(BankDM.class);
 		beanBankDM.addAll(bankList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Bank. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanBankDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "bankid", "bankname",  "bankStatus",
-				"lastupdateddt", "lastupdatedby", });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", " Bank Name", "Status",
-				"Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "bankid", "bankname", "bankStatus", "lastupdateddt",
+				"lastupdatedby", });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", " Bank Name", "Status", "Last Updated Date",
+				"Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("bankid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
@@ -162,17 +158,14 @@ public class Bank extends BaseUI {
 	private void editBank() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		pkbankId = sltedRcd.getItemProperty("bankid").getValue().toString();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Bank. Id -> "
-				+ pkbankId);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			BankDM editBank = beanBankDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfBankname.setValue(sltedRcd.getItemProperty("bankname").getValue().toString());
+			pkbankId = editBank.getBankid().toString();
+			tfBankname.setValue(editBank.getBankname());
 			if (editBank.getShortname() != null) {
 				tfShortName.setValue(editBank.getShortname());
 			}
-			cbBankStatus.setValue(sltedRcd.getItemProperty("bankStatus").getValue().toString());
+			cbBankStatus.setValue(editBank.getBankStatus());
 		}
 	}
 	
@@ -273,7 +266,6 @@ public class Bank extends BaseUI {
 			if (cbBankStatus.getValue() != null) {
 				bankObj.setBankStatus((String) cbBankStatus.getValue());
 			}
-			
 			bankObj.setLastupdateddt(DateUtils.getcurrentdate());
 			bankObj.setLastupdatedby(username);
 			serviceBank.saveDetails(bankObj);

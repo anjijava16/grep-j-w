@@ -45,7 +45,6 @@ import com.gnts.fms.domain.txn.AccountReceivablesDM;
 import com.gnts.fms.domain.txn.AccountsDM;
 import com.gnts.fms.service.txn.AccountReceivablesService;
 import com.gnts.fms.service.txn.AccountsService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -89,9 +88,9 @@ public class AccountReceivables extends BaseUI {
 	private String loginUserName;
 	private Long companyId, empId;
 	private int recordCnt;
-	String primaryid;
+	private String primaryid;
 	private BeanItemContainer<AccountReceivablesDM> beansAccountReceivablesDM = null;
-	private static Logger logger = Logger.getLogger(AccountPayables.class);
+	private Logger logger = Logger.getLogger(AccountPayables.class);
 	
 	// Constructor
 	public AccountReceivables() {
@@ -203,28 +202,24 @@ public class AccountReceivables extends BaseUI {
 	
 	// For Load Active Branch Details based on Company
 	private void loadBranchList() {
-		List<BranchDM> list = serviceBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId,
-				"F");
 		BeanContainer<Long, BranchDM> bean = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		bean.setBeanIdProperty("branchId");
-		bean.addAll(list);
+		bean.addAll(serviceBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId, "F"));
 		cbBranchName.setContainerDataSource(bean);
 	}
 	
 	// For Load Active Account Type Details based on Company
 	private void loadAccountTypeList() {
-		List<AccountsDM> list = serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null);
 		BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
-		bean.addAll(list);
+		bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
 		cbAccountReference.setContainerDataSource(bean);
 	}
 	
 	private void editActReceivables() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			AccountReceivablesDM actpayablesList = beansAccountReceivablesDM.getItem(tblMstScrSrchRslt.getValue())
 					.getBean();
-			primaryid = (itselect.getItemProperty("accrcbleId").getValue().toString());
+			primaryid = actpayablesList.getAccrcbleId().toString();
 			if (actpayablesList.getBranchId() != null) {
 				cbBranchName.setValue(actpayablesList.getBranchId());
 			}
@@ -422,8 +417,6 @@ public class AccountReceivables extends BaseUI {
 		tfPaidAmt.setValue("0");
 		tfBalanceAmt.setValue("0");
 		tfRemarks.setValue("");
-		// cbActionedBy.setValue(cbActionedBy.getItemIds().iterator().next());
-		// cbActionedBy.setValue(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		cbStatus.setValue(null);
 	}

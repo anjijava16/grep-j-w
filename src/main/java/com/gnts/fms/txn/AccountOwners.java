@@ -43,7 +43,6 @@ import com.gnts.fms.domain.txn.AccountOwnersDM;
 import com.gnts.fms.domain.txn.AccountsDM;
 import com.gnts.fms.service.txn.AccountOwnersService;
 import com.gnts.fms.service.txn.AccountsService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -144,7 +143,7 @@ public class AccountOwners extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Account Owners Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading Search...");
 		List<AccountOwnersDM> ownerList = new ArrayList<AccountOwnersDM>();
@@ -168,11 +167,10 @@ public class AccountOwners extends BaseUI {
 	
 	private void loadEmployeeList() {
 		try {
-			List<EmployeeDM> empList = servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid, null,
-					null, null, null, "F");
 			BeanContainer<Long, EmployeeDM> beanAccountNo = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanAccountNo.setBeanIdProperty("employeeid");
-			beanAccountNo.addAll(empList);
+			beanAccountNo.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+					null, null, "P"));
 			cbEmpName.setContainerDataSource(beanAccountNo);
 		}
 		catch (Exception e) {
@@ -182,11 +180,9 @@ public class AccountOwners extends BaseUI {
 	
 	private void loadAccountNumber() {
 		try {
-			List<AccountsDM> empList = serviceAccount
-					.getAccountsList(companyid, null, null, "Active", null, null, null);
 			BeanContainer<Long, AccountsDM> beanAccountNo = new BeanContainer<Long, AccountsDM>(AccountsDM.class);
 			beanAccountNo.setBeanIdProperty("accountId");
-			beanAccountNo.addAll(empList);
+			beanAccountNo.addAll(serviceAccount.getAccountsList(companyid, null, null, "Active", null, null, null));
 			cbAccountNo.setContainerDataSource(beanAccountNo);
 		}
 		catch (Exception e) {
@@ -197,10 +193,7 @@ public class AccountOwners extends BaseUI {
 	private void editccountOwner() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected enquiry.Id -> "
-				+ AccountOwnerid);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			AccountOwnersDM editAccountOwnerlist = new AccountOwnersDM();
 			editAccountOwnerlist = beanAccountOwnerDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			String accno = editAccountOwnerlist.getAccountno();

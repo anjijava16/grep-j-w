@@ -9,8 +9,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
+import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.DepartmentDM;
 import com.gnts.base.domain.mst.EmployeeDM;
+import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.DepartmentService;
 import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.erputil.BASEConstants;
@@ -50,9 +52,12 @@ public class PhoneCallRegister extends BaseTransUI {
 	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(PhoneCallRegister.class);
+	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
+	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// User Input Fields for EC Request
 	private GERPPopupDateField dfCallDate;
-	private GERPComboBox cbEmployee, cbDepartment;
+	private GERPComboBox cbEmployee, cbDepartment,cbCallType;
 	private GERPTextField tfPhoneNumber, tfCompany, tfIntercom, tfTime;
 	private TextArea taPurpose;
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
@@ -86,6 +91,9 @@ public class PhoneCallRegister extends BaseTransUI {
 	private void buildview() {
 		logger.info("CompanyId" + companyid + "username" + username + "painting PhoneCallRegister UI");
 		// EC Request Components Definition
+		cbCallType = new GERPComboBox("Call Type");
+		cbCallType.setWidth("170");
+		loadCallType();
 		tfPhoneNumber = new GERPTextField("Phone Number");
 		tfPhoneNumber.setWidth("150");
 		tfPhoneNumber.setReadOnly(false);
@@ -97,7 +105,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		cbDepartment.setItemCaptionPropertyId("deptname");
 		loadDepartmentList();
 		taPurpose = new TextArea("Purpose");
-		taPurpose.setHeight("70px");
+		taPurpose.setHeight("50px");
 		cbEmployee = new GERPComboBox("Employee");
 		cbEmployee.setItemCaptionPropertyId("firstname");
 		cbEmployee.setImmediate(true);
@@ -146,6 +154,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		flcol2.addComponent(tfPhoneNumber);
 		flcol2.addComponent(tfIntercom);
 		flcol2.addComponent(tfCompany);
+		flcol3.addComponent(cbCallType);
 		flcol3.addComponent(taPurpose);
 		flcol4.addComponent(tfTime);
 		flcol4.addComponent(cbStatus);
@@ -180,7 +189,23 @@ public class PhoneCallRegister extends BaseTransUI {
 		tblMstScrSrchRslt.setColumnAlignment("phoneRegId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
-	
+	/*
+	 * Load call type.
+	 */
+	public void loadCallType() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Call Type Search...");
+			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"HC_CALTYP");
+			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(lookUpList);
+			cbCallType.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	// Load Employee List
 	private void loadEmployeeList() {
 		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
@@ -218,6 +243,7 @@ public class PhoneCallRegister extends BaseTransUI {
 			tfCompany.setValue(phoneRegDM.getCompanyName());
 			taPurpose.setValue(phoneRegDM.getPurpose());
 			tfTime.setValue(phoneRegDM.getPhoneTime());
+			cbCallType.setValue(phoneRegDM.getCallType());
 		}
 	}
 	
@@ -238,6 +264,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		phoneRegDM.setPurpose(taPurpose.getValue());
 		phoneRegDM.setPhoneTime(tfTime.getValue());
 		phoneRegDM.setLastUpdatedBy(username);
+		phoneRegDM.setCallType(cbCallType.getValue().toString());
 		phoneRegDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 		servicePhoneReg.saveOrUpdatePhoneReg(phoneRegDM);
 		phoneRegid = phoneRegDM.getPhoneRegId();

@@ -20,6 +20,8 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
+import com.gnts.base.domain.mst.CompanyLookupDM;
+import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
@@ -40,6 +42,8 @@ import com.gnts.hcm.domain.txn.JobCandidateDM;
 import com.gnts.hcm.domain.txn.JobVaccancyDM;
 import com.gnts.hcm.service.txn.JobCandidateService;
 import com.gnts.hcm.service.txn.JobVaccancyService;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -57,6 +61,9 @@ public class JobCandidate extends BaseUI {
 	// Bean creation
 	private JobCandidateService serviceJobCandidate = (JobCandidateService) SpringContextHelper.getBean("JobCandidate");
 	private JobVaccancyService serviceJobVaccancy = (JobVaccancyService) SpringContextHelper.getBean("JobVaccancy");
+	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
+	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Parent layout for all the input controls
@@ -75,6 +82,8 @@ public class JobCandidate extends BaseUI {
 	private Long companyid;
 	private int recordCnt = 0;
 	private String username;
+	private GERPComboBox cbWrkExp;
+	private GERPTextField tfWrkExpYr, tfWrkExpDesc;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(JobCandidate.class);
 	private String jobCandidateId;
@@ -96,7 +105,25 @@ public class JobCandidate extends BaseUI {
 	private void buildview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Printing JobCandidate UI");
 		// Status ComboBox
+		cbWrkExp = new GERPComboBox("Work Experience");
+		cbWrkExp.setWidth("150");
+		loadworkexp();
+		cbWrkExp.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getWorkExper();
+			}
+		});
+		tfWrkExpYr = new GERPTextField("No. of Years");
+		tfWrkExpYr.setWidth("150");
+		tfWrkExpDesc = new GERPTextField("Description");
+		tfWrkExpDesc.setWidth("150");
+		tfWrkExpDesc.setHeight("50");
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		cbStatus.setWidth("150");
 		// Job Candidate Description text field
 		tffirstname = new GERPTextField("First Name");
 		tflastname = new GERPTextField("Last Name");
@@ -109,7 +136,7 @@ public class JobCandidate extends BaseUI {
 		taresumkywrd.setHeight("25");
 		taresumkywrd.setWidth("150");
 		dfDOA = new GERPPopupDateField("DOA");
-		dfDOA.setWidth("110");
+		dfDOA.setWidth("130");
 		// Job Title combobox
 		cbjobtitle = new GERPComboBox("Job Title");
 		cbjobtitle.setItemCaptionPropertyId("jobtitle");
@@ -158,10 +185,13 @@ public class JobCandidate extends BaseUI {
 		flColumn1.addComponent(cbjobtitle);
 		flColumn1.addComponent(tffirstname);
 		flColumn1.addComponent(tflastname);
-		flColumn2.addComponent(tfemailid);
+		flColumn1.addComponent(tfemailid);
 		flColumn2.addComponent(tfcontactno);
-		flColumn3.addComponent(dfDOA);
+		flColumn2.addComponent(dfDOA);
 		flColumn2.addComponent(taresumkywrd);
+		flColumn2.addComponent(cbWrkExp);
+		flColumn3.addComponent(tfWrkExpYr);
+		flColumn3.addComponent(tfWrkExpDesc);
 		flColumn3.addComponent(cbStatus);
 		flColumn4.addComponent(vlresumdoc);
 		flColumn4.setMargin(true);
@@ -223,6 +253,39 @@ public class JobCandidate extends BaseUI {
 		}
 	}
 	
+	/*
+	 * Laod Work Experince Type
+	 */
+	private void loadworkexp() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Relationship Search...");
+			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"HC_WRKEXP");
+			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(lookUpList);
+			cbWrkExp.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
+	}
+	
+	/*
+	 * Work Experince must control flow.
+	 */
+	private void getWorkExper() {
+		if (cbWrkExp != null) {
+			if (cbWrkExp.getValue().toString().equals("Yes")) {
+				tfWrkExpYr.setRequired(true);
+				tfWrkExpDesc.setRequired(true);
+			} else {
+				tfWrkExpDesc.setRequired(false);
+				tfWrkExpYr.setRequired(false);
+			}
+		}
+	}
+	
 	@Override
 	protected void resetSearchDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -275,6 +338,15 @@ public class JobCandidate extends BaseUI {
 			}
 			if ((jobcandidatelist.getStatus() != null)) {
 				cbStatus.setValue(jobcandidatelist.getStatus());
+			}
+			if (jobcandidatelist.getWorkExp() != null) {
+				tfWrkExpDesc.setValue(jobcandidatelist.getWorkExp());
+			}
+			if (jobcandidatelist.getExpYear() != null) {
+				tfWrkExpYr.setValue(jobcandidatelist.getExpYear());
+			}
+			if (jobcandidatelist.getExpDesc() != null) {
+				cbWrkExp.setValue(jobcandidatelist.getExpDesc());
 			}
 			if (jobcandidatelist.getResume() != null) {
 				byte[] certificate = jobcandidatelist.getResume();
@@ -331,6 +403,9 @@ public class JobCandidate extends BaseUI {
 			jobcandidateobj.setLastName(tflastname.getValue().toString());
 			jobcandidateobj.setEmail(tfemailid.getValue().toString());
 			jobcandidateobj.setContactNo(tfcontactno.getValue().toString());
+			jobcandidateobj.setWorkExp(cbWrkExp.getValue().toString());
+			jobcandidateobj.setExpYear(tfWrkExpYr.getValue());
+			jobcandidateobj.setExpDesc(tfWrkExpDesc.getValue());
 			jobcandidateobj.setResumKeywrds(taresumkywrd.getValue().toString());
 			if (cbStatus.getValue() != null) {
 				jobcandidateobj.setStatus((String) cbStatus.getValue());
@@ -394,6 +469,8 @@ public class JobCandidate extends BaseUI {
 		dfDOA.setValue(null);
 		taresumkywrd.setComponentError(null);
 		taresumkywrd.setValue("");
+		tfWrkExpYr.setValue(null);
+		tfWrkExpDesc.setValue(null);
 		new UploadDocumentUI(vlresumdoc);
 	}
 }

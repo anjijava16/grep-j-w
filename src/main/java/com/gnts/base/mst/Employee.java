@@ -256,11 +256,12 @@ public class Employee extends BaseUI {
 	private ComboBox cbempdtlsbitrhcountry, cbempdtlsemptypeid, cbempdtlscandid, cbempdtlsgradid, cbempdtlspayperid,
 			cbempdtlsstatusid, cbempdtlsnationalid, cbempdtlsdesignaton, cbempdtlsmaritalstatus;
 	private TextField tfempdtlsPFno, tfempdtlsESIno, tfempdtlsPENSON, tfempdtlsbirthplace, tfempdtlsstatusreasion;
-	private PopupDateField dfempdtlsconfdate, dfempdtlslasttpromotdate, dfempdtlsreleaveddate, dfempdtlsdeathdtate;
+	private PopupDateField dfempdtlsmarriageDate, dfempdtlsconfdate, dfempdtlslasttpromotdate, dfempdtlsreleaveddate,
+			dfempdtlsdeathdtate;
 	private Table tblempdtls = new GERPTable();
 	private Button btnaddempdtls = new GERPButton("Add", "addbt", this);
 	// Employee contact Declaration
-	private TextField tfempcontactname, tfempcontrelationship, tfempcontphno, tfempcontmono;
+	private TextField tfempcontactname, tfempcontrelationship, tfempcontphno, tfempcontmono, tfempcontaddress;
 	private ComboBox cbempcontstatus = new GERPComboBox("Status", BASEConstants.M_BASE_USER, BASEConstants.USER_STATUS);
 	private Table tblempcont = new GERPTable();
 	private Button btnaddempcont = new GERPButton("Add", "addbt", this);
@@ -567,6 +568,7 @@ public class Employee extends BaseUI {
 		tfempdtlsbirthplace.setWidth("200");
 		tfempdtlsPENSON = new GERPTextField("Pension");
 		tfempdtlsPENSON.setWidth("200");
+		tfempdtlsPENSON.setVisible(false);
 		tfempdtlsESIno = new GERPTextField("ESI No");
 		tfempdtlsESIno.setWidth("200");
 		tfempdtlsPFno = new GERPTextField("PF No");
@@ -606,6 +608,9 @@ public class Employee extends BaseUI {
 			}
 		});
 		loadCountrydtlsbirthList();
+		dfempdtlsmarriageDate = new GERPPopupDateField("Marriage Date");
+		dfempdtlsmarriageDate.setImmediate(true);
+		dfempdtlsmarriageDate.setWidth("180");
 		dfempdtlsconfdate = new GERPPopupDateField("Conformation Date");
 		dfempdtlsconfdate.setImmediate(true);
 		dfempdtlsconfdate.setWidth("180");
@@ -855,6 +860,9 @@ public class Employee extends BaseUI {
 		tfempcontactname.setRequired(true);
 		tfempcontrelationship = new GERPTextField("Relationship");
 		tfempcontrelationship.setWidth("200");
+		tfempcontaddress = new GERPTextField("Address");
+		tfempcontaddress.setWidth("200");
+		tfempcontaddress.setHeight("50");
 		tfempcontphno = new GERPTextField("Phone No");
 		tfempcontphno.setWidth("200");
 		tfempcontphno.addBlurListener(new BlurListener() {
@@ -1029,7 +1037,7 @@ public class Employee extends BaseUI {
 		cbempaccttype.setWidth("200");
 		cbempaccttype.setRequired(true);
 		loadaccttype();
-		tfemproutingcode = new GERPTextField("Routing Code");
+		tfemproutingcode = new GERPTextField("IFSC Code");
 		tfemproutingcode.setWidth("200");
 		tfemproutingcode.setRequired(true);
 		tfempbranchname = new GERPTextField("Branch Name");
@@ -1774,6 +1782,8 @@ public class Employee extends BaseUI {
 		flemployeedtls1.setSpacing(true);
 		flemployeedtls1.addComponent(cbempdtlsmaritalstatus);
 		flemployeedtls1.setSpacing(true);
+		flemployeedtls2.addComponent(dfempdtlsmarriageDate);
+		flemployeedtls2.setSpacing(true);
 		flemployeedtls2.addComponent(tfempdtlsbirthplace);
 		flemployeedtls2.setSpacing(true);
 		flemployeedtls2.addComponent(cbempdtlsbitrhcountry);
@@ -1784,15 +1794,14 @@ public class Employee extends BaseUI {
 		flemployeedtls2.setSpacing(true);
 		flemployeedtls2.addComponent(dfempdtlsreleaveddate);
 		flemployeedtls2.setSpacing(true);
-		flemployeedtls2.addComponent(dfempdtlsdeathdtate);
-		flemployeedtls2.setSpacing(true);
 		flemployeedtls3.addComponent(tfempdtlsPFno);
 		flemployeedtls3.setSpacing(true);
 		flemployeedtls3.addComponent(tfempdtlsESIno);
 		flemployeedtls3.setSpacing(true);
 		flemployeedtls3.addComponent(cbempdtlsnationalid);
 		flemployeedtls3.setSpacing(true);
-		flemployeedtls3.addComponent(tfempdtlsPENSON);
+		flemployeedtls3.addComponent(dfempdtlsdeathdtate);
+		// flemployeedtls3.addComponent(tfempdtlsPENSON);
 		flemployeedtls3.setSpacing(true);
 		flemployeedtls3.addComponent(cbempdtlsstatusid);
 		flemployeedtls3.setSpacing(true);
@@ -1819,6 +1828,7 @@ public class Employee extends BaseUI {
 		FormLayout flemployeecont1 = new FormLayout();
 		FormLayout flemployeecont2 = new FormLayout();
 		FormLayout flemployeecont3 = new FormLayout();
+		FormLayout flemployeecont4 = new FormLayout();
 		HorizontalLayout hlempconttable = new HorizontalLayout();
 		hlempconttable.addComponent(tblempcont);
 		hlempconttable.setWidth("100%");
@@ -1831,13 +1841,16 @@ public class Employee extends BaseUI {
 		flemployeecont2.setSpacing(true);
 		flemployeecont2.addComponent(tfempcontmono);
 		flemployeecont2.setSpacing(true);
-		flemployeecont3.addComponent(cbempcontstatus);
+		flemployeecont3.addComponent(tfempcontaddress);
 		flemployeecont3.setSpacing(true);
+		flemployeecont4.addComponent(cbempcontstatus);
+		flemployeecont4.setSpacing(true);
 		// setting for Employee contact tab component to layout
 		HorizontalLayout hlemployeecontComponent = new HorizontalLayout();
 		hlemployeecontComponent.addComponent(flemployeecont1);
 		hlemployeecontComponent.addComponent(flemployeecont2);
 		hlemployeecontComponent.addComponent(flemployeecont3);
+		hlemployeecontComponent.addComponent(flemployeecont4);
 		hlemployeecontComponent.addComponent(btnaddempcont);
 		hlemployeecontComponent.setComponentAlignment(btnaddempcont, Alignment.BOTTOM_RIGHT);
 		hlemployeecontComponent.setSpacing(true);
@@ -2377,17 +2390,21 @@ public class Employee extends BaseUI {
 	 * loadempeduqualification()-->this function is used for load the Qualification
 	 */
 	private void loadempeduqualification() {
+		try{
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading Qualification Search...");
 		logger.info("qualification--->");
-		List<QualificationDM> qualificationlist = serviceQualification.getQualificationList(null, null, companyid,
-				"Active", "F");
 		BeanContainer<Long, QualificationDM> beaneducation = new BeanContainer<Long, QualificationDM>(
 				QualificationDM.class);
 		beaneducation.setBeanIdProperty("qualId");
-		beaneducation.addAll(qualificationlist);
+		beaneducation.addAll(serviceQualification.getQualificationList(null, null, companyid,
+				"Active", "F"));
 		cbempeduqualtnid.setContainerDataSource(beaneducation);
 		logger.info("qualification1--->");
+	}
+	catch (Exception e)
+	{
+	}
 	}
 	
 	/*
@@ -2556,6 +2573,7 @@ public class Employee extends BaseUI {
 			}
 			cbempdtlsbitrhcountry.setValue(empdtlsselected.getItemProperty("birthcountry").getValue());
 			cbempdtlsmaritalstatus.setValue(empdtlsselected.getItemProperty("maritalstatus").getValue());
+			dfempdtlsmarriageDate.setValue((Date) empdtlsselected.getItemProperty("marriageDate").getValue());
 			dfempdtlsconfdate.setValue((Date) empdtlsselected.getItemProperty("confirmationndate").getValue());
 			dfempdtlslasttpromotdate.setValue((Date) empdtlsselected.getItemProperty("lastpromottiondate").getValue());
 			dfempdtlsreleaveddate.setValue((Date) empdtlsselected.getItemProperty("releaveddate").getValue());
@@ -2591,6 +2609,9 @@ public class Employee extends BaseUI {
 			tfempcontactname.setValue(empcontselected.getItemProperty("contactname").getValue().toString());
 			if (empcontselected.getItemProperty("relationship").getValue() != null) {
 				tfempcontrelationship.setValue(empcontselected.getItemProperty("relationship").getValue().toString());
+			}
+			if (empcontselected.getItemProperty("contAddress").getValue() != null) {
+				tfempcontaddress.setValue(empcontselected.getItemProperty("contAddress").getValue().toString());
 			}
 			tfempcontphno.setValue(empcontselected.getItemProperty("phoneno").getValue().toString());
 			if (empcontselected.getItemProperty("mobileno").getValue() != null) {
@@ -2656,8 +2677,8 @@ public class Employee extends BaseUI {
 		Item empeduselected = tblempedu.getItem(tblempedu.getValue());
 		if (empeduselected != null) {
 			EmployeeEducationDM empeduobj = beanemployeeeducation.getItem(tblempedu.getValue()).getBean();
-			// cbempeduqualtnid.setValue((empeduselected.getItemProperty("qufiid").getValue()));
-			// if (empeduselected != null) {
+			cbempeduqualtnid.setValue((empeduselected.getItemProperty("qufiid").getValue()));
+			if (empeduselected != null) {
 			Long dtls = (Long) empeduselected.getItemProperty("qufiid").getValue();
 			Collection<?> dtlsid = cbempeduqualtnid.getItemIds();
 			for (java.util.Iterator<?> iterator = dtlsid.iterator(); iterator.hasNext();) {
@@ -2693,6 +2714,7 @@ public class Employee extends BaseUI {
 			cbempedugradeached.setValue(empeduselected.getItemProperty("gradeachcd").getValue().toString());
 			String stcode = empeduselected.getItemProperty("empednstatus").getValue().toString();
 			cbempedustatus.setValue(stcode);
+			}
 		}
 	}
 	
@@ -3351,6 +3373,7 @@ public class Employee extends BaseUI {
 			empdtlsobj.setEsino((String) tfempdtlsESIno.getValue().toString());
 			empdtlsobj.setPensionno((String) tfempdtlsPENSON.getValue().toString());
 			empdtlsobj.setMaritalstatus((String) cbempdtlsmaritalstatus.getValue().toString());
+			empdtlsobj.setMarriageDate((Date) dfempdtlsmarriageDate.getValue());
 			empdtlsobj.setBirthcountry((Long) cbempdtlsbitrhcountry.getValue());
 			empdtlsobj.setConfirmationndate((Date) dfempdtlsconfdate.getValue());
 			empdtlsobj.setLastpromottiondate((Date) dfempdtlslasttpromotdate.getValue());
@@ -3400,6 +3423,9 @@ public class Employee extends BaseUI {
 			}
 			if (cbempcontstatus.getValue() != null) {
 				empcontobj.setContactstatus((String) cbempcontstatus.getValue().toString());
+			}
+			if (tfempcontaddress.getValue() != null) {
+				empcontobj.setContAddress((String) tfempcontaddress.getValue().toString());
 			}
 			empcontobj.setLastupdateddate(DateUtils.getcurrentdate());
 			empcontobj.setLastupdatedby(username);
@@ -3474,7 +3500,6 @@ public class Employee extends BaseUI {
 			employeeedulist.remove(employeeeduobj);
 		}
 		employeeeduobj.setQufiid((Long) cbempeduqualtnid.getValue());
-		System.out.println("===============================================>>>>>"+ cbempeduqualtnid.getValue());
 		employeeeduobj.setSubject((String) tfempedusubject.getValue().toString());
 		employeeeduobj.setDurfrm((Date) dfempedudurtnfrm.getValue());
 		employeeeduobj.setDurto((Date) dfempedudurtnto.getValue());
@@ -3819,6 +3844,7 @@ public class Employee extends BaseUI {
 		tfempdtlsPENSON.setValue("");
 		cbempdtlsmaritalstatus.setValue(null);
 		dfempdtlsconfdate.setValue(null);
+		dfempdtlsmarriageDate.setValue(null);
 		dfempdtlslasttpromotdate.setValue(null);
 		dfempdtlsreleaveddate.setValue(null);
 		dfempdtlsdeathdtate.setValue(null);
@@ -3855,6 +3881,7 @@ public class Employee extends BaseUI {
 		tfempcontrelationship.setValue("");
 		tfempcontphno.setValue("");
 		tfempcontmono.setValue("");
+		tfempcontaddress.setValue("");
 		btnaddempcont.setCaption("add");
 		cbempcontstatus.setValue(cbempcontstatus.getItemIds().iterator().next());
 		tfempcontactname.setComponentError(null);

@@ -9,7 +9,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
+import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.EmployeeDM;
+import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
@@ -17,6 +19,7 @@ import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPTextField;
+import com.gnts.erputil.components.GERPTimeField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
@@ -46,14 +49,18 @@ public class EmployeeWarning extends BaseTransUI {
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private EmployeeWarningService serviceEmplyeeWarning = (EmployeeWarningService) SpringContextHelper
 			.getBean("employeeWarning");
+	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
+	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(EmployeeWarning.class);
 	// User Input Fields for EC Request
-	private GERPPopupDateField dfRefDate;
-	private GERPComboBox cbEmployee;
+	private GERPPopupDateField dfRefDate, dfDateTo;
+	private GERPComboBox cbEmployee, cbWarLevel;
 	private GERPTextField tfFrom, tfTo, tfFineAmount;
 	private GERPTextField tfDeductMonth;
 	private TextArea taRemarks;
+	private GERPTimeField tfTimeOut;
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<EmployeeWarningDM> beanEmpWarning = null;
@@ -85,14 +92,16 @@ public class EmployeeWarning extends BaseTransUI {
 	private void buildview() {
 		logger.info("CompanyId" + companyid + "username" + username + "painting EmployeeWarning UI");
 		// EC Request Components Definition
+		tfTimeOut = new GERPTimeField("Time In");
 		tfFrom = new GERPTextField("From");
 		tfFrom.setWidth("150");
 		tfDeductMonth = new GERPTextField("Deduct month");
 		tfDeductMonth.setWidth("150");
-		tfFineAmount = new GERPTextField("Time Out");
+		tfFineAmount = new GERPTextField("Fine Amount");
 		tfTo = new GERPTextField("To");
 		taRemarks = new TextArea("Reason");
-		taRemarks.setHeight("45px");
+		taRemarks.setHeight("40");
+		taRemarks.setWidth("150");
 		cbEmployee = new GERPComboBox("Employee");
 		cbEmployee.setItemCaptionPropertyId("firstname");
 		cbEmployee.setImmediate(true);
@@ -100,6 +109,13 @@ public class EmployeeWarning extends BaseTransUI {
 		cbEmployee.setWidth("150");
 		cbEmployee.setRequired(true);
 		loadEmployeeList();
+		cbWarLevel = new GERPComboBox("Level");
+		cbWarLevel.setWidth("150");
+		loadWarLevel();
+		dfDateTo = new GERPPopupDateField("To Date");
+		dfDateTo.setDateFormat("dd-MMM-yyyy");
+		dfDateTo.setInputPrompt("Select Date");
+		dfDateTo.setWidth("110px");
 		dfRefDate = new GERPPopupDateField("Date");
 		dfRefDate.setRequired(true);
 		dfRefDate.setDateFormat("dd-MMM-yyyy");
@@ -140,9 +156,12 @@ public class EmployeeWarning extends BaseTransUI {
 		flcol1.addComponent(cbEmployee);
 		flcol2.addComponent(tfFrom);
 		flcol2.addComponent(tfTo);
+		flcol3.addComponent(tfTimeOut);
 		flcol3.addComponent(tfDeductMonth);
 		flcol3.addComponent(tfFineAmount);
+		flcol4.addComponent(cbWarLevel);
 		flcol4.addComponent(taRemarks);
+		flcol5.addComponent(dfDateTo);
 		flcol5.addComponent(cbStatus);
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
@@ -171,10 +190,28 @@ public class EmployeeWarning extends BaseTransUI {
 		tblMstScrSrchRslt.setContainerDataSource(beanEmpWarning);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empwarningId", "refDate", "fromName", "toName",
 				"deductAmt", "status", "lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "From Name", "To Name", "Amount",
-				"Status", "Last Updated date", "Last Updated by" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "From Name", "To Name", "Amount", "Status",
+				"Last Updated date", "Last Updated by" });
 		tblMstScrSrchRslt.setColumnAlignment("empwarningId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+	}
+	
+	/*
+	 * Employe waring level
+	 */
+	public void loadWarLevel() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Warning Search Search...");
+			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"HC_EMPWAR"));
+			cbWarLevel.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	// Load Employee List
@@ -194,38 +231,44 @@ public class EmployeeWarning extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
 				+ visitorid);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeWarningDM visitPassDM = beanEmpWarning.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			visitorid = visitPassDM.getEmpwarningId();
-			dfRefDate.setValue(visitPassDM.getRefDate());
-			cbEmployee.setValue(visitPassDM.getEmployeeID());
-			cbStatus.setValue(visitPassDM.getStatus());
-			tfFrom.setValue(visitPassDM.getFromName());
-			tfFineAmount.setValue(visitPassDM.getDeductAmt());
-			tfTo.setValue(visitPassDM.getToName());
-			taRemarks.setValue(visitPassDM.getReason());
-			tfDeductMonth.setValue(visitPassDM.getDeductFrom());
+			EmployeeWarningDM employeewarningDM = beanEmpWarning.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			visitorid = employeewarningDM.getEmpwarningId();
+			dfRefDate.setValue(employeewarningDM.getRefDate());
+			cbEmployee.setValue(employeewarningDM.getEmployeeID());
+			cbStatus.setValue(employeewarningDM.getStatus());
+			tfFrom.setValue(employeewarningDM.getFromName());
+			tfFineAmount.setValue(employeewarningDM.getDeductAmt());
+			tfTo.setValue(employeewarningDM.getToName());
+			taRemarks.setValue(employeewarningDM.getReason());
+			tfDeductMonth.setValue(employeewarningDM.getDeductFrom());
+			cbWarLevel.setValue(employeewarningDM.getWarLevel());
+			dfDateTo.setValue(employeewarningDM.getDateTo());
+			tfTimeOut.setTime(employeewarningDM.getTimeOut());
 		}
 	}
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... "); //
-		EmployeeWarningDM visitPassDM = new EmployeeWarningDM();
+		EmployeeWarningDM employeewarningDM = new EmployeeWarningDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			visitPassDM = beanEmpWarning.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			employeewarningDM = beanEmpWarning.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		visitPassDM.setRefDate(dfRefDate.getValue());
-		visitPassDM.setEmployeeID((Long) cbEmployee.getValue());
-		visitPassDM.setStatus((String) cbStatus.getValue());
-		visitPassDM.setFromName(tfFrom.getValue());
-		visitPassDM.setDeductAmt(tfFineAmount.getValue());
-		visitPassDM.setToName(tfTo.getValue());
-		visitPassDM.setReason(taRemarks.getValue());
-		visitPassDM.setDeductFrom(tfDeductMonth.getValue());
-		visitPassDM.setLastUpdatedBy(username);
-		visitPassDM.setLastUpdatedDate(DateUtils.getcurrentdate());
-		serviceEmplyeeWarning.saveOrUpdateEmployeeWarning(visitPassDM);
-		visitorid = visitPassDM.getEmpwarningId();
+		employeewarningDM.setRefDate(dfRefDate.getValue());
+		employeewarningDM.setEmployeeID((Long) cbEmployee.getValue());
+		employeewarningDM.setStatus((String) cbStatus.getValue());
+		employeewarningDM.setFromName(tfFrom.getValue());
+		employeewarningDM.setDeductAmt(tfFineAmount.getValue());
+		employeewarningDM.setToName(tfTo.getValue());
+		employeewarningDM.setReason(taRemarks.getValue());
+		employeewarningDM.setDeductFrom(tfDeductMonth.getValue());
+		employeewarningDM.setLastUpdatedBy(username);
+		employeewarningDM.setWarLevel(cbWarLevel.getValue().toString());
+		employeewarningDM.setDateTo(dfDateTo.getValue());
+		employeewarningDM.setTimeOut(tfTimeOut.getHorsMunites().toString());
+		employeewarningDM.setLastUpdatedDate(DateUtils.getcurrentdate());
+		serviceEmplyeeWarning.saveOrUpdateEmployeeWarning(employeewarningDM);
+		visitorid = employeewarningDM.getEmpwarningId();
 		resetFields();
 		loadSrchRslt();
 	}

@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.BranchDM;
+import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.service.mst.BranchService;
+import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
@@ -46,6 +48,8 @@ import com.gnts.hcm.domain.txn.JobVaccancyDM;
 import com.gnts.hcm.service.mst.DesignationService;
 import com.gnts.hcm.service.mst.JobClassificationService;
 import com.gnts.hcm.service.txn.JobVaccancyService;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -67,8 +71,11 @@ public class JobVaccancy extends BaseUI {
 			.getBean("JobClassification");
 	private BranchService servicebeanBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private DesignationService serviceDesinatn = (DesignationService) SpringContextHelper.getBean("Designation");
+	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
+	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// Form layout for input controls
-	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
+	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4, flColumn5;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
@@ -80,6 +87,8 @@ public class JobVaccancy extends BaseUI {
 			cbApvdName;
 	private PopupDateField dfApvdDate;
 	private TextArea taJobDetails;
+	private GERPComboBox cbWrkExp;
+	private GERPTextField tfWrkExpYr, tfWrkExpDesc;
 	// BeanItemContainer
 	private BeanItemContainer<JobVaccancyDM> beanJobVaccancyDM = null;
 	// local variables declaration
@@ -106,8 +115,27 @@ public class JobVaccancy extends BaseUI {
 	private void buildview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Printing JobVaccancy UI");
 		// Status ComboBox
+		cbWrkExp = new GERPComboBox("Work Experience");
+		cbWrkExp.setWidth("150");
+		loadworkexp();
+		cbWrkExp.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getWorkExper();
+			}
+		});
+		tfWrkExpYr = new GERPTextField("No. of Years");
+		tfWrkExpYr.setWidth("150");
+		tfWrkExpDesc = new GERPTextField("Description");
+		tfWrkExpDesc.setWidth("150");
+		tfWrkExpDesc.setHeight("50");
 		cbApStatus = new GERPComboBox("Approved Status", BASEConstants.T_HCM_JOB_VACCANCY, BASEConstants.JV_APRVDSTS);
+		cbApStatus.setWidth("150");
 		cbJbStatus = new GERPComboBox("Job Status", BASEConstants.T_HCM_JOB_VACCANCY, BASEConstants.JV_JOBSTS);
+		cbJbStatus.setWidth("150");
 		taJobDetails = new GERPTextArea("Job Details");
 		taJobDetails.setHeight("30");
 		taJobDetails.setWidth("150");
@@ -179,22 +207,27 @@ public class JobVaccancy extends BaseUI {
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
+		flColumn5 = new FormLayout();
 		flColumn1.addComponent(tfJobtitle);
 		flColumn1.addComponent(taJobDetails);
 		flColumn1.addComponent(cbJobClsName);
-		flColumn2.addComponent(cbDesgntnName);
-		flColumn2.addComponent(cbBrnchName);
+		flColumn1.addComponent(cbDesgntnName);
+		flColumn1.addComponent(cbBrnchName);
 		flColumn2.addComponent(cbHirgMgr);
 		flColumn2.addComponent(cbReqstdName);
-		flColumn3.addComponent(cbApvdName);
-		flColumn3.addComponent(dfApvdDate);
-		flColumn3.addComponent(cbApStatus);
+		flColumn2.addComponent(cbApvdName);
+		flColumn2.addComponent(dfApvdDate);
+		flColumn2.addComponent(cbApStatus);
+		flColumn3.addComponent(cbWrkExp);
+		flColumn3.addComponent(tfWrkExpYr);
+		flColumn3.addComponent(tfWrkExpDesc);
 		flColumn3.addComponent(cbJbStatus);
 		flColumn4.addComponent(vlappdoc);
 		hlUserInputLayout.addComponent(flColumn1);
 		hlUserInputLayout.addComponent(flColumn2);
 		hlUserInputLayout.addComponent(flColumn3);
 		hlUserInputLayout.addComponent(flColumn4);
+		hlUserInputLayout.addComponent(flColumn5);
 		hlUserInputLayout.setSizeUndefined();
 		hlUserInputLayout.setMargin(true);
 		hlUserInputLayout.setSpacing(true);
@@ -255,6 +288,39 @@ public class JobVaccancy extends BaseUI {
 		}
 		catch (Exception e) {
 			logger.info("load Employee details" + e);
+		}
+	}
+	
+	/*
+	 * Laod Work Experince Type
+	 */
+	private void loadworkexp() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Relationship Search...");
+			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"HC_WRKEXP");
+			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(lookUpList);
+			cbWrkExp.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
+	}
+	
+	/*
+	 * Work Experince must control flow.
+	 */
+	private void getWorkExper() {
+		if (cbWrkExp != null) {
+			if (cbWrkExp.getValue().toString().equals("Yes")) {
+				tfWrkExpYr.setRequired(true);
+				tfWrkExpDesc.setRequired(true);
+			} else {
+				tfWrkExpDesc.setRequired(false);
+				tfWrkExpYr.setRequired(false);
+			}
 		}
 	}
 	
@@ -395,6 +461,15 @@ public class JobVaccancy extends BaseUI {
 			if (jobVaccancyDM.getJobstatus() != null) {
 				cbJbStatus.setValue(jobVaccancyDM.getJobstatus());
 			}
+			if (jobVaccancyDM.getWorkExp() != null) {
+				tfWrkExpDesc.setValue(jobVaccancyDM.getWorkExp());
+			}
+			if (jobVaccancyDM.getExpYear() != null) {
+				tfWrkExpYr.setValue(jobVaccancyDM.getExpYear());
+			}
+			if (jobVaccancyDM.getExpDesc() != null) {
+				cbWrkExp.setValue(jobVaccancyDM.getExpDesc());
+			}
 			if (jobVaccancyDM.getApplctnform() != null) {
 				byte[] certificate = jobVaccancyDM.getApplctnform();
 				UploadDocumentUI test = new UploadDocumentUI(vlappdoc);
@@ -501,6 +576,9 @@ public class JobVaccancy extends BaseUI {
 			jobVacancyobj.setJobdetails(taJobDetails.getValue().toString());
 			jobVacancyobj.setRequestdby((Long) cbReqstdName.getValue());
 			jobVacancyobj.setApprovedby((Long) cbApvdName.getValue());
+			jobVacancyobj.setWorkExp(cbWrkExp.getValue().toString());
+			jobVacancyobj.setExpYear(tfWrkExpYr.getValue());
+			jobVacancyobj.setExpDesc(tfWrkExpDesc.getValue());
 			if (cbJbStatus.getValue() != null) {
 				jobVacancyobj.setJobstatus((String) cbJbStatus.getValue());
 			}
@@ -581,6 +659,8 @@ public class JobVaccancy extends BaseUI {
 		dfApvdDate.setValue(null);
 		new UploadDocumentUI(vlappdoc);
 		cbApStatus.setValue(null);
+		tfWrkExpYr.setValue(null);
+		tfWrkExpDesc.setValue(null);
 		cbJbStatus.setValue(cbJbStatus.getItemIds().iterator().next());
 	}
 }

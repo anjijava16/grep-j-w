@@ -69,6 +69,7 @@ import com.gnts.mms.service.txn.MmsQuoteDtlService;
 import com.gnts.mms.service.txn.MmsQuoteHdrService;
 import com.gnts.sms.service.mst.SmsTaxesService;
 import com.gnts.sms.txn.SmsComments;
+import com.gnts.stt.dsn.domain.txn.ECRequestDM;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -251,18 +252,47 @@ public class MaterialQuote extends BaseTransUI {
 		cbvendorname = new ComboBox("Vendor Name");
 		cbvendorname.setWidth("150");
 		cbvendorname.setItemCaptionPropertyId("vendorName");
+		/*
+		 * cbvendorname.addValueChangeListener(new ValueChangeListener() { private static final long serialVersionUID =
+		 * 1L;
+		 * @Override public void valueChange(ValueChangeEvent event) { // TODO Auto-generated method stub if
+		 * (cbvendorname.getValue() != null) { tfvendorCode.setReadOnly(false); tfvendorCode.setValue(serviceVendor
+		 * .getVendorList(null, (Long) cbvendorname.getValue(), companyid, null, null, null, null, null, null, null,
+		 * "P").get(0).getVendorCode()); tfvendorCode.setReadOnly(true); } } });
+		 */
 		cbvendorname.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				// TODO Auto-generated method stub
 				if (cbvendorname.getValue() != null) {
-					tfvendorCode.setReadOnly(false);
-					tfvendorCode.setValue(serviceVendor
-							.getVendorList(null, (Long) cbvendorname.getValue(), companyid, null, null, null, null,
-									null, null, null, "P").get(0).getVendorCode());
-					tfvendorCode.setReadOnly(true);
+					VendorDM vendordm = serviceVendor.getVendorList(null, (Long) cbvendorname.getValue(), null, null,
+							null, null, null, null, null, null, "F").get(0);
+					if (vendordm.getPackingPrnct().toString() == null) {
+						tfpackingPer.setValue(vendordm.getPackingPrnct().toString());
+					} else {
+						tfpackingPer.setValue("0");
+					}
+					if (vendordm.getEdPrnct().toString() != null) {
+						tfEDPer.setValue(vendordm.getEdPrnct().toString());
+					} else {
+						tfEDPer.setValue("0");
+					}
+					if (vendordm.getVatPrnct().toString() != null) {
+						tfVatPer.setValue(vendordm.getVatPrnct().toString());
+					} else {
+						tfVatPer.setValue("0");
+					}
+					if (vendordm.getCstPrnct().toString() != null) {
+						tfCstPer.setValue(vendordm.getCstPrnct().toString());
+					} else {
+						tfCstPer.setValue("0");
+					}
+					if (vendordm.getFreightPrnct().toString() != null) {
+						tfFreightPer.setValue(vendordm.getFreightPrnct().toString());
+					} else {
+						tfFreightPer.setValue("0");
+					}
 				}
 			}
 		});
@@ -848,6 +878,9 @@ public class MaterialQuote extends BaseTransUI {
 		}
 	}
 	
+	/*
+	 * Load Vendor Names
+	 */
 	public void loadVendor() {
 		try {
 			List<VendorDM> vendorList = serviceVendor.getVendorList(null, null, companyid, null, null, null, null,

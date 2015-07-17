@@ -161,7 +161,6 @@ public class MaterialEnquiry extends BaseTransUI {
 		// Initialization for Material Enquire Details user input components
 		tfEnqNo = new TextField("Enquiry No");
 		tfEnqNo.setWidth("150px");
-		tfEnqNo.setMaxLength(40);
 		tfEnqQty = new TextField();
 		tfEnqQty.setValue("0");
 		tfEnqQty.setWidth("100");
@@ -227,7 +226,6 @@ public class MaterialEnquiry extends BaseTransUI {
 		lsVendorName = new ListSelect("Vendor Name ");
 		lsVendorName.setItemCaptionPropertyId("vendorName");
 		lsVendorName.setMultiSelect(true);
-		// loadVendorList();
 		loadVendorNameList();
 		lsVendorName.setWidth("150");
 		lsVendorName.setHeight("75");
@@ -325,7 +323,6 @@ public class MaterialEnquiry extends BaseTransUI {
 		lbl = new Label(" ");
 		hlMmsEnqHDR.addComponent(lbl);
 		hlMmsEnqHDR.addComponent(flMmsEnqHdr4);
-		tfEnqNo.setReadOnly(true);
 		hlMmsEnqHDR.setSpacing(true);
 		hlMmsEnqHDR.setMargin(true);
 		// Adding MmsEnqDtl components
@@ -493,7 +490,6 @@ public class MaterialEnquiry extends BaseTransUI {
 			cbBranch.setValue(enqHdrDM.getBranchId());
 			tfEnqNo.setReadOnly(false);
 			tfEnqNo.setValue(enqHdrDM.getEnquiryNo());
-			tfEnqNo.setReadOnly(true);
 			dfEnqDate.setValue(enqHdrDM.getEnquiryDate());
 			dfDueDate.setValue(enqHdrDM.getDueDate());
 			for (MMSVendorDtlDM enquiryVendorDtlDM : serviceMMSVendordtl.getmaterialvdrdtl(null, enquiryId, null)) {
@@ -586,22 +582,9 @@ public class MaterialEnquiry extends BaseTransUI {
 		tblMmsEnqDtl.setVisible(true);
 		cbBranch.setRequired(true);
 		lsVendorName.setRequired(true);
-		tfEnqNo.setReadOnly(true);
 		lsmaterial.setRequired(true);
 		resetFields();
 		tfEnqNo.setReadOnly(false);
-		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO").get(0);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfEnqNo.setValue(slnoObj.getKeyDesc());
-				tfEnqNo.setReadOnly(true);
-			} else {
-				tfEnqNo.setReadOnly(false);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
 		comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null);
 	}
 	
@@ -613,9 +596,6 @@ public class MaterialEnquiry extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		tblMmsEnqDtl.setVisible(true);
-		if (tfEnqNo.getValue() == null || tfEnqNo.getValue().trim().length() == 0) {
-			tfEnqNo.setReadOnly(false);
-		}
 		cbBranch.setRequired(true);
 		lsVendorName.setRequired(true);
 		resetFields();
@@ -645,18 +625,6 @@ public class MaterialEnquiry extends BaseTransUI {
 						+ "Throwing ValidationException. User data is > " + dfEnqDate.getValue());
 				errorFlag = true;
 			}
-		}
-		if ((tfEnqNo.getValue() == null) || tfEnqNo.getValue().trim().length() == 0) {
-			List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO");
-			for (SlnoGenDM slnoObj : slnoList) {
-				if (slnoObj.getAutoGenYN().equals("N")) {
-					tfEnqNo.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_CODE));
-					errorFlag = true;
-				}
-			}
-		} else {
-			tfEnqNo.setComponentError(null);
-			errorFlag = false;
 		}
 		if (tblMmsEnqDtl.size() == 0) {
 			cbUom.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRY_QTY));
@@ -753,7 +721,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			}
 			tfEnqNo.setReadOnly(false);
 			tfEnqNo.setValue(matEnqobj.getEnquiryNo());
-			tfEnqNo.setReadOnly(true);
+//			tfEnqNo.setReadOnly(true);
 			comments.saveEnquiry(matEnqobj.getEnquiryId(), matEnqobj.getEnquiryStatus());
 			comments.resetfields();
 			enqDtlresetFields();

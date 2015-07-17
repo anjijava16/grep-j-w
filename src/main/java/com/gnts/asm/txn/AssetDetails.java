@@ -123,7 +123,7 @@ public class AssetDetails extends BaseTransUI {
 		cbAssetStatus.setWidth("140px");
 		// category
 		cbcategory = new GERPComboBox("Category");
-		cbcategory.setItemCaptionPropertyId("clientCatName");
+		cbcategory.setItemCaptionPropertyId("catgryName");
 		loadcategory();
 		// Initialization for btnSearch
 		btnSearch = new Button("Search", this);
@@ -223,16 +223,6 @@ public class AssetDetails extends BaseTransUI {
 		tfSerialNo = new GERPTextField("Serial No.");
 		tfMfgSerialNo = new GERPTextField("MFG.Serial No.");
 		tfAssetLocation = new GERPTextField("Asset Location");
-		tfAssetLocation.addBlurListener(new BlurListener() {
-			private static final long serialVersionUID = 1L;
-			
-			public void blur(BlurEvent event) {
-				tfAssetLocation.setComponentError(null);
-				if (tfAssetLocation.getValue() != null) {
-					tfAssetLocation.setComponentError(null);
-				}
-			}
-		});
 		// Initialization for dtPurchaseDate
 		dtPurchaseDate = new GERPPopupDateField("Purchase Date");
 		dtPurchaseDate.setDateFormat("dd-MMM-yyyy");
@@ -412,7 +402,7 @@ public class AssetDetails extends BaseTransUI {
 	private void loadcategory() {
 		BeanContainer<Long, AssetCategoryDM> assetCategorydm = new BeanContainer<Long, AssetCategoryDM>(
 				AssetCategoryDM.class);
-		assetCategorydm.setBeanIdProperty("assetCategory");
+		assetCategorydm.setBeanIdProperty("catgryId");
 		assetCategorydm.addAll(serviceAsset.getAssetCategoryList(companyid, null, "Active", "P"));
 		cbcategory.setContainerDataSource(assetCategorydm);
 	}
@@ -622,7 +612,7 @@ public class AssetDetails extends BaseTransUI {
 			if (cbDeptId.getValue() != null) {
 				assetDetailsDM.setDeptId(Long.valueOf(cbDeptId.getValue().toString()));
 			}
-			assetDetailsDM.setCatgryId((Long) cbcategory.getValue());
+			assetDetailsDM.setCatgryId((String)cbcategory.getValue());
 			assetDetailsDM.setWarrentydesc(tawarrentdesc.getValue());
 			assetDetailsDM.setServicereqd(tfservicerequire.getValue());
 			assetDetailsDM.setSerialno(tfSerialNo.getValue());

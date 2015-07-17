@@ -123,7 +123,7 @@ public class AssetCategory extends BaseUI {
 		List<AssetCategoryDM> assetCtgryList = new ArrayList<AssetCategoryDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfCategoryName.getValue() + ", " + (String) cbCatgryStatus.getValue());
-		assetCtgryList = assetCatgryService.getAssetCategoryList(null,tfCategoryName.getValue(), (String)cbCatgryStatus.getValue(), "F");
+		assetCtgryList = assetCatgryService.getAssetCategoryList(null,tfCategoryName.getValue(), (String)cbCatgryStatus.getValue(), "P");
 		recordCnt = assetCtgryList.size();
 		beanAssetCatgry = new BeanItemContainer<AssetCategoryDM>(AssetCategoryDM.class);
 		beanAssetCatgry.addAll(assetCtgryList);

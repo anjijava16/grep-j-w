@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
+import com.gnts.asm.domain.txn.AssetDetailsDM;
+import com.gnts.asm.service.txn.AssetDetailsService;
 import com.gnts.base.domain.mst.DepartmentDM;
 import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.service.mst.DepartmentService;
@@ -34,6 +36,7 @@ import com.gnts.erputil.util.DateUtils;
 import com.gnts.stt.dsn.domain.txn.OutpassDM;
 import com.gnts.stt.dsn.service.txn.OutpassService;
 import com.itextpdf.text.pdf.TextField;
+import com.thoughtworks.selenium.webdriven.commands.GetValue;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -55,6 +58,7 @@ public class Outpass extends BaseTransUI {
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private OutpassService serviceOutpass = (OutpassService) SpringContextHelper.getBean("outpass");
 	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private AssetDetailsService serviceassetdetails = (AssetDetailsService) SpringContextHelper.getBean("assetDetails");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(Outpass.class);
 	// User Input Fields for EC Request
@@ -64,7 +68,7 @@ public class Outpass extends BaseTransUI {
 	private GERPTextField tfPlace, tfTotalKM;
 	private GERPTextField tfTotalTime;
 	private GERPTimeField tfTimeIn, tfTimeOut;
-	private GERPComboBox cbVehicle;
+	private GERPComboBox cbVehicle, cbVehicleName;
 	private GERPTextField tfVehicleNo, tfKMIn, tfKMOut;
 	private TextArea taPurpose;
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
@@ -119,7 +123,19 @@ public class Outpass extends BaseTransUI {
 		});
 		cbVehicle = new GERPComboBox("Vehicle");
 		cbVehicle.setWidth("130");
+		cbVehicle.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getVehicleName();
+			}
+		});
 		cbVehicle.addItems("Company", "Personal");
+		cbVehicleName = new GERPComboBox("Vehicle Name");
+		cbVehicleName.setWidth("130");
+		loadVehicleName();
 		tfTimeIn = new GERPTimeField("Time In");
 		tfTimeIn.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -146,7 +162,7 @@ public class Outpass extends BaseTransUI {
 		cbDepartment.setItemCaptionPropertyId("deptname");
 		loadDepartmentList();
 		taPurpose = new TextArea("Purpose");
-		taPurpose.setHeight("50px");
+		taPurpose.setHeight("70px");
 		cbEmployee = new GERPComboBox("Employee");
 		cbEmployee.setItemCaptionPropertyId("firstname");
 		cbEmployee.setImmediate(true);
@@ -199,6 +215,7 @@ public class Outpass extends BaseTransUI {
 		flcol3.addComponent(tfPlace);
 		flcol3.addComponent(taPurpose);
 		flcol4.addComponent(cbVehicle);
+		flcol4.addComponent(cbVehicleName);
 		flcol4.addComponent(tfVehicleNo);
 		flcol4.addComponent(tfKMOut);
 		flcol5.addComponent(tfKMIn);
@@ -247,6 +264,21 @@ public class Outpass extends BaseTransUI {
 	}
 	
 	/*
+	 * COndition for vechine name
+	 */
+	private void getVehicleName() {
+		if (cbVehicle != null) {
+			if (cbVehicle.getValue().toString().equals("Company")) {
+				cbVehicleName.setRequired(true);
+				tfVehicleNo.setRequired(false);
+			} else {
+				cbVehicleName.setRequired(false);
+				tfVehicleNo.setRequired(true);
+			}
+		}
+	}
+	
+	/*
 	 * Total time calculation.
 	 */
 	private void getTotalHours() {
@@ -259,6 +291,19 @@ public class Outpass extends BaseTransUI {
 				tfTotalTime.setValue("0.0");
 			}
 		}
+	}
+	
+	/*
+	 * Load vehicle list.
+	 */
+	private void loadVehicleName() {
+		// getAssetDetailList(Long companyid,Long assetId, String assetName, Long brandId, Long deptId,String CatgryId,String status)
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
+		BeanContainer<Long, AssetDetailsDM> beanDepartment = new BeanContainer<Long, AssetDetailsDM>(
+				AssetDetailsDM.class);
+		beanDepartment.setBeanIdProperty("assetName");
+		beanDepartment.addAll(serviceassetdetails.getAssetDetailList(companyid,null, null, null, null,"Vehicle", "Active"));
+		cbVehicleName.setContainerDataSource(beanDepartment);
 	}
 	
 	/*
@@ -306,6 +351,7 @@ public class Outpass extends BaseTransUI {
 			tfTimeIn.setTime(outpassDM.getInTime());
 			taPurpose.setValue(outpassDM.getPurpose());
 			cbVehicle.setValue(outpassDM.getVehicle());
+			// cbVehicleName
 			tfVehicleNo.setValue(outpassDM.getVehicleNo());
 			tfKMOut.setValue(outpassDM.getKmOut().toString());
 			tfKMIn.setValue(outpassDM.getKmIn().toString());
@@ -330,6 +376,7 @@ public class Outpass extends BaseTransUI {
 		outpassDM.setInTime(tfTimeIn.getHorsMunites());
 		outpassDM.setPurpose(taPurpose.getValue());
 		outpassDM.setVehicle((String) cbVehicle.getValue());
+		// cbVehicleName
 		outpassDM.setVehicleNo(tfVehicleNo.getValue());
 		outpassDM.setKmOut(new BigDecimal(tfKMOut.getValue()));
 		outpassDM.setKmIn(new BigDecimal(tfKMIn.getValue()));
@@ -439,6 +486,7 @@ public class Outpass extends BaseTransUI {
 		tfKMIn.setValue("");
 		tfTotalKM.setValue("");
 		cbVehicle.setValue(null);
+		cbVehicleName.setValue(null);
 		tfTotalTime.setValue("0");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}

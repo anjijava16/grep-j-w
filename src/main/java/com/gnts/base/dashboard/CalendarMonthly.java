@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Locale;
 import com.gnts.asm.domain.txn.AssetMaintSchedDM;
 import com.gnts.asm.service.txn.AssetMaintSchedService;
+import com.gnts.die.domain.txn.DieRequestDM;
+import com.gnts.die.service.txn.DieRequestService;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -23,10 +25,15 @@ import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
 import com.vaadin.ui.themes.Runo;
 
+/**
+ * @author soundar
+ * 
+ */
 public class CalendarMonthly extends VerticalLayout implements CalendarEventProvider {
 	private static final long serialVersionUID = -5436777475398410597L;
 	private AssetMaintSchedService serviceMaintSched = (AssetMaintSchedService) SpringContextHelper
 			.getBean("AssetMaintSchedul");
+	private DieRequestService serviceDieRequest = (DieRequestService) SpringContextHelper.getBean("dieRequest");
 	GregorianCalendar calendar = new GregorianCalendar();
 	private Calendar calendarComponent;
 	private Date currentMonthsFirstDate = null;
@@ -121,6 +128,11 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 		return getEventsOverlappingForMonthly(fromStartDate, toEndDate);
 	}
 	
+	/**
+	 * @param fromStartDate
+	 * @param toEndDate
+	 * @return
+	 */
 	private List<CalendarEvent> getEventsOverlappingForMonthly(Date fromStartDate, Date toEndDate) {
 		List<CalendarEvent> e = new ArrayList<CalendarEvent>();
 		if (type.equalsIgnoreCase("APPOINMENTS")) {
@@ -140,6 +152,24 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 					event.setStyleName("color3");
 				}
 				event.setDescription(assetMaintSchedDM.getRemarks());
+				e.add(event);
+			}
+		} else if (type.equalsIgnoreCase("DIE_SCHEDULE")) {
+			for (DieRequestDM dieRequestDM : serviceDieRequest.getDieRequestList(null, null, null, null, null)) {
+				calendar.setTime(dieRequestDM.getRefDate1());
+				calendar.add(GregorianCalendar.DATE, 2);
+				CalendarTestEvent event = getNewEvent("Ref. Number : " + dieRequestDM.getDieRefNumber()
+						+ " - \n Enquiry Number : " + dieRequestDM.getEnquiryNo(), dieRequestDM.getRefDate1(),
+						dieRequestDM.getPlanCompleteDate());
+				if (dieRequestDM.getPlanCompleteDate().after(new Date())) {
+					event.setStyleName("color1");
+				} else if (dieRequestDM.getPlanCompleteDate().equals(new Date())) {
+					event.setStyleName("color4");
+				} else {
+					event.setStyleName("color3");
+				}
+				event.setDescription("Ref. Number : " + dieRequestDM.getDieRefNumber() + " - \n Enquiry Number : "
+						+ dieRequestDM.getEnquiryNo() +" Change Note : "+ dieRequestDM.getChangeNote());
 				e.add(event);
 			}
 		}

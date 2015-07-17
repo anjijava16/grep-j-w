@@ -15,6 +15,8 @@ import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.SlnoGenService;
+import com.gnts.die.domain.txn.DieRequestDM;
+import com.gnts.die.service.txn.DieRequestService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
@@ -37,8 +39,6 @@ import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsEnquiryDtlService;
-import com.gnts.stt.dsn.domain.txn.DieRequestDM;
-import com.gnts.stt.dsn.service.txn.DieRequestService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -56,7 +56,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * @author soundar
+ * @author soundarc
  * 
  */
 public class DieRequest extends BaseTransUI {
@@ -91,7 +91,9 @@ public class DieRequest extends BaseTransUI {
 	private Long companyid, moduleId, branchId;
 	private int recordCnt = 0;
 	// for die section
+	private GERPTextField tfDieModel, tfWorkNature;
 	private GERPComboBox cbRegisterby, cbReceivedby;
+	private GERPPopupDateField dfDieSecRefDate;
 	private GERPTextArea taTrailComments, taCmtsRectified;
 	// for Mold trail request
 	private GERPTextField tfMTRefNumber;
@@ -129,6 +131,21 @@ public class DieRequest extends BaseTransUI {
 		tfDrawingNumber.setEnabled(false);
 		cbNewDie = new GERPComboBox("New Die ?");
 		cbNewDie.addItems("Yes", "No");
+		cbNewDie.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				tfDieModel.setReadOnly(false);
+				if (cbNewDie.getValue() != null && cbNewDie.getValue().equals("Yes")) {
+					tfDieModel.setValue("NEW");
+				} else {
+					tfDieModel.setValue("OLD");
+				}
+				tfDieModel.setReadOnly(true);
+			}
+		});
 		taChangeNote = new GERPTextArea("Change Note");
 		taChangeNote.setWidth("984");
 		cbEnquiry = new GERPComboBox("Enquiry No.");
@@ -166,10 +183,17 @@ public class DieRequest extends BaseTransUI {
 		// for die section
 		cbRegisterby = new GERPComboBox("Registered by");
 		cbReceivedby = new GERPComboBox("Received by");
+		tfDieModel = new GERPTextField("Die Model");
+		tfDieModel.setWidth("130");
+		tfWorkNature = new GERPTextField("Work Nature");
+		dfDieSecRefDate = new GERPPopupDateField("Date");
+		dfDieSecRefDate.setWidth("110");
 		taTrailComments = new GERPTextArea("Trail Performance & Comments(by Roto)");
 		taTrailComments.setWidth("984");
+		taTrailComments.setHeight("150px");
 		taCmtsRectified = new GERPTextArea("Comments Rectified");
 		taCmtsRectified.setWidth("984");
+		taCmtsRectified.setHeight("150px");
 		// for mold section
 		tfMTRefNumber = new GERPTextField("Ref. Number");
 		dfMTRefDate = new GERPPopupDateField("Date");
@@ -237,8 +261,11 @@ public class DieRequest extends BaseTransUI {
 			private static final long serialVersionUID = 1L;
 			{
 				setSpacing(true);
+				addComponent(new FormLayout(tfDieModel));
+				addComponent(new FormLayout(tfWorkNature));
 				addComponent(new FormLayout(cbRegisterby));
 				addComponent(new FormLayout(cbReceivedby));
+				addComponent(new FormLayout(dfDieSecRefDate));
 			}
 		});
 		vlDieSection.addComponent(taTrailComments);

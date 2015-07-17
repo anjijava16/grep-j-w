@@ -130,7 +130,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 	private HorizontalLayout hlCollapse, hlExpand, collandexpndhl, hlLine, hlScreenName, hlHeader, hlTreeMenu;
 	private VerticalLayout vlLine, vlPasswordLayout;
 	private Image imgExpand, imgCollapse, imgPin, imgUnpin, imgGlob, imgProfile, imgHelp, imgCustomer, imgSingOut,
-			imgMonitor, imgFavorite,imgAssetIssue;
+			imgMonitor, imgFavorite, imgAssetIssue;
 	private Tree treeMenu;
 	String versionVar = "BS_APPVER";
 	String copyrightVar = "BS_APPCPR";
@@ -142,7 +142,6 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 	private String systemUser;
 	private Logger logger = Logger.getLogger(Login.class.getName());
 	private MenuBar mbFavarotise;
-	
 	
 	@WebServlet(value = "/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = false, ui = Login.class, widgetset = "com.gnts.base.AppWidgetSet")
@@ -318,13 +317,11 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 		imgFavorite.setWidth("22px");
 		imgFavorite.setHeight("22px");
 		imgFavorite.addClickListener(this);
-		
-		imgAssetIssue=new Image(null, new ThemeResource("img/customerservice.png"));
+		imgAssetIssue = new Image(null, new ThemeResource("img/customerservice.png"));
 		imgAssetIssue.setDescription("Raise Ticket");
 		imgAssetIssue.setWidth("36px");
 		imgAssetIssue.setHeight("36px");
 		imgAssetIssue.addClickListener(this);
-		
 		Label userName = new Label(loginuserName);
 		imgSingOut = new Image(null, new ThemeResource("img/signout.png"));
 		imgSingOut.setDescription("Sign Out");
@@ -681,8 +678,8 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 					System.out.println("Current Date" + DateUtils.getcurrentdate());
 					System.out.println("Current DateTime in GMT : " + gmtFormat.format(DateUtils.getcurrentdate()));
 					System.out.println("Adjust time" + adjustTime);
-					//System.out.println("Adjuseted Date and time"
-					//		+ gmtFormat.format(DateUtils.getcurrentdate().getTimezoneOffset()));
+					// System.out.println("Adjuseted Date and time"
+					// + gmtFormat.format(DateUtils.getcurrentdate().getTimezoneOffset()));
 					// Date dstDate = new Date( gmtFormat.format(DateUtils.getcurrentdate()) +
 					// TimeZone.getTimeZone(adjustTime));
 				}
@@ -785,10 +782,9 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 			new Dashboard();
 			clContent.addComponent(clArgumentLayout);
 		}
-		if(imgAssetIssue==event.getComponent()){
+		if (imgAssetIssue == event.getComponent()) {
 			UI.getCurrent().addWindow(new AssetComplaintRegister());
 		}
-		
 		if (imgHelp == event.getComponent()) {
 			/*
 			 * subwindow = new Window("Help"); subwindow.setWidth("580px"); subwindow.setHeight("800px");
@@ -900,9 +896,11 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 				targetClass = "com.gnts.base.dashboard.DashboardMMSView";
 			} else if (sreenName.equalsIgnoreCase("MMS Setup")) {
 				targetClass = "com.gnts.base.dashboard.DashboardStoreView";
-			}else if(sreenName.equalsIgnoreCase("Asset Management"))
+			} else if (sreenName.equalsIgnoreCase("Asset Management")) {
 				targetClass = "com.gnts.base.dashboard.MaintenanceDashboardView";
-			else {
+			}else if (sreenName.equalsIgnoreCase("Die")) {
+				targetClass = "com.gnts.base.dashboard.DieDashboardView";
+			} else {
 				targetClass = "com.gnts.base.dashboard.DashbordView";
 			}
 		}

@@ -616,9 +616,9 @@ public class Material extends BaseUI {
 		flMaterialConsumer3.addComponent(cbMatConsStatus);
 		cbMatConsBranch.setRequired(true);
 		cbMatConsDepartment.setRequired(true);
-		cbMatOwnerEmployee.setRequired(true);
-		cbMatOwnerDept.setRequired(true);
-		cbMatOwnerBranch.setRequired(true);
+		cbMatOwnerEmployee.setRequired(false);
+		cbMatOwnerDept.setRequired(false);
+		cbMatOwnerBranch.setRequired(false);
 		tfMatSpecName.setRequired(true);
 		flMaterialConsumer3.setSpacing(true);
 		// Setting for material consumer tab component to layout

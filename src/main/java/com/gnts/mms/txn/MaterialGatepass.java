@@ -136,7 +136,7 @@ public class MaterialGatepass extends BaseTransUI {
 	private void buildview() {
 		btndelete.setEnabled(false);
 		tfpersonname = new GERPTextField("Person");
-		tfVendorname = new GERPTextField("Vendor");
+		tfVendorname = new GERPTextField("Through");
 		tfGatePassQty = new TextField();
 		tfGatePassQty.setValue("0");
 		tfGatePassQty.setWidth("90");
@@ -232,15 +232,22 @@ public class MaterialGatepass extends BaseTransUI {
 		cbVendor.setItemCaptionPropertyId("vendorName");
 		loadvendordetails();
 		cbVendor.addValueChangeListener(new ValueChangeListener() {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 			
+			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (cbVendor.getValue() != null) {
-					tfVendorname.setValue(((VendorDM) cbVendor.getValue()).getVendorName());
-					// tfvendorname.setValue(cbvendor.getValue().toString());
+					VendorDM vendordm = serviceVendor.getVendorList(null,
+							((VendorDM) cbVendor.getValue()).getVendorId(), null, null, null, null, null, null, null,
+							null, "F").get(0);
+					if ((vendordm.getVendorAddress().toString() != null)
+							&& (vendordm.getcountryID().toString() != null)
+							&& (vendordm.getStateId().toString() != null) && (vendordm.getCityId().toString() != null)) {
+						tavendoraddres.setValue((vendordm.getVendorAddress().toString()) + "\n"
+								+ (vendordm.getCityName().toString()) + "\n" + (vendordm.getStateName()).toString()
+								+ "\n" + (vendordm.getCountryName().toString())+ "-" + (vendordm.getVendorPostcode().toString()));
+						tfVendorname.setValue(vendordm.getContactName());
+					}
 				}
 			}
 		});

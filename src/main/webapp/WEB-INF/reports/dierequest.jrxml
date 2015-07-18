@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="dierequest" pageWidth="595" pageHeight="842" orientation="Landscape" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8c0486eb-849c-42a8-83c1-759e7bd67ae6">
+	<property name="ireport.zoom" value="1.2100000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="diereqid" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select dt.die_ref_no,dt.ref_date ,e.cust_prod_code,e.cust_fld1,e.cust_fld2,dt.no_of_die,dt.enquiry_no
+from t_stt_die_request dt,t_sms_enquiry_dtl e
+where e.enquiry_id = dt.enquiry_no
+and dt.die_req_id =$P{diereqid}]]>
+	</queryString>
+	<field name="DIE_REF_NO" class="java.lang.String"/>
+	<field name="REF_DATE" class="java.sql.Timestamp"/>
+	<field name="CUST_PROD_CODE" class="java.lang.String"/>
+	<field name="CUST_FLD1" class="java.lang.String"/>
+	<field name="CUST_FLD2" class="java.lang.String"/>
+	<field name="NO_OF_DIE" class="java.math.BigDecimal"/>
+	<field name="ENQUIRY_NO" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="209" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="06f35a78-72be-4aa1-8c20-58b2499858c2" x="0" y="1" width="555" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC Tool Tech (P) Ltd.,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="02f1eafb-f917-4058-91b8-97699e72ba4e" x="0" y="44" width="555" height="19"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Die Request]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="96eac4dd-8b9f-4012-b9d1-7fba30d56dbf" x="1" y="26" width="554" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Malumichampatti, Coimbatore - 641 050]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="353" y="92" width="83" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="435" y="92" width="16" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField pattern="dd-MMM-yyyy" isBlankWhenNull="true">
+				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="450" y="92" width="101" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{REF_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="352" y="74" width="83" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ref. No]]></text>
+			</staticText>
+			<textField pattern="dd-MMM-yyyy" isBlankWhenNull="true">
+				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="449" y="74" width="102" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DIE_REF_NO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="435" y="74" width="16" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="76badd44-25e8-4625-9bd4-04101f1b931b" x="1" y="73" width="43" height="17"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[To,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3b5c6f48-890f-4923-bd05-df02f4604cbc" x="24" y="93" width="147" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[HOD Technical]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0abe1904-6480-483d-b3ff-36fe69dbf29b" x="1" y="130" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Dear sir,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4de6c9cc-81ba-4a3d-b0f5-7c3adbf70c23" x="47" y="154" width="508" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Request to produce new mold as per the enclosed drawing.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="165f58b8-7a4c-41af-bc82-6d35cdfe3745" x="1" y="185" width="43" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[SL/No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c75b8ae4-3f3c-449f-86c6-5bffcd7fe877" x="51" y="185" width="173" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Customer Code No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="67d4b51e-36fb-4788-8561-cb8477550268" x="228" y="185" width="146" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[SAARC P/No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed8be1d-d762-4624-87b5-32e4e75ff2e1" x="377" y="185" width="39" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Qry]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="955582c2-0ffa-4b54-9326-7330d6bee6ea" x="424" y="185" width="130" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Drawing No]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="08f0fc59-2c2a-49f1-8fd4-bc51333d95a0" x="1" y="180" width="554" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="08f0fc59-2c2a-49f1-8fd4-bc51333d95a0" x="-1" y="207" width="554" height="1"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="35" splitType="Stretch">
+			<textField>
+				<reportElement uuid="13a17c8f-4f7c-4a9c-966a-d44cba210801" x="2" y="9" width="43" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="1c63ccd4-d362-41ea-a222-830008cc3390" x="52" y="8" width="172" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CUST_PROD_CODE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="01c1f4b6-bd58-4ecb-9eb5-30c236a61297" x="228" y="8" width="146" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CUST_FLD1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="28d2a655-7e3b-4462-965d-696a1ef948f6" x="377" y="8" width="39" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{NO_OF_DIE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="04b44259-9164-4734-b4d6-59985dee5d85" x="425" y="9" width="126" height="19"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CUST_FLD2}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="89f174c8-d195-4126-8c62-e615188e6cb1" x="1" y="31" width="553" height="1"/>
+			</line>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="200" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="c8672ae0-f654-4e24-938f-d5309cd430b3" x="1" y="5" width="170" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[MARKETING]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a85a596c-042e-4bd1-af29-3aae4684399d" x="321" y="5" width="234" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[MANAGING DIRECTOR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="abcce501-c4d3-4d21-b7b8-7251a9d52b25" x="1" y="68" width="152" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Copy to  : Design]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="eeb6d627-268f-455b-8b3e-dfd8b2788d44" x="53" y="95" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Mould. MFG.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="da7403fb-2b49-4b87-919b-667193c94337" x="53" y="119" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[HOD - Production]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2366566e-ef4e-4573-839c-7732d882eb93" x="196" y="68" width="11" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[--]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2366566e-ef4e-4573-839c-7732d882eb93" x="196" y="95" width="11" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[--]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2366566e-ef4e-4573-839c-7732d882eb93" x="196" y="119" width="189" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[-- For Information]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

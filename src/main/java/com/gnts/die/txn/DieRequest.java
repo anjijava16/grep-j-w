@@ -61,7 +61,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Button.ClickEvent;
@@ -112,6 +111,9 @@ public class DieRequest extends BaseTransUI {
 	private HorizontalLayout hllayout1 = new HorizontalLayout();
 	private TabSheet tbDieRequest;
 	private VerticalLayout vlDieSection;
+	private VerticalLayout vlMoldTrialRequest;
+	private VerticalLayout vlDieCompletion;
+	private VerticalLayout vlBillofMaterial;
 	// local variables declaration
 	private Long dieRequestId, dieSectionId = null;
 	private String username;
@@ -315,7 +317,7 @@ public class DieRequest extends BaseTransUI {
 		vlDieSection.addComponent(taCmtsRectified);
 		tbDieRequest.addTab(vlDieSection, "Die Section");
 		// for mold trial request
-		VerticalLayout vlMoldTrialRequest = new VerticalLayout();
+		vlMoldTrialRequest = new VerticalLayout();
 		vlMoldTrialRequest.addComponent(GERPPanelGenerator.createPanel(new HorizontalLayout() {
 			private static final long serialVersionUID = 1L;
 			{
@@ -344,7 +346,7 @@ public class DieRequest extends BaseTransUI {
 			}
 		}));
 		tbDieRequest.addTab(vlMoldTrialRequest, "Mold Trial Request");
-		VerticalLayout vlDieCompletion = new VerticalLayout();
+		vlDieCompletion = new VerticalLayout();
 		vlDieCompletion.addComponent(GERPPanelGenerator.createPanel(new HorizontalLayout() {
 			private static final long serialVersionUID = 1L;
 			{
@@ -376,7 +378,8 @@ public class DieRequest extends BaseTransUI {
 			}
 		}));
 		tbDieRequest.addTab(vlDieCompletion, "Die Completion Report");
-		tbDieRequest.addTab(new Label(), "Bill of Matrial");
+		vlBillofMaterial = new VerticalLayout();
+		tbDieRequest.addTab(vlBillofMaterial, "Bill of Matrial");
 		hlUserIPContainer.addComponent(tbDieRequest);
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
@@ -785,6 +788,27 @@ public class DieRequest extends BaseTransUI {
 				parameterMap.put("diesecid", dieSectionId);
 				Report rpt = new Report(parameterMap, connection);
 				rpt.setReportName(basepath + "/WEB-INF/reports/diesection"); // diesection is the name of my jasper
+				rpt.callReport(basepath, "Preview");
+			} else if (tbDieRequest.getSelectedTab().equals(vlMoldTrialRequest)) {
+				HashMap<String, Long> parameterMap = new HashMap<String, Long>();
+				parameterMap.put("moldreqid", 1L);
+				Report rpt = new Report(parameterMap, connection);
+				rpt.setReportName(basepath + "/WEB-INF/reports/moldtrialrequest"); // diesection is the name of my
+																					// jasper
+				rpt.callReport(basepath, "Preview");
+			} else if (tbDieRequest.getSelectedTab().equals(vlDieCompletion)) {
+				HashMap<String, Long> parameterMap = new HashMap<String, Long>();
+				parameterMap.put("diecompid", 1L);
+				Report rpt = new Report(parameterMap, connection);
+				rpt.setReportName(basepath + "/WEB-INF/reports/diecompletionreport"); // diecompletionreport is the name of my
+																						// jasper
+				rpt.callReport(basepath, "Preview");
+			} else if (tbDieRequest.getSelectedTab().equals(vlBillofMaterial)) {
+				HashMap<String, Long> parameterMap = new HashMap<String, Long>();
+				parameterMap.put("bomid", 1L);
+				Report rpt = new Report(parameterMap, connection);
+				rpt.setReportName(basepath + "/WEB-INF/reports/moldlidbom"); // moldlidbom is the name of my
+																						// jasper
 				rpt.callReport(basepath, "Preview");
 			} else {
 				HashMap<String, Long> parameterMap = new HashMap<String, Long>();

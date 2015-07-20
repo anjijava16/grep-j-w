@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="moldtrialrequest" pageWidth="595" pageHeight="842" orientation="Landscape" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8c0486eb-849c-42a8-83c1-759e7bd67ae6">
+	<property name="ireport.zoom" value="1.464100000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="108"/>
+	<parameter name="moldreqid" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select h.ref_number,h.ref_date,d.input_detail,d.description
+from t_stt_mold_trial_req_hdr h,t_stt_mold_trial_req_dtl d
+where h.mold_trial_req_hid = d.mold_trial_req_hid
+and h.mold_trial_req_hid =$P{moldreqid}]]>
+	</queryString>
+	<field name="REF_NUMBER" class="java.lang.String"/>
+	<field name="REF_DATE" class="java.sql.Timestamp"/>
+	<field name="INPUT_DETAIL" class="java.lang.String"/>
+	<field name="DESCRIPTION" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="141" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="06f35a78-72be-4aa1-8c20-58b2499858c2" x="0" y="1" width="555" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC Tool Tech (P) Ltd.,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="02f1eafb-f917-4058-91b8-97699e72ba4e" x="0" y="44" width="555" height="19"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MOLD TRIAL REQUEST - DIE INPUT DATA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="96eac4dd-8b9f-4012-b9d1-7fba30d56dbf" x="1" y="26" width="554" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Malumichampatti, Coimbatore - 641 050]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="353" y="92" width="83" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="435" y="92" width="16" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField pattern="dd-MMM-yyyy" isBlankWhenNull="true">
+				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="450" y="92" width="101" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{REF_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="352" y="74" width="83" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ref. No]]></text>
+			</staticText>
+			<textField pattern="dd-MMM-yyyy" isBlankWhenNull="true">
+				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="449" y="74" width="102" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{REF_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="435" y="74" width="16" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="165f58b8-7a4c-41af-bc82-6d35cdfe3745" x="5" y="118" width="39" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[SL/No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c75b8ae4-3f3c-449f-86c6-5bffcd7fe877" x="51" y="118" width="245" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Detail of Input]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="955582c2-0ffa-4b54-9326-7330d6bee6ea" x="309" y="118" width="245" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="08f0fc59-2c2a-49f1-8fd4-bc51333d95a0" x="1" y="113" width="554" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="08f0fc59-2c2a-49f1-8fd4-bc51333d95a0" x="-1" y="140" width="556" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="cf1d434a-8032-4e27-a922-fbecef682411" x="302" y="113" width="1" height="28"/>
+			</line>
+			<line>
+				<reportElement uuid="cf1d434a-8032-4e27-a922-fbecef682411" x="46" y="113" width="1" height="28"/>
+			</line>
+			<line>
+				<reportElement uuid="cf1d434a-8032-4e27-a922-fbecef682411" x="0" y="113" width="1" height="28"/>
+			</line>
+			<line>
+				<reportElement uuid="567148f5-49a3-4925-87a5-65693448b134" x="554" y="113" width="1" height="27"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="33" splitType="Stretch">
+			<textField>
+				<reportElement uuid="13a17c8f-4f7c-4a9c-966a-d44cba210801" x="5" y="2" width="39" height="20"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="1c63ccd4-d362-41ea-a222-830008cc3390" x="52" y="2" width="244" height="29"/>
+				<textElement verticalAlignment="Top">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{INPUT_DETAIL}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="04b44259-9164-4734-b4d6-59985dee5d85" x="309" y="3" width="242" height="28"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="89f174c8-d195-4126-8c62-e615188e6cb1" x="1" y="31" width="553" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="4b696b94-7fab-4eef-836e-b163e07a45e1" x="302" y="-3" width="1" height="34"/>
+			</line>
+			<line>
+				<reportElement uuid="c2cf4ab0-c531-4f9f-a68f-8c9bd292d0ff" x="46" y="0" width="1" height="31"/>
+			</line>
+			<line>
+				<reportElement uuid="b5eb591d-df0f-48a8-9459-42690b752ab9" x="0" y="0" width="1" height="32"/>
+			</line>
+			<line>
+				<reportElement uuid="042f91ba-3015-48d6-b1e2-844fdd662635" x="554" y="0" width="1" height="32"/>
+			</line>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="76" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="c8672ae0-f654-4e24-938f-d5309cd430b3" x="1" y="25" width="114" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[DESIGN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a85a596c-042e-4bd1-af29-3aae4684399d" x="449" y="25" width="105" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[HOD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="abcce501-c4d3-4d21-b7b8-7251a9d52b25" x="128" y="25" width="90" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[MOLD SHOP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="eeb6d627-268f-455b-8b3e-dfd8b2788d44" x="235" y="25" width="85" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[QC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="da7403fb-2b49-4b87-919b-667193c94337" x="335" y="25" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[ROTO]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

@@ -381,7 +381,7 @@ public class Generator extends BaseTransUI {
 		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
 				AssetDetailsDM.class);
 		beanAssetDetails.setBeanIdProperty("assetId");
-		beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, "GEN", null, null, null));
+		beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, "GEN", null, null, null, null));
 		cbAssetName.setContainerDataSource(beanAssetDetails);
 	}
 	

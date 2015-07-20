@@ -429,7 +429,7 @@ public class AssetDetails extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfAssetName.getValue() + ",");
 			asstdetailList = serviceAssetDetail.getAssetDetailList(companyid, null, tfAssetName.getValue(),
-					(Long) cbBrandId.getValue(), (Long) cbDeptId.getValue(), ((String) cbAssetStatus.getValue()));
+					(Long) cbBrandId.getValue(), (Long) cbDeptId.getValue(), null,((String) cbAssetStatus.getValue()));
 			recordCnt = asstdetailList.size();
 			beanAssetdetail = new BeanItemContainer<AssetDetailsDM>(AssetDetailsDM.class);
 			beanAssetdetail.addAll(asstdetailList);

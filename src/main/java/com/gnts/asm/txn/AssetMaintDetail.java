@@ -301,7 +301,7 @@ public class AssetMaintDetail extends BaseTransUI {
 				AssetDetailsDM.class);
 		beanAssetDetails.setBeanIdProperty("assetId");
 		beanAssetDetails
-				.addAll(servicebeanAssetDetails.getAssetDetailList(companyId, null, null, null, null, "Active"));
+				.addAll(servicebeanAssetDetails.getAssetDetailList(companyId, null, null, null, null, null, "Active"));
 		cbAssetName.setContainerDataSource(beanAssetDetails);
 	}
 	

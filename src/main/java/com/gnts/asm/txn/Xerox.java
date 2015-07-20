@@ -212,7 +212,7 @@ public class Xerox extends BaseTransUI {
 		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
 				AssetDetailsDM.class);
 		beanAssetDetails.setBeanIdProperty("assetId");
-		beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, "PRINTER", null, null, null));
+		beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, "PRINTER", null, null, null, null));
 		cbAssetName.setContainerDataSource(beanAssetDetails);
 	}
 	

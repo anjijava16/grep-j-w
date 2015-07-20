@@ -277,7 +277,7 @@ public class AssetMaintSched extends BaseUI {
 		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
 				AssetDetailsDM.class);
 		beanAssetDetails.setBeanIdProperty("assetId");
-		beanAssetDetails.addAll(servicebeanAssetDetails.getAssetDetailList(companyId, null, schedassetName, null, null,
+		beanAssetDetails.addAll(servicebeanAssetDetails.getAssetDetailList(companyId, null, schedassetName, null, null,null,
 				"Active"));
 		cbAssetName.setContainerDataSource(beanAssetDetails);
 	}

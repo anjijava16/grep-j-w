@@ -155,7 +155,7 @@ public class AssetComplaintRegister extends Window {
 		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
 				AssetDetailsDM.class);
 		beanAssetDetails.setBeanIdProperty("assetId");
-		beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null, null));
+		beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null, null,null));
 		cbAssetName.setContainerDataSource(beanAssetDetails);
 	}
 	

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ecn" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2b31763f-f900-4eec-ad1c-176b6a1f149c">
 	<property name="ireport.zoom" value="1.9487171000000063"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="109"/>
 	<property name="ireport.y" value="220"/>
 	<parameter name="ECNID" class="java.lang.Long">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
@@ -197,7 +197,7 @@ and ecn.ecn_id=$P{ECNID}]]>
 			<staticText>
 				<reportElement uuid="705a1da9-3738-4725-b347-a068683a47d8" x="284" y="97" width="54" height="21"/>
 				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[ ECR No.]]></text>
+				<text><![CDATA[ ECN No.]]></text>
 			</staticText>
 			<textField>
 				<reportElement uuid="729e5f1a-4c94-48fa-94d2-a88dc07a2125" x="340" y="98" width="101" height="20"/>

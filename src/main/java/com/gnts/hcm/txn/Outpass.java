@@ -302,7 +302,7 @@ public class Outpass extends BaseTransUI {
 		BeanContainer<Long, AssetDetailsDM> beanDepartment = new BeanContainer<Long, AssetDetailsDM>(
 				AssetDetailsDM.class);
 		beanDepartment.setBeanIdProperty("assetName");
-		beanDepartment.addAll(serviceassetdetails.getAssetDetailList(companyid,null, null, null, null,"Vehicle", "Active"));
+		beanDepartment.addAll(serviceassetdetails.getAssetDetailList(companyid,null, null, null, null,null, "Active"));
 		cbVehicleName.setContainerDataSource(beanDepartment);
 	}
 	

@@ -591,21 +591,7 @@ public class MaterialGatepass extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(false);
 		btnAddDtl.setCaption("Add");
 		tblGatepassDetails.setVisible(true);
-		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyId, branchID, moduleId, "MM_GPNO").get(0);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfGatePassNo.setReadOnly(false);
-				tfGatePassNo.setValue(slnoObj.getKeyDesc());
-				tfGatePassNo.setReadOnly(true);
-			} else {
-				tfGatePassNo.setReadOnly(false);
-			}
-		}
-		catch (Exception e) {
-		}
-		comments = new MmsComments(vlTableForm, null, companyId, null, null, null, null, null, null, null, status);
 	}
-	
 	@Override
 	protected void editDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Adding new record...");
@@ -632,7 +618,6 @@ public class MaterialGatepass extends BaseTransUI {
 			cbDC.setValue(editHdrIndent.getDcId());
 			tfGatePassNo.setReadOnly(false);
 			tfGatePassNo.setValue(editHdrIndent.getGatepassNo());
-			tfGatePassNo.setReadOnly(true);
 			if (gatepassdt.getValue() != null) {
 				gatepassdt.setValue(editHdrIndent.getGatepassDtInt());
 			}
@@ -898,7 +883,6 @@ public class MaterialGatepass extends BaseTransUI {
 	protected void resetFields() {
 		tfGatePassNo.setReadOnly(false);
 		tfGatePassNo.setValue("");
-		tfGatePassNo.setReadOnly(true);
 		gatepassdt.setValue(null);
 		cbGatepasstype.setValue(null);
 		cbDC.setValue(null);

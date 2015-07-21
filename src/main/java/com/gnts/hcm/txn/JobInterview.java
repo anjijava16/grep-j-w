@@ -174,7 +174,7 @@ public class JobInterview extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<JobInterviewDM> loadjobinterviewList = new ArrayList<JobInterviewDM>();
@@ -283,25 +283,25 @@ public class JobInterview extends BaseUI {
 	private void editJobIntervwdetails() {
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			JobInterviewDM editjbintrvwList = beanJobInterviewDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if ((editjbintrvwList.getCandidateid() != null)) {
-				cbCandidateName.setValue(editjbintrvwList.getCandidateid());
+			JobInterviewDM jobInterviewDM = beanJobInterviewDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			if ((jobInterviewDM.getCandidateid() != null)) {
+				cbCandidateName.setValue(jobInterviewDM.getCandidateid());
 			}
-			if ((editjbintrvwList.getVacancyid() != null)) {
-				cbJobTitle.setValue(editjbintrvwList.getVacancyid());
+			if ((jobInterviewDM.getVacancyid() != null)) {
+				cbJobTitle.setValue(jobInterviewDM.getVacancyid());
 			}
-			if (editjbintrvwList.getInterviewDt() != null) {
-				dfIntrvwDate.setValue(editjbintrvwList.getInterviewDt());
+			if (jobInterviewDM.getInterviewDt() != null) {
+				dfIntrvwDate.setValue(jobInterviewDM.getInterviewDt());
 			}
-			if ((editjbintrvwList.getIntervwdesc() != null)) {
-				taIntrvwDesc.setValue(editjbintrvwList.getIntervwdesc().toString());
+			if ((jobInterviewDM.getIntervwdesc() != null)) {
+				taIntrvwDesc.setValue(jobInterviewDM.getIntervwdesc().toString());
 			}
-			if ((editjbintrvwList.getIntervwlevel() != null)) {
-				cbIntrvwLevel.setValue(editjbintrvwList.getIntervwlevel().toString());
+			if ((jobInterviewDM.getIntervwlevel() != null)) {
+				cbIntrvwLevel.setValue(jobInterviewDM.getIntervwlevel().toString());
 			}
-			tfIntrvwTime.setTime(editjbintrvwList.getIntervwtime());
-			cbStatus.setValue(editjbintrvwList.getStatus());
-			cbinterviewerid.setValue(editjbintrvwList.getInterviewerid());
+			tfIntrvwTime.setTime(jobInterviewDM.getIntervwtime());
+			cbStatus.setValue(jobInterviewDM.getStatus());
+			cbinterviewerid.setValue(jobInterviewDM.getInterviewerid());
 		}
 	}
 	
@@ -355,25 +355,25 @@ public class JobInterview extends BaseUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			JobInterviewDM jobInterviewobj = new JobInterviewDM();
+			JobInterviewDM jobInterviewDM = new JobInterviewDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				jobInterviewobj = beanJobInterviewDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				jobInterviewDM = beanJobInterviewDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			jobInterviewobj.setCandidateid((Long) cbCandidateName.getValue());
-			jobInterviewobj.setVacancyid((Long) cbJobTitle.getValue());
+			jobInterviewDM.setCandidateid((Long) cbCandidateName.getValue());
+			jobInterviewDM.setVacancyid((Long) cbJobTitle.getValue());
 			if (dfIntrvwDate.getValue() != null) {
-				jobInterviewobj.setInterviewDt(dfIntrvwDate.getValue());
+				jobInterviewDM.setInterviewDt(dfIntrvwDate.getValue());
 			}
-			jobInterviewobj.setIntervwdesc(taIntrvwDesc.getValue().toString());
-			jobInterviewobj.setIntervwlevel(cbIntrvwLevel.getValue().toString());
-			jobInterviewobj.setInterviewerid((Long) cbinterviewerid.getValue());
-			jobInterviewobj.setStatus(cbStatus.getValue().toString());
+			jobInterviewDM.setIntervwdesc(taIntrvwDesc.getValue().toString());
+			jobInterviewDM.setIntervwlevel(cbIntrvwLevel.getValue().toString());
+			jobInterviewDM.setInterviewerid((Long) cbinterviewerid.getValue());
+			jobInterviewDM.setStatus(cbStatus.getValue().toString());
 			if (tfIntrvwTime.getValue() != null) {
-				jobInterviewobj.setIntervwtime(tfIntrvwTime.getHorsMunites());
+				jobInterviewDM.setIntervwtime(tfIntrvwTime.getHorsMunites());
 			}
-			jobInterviewobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			jobInterviewobj.setLastUpdatedBy(username);
-			serviceJobInterview.saveOrUpdateJobInterview(jobInterviewobj);
+			jobInterviewDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+			jobInterviewDM.setLastUpdatedBy(username);
+			serviceJobInterview.saveOrUpdateJobInterview(jobInterviewDM);
 			resetFields();
 			loadSrchRslt();
 		}

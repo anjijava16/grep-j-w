@@ -17,9 +17,12 @@ import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.base.service.mst.SlnoGenService;
+import com.gnts.die.domain.txn.DieCompletionDtlDM;
+import com.gnts.die.domain.txn.DieCompletionHdrDM;
 import com.gnts.die.domain.txn.DieRequestDM;
 import com.gnts.die.domain.txn.DieSectionDM;
 import com.gnts.die.domain.txn.MoldTrailReqDtlDM;
+import com.gnts.die.domain.txn.MoldTrailReqHdrDM;
 import com.gnts.die.service.txn.DieCompletionDtlService;
 import com.gnts.die.service.txn.DieCompletionHdrService;
 import com.gnts.die.service.txn.DieRequestService;
@@ -42,6 +45,7 @@ import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
+import com.vaadin.ui.AbstractSelect;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
@@ -54,16 +58,18 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -102,6 +108,7 @@ public class DieRequest extends BaseTransUI {
 			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<DieRequestDM> beanDieRequest = null;
 	private BeanItemContainer<MoldTrailReqDtlDM> beanMoldTrailReqDtl = null;
+	private BeanItemContainer<DieCompletionDtlDM> beanDieCompletionDtl = null;
 	// form layout for input controls EC Request
 	private FormLayout flcol1, flcol2, flcol3, flcol4;
 	// Search Control Layout
@@ -115,7 +122,7 @@ public class DieRequest extends BaseTransUI {
 	private VerticalLayout vlDieCompletion;
 	private VerticalLayout vlBillofMaterial;
 	// local variables declaration
-	private Long dieRequestId, dieSectionId = null;
+	private Long dieRequestId, dieSectionId = null, moldRequestId = null, dieCompletionId = null;
 	private String username;
 	private Long companyid, moduleId, branchId;
 	private int recordCnt = 0;
@@ -134,12 +141,12 @@ public class DieRequest extends BaseTransUI {
 	private List<MoldTrailReqDtlDM> listMoldTrailDetail = new ArrayList<MoldTrailReqDtlDM>();
 	// Die completion report
 	private GERPTextField tfDCRefNumber;
-	private GERPComboBox cbFromDept, cbToDept;
 	private GERPPopupDateField dfDCRefDate;
 	private GERPComboBox cbDCDescription, cbDCResult;
 	private GERPTextField taDCRemarks;
 	private GERPTable tblDieCompletion = new GERPTable();
 	private Button btnAddDieCompl = new GERPButton("Add", "add");
+	private List<DieCompletionDtlDM> listDieComplDetail = new ArrayList<DieCompletionDtlDM>();
 	
 	// Constructor received the parameters from Login UI class
 	public DieRequest() {
@@ -241,8 +248,6 @@ public class DieRequest extends BaseTransUI {
 		// for die completion
 		tfDCRefNumber = new GERPTextField("Report Number");
 		dfDCRefDate = new GERPPopupDateField("Date");
-		cbFromDept = new GERPComboBox("From ");
-		cbToDept = new GERPComboBox("To ");
 		cbDCDescription = new GERPComboBox("Description");
 		loadDCDescriptions();
 		cbDCResult = new GERPComboBox("Result");
@@ -256,6 +261,7 @@ public class DieRequest extends BaseTransUI {
 		resetFields();
 		loadSrchRslt();
 		loadTrailRequestDetails();
+		loadDieCompletion();
 		btnAddMoldTrial.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -263,6 +269,41 @@ public class DieRequest extends BaseTransUI {
 			public void buttonClick(ClickEvent event) {
 				// TODO Auto-generated method stub
 				saveMoldTrialDetails();
+			}
+		});
+		btnAddDieCompl.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				saveDieCompletionDtl();
+			}
+		});
+		tblTrailRequest.addItemClickListener(new ItemClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				if (tblTrailRequest.isSelected(event.getItemId())) {
+					resetMoldReqDetails();
+				} else {
+					((AbstractSelect) event.getSource()).select(event.getItemId());
+					editMoldReqDetails();
+				}
+			}
+		});
+		tblDieCompletion.addItemClickListener(new ItemClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				if (tblDieCompletion.isSelected(event.getItemId())) {
+					resetDieCompleteDetails();
+				} else {
+					((AbstractSelect) event.getSource()).select(event.getItemId());
+					editDieCompleteDetails();
+				}
 			}
 		});
 	}
@@ -354,8 +395,6 @@ public class DieRequest extends BaseTransUI {
 				setMargin(true);
 				addComponent(new FormLayout(tfDCRefNumber));
 				addComponent(new FormLayout(dfDCRefDate));
-				addComponent(new FormLayout(cbFromDept));
-				addComponent(new FormLayout(cbToDept));
 			}
 		}));
 		vlDieCompletion.addComponent(GERPPanelGenerator.createPanel(new VerticalLayout() {
@@ -379,7 +418,7 @@ public class DieRequest extends BaseTransUI {
 		}));
 		tbDieRequest.addTab(vlDieCompletion, "Die Completion Report");
 		vlBillofMaterial = new VerticalLayout();
-		tbDieRequest.addTab(vlBillofMaterial, "Bill of Matrial");
+		// tbDieRequest.addTab(vlBillofMaterial, "Bill of Matrial");
 		hlUserIPContainer.addComponent(tbDieRequest);
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
@@ -418,6 +457,15 @@ public class DieRequest extends BaseTransUI {
 		tblTrailRequest.setVisibleColumns(new Object[] { "inputDetail", "description" });
 		tblTrailRequest.setColumnHeaders(new String[] { "Detail of Input", "Description" });
 		tblTrailRequest.setColumnWidth("inputDetail", 350);
+	}
+	
+	private void loadDieCompletion() {
+		tblDieCompletion.removeAllItems();
+		beanDieCompletionDtl = new BeanItemContainer<DieCompletionDtlDM>(DieCompletionDtlDM.class);
+		beanDieCompletionDtl.addAll(listDieComplDetail);
+		tblDieCompletion.setContainerDataSource(beanDieCompletionDtl);
+		tblDieCompletion.setVisibleColumns(new Object[] { "descType", "result", "remarks" });
+		tblDieCompletion.setColumnHeaders(new String[] { "Description", "Results", "Remarks" });
 	}
 	
 	// Load Enquiry List
@@ -523,6 +571,21 @@ public class DieRequest extends BaseTransUI {
 		}
 	}
 	
+	private void editMoldReqDetails() {
+		// TODO Auto-generated method stub
+		MoldTrailReqDtlDM moldTrailReqDtlDM = beanMoldTrailReqDtl.getItem(tblTrailRequest.getValue()).getBean();
+		cbMTInput.setValue(moldTrailReqDtlDM.getInputDetail());
+		tfMTDescription.setValue(moldTrailReqDtlDM.getDescription());
+	}
+	
+	private void editDieCompleteDetails() {
+		// TODO Auto-generated method stub
+		DieCompletionDtlDM dieCompletionDtlDM = beanDieCompletionDtl.getItem(tblDieCompletion.getValue()).getBean();
+		cbDCDescription.setValue(dieCompletionDtlDM.getDescType());
+		cbDCResult.setValue(dieCompletionDtlDM.getResult());
+		taDCRemarks.setValue(dieCompletionDtlDM.getRemarks());
+	}
+	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		saveDieRequest();
@@ -544,12 +607,54 @@ public class DieRequest extends BaseTransUI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		try {
+			if (validateDieCompletion()) {
+				saveDieCompletion();
+			}
+		}
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void saveDieCompletion() {
+		// TODO Auto-generated method stub
+		DieCompletionHdrDM dieCompletionHdrDM = new DieCompletionHdrDM();
+		dieCompletionHdrDM.setDieReqId(dieRequestId);
+		dieCompletionHdrDM.setDieComplHdrId(dieCompletionId);
+		dieCompletionHdrDM.setRefNumber(tfDCRefNumber.getValue());
+		dieCompletionHdrDM.setRefDate(dfDCRefDate.getValue());
+		dieCompletionHdrDM.setDieModel(tfDieModel.getValue());
+		serviceDieComplHdr.saveOrUpdateDetails(dieCompletionHdrDM);
+		dieCompletionId = dieCompletionHdrDM.getDieComplHdrId();
+		@SuppressWarnings("unchecked")
+		Collection<DieCompletionDtlDM> itemIds = (Collection<DieCompletionDtlDM>) tblDieCompletion.getVisibleItemIds();
+		for (DieCompletionDtlDM dieCompletionDtlDM : (Collection<DieCompletionDtlDM>) itemIds) {
+			dieCompletionDtlDM.setDieComplHdrId(dieCompletionHdrDM.getDieComplHdrId());
+			serviceDieComplDtl.saveOrUpdateDetails(dieCompletionDtlDM);
+		}
+	}
+	
+	private boolean validateDieCompletion() throws ValidationException {
+		Boolean isvalid = true;
+		if (tfDCRefNumber.getValue() == null) {
+			isvalid = false;
+		}
+		if (dfDCRefDate.getValue() == null) {
+			isvalid = false;
+		}
+		if (!isvalid) {
+			throw new ERPException.ValidationException();
+		}
+		return isvalid;
 	}
 	
 	private void saveMoldTrialDetails() {
 		MoldTrailReqDtlDM moldTrailReqDtlDM = new MoldTrailReqDtlDM();
 		if (tblTrailRequest.getValue() != null) {
 			moldTrailReqDtlDM = beanMoldTrailReqDtl.getItem(tblTrailRequest.getValue()).getBean();
+			listMoldTrailDetail.remove(moldTrailReqDtlDM);
 		}
 		moldTrailReqDtlDM.setInputDetail((String) cbMTInput.getValue());
 		moldTrailReqDtlDM.setDescription((String) tfMTDescription.getValue());
@@ -557,6 +662,7 @@ public class DieRequest extends BaseTransUI {
 		moldTrailReqDtlDM.setLastUpdatedDate(DateUtils.getcurrentdate());
 		listMoldTrailDetail.add(moldTrailReqDtlDM);
 		loadTrailRequestDetails();
+		resetMoldReqDetails();
 	}
 	
 	private Boolean validateMoldTrail() throws ValidationException {
@@ -571,6 +677,33 @@ public class DieRequest extends BaseTransUI {
 	}
 	
 	private void saveMoldTrailRequest() {
+		MoldTrailReqHdrDM moldTrailReqHdrDM = new MoldTrailReqHdrDM();
+		moldTrailReqHdrDM.setDieReqId(dieRequestId);
+		moldTrailReqHdrDM.setTrialReqHdrId(moldRequestId);
+		moldTrailReqHdrDM.setRefNumber(tfMTRefNumber.getValue());
+		moldTrailReqHdrDM.setRefDate(dfMTRefDate.getValue());
+		serviceMoldTrialHdr.saveOrUpdateDetails(moldTrailReqHdrDM);
+		moldRequestId = moldTrailReqHdrDM.getTrialReqHdrId();
+		@SuppressWarnings("unchecked")
+		Collection<MoldTrailReqDtlDM> itemIds = (Collection<MoldTrailReqDtlDM>) tblTrailRequest.getVisibleItemIds();
+		for (MoldTrailReqDtlDM moldTrailReqDtlDM : (Collection<MoldTrailReqDtlDM>) itemIds) {
+			moldTrailReqDtlDM.setTrialReqHdrId(moldTrailReqHdrDM.getTrialReqHdrId());
+			serviceMoldTrialDtl.saveOrUpdateDetails(moldTrailReqDtlDM);
+		}
+	}
+	
+	private void saveDieCompletionDtl() {
+		DieCompletionDtlDM dieCompletionDtlDM = new DieCompletionDtlDM();
+		if (tblTrailRequest.getValue() != null) {
+			dieCompletionDtlDM = beanDieCompletionDtl.getItem(tblTrailRequest.getValue()).getBean();
+			listDieComplDetail.remove(dieCompletionDtlDM);
+		}
+		dieCompletionDtlDM.setDescType((String) cbDCDescription.getValue());
+		dieCompletionDtlDM.setResult((String) cbDCResult.getValue());
+		dieCompletionDtlDM.setRemarks(taDCRemarks.getValue());
+		listDieComplDetail.add(dieCompletionDtlDM);
+		loadDieCompletion();
+		resetDieCompleteDetails();
 	}
 	
 	private void saveDieRequest() {
@@ -655,6 +788,10 @@ public class DieRequest extends BaseTransUI {
 		vlSrchRsltContainer.setVisible(true);
 		assembleinputLayout();
 		resetFields();
+		dieRequestId = null;
+		dieSectionId = null;
+		moldRequestId = null;
+		dieCompletionId = null;
 		tfDieRefNumber.setReadOnly(false);
 		try {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "DIE_REQ_NO").get(0);
@@ -677,6 +814,10 @@ public class DieRequest extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		resetFields();
+		dieRequestId = null;
+		dieSectionId = null;
+		moldRequestId = null;
+		dieCompletionId = null;
 		editDieRequest();
 		try {
 			editDieSection();
@@ -684,11 +825,46 @@ public class DieRequest extends BaseTransUI {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		try {
+			editMoldTrialRequest();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			editDieCompletion();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void editDieCompletion() {
+		// TODO Auto-generated method stub
+		DieCompletionHdrDM dieCompletionHdrDM = serviceDieComplHdr.getDieCompletionHdrList(null, dieRequestId, null,
+				null, null).get(0);
+		dieCompletionId = dieCompletionHdrDM.getDieComplHdrId();
+		tfDCRefNumber.setValue(dieCompletionHdrDM.getRefNumber());
+		dfDCRefDate.setValue(dieCompletionHdrDM.getRefDate());
+		tfDieModel.setValue(dieCompletionHdrDM.getDieModel());
+		listDieComplDetail = serviceDieComplDtl.getDieCompletionDtlList(null, dieCompletionId, null);
+		loadDieCompletion();
+	}
+	
+	private void editMoldTrialRequest() {
+		// TODO Auto-generated method stub
+		MoldTrailReqHdrDM moldTrailReqHdrDM = serviceMoldTrialHdr.getMoldTrailReqHdrList(null, dieRequestId, null,
+				null, null).get(0);
+		moldRequestId = moldTrailReqHdrDM.getTrialReqHdrId();
+		tfMTRefNumber.setValue(moldTrailReqHdrDM.getRefNumber());
+		dfRefDate.setValue(moldTrailReqHdrDM.getRefDate());
+		listMoldTrailDetail = serviceMoldTrialDtl.getMoldTrailReqDtlList(null, moldRequestId, null);
+		loadTrailRequestDetails();
 	}
 	
 	private void editDieSection() {
 		// TODO Auto-generated method stub
-		DieSectionDM dieSectionDM = serviceDieSection.getDieSectionList(null, dieSectionId, null, null, null).get(0);
+		DieSectionDM dieSectionDM = serviceDieSection.getDieSectionList(null, dieRequestId, null, null, null).get(0);
 		dieSectionId = dieSectionDM.getDieSecId();
 		dfDieSecRefDate.setValue(dieSectionDM.getRefDate());
 		tfDieModel.setValue(dieSectionDM.getDieModel());
@@ -740,6 +916,22 @@ public class DieRequest extends BaseTransUI {
 		loadSrchRslt();
 	}
 	
+	private void resetMoldReqDetails() {
+		cbMTInput.setValue(null);
+		tfMTDescription.setValue("");
+		cbMTInput.setComponentError(null);
+		tfMTDescription.setComponentError(null);
+	}
+	
+	private void resetDieCompleteDetails() {
+		// TODO Auto-generated method stub
+		cbDCDescription.setValue(null);
+		cbDCResult.setValue(null);
+		taDCRemarks.setValue("");
+		cbDCDescription.setComponentError(null);
+		cbDCResult.setComponentError(null);
+	}
+	
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
@@ -755,6 +947,7 @@ public class DieRequest extends BaseTransUI {
 		taChangeNote.setValue("");
 		cbStatus.setValue(null);
 		dfRefDate.setValue(new Date());
+		
 	}
 	
 	@Override
@@ -791,16 +984,17 @@ public class DieRequest extends BaseTransUI {
 				rpt.callReport(basepath, "Preview");
 			} else if (tbDieRequest.getSelectedTab().equals(vlMoldTrialRequest)) {
 				HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-				parameterMap.put("moldreqid", 1L);
+				parameterMap.put("moldreqid", moldRequestId);
 				Report rpt = new Report(parameterMap, connection);
 				rpt.setReportName(basepath + "/WEB-INF/reports/moldtrialrequest"); // diesection is the name of my
 																					// jasper
 				rpt.callReport(basepath, "Preview");
 			} else if (tbDieRequest.getSelectedTab().equals(vlDieCompletion)) {
 				HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-				parameterMap.put("diecompid", 1L);
+				parameterMap.put("diecompid", dieCompletionId);
 				Report rpt = new Report(parameterMap, connection);
-				rpt.setReportName(basepath + "/WEB-INF/reports/diecompletionreport"); // diecompletionreport is the name of my
+				rpt.setReportName(basepath + "/WEB-INF/reports/diecompletionreport"); // diecompletionreport is the name
+																						// of my
 																						// jasper
 				rpt.callReport(basepath, "Preview");
 			} else if (tbDieRequest.getSelectedTab().equals(vlBillofMaterial)) {
@@ -808,7 +1002,7 @@ public class DieRequest extends BaseTransUI {
 				parameterMap.put("bomid", 1L);
 				Report rpt = new Report(parameterMap, connection);
 				rpt.setReportName(basepath + "/WEB-INF/reports/moldlidbom"); // moldlidbom is the name of my
-																						// jasper
+																				// jasper
 				rpt.callReport(basepath, "Preview");
 			} else {
 				HashMap<String, Long> parameterMap = new HashMap<String, Long>();

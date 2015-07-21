@@ -418,7 +418,7 @@ public class Pulverizer extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading pulviz Reference No...");
 		BeanItemContainer<AssetDetailsDM> beanassetdetails = new BeanItemContainer<AssetDetailsDM>(AssetDetailsDM.class);
-		beanassetdetails.addAll(serviceassetdetails.getAssetDetailList(null, assetId, "PUL", null, null, null));
+		beanassetdetails.addAll(serviceassetdetails.getAssetDetailList(null, assetId, "PUL", null, null,null, null));
 		cbMachineName.setContainerDataSource(beanassetdetails);
 	}
 	

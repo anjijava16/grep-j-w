@@ -37,7 +37,6 @@ import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.EmployeeOvertimeDM;
 import com.gnts.hcm.domain.txn.EmployeePermissionDM;
 import com.gnts.hcm.service.txn.EmployeeOvertimeService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -62,8 +61,11 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
-@SuppressWarnings("serial")
 public class EmployeeOvertime extends VerticalLayout implements ClickListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Declaration for add and edit panel components
 	private ComboBox cbOvertimeapprovemgr;
 	private PopupDateField dfovertimedt;
@@ -72,12 +74,10 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 	private TextField tfOvertimetotalhours;
 	private ComboBox cbOvertimestatus;
 	// for Search
-	Button btnSearch, btnReset;
+	private Button btnSearch, btnReset;
 	// Declaration for add and edit panel
-	VerticalLayout vlAddEditPanel = new VerticalLayout();
-	VerticalLayout vlTablePanel = new VerticalLayout();
-	HorizontalLayout hlsavecancel = new HorizontalLayout();
-	HorizontalLayout hlFileDownloadLayout;
+	private VerticalLayout vlTablePanel = new VerticalLayout();
+	private HorizontalLayout hlsavecancel = new HorizontalLayout();
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Table Declaration
@@ -85,18 +85,18 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 	public Button btnadd;
 	public Button btnSave;
 	public Button btnCancel;
-	List<EmployeeOvertimeDM> usertable = new ArrayList<EmployeeOvertimeDM>();
+	private List<EmployeeOvertimeDM> usertable = new ArrayList<EmployeeOvertimeDM>();
 	private BeanItemContainer<EmployeeOvertimeDM> beans = null;
 	private VerticalLayout vltable, vlTableForm, vlTableLayout;
-	HorizontalLayout hlTableTitleandCaptionLayout;
+	private HorizontalLayout hlTableTitleandCaptionLayout;
 	private String username;
 	private Long companyid;
-	EmployeeOvertimeService serviceovertime = (EmployeeOvertimeService) SpringContextHelper.getBean("EmployeeOvertime");
-	EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private static Logger logger = Logger.getLogger(EmployeePermissionDM.class);
+	private EmployeeOvertimeService serviceovertime = (EmployeeOvertimeService) SpringContextHelper
+			.getBean("EmployeeOvertime");
+	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private Logger logger = Logger.getLogger(EmployeePermissionDM.class);
 	private int total = 0;
 	private Long employeeid;
-	public HorizontalLayout hlHeader = new HorizontalLayout();
 	
 	public EmployeeOvertime(Long empid) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -107,7 +107,6 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 		buildView();
 	}
 	
-	@SuppressWarnings("unused")
 	private void buildView() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting EmployeeOvertime UI");
 		// Initialization for dfovertimedate
@@ -187,7 +186,6 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 				}
 			}
 		});
-		HorizontalLayout hlTableCaptionLayout = new HorizontalLayout();
 		hlTableTitleandCaptionLayout = new HorizontalLayout();
 		// Initialization for table panel components
 		tblMstScrSrchRslt = new Table();
@@ -315,19 +313,17 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 	// Method used to display selected row's values in desired text box and combo box for edit the values
 	private void editOvertime() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Overtime.......");
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			EmployeeOvertimeDM over = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfovertimedt.setValue(over.getOvertimedate());
-			tfstarthour.setTime(over.getStarthour());
-			tfendhour.setTime(over.getEndhour());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			EmployeeOvertimeDM employeeOvertimeDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			dfovertimedt.setValue(employeeOvertimeDM.getOvertimedate());
+			tfstarthour.setTime(employeeOvertimeDM.getStarthour());
+			tfendhour.setTime(employeeOvertimeDM.getEndhour());
 			tfOvertimetotalhours.setReadOnly(false);
-			tfOvertimetotalhours.setValue(over.getTotalhours().toString());
+			tfOvertimetotalhours.setValue(employeeOvertimeDM.getTotalhours().toString());
 			tfOvertimetotalhours.setReadOnly(true);
-			taOvertimeremarks.setValue(over.getOtremarks());
-			cbOvertimeapprovemgr.setValue(over.getApprovemgr());
-			String stcode = itselect.getItemProperty("empotstatus").getValue().toString();
-			cbOvertimestatus.setValue(stcode);
+			taOvertimeremarks.setValue(employeeOvertimeDM.getOtremarks());
+			cbOvertimeapprovemgr.setValue(employeeOvertimeDM.getApprovemgr());
+			cbOvertimestatus.setValue(employeeOvertimeDM.getEmpotstatus());
 		}
 	}
 	
@@ -376,7 +372,6 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 	public void overtimesave(Long employeeid) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "EmployeeOvertime Save details......");
-		System.out.println("employeeid--------->" + employeeid);
 		@SuppressWarnings("unchecked")
 		Collection<EmployeeOvertimeDM> itemIds = (Collection<EmployeeOvertimeDM>) tblMstScrSrchRslt.getVisibleItemIds();
 		for (EmployeeOvertimeDM saveovertime : (Collection<EmployeeOvertimeDM>) itemIds) {

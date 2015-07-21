@@ -35,8 +35,6 @@ import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.stt.dsn.domain.txn.OutpassDM;
 import com.gnts.stt.dsn.service.txn.OutpassService;
-import com.itextpdf.text.pdf.TextField;
-import com.thoughtworks.selenium.webdriven.commands.GetValue;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -50,7 +48,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 public class Outpass extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
@@ -81,8 +78,6 @@ public class Outpass extends BaseTransUI {
 	// Parent layout for all the input controls EC Request
 	private HorizontalLayout hllayout = new HorizontalLayout();
 	private HorizontalLayout hllayout1 = new HorizontalLayout();
-	// Parent layout for all the input controls Sms Comments
-	VerticalLayout vlTableForm = new VerticalLayout();
 	// local variables declaration
 	private Long outpassid;
 	private String username;
@@ -297,12 +292,14 @@ public class Outpass extends BaseTransUI {
 	 * Load vehicle list.
 	 */
 	private void loadVehicleName() {
-		// getAssetDetailList(Long companyid,Long assetId, String assetName, Long brandId, Long deptId,String CatgryId,String status)
+		// getAssetDetailList(Long companyid,Long assetId, String assetName, Long brandId, Long deptId,String
+		// CatgryId,String status)
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
 		BeanContainer<Long, AssetDetailsDM> beanDepartment = new BeanContainer<Long, AssetDetailsDM>(
 				AssetDetailsDM.class);
 		beanDepartment.setBeanIdProperty("assetName");
-		beanDepartment.addAll(serviceassetdetails.getAssetDetailList(companyid,null, null, null, null,null, "Active"));
+		beanDepartment
+				.addAll(serviceassetdetails.getAssetDetailList(companyid, null, null, null, null, null, "Active"));
 		cbVehicleName.setContainerDataSource(beanDepartment);
 	}
 	
@@ -520,7 +517,6 @@ public class Outpass extends BaseTransUI {
 			parameterMap.put("ECRID", outpassid);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/ecr"); // ecr is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

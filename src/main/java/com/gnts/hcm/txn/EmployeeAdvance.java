@@ -191,7 +191,7 @@ public class EmployeeAdvance extends BaseUI {
 	public void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeAdvanceDM> EmployeeAdvanceList = new ArrayList<EmployeeAdvanceDM>();
+		List<EmployeeAdvanceDM> listEmpAdvance = new ArrayList<EmployeeAdvanceDM>();
 		Long empId = null;
 		if (cbEmpName.getValue() != null) {
 			empId = ((Long.valueOf(cbEmpName.getValue().toString())));
@@ -203,11 +203,11 @@ public class EmployeeAdvance extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfAdvncAmt.getValue() + ", " + dfEffective.getValue()
 				+ (String) cbStatus.getValue() + ", " + empId + "," + deductionId);
-		EmployeeAdvanceList = serviceEmpAdvance.getempadvancelist(null, empId, deductionId, null, null,
+		listEmpAdvance = serviceEmpAdvance.getempadvancelist(null, empId, deductionId, null, null,
 				(String) cbStatus.getValue(), "F");
-		recordCnt = EmployeeAdvanceList.size();
+		recordCnt = listEmpAdvance.size();
 		beanAdvanceDM = new BeanItemContainer<EmployeeAdvanceDM>(EmployeeAdvanceDM.class);
-		beanAdvanceDM.addAll(EmployeeAdvanceList);
+		beanAdvanceDM.addAll(listEmpAdvance);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the EmployeeAdvance. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanAdvanceDM);

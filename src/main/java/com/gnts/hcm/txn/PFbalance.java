@@ -122,7 +122,7 @@ public class PFbalance extends BaseUI {
 	public void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<PFbalanceDM> PFbalanceList = new ArrayList<PFbalanceDM>();
+		List<PFbalanceDM> listPFBalance = new ArrayList<PFbalanceDM>();
 		Long employeeid = null;
 		if (cbempname.getValue() != null) {
 			employeeid = ((Long) cbempname.getValue());
@@ -131,11 +131,11 @@ public class PFbalance extends BaseUI {
 				+ tffinyear.getValue());
 		recordCnt = 0;
 		if (cbempname.getValue() != null || tffinyear.getValue().trim().length() > 0) {
-			PFbalanceList = servicepfbalance.getPfBalanceList(null, null, employeeid, null, null, tffinyear.getValue());
-			recordCnt = PFbalanceList.size();
+			listPFBalance = servicepfbalance.getPfBalanceList(null, null, employeeid, null, null, tffinyear.getValue());
+			recordCnt = listPFBalance.size();
 		}
 		beanPFbalanceDM = new BeanItemContainer<PFbalanceDM>(PFbalanceDM.class);
-		beanPFbalanceDM.addAll(PFbalanceList);
+		beanPFbalanceDM.addAll(listPFBalance);
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
 				+ "Got the PF Balance result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanPFbalanceDM);

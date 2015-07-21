@@ -1265,7 +1265,7 @@ public class Extruder extends BaseTransUI {
 		BeanContainer<Long, AssetDetailsDM> beanAssetdetail = new BeanContainer<Long, AssetDetailsDM>(
 				AssetDetailsDM.class);
 		beanAssetdetail.setBeanIdProperty("assetId");
-		beanAssetdetail.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null, "Active"));
+		beanAssetdetail.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null,null, "Active"));
 		cbMachineName.setContainerDataSource(beanAssetdetail);
 	}
 	

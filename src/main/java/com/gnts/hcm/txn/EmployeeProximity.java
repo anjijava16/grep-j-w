@@ -41,7 +41,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.EmployeeProximityDM;
 import com.gnts.hcm.service.txn.EmployeeProximityService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -69,7 +68,6 @@ public class EmployeeProximity extends BaseUI {
 	private TextField tfProximityNo;
 	private ComboBox cbEmployeeName;
 	private PopupDateField dfValidFrm;
-	Date dtValidFrm;
 	private PopupDateField dfValidUntil;
 	private TextArea taRemarks;
 	private ComboBox cbStatus;
@@ -127,7 +125,7 @@ public class EmployeeProximity extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		tblMstScrSrchRslt.setPageLength(14);
@@ -249,24 +247,24 @@ public class EmployeeProximity extends BaseUI {
 	}
 	
 	private void editProximity() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			EmployeeProximityDM empprxmty = beanEmployeeProximityDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			empprxmty.getEmpproxmtyid();
-			if ((itselect.getItemProperty("proxmtyno").getValue() != null)) {
-				tfProximityNo.setValue(empprxmty.getProxmtyno().toString());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			EmployeeProximityDM employeeProximityDM = beanEmployeeProximityDM.getItem(tblMstScrSrchRslt.getValue())
+					.getBean();
+			employeeProximityDM.getEmpproxmtyid();
+			if (employeeProximityDM.getProxmtyno() != null) {
+				tfProximityNo.setValue(employeeProximityDM.getProxmtyno().toString());
 			}
-			cbEmployeeName.setValue(itselect.getItemProperty("employeeid").getValue());
-			if (empprxmty.getValidfrom() != null) {
-				dfValidFrm.setValue(empprxmty.getValidfrom());
+			cbEmployeeName.setValue(employeeProximityDM.getEmployeeid());
+			if (employeeProximityDM.getValidfrom() != null) {
+				dfValidFrm.setValue(employeeProximityDM.getValidfrom());
 			}
-			if (empprxmty.getValiduntil() != null) {
-				dfValidUntil.setValue(empprxmty.getValiduntil());
+			if (employeeProximityDM.getValiduntil() != null) {
+				dfValidUntil.setValue(employeeProximityDM.getValiduntil());
 			}
-			if ((itselect.getItemProperty("remarks").getValue() != null)) {
-				taRemarks.setValue(empprxmty.getRemarks().toString());
+			if (employeeProximityDM.getRemarks() != null) {
+				taRemarks.setValue(employeeProximityDM.getRemarks().toString());
 			}
-			cbStatus.setValue(itselect.getItemProperty("proxmtystatus").getValue());
+			cbStatus.setValue(employeeProximityDM.getProxmtystatus());
 		}
 	}
 	

@@ -41,7 +41,6 @@ import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.ITHraDeclDM;
 import com.gnts.hcm.service.txn.ITHraDeclService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -49,10 +48,10 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Table.Align;
 
 public class ITHraDeclaration extends BaseUI {
 	private ITHraDeclService serviceITHraDecl = (ITHraDeclService) SpringContextHelper.getBean("ITHRA");
@@ -71,7 +70,7 @@ public class ITHraDeclaration extends BaseUI {
 	private PopupDateField dfVerifiedDt = new GERPPopupDateField("Verified Date");
 	// Bean container
 	private BeanItemContainer<ITHraDeclDM> beanITHraDeclDM = null;
-	private Long companyId,EmployeeId;
+	private Long companyId, EmployeeId;
 	private String loginUserName;
 	private int recordCnt = 0;
 	String primaryid;
@@ -95,7 +94,8 @@ public class ITHraDeclaration extends BaseUI {
 	}
 	
 	private void buildview() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Painting ITHraDeclaration UI");
+		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+				+ "Painting ITHraDeclaration UI");
 		// text fields
 		tfFinYear = new GERPTextField("Finance Year");
 		tfHraAmt = new GERPTextField("HRA Amount");
@@ -186,11 +186,10 @@ public class ITHraDeclaration extends BaseUI {
 	}
 	
 	private void loadEmployee() {
-		List<EmployeeDM> list = servicebeanEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, null,
-				null, null, null, null, null, "F");
 		BeanContainer<Long, EmployeeDM> bean = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		bean.setBeanIdProperty("employeeid");
-		bean.addAll(list);
+		bean.addAll(servicebeanEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, null, null, null,
+				null, null, null, "P"));
 		cbEmpName.setContainerDataSource(bean);
 	}
 	
@@ -209,8 +208,10 @@ public class ITHraDeclaration extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Got the IT Other HRA declaration List result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanITHraDeclDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "itHRAId", "empName","hraAmt","appAmt","status","lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name","HRA Amount","Approved Amount","Status", "Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "itHRAId", "empName", "hraAmt", "appAmt", "status",
+				"lastUpdatedDt", "lastUpdatedBy" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "HRA Amount", "Approved Amount",
+				"Status", "Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("itHRAId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records:" + recordCnt);
 	}
@@ -257,8 +258,7 @@ public class ITHraDeclaration extends BaseUI {
 	private void editItHraDecl() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Editing the selected record");
-		Item select = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (select != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			ITHraDeclDM editHraDeclObj = beanITHraDeclDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			if (editHraDeclObj.getEmpId() != null) {
 				cbEmpName.setValue(editHraDeclObj.getEmpId());
@@ -282,8 +282,8 @@ public class ITHraDeclaration extends BaseUI {
 			if (editHraDeclObj.getStatus() != null) {
 				cbStatus.setValue(editHraDeclObj.getStatus());
 			}
-			if (select.getItemProperty("proofDoc").getValue() != null) {
-				byte[] certificate = (byte[]) select.getItemProperty("proofDoc").getValue();
+			if (editHraDeclObj.getProofDoc() != null) {
+				byte[] certificate = editHraDeclObj.getProofDoc();
 				UploadDocumentUI test = new UploadDocumentUI(hlithradDoc);
 				test.displaycertificate(certificate);
 			} else {

@@ -238,16 +238,16 @@ public class JobVaccancy extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		tblMstScrSrchRslt.setPageLength(13);
-		List<JobVaccancyDM> loadjobvacncyList = new ArrayList<JobVaccancyDM>();
+		List<JobVaccancyDM> listJobvacncy = new ArrayList<JobVaccancyDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + (String) tfJobtitle.getValue() + ", " + (Long) cbJobClsName.getValue()
 				+ (String) cbJbStatus.getValue() + ", " + (Long) cbDesgntnName.getValue());
-		loadjobvacncyList = serviceJobVaccancy.getJobVaccancyList(vaccancyId, (String) tfJobtitle.getValue(),
+		listJobvacncy = serviceJobVaccancy.getJobVaccancyList(vaccancyId, (String) tfJobtitle.getValue(),
 				(Long) cbJobClsName.getValue(), (Long) cbDesgntnName.getValue(), null, null,
 				(String) cbJbStatus.getValue(), "F");
-		recordCnt = loadjobvacncyList.size();
+		recordCnt = listJobvacncy.size();
 		beanJobVaccancyDM = new BeanItemContainer<JobVaccancyDM>(JobVaccancyDM.class);
-		beanJobVaccancyDM.addAll(loadjobvacncyList);
+		beanJobVaccancyDM.addAll(listJobvacncy);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the JobVaccancy. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanJobVaccancyDM);

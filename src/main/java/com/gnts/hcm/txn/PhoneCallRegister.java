@@ -42,7 +42,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 public class PhoneCallRegister extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
@@ -54,10 +53,9 @@ public class PhoneCallRegister extends BaseTransUI {
 	private Logger logger = Logger.getLogger(PhoneCallRegister.class);
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// User Input Fields for EC Request
 	private GERPPopupDateField dfCallDate;
-	private GERPComboBox cbEmployee, cbDepartment,cbCallType;
+	private GERPComboBox cbEmployee, cbDepartment, cbCallType;
 	private GERPTextField tfPhoneNumber, tfCompany, tfIntercom, tfTime;
 	private TextArea taPurpose;
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
@@ -70,8 +68,6 @@ public class PhoneCallRegister extends BaseTransUI {
 	// Parent layout for all the input controls EC Request
 	private HorizontalLayout hllayout = new HorizontalLayout();
 	private HorizontalLayout hllayout1 = new HorizontalLayout();
-	// Parent layout for all the input controls Sms Comments
-	VerticalLayout vlTableForm = new VerticalLayout();
 	// local variables declaration
 	private Long phoneRegid;
 	private String username;
@@ -189,23 +185,26 @@ public class PhoneCallRegister extends BaseTransUI {
 		tblMstScrSrchRslt.setColumnAlignment("phoneRegId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
+	
 	/*
 	 * Load call type.
 	 */
-	public void loadCallType() {
+	private void loadCallType() {
 		try {
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Call Type Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"HC_CALTYP");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Call Type Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"HC_CALTYP"));
 			cbCallType.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
 	// Load Employee List
 	private void loadEmployeeList() {
 		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);

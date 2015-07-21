@@ -40,7 +40,6 @@ import com.gnts.hcm.domain.mst.ShiftDM;
 import com.gnts.hcm.domain.txn.EmployeeShiftDM;
 import com.gnts.hcm.service.mst.ShiftService;
 import com.gnts.hcm.service.txn.EmployeeShiftService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -70,8 +69,6 @@ public class EmployeeShift extends BaseUI {
 	private PopupDateField dfShiftStart, dfShiftEnd;
 	// BeanItemContainer
 	private BeanItemContainer<EmployeeShiftDM> beanEmployeeShift = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployeeDM = null;
-	private BeanContainer<Long, ShiftDM> beanShift = null;
 	// local variables declaration
 	private Long companyId, shiftId, employeeId;
 	private int recordCnt = 0;
@@ -164,11 +161,10 @@ public class EmployeeShift extends BaseUI {
 	
 	private void loadEmployeeList() {
 		try {
-			List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyId,
-					employeeId, null, null, null, "F");
-			beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(empList);
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, employeeId,
+					null, null, null, "P"));
 			cbEmployeeName.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
@@ -178,10 +174,9 @@ public class EmployeeShift extends BaseUI {
 	
 	private void loadShiftList() {
 		try {
-			List<ShiftDM> shiftList = serviceShift.getShiftList(shiftId, null, companyId, null, "F");
-			beanShift = new BeanContainer<Long, ShiftDM>(ShiftDM.class);
+			BeanContainer<Long, ShiftDM> beanShift = new BeanContainer<Long, ShiftDM>(ShiftDM.class);
 			beanShift.setBeanIdProperty("shiftId");
-			beanShift.addAll(shiftList);
+			beanShift.addAll(serviceShift.getShiftList(shiftId, null, companyId, null, "F"));
 			cbShiftName.setContainerDataSource(beanShift);
 		}
 		catch (Exception e) {
@@ -304,18 +299,17 @@ public class EmployeeShift extends BaseUI {
 		editEmpShift();
 	}
 	
-	protected void editEmpShift() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+	private void editEmpShift() {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			EmployeeShiftDM empShift = beanEmployeeShift.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			empShift.getEmpshiftid();
-			cbEmployeeName.setValue(itselect.getItemProperty("employeeid").getValue());
-			cbShiftName.setValue(itselect.getItemProperty("shiftid").getValue());
+			cbEmployeeName.setValue(empShift.getEmployeeid());
+			cbShiftName.setValue(empShift.getShiftid());
 			if (empShift.getShiftdt() != null) {
 				dfShiftEnd.setValue(empShift.getShiftdt());
 				dfShiftStart.setValue(empShift.getShiftdt());
 			}
-			cbStatus.setValue(itselect.getItemProperty("shiftstatus").getValue());
+			cbStatus.setValue(empShift.getShiftstatus());
 		}
 	}
 	
@@ -346,9 +340,7 @@ public class EmployeeShift extends BaseUI {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(dfShiftStart.getValue());
 		cal.add(Calendar.DATE, -1);
-		System.out.println("cal.getTime()--->" + dfShiftEnd.getValue());
 		while (cal.getTime().before(dfShiftEnd.getValue())) {
-			System.out.println("cal.getTime()--->" + dfShiftEnd.getValue());
 			EmployeeShiftDM employeeShiftobj = new EmployeeShiftDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				employeeShiftobj = beanEmployeeShift.getItem(tblMstScrSrchRslt.getValue()).getBean();
@@ -362,7 +354,6 @@ public class EmployeeShift extends BaseUI {
 			employeeShiftobj.setLastupdatedby(userName);
 			// Date calculation
 			cal.add(Calendar.DATE, 1);
-			System.out.println("cal.getTime()--->" + cal.getTime());
 			employeeShiftobj.setShiftdt(cal.getTime());
 			serviceEmployeeShift.saveAndUpdate(employeeShiftobj);
 		}

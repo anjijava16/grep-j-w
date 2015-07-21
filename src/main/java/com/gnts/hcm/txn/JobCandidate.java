@@ -63,7 +63,6 @@ public class JobCandidate extends BaseUI {
 	private JobVaccancyService serviceJobVaccancy = (JobVaccancyService) SpringContextHelper.getBean("JobVaccancy");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Parent layout for all the input controls
@@ -229,7 +228,7 @@ public class JobCandidate extends BaseUI {
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
 	
-	public void loadJobVaccancy() {
+	private void loadJobVaccancy() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading JobVaccancy Search...");
 		BeanContainer<Long, JobVaccancyDM> beanJobVaccancyDM = new BeanContainer<Long, JobVaccancyDM>(
@@ -262,7 +261,7 @@ public class JobCandidate extends BaseUI {
 					+ "Loading Relationship Search...");
 			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 					"HC_WRKEXP");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
 			beanCompanyLookUp.addAll(lookUpList);
 			cbWrkExp.setContainerDataSource(beanCompanyLookUp);
@@ -314,42 +313,42 @@ public class JobCandidate extends BaseUI {
 	public void editCandidate() {
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			JobCandidateDM jobcandidatelist = beanJobCandidateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (jobcandidatelist.getJobtitle() != null) {
-				cbjobtitle.setValue(jobcandidatelist.getJobtitle());
+			JobCandidateDM jobCandidateDM = beanJobCandidateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			if (jobCandidateDM.getJobtitle() != null) {
+				cbjobtitle.setValue(jobCandidateDM.getJobtitle());
 			}
-			if ((jobcandidatelist.getFirstName() != null)) {
-				tffirstname.setValue(jobcandidatelist.getFirstName().toString());
+			if ((jobCandidateDM.getFirstName() != null)) {
+				tffirstname.setValue(jobCandidateDM.getFirstName().toString());
 			}
-			if ((jobcandidatelist.getLastName() != null)) {
-				tflastname.setValue(jobcandidatelist.getLastName());
+			if ((jobCandidateDM.getLastName() != null)) {
+				tflastname.setValue(jobCandidateDM.getLastName());
 			}
-			if ((jobcandidatelist.getEmail() != null)) {
-				tfemailid.setValue(jobcandidatelist.getEmail().toString());
+			if ((jobCandidateDM.getEmail() != null)) {
+				tfemailid.setValue(jobCandidateDM.getEmail().toString());
 			}
-			if ((jobcandidatelist.getContactNo() != null)) {
-				tfcontactno.setValue(jobcandidatelist.getContactNo());
+			if ((jobCandidateDM.getContactNo() != null)) {
+				tfcontactno.setValue(jobCandidateDM.getContactNo());
 			}
-			if ((jobcandidatelist.getDoa() != null)) {
-				dfDOA.setValue(jobcandidatelist.getDoa());
+			if ((jobCandidateDM.getDoa() != null)) {
+				dfDOA.setValue(jobCandidateDM.getDoa());
 			}
-			if ((jobcandidatelist.getResumKeywrds() != null)) {
-				taresumkywrd.setValue(jobcandidatelist.getResumKeywrds());
+			if ((jobCandidateDM.getResumKeywrds() != null)) {
+				taresumkywrd.setValue(jobCandidateDM.getResumKeywrds());
 			}
-			if ((jobcandidatelist.getStatus() != null)) {
-				cbStatus.setValue(jobcandidatelist.getStatus());
+			if ((jobCandidateDM.getStatus() != null)) {
+				cbStatus.setValue(jobCandidateDM.getStatus());
 			}
-			if (jobcandidatelist.getWorkExp() != null) {
-				tfWrkExpDesc.setValue(jobcandidatelist.getWorkExp());
+			if (jobCandidateDM.getWorkExp() != null) {
+				tfWrkExpDesc.setValue(jobCandidateDM.getWorkExp());
 			}
-			if (jobcandidatelist.getExpYear() != null) {
-				tfWrkExpYr.setValue(jobcandidatelist.getExpYear());
+			if (jobCandidateDM.getExpYear() != null) {
+				tfWrkExpYr.setValue(jobCandidateDM.getExpYear());
 			}
-			if (jobcandidatelist.getExpDesc() != null) {
-				cbWrkExp.setValue(jobcandidatelist.getExpDesc());
+			if (jobCandidateDM.getExpDesc() != null) {
+				cbWrkExp.setValue(jobCandidateDM.getExpDesc());
 			}
-			if (jobcandidatelist.getResume() != null) {
-				byte[] certificate = jobcandidatelist.getResume();
+			if (jobCandidateDM.getResume() != null) {
+				byte[] certificate = jobCandidateDM.getResume();
 				UploadDocumentUI test = new UploadDocumentUI(vlresumdoc);
 				test.displaycertificate(certificate);
 			} else {

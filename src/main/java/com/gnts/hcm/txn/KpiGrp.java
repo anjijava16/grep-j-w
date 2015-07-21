@@ -64,7 +64,7 @@ public class KpiGrp extends BaseUI {
 	private Long companyId;
 	private String loginUserName;
 	private int recordCnt = 0;
-	String primaryid;
+	private String primaryid;
 	// Initialize Logger
 	private Logger logger = Logger.getLogger(KpiGrp.class);
 	private static final long serialVersionUID = 1L;
@@ -156,7 +156,7 @@ public class KpiGrp extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<KpiGroupDM> kpiGrpList = new ArrayList<KpiGroupDM>();

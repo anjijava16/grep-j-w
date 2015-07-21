@@ -148,7 +148,7 @@ public class PayAdhocEntry extends BaseUI {
 		hluserInputlayout.setMargin(true);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search result...");
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.removeAllItems();
@@ -156,13 +156,13 @@ public class PayAdhocEntry extends BaseUI {
 		if (cbEmployeeName.getValue() != null) {
 			empid = ((Long) cbEmployeeName.getValue());
 		}
-		List<PayAdhocEntryDM> PayAdhocEntryList = new ArrayList<PayAdhocEntryDM>();
+		List<PayAdhocEntryDM> listPayAdhocEntry = new ArrayList<PayAdhocEntryDM>();
 		Date payrolldt = (Date) pdfPayDate.getValue();
-		PayAdhocEntryList = servicepayadhocentry.getPayAdhocEntry(null, empid, payrolldt, (String) cbStatus.getValue(),
+		listPayAdhocEntry = servicepayadhocentry.getPayAdhocEntry(null, empid, payrolldt, (String) cbStatus.getValue(),
 				"F");
-		recordCnt = PayAdhocEntryList.size();
+		recordCnt = listPayAdhocEntry.size();
 		beanPayAdhocEntryDM = new BeanItemContainer<PayAdhocEntryDM>(PayAdhocEntryDM.class);
-		beanPayAdhocEntryDM.addAll(PayAdhocEntryList);
+		beanPayAdhocEntryDM.addAll(listPayAdhocEntry);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the PayAdhocEntry result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanPayAdhocEntryDM);

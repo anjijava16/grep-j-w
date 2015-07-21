@@ -171,10 +171,10 @@ public class TaxLimit extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<TaxLimitDM> TaxLimitList = new ArrayList<TaxLimitDM>();
+		List<TaxLimitDM> listTaxLimit = new ArrayList<TaxLimitDM>();
 		Long TaxId = null;
 		if (cbTaxId.getValue() != null) {
 			TaxId = ((Long.valueOf(cbTaxId.getValue().toString())));
@@ -182,11 +182,11 @@ public class TaxLimit extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfExemptLimit.getValue() + ", " + cbTaxId.getValue()
 				+ (String) cbStatus.getValue() + ", " + TaxId);
-		TaxLimitList = serviceTaxLimit.getTaxLimitList(null, TaxId, (String) cbSectnCode.getValue(),
+		listTaxLimit = serviceTaxLimit.getTaxLimitList(null, TaxId, (String) cbSectnCode.getValue(),
 				(String) cbStatus.getValue(), "F");
-		recordCnt = TaxLimitList.size();
+		recordCnt = listTaxLimit.size();
 		beanTaxLimitDM = new BeanItemContainer<TaxLimitDM>(TaxLimitDM.class);
-		beanTaxLimitDM.addAll(TaxLimitList);
+		beanTaxLimitDM.addAll(listTaxLimit);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the TaxLimit. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanTaxLimitDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "taxLimitId", "taxName", "sctnCode", "exemptLimit",
@@ -327,27 +327,27 @@ public class TaxLimit extends BaseUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			TaxLimitDM TaxLimitObj = new TaxLimitDM();
+			TaxLimitDM taxLimitDM = new TaxLimitDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				TaxLimitObj = beanTaxLimitDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				taxLimitDM = beanTaxLimitDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			if (cbStatus.getValue() != null) {
-				TaxLimitObj.setStatus((String) cbStatus.getValue());
+				taxLimitDM.setStatus((String) cbStatus.getValue());
 			}
 			if (cbSectnCode.getValue() != null) {
-				TaxLimitObj.setSctnCode((String) cbSectnCode.getValue());
+				taxLimitDM.setSctnCode((String) cbSectnCode.getValue());
 			}
 			if (tfExemptLimit.getValue() != null && tfExemptLimit.getValue().trim().length() > 0) {
-				TaxLimitObj.setExemptLimit(Long.valueOf(tfExemptLimit.getValue()));
+				taxLimitDM.setExemptLimit(Long.valueOf(tfExemptLimit.getValue()));
 			} else {
-				TaxLimitObj.setExemptLimit(new Long("0"));
+				taxLimitDM.setExemptLimit(new Long("0"));
 			}
 			if (cbTaxId.getValue() != null) {
-				TaxLimitObj.setTaxId(Long.valueOf(cbTaxId.getValue().toString()));
+				taxLimitDM.setTaxId(Long.valueOf(cbTaxId.getValue().toString()));
 			}
-			TaxLimitObj.setLastupdateddt(DateUtils.getcurrentdate());
-			TaxLimitObj.setLastupdatedby(username);
-			serviceTaxLimit.saveTaxDetails(TaxLimitObj);
+			taxLimitDM.setLastupdateddt(DateUtils.getcurrentdate());
+			taxLimitDM.setLastupdatedby(username);
+			serviceTaxLimit.saveTaxDetails(taxLimitDM);
 			resetFields();
 			loadSrchRslt();
 		}
@@ -356,7 +356,7 @@ public class TaxLimit extends BaseUI {
 		}
 	}
 	
-	public void loadGRDLvl() {
+	private void loadGRDLvl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
 				CompanyLookupDM.class);
@@ -366,7 +366,7 @@ public class TaxLimit extends BaseUI {
 		cbSectnCode.setContainerDataSource(beanCompanyLookUp);
 	}
 	
-	public void loadTaxList() {
+	private void loadTaxList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 		BeanContainer<String, TaxDM> beanTax = new BeanContainer<String, TaxDM>(TaxDM.class);
 		beanTax.setBeanIdProperty("taxid");

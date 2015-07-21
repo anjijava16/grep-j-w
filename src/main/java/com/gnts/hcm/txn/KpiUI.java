@@ -65,7 +65,7 @@ public class KpiUI extends BaseUI {
 	private Long companyId;
 	private String loginUserName;
 	private int recordCnt = 0;
-	String primaryid;
+	private String primaryid;
 	// Initialize Logger
 	private Logger logger = Logger.getLogger(KpiUI.class);
 	private static final long serialVersionUID = 1L;

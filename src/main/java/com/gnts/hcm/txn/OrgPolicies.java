@@ -215,7 +215,7 @@ public class OrgPolicies extends BaseUI {
 	/*
 	 * loadOrgPolicisGroup()-->this function is used for load the material UOM type
 	 */
-	public void loadOrgPolicisGroup() {
+	private void loadOrgPolicisGroup() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Loading OrgPolicis Group Search...");
 		BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(
@@ -258,21 +258,21 @@ public class OrgPolicies extends BaseUI {
 	// Reset the selected row's data into OrgPolycies input components
 	private void editOrgPolyci() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			OrgPoliciesDM orgPolyciesList = beanOrgPolicies.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if ((orgPolyciesList.getPolicyname()) != null) {
-				tfPolicyName.setValue(orgPolyciesList.getPolicyname().toString());
+			OrgPoliciesDM orgPoliciesDM = beanOrgPolicies.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			if ((orgPoliciesDM.getPolicyname()) != null) {
+				tfPolicyName.setValue(orgPoliciesDM.getPolicyname().toString());
 			}
-			if ((orgPolyciesList.getPolicygroup()) != null) {
-				cbPolicyGroup.setValue((String) orgPolyciesList.getPolicygroup());
+			if ((orgPoliciesDM.getPolicygroup()) != null) {
+				cbPolicyGroup.setValue((String) orgPoliciesDM.getPolicygroup());
 			}
-			if ((orgPolyciesList.getPolicydesc()) != null) {
-				taPolicyDesc.setValue(orgPolyciesList.getPolicydesc().toString());
+			if ((orgPoliciesDM.getPolicydesc()) != null) {
+				taPolicyDesc.setValue(orgPoliciesDM.getPolicydesc().toString());
 			}
-			if ((orgPolyciesList.getPolicystatus()) != null) {
-				cbPolicyStatus.setValue(orgPolyciesList.getPolicystatus());
+			if ((orgPoliciesDM.getPolicystatus()) != null) {
+				cbPolicyStatus.setValue(orgPoliciesDM.getPolicystatus());
 			}
-			if (orgPolyciesList.getPolicydoc() != null) {
-				byte[] certificate = orgPolyciesList.getPolicydoc();
+			if (orgPoliciesDM.getPolicydoc() != null) {
+				byte[] certificate = orgPoliciesDM.getPolicydoc();
 				UploadDocumentUI test = new UploadDocumentUI(vlDocument);
 				test.displaycertificate(certificate);
 			} else {
@@ -305,26 +305,26 @@ public class OrgPolicies extends BaseUI {
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
-		OrgPoliciesDM orgPoliciesObj = new OrgPoliciesDM();
+		OrgPoliciesDM orgPoliciesDM = new OrgPoliciesDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			orgPoliciesObj = beanOrgPolicies.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			orgPoliciesDM = beanOrgPolicies.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		orgPoliciesObj.setCompanyid(companyId);
-		orgPoliciesObj.setPolicyname(tfPolicyName.getValue().toString());
-		orgPoliciesObj.setPolicygroup((String) cbPolicyGroup.getValue());
-		orgPoliciesObj.setPolicydesc(taPolicyDesc.getValue().toString());
+		orgPoliciesDM.setCompanyid(companyId);
+		orgPoliciesDM.setPolicyname(tfPolicyName.getValue().toString());
+		orgPoliciesDM.setPolicygroup((String) cbPolicyGroup.getValue());
+		orgPoliciesDM.setPolicydesc(taPolicyDesc.getValue().toString());
 		if (cbPolicyStatus.getValue() != null) {
-			orgPoliciesObj.setPolicystatus((String) cbPolicyStatus.getValue());
+			orgPoliciesDM.setPolicystatus((String) cbPolicyStatus.getValue());
 		}
 		File file = new File(basepath1);
 		FileInputStream fin = new FileInputStream(file);
 		byte fileContent[] = new byte[(int) file.length()];
 		fin.read(fileContent);
 		fin.close();
-		orgPoliciesObj.setPolicydoc(fileContent);
-		orgPoliciesObj.setLastupdateddt(DateUtils.getcurrentdate());
-		orgPoliciesObj.setLastupdatedby(userName);
-		serviceOrgPolicies.saveorUpdateOrgPoliciesDetails(orgPoliciesObj);
+		orgPoliciesDM.setPolicydoc(fileContent);
+		orgPoliciesDM.setLastupdateddt(DateUtils.getcurrentdate());
+		orgPoliciesDM.setLastupdatedby(userName);
+		serviceOrgPolicies.saveorUpdateOrgPoliciesDetails(orgPoliciesDM);
 		resetFields();
 		loadSrchRslt();
 	}

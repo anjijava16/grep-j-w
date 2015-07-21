@@ -12,8 +12,8 @@
  **/
 package com.gnts.hcm.txn;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.EmployeeDM;
@@ -30,9 +30,6 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.mst.AllowanceDM;
 import com.gnts.hcm.domain.mst.EmployeeDtlsDM;
@@ -42,8 +39,9 @@ import com.gnts.hcm.service.mst.AllowanceService;
 import com.gnts.hcm.service.mst.EmployeeDtlsService;
 import com.gnts.hcm.service.mst.GradeAllowanceService;
 import com.gnts.hcm.service.txn.EmployeeAllowanceService;
-import java.math.BigDecimal;
-import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -53,9 +51,9 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class EmployeeAllowance extends BaseUI {
 	// Bean creation
@@ -79,13 +77,11 @@ public class EmployeeAllowance extends BaseUI {
 	private DateField dtEffectiveDt;
 	// BeanItemContainer
 	private BeanItemContainer<EmployeeAllowanceDM> beanEmpAllowanceDM = null;
-	private BeanContainer<Long, EmployeeDM> beanEmpDM = null;
-	private BeanContainer<Long, AllowanceDM> beanAlwncDM = null;
 	// local variables declaration
 	private Long companyid;
 	private String pkEmpAlwncId;
-	public BigDecimal allPercent;
-	public BigDecimal basictotal = new BigDecimal("0");
+	private BigDecimal allPercent;
+	private BigDecimal basictotal = new BigDecimal("0");
 	private int recordCnt = 0;
 	private String username;
 	private Boolean errorFlag = false;
@@ -219,7 +215,7 @@ public class EmployeeAllowance extends BaseUI {
 				empAlwncObj = serviceEmpAllowance.getEmpAlwncList(empId, "BASIC");
 				for (EmployeeAllowanceDM obj : empAlwncObj) {
 					basictotal = new BigDecimal(obj.getAllowamt().toString());
-					getAmt();
+					getAllowanceAmount();
 				}
 			}
 		});
@@ -239,7 +235,7 @@ public class EmployeeAllowance extends BaseUI {
 				empAlwncObj = serviceEmpAllowance.getEmpAlwncList(empId, "BASIC");
 				for (EmployeeAllowanceDM obj : empAlwncObj) {
 					basictotal = new BigDecimal(obj.getAllowamt().toString());
-					getAmt();
+					getAllowanceAmount();
 				}
 			}
 		});
@@ -253,7 +249,7 @@ public class EmployeeAllowance extends BaseUI {
 		loadSrchRslt();
 	}
 	
-	public void getAmt() {
+	private void getAllowanceAmount() {
 		allPercent = (new BigDecimal(tfAlwncPercent.getValue()));
 		BigDecimal packingvalue = gerPercentageValue(allPercent, basictotal);
 		tfAllownceAmt.setReadOnly(false);
@@ -266,7 +262,7 @@ public class EmployeeAllowance extends BaseUI {
 		tfAllBal.setReadOnly(true);
 	}
 	
-	public BigDecimal gerPercentageValue(BigDecimal percent, BigDecimal value) {
+	private BigDecimal gerPercentageValue(BigDecimal percent, BigDecimal value) {
 		return percent.multiply(value).divide(new BigDecimal("100"));
 	}
 	
@@ -318,10 +314,10 @@ public class EmployeeAllowance extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeAllowanceDM> EmployeeAllowanceList = new ArrayList<EmployeeAllowanceDM>();
+		List<EmployeeAllowanceDM> listEmpAllowance = new ArrayList<EmployeeAllowanceDM>();
 		Long empAlwnId = null;
 		if (cbEmpName.getValue() != null) {
 			empAlwnId = ((Long.valueOf(cbEmpName.getValue().toString())));
@@ -333,11 +329,11 @@ public class EmployeeAllowance extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfAllownceAmt.getValue() + ", " + dtEffectiveDt.getValue()
 				+ (String) cbStatus.getValue() + ", " + empAlwnId + "," + alwncId);
-		EmployeeAllowanceList = serviceEmpAllowance.getempallowanceList(null, empAlwnId, alwncId,
+		listEmpAllowance = serviceEmpAllowance.getempallowanceList(null, empAlwnId, alwncId,
 				(String) cbStatus.getValue(), "F");
-		recordCnt = EmployeeAllowanceList.size();
+		recordCnt = listEmpAllowance.size();
 		beanEmpAllowanceDM = new BeanItemContainer<EmployeeAllowanceDM>(EmployeeAllowanceDM.class);
-		beanEmpAllowanceDM.addAll(EmployeeAllowanceList);
+		beanEmpAllowanceDM.addAll(listEmpAllowance);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the EmployeeAllowance. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanEmpAllowanceDM);
@@ -376,17 +372,15 @@ public class EmployeeAllowance extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editEmpAlownce() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			EmployeeAllowanceDM empAlloObj = new EmployeeAllowanceDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
 			EmployeeAllowanceDM editEmpAlownce = beanEmpAllowanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			pkEmpAlwncId = editEmpAlownce.getEmpallwnid().toString();
 			if (editEmpAlownce.getAllowamt() != null) {
-				tfAllownceAmt.setValue(itselect.getItemProperty("allowamt").getValue().toString());
+				tfAllownceAmt.setValue(editEmpAlownce.getAllowamt().toString());
 			}
-			dtEffectiveDt.setValue((Date) itselect.getItemProperty("effdt").getValue());
+			dtEffectiveDt.setValue(editEmpAlownce.getEffdt());
 			if (editEmpAlownce.getAllowbal() != null) {
-				tfAllBal.setValue(itselect.getItemProperty("allowbal").getValue().toString());
+				tfAllBal.setValue(editEmpAlownce.getAllowbal().toString());
 			}
 			if (editEmpAlownce.getAutopay().equals("Y")) {
 				chAutoPay.setValue(true);
@@ -398,13 +392,12 @@ public class EmployeeAllowance extends BaseUI {
 			} else {
 				chArrearFlag.setValue(false);
 			}
-			cbStatus.setValue(itselect.getItemProperty("empawstatus").getValue());
+			cbStatus.setValue(editEmpAlownce.getEmpawstatus());
 			cbEmpName.setValue(editEmpAlownce.getEmpid());
 			cbAlwncDesc.setValue(editEmpAlownce.getAllowid());
-			cbFlatPercent.setValue(itselect.getItemProperty("isflpt").getValue());
-			tfAlwncPercent.setValue(itselect.getItemProperty("allowpt").getValue().toString());
-			if (tfAlwncPercent.getValue() != null) {
-				empAlloObj.setAllowpt(new BigDecimal(tfAlwncPercent.getValue()));
+			cbFlatPercent.setValue(editEmpAlownce.getIsflpt());
+			if (editEmpAlownce.getAllowpt() != null) {
+				tfAlwncPercent.setValue(editEmpAlownce.getAllowpt().toString());
 			}
 		}
 	}
@@ -573,15 +566,14 @@ public class EmployeeAllowance extends BaseUI {
 		loadSrchRslt();
 	}
 	
-	public void loadEmpList() {
+	private void loadEmpList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Loading employee Search...");
-			List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, null, companyid, null, null,
-					null, null, "F");
-			beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			BeanContainer<Long, EmployeeDM> beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmpDM.setBeanIdProperty("employeeid");
-			beanEmpDM.addAll(empList);
+			beanEmpDM.addAll(serviceEmployee.getEmployeeList(null, null, null, null, companyid, null, null, null, null,
+					"P"));
 			cbEmpName.setContainerDataSource(beanEmpDM);
 		}
 		catch (Exception e) {
@@ -589,13 +581,12 @@ public class EmployeeAllowance extends BaseUI {
 		}
 	}
 	
-	public void loadAllowanceList() {
+	private void loadAllowanceList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading allowance Search...");
-		List<AllowanceDM> alwncList = serviceAllowance.getalowanceList(null, null, companyid,
-				(String) cbAlwncDesc.getValue(), "Active", "P");
-		beanAlwncDM = new BeanContainer<Long, AllowanceDM>(AllowanceDM.class);
+		BeanContainer<Long, AllowanceDM> beanAlwncDM = new BeanContainer<Long, AllowanceDM>(AllowanceDM.class);
 		beanAlwncDM.setBeanIdProperty("alowncId");
-		beanAlwncDM.addAll(alwncList);
+		beanAlwncDM.addAll(serviceAllowance.getalowanceList(null, null, companyid, (String) cbAlwncDesc.getValue(),
+				"Active", "P"));
 		cbAlwncDesc.setContainerDataSource(beanAlwncDM);
 	}
 }

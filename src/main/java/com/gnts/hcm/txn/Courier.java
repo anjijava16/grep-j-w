@@ -41,14 +41,13 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 public class Courier extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	// Bean Creation
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private CourierService serviceCourier = (CourierService) SpringContextHelper.getBean("courier");
-	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private DepartmentService serviceDepartmant = (DepartmentService) SpringContextHelper.getBean("department");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(Courier.class);
 	// User Input Fields for Courier
@@ -66,8 +65,6 @@ public class Courier extends BaseTransUI {
 	// Parent layout for all the input controls Courier
 	private HorizontalLayout hllayout = new HorizontalLayout();
 	private HorizontalLayout hllayout1 = new HorizontalLayout();
-	// Parent layout for all the input controls Sms Comments
-	VerticalLayout vlTableForm = new VerticalLayout();
 	// local variables declaration
 	private Long courierId;
 	private String username;
@@ -191,11 +188,10 @@ public class Courier extends BaseTransUI {
 	
 	// Load Employee List
 	private void loadEmployeeList() {
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "P");
 		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanInitiatedBy.setBeanIdProperty("employeeid");
-		beanInitiatedBy.addAll(empList);
+		beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+				null, "P"));
 		cbFromOrTo.setContainerDataSource(beanInitiatedBy);
 	}
 	
@@ -364,10 +360,9 @@ public class Courier extends BaseTransUI {
 	 */
 	private void loadDeptList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P");
 		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
+		beanDepartment.addAll(serviceDepartmant.getDepartmentList(companyid, null, "Active", "P"));
 		cbDepartment.setContainerDataSource(beanDepartment);
 	}
 	
@@ -384,7 +379,6 @@ public class Courier extends BaseTransUI {
 			parameterMap.put("ECRID", courierId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/ecr"); // ecr is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

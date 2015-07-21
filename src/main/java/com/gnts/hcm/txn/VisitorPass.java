@@ -36,8 +36,6 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.FieldEvents.BlurEvent;
-import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.FormLayout;
@@ -45,7 +43,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 public class VisitorPass extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
@@ -64,7 +61,6 @@ public class VisitorPass extends BaseTransUI {
 	private GERPTextField tfTotalTime;
 	private GERPTextField tfVehicleNo, tfCompanyName, tfContactNumber;
 	private TextArea taRemarks, taMaterialDesc;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<VisitPassDM> beanVisitpass = null;
@@ -75,8 +71,6 @@ public class VisitorPass extends BaseTransUI {
 	// Parent layout for all the input controls EC Request
 	private HorizontalLayout hllayout = new HorizontalLayout();
 	private HorizontalLayout hllayout1 = new HorizontalLayout();
-	// Parent layout for all the input controls Sms Comments
-	VerticalLayout vlTableForm = new VerticalLayout();
 	// local variables declaration
 	private Long visitorid;
 	private String username;
@@ -105,6 +99,7 @@ public class VisitorPass extends BaseTransUI {
 		loadMaterialflow();
 		cbMaterialFlw.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
@@ -165,14 +160,14 @@ public class VisitorPass extends BaseTransUI {
 	/*
 	 * Load material flow type.
 	 */
-	public void loadMaterialflow() {
+	private void loadMaterialflow() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"HC_MATFLW");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"HC_MATFLW"));
 			cbMaterialFlw.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -184,12 +179,13 @@ public class VisitorPass extends BaseTransUI {
 	 * Condition for product description
 	 */
 	private void getmatedescription() {
-	if (cbMaterialFlw != null) {
-			if (cbMaterialFlw.getValue().toString().equals("Inward") || cbMaterialFlw.getValue().toString().equals("Outward")) {
+		if (cbMaterialFlw != null) {
+			if (cbMaterialFlw.getValue().toString().equals("Inward")
+					|| cbMaterialFlw.getValue().toString().equals("Outward")) {
 				taMaterialDesc.setRequired(true);
 			} else {
 				taMaterialDesc.setRequired(false);
-		}
+			}
 		}
 	}
 	
@@ -355,7 +351,6 @@ public class VisitorPass extends BaseTransUI {
 	@Override
 	protected void addDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
-		// cbclient.setRequired(true);
 		tfVisitorsName.setReadOnly(true);
 		hllayout.removeAllComponents();
 		vlSrchRsltContainer.setVisible(true);
@@ -383,7 +378,7 @@ public class VisitorPass extends BaseTransUI {
 			tfVisitorsName.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRYNO));
 			errorFlag = true;
 		}
-		if ((dfPassDate.getValue() == null)) {
+		if (dfPassDate.getValue() == null) {
 			dfPassDate.setComponentError(new UserError(GERPErrorCodes.SELECT_DATE));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Throwing ValidationException. User data is > " + dfPassDate.getValue());
@@ -426,7 +421,6 @@ public class VisitorPass extends BaseTransUI {
 		cbEmployee.setValue(null);
 		tfTimeIn.setValue(null);
 		tfTimeOut.setValue(null);
-		;
 		dfPassDate.setValue(null);
 		taRemarks.setValue("");
 		tfVehicleNo.setValue("");
@@ -466,7 +460,6 @@ public class VisitorPass extends BaseTransUI {
 			parameterMap.put("ECRID", visitorid);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/ecr"); // ecr is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

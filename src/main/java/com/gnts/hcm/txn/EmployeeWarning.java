@@ -41,7 +41,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 public class EmployeeWarning extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
@@ -51,7 +50,6 @@ public class EmployeeWarning extends BaseTransUI {
 			.getBean("employeeWarning");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(EmployeeWarning.class);
 	// User Input Fields for EC Request
@@ -71,8 +69,6 @@ public class EmployeeWarning extends BaseTransUI {
 	// Parent layout for all the input controls EC Request
 	private HorizontalLayout hllayout = new HorizontalLayout();
 	private HorizontalLayout hllayout1 = new HorizontalLayout();
-	// Parent layout for all the input controls Sms Comments
-	VerticalLayout vlTableForm = new VerticalLayout();
 	// local variables declaration
 	private Long visitorid;
 	private String username;
@@ -199,11 +195,12 @@ public class EmployeeWarning extends BaseTransUI {
 	/*
 	 * Employe waring level
 	 */
-	public void loadWarLevel() {
+	private void loadWarLevel() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Loading Warning Search Search...");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
 			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 					"HC_EMPWAR"));

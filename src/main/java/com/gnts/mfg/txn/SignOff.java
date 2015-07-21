@@ -817,6 +817,7 @@ public class SignOff extends BaseTransUI {
 	protected void resetFields() {
 		tfbatchQty.setValue("0");
 		tfbatchTested.setValue("0");
+		tfbatchNo.setReadOnly(false);
 		tfbatchNo.setValue("");
 		cbBranch.setValue(null);
 		cbClient.setValue(null);

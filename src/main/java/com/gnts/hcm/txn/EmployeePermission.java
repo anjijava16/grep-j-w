@@ -35,7 +35,6 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.EmployeePermissionDM;
 import com.gnts.hcm.service.txn.EmployeePermissionService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
@@ -57,8 +56,11 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
-@SuppressWarnings("serial")
 public class EmployeePermission extends VerticalLayout implements ClickListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Declaration for add and edit panel components
 	private ComboBox cbPermissionApprmgr;
 	private PopupDateField dfPermissiondate;
@@ -67,12 +69,10 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 	private TextField tfPermissionprmhrs;
 	private ComboBox cbPermissionStatus;
 	// for Search
-	Button btnSearch, btnReset;
+	private Button btnSearch, btnReset;
 	// Declaration for add and edit panel
-	VerticalLayout vlAddEditPanel = new VerticalLayout();
-	VerticalLayout vlTablePanel = new VerticalLayout();
-	HorizontalLayout hlsavecancel = new HorizontalLayout();
-	HorizontalLayout hlFileDownloadLayout;
+	private VerticalLayout vlTablePanel = new VerticalLayout();
+	private HorizontalLayout hlsavecancel = new HorizontalLayout();
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Table Declaration
@@ -80,19 +80,18 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 	public Button btnadd;
 	public Button btnSave;
 	public Button btnCancel;
-	List<EmployeePermissionDM> usertable = new ArrayList<EmployeePermissionDM>();
+	private List<EmployeePermissionDM> usertable = new ArrayList<EmployeePermissionDM>();
 	private BeanItemContainer<EmployeePermissionDM> beans = null;
 	private VerticalLayout vltable, vlTableForm, vlTableLayout;
-	HorizontalLayout hlTableTitleandCaptionLayout;
+	private HorizontalLayout hlTableTitleandCaptionLayout;
 	private String username;
 	private Long companyid;
-	EmployeePermissionService servicepermission = (EmployeePermissionService) SpringContextHelper
+	private EmployeePermissionService servicepermission = (EmployeePermissionService) SpringContextHelper
 			.getBean("EmployeePermission");
-	EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private static Logger logger = Logger.getLogger(EmployeePermissionDM.class);
+	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private Logger logger = Logger.getLogger(EmployeePermissionDM.class);
 	private int recordCnt = 0;
 	private Long employeeid;
-	public HorizontalLayout hlHeader = new HorizontalLayout();
 	
 	public EmployeePermission(Long empid) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -103,7 +102,6 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 		buildView();
 	}
 	
-	@SuppressWarnings("unused")
 	private void buildView() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Painting EmployeePermission UI");
@@ -161,7 +159,6 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 				}
 			}
 		});
-		HorizontalLayout hlTableCaptionLayout = new HorizontalLayout();
 		hlTableTitleandCaptionLayout = new HorizontalLayout();
 		// Initialization for table panel components
 		tblMstScrSrchRslt = new Table();
@@ -200,9 +197,6 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 		});
 		vlTableForm = new VerticalLayout();
 		vlTableForm.setSizeFull();
-		/*
-		 * vlTableForm.setMargin(true); vlTableForm.setSpacing(true);
-		 */
 		flColumn1 = new FormLayout();
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
@@ -237,7 +231,7 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "loading Approve Manager List...");
 		List<EmployeeDM> employeelist = serviceemployee.getEmployeeList(null, null, null,/* department */
-				"Active", companyid, null, null, null, null, "F");
+				"Active", companyid, null, null, null, null, "P");
 		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployee.setBeanIdProperty("employeeid");
 		beanEmployee.addAll(employeelist);
@@ -268,15 +262,14 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 	// Method used to display selected row's values in desired text box and combo box for edit the values
 	private void editPermission() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Permission.......");
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			EmployeePermissionDM Permission = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfPermissiondate.setValue(Permission.getPermissiondate());
-			tfPermissionprmhrs.setValue((Permission.getPermissionhrs().toString()));
-			tfintime.setTime(Permission.getIntime());
-			taPermissionremarks.setValue(Permission.getRemarks());
-			cbPermissionApprmgr.setValue(Permission.getApprovemgr());
-			cbPermissionStatus.setValue(itselect.getItemProperty("emppermstatus").getValue());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			EmployeePermissionDM employeePermissionDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			dfPermissiondate.setValue(employeePermissionDM.getPermissiondate());
+			tfPermissionprmhrs.setValue((employeePermissionDM.getPermissionhrs().toString()));
+			tfintime.setTime(employeePermissionDM.getIntime());
+			taPermissionremarks.setValue(employeePermissionDM.getRemarks());
+			cbPermissionApprmgr.setValue(employeePermissionDM.getApprovemgr());
+			cbPermissionStatus.setValue(employeePermissionDM.getEmppermstatus());
 		}
 	}
 	

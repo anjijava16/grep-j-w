@@ -728,9 +728,9 @@ public class SmsEnquiry extends BaseTransUI {
 				+ "Got the SMSENQUIRY. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanhdr);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "enquiryNo", "clientName", "enquiryStatus",
-				"lastUpdateddt", "lastUpdatedby" });
+				"enquiryid","custproddesc","lastUpdateddt", "lastUpdatedby" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry No", "Client Name", "Status",
-				"Last Updated date", "Last Updated by" });
+				"Enquiry ID","Description","Last Updated date", "Last Updated by" });
 		tblMstScrSrchRslt.setColumnAlignment("enquiryId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 	}
@@ -1234,7 +1234,6 @@ public class SmsEnquiry extends BaseTransUI {
 		}
 		// tfenqty.setComponentError(null);
 		cdProduct.setComponentError(null);
-		System.out.println("_______________---------------->" + tblEnqDetails.size());
 		if (tblEnqDetails.size() == 0) {
 			cdProduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
 			errorFlag = true;

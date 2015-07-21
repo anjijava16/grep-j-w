@@ -111,18 +111,16 @@ public class SalesQuote extends BaseTransUI {
 			.getBean("companyLookUp");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private BeanContainer<Long, ClientsContactsDM> beanclientcontact = null;
-
 	// form layout for input controls for Sales Quote Header
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4, flColumn5;
 	// form layout for input controls for Sales Quote Details
 	private FormLayout flDtlColumn1, flDtlColumn2, flDtlColumn3, flDtlColumn4;
 	// User Input Components for Sales Quote Details
-	private ComboBox cbBranch, cbStatus, cbEnqNo,cbwindTechPers,cbwindcommPerson;
+	private ComboBox cbBranch, cbStatus, cbEnqNo, cbwindTechPers, cbwindcommPerson;
 	private TextField tfQuoteNumber, tfQuoteRef, tfQuoteVersion, tfBasictotal, tfpackingPer, tfPaclingValue;
 	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
 	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
-	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal, tfDocumentCharges,
-			tfPDCCharges;
+	private TextField tfFreightValue, tfOtherValue, tfGrandtotal, tfDocumentCharges, tfPDCCharges;
 	private ComboBox cbpaymetTerms, cbFreightTerms, cbWarrentyTerms, cbDelTerms;
 	private TextArea tfLiquidatedDamage;
 	private GERPComboBox cbQuotationType = new GERPComboBox("Quote Type");
@@ -165,7 +163,6 @@ public class SalesQuote extends BaseTransUI {
 	// Initialize logger
 	private Logger logger = Logger.getLogger(PurchaseQuote.class);
 	public Button btndelete = new GERPButton("Delete", "delete", this);
-
 	
 	// Constructor received the parameters from Login UI class
 	public SalesQuote() {
@@ -213,7 +210,8 @@ public class SalesQuote extends BaseTransUI {
 				BeanItem<?> item = (BeanItem<?>) cbEnqNo.getItem(itemId);
 				if (item != null) {
 					loadProductList(false);
-					loadclientCommCont();loadclienTecCont();
+					loadclientCommCont();
+					loadclienTecCont();
 				}
 			}
 		});
@@ -265,7 +263,6 @@ public class SalesQuote extends BaseTransUI {
 				getCalculatedValues();
 			}
 		});
-		
 		tfEDValue.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -305,14 +302,10 @@ public class SalesQuote extends BaseTransUI {
 				getCalculatedValues();
 			}
 		});
-		tfFreightPer = new TextField();
-		tfFreightPer.setWidth("30");
-		tfFreightValue = new GERPNumberField();
-		tfFreightValue.setWidth("120");
-		tfOtherPer = new TextField();
-		tfOtherPer.setWidth("30");
-		tfOtherValue = new GERPNumberField();
-		tfOtherValue.setWidth("120");
+		tfFreightValue = new GERPNumberField("Freight Value");
+		tfFreightValue.setWidth("150");
+		tfOtherValue = new GERPNumberField("Other Value");
+		tfOtherValue.setWidth("150");
 		cbpaymetTerms = new ComboBox("Payment Terms");
 		cbpaymetTerms.setItemCaptionPropertyId("lookupname");
 		cbpaymetTerms.setWidth("150");
@@ -329,10 +322,9 @@ public class SalesQuote extends BaseTransUI {
 		cbDelTerms.setItemCaptionPropertyId("lookupname");
 		cbDelTerms.setWidth("150");
 		loadDeliveryTerms();
-		tfLiquidatedDamage=new TextArea("Liquidated Damage");
+		tfLiquidatedDamage = new TextArea("Liquidated Damage");
 		tfLiquidatedDamage.setWidth("150");
 		tfLiquidatedDamage.setHeight("50");
-		
 		chkDutyExe = new CheckBox("Duty Exempted");
 		chkDutyExe.setImmediate(true);
 		chkDutyExe.addValueChangeListener(new ValueChangeListener() {
@@ -347,7 +339,6 @@ public class SalesQuote extends BaseTransUI {
 		chkCformReq = new CheckBox("Cform Req");
 		chkCformReq.setImmediate(true);
 		chkCformReq.setImmediate(true);
-
 		chkCformReq.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -528,7 +519,6 @@ public class SalesQuote extends BaseTransUI {
 				}
 			}
 		});
-		
 		// Load Quote type values.
 		cbQuotationType.setRequired(true);
 		cbQuotationType.addItem("Enquiry");
@@ -556,7 +546,7 @@ public class SalesQuote extends BaseTransUI {
 				getCalculatedValues();
 			}
 		});
-tfOtherValue.addBlurListener(new BlurListener() {
+		tfOtherValue.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
@@ -635,9 +625,6 @@ tfOtherValue.addBlurListener(new BlurListener() {
 		flColumn1.addComponent(tfQuoteRef);
 		flColumn1.addComponent(cbwindTechPers);
 		flColumn1.addComponent(cbwindcommPerson);
-		
-		
-		
 		flColumn1.addComponent(tfQuoteVersion);
 		flColumn2.addComponent(dfQuoteDt);
 		flColumn2.addComponent(dfvalidDt);
@@ -649,25 +636,19 @@ tfOtherValue.addBlurListener(new BlurListener() {
 		flColumn2.addComponent(pp);
 		flColumn2.setComponentAlignment(pp, Alignment.TOP_LEFT);
 		flColumn2.addComponent(tfSubTotal);
-		
 		HorizontalLayout ed = new HorizontalLayout();
 		ed.addComponent(tfEDPer);
 		ed.addComponent(tfEDValue);
 		ed.setCaption("ED");
 		flColumn2.addComponent(ed);
 		flColumn2.setComponentAlignment(ed, Alignment.TOP_LEFT);
-		/*HorizontalLayout hed = new HorizontalLayout();
-		hed.addComponent(tfHEDPer);
-		hed.addComponent(tfHEDValue);
-		hed.setCaption("HED");
-		flColumn2.addComponent(hed);
-		flColumn2.setComponentAlignment(hed, Alignment.TOP_LEFT);
-		HorizontalLayout cess = new HorizontalLayout();
-		cess.addComponent(tfCessPer);
-		cess.addComponent(tfCessValue);
-		cess.setCaption("CESS");
-		flColumn2.addComponent(cess);
-		flColumn2.setComponentAlignment(cess, Alignment.TOP_LEFT);*/
+		/*
+		 * HorizontalLayout hed = new HorizontalLayout(); hed.addComponent(tfHEDPer); hed.addComponent(tfHEDValue);
+		 * hed.setCaption("HED"); flColumn2.addComponent(hed); flColumn2.setComponentAlignment(hed, Alignment.TOP_LEFT);
+		 * HorizontalLayout cess = new HorizontalLayout(); cess.addComponent(tfCessPer); cess.addComponent(tfCessValue);
+		 * cess.setCaption("CESS"); flColumn2.addComponent(cess); flColumn2.setComponentAlignment(cess,
+		 * Alignment.TOP_LEFT);
+		 */
 		flColumn2.addComponent(tfSubTaxTotal);
 		HorizontalLayout vp = new HorizontalLayout();
 		vp.addComponent(tfVatPer);
@@ -681,18 +662,8 @@ tfOtherValue.addBlurListener(new BlurListener() {
 		cst.setCaption("CST");
 		flColumn3.addComponent(cst);
 		flColumn3.setComponentAlignment(cst, Alignment.TOP_LEFT);
-		HorizontalLayout frght = new HorizontalLayout();
-		frght.addComponent(tfFreightPer);
-		frght.addComponent(tfFreightValue);
-		frght.setCaption("Freight");
-		flColumn3.addComponent(frght);
-		flColumn3.setComponentAlignment(frght, Alignment.TOP_LEFT);
-		HorizontalLayout other = new HorizontalLayout();
-		other.addComponent(tfOtherPer);
-		other.addComponent(tfOtherValue);
-		other.setCaption("Other(%)");
-		flColumn3.addComponent(other);
-		flColumn3.setComponentAlignment(other, Alignment.TOP_LEFT);
+		flColumn3.addComponent(tfFreightValue);
+		flColumn3.addComponent(tfOtherValue);
 		flColumn3.addComponent(tfDocumentCharges);
 		flColumn3.addComponent(tfPDCCharges);
 		flColumn3.addComponent(tfGrandtotal);
@@ -705,7 +676,6 @@ tfOtherValue.addBlurListener(new BlurListener() {
 		flColumn4.addComponent(chkDutyExe);
 		flColumn4.addComponent(chkCformReq);
 		flColumn4.addComponent(ckPdcRqu);
-		// flColumn5.addComponent(hlquoteDoc);
 		HorizontalLayout hlHdr = new HorizontalLayout();
 		hlHdr.addComponent(flColumn1);
 		hlHdr.addComponent(flColumn2);
@@ -770,14 +740,14 @@ tfOtherValue.addBlurListener(new BlurListener() {
 			eno = (((SmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryNo());
 		}
 		smsQuoteHdrList = servicesmsQuoteHdr.getSmsQuoteHdrList(companyid, null, (Long) cbBranch.getValue(),
-				(String) cbStatus.getValue(), (String) tfQuoteNumber.getValue(), eno, "F",null);
+				(String) cbStatus.getValue(), (String) tfQuoteNumber.getValue(), eno, "F", null);
 		recordCnt = smsQuoteHdrList.size();
 		beansmsQuoteHdr = new BeanItemContainer<SmsQuoteHdrDM>(SmsQuoteHdrDM.class);
 		beansmsQuoteHdr.addAll(smsQuoteHdrList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beansmsQuoteHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "quoteId", "branchName", "quoteNumber", "enquiryNo", "status",
-				"lastupdateddt", "lastupdatedby" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "quoteId", "branchName", "quoteNumber", "enquiryNo",
+				"status", "lastupdateddt", "lastupdatedby" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Quote No", "Enquiry No", "Status",
 				"Last Updated Date", "Last Updated By" });
 		// tblMstScrSrchRslt.setColumnAlignment("quoteId", Align.RIGHT);
@@ -793,7 +763,7 @@ tfOtherValue.addBlurListener(new BlurListener() {
 			beansmsQuoteDtl.addAll(smsQuoteDtlList);
 			BigDecimal sum = new BigDecimal("0");
 			for (SmsQuoteDtlDM obj : smsQuoteDtlList) {
-				if (obj.getBasicvalue() != null) {		
+				if (obj.getBasicvalue() != null) {
 					sum = sum.add(obj.getBasicvalue());
 				}
 			}
@@ -803,10 +773,10 @@ tfOtherValue.addBlurListener(new BlurListener() {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblsmsQuoteDtl.setContainerDataSource(beansmsQuoteDtl);
-			tblsmsQuoteDtl.setVisibleColumns(new Object[] { "prodname","custproddesc", "quoteqty"/* , "produom" */, "unitrate",
-					"basicvalue","customField1", "quodtlstatus", "lastupdateddt", "lastupdatedby" });
-			tblsmsQuoteDtl.setColumnHeaders(new String[] { "Product Name","Description", "Quote Qty"/* , "UOM" */, "Unit Rate",
-					"Basic Value","Part No.", "Status", "Last Updated Date", "Last Updated By" });
+			tblsmsQuoteDtl.setVisibleColumns(new Object[] { "prodname", "custproddesc", "quoteqty"/* , "produom" */,
+					"unitrate", "basicvalue", "customField1", "quodtlstatus", "lastupdateddt", "lastupdatedby" });
+			tblsmsQuoteDtl.setColumnHeaders(new String[] { "Product Name", "Description", "Quote Qty"/* , "UOM" */,
+					"Unit Rate", "Basic Value", "Part No.", "Status", "Last Updated Date", "Last Updated By" });
 			tblsmsQuoteDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
@@ -972,9 +942,7 @@ tfOtherValue.addBlurListener(new BlurListener() {
 			tfSubTaxTotal.setReadOnly(false);
 			tfSubTaxTotal.setValue(editsmsQuotlist.getSubTaxTotal().toString());
 			tfSubTaxTotal.setReadOnly(true);
-			tfFreightPer.setValue(editsmsQuotlist.getFreightPrcnt().toString());
 			tfFreightValue.setValue(editsmsQuotlist.getFreightValue().toString());
-			tfOtherPer.setValue((editsmsQuotlist.getOthersPrcnt().toString()));
 			tfOtherValue.setValue((editsmsQuotlist.getOthersValue().toString()));
 			tfGrandtotal.setReadOnly(false);
 			tfGrandtotal.setValue(editsmsQuotlist.getGrandTotal().toString());
@@ -990,7 +958,6 @@ tfOtherValue.addBlurListener(new BlurListener() {
 				tfPDCCharges.setValue(editsmsQuotlist.getPdcCharges().toString());
 			} else {
 				tfPDCCharges.setReadOnly(false);
-
 				tfPDCCharges.setValue("0");
 			}
 			if (editsmsQuotlist.getPaymentTerms() != null) {
@@ -1026,7 +993,6 @@ tfOtherValue.addBlurListener(new BlurListener() {
 			} else {
 				ckPdcRqu.setValue(false);
 			}
-			
 			Long uom = editsmsQuotlist.getEnquiryId();
 			Collection<?> uomid = cbEnqNo.getItemIds();
 			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
@@ -1038,10 +1004,12 @@ tfOtherValue.addBlurListener(new BlurListener() {
 					cbEnqNo.setValue(itemId);
 				}
 			}
-			if(editsmsQuotlist.getCpmPerson()!=null){
-				cbwindcommPerson.setValue(editsmsQuotlist.getCpmPerson());}
-				if(editsmsQuotlist.getTecPerson()!=null){
-					cbwindTechPers.setValue(editsmsQuotlist.getTecPerson());}
+			if (editsmsQuotlist.getCpmPerson() != null) {
+				cbwindcommPerson.setValue(editsmsQuotlist.getCpmPerson());
+			}
+			if (editsmsQuotlist.getTecPerson() != null) {
+				cbwindTechPers.setValue(editsmsQuotlist.getTecPerson());
+			}
 			if (sltedRcd.getItemProperty("quoteDoc").getValue() != null) {
 				byte[] certificate = (byte[]) sltedRcd.getItemProperty("quoteDoc").getValue();
 				UploadDocumentUI test = new UploadDocumentUI(hlquoteDoc);
@@ -1114,7 +1082,6 @@ tfOtherValue.addBlurListener(new BlurListener() {
 			if (editsmsQuoteDtllist.getCustomField2() != null) {
 				tfCustomField2.setValue(editsmsQuoteDtllist.getCustomField2());
 			}
-			
 		}
 	}
 	
@@ -1149,8 +1116,10 @@ tfOtherValue.addBlurListener(new BlurListener() {
 		if (chkCformReq.getValue()) {
 			tfVatPer.setValue("0");
 			try {
-				/*tfCstPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "CST", "Active", "F").get(0)
-						.getTaxprnct().toString());*/
+				/*
+				 * tfCstPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "CST", "Active", "F").get(0)
+				 * .getTaxprnct().toString());
+				 */
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -1159,8 +1128,10 @@ tfOtherValue.addBlurListener(new BlurListener() {
 		} else {
 			tfCstPer.setValue("0");
 			try {
-				/*tfVatPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "VAT", "Active", "F").get(0)
-						.getTaxprnct().toString());*/
+				/*
+				 * tfVatPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "VAT", "Active", "F").get(0)
+				 * .getTaxprnct().toString());
+				 */
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -1173,29 +1144,34 @@ tfOtherValue.addBlurListener(new BlurListener() {
 			tfCessPer.setValue("0");
 		} else {
 			try {
-				/*tfHEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "HED", "Active", "F").get(0)
-						.getTaxprnct().toString());*/
+				/*
+				 * tfHEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "HED", "Active", "F").get(0)
+				 * .getTaxprnct().toString());
+				 */
 			}
 			catch (Exception e) {
 				tfHEDPer.setValue("0");
 			}
 			try {
-				/*tfEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "ED", "Active", "F").get(0)
-						.getTaxprnct().toString());*/
+				/*
+				 * tfEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "ED", "Active", "F").get(0)
+				 * .getTaxprnct().toString());
+				 */
 			}
 			catch (Exception e) {
 				tfEDPer.setValue("0");
 			}
 			try {
-			/*	tfCessPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "CESS", "Active", "F").get(0)
-						.getTaxprnct().toString());*/
+				/*
+				 * tfCessPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "CESS", "Active", "F").get(0)
+				 * .getTaxprnct().toString());
+				 */
 			}
 			catch (Exception e) {
 				tfCessPer.setValue("0");
 			}
 		}
 		BigDecimal basictotal = new BigDecimal(tfBasictotal.getValue());
-		
 		BigDecimal packingvalue = gerPercentageValue(new BigDecimal(tfpackingPer.getValue()), basictotal);
 		tfPaclingValue.setReadOnly(false);
 		tfPaclingValue.setValue(packingvalue.toString());
@@ -1214,18 +1190,16 @@ tfOtherValue.addBlurListener(new BlurListener() {
 		tfEDValue.setReadOnly(false);
 		tfEDValue.setValue(edValue.toString());
 		tfEDValue.setReadOnly(true);
-	
 		BigDecimal subtaxTotal = subtotal.add(new BigDecimal(tfEDValue.getValue()));
 		tfSubTaxTotal.setReadOnly(false);
 		tfSubTaxTotal.setValue(subtaxTotal.toString());
 		tfSubTaxTotal.setReadOnly(true);
-		System.out.println("subtaxTotal"+subtaxTotal);
-		System.out.println("tfVatPer.getValue()"+tfVatPer.getValue());
+		System.out.println("subtaxTotal" + subtaxTotal);
+		System.out.println("tfVatPer.getValue()" + tfVatPer.getValue());
 		BigDecimal vatvalue = gerPercentageValue(new BigDecimal(tfVatPer.getValue()), subtaxTotal);
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue(vatvalue.toString());
 		tfVatValue.setReadOnly(true);
-		
 		BigDecimal cstval = gerPercentageValue(new BigDecimal(tfCstPer.getValue()), subtaxTotal);
 		tfCstValue.setReadOnly(false);
 		tfCstValue.setValue(cstval.toString());
@@ -1233,21 +1207,6 @@ tfOtherValue.addBlurListener(new BlurListener() {
 		BigDecimal csttotal = vatvalue;
 		BigDecimal frgval = new BigDecimal(0);
 		BigDecimal otherval = new BigDecimal(0);
-		if (!tfFreightPer.getValue().equals("0")) {
-
-		 frgval = gerPercentageValue(new BigDecimal(tfFreightPer.getValue()), subtaxTotal);
-		tfFreightValue.setValue(frgval.toString());}else {
-			tfFreightValue.setValue("0");
-			frgval=new BigDecimal(tfFreightValue.getValue());
-		}
-		if (!tfOtherPer.getValue().equals("0")) {
-
-		 otherval = gerPercentageValue(new BigDecimal(tfOtherPer.getValue()), subtaxTotal);
-			tfOtherValue.setValue(otherval.toString());
-}else {
-	tfOtherValue.setValue("0");
-otherval=new BigDecimal(tfOtherValue.getValue());
-}
 		BigDecimal grand = frgval.add(otherval).add(cstval).add(csttotal);
 		BigDecimal documentCharges = new BigDecimal(tfDocumentCharges.getValue());
 		BigDecimal grandTotal = subtaxTotal.add(grand).add(documentCharges);
@@ -1359,7 +1318,6 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 		comments = new SmsComments(vlTableForm, null, companyid, null, quoteId, null, null, null, null, null, null,
 				null, null);
 		cbEnqNo.setRequired(true);
-
 	}
 	
 	@Override
@@ -1380,7 +1338,6 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
 		tfQuoteNumber.setReadOnly(false);
-		
 		cbproduct.setRequired(true);
 		cbUom.setRequired(true);
 		lblNotification.setValue("");
@@ -1443,7 +1400,7 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 			SmsQuoteHdrDM salesQuoteHdrobj = new SmsQuoteHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				salesQuoteHdrobj = beansmsQuoteHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			} 
+			}
 			salesQuoteHdrobj.setQuoteNumber(tfQuoteNumber.getValue());
 			salesQuoteHdrobj.setQuoteRef(tfQuoteRef.getValue());
 			salesQuoteHdrobj.setBranchId((Long) cbBranch.getValue());
@@ -1483,9 +1440,7 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 				salesQuoteHdrobj.setCstValue((new BigDecimal(tfCstValue.getValue())));
 			}
 			salesQuoteHdrobj.setSubTaxTotal(new BigDecimal(tfSubTaxTotal.getValue()));
-			salesQuoteHdrobj.setFreightPrcnt(new BigDecimal(tfFreightPer.getValue()));
 			salesQuoteHdrobj.setFreightValue(new BigDecimal(tfFreightValue.getValue()));
-			salesQuoteHdrobj.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
 			salesQuoteHdrobj.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
 			salesQuoteHdrobj.setDocumentCharges(new BigDecimal(tfDocumentCharges.getValue()));
 			salesQuoteHdrobj.setPdcCharges(new BigDecimal(tfPDCCharges.getValue()));
@@ -1502,7 +1457,7 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 			if (cbDelTerms.getValue() != null) {
 				salesQuoteHdrobj.setDeliveryTerms(cbDelTerms.getValue().toString());
 			}
-			if(tfLiquidatedDamage.getValue()!=null){
+			if (tfLiquidatedDamage.getValue() != null) {
 				salesQuoteHdrobj.setLiqdatedDamage(tfLiquidatedDamage.getValue());
 			}
 			if (chkDutyExe.getValue().equals(true)) {
@@ -1528,10 +1483,12 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 			salesQuoteHdrobj.setActionedBy(null);
 			salesQuoteHdrobj.setLastupdateddt(DateUtils.getcurrentdate());
 			salesQuoteHdrobj.setLastupdatedby(username);
-			if(cbwindTechPers.getValue()!=null){
-				salesQuoteHdrobj.setTecPerson(cbwindTechPers.getValue().toString());}
-				if(cbwindcommPerson.getValue()!=null){
-					salesQuoteHdrobj.setCpmPerson(cbwindcommPerson.getValue().toString());}
+			if (cbwindTechPers.getValue() != null) {
+				salesQuoteHdrobj.setTecPerson(cbwindTechPers.getValue().toString());
+			}
+			if (cbwindcommPerson.getValue() != null) {
+				salesQuoteHdrobj.setCpmPerson(cbwindcommPerson.getValue().toString());
+			}
 			file = new File(GERPConstants.DOCUMENT_PATH);
 			FileInputStream fio = new FileInputStream(file);
 			byte fileContents[] = new byte[(int) file.length()];
@@ -1551,17 +1508,17 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 			tfQuoteNumber.setReadOnly(true);
 			comments.saveQuote(salesQuoteHdrobj.getQuoteId(), salesQuoteHdrobj.getStatus());
 			if (tblMstScrSrchRslt.getValue() == null) {
-				try{
-				SlnoGenDM slnoObj = serviceSlnogen
-						.getSequenceNumber(companyid, null, moduleId, "SM_QUOTENO").get(0);
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, moduleId, "SM_QUOTENO")
+							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_QUOTENO");
 						System.out.println("Serial no=>" + companyid + "," + moduleId + "," + branchId);
 					}
-				}catch(Exception e){
+				}
+				catch (Exception e) {
 					e.printStackTrace();
 				}
-				
 			}
 			// comments.saveSaleQuote(salesQuoteHdrobj.getQuoteId(),salesQuoteHdrobj.getStatus());
 			quoteDtlresetFields();
@@ -1646,7 +1603,6 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 		tblMstScrSrchRslt.setVisible(true);
 		loadSrchRslt();
 		cbEnqNo.setRequired(false);
- 
 	}
 	
 	@Override
@@ -1706,8 +1662,8 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 		tfSubTotal.setValue("0");
 		tfSubTaxTotal.setReadOnly(false);
 		tfSubTaxTotal.setValue("0");
-	tfQuoteVersion.setValue("1");
-	tfQuoteNumber.setReadOnly(false);
+		tfQuoteVersion.setValue("1");
+		tfQuoteNumber.setReadOnly(false);
 		tfQuoteNumber.setValue("");
 		tfQuoteRef.setValue("");
 		ckPdcRqu.setValue(false);
@@ -1716,13 +1672,6 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 		tfPaclingValue.setValue("0");
 		tfpackingPer.setValue("10");
 		tfOtherValue.setValue("0");
-		try {
-			tfOtherPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "OTHER", "Active", "F").get(0)
-					.getTaxprnct().toString());
-		}
-		catch (Exception e) {
-			tfOtherPer.setValue("0");
-		}
 		tfHEDValue.setReadOnly(false);
 		tfHEDValue.setValue("0");
 		try {
@@ -1739,13 +1688,6 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 		tfGrandtotal.setReadOnly(false);
 		tfGrandtotal.setValue("0");
 		tfFreightValue.setValue("0");
-		try {
-			tfFreightPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "FREIGHT", "Active", "F").get(0)
-					.getTaxprnct().toString());
-		}
-		catch (Exception e) {
-			tfFreightPer.setValue("0");
-		}
 		cbFreightTerms.setValue(null);
 		cbStatus.setValue(null);
 		cbBranch.setValue(null);
@@ -1795,34 +1737,40 @@ otherval=new BigDecimal(tfOtherValue.getValue());
 			}
 		}
 	}
-	private void loadclienTecCont() {try {
-		Long enquid = ((SmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId();
-		Long clientId=serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null).get(0).getClientId();
-		List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null, clientId, null, "Active","Technical Person");
-		beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
-		beanclientcontact.setBeanIdProperty("contactName");
-		beanclientcontact.addAll(listclientconDtls);
-		cbwindTechPers.setContainerDataSource(beanclientcontact);
-		cbwindTechPers.setItemCaptionPropertyId("contactName");	}
-	catch (Exception e) {
-		e.printStackTrace();
-	}}
-
 	
-
-	private void loadclientCommCont() {
-
-	try {
-		Long enquid = ((SmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId()	;
-		Long clientId=serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null).get(0).getClientId();
-		List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null, clientId, null, "Active","Contact Person");
-		beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
-		beanclientcontact.setBeanIdProperty("contactName");
-		beanclientcontact.addAll(listclientconDtls);
-		cbwindcommPerson.setContainerDataSource(beanclientcontact);
-		cbwindcommPerson.setItemCaptionPropertyId("contactName");	}
-	catch (Exception e) {
-		e.printStackTrace();
+	private void loadclienTecCont() {
+		try {
+			Long enquid = ((SmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId();
+			Long clientId = serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null)
+					.get(0).getClientId();
+			List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null,
+					clientId, null, "Active", "Technical Person");
+			beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
+			beanclientcontact.setBeanIdProperty("contactName");
+			beanclientcontact.addAll(listclientconDtls);
+			cbwindTechPers.setContainerDataSource(beanclientcontact);
+			cbwindTechPers.setItemCaptionPropertyId("contactName");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-}
+	
+	private void loadclientCommCont() {
+		try {
+			Long enquid = ((SmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId();
+			Long clientId = serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null)
+					.get(0).getClientId();
+			List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null,
+					clientId, null, "Active", "Contact Person");
+			beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
+			beanclientcontact.setBeanIdProperty("contactName");
+			beanclientcontact.addAll(listclientconDtls);
+			cbwindcommPerson.setContainerDataSource(beanclientcontact);
+			cbwindcommPerson.setItemCaptionPropertyId("contactName");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

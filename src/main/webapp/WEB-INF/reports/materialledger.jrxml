@@ -12,7 +12,7 @@
 	<queryString>
 		<![CDATA[select m.STOCKLED_ID,m.STOCKLED_DT,m.MATERIAL_ID,m.STOCK_TYPE,m.open_qty,m.inout_qty,m.inout_flag,m.close_qty,m.REF_REMARKS,m.is_latest
 ,ma.materail_name,ma.materail_uom,ma.UNIT_RATE
-from T_MMS_MATERIAL_LEDGER  M_MMS_MATERIAL ma
+from T_MMS_MATERIAL_LEDGER m, m_mms_material ma
 where m.MATERIAL_ID=ma.MATERIAL_ID
 and m.MATERIAL_ID like COALESCE($P{item_id},'%')
 and m.INOUT_FLAG like COALESCE($P{INOUT_FLAG},'%')
@@ -23,7 +23,6 @@ order by m.STOCKLED_ID]]>
 	<field name="MATERIAL_ID" class="java.math.BigDecimal"/>
 	<field name="STOCK_TYPE" class="java.lang.String"/>
 	<field name="OPEN_QTY" class="java.math.BigDecimal"/>
-	<field name="UNIT_RATE" class="java.math.BigDecimal"/>
 	<field name="INOUT_QTY" class="java.math.BigDecimal"/>
 	<field name="INOUT_FLAG" class="java.lang.String"/>
 	<field name="CLOSE_QTY" class="java.math.BigDecimal"/>
@@ -31,6 +30,7 @@ order by m.STOCKLED_ID]]>
 	<field name="IS_LATEST" class="java.lang.String"/>
 	<field name="MATERAIL_NAME" class="java.lang.String"/>
 	<field name="MATERAIL_UOM" class="java.lang.String"/>
+	<field name="UNIT_RATE" class="java.math.BigDecimal"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -124,7 +124,7 @@ order by m.STOCKLED_ID]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Price]]></text>
+				<text><![CDATA[U.Price]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -164,13 +164,6 @@ order by m.STOCKLED_ID]]>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{INOUT_QTY}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement uuid="6ee0e305-3ace-432c-aecb-871e24f8b600" x="311" y="-1" width="38" height="15"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{UNIT_RATE}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement uuid="6ee0e305-3ace-432c-aecb-871e24f8b600" x="311" y="-1" width="38" height="15"/>

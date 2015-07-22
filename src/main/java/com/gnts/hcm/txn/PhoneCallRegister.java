@@ -89,13 +89,16 @@ public class PhoneCallRegister extends BaseTransUI {
 		// EC Request Components Definition
 		cbCallType = new GERPComboBox("Call Type");
 		cbCallType.setWidth("170");
+		cbCallType.setRequired(true);
 		loadCallType();
 		tfPhoneNumber = new GERPTextField("Phone Number");
 		tfPhoneNumber.setWidth("150");
 		tfPhoneNumber.setReadOnly(false);
+		tfPhoneNumber.setRequired(true);
 		tfTime = new GERPTextField("Duration");
 		tfTime.setWidth("130");
 		tfIntercom = new GERPTextField("Intercom");
+		tfIntercom.setRequired(true);
 		tfCompany = new GERPTextField("Company/Customer");
 		cbDepartment = new GERPComboBox("Department");
 		cbDepartment.setItemCaptionPropertyId("deptname");

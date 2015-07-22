@@ -728,9 +728,9 @@ public class SmsEnquiry extends BaseTransUI {
 				+ "Got the SMSENQUIRY. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanhdr);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "enquiryNo", "clientName", "enquiryStatus",
-				"enquiryid","custproddesc","lastUpdateddt", "lastUpdatedby" });
+				"enquiryqty","custproddesc","lastUpdateddt", "lastUpdatedby" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry No", "Client Name", "Status",
-				"Enquiry ID","Description","Last Updated date", "Last Updated by" });
+				"Enquiry Qty","Description","Last Updated date", "Last Updated by" });
 		tblMstScrSrchRslt.setColumnAlignment("enquiryId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 	}

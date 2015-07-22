@@ -95,6 +95,7 @@ public class VisitorPass extends BaseTransUI {
 		taMaterialDesc = new TextArea("Description");
 		taMaterialDesc.setHeight("90px");
 		cbMaterialFlw = new GERPComboBox("Materials");
+		cbMaterialFlw.setRequired(true);
 		cbMaterialFlw.setWidth("170");
 		loadMaterialflow();
 		cbMaterialFlw.addValueChangeListener(new ValueChangeListener() {
@@ -115,7 +116,9 @@ public class VisitorPass extends BaseTransUI {
 		tfCompanyName.setWidth("150");
 		tfContactNumber = new GERPTextField("Contact Number");
 		tfContactNumber.setWidth("150");
+		tfContactNumber.setRequired(true);
 		tfTimeIn = new GERPTimeField("Time In");
+		tfTimeIn.setRequired(true);
 		tfTimeIn.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -126,6 +129,7 @@ public class VisitorPass extends BaseTransUI {
 			}
 		});
 		tfTimeOut = new GERPTimeField("Time Out");
+		tfTimeOut.setRequired(true);
 		tfTimeOut.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			

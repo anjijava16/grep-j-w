@@ -91,6 +91,7 @@ public class Courier extends BaseTransUI {
 		tfNoofDocuments.setWidth("150");
 		tfSentTo = new GERPTextField("Sent To");
 		tfSentTo.setWidth("150");
+		tfSentTo.setRequired(true);
 		tfModeofPost = new GERPTextField("Mode of Post");
 		tfModeofPost.setWidth("180");
 		tfDocketNo = new GERPTextField("Docket No");
@@ -98,6 +99,7 @@ public class Courier extends BaseTransUI {
 		taRemarks.setWidth("180");
 		taRemarks.setHeight("45px");
 		taAddress = new GERPTextArea("Name & Address");
+		taAddress.setRequired(true);
 		taAddress.setWidth("180");
 		taAddress.setHeight("45px");
 		cbFromOrTo = new GERPComboBox("From/To");
@@ -114,7 +116,7 @@ public class Courier extends BaseTransUI {
 		dfRefDate.setDateFormat("dd-MMM-yyyy");
 		dfRefDate.setInputPrompt("Select Date");
 		dfRefDate.setWidth("130px");
-		cbStatus.setWidth("130");
+		cbStatus.setWidth("180");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));

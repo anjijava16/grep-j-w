@@ -1693,7 +1693,7 @@ public class SalesQuote extends BaseTransUI {
 		cbBranch.setValue(null);
 		cbQuotationType.setValue("Enquiry");
 		dfQuoteDt.setValue(new Date());
-		dfvalidDt.setValue(DateUtils.addDays(new Date(), 7));
+		dfvalidDt.setValue(DateUtils.addDays(new Date(), 30));
 		cbBranch.setComponentError(null);
 		cbEnqNo.setComponentError(null);
 		dfvalidDt.setComponentError(null);

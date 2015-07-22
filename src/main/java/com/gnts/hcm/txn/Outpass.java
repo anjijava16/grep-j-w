@@ -132,6 +132,7 @@ public class Outpass extends BaseTransUI {
 		cbVehicleName.setWidth("130");
 		loadVehicleName();
 		tfTimeIn = new GERPTimeField("Time In");
+		tfTimeIn.setRequired(true);
 		tfTimeIn.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -142,6 +143,7 @@ public class Outpass extends BaseTransUI {
 			}
 		});
 		tfTimeOut = new GERPTimeField("Time Out");
+		tfTimeOut.setRequired(true);
 		tfTimeOut.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -266,9 +268,13 @@ public class Outpass extends BaseTransUI {
 			if (cbVehicle.getValue().toString().equals("Company")) {
 				cbVehicleName.setRequired(true);
 				tfVehicleNo.setRequired(false);
+				tfKMIn.setRequired(true);
+				tfKMOut.setRequired(true);
 			} else {
 				cbVehicleName.setRequired(false);
 				tfVehicleNo.setRequired(true);
+				tfKMIn.setRequired(false);
+				tfKMOut.setRequired(false);
 			}
 		}
 	}

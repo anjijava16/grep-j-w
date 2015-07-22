@@ -126,7 +126,7 @@ public class DC extends BaseTransUI {
 			BASEConstants.INVOICE_STATUS);
 	private TextField tfDcNo, tfDCQty, rfGoodsuom;
 	private ComboBox cbVendor, cbClients, cbModeOfTrans, cbPersonName, cbEnquiry, cbGoodsType, cbMaterialId, cbProduct,
-			cbDCType, cbwindTechPers, cbwindcommPerson;
+			cbDCType, cbwindTechPers, cbwindcommPerson,cbDCTypeRNR;
 	private DateField dfDcDt;
 	private TextArea taRemarks, taGoodsDesc;
 	private Table tblDtl;
@@ -227,15 +227,18 @@ public class DC extends BaseTransUI {
 		tfDcNo = new GERPTextField("DC No");
 		tfDcNo.setReadOnly(false);
 		// DC Type combobox
-		cbDCType = new GERPComboBox("DC Type");
-		cbDCType.addItem("Customer");
-		cbDCType.addItem("Vendor");
+		cbDCTypeRNR= new GERPComboBox("DC Type");
+		cbDCTypeRNR.addItem("Returnable");
+		cbDCTypeRNR.addItem("Non Returnable");
+		cbDCType = new GERPComboBox("Department");
+		cbDCType.addItem("Marketing");
+		cbDCType.addItem("Store");
 		cbDCType.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void valueChange(ValueChangeEvent event) {
 				if (cbDCType.getValue() != null) {
-					if (cbDCType.getValue().equals("Customer")) {
+					if (cbDCType.getValue().equals("Marketing")) {
 						cbClients.setEnabled(true);
 						cbVendor.setEnabled(false);
 						cbwindcommPerson.setEnabled(true);
@@ -253,7 +256,7 @@ public class DC extends BaseTransUI {
 												"Active", "F").get(0).getClientAddress());
 							}
 						}
-					} else if (cbDCType.getValue().equals("Vendor")) {
+					} else if (cbDCType.getValue().equals("Store")) {
 						cbVendor.setValue(cbVendor.getValue());
 						cbClients.setEnabled(false);
 						cbVendor.setEnabled(true);
@@ -458,6 +461,7 @@ public class DC extends BaseTransUI {
 		flDCCol1.addComponent(tfDcNo);
 		flDCCol1.addComponent(cbEnquiry);
 		flDCCol1.addComponent(cbDCType);
+		flDCCol1.addComponent(cbDCTypeRNR);
 		dfDcDt.setWidth("130");
 		flDCCol1.addComponent(dfDcDt);
 		flDCCol2.addComponent(cbVendor);

@@ -251,12 +251,12 @@ public class GradeAllowance extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		cbAlwncDesc.setRequired(false);
 		cbGradeDesc.setRequired(false);
-		List<GradeAllowanceDM> GradeAllowanceList = new ArrayList<GradeAllowanceDM>();
+		List<GradeAllowanceDM> listGradeAllowance = new ArrayList<GradeAllowanceDM>();
 		Long gradeId = null;
 		if (cbGradeDesc.getValue() != null) {
 			gradeId = ((Long.valueOf(cbGradeDesc.getValue().toString())));
@@ -268,11 +268,11 @@ public class GradeAllowance extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfMinValue.getValue() + ", " + tfMaxValue.getValue()
 				+ (String) cbStatus.getValue() + ", " + gradeId + "," + alwncId);
-		GradeAllowanceList = serviceGradeAllowance.getGradeAllowanceList(null, gradeId, alwncId,
+		listGradeAllowance = serviceGradeAllowance.getGradeAllowanceList(null, gradeId, alwncId,
 				(String) cbStatus.getValue(), "F");
-		recordCnt = GradeAllowanceList.size();
+		recordCnt = listGradeAllowance.size();
 		beanGradeEarningDM = new BeanItemContainer<GradeAllowanceDM>(GradeAllowanceDM.class);
-		beanGradeEarningDM.addAll(GradeAllowanceList);
+		beanGradeEarningDM.addAll(listGradeAllowance);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the GradeEarning. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanGradeEarningDM);
@@ -413,7 +413,6 @@ public class GradeAllowance extends BaseUI {
 		cbAlwncDesc.setRequired(true);
 		cbGradeDesc.setRequired(true);
 		cbAlwncPercent.setRequired(true);
-		// cbOnBasicGros.setRequired(true);
 		cbPayBasic.setRequired(true);
 		hlUserInputLayout.removeAllComponents();
 		assembleUserInputLayout();
@@ -520,7 +519,7 @@ public class GradeAllowance extends BaseUI {
 		loadSrchRslt();
 	}
 	
-	public void loadGradeList() {
+	private void loadGradeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 		BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
 		beanGradeDM.setBeanIdProperty("gradeId");
@@ -528,7 +527,7 @@ public class GradeAllowance extends BaseUI {
 		cbGradeDesc.setContainerDataSource(beanGradeDM);
 	}
 	
-	public void loadAllowanceList() {
+	private void loadAllowanceList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 			BeanContainer<Long, AllowanceDM> beanAlwncDM = new BeanContainer<Long, AllowanceDM>(AllowanceDM.class);

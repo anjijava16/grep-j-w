@@ -42,7 +42,6 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 	
 	public CalendarMonthly(String type) {
 		this.type = type;
-		// setTheme("calendartest");
 		calendarComponent = new Calendar(this);
 		calendarComponent.setTimeFormat(TimeFormat.Format24H);
 		calendarComponent.setWidth("99%");

@@ -100,9 +100,8 @@ public class Client extends BaseUI {
 	private HorizontalLayout hlInput;
 	private VerticalLayout hlUserInput;
 	// User Input Components
-	private TextField tfClntName, tfRevenue, tfpostcd, tfphnno, tffaxno, tfEmail, tfWebsite,
-			tfclntcode;
-	private TextArea taClntAddrss,tfotherDetails;
+	private TextField tfClntName, tfRevenue, tfpostcd, tfphnno, tffaxno, tfEmail, tfWebsite, tfclntcode;
+	private TextArea taClntAddrss, tfotherDetails;
 	private ComboBox cbClntCategory, cbClntSubCategory, cbCampaign, cbLeads, cbAssignedto, cbClientrate, cbCountry,
 			cbState, cbcity, cbclntindustry, cbClntStatus;
 	// Bean Container
@@ -739,56 +738,54 @@ public class Client extends BaseUI {
 	protected void saveDetails() throws ERPException.SaveException {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			ClientDM clntobj = new ClientDM();
+			ClientDM clientDM = new ClientDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				clntobj = beanClnt.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				clientDM = beanClnt.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			clntobj.setClientCode(tfclntcode.getValue());
-			clntobj.setCompanyId(companyid);
-			clntobj.setClientName(tfClntName.getValue().toString());
-			clntobj.setClientAddress(taClntAddrss.getValue());
-			clntobj.setClientCatId((Long) cbClntCategory.getValue());
-			clntobj.setClientSubCatId((Long) cbClntSubCategory.getValue());
-			clntobj.setCampaignId((Long) cbCampaign.getValue());
-			clntobj.setLeadId((Long) cbLeads.getValue());
+			clientDM.setClientCode(tfclntcode.getValue());
+			clientDM.setCompanyId(companyid);
+			clientDM.setClientName(tfClntName.getValue().toString());
+			clientDM.setClientAddress(taClntAddrss.getValue());
+			clientDM.setClientCatId((Long) cbClntCategory.getValue());
+			clientDM.setClientSubCatId((Long) cbClntSubCategory.getValue());
+			clientDM.setCampaignId((Long) cbCampaign.getValue());
+			clientDM.setLeadId((Long) cbLeads.getValue());
 			if (tfRevenue.getValue() != "" && tfRevenue.getValue().toString().trim().length() > 0) {
-				clntobj.setRevenue(Long.valueOf(tfRevenue.getValue()));
+				clientDM.setRevenue(Long.valueOf(tfRevenue.getValue()));
 			}
-			clntobj.setAssignedTo((Long) cbAssignedto.getValue());
-			clntobj.setPostalCode(tfpostcd.getValue());
-			clntobj.setPhoneNo(tfphnno.getValue());
-			clntobj.setFaxNo(tffaxno.getValue());
-			clntobj.setEmailId(tfEmail.getValue());
-			clntobj.setWebsite(tfWebsite.getValue());
-			clntobj.setOtherDetails(tfotherDetails.getValue());
+			clientDM.setAssignedTo((Long) cbAssignedto.getValue());
+			clientDM.setPostalCode(tfpostcd.getValue());
+			clientDM.setPhoneNo(tfphnno.getValue());
+			clientDM.setFaxNo(tffaxno.getValue());
+			clientDM.setEmailId(tfEmail.getValue());
+			clientDM.setWebsite(tfWebsite.getValue());
+			clientDM.setOtherDetails(tfotherDetails.getValue());
 			if (cbClientrate.getValue() != null) {
-				clntobj.setClinetRating(cbClientrate.getValue().toString());
+				clientDM.setClinetRating(cbClientrate.getValue().toString());
 			}
 			if (cbclntindustry.getValue() != null) {
-				clntobj.setClientIndustry(cbclntindustry.getValue().toString());
+				clientDM.setClientIndustry(cbclntindustry.getValue().toString());
 			}
 			if (cbCountry.getValue() != null) {
-				clntobj.setCountryId((Long) cbCountry.getValue());
+				clientDM.setCountryId((Long) cbCountry.getValue());
 			}
-			logger.info(" (Long) cbCountryName.getValue() is > " + cbCountry.getValue());
 			if (cbState.getValue() != null) {
-				clntobj.setStateId((Long.valueOf(cbState.getValue().toString())));
+				clientDM.setStateId((Long.valueOf(cbState.getValue().toString())));
 			}
-			logger.info(" (Long) cbState.getValue() is > " + cbState.getValue());
 			if (cbcity.getValue() != null) {
-				clntobj.setCityId((Long.valueOf(cbcity.getValue().toString())));
+				clientDM.setCityId((Long.valueOf(cbcity.getValue().toString())));
 			}
 			if (cbClntStatus.getValue() != null) {
-				clntobj.setClientSttus(cbClntStatus.getValue().toString());
+				clientDM.setClientSttus(cbClntStatus.getValue().toString());
 			}
-			clntobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			clntobj.setLastUpdatedBy(username);
-			serviceClients.saveOrUpdateClientsDetails(clntobj);
-			inform.saveinformation(clntobj.getClientId());
+			clientDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+			clientDM.setLastUpdatedBy(username);
+			serviceClients.saveOrUpdateClientsDetails(clientDM);
+			inform.saveinformation(clientDM.getClientId());
 			inform.resetfields();
-			comment.save(clntobj.getClientId());
+			comment.save(clientDM.getClientId());
 			comment.resetfields();
-			document.documentsave(clntobj.getClientId());
+			document.documentsave(clientDM.getClientId());
 			document.ResetFields();
 			loadSrchRslt();
 		}

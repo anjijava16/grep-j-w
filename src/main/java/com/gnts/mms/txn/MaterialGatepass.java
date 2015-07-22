@@ -120,7 +120,6 @@ public class MaterialGatepass extends BaseTransUI {
 	private int recordCnt = 0;
 	private Button btndelete = new GERPButton("Delete", "delete", this);
 	private Logger logger = Logger.getLogger(MaterialGatepass.class);
-	private String status;
 	
 	public MaterialGatepass() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "

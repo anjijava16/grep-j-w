@@ -650,10 +650,9 @@ public class EmployeeDetail implements ClickListener {
 	 */
 	private void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name :  > " + "Loading  Employee Search...");
-		List<EmployeeDM> employeelist = servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid,
-				null, null, null, null, "F");
 		BeanItemContainer<EmployeeDM> beanLoadEmployee = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanLoadEmployee.addAll(employeelist);
+		beanLoadEmployee.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+				null, null, "F"));
 		cbEmployee.setContainerDataSource(beanLoadEmployee);
 	}
 	
@@ -662,11 +661,10 @@ public class EmployeeDetail implements ClickListener {
 	 */
 	private void loadBranchList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<BranchDM> branchlist = servicebeanBranch.getBranchList(((EmployeeDM) cbEmployee.getValue()).getBranchid(),
-				null, null, "Active", companyid, "P");
 		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(branchlist);
+		beanBranch.addAll(servicebeanBranch.getBranchList(((EmployeeDM) cbEmployee.getValue()).getBranchid(), null,
+				null, "Active", companyid, "P"));
 		cbBranch.setContainerDataSource(beanBranch);
 	}
 	
@@ -675,10 +673,9 @@ public class EmployeeDetail implements ClickListener {
 	 */
 	private void loadDepartmentList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P");
 		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
+		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
 		cbDepartment.setContainerDataSource(beanDepartment);
 	}
 	
@@ -687,12 +684,10 @@ public class EmployeeDetail implements ClickListener {
 	 */
 	private void loadEmploymentType(Long id) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employment Search...");
-		List<EmploymentTypeDM> empmenttypelist = serviceEmploymentType.getEmpTypeList(id, null, companyid, "Active",
-				"F");
 		BeanContainer<Long, EmploymentTypeDM> benemptype = new BeanContainer<Long, EmploymentTypeDM>(
 				EmploymentTypeDM.class);
 		benemptype.setBeanIdProperty("empTypeId");
-		benemptype.addAll(empmenttypelist);
+		benemptype.addAll(serviceEmploymentType.getEmpTypeList(id, null, companyid, "Active", "F"));
 		cbEmpType.setContainerDataSource(benemptype);
 	}
 	
@@ -701,10 +696,9 @@ public class EmployeeDetail implements ClickListener {
 	 */
 	private void loadGradeList(Long id) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Grade Search...");
-		List<GradeDM> gradelist = serviceGrade.getGradeList(id, null, null, companyid, "Active", "F");
 		BeanContainer<Long, GradeDM> beangrad = new BeanContainer<Long, GradeDM>(GradeDM.class);
 		beangrad.setBeanIdProperty("gradeId");
-		beangrad.addAll(gradelist);
+		beangrad.addAll(serviceGrade.getGradeList(id, null, null, companyid, "Active", "F"));
 		cbGrade.setContainerDataSource(beangrad);
 	}
 	
@@ -713,11 +707,9 @@ public class EmployeeDetail implements ClickListener {
 	 */
 	private void loadPayperiodList(Long id) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Payperiod  Search...");
-		List<PayPeriodDM> payperiodlist = servicePayPeriodService.getPayList(id, null, null, null, companyid, "Active",
-				"F");
 		BeanContainer<Long, PayPeriodDM> beanpayperiod = new BeanContainer<Long, PayPeriodDM>(PayPeriodDM.class);
 		beanpayperiod.setBeanIdProperty("payPeriodId");
-		beanpayperiod.addAll(payperiodlist);
+		beanpayperiod.addAll(servicePayPeriodService.getPayList(id, null, null, null, companyid, "Active", "F"));
 		cbPayperiod.setContainerDataSource(beanpayperiod);
 	}
 	
@@ -727,12 +719,9 @@ public class EmployeeDetail implements ClickListener {
 	private void loadDesignationList(Long id) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading Designation Search...");
-		List<DesignationDM> designationlist = serviceDesignation.getDesignationList(id, null, null, null, companyid,
-				"Active", "F");
-		System.out.println("cbempdtlsgradid.getValue()---");
 		BeanContainer<Long, DesignationDM> beandesignation = new BeanContainer<Long, DesignationDM>(DesignationDM.class);
 		beandesignation.setBeanIdProperty("designationId");
-		beandesignation.addAll(designationlist);
+		beandesignation.addAll(serviceDesignation.getDesignationList(id, null, null, null, companyid, "Active", "F"));
 		cbDesignation.setContainerDataSource(beandesignation);
 	}
 	

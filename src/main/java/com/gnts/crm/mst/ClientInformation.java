@@ -67,15 +67,12 @@ public class ClientInformation implements ClickListener {
 	private List<ClientInformationDM> informlist = new ArrayList<ClientInformationDM>();
 	private int recordCnt = 0;
 	private String userName;
-	private Long clientid;
 	private Button btnadd = new GERPButton("Add", "add", this);
-	public Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btndelete = new GERPButton("Delete", "delete", this);
 	private Logger logger = Logger.getLogger(ClientInformationDM.class);
 	
 	public ClientInformation(VerticalLayout vlinformTblLayout, Long clientId) {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
-		// clientid = (Long) (UI.getCurrent().getSession().getAttribute("clientId"));
-		clientid = clientId;
 		buildview(vlinformTblLayout);
 	}
 	
@@ -152,7 +149,6 @@ public class ClientInformation implements ClickListener {
 		try {
 			tblinform.removeAllItems();
 			recordCnt = informlist.size();
-			System.out.println("LISTSIZE---1->" + informlist.size());
 			beanClntinform = new BeanItemContainer<ClientInformationDM>(ClientInformationDM.class);
 			beanClntinform.addAll(informlist);
 			tblinform.setSelectable(true);
@@ -238,12 +234,10 @@ public class ClientInformation implements ClickListener {
 	}
 	
 	public void saveinformation(Long clientId) {
-		System.out.println("saveid1-->>" + clientid);
 		@SuppressWarnings("unchecked")
 		Collection<ClientInformationDM> itemIds = (Collection<ClientInformationDM>) tblinform.getVisibleItemIds();
 		for (ClientInformationDM saveinform : (Collection<ClientInformationDM>) itemIds) {
 			saveinform.setClientid(clientId);
-			System.out.println("saveid2-->>" + clientid);
 			serviceinformation.saveOrUpdateClientInformDetails(saveinform);
 		}
 	}

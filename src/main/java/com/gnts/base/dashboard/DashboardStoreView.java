@@ -286,7 +286,7 @@ public class DashboardStoreView implements ClickListener {
 	}
 	
 	// Loading Material List
-	public void loadMaterialList() {
+	private void loadMaterialList() {
 		try {
 			List<MaterialDM> list = new ArrayList<MaterialDM>();
 			list.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null, "Active",

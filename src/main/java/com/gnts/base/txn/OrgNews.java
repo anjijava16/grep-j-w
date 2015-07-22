@@ -55,9 +55,9 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class OrgNews extends BaseUI {
-	OrgNewsService serviceNews = (OrgNewsService) SpringContextHelper.getBean("news");
-	BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
-	DepartmentService serviceDepartment = (DepartmentService) SpringContextHelper.getBean("department");
+	private OrgNewsService serviceNews = (OrgNewsService) SpringContextHelper.getBean("news");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	private DepartmentService serviceDepartment = (DepartmentService) SpringContextHelper.getBean("department");
 	private String username;
 	private BeanItemContainer<OrgNewsDM> beanNews = null;
 	// form layout for input controlsa
@@ -191,7 +191,7 @@ public class OrgNews extends BaseUI {
 		cbDepartment.setContainerDataSource(beandept);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<OrgNewsDM> orgList = new ArrayList<OrgNewsDM>();
@@ -213,14 +213,13 @@ public class OrgNews extends BaseUI {
 		tblMstScrSrchRslt.setContainerDataSource(beanNews);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "newsId", "newsTitle", "branchName", "departmentName",
 				"validFrom", "validTo", "newsStatus", "lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id ", "News", "Branch", "Department",
-				"Valid From", "Valid Upto", "Status", "Updated Date", "Updated By" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id ", "News", "Branch", "Department", "Valid From",
+				"Valid Upto", "Status", "Updated Date", "Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("newsId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
 	
 	private void editnews() {
-		
 		hlUserInputLayout.setVisible(true);
 		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		newsId = sltedRcd.getItemProperty("newsId").getValue().toString();
@@ -333,9 +332,6 @@ public class OrgNews extends BaseUI {
 		tfNewsTitle.setRequired(true);
 		dfValidFrom.setRequired(true);
 		dfValidTo.setRequired(true);
-		//editnews();
-	/*	hlCmdBtnLayout.setVisible(true);
-		vlSrchRsltContainer.setVisible(true);*/
 		editnews();
 	}
 	
@@ -346,15 +342,11 @@ public class OrgNews extends BaseUI {
 		tfNewsTitle.setComponentError(null);
 		dfValidFrom.setComponentError(null);
 		dfValidTo.setComponentError(null);
-		
 		if ((tfNewsTitle.getValue() == null) || tfNewsTitle.getValue().trim().length() == 0) {
 			tfNewsTitle.setComponentError(new UserError(GERPErrorCodes.NULL_ORG_NEWS));
 			errorflag = true;
-		}
-		else
-		{
+		} else {
 			tfNewsTitle.setComponentError(null);
-
 		}
 		if (dfValidFrom.getValue() == null) {
 			dfValidFrom.setComponentError(new UserError(GERPErrorCodes.DATE_NOT_NULL));

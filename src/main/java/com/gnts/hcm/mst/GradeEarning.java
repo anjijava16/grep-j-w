@@ -227,12 +227,12 @@ public class GradeEarning extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		cbEarnDesc.setRequired(false);
 		cbGradeDesc.setRequired(false);
-		List<GradeEarningsDM> GradeEarningList = new ArrayList<GradeEarningsDM>();
+		List<GradeEarningsDM> listGradeEarning = new ArrayList<GradeEarningsDM>();
 		Long gradeId = null;
 		if (cbGradeDesc.getValue() != null) {
 			gradeId = ((Long.valueOf(cbGradeDesc.getValue().toString())));
@@ -244,11 +244,11 @@ public class GradeEarning extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfEarnPercent.getValue() + ", " + tfMaxValue.getValue()
 				+ (String) cbStatus.getValue() + ", " + gradeId + "," + earnId);
-		GradeEarningList = serviceGradeEarning.getGradeEarnList(null, gradeId, earnId, (String) cbStatus.getValue(),
+		listGradeEarning = serviceGradeEarning.getGradeEarnList(null, gradeId, earnId, (String) cbStatus.getValue(),
 				"F");
-		recordCnt = GradeEarningList.size();
+		recordCnt = listGradeEarning.size();
 		beanGradeEarningDM = new BeanItemContainer<GradeEarningsDM>(GradeEarningsDM.class);
-		beanGradeEarningDM.addAll(GradeEarningList);
+		beanGradeEarningDM.addAll(listGradeEarning);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the GradeEarning. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanGradeEarningDM);
@@ -459,7 +459,7 @@ public class GradeEarning extends BaseUI {
 		}
 	}
 	
-	public void loadGradeList() {
+	private void loadGradeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 		BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
 		beanGradeDM.setBeanIdProperty("gradeId");
@@ -467,7 +467,7 @@ public class GradeEarning extends BaseUI {
 		cbGradeDesc.setContainerDataSource(beanGradeDM);
 	}
 	
-	public void loadEarnList() {
+	private void loadEarnList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 			BeanContainer<Long, EarningsDM> beanEarningsDM = new BeanContainer<Long, EarningsDM>(EarningsDM.class);

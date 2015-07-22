@@ -148,7 +148,7 @@ public class Earnings extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<EarningsDM> EarningsList = new ArrayList<EarningsDM>();
@@ -344,7 +344,7 @@ public class Earnings extends BaseUI {
 		loadSrchRslt();
 	}
 	
-	public void loadCmpLkup() {
+	private void loadCmpLkup() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");

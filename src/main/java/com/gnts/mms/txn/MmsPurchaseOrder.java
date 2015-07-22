@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
-import com.gargoylesoftware.htmlunit.javascript.host.Text;
 import com.gnts.base.domain.mst.ApprovalSchemaDM;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
@@ -58,8 +57,6 @@ import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.mms.domain.txn.MMSVendorDtlDM;
-import com.gnts.mms.domain.txn.MmsEnqHdrDM;
 import com.gnts.mms.domain.txn.MmsPoDtlDM;
 import com.gnts.mms.domain.txn.MmsQuoteDtlDM;
 import com.gnts.mms.domain.txn.MmsQuoteHdrDM;
@@ -111,7 +108,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
 	private CompanyService serviceCompany = (CompanyService) SpringContextHelper.getBean("companyBean");
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private BeanItemContainer<MmsPoDtlDM> beanpodtldm = null;
 	private GERPTable tblPODetails;
 	// form layout for input controls for PO Header
@@ -144,7 +140,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	private String username;
 	private Long companyid;
 	private int recordCnt;
-	private Long QuoteId;
 	private Long EmployeeId;
 	private File file;
 	private Long roleId;
@@ -347,7 +342,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (DtlValidation()) {
+				if (validatePODetails()) {
 					savePurchaseQuoteDetails();
 				}
 			}
@@ -579,26 +574,24 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfDelTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getDeliveryTerms().toString());
 		// load quote details
 		listPODetails = new ArrayList<MmsPoDtlDM>();
-		for (MmsQuoteDtlDM MmsQuoteDtlDMobj : serviceMmsQuoteDtlService.getmmsquotedtllist(null,
-				((MmsQuoteHdrDM) cbQuoteRef.getValue()).getQuoteId(), null, null, null)) {
-			MmsPoDtlDM mmspodtl = new MmsPoDtlDM();
-			mmspodtl.setMaterialid(MmsQuoteDtlDMobj.getMaterialid());
-			mmspodtl.setMaterialname(MmsQuoteDtlDMobj.getMaterialname());
-			mmspodtl.setUnitrate(MmsQuoteDtlDMobj.getUnitrate());
-			mmspodtl.setPoqty(MmsQuoteDtlDMobj.getQuoteqty());
-			mmspodtl.setMaterialuom(MmsQuoteDtlDMobj.getMatuom());
-			mmspodtl.setBasicvalue(MmsQuoteDtlDMobj.getBasicvalue());
-			// mmspodtl.setPodtlstatus(MmsQuoteDtlDMobj.get);
-			mmspodtl.setLastupdatedby(username);
-			mmspodtl.setLastupdatedt(DateUtils.getcurrentdate());
-			listPODetails.add(mmspodtl);
-		}
+		MmsQuoteDtlDM quoteDtlDMobj = serviceMmsQuoteDtlService.getmmsquotedtllist(null,
+				((MmsQuoteHdrDM) cbQuoteRef.getValue()).getQuoteId(), null, null, null).get(0);
+		MmsPoDtlDM mmspodtl = new MmsPoDtlDM();
+		mmspodtl.setMaterialid(quoteDtlDMobj.getMaterialid());
+		mmspodtl.setMaterialname(quoteDtlDMobj.getMaterialname());
+		mmspodtl.setUnitrate(quoteDtlDMobj.getUnitrate());
+		mmspodtl.setPoqty(quoteDtlDMobj.getQuoteqty());
+		mmspodtl.setMaterialuom(quoteDtlDMobj.getMatuom());
+		mmspodtl.setBasicvalue(quoteDtlDMobj.getBasicvalue());
+		mmspodtl.setLastupdatedby(username);
+		mmspodtl.setLastupdatedt(DateUtils.getcurrentdate());
+		listPODetails.add(mmspodtl);
 		loadPODetails();
 	}
+	
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		System.out.println("ddddddddd");
 		List<POHdrDM> pohdrlist = new ArrayList<POHdrDM>();
 		String poType = null;
 		if (cbpoType.getValue() != null) {
@@ -641,7 +634,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				"Basic Value", "Status", "Last Updated Date", "Last Updated By" });
 	}
 	
-	public void loadBranchList() {
+	private void loadBranchList() {
 		try {
 			List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
 			branchList.add(new BranchDM(0L, "All Branches"));
@@ -656,12 +649,13 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	}
 	
 	// Load Uom
-	public void loadUomList() {
+	private void loadUomList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
 			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 					"MM_UOM");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
 			beanCompanyLookUp.addAll(lookUpList);
 			cbMatUom.setContainerDataSource(beanCompanyLookUp);
@@ -671,15 +665,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		}
 	}
 	
-	public void loadmaterial() {
+	private void loadmaterial() {
 		try {
-			List<MmsQuoteDtlDM> getQuoteDtl = new ArrayList<MmsQuoteDtlDM>();
-			if ((MmsQuoteHdrDM) cbQuoteRef.getValue() != null) {
-				QuoteId = ((MmsQuoteHdrDM) cbQuoteRef.getValue()).getQuoteId();
-			}
-			getQuoteDtl.addAll(serviceMmsQuoteDtlService.getmmsquotedtllist(null, QuoteId, null, null, null));
 			BeanItemContainer<MmsQuoteDtlDM> beanpodtl = new BeanItemContainer<MmsQuoteDtlDM>(MmsQuoteDtlDM.class);
-			beanpodtl.addAll(getQuoteDtl);
+			beanpodtl.addAll(serviceMmsQuoteDtlService.getmmsquotedtllist(null,
+					((MmsQuoteHdrDM) cbQuoteRef.getValue()).getQuoteId(), null, null, null));
 			cbMaterial.setContainerDataSource(beanpodtl);
 		}
 		catch (Exception e) {
@@ -687,29 +677,27 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		}
 	}
 	
-	public void loadVendor() {
+	private void loadVendor() {
 		try {
-			List<VendorDM> vendorList = serviceVendor.getVendorList(null, null, companyid, null, null, null, stateId,
-					null, null, null, "P");
 			BeanContainer<Long, VendorDM> beanVendor = new BeanContainer<Long, VendorDM>(VendorDM.class);
 			beanVendor.setBeanIdProperty("vendorId");
-			beanVendor.addAll(vendorList);
+			beanVendor.addAll(serviceVendor.getVendorList(null, null, companyid, null, null, null, stateId, null, null,
+					null, "P"));
 			cbVendor.setContainerDataSource(beanVendor);
-			System.out.println("===========>" + stateId);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void loadPOTypet() {
+	private void loadPOTypet() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"MM_POTYPE");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"MM_POTYPE"));
 			cbpoType.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -718,11 +706,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	}
 	
 	private void loadQuoteRefNumber() {
-		List<MmsQuoteHdrDM> mmsQuoteHdrDM = serviceMmsQuoteHdr.getMmsQuoteHdrList(companyid, null, null, null, null, null, null, "F");
 		BeanItemContainer<MmsQuoteHdrDM> beanQuote = new BeanItemContainer<MmsQuoteHdrDM>(MmsQuoteHdrDM.class);
-		beanQuote.addAll(mmsQuoteHdrDM);
-		//beanCompanyLookUp.setBeanIdProperty("quoteRef");
-		cbQuoteRef.setContainerDataSource(beanQuote);		
+		beanQuote.addAll(serviceMmsQuoteHdr.getMmsQuoteHdrList(companyid, null, null, null, null, null, null, "F"));
+		cbQuoteRef.setContainerDataSource(beanQuote);
 	}
 	
 	private void editPOHdr() {
@@ -991,7 +977,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		}
 	}
 	
-	private boolean DtlValidation() {
+	private boolean validatePODetails() {
 		boolean isValid = true;
 		if (cbMatUom.getValue() == null) {
 			cbMatUom.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));

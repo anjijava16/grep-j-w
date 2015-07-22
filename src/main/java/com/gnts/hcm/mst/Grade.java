@@ -393,7 +393,7 @@ public class Grade extends BaseUI {
 		loadSrchRslt();
 	}
 	
-	public void loadGRDLvl() {
+	private void loadGRDLvl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
 				CompanyLookupDM.class);

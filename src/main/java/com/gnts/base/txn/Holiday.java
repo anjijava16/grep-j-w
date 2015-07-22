@@ -94,7 +94,7 @@ public class Holiday extends BaseUI {
 		// Initializing and properties for holidayDate PopupDateField
 		dtHolidayDate = new GERPPopupDateField("Holiday Date");
 		dtHolidayDate.setVisible(false);
-		//dtHolidayDate.setRequired(true);
+		// dtHolidayDate.setRequired(true);
 		// Initializing and properties for Holiday Name Text field
 		tfHolidayName = new GERPTextField("Holiday Name");
 		tfHolidayName.setRequired(true);
@@ -156,7 +156,7 @@ public class Holiday extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<HolidaysDM> holidayList = new ArrayList<HolidaysDM>();
 		Long branchObjId = null;
@@ -174,15 +174,14 @@ public class Holiday extends BaseUI {
 		tblMstScrSrchRslt.setContainerDataSource(beanHolidayDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "holidayId", "holidayName", "branchName", "holidayDate",
 				"holidayStatus", "lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref Id", "Holiday", "Branch", "Date",
-				"Status", "Updated Date", "Updated By" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref Id", "Holiday", "Branch", "Date", "Status",
+				"Updated Date", "Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("holidayId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		tfHolidayName.setRequired(false);
 		cbBranch.setRequired(false);
 		dtHolidayDate.setRequired(false);
 	}
-	
 	
 	// Reset the field values to default values
 	@Override
@@ -299,11 +298,10 @@ public class Holiday extends BaseUI {
 	
 	@Override
 	protected void validateDetails() throws ValidationException {
-		//try{
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		 tfHolidayName.setComponentError(null);
-		 dtHolidayDate.setComponentError(null);
-		 cbBranch.setComponentError(null);
+		tfHolidayName.setComponentError(null);
+		dtHolidayDate.setComponentError(null);
+		cbBranch.setComponentError(null);
 		Boolean errorFlag = false;
 		if (tfHolidayName.getValue() == null || tfHolidayName.getValue().trim().length() == 0) {
 			tfHolidayName.setComponentError(new UserError(GERPErrorCodes.NULL_HOLIDAY_NAME));
@@ -317,7 +315,7 @@ public class Holiday extends BaseUI {
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Throwing ValidationException. Holiday Date is > " + dtHolidayDate.getValue());
 		}
-		if ((Long)cbBranch.getValue()==0L) {
+		if ((Long) cbBranch.getValue() == 0L) {
 			cbBranch.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_BRANCH));
 			errorFlag = true;
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -326,36 +324,32 @@ public class Holiday extends BaseUI {
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
-		/*}catch(Exception e)
-		{
-			e.printStackTrace();
-		}*/
 	}
 	
 	@Override
-	protected void saveDetails()  {
-		try{
-		HolidaysDM holidayObj = new HolidaysDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			holidayObj = beanHolidayDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+	protected void saveDetails() {
+		try {
+			HolidaysDM holidayObj = new HolidaysDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				holidayObj = beanHolidayDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
+			holidayObj.setHolidayName(tfHolidayName.getValue());
+			holidayObj.setHolidayDate(dtHolidayDate.getValue());
+			holidayObj.setCompanyid(companyid);
+			if (cbstatus.getValue() != null) {
+				holidayObj.setHolidayStatus((String) cbstatus.getValue());
+			}
+			if (cbHolidayHrs.getValue() != null) {
+				holidayObj.setHolidaySession((String) cbHolidayHrs.getValue());
+			}
+			holidayObj.setLastUpdatedBy(username);
+			holidayObj.setLastUpdatedDate(DateUtils.getcurrentdate());
+			holidayObj.setBranchId((Long) cbBranch.getValue());
+			serviceHoliday.saveAndUpdate(holidayObj);
+			resetFields();
+			loadSrchRslt();
 		}
-		holidayObj.setHolidayName(tfHolidayName.getValue());
-		holidayObj.setHolidayDate(dtHolidayDate.getValue());
-		holidayObj.setCompanyid(companyid);
-		if (cbstatus.getValue() != null) {
-			holidayObj.setHolidayStatus((String) cbstatus.getValue());
-		}
-		if (cbHolidayHrs.getValue() != null) {
-			holidayObj.setHolidaySession((String) cbHolidayHrs.getValue());
-		}
-		holidayObj.setLastUpdatedBy(username);
-		holidayObj.setLastUpdatedDate(DateUtils.getcurrentdate());
-		holidayObj.setBranchId((Long) cbBranch.getValue());
-		serviceHoliday.saveAndUpdate(holidayObj);
-		resetFields();
-		loadSrchRslt();
-		}catch(Exception e)
-		{
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -367,10 +361,7 @@ public class Holiday extends BaseUI {
 		branch.setBranchId(0L);
 		branch.setBranchName("All Branchces");
 		list.add(branch);
-		List<BranchDM> list1 = branchbean.getBranchList(null, null, null, "Active", companyid, "P");
-		for (BranchDM dis : list1) {
-			list.add(dis);
-		}
+		list.addAll(branchbean.getBranchList(null, null, null, "Active", companyid, "P"));
 		BeanContainer<Long, BranchDM> beanState = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanState.setBeanIdProperty("branchId");
 		beanState.addAll(list);

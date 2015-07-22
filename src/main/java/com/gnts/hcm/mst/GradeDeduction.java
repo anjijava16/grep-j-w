@@ -228,12 +228,12 @@ public class GradeDeduction extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		cbDednDesc.setRequired(false);
 		cbGradeDesc.setRequired(false);
-		List<GradeDeductionDM> GradeEarningList = new ArrayList<GradeDeductionDM>();
+		List<GradeDeductionDM> listGradeEarning = new ArrayList<GradeDeductionDM>();
 		Long gradeId = null;
 		if (cbGradeDesc.getValue() != null) {
 			gradeId = ((Long.valueOf(cbGradeDesc.getValue().toString())));
@@ -245,11 +245,11 @@ public class GradeDeduction extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfDeduPercent.getValue() + ", " + tfMaxValue.getValue()
 				+ (String) cbStatus.getValue() + ", " + gradeId + "," + earnId);
-		GradeEarningList = serviceGradeDeduction.getGradeEarnList(null, gradeId, earnId, (String) cbStatus.getValue(),
+		listGradeEarning = serviceGradeDeduction.getGradeEarnList(null, gradeId, earnId, (String) cbStatus.getValue(),
 				"F");
-		recordCnt = GradeEarningList.size();
+		recordCnt = listGradeEarning.size();
 		beanGradeEarningDM = new BeanItemContainer<GradeDeductionDM>(GradeDeductionDM.class);
-		beanGradeEarningDM.addAll(GradeEarningList);
+		beanGradeEarningDM.addAll(listGradeEarning);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the GradeEarning. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanGradeEarningDM);
@@ -459,22 +459,20 @@ public class GradeDeduction extends BaseUI {
 		}
 	}
 	
-	public void loadGradeList() {
+	private void loadGradeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<GradeDM> gradeList = serviceGrade.getGradeList(null, null, null, companyid, null, "P");
 		BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
 		beanGradeDM.setBeanIdProperty("gradeId");
-		beanGradeDM.addAll(gradeList);
+		beanGradeDM.addAll(serviceGrade.getGradeList(null, null, null, companyid, null, "P"));
 		cbGradeDesc.setContainerDataSource(beanGradeDM);
 	}
 	
-	public void loadDeductionList() {
+	private void loadDeductionList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-			List<DeductionDM> earnList = serviceDeduction.getDuctionList(null, null, companyid, null, null, "P");
 			BeanContainer<Long, DeductionDM> beanDeducDM = new BeanContainer<Long, DeductionDM>(DeductionDM.class);
 			beanDeducDM.setBeanIdProperty("deductionId");
-			beanDeducDM.addAll(earnList);
+			beanDeducDM.addAll(serviceDeduction.getDuctionList(null, null, companyid, null, null, "P"));
 			cbDednDesc.setContainerDataSource(beanDeducDM);
 		}
 		catch (Exception e) {

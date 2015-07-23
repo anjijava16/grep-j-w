@@ -17,6 +17,7 @@ import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.base.service.mst.SlnoGenService;
+import com.gnts.die.domain.txn.DieBOMDtlDM;
 import com.gnts.die.domain.txn.DieCompletionDtlDM;
 import com.gnts.die.domain.txn.DieCompletionHdrDM;
 import com.gnts.die.domain.txn.DieRequestDM;
@@ -33,6 +34,7 @@ import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPNumberField;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPTable;
@@ -45,7 +47,6 @@ import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
-import com.vaadin.ui.AbstractSelect;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
@@ -62,6 +63,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -147,6 +149,22 @@ public class DieRequest extends BaseTransUI {
 	private GERPTable tblDieCompletion = new GERPTable();
 	private Button btnAddDieCompl = new GERPButton("Add", "add");
 	private List<DieCompletionDtlDM> listDieComplDetail = new ArrayList<DieCompletionDtlDM>();
+	// Die Bill of material
+	private GERPTextField tfBOMCustomerCode;
+	private GERPTextField tfBOMIOM;
+	private GERPTextField tfBOMPartNumber;
+	private GERPComboBox cbBOMMaterial;
+	private GERPTextField tfBOMLIDProfile;
+	private GERPTextField tfBOMTopQty;
+	private GERPTextField tfBOMBottomQty;
+	private GERPTextArea taBOMNotes;
+	private GERPTextField tfBOMDimensions;
+	private GERPTextField tfBOMMatSize;
+	private GERPNumberField tfBOMQty;
+	private GERPTextArea tataBOMRemarks;
+	private GERPTable tblDieBillofMaterial = new GERPTable();
+	private Button btnAddBOM = new GERPButton("Add", "add");
+	private List<DieBOMDtlDM> listDieBOMDtl = new ArrayList<DieBOMDtlDM>();
 	
 	// Constructor received the parameters from Login UI class
 	public DieRequest() {
@@ -256,6 +274,21 @@ public class DieRequest extends BaseTransUI {
 		taDCRemarks.setWidth("300");
 		tblDieCompletion.setPageLength(12);
 		hlsearchlayout = new GERPAddEditHLayout();
+		// for bill of material
+		tfBOMCustomerCode = new GERPTextField("Customer Code");
+		tfBOMIOM = new GERPTextField("IOM");
+		tfBOMPartNumber = new GERPTextField("Saarc p/no");
+		cbBOMMaterial = new GERPComboBox("Material");
+		tfBOMLIDProfile = new GERPTextField("Lid profile with");
+		tfBOMTopQty = new GERPTextField("Top Qty");
+		tfBOMBottomQty = new GERPTextField("Bottom Qty");
+		tfBOMDimensions = new GERPTextField("Dimensions");
+		taBOMNotes = new GERPTextArea("Note :");
+		taBOMNotes.setWidth("984");
+		tfBOMMatSize = new GERPTextField("Raw material size");
+		tfBOMQty = new GERPNumberField("Qty");
+		tataBOMRemarks = new GERPTextArea("Remarks");
+		tblDieBillofMaterial.setPageLength(5);
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
 		resetFields();
@@ -306,6 +339,15 @@ public class DieRequest extends BaseTransUI {
 				}
 			}
 		});
+		btnAddBOM.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				saveBOMDetails();
+			}
+		});
 	}
 	
 	private void assembleSearchLayout() {
@@ -339,6 +381,39 @@ public class DieRequest extends BaseTransUI {
 		vlHeader.setSpacing(true);
 		vlHeader.setMargin(true);
 		tbDieRequest.addTab(GERPPanelGenerator.createPanel(vlHeader), "Die Request");
+		// for bill of material
+		vlBillofMaterial = new VerticalLayout();
+		vlBillofMaterial.setMargin(true);
+		vlBillofMaterial.addComponent(new HorizontalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(new FormLayout(tfBOMCustomerCode, tfBOMIOM));
+				addComponent(new FormLayout(tfBOMPartNumber, cbBOMMaterial));
+				addComponent(new FormLayout(tfBOMLIDProfile, tfBOMTopQty));
+				addComponent(new FormLayout(tfBOMBottomQty));
+			}
+		});
+		vlBillofMaterial.addComponent(taBOMNotes);
+		vlBillofMaterial.addComponent(GERPPanelGenerator.createPanel(new VerticalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				addComponent(new HorizontalLayout() {
+					private static final long serialVersionUID = 1L;
+					{
+						setSpacing(true);
+						addComponent(new FormLayout(tfBOMDimensions));
+						addComponent(new FormLayout(tfBOMMatSize));
+						addComponent(new FormLayout(tfBOMQty));
+						addComponent(new FormLayout(tataBOMRemarks));
+						addComponent(btnAddBOM);
+						setComponentAlignment(btnAddBOM, Alignment.MIDDLE_LEFT);
+					}
+				});
+				addComponent(tblDieBillofMaterial);
+			}
+		}));
+		tbDieRequest.addTab(vlBillofMaterial, "Bill of Matrial");
 		// for die section
 		vlDieSection = new VerticalLayout();
 		vlDieSection.setSpacing(true);
@@ -417,8 +492,6 @@ public class DieRequest extends BaseTransUI {
 			}
 		}));
 		tbDieRequest.addTab(vlDieCompletion, "Die Completion Report");
-		vlBillofMaterial = new VerticalLayout();
-		// tbDieRequest.addTab(vlBillofMaterial, "Bill of Matrial");
 		hlUserIPContainer.addComponent(tbDieRequest);
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
@@ -706,6 +779,12 @@ public class DieRequest extends BaseTransUI {
 		resetDieCompleteDetails();
 	}
 	
+	private void saveBOMDetails() {
+		// TODO Auto-generated method stub
+		DieBOMDtlDM dieBOMDtlDM = new DieBOMDtlDM();
+		listDieBOMDtl.add(dieBOMDtlDM);
+	}
+	
 	private void saveDieRequest() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... "); //
 		DieRequestDM dieRequestDM = new DieRequestDM();
@@ -947,7 +1026,6 @@ public class DieRequest extends BaseTransUI {
 		taChangeNote.setValue("");
 		cbStatus.setValue(null);
 		dfRefDate.setValue(new Date());
-		
 	}
 	
 	@Override

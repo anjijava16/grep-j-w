@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="moldlidbom" pageWidth="595" pageHeight="842" orientation="Landscape" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8c0486eb-849c-42a8-83c1-759e7bd67ae6">
-	<property name="ireport.zoom" value="1.331000000000006"/>
+	<property name="ireport.zoom" value="2.1435888100000104"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="192"/>
 	<parameter name="bomid" class="java.lang.Long">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select h.ref_number,h.ref_date,h.die_model,d.desc_type,d.result,d.remarks
-from t_stt_die_compl_hdr h,t_stt_die_compl_dtl d
-where d.die_compl_hdr_id = d.die_compl_hdr_id
-and d.die_compl_hdr_id=$P{bomid}]]>
+		<![CDATA[select  h.client_id,h.ref_number,h.ref_date,h.part_number,m.materail_name||' '||nvl(m.material_code,'') material_code,h.lid_profile
+,h.qty_top,h.qty_bottom,d.mat_dimension,d.mat_size,d.mat_qty,d.remarks,h.remarks notes
+from t_stt_die_bom_hdr h,t_stt_die_bom_dtl d,m_mms_material m
+where m.material_id = h.material_id
+and h.die_bom_hdr_id = d.die_bom_hdr_id
+and h.die_bom_hdr_id=$P{bomid}]]>
 	</queryString>
+	<field name="CLIENT_ID" class="java.lang.String"/>
 	<field name="REF_NUMBER" class="java.lang.String"/>
 	<field name="REF_DATE" class="java.sql.Timestamp"/>
-	<field name="DIE_MODEL" class="java.lang.String"/>
-	<field name="DESC_TYPE" class="java.lang.String"/>
-	<field name="RESULT" class="java.lang.String"/>
+	<field name="PART_NUMBER" class="java.lang.String"/>
+	<field name="MATERIAL_CODE" class="java.lang.String"/>
+	<field name="LID_PROFILE" class="java.lang.String"/>
+	<field name="QTY_TOP" class="java.math.BigDecimal"/>
+	<field name="QTY_BOTTOM" class="java.math.BigDecimal"/>
+	<field name="MAT_DIMENSION" class="java.lang.String"/>
+	<field name="MAT_SIZE" class="java.lang.String"/>
+	<field name="MAT_QTY" class="java.math.BigDecimal"/>
 	<field name="REMARKS" class="java.lang.String"/>
+	<field name="NOTES" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -86,15 +95,15 @@ and d.die_compl_hdr_id=$P{bomid}]]>
 				<text><![CDATA[SL/No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="c75b8ae4-3f3c-449f-86c6-5bffcd7fe877" x="51" y="212" width="89" height="20"/>
+				<reportElement uuid="c75b8ae4-3f3c-449f-86c6-5bffcd7fe877" x="50" y="212" width="153" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Dimensions]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="955582c2-0ffa-4b54-9326-7330d6bee6ea" x="327" y="212" width="79" height="20"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement uuid="955582c2-0ffa-4b54-9326-7330d6bee6ea" x="327" y="212" width="48" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Qty]]></text>
@@ -125,7 +134,7 @@ and d.die_compl_hdr_id=$P{bomid}]]>
 				<text><![CDATA[Raw material size]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="bf834825-d479-4807-b46d-09edb4a1be03" x="141" y="208" width="1" height="27"/>
+				<reportElement uuid="bf834825-d479-4807-b46d-09edb4a1be03" x="204" y="208" width="1" height="27"/>
 			</line>
 			<staticText>
 				<reportElement uuid="af8db1e4-a60c-4794-b4a7-2a1dd1785cfe" x="1" y="74" width="100" height="20"/>
@@ -153,19 +162,121 @@ and d.die_compl_hdr_id=$P{bomid}]]>
 				<text><![CDATA[Lid profile with]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="332feba8-0464-4bd0-ac66-040a7fcab2e7" x="143" y="212" width="69" height="20"/>
-				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Mold]]></text>
-			</staticText>
-			<staticText>
-				<reportElement uuid="955582c2-0ffa-4b54-9326-7330d6bee6ea" x="406" y="212" width="145" height="20"/>
+				<reportElement uuid="955582c2-0ffa-4b54-9326-7330d6bee6ea" x="390" y="212" width="164" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Remarks]]></text>
 			</staticText>
+			<line>
+				<reportElement uuid="8ff96f45-22e3-45c5-8a18-5b21d532e93e" x="386" y="208" width="1" height="26"/>
+			</line>
+			<staticText>
+				<reportElement uuid="845d5a8e-fe7d-4f02-af07-70a9f7bcd7e9" x="101" y="74" width="8" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="845d5a8e-fe7d-4f02-af07-70a9f7bcd7e9" x="101" y="95" width="8" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="845d5a8e-fe7d-4f02-af07-70a9f7bcd7e9" x="101" y="115" width="8" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="845d5a8e-fe7d-4f02-af07-70a9f7bcd7e9" x="101" y="135" width="8" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="845d5a8e-fe7d-4f02-af07-70a9f7bcd7e9" x="101" y="156" width="8" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="58f0e07f-58dd-40fb-9ac0-753a9c5f77db" x="1" y="179" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[No of Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="845d5a8e-fe7d-4f02-af07-70a9f7bcd7e9" x="101" y="179" width="8" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="19ed0934-6bd6-4f9f-9ca8-5f921944f037" x="112" y="179" width="29" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Top]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="476658e9-a015-4c1a-8a81-fc841581bf66" x="142" y="179" width="40" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{QTY_TOP}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="aa27a914-9730-4c73-a476-efdff69e9cd5" x="182" y="179" width="31" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Sets,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="aa27a914-9730-4c73-a476-efdff69e9cd5" x="303" y="179" width="31" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Sets]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="476658e9-a015-4c1a-8a81-fc841581bf66" x="263" y="179" width="40" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{QTY_BOTTOM}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="19ed0934-6bd6-4f9f-9ca8-5f921944f037" x="217" y="179" width="46" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Bottom]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="28cc7721-72be-4172-8350-d79e74a0910f" x="111" y="74" width="182" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CLIENT_ID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="f88685dc-8015-4663-9388-370244a689b5" x="111" y="95" width="182" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{REF_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="13f911eb-6b97-4659-993a-9413bfbb9fd7" x="111" y="115" width="182" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PART_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="179029b8-28f3-4d9c-8dbb-60aba6ef07a2" x="111" y="136" width="182" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{MATERIAL_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="a4365c91-5d37-4d61-b290-8ed917463fa0" x="111" y="156" width="182" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{LID_PROFILE}]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnHeader>
 	<detail>
@@ -176,14 +287,14 @@ and d.die_compl_hdr_id=$P{bomid}]]>
 				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="1c63ccd4-d362-41ea-a222-830008cc3390" x="52" y="2" width="88" height="29"/>
+				<reportElement uuid="1c63ccd4-d362-41ea-a222-830008cc3390" x="51" y="2" width="152" height="29"/>
 				<textElement verticalAlignment="Top">
 					<font isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{DESC_TYPE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{MAT_DIMENSION}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="04b44259-9164-4734-b4d6-59985dee5d85" x="407" y="3" width="145" height="28"/>
+				<reportElement uuid="04b44259-9164-4734-b4d6-59985dee5d85" x="390" y="3" width="162" height="28"/>
 				<textElement verticalAlignment="Top"/>
 				<textFieldExpression><![CDATA[$F{REMARKS}]]></textFieldExpression>
 			</textField>
@@ -205,10 +316,18 @@ and d.die_compl_hdr_id=$P{bomid}]]>
 			<textField>
 				<reportElement uuid="794410a7-9749-45b8-bb32-46763b7fa962" x="213" y="1" width="110" height="29"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{RESULT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{MAT_SIZE}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement uuid="f56381fc-b912-42f3-b4f5-c253645b44ad" x="141" y="0" width="1" height="32"/>
+				<reportElement uuid="f56381fc-b912-42f3-b4f5-c253645b44ad" x="204" y="0" width="1" height="32"/>
+			</line>
+			<textField>
+				<reportElement uuid="ef1da086-e45d-4e04-a73d-795c1409919a" x="327" y="0" width="48" height="31"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{MAT_QTY}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="ecd59b18-15a7-4e95-83c4-45be05a54de4" x="386" y="-2" width="1" height="34"/>
 			</line>
 		</band>
 	</detail>

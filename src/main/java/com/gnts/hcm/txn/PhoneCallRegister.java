@@ -55,8 +55,8 @@ public class PhoneCallRegister extends BaseTransUI {
 			.getBean("companyLookUp");
 	// User Input Fields for EC Request
 	private GERPPopupDateField dfCallDate;
-	private GERPComboBox cbEmployee, cbDepartment, cbCallType;
-	private GERPTextField tfPhoneNumber, tfCompany, tfIntercom, tfTime;
+	private GERPComboBox cbEmployee, cbDepartment, cbCallType,tfCompany;
+	private GERPTextField tfPhoneNumber,tfIntercom, tfTime;
 	private TextArea taPurpose;
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
@@ -99,7 +99,10 @@ public class PhoneCallRegister extends BaseTransUI {
 		tfTime.setWidth("130");
 		tfIntercom = new GERPTextField("Intercom");
 		tfIntercom.setRequired(true);
-		tfCompany = new GERPTextField("Company/Customer");
+		tfCompany = new GERPComboBox("Caller Type");
+		tfCompany.addItem("Company");
+		tfCompany.addItem("Customer");
+		tfCompany.addItem("Personal");
 		cbDepartment = new GERPComboBox("Department");
 		cbDepartment.setItemCaptionPropertyId("deptname");
 		loadDepartmentList();
@@ -262,7 +265,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		phoneRegDM.setStatus((String) cbStatus.getValue());
 		phoneRegDM.setPhoneNumber(tfPhoneNumber.getValue());
 		phoneRegDM.setInterNo(tfIntercom.getValue());
-		phoneRegDM.setCompanyName(tfCompany.getValue());
+		phoneRegDM.setCompanyName((String)tfCompany.getValue());
 		phoneRegDM.setPurpose(taPurpose.getValue());
 		phoneRegDM.setPhoneTime(tfTime.getValue());
 		phoneRegDM.setLastUpdatedBy(username);

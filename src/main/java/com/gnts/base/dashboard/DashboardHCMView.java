@@ -178,20 +178,20 @@ public class DashboardHCMView implements ClickListener {
 	private void loadEmplLeave() {
 		try {
 			// logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
-			tblOutpass.removeAllItems();
+			tblEmplLeave.removeAllItems();
 			BeanItemContainer<EmployeeLeaveDM> beanempleave = new BeanItemContainer<EmployeeLeaveDM>(EmployeeLeaveDM.class);
 			beanempleave.addAll(serviceemployeeleave.getempleaveList(null, null, null, null, null));
-			tblOutpass.setContainerDataSource(beanempleave);
-			tblOutpass.setVisibleColumns(new Object[] { "employeeid", "leavetypeid", "noofdays", "leavereason", "appmgr",
+			tblEmplLeave.setContainerDataSource(beanempleave);
+			tblEmplLeave.setVisibleColumns(new Object[] { "employeeid", "leavetypeid", "noofdays", "leavereason", "appmgr",
 					"empleavestatus" });
-			tblOutpass.setColumnHeaders(new String[] { "Name", "Type", "Days", "Reason", "Approved BY", "Status" });
-			tblOutpass.setColumnWidth("employeeid", 80);
-			tblOutpass.setColumnWidth("leavetypeid", 75);
-			tblOutpass.setColumnWidth("noofdays", 70);
-			tblOutpass.setColumnWidth("leavereason", 60);
-			tblOutpass.setColumnWidth("appmgr", 50);
-			tblOutpass.setColumnWidth("empleavestatus", 50);
-			tblOutpass.setHeightUndefined();
+			tblEmplLeave.setColumnHeaders(new String[] { "Name", "Type", "Days", "Reason", "Approved BY", "Status" });
+			tblEmplLeave.setColumnWidth("employeeid", 80);
+			tblEmplLeave.setColumnWidth("leavetypeid", 75);
+			tblEmplLeave.setColumnWidth("noofdays", 70);
+			tblEmplLeave.setColumnWidth("leavereason", 60);
+			tblEmplLeave.setColumnWidth("appmgr", 50);
+			tblEmplLeave.setColumnWidth("empleavestatus", 50);
+			tblEmplLeave.setHeightUndefined();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -201,20 +201,20 @@ public class DashboardHCMView implements ClickListener {
 	private void loadPhoneReg() {
 		try {
 			// logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
-			tblOutpass.removeAllItems();
+			tblPhoneReg.removeAllItems();
 			BeanItemContainer<PhoneRegDM> beanphonereg = new BeanItemContainer<PhoneRegDM>(PhoneRegDM.class);
 			beanphonereg.addAll(servicephonereg.getPhoneRegList(null, null, null, null, null));
-			tblOutpass.setContainerDataSource(beanphonereg);
-			tblOutpass.setVisibleColumns(new Object[] { "callDate", "callType", "companyName", "employeeId", "phoneNumber",
+			tblPhoneReg.setContainerDataSource(beanphonereg);
+			tblPhoneReg.setVisibleColumns(new Object[] { "callDate", "callType", "companyName", "employeeId", "phoneNumber",
 					"interNo" });
-			tblOutpass.setColumnHeaders(new String[] { "Date", "Type", "From", "To", "Number", "Intercom" });
-			tblOutpass.setColumnWidth("callDate", 150);
-			tblOutpass.setColumnWidth("callType", 75);
-			tblOutpass.setColumnWidth("companyName", 70);
-			tblOutpass.setColumnWidth("employeeId", 60);
-			tblOutpass.setColumnWidth("phoneNumber", 65);
-			tblOutpass.setColumnWidth("interNo", 40);
-			tblOutpass.setHeightUndefined();
+			tblPhoneReg.setColumnHeaders(new String[] { "Date", "Type", "From", "To", "Number", "Intercom" });
+			tblPhoneReg.setColumnWidth("callDate", 75);
+			tblPhoneReg.setColumnWidth("callType", 50);
+			tblPhoneReg.setColumnWidth("companyName", 100);
+			tblPhoneReg.setColumnWidth("employeeId", 60);
+			tblPhoneReg.setColumnWidth("phoneNumber", 80);
+			tblPhoneReg.setColumnWidth("interNo", 40);
+			tblPhoneReg.setHeightUndefined();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -231,8 +231,8 @@ public class DashboardHCMView implements ClickListener {
 			tblOutpass.setVisibleColumns(new Object[] { "passDate", "firstname", "place", "vehicle", "totalTime",
 					"totalKM" });
 			tblOutpass.setColumnHeaders(new String[] { "Date", "Name", "Place", "Vehicle", "Time", "KM" });
-			tblOutpass.setColumnWidth("passDate", 150);
-			tblOutpass.setColumnWidth("employeeId", 75);
+			tblOutpass.setColumnWidth("passDate", 75);
+			tblOutpass.setColumnWidth("firstname", 150);
 			tblOutpass.setColumnWidth("place", 70);
 			tblOutpass.setColumnWidth("vehicle", 60);
 			tblOutpass.setColumnWidth("totalTime", 45);
@@ -256,9 +256,9 @@ public class DashboardHCMView implements ClickListener {
 					"inTime", "totalTime" });
 			tblVisitpass
 					.setColumnHeaders(new String[] { "Date", "Name", "Number", "Material", "Time In", "Total Time" });
-			tblVisitpass.setColumnWidth("visitDate", 150);
-			tblVisitpass.setColumnWidth("visitorName", 75);
-			tblVisitpass.setColumnWidth("contactNo", 70);
+			tblVisitpass.setColumnWidth("visitDate", 75);
+			tblVisitpass.setColumnWidth("visitorName", 140);
+			tblVisitpass.setColumnWidth("contactNo", 80);
 			tblVisitpass.setColumnWidth("mateFLow", 60);
 			tblVisitpass.setColumnWidth("inTime", 45);
 			tblVisitpass.setColumnWidth("totalTime", 40);

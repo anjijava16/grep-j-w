@@ -898,8 +898,10 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 				targetClass = "com.gnts.base.dashboard.DashboardStoreView";
 			} else if (sreenName.equalsIgnoreCase("Asset Management")) {
 				targetClass = "com.gnts.base.dashboard.MaintenanceDashboardView";
-			}else if (sreenName.equalsIgnoreCase("Die")) {
+			} else if (sreenName.equalsIgnoreCase("Die")) {
 				targetClass = "com.gnts.base.dashboard.DieDashboardView";
+			} else if (sreenName.equalsIgnoreCase("Production Management")) {
+				targetClass = "com.gnts.base.dashboard.DashboardProduction";
 			} else {
 				targetClass = "com.gnts.base.dashboard.DashbordView";
 			}

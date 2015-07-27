@@ -294,7 +294,7 @@ public class VisitorPass extends BaseTransUI {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			VisitPassDM visitPassDM = beanVisitpass.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			visitorid = visitPassDM.getVisitorId();
-			dfPassDate.setValue(visitPassDM.getVisitDate());
+			dfPassDate.setValue(visitPassDM.getVisitDateD());
 			cbEmployee.setValue(visitPassDM.getEmployeeId());
 			cbStatus.setValue(visitPassDM.getStatus());
 			tfVisitorsName.setValue(visitPassDM.getVisitorName());

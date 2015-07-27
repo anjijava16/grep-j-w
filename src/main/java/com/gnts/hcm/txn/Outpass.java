@@ -345,7 +345,7 @@ public class Outpass extends BaseTransUI {
 				+ outpassid);
 		if (tblMstScrSrchRslt.getValue() != null) {
 			OutpassDM outpassDM = beanOutpass.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfPassDate.setValue(outpassDM.getPassDate());
+			dfPassDate.setValue(outpassDM.getPassDateD());
 			cbEmployee.setValue(outpassDM.getEmployeeId());
 			cbDepartment.setValue(outpassDM.getDeptId());
 			cbStatus.setValue(outpassDM.getStatus());

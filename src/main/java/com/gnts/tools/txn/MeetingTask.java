@@ -13,7 +13,6 @@ import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPTextArea;
 import com.gnts.erputil.constants.GERPErrorCodes;
-import com.gnts.erputil.domain.StatusDM;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
@@ -21,24 +20,18 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.tools.domain.txn.MeetingDM;
-import com.gnts.tools.domain.txn.MeetingTaskActionDM;
 import com.gnts.tools.domain.txn.MeetingTaskDM;
 import com.gnts.tools.service.txn.MeetingService;
-import com.gnts.tools.service.txn.MeetingTaskActionService;
 import com.gnts.tools.service.txn.MeetingTaskService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupDateField;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -48,47 +41,27 @@ public class MeetingTask extends BaseUI {
 	 */
 	private static final long serialVersionUID = 1L;
 	private MeetingTaskService servicetask = (MeetingTaskService) SpringContextHelper.getBean("tToolMeetingTask");
-	private MeetingTaskActionService actionServiceBean = (MeetingTaskActionService) SpringContextHelper
-			.getBean("tToolMeetingTaskAction");
 	private MeetingService servicemeeting = (MeetingService) SpringContextHelper.getBean("tToolMeeting");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private CompanyLookupService servicecompany = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
-	private BeanItemContainer<EmployeeDM> beanEmployee = null;
-	// form Layout components for ttoolmeetingtask
 	private FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private ComboBox cbStatus, cbOwner, cbPriority, cbmeeting;
-	private TextField tfTaskDesc;
 	private PopupDateField dfTaskDt, dfTaskEndDt, dfRevisionDt;
-	private EmployeeDM selectOwner;
-	private String status = "Active";
-	// form Layout components for ttoolmeetingtaskaction
-	private TextField tfDependancyDesc, tfActionedby, tfProgressPercentage;
 	private GERPTextArea taActionDesc;
-	private Table tblMeetingTaskAction;
-	public Button btnSaveAction, btnCancelAction, btnEditAction, btnDownloadAction;
 	// Button Declarations
-	public Button btnSave, btnCancel, btnEdit, btnDownload;
-	private VerticalLayout vlTableLayout;
-	HorizontalLayout hlTableTitleandCaptionLayout;
 	// Declaration for exporter
 	// label for titles
-	private Label lblFormTitle, lblTableTitle;
-	public Label lblNotification, lblNotificationIcon;
+	private Label lblNotification;
 	// Layouts
-	VerticalLayout pnlTable = new VerticalLayout();
-	VerticalLayout pnlForm = new VerticalLayout();
+	private VerticalLayout pnlForm = new VerticalLayout();
 	private Logger logger = Logger.getLogger(MeetingTask.class);
-	public HorizontalLayout hlSaveandCancelButtonLayout;
-	private String strLoginUserName, strScreenName;
-	private BeanItemContainer<StatusDM> beansStatus;
 	private BeanItemContainer<MeetingTaskDM> beansToolMeetingTask = null;
-	private BeanItemContainer<MeetingTaskActionDM> beansToolMeetingTaskAction = null;
-	private Long meetingHeaderId, meetingId;
-	private Long taskId, moduleId, companyid;
+	private Long meetingId;
+	private Long moduleId, companyid;
 	private String username;
-	HorizontalLayout hlScreenNameLayout, hlsearch;
+	private HorizontalLayout hlsearch;
 	private int recordCnt = 0;
 	private Boolean errorFlag = false;
 	
@@ -117,7 +90,6 @@ public class MeetingTask extends BaseUI {
 		cbPriority.setItemCaptionPropertyId("lookupname");
 		cbPriority.setWidth("150");
 		loadlookuplist();
-		// cbStatus = new GERPComboBox("Task Status");
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbStatus.setItemCaptionPropertyId("desc");
 		cbStatus.setWidth("150");
@@ -132,7 +104,7 @@ public class MeetingTask extends BaseUI {
 		loadSrchRslt();
 	}
 	
-	public void assembleUserSearchLayout() {
+	private void assembleUserSearchLayout() {
 		hlsearch.removeAllComponents();
 		flcolumn1 = new FormLayout();
 		flcolumn2 = new FormLayout();
@@ -146,10 +118,9 @@ public class MeetingTask extends BaseUI {
 		hlsearch.setSizeUndefined();
 		hlsearch.setSpacing(true);
 		hlsearch.setMargin(true);
-		// hlUserInputLayout.removeAllComponents();
 	}
 	
-	public void assembleUserInputLayout() {
+	private void assembleUserInputLayout() {
 		flcolumn1 = new FormLayout();
 		flcolumn2 = new FormLayout();
 		flcolumn3 = new FormLayout();
@@ -173,17 +144,10 @@ public class MeetingTask extends BaseUI {
 	}
 	
 	private void loadownerName() {
-		/*
-		 * List<EmployeeDM> employeeList = serviceEmployee.getEmployeeList(null, null, null, status, companyid, null,
-		 * null, null, null, "F"); beanEmployee = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		 * beanEmployee.addAll(employeeList); beanEmployee.setBeanIdProperty("employeeid");
-		 * cbOwner.setContainerDataSource(beanEmployee);
-		 */
-		List<EmployeeDM> employeelist = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null,
-				null, null, null, "F");
 		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(employeelist);
+		beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+				null, "P"));
 		cbOwner.setContainerDataSource(beanEmployee);
 	}
 	
@@ -201,15 +165,13 @@ public class MeetingTask extends BaseUI {
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Owner", "Priority", "Status", "Last Updated Date",
 				"Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("taskid", Align.RIGHT);
-		// tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records :" + recordCnt);
 	}
 	
 	// Display the details after click the edit button
 	private void editToolMeetingTask() {
 		pnlForm.setVisible(true);
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			MeetingTaskDM editTToolMeetingTask = beansToolMeetingTask.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			cbOwner.setValue(editTToolMeetingTask.getOwnerId());
 			cbPriority.setValue(editTToolMeetingTask.getPriority());
@@ -222,21 +184,18 @@ public class MeetingTask extends BaseUI {
 		}
 	}
 	
-	public void loadlookuplist() {
-		List<CompanyLookupDM> lookupname = servicecompany.getCompanyLookUpByLookUp(companyid, moduleId, null,
-				"CM_MTNGPRY");
+	private void loadlookuplist() {
 		BeanContainer<String, CompanyLookupDM> beanlookup = new BeanContainer<String, CompanyLookupDM>(
 				CompanyLookupDM.class);
 		beanlookup.setBeanIdProperty("lookupname");
-		beanlookup.addAll(lookupname);
+		beanlookup.addAll(servicecompany.getCompanyLookUpByLookUp(companyid, moduleId, null, "CM_MTNGPRY"));
 		cbPriority.setContainerDataSource(beanlookup);
 	}
 	
-	public void loadmeetinglist() {
-		List<MeetingDM> meetinglist = servicemeeting.getToolMeetingList(companyid, null, null, null);
+	private void loadmeetinglist() {
 		BeanContainer<Long, MeetingDM> beanmeeting = new BeanContainer<Long, MeetingDM>(MeetingDM.class);
 		beanmeeting.setBeanIdProperty("meetingId");
-		beanmeeting.addAll(meetinglist);
+		beanmeeting.addAll(servicemeeting.getToolMeetingList(companyid, null, null, null));
 		cbmeeting.setContainerDataSource(beanmeeting);
 	}
 	
@@ -332,23 +291,22 @@ public class MeetingTask extends BaseUI {
 	protected void saveDetails() throws ERPException.SaveException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
-			MeetingTaskDM ToolMeetingObj = new MeetingTaskDM();
+			MeetingTaskDM meetingTaskDM = new MeetingTaskDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				ToolMeetingObj = beansToolMeetingTask.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				meetingTaskDM = beansToolMeetingTask.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			ToolMeetingObj.setOwnerId((Long) cbOwner.getValue());
-			System.out.println("cbPriority====>" + cbPriority.getValue());
-			ToolMeetingObj.setPriority(cbPriority.getValue().toString());
-			ToolMeetingObj.setTaskDate(dfTaskDt.getValue());
-			ToolMeetingObj.setTargetEndDate(dfTaskEndDt.getValue());
-			ToolMeetingObj.setMeetingId((Long.valueOf(cbmeeting.getValue().toString())));
-			ToolMeetingObj.setRevisionDate(dfRevisionDt.getValue());
-			ToolMeetingObj.setTaskDescription(taActionDesc.getValue());
-			ToolMeetingObj.setTaskStatus((String) cbStatus.getValue());
-			ToolMeetingObj.setLastupdateddt(DateUtils.getcurrentdate());
-			ToolMeetingObj.setLastupdatedby(username);
-			logger.info(" saveOrUpdateBranch() > " + ToolMeetingObj);
-			servicetask.saveAndUpdateDetails(ToolMeetingObj);
+			meetingTaskDM.setOwnerId((Long) cbOwner.getValue());
+			meetingTaskDM.setPriority(cbPriority.getValue().toString());
+			meetingTaskDM.setTaskDate(dfTaskDt.getValue());
+			meetingTaskDM.setTargetEndDate(dfTaskEndDt.getValue());
+			meetingTaskDM.setMeetingId((Long.valueOf(cbmeeting.getValue().toString())));
+			meetingTaskDM.setRevisionDate(dfRevisionDt.getValue());
+			meetingTaskDM.setTaskDescription(taActionDesc.getValue());
+			meetingTaskDM.setTaskStatus((String) cbStatus.getValue());
+			meetingTaskDM.setLastupdateddt(DateUtils.getcurrentdate());
+			meetingTaskDM.setLastupdatedby(username);
+			logger.info(" saveOrUpdateBranch() > " + meetingTaskDM);
+			servicetask.saveAndUpdateDetails(meetingTaskDM);
 			resetFields();
 			loadSrchRslt();
 		}

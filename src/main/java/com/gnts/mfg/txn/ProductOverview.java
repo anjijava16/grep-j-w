@@ -38,7 +38,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -285,6 +284,5 @@ public class ProductOverview implements ClickListener {
 
 	private void viewProductDetails() {
 		// TODO Auto-generated method stub
-		Notification.show(tfSerialNumber.getValue());
 	}
 }

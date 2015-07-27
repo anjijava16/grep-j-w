@@ -76,6 +76,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
@@ -84,9 +85,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class QCTest extends BaseTransUI {
-	/**
-	 
-	 */
 	private static final long serialVersionUID = 1L;
 	private QcTestHdrService serviceQcTstHdr = (QcTestHdrService) SpringContextHelper.getBean("qcTestHdr");
 	private QCTestDtlService serviceQcTstDtl = (QCTestDtlService) SpringContextHelper.getBean("qcTestDtl");
@@ -132,6 +130,8 @@ public class QCTest extends BaseTransUI {
 	private Comments comment;
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	private Long commentby;
+	// for test documents
+	private VerticalLayout hlPageLayout = new VerticalLayout();
 	
 	public QCTest() {
 		// Get the logged in user name and company id from the session
@@ -262,6 +262,7 @@ public class QCTest extends BaseTransUI {
 		assembleSearchLayout();
 		loadSrchRslt();
 		loadSrchQCDtlList();
+		hlPageLayout.setEnabled(false);
 	}
 	
 	private void assembleSearchLayout() {
@@ -388,7 +389,10 @@ public class QCTest extends BaseTransUI {
 		vlQcHdrNDtl.addComponent(GERPPanelGenerator.createPanel(hlQCHdr));
 		vlQcHdrNDtl.addComponent(hlDtlNCmt);
 		vlQcHdrNDtl.setSpacing(true);
-		hlUserInputLayout.addComponent(vlQcHdrNDtl);
+		TabSheet tabsheet = new TabSheet();
+		tabsheet.addTab(vlQcHdrNDtl, "Testing Details");
+		tabsheet.addTab(hlPageLayout, "Testing Documents");
+		hlUserInputLayout.addComponent(tabsheet);
 		// hlUserInputLayout.setWidth("100%");
 	}
 	
@@ -578,6 +582,8 @@ public class QCTest extends BaseTransUI {
 						.getQcTestDtlDetails(null, Long.valueOf(testTypeId), null, null, "Active");
 				comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
 				comment.loadsrch(true, null, companyid, null, null, null, Long.valueOf(testTypeId));
+				new TestingDocuments(hlPageLayout, testTypeId);
+				hlPageLayout.setEnabled(true);
 			}
 		}
 		catch (Exception e) {
@@ -838,6 +844,7 @@ public class QCTest extends BaseTransUI {
 			qcTestHdr.setLastupdateddate(DateUtils.getcurrentdate());
 			qcTestHdr.setLastupdatedby(userName);
 			serviceQcTstHdr.saveQcTestHdr(qcTestHdr);
+			testTypeId = qcTestHdr.getQctestid();
 			@SuppressWarnings("unchecked")
 			Collection<QcTestDtlDM> itemIds = (Collection<QcTestDtlDM>) tblQcDtlTbl.getVisibleItemIds();
 			for (QcTestDtlDM save : (Collection<QcTestDtlDM>) itemIds) {
@@ -855,12 +862,10 @@ public class QCTest extends BaseTransUI {
 				catch (Exception e) {
 				}
 			}
-			resetQcTestDtl();
-			resetFields();
-			loadSrchRslt();
-			loadSrchQCDtlList();
 			comment.saveqaSignOffId(qcTestHdr.getQctesttypeid());
 			comment.resetFields();
+			new TestingDocuments(hlPageLayout, testTypeId);
+			hlPageLayout.setEnabled(true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

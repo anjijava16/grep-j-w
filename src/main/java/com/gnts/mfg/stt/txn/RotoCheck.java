@@ -17,7 +17,10 @@ import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
+import com.gnts.erputil.components.GERPTable;
+import com.gnts.erputil.components.GERPTextArea;
 import com.gnts.erputil.components.GERPTextField;
+import com.gnts.erputil.components.GERPTimeField;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
@@ -43,6 +46,7 @@ import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Table.Align;
@@ -62,32 +66,41 @@ public class RotoCheck extends BaseTransUI {
 	private BeanItemContainer<RotoDtlDM> beanrotodtldm = null;
 	private Button btnAddDtls = new GERPButton("Add", "Addbt", this);
 	private FormLayout flHdrCol1, flHdrCol2;
-	private VerticalLayout vlDtl, vlHdrshiftandDtlarm;
+	private FormLayout fldtl1, fldtl2, fldtl3, fldtl4, fldtl5;
+	private VerticalLayout vlDtl, vlHdrshiftandDtlarm, vldtl;
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private HorizontalLayout hlHdr = new HorizontalLayout();
 	private HorizontalLayout hlHdrAndShift;
 	private Table tblRotoDetails;
+	private Table tblRotoCheckDtl = new GERPTable();
+	private TabSheet dtlTab;
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(RotoCheck.class);
-	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
-			.getBean("companyLookUp");
 	// User Input Fields for EC Request
-	//Roto Header
+	// Roto Header
 	private GERPPopupDateField dfRotoDt;
 	private GERPTextField tfRotoRef, tfPlanedQty, tfProdQty;
 	private GERPComboBox cbBranch, cbPlanRef;
 	private TextArea tfRemarks;
-	//Roto Details
-	
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
+	// Roto Details
+	private GERPTextField tfOvenTotal, tfCharTot, tfCoolTot, tfBoxModel, tfPwdTop, tfPwdBot, tfPowTotal;
+	private GERPTextField tftempZ1, tftempZ2, tftempZ3, tfBoxWgTop, tfBoxWgBot, tfBoxWgTotal, tfCycles, tfKgCm,
+			tfEmpNo;
+	private GERPTimeField tmOvenOn, tmOvenOff, tmCharOn, tmCharOff, tmCoolOn, tmCoolOff;
+	private GERPComboBox cbArmNo;
+	private TextArea tfRemarksDtl;
 	// private BeanItemContainer<RotohdrDM> beanRotohdr = null;
 	// form layout for input controls EC Request
-	private FormLayout flcol1, flcol2, flcol3, flcol4;
+	private FormLayout flcol1, flcol2;
 	// Search Control LayouttaRemarksa
 	private HorizontalLayout hlsearchlayout;
 	// Parent layout for all the input controls EC Request
 	private HorizontalLayout hllayout = new HorizontalLayout();
+	private HorizontalLayout hldtllayout = new HorizontalLayout();
+	private HorizontalLayout hlspecadd = new HorizontalLayout();
+	private VerticalLayout vlTableForm = new VerticalLayout();
 	// local variables declaration
 	private String username;
 	private Long companyid, branchID, moduleId;
@@ -107,7 +120,7 @@ public class RotoCheck extends BaseTransUI {
 	
 	private void buildview() {
 		logger.info("CompanyId" + companyid + "username" + username + "painting VisitorPass UI");
-		// EC Request Components Definition
+		// RotoCheck Header.
 		tblRotoDetails = new Table();
 		tblRotoDetails.setSelectable(true);
 		tblRotoDetails.setWidth("588px");
@@ -171,6 +184,7 @@ public class RotoCheck extends BaseTransUI {
 		dfRotoDt.setInputPrompt("Select Date");
 		dfRotoDt.setWidth("130px");
 		cbStatus.setWidth("150");
+		buildviewDtl();
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleinputLayout();
 		assembleSearchLayout();
@@ -179,13 +193,69 @@ public class RotoCheck extends BaseTransUI {
 		loadPlanDtlRslt();
 	}
 	
+	// Roto Check Details
+	private void buildviewDtl() {
+		cbArmNo = new GERPComboBox("Arm No.");
+		cbArmNo.addItem("1");
+		cbArmNo.addItem("2");
+		cbArmNo.addItem("3");
+		cbArmNo.addItem("4");
+		cbArmNo.setRequired(true);
+		cbArmNo.setWidth("150");
+		tmOvenOn = new GERPTimeField("Oven On");
+		tmOvenOn.setWidth("150");
+		tmOvenOff = new GERPTimeField("Oven Off");
+		tmOvenOff.setWidth("150");
+		tfOvenTotal = new GERPTextField("Oven Total");
+		tfOvenTotal.setWidth("150");
+		tmCharOn = new GERPTimeField("Charge On");
+		tmCharOn.setWidth("150");
+		tmCharOff = new GERPTimeField("Change Off");
+		tmCharOff.setWidth("150");
+		tfCharTot = new GERPTextField("Charge Total");
+		tfCharTot.setWidth("150");
+		tmCoolOn = new GERPTimeField("Cooling On");
+		tmCoolOn.setWidth("150");
+		tmCoolOff = new GERPTimeField("Cooling Off");
+		tmCoolOff.setWidth("150");
+		tfCoolTot = new GERPTextField("Cooling Total");
+		tfCoolTot.setWidth("150");
+		tftempZ1 = new GERPTextField("Z1");
+		tftempZ1.setWidth("150");
+		tftempZ2 = new GERPTextField("Z2");
+		tftempZ2.setWidth("150");
+		tftempZ3 = new GERPTextField("Z3");
+		tftempZ3.setWidth("150");
+		tfBoxModel = new GERPTextField("Box Model");
+		tfBoxModel.setWidth("150");
+		tfPwdTop = new GERPTextField("Powder Top");
+		tfPwdTop.setWidth("150");
+		tfPwdBot = new GERPTextField("Powder Bottom");
+		tfPwdBot.setWidth("150");
+		tfPowTotal = new GERPTextField("Powder Total");
+		tfPowTotal.setWidth("150");
+		tfBoxWgTop = new GERPTextField("Box.Wg Top");
+		tfBoxWgTop.setWidth("150");
+		tfBoxWgBot = new GERPTextField("Box.Wg Bottom");
+		tfBoxWgBot.setWidth("150");
+		tfBoxWgTotal = new GERPTextField("Box.Wg Total");
+		tfBoxWgTotal.setWidth("150");
+		tfCycles = new GERPTextField("Cycles");
+		tfCycles.setWidth("150");
+		tfKgCm = new GERPTextField("Kg/Cm3");
+		tfKgCm.setWidth("150");
+		tfEmpNo = new GERPTextField("No.of Emp.");
+		tfEmpNo.setWidth("150");
+		tfRemarksDtl = new GERPTextArea("Remarks");
+		tfRemarksDtl.setWidth("150");
+	}
+	
 	private void assembleSearchLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		hlsearchlayout.removeAllComponents();
 		// Remove all components in search layout
 		flcol1 = new FormLayout();
 		flcol2 = new FormLayout();
-		flcol3 = new FormLayout();
 		flcol1.addComponent(cbBranch);
 		flcol2.addComponent(cbStatus);
 		hlsearchlayout.addComponent(flcol1);
@@ -199,6 +269,7 @@ public class RotoCheck extends BaseTransUI {
 		// Remove all components in search layout
 		flHdrCol1 = new FormLayout();
 		flHdrCol2 = new FormLayout();
+		// RotoCheck Header.
 		flHdrCol1.addComponent(cbBranch);
 		flHdrCol1.addComponent(cbPlanRef);
 		flHdrCol1.addComponent(tfRotoRef);
@@ -226,12 +297,64 @@ public class RotoCheck extends BaseTransUI {
 		hlUserInputLayout.setWidth("100%");
 		hlUserInputLayout.setMargin(false);
 		hlUserInputLayout.setSpacing(true);
+		// RotoCheck Details Layout
+		fldtl1 = new FormLayout();
+		fldtl2 = new FormLayout();
+		fldtl3 = new FormLayout();
+		fldtl4 = new FormLayout();
+		fldtl5 = new FormLayout();
+		fldtl1.addComponent(cbArmNo);
+		fldtl1.addComponent(tmOvenOn);
+		fldtl1.addComponent(tmOvenOff);
+		fldtl1.addComponent(tfOvenTotal);
+		fldtl1.addComponent(tmCharOn);
+		fldtl2.addComponent(tmCharOff);
+		fldtl2.addComponent(tfCharTot);
+		fldtl2.addComponent(tmCoolOn);
+		fldtl2.addComponent(tmCoolOff);
+		fldtl2.addComponent(tfCoolTot);
+		fldtl3.addComponent(tftempZ1);
+		fldtl3.addComponent(tftempZ2);
+		fldtl3.addComponent(tftempZ3);
+		fldtl3.addComponent(tfBoxModel);
+		fldtl3.addComponent(tfPwdTop);
+		fldtl4.addComponent(tfPwdBot);
+		fldtl4.addComponent(tfPowTotal);
+		fldtl4.addComponent(tfBoxWgTop);
+		fldtl4.addComponent(tfBoxWgBot);
+		fldtl4.addComponent(tfBoxWgTotal);
+		fldtl5.addComponent(tfCycles);
+		fldtl5.addComponent(tfKgCm);
+		fldtl5.addComponent(tfEmpNo);
+		fldtl5.addComponent(tfRemarksDtl);
+		hldtllayout.setMargin(true);
+		hldtllayout.setSpacing(true);
+		hldtllayout.addComponent(fldtl1);
+		hldtllayout.addComponent(fldtl2);
+		hldtllayout.addComponent(fldtl3);
+		hldtllayout.addComponent(fldtl4);
+		hldtllayout.addComponent(fldtl5);
+		vldtl.addComponent(GERPPanelGenerator.createPanel(hldtllayout));
+		vldtl.addComponent(tblRotoCheckDtl);
+		tblRotoCheckDtl.setWidth("1188px");
+		tblRotoCheckDtl.setPageLength(6);
+		vldtl.setWidth("100%");
+		tblMstScrSrchRslt.setVisible(false);
+		hlspecadd = new HorizontalLayout();
+		hlspecadd.addComponent(vldtl);
+		hlspecadd.addComponent(GERPPanelGenerator.createPanel(vldtl));
+		dtlTab = new TabSheet();
+		dtlTab.addTab(hlspecadd, "Roto Details");
+		dtlTab.addTab(vlTableForm, "Comments");
+		tblMstScrSrchRslt.setVisible(false);
+		vlSrchRsltContainer.addComponent(GERPPanelGenerator.createPanel(dtlTab));
 	}
 	
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			RotoCheckHdrDM rotocheckhdrDM = new RotoCheckHdrDM();
+			// RotoCheck Header.
 			rotocheckhdrDM.setRotorefno(tfRotoRef.getValue());
 			rotocheckhdrDM.setBranchid((Long.valueOf(cbBranch.getValue().toString())));
 			rotocheckhdrDM.setRotodate(dfRotoDt.getValue());
@@ -242,8 +365,8 @@ public class RotoCheck extends BaseTransUI {
 			rotocheckhdrDM.setLastupdatedby(username);
 			rotocheckhdrDM.setRotostatus((String) cbStatus.getValue());
 			serviceRotoCheckhdr.saveRotoCheckHdr(rotocheckhdrDM);
-			Collection<RotoDtlDM> rotoDtls = ((Collection<RotoDtlDM>) tblRotoDetails.getVisibleItemIds());
-			for (RotoDtlDM rotoDtl : (Collection<RotoDtlDM>) rotoDtls) {
+			for (RotoDtlDM rotoDtl : (Collection<RotoDtlDM>) ((Collection<RotoDtlDM>) tblRotoDetails
+					.getVisibleItemIds())) {
 				rotoDtl.setRotoid(rotocheckhdrDM.getRotoid());
 				id = rotocheckhdrDM.getRotoid();
 				productid = rotoDtl.getProductid();
@@ -268,6 +391,7 @@ public class RotoCheck extends BaseTransUI {
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
+		// RotoCheck Header.
 		cbPlanRef.setValue(null);
 		cbPlanRef.setComponentError(null);
 		cbBranch.setValue(cbBranch.getItemIds().iterator().next());
@@ -330,6 +454,7 @@ public class RotoCheck extends BaseTransUI {
 		// remove the components in the search layout and input controls in the same container
 		hlUserInputLayout.removeAllComponents();
 		hlUserIPContainer.addComponent(hlUserInputLayout);
+		vlSrchRsltContainer.setVisible(true);
 		resetFields();
 		assembleinputLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
@@ -351,12 +476,12 @@ public class RotoCheck extends BaseTransUI {
 	protected void editDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		hlUserInputLayout.removeAllComponents();
+		vlSrchRsltContainer.setVisible(true);
 		// tblMstScrSrchRslt.setVisible(false);
 		// remove the components in the search layout and input controls in the same container
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		hlCmdBtnLayout.setVisible(false);
 		// reset the input controls to default value comment
-		tblMstScrSrchRslt.setVisible(false);
 		assembleinputLayout();
 		loadPlanDtlRslt();
 	}

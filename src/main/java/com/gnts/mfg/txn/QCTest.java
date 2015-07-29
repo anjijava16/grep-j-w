@@ -131,7 +131,7 @@ public class QCTest extends BaseTransUI {
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	private Long commentby;
 	// for test documents
-	private VerticalLayout hlPageLayout = new VerticalLayout();
+	private VerticalLayout hlDocumentLayout = new VerticalLayout();
 	
 	public QCTest() {
 		// Get the logged in user name and company id from the session
@@ -262,7 +262,7 @@ public class QCTest extends BaseTransUI {
 		assembleSearchLayout();
 		loadSrchRslt();
 		loadSrchQCDtlList();
-		hlPageLayout.setEnabled(false);
+		hlDocumentLayout.setEnabled(false);
 	}
 	
 	private void assembleSearchLayout() {
@@ -391,7 +391,7 @@ public class QCTest extends BaseTransUI {
 		vlQcHdrNDtl.setSpacing(true);
 		TabSheet tabsheet = new TabSheet();
 		tabsheet.addTab(vlQcHdrNDtl, "Testing Details");
-		tabsheet.addTab(hlPageLayout, "Testing Documents");
+		tabsheet.addTab(hlDocumentLayout, "Testing Documents");
 		hlUserInputLayout.addComponent(tabsheet);
 		// hlUserInputLayout.setWidth("100%");
 	}
@@ -582,8 +582,8 @@ public class QCTest extends BaseTransUI {
 						.getQcTestDtlDetails(null, Long.valueOf(testTypeId), null, null, "Active");
 				comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
 				comment.loadsrch(true, null, companyid, null, null, null, Long.valueOf(testTypeId));
-				new TestingDocuments(hlPageLayout, testTypeId);
-				hlPageLayout.setEnabled(true);
+				new TestingDocuments(hlDocumentLayout, testTypeId, "QC");
+				hlDocumentLayout.setEnabled(true);
 			}
 		}
 		catch (Exception e) {
@@ -864,8 +864,8 @@ public class QCTest extends BaseTransUI {
 			}
 			comment.saveqaSignOffId(qcTestHdr.getQctesttypeid());
 			comment.resetFields();
-			new TestingDocuments(hlPageLayout, testTypeId);
-			hlPageLayout.setEnabled(true);
+			new TestingDocuments(hlDocumentLayout, testTypeId, "QC");
+			hlDocumentLayout.setEnabled(true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

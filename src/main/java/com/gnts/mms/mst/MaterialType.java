@@ -94,10 +94,9 @@ public class MaterialType extends BaseUI {
 		tblMstScrSrchRslt.setPageLength(15);
 		tblMstScrSrchRslt.removeAllItems();
 		List<MaterialTypeDM> materialTypeList = new ArrayList<MaterialTypeDM>();
-		String matTypeName = tfMatTypeName.getValue().toString();
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ matTypeName + "," + cbMatTypeStatus.getValue() + "," + companyId);
-		materialTypeList = serviceMaterialType.getMaterialTypeList(null, matTypeName,
+				+ tfMatTypeName.getValue() + "," + cbMatTypeStatus.getValue() + "," + companyId);
+		materialTypeList = serviceMaterialType.getMaterialTypeList(null, tfMatTypeName.getValue(),
 				(String) cbMatTypeStatus.getValue(), "F");
 		recordCnt = materialTypeList.size();
 		beanMaterialType = new BeanItemContainer<MaterialTypeDM>(MaterialTypeDM.class);

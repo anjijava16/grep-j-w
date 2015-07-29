@@ -308,7 +308,7 @@ public class ProductBomHdr extends BaseTransUI {
 		hlSearchLayout.setSizeUndefined();
 	}
 	
-	protected void assembleUserInputLayout() {
+	private void assembleUserInputLayout() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Assembling User Input layout");
 		cbProduct.setRequired(true);
 		cbBranch.setRequired(true);
@@ -565,11 +565,8 @@ public class ProductBomHdr extends BaseTransUI {
 			serviceProductBomDtl.saveOrUpdateProductBomDtl(saveProdBOMDtl);
 		}
 		comments.savebom(productBOMObj.getBomId(), productBOMObj.getBomStatus());
-		// comments.resetfields();
-		// resetFields();
 		loadSrchRslt();
 		bomId = 0L;
-		// resetFields();
 		loadProductBomDtlRslt();
 	}
 	

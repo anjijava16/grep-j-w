@@ -23,8 +23,13 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
+import com.gnts.base.domain.mst.ProductDM;
+import com.gnts.base.service.mst.ProductService;
 import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPTextField;
+import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.stt.mfg.domain.txn.RotoCheckDtlDM;
+import com.gnts.stt.mfg.service.txn.RotoCheckDtlService;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.ThemeResource;
@@ -38,8 +43,11 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -52,6 +60,8 @@ public class ProductOverview implements ClickListener {
 	private static final long serialVersionUID = 1L;
 	private VerticalLayout hlPageRootContainter = (VerticalLayout) UI.getCurrent().getSession()
 			.getAttribute("clLayout");
+	private RotoCheckDtlService serviceRotoCheckDtl = (RotoCheckDtlService) SpringContextHelper.getBean("rotocheckdtl");
+	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	// Header container which holds, screen name, notification and page master
 	// buttons
 	private HorizontalLayout hlPageHdrContainter = (HorizontalLayout) UI.getCurrent().getSession()
@@ -61,11 +71,11 @@ public class ProductOverview implements ClickListener {
 	private GERPTextField tfSerialNumber = new GERPTextField("Serial Number");
 	private Button btnSearch = new GERPButton("Search", "searchbt", this);
 	// profile components
-	private Image profilePic;
+	private Image imgProduct;
 	private TextField tfProductCode;
 	private TextField tfProductName;
-	private TextField taProductDesc;
-	private TextField taProductShortDesc;
+	private TextArea taProductDesc;
+	private TextArea taProductShortDesc;
 	private TextField tfEnquiryRef;
 	private TextField tfQuoteRef;
 	private TextField tfPORef;
@@ -178,10 +188,10 @@ public class ProductOverview implements ClickListener {
 		root.setMargin(true);
 		VerticalLayout pic = new VerticalLayout();
 		pic.setSpacing(true);
-		profilePic = new Image(null, new ThemeResource("img/box.png"));
-		profilePic.setWidth(155.0f, Unit.PIXELS);
-		profilePic.setHeight(160.0f, Unit.PIXELS);
-		pic.addComponent(profilePic);
+		imgProduct = new Image(null, new ThemeResource("img/box.png"));
+		imgProduct.setWidth(155.0f, Unit.PIXELS);
+		imgProduct.setHeight(160.0f, Unit.PIXELS);
+		pic.addComponent(imgProduct);
 		root.addComponent(pic);
 		FormLayout details1 = new FormLayout();
 		details1.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
@@ -192,13 +202,13 @@ public class ProductOverview implements ClickListener {
 		tfProductName = new TextField("Product Name");
 		tfProductName.setWidth("150px");
 		details1.addComponent(tfProductName);
-		taProductDesc = new TextField("Description");
+		taProductDesc = new TextArea("Description");
 		taProductDesc.setWidth("150px");
 		details1.addComponent(taProductDesc);
 		tfQuoteRef = new TextField("Quote Ref.");
 		tfQuoteRef.setWidth("150px");
 		details1.addComponent(tfQuoteRef);
-		taProductShortDesc = new TextField("Short Desc.");
+		taProductShortDesc = new TextArea("Short Desc.");
 		taProductShortDesc.setWidth("150px");
 		taProductShortDesc.setNullRepresentation("");
 		details1.addComponent(taProductShortDesc);
@@ -240,7 +250,7 @@ public class ProductOverview implements ClickListener {
 		return root;
 	}
 	
-	public String viewImage(byte[] myimage, String name) {
+	private String viewProdImage(byte[] myimage, String name) {
 		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() + "/VAADIN/themes/gerp/img/"
 				+ name + ".png";
 		if (myimage != null && !"null".equals(myimage)) {
@@ -281,8 +291,46 @@ public class ProductOverview implements ClickListener {
 			viewProductDetails();
 		}
 	}
-
+	
+	private void resetFields() {
+		tfProductCode.setValue("");
+		tfProductName.setValue("");
+		taProductDesc.setValue("");
+		taProductShortDesc.setValue("");
+	}
+	
 	private void viewProductDetails() {
 		// TODO Auto-generated method stub
+		resetFields();
+		RotoCheckDtlDM rotoCheckDtlDM = null;
+		try {
+			rotoCheckDtlDM = serviceRotoCheckDtl.getRotoCheckDtlDetatils(null, null, tfSerialNumber.getValue(), null,
+					"P").get(0);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (rotoCheckDtlDM != null) {
+			ProductDM productDM = null;
+			try {
+				productDM = serviceProduct.getProductList(rotoCheckDtlDM.getProductId(), null, null, null, null, null,
+						null, "F").get(0);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (productDM != null) {
+				if (productDM.getProdimg() != null) {
+					imgProduct.setSource(new ThemeResource(viewProdImage(productDM.getProdimg(),
+							productDM.getProductcode())));
+				}
+				tfProductCode.setValue(productDM.getProductcode());
+				tfProductName.setValue(productDM.getProdname());
+				taProductDesc.setValue(productDM.getProddesc());
+				taProductShortDesc.setValue(productDM.getShortdesc());
+			}
+		} else {
+			Notification.show("No data found", Type.ERROR_MESSAGE);
+		}
 	}
 }

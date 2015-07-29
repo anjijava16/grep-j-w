@@ -38,7 +38,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.gcat.domain.mst.CompanySettingsDM;
 import com.gnts.gcat.service.mst.CompanySettingsService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
@@ -49,7 +48,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class CompanySettings extends BaseUI {
-	CompanySettingsService serviceCompanySettings = (CompanySettingsService) SpringContextHelper
+	private CompanySettingsService serviceCompanySettings = (CompanySettingsService) SpringContextHelper
 			.getBean("companySettings");
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3;
@@ -131,7 +130,7 @@ public class CompanySettings extends BaseUI {
 		hlUserInputLayout.setSpacing(true);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<CompanySettingsDM> companyStngList = new ArrayList<CompanySettingsDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search CompanySettings are "
@@ -154,13 +153,11 @@ public class CompanySettings extends BaseUI {
 	
 	private void editCompanyStng() {
 		hlUserInputLayout.setVisible(true);
-		Item rowSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		// compSettingId = rowSelected.getItemProperty("rowSelected").getValue().toString();
-		if (rowSelected != null) {
-			CompanySettingsDM editCompStnglist = beancompanyStngDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfsettingcode.setValue(editCompStnglist.getSettingCode());
-			tfsettingValue.setValue(editCompStnglist.getSettingValue());
-			cbcompanyStngstatus.setValue(rowSelected.getItemProperty("settingStatus").getValue());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			CompanySettingsDM companySettingsDM = beancompanyStngDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			tfsettingcode.setValue(companySettingsDM.getSettingCode());
+			tfsettingValue.setValue(companySettingsDM.getSettingValue());
+			cbcompanyStngstatus.setValue(companySettingsDM.getSettingStatus());
 		}
 	}
 	

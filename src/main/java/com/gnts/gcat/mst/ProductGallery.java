@@ -17,8 +17,6 @@
  */
 package com.gnts.gcat.mst;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +27,6 @@ import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.constants.GERPColorChangeColGenerator;
-import com.gnts.erputil.constants.GERPConstants;
 import com.gnts.erputil.constants.GERPGalleryChngColGenerator;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.UploadUI;
@@ -38,8 +35,6 @@ import com.gnts.gcat.domain.mst.ProductColorDM;
 import com.gnts.gcat.domain.mst.ProductGalleryDM;
 import com.gnts.gcat.service.mst.ProductColorService;
 import com.gnts.gcat.service.mst.ProductGalleryService;
-import com.gnts.stt.mfg.domain.txn.ExtrudersMtrlDM;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -69,14 +64,13 @@ public class ProductGallery implements ClickListener {
 	// form layout for input controls
 	private Button btnsaveColor, btndeleteColor;
 	private Button btnsaveGallery, btndeleteGallery;
-	public Button btnSave = new GERPButton("Save", "savebt", this);
-	public Button btnCancel = new GERPButton("Cancel", "cancelbt", this);
+	private Button btnSave = new GERPButton("Save", "savebt", this);
 	private ColorPickerArea pickerarea;
 	private HorizontalLayout hlcolor1 = new HorizontalLayout();
 	private HorizontalLayout hlcolor2 = new HorizontalLayout();
 	private HorizontalLayout hlimage = new HorizontalLayout();
-	List<ProductGalleryDM> galleryList = new ArrayList<ProductGalleryDM>();
-	List<ProductColorDM> colorList = new ArrayList<ProductColorDM>();
+	private List<ProductGalleryDM> galleryList = new ArrayList<ProductGalleryDM>();
+	private List<ProductColorDM> colorList = new ArrayList<ProductColorDM>();
 	private VerticalLayout vlSrchRsltContainer = new VerticalLayout();
 	private Table tblgallery = new Table();
 	private Table tblcolor = new Table();
@@ -92,7 +86,6 @@ public class ProductGallery implements ClickListener {
 	private BeanItemContainer<ProductGalleryDM> beanGallery = null;
 	// for initialize logger
 	private Logger logger = Logger.getLogger(ProductGallery.class);
-	private int records;
 	
 	// private AbstractComponent btnSave;
 	// Constructor
@@ -116,6 +109,11 @@ public class ProductGallery implements ClickListener {
 		btndeleteGallery.setStyleName("cancelbt");
 		tblgallery.setImmediate(true);
 		tblgallery.addItemClickListener(new ItemClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			public void itemClick(ItemClickEvent event) {
 				if (tblgallery.isSelected(event.getItemId())) {
 					btndeleteGallery.setEnabled(false);
@@ -134,6 +132,11 @@ public class ProductGallery implements ClickListener {
 		btndeleteColor.setStyleName("cancelbt");
 		tblcolor.setImmediate(true);
 		tblcolor.addItemClickListener(new ItemClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			public void itemClick(ItemClickEvent event) {
 				if (tblcolor.isSelected(event.getItemId())) {
 					btndeleteColor.setEnabled(false);
@@ -218,6 +221,11 @@ public class ProductGallery implements ClickListener {
 		hlcolor1.addComponent(pickerarea);
 		hlcolor1.setWidth("300");
 		pickerarea.addColorChangeListener(new ColorChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void colorChanged(ColorChangeEvent event) {
 				// Do something with the color
@@ -235,10 +243,8 @@ public class ProductGallery implements ClickListener {
 		vlSrchRsltContainer.addComponent(tblcolor);
 		assembleUserInputLayout(clrGlry);
 		tblcolor.removeAllItems();
-		UploadUI test = new UploadUI(hlimage);
 		new UploadUI(hlimage);
 		loadSrchClrRslt(false, null);
-		// resetFields();
 	}
 	
 	protected void assembleUserInputLayout(HorizontalLayout clrGlry) {
@@ -327,14 +333,12 @@ public class ProductGallery implements ClickListener {
 		if (fromdb) {
 			colorList = servicebeanProdColor.getProdColorList(prodid, null, null);
 		}
-		records = colorList.size();
 		beanColor = new BeanItemContainer<ProductColorDM>(ProductColorDM.class);
 		beanColor.addAll(colorList);
 		tblcolor.setSelectable(true);
 		tblcolor.setContainerDataSource(beanColor);
 		tblcolor.setVisibleColumns(new Object[] { "colorcode" });
 		tblcolor.setColumnHeaders(new String[] { "Color" });
-		// tblcolor.setPageLength(15);
 	}
 	
 	// Product Gallery Table
@@ -342,14 +346,12 @@ public class ProductGallery implements ClickListener {
 		if (fromdb) {
 			galleryList = servicebeanProdGallery.getProdGalleryList(prodid, null, null);
 		}
-		records = galleryList.size();
 		beanGallery = new BeanItemContainer<ProductGalleryDM>(ProductGalleryDM.class);
 		beanGallery.addAll(galleryList);
 		tblgallery.setSelectable(true);
 		tblgallery.setContainerDataSource(beanGallery);
 		tblgallery.setVisibleColumns(new Object[] { "prodimage" });
 		tblgallery.setColumnHeaders(new String[] { "Product image" });
-		// tblgallery.setPageLength(8);
 	}
 	
 	public void saveDetails(Long prodid) {
@@ -358,17 +360,13 @@ public class ProductGallery implements ClickListener {
 		Collection<ProductColorDM> itemIds = (Collection<ProductColorDM>) tblcolor.getVisibleItemIds();
 		for (ProductColorDM savecolor : (Collection<ProductColorDM>) itemIds) {
 			savecolor.setProdid(prodid);
-			System.out.println("save color===>");
 			servicebeanProdColor.saveorUpdateProdColorDetails(savecolor);
 		}
-		
-		
 		servicebeanProdGallery.deleteProdGalleryList(prodid);
 		@SuppressWarnings("unchecked")
 		Collection<ProductGalleryDM> itemId = (Collection<ProductGalleryDM>) tblgallery.getVisibleItemIds();
 		for (ProductGalleryDM savegallery : (Collection<ProductGalleryDM>) itemId) {
 			savegallery.setProdid(prodid);
-			System.out.println("save gallery===>");
 			servicebeanProdGallery.saveGallerydetails(savegallery);
 		}
 	}
@@ -377,7 +375,6 @@ public class ProductGallery implements ClickListener {
 		String[] split = colorcode.split(",");
 		for (String obj : split) {
 			ProductColorDM save = new ProductColorDM();
-			// save.setProdid(productID);
 			ProductDM productobj = new ProductDM();
 			productobj.setProdid(productID);
 			save.setProdid(prodid);
@@ -387,7 +384,6 @@ public class ProductGallery implements ClickListener {
 			save.setColorcode(obj);
 			colorList.add(save);
 			loadSrchClrRslt(false, null);
-			// servicebeanProdColor.saveorUpdateProdColorDetails(save);
 		}
 	}
 	
@@ -399,7 +395,6 @@ public class ProductGallery implements ClickListener {
 			ProductGalleryDM save = new ProductGalleryDM();
 			save.setProdid(prodid);
 			save.setGallerystatus("Active");
-			// save.setGallerystatus((String) cbstatus.getValue());
 			save.setLastupdatedby(username);
 			save.setLastupdateddt(DateUtils.getcurrentdate());
 			if ((Boolean) UI.getCurrent().getSession().getAttribute("isFileUploaded")) {
@@ -412,13 +407,6 @@ public class ProductGallery implements ClickListener {
 			} else {
 				save.setProdimage(null);
 			}
-			/*File file = new File(GERPConstants.IMAGE_PATH);
-			FileInputStream fin = new FileInputStream(file);
-			byte fileContent[] = new byte[(int) file.length()];
-			fin.read(fileContent);
-			fin.close();
-			save.setProdimage(fileContent);*/
-			// servicebeanProdGallery.saveGallerydetails(save);
 			galleryList.add(save);
 			loadSrchGlryRslt(false, null);
 			btnSave.setComponentError(null);
@@ -443,25 +431,19 @@ public class ProductGallery implements ClickListener {
 	
 	// Delete Product Color
 	public void deleteColor() {
-		Item select = tblcolor.getItem(tblcolor.getValue());
-		if (select != null) {
+		if (tblcolor.getValue() != null) {
 			ProductColorDM deleteColorlist = beanColor.getItem(tblcolor.getValue()).getBean();
 			colorList.remove(deleteColorlist);
 			loadSrchClrRslt(false, null);
-			// Long colorId = (Long) select.getItemProperty("colorid").getValue();
-			// servicebeanProdColor.deleteProdColor(colorId);
 		}
 	}
 	
 	// Delete Product Gallery
 	private void deleteGallery() {
-		Item select = tblgallery.getItem(tblgallery.getValue());
-		if (select != null) {
+		if (tblgallery.getValue() != null) {
 			ProductGalleryDM deleteGallerylist = beanGallery.getItem(tblgallery.getValue()).getBean();
 			galleryList.remove(deleteGallerylist);
 			loadSrchGlryRslt(false, null);
-			// Long gallId = (Long) select.getItemProperty("gallid").getValue();
-			// servicebeanProdGallery.deleteProdGallery(gallId);
 		}
 	}
 	

@@ -36,10 +36,11 @@ public class TestingDocuments implements ClickListener {
 	private GERPTable tblDocuments = new GERPTable();
 	private VerticalLayout vlDocument = new VerticalLayout();
 	private BeanItemContainer<DocumentsDM> beanDocuments = null;
-	private String testTypeId;
+	private String testTypeId, docType;
 	
-	public TestingDocuments(VerticalLayout hlPageLayout, String testTypeId) {
+	public TestingDocuments(VerticalLayout hlPageLayout, String testTypeId, String docType) {
 		this.testTypeId = testTypeId;
+		this.docType = docType;
 		hlPageLayout.setWidth("1150");
 		hlPageLayout.removeAllComponents();
 		if (UI.getCurrent().getSession().getAttribute("loginCompanyId") != null) {
@@ -94,8 +95,13 @@ public class TestingDocuments implements ClickListener {
 	private void loadSearchResult(String testTypeId) {
 		List<DocumentsDM> documentList = new ArrayList<DocumentsDM>();
 		try {
-			documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null, null,
-					Long.valueOf(testTypeId), null);
+			if (docType.equalsIgnoreCase("QC")) {
+				documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null,
+						null, Long.valueOf(testTypeId), null);
+			} else if (docType.equalsIgnoreCase("QA")) {
+				documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null,
+						null, null, Long.valueOf(testTypeId));
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -124,7 +130,11 @@ public class TestingDocuments implements ClickListener {
 			documentsDM.setDocumentName(tfDocumentName.getValue());
 			documentsDM.setComments(taComments.getValue());
 			documentsDM.setFileName(filename);
-			documentsDM.setQcTestId(Long.valueOf(testTypeId));
+			if (docType.equalsIgnoreCase("QC")) {
+				documentsDM.setQcTestId(Long.valueOf(testTypeId));
+			} else if (docType.equalsIgnoreCase("QA")) {
+				documentsDM.setQaTestId(Long.valueOf(testTypeId));
+			}
 			documentsDM.setDocumentType("pdf");
 			documentsDM.setLastUpdatedBy(username);
 			documentsDM.setLastUpdatedDt(DateUtils.getcurrentdate());

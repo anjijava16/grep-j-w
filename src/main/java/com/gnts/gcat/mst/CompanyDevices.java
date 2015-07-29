@@ -31,7 +31,6 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.gcat.domain.mst.CompanyDevicesDM;
 import com.gnts.gcat.service.mst.CompanyDevicesService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
@@ -52,7 +51,7 @@ public class CompanyDevices extends BaseUI {
 	private HorizontalLayout hlSearchLayout;
 	// User Input Components
 	private TextField tfSlNo, tfDMake, tfDModel, tfDeviceCode, tfDEviceMake;
-	private TextField tfSlNoSear, tfDMakeSear, tfDModelSearch;
+	private TextField tfSlNoSear, tfDModelSearch;
 	private ComboBox cbstatus, cbstatusSearch;
 	private PopupDateField dfREnewedDate, dfVaildDate;
 	// Bean Container
@@ -61,7 +60,6 @@ public class CompanyDevices extends BaseUI {
 	private Long companyid;
 	private String username;
 	private int recordCnt = 0;
-	private Long userId;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(CompanyDevices.class);
 	private static final long serialVersionUID = 1L;
@@ -71,7 +69,6 @@ public class CompanyDevices extends BaseUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		userId = Long.valueOf(UI.getCurrent().getSession().getAttribute("userId").toString());
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside EmailLogger() constructor");
 		// Loading the UI
@@ -86,33 +83,19 @@ public class CompanyDevices extends BaseUI {
 		btnAuditRecords.setVisible(false);
 		btnEdit.setCaption("View");
 		btnEdit.setStyleName("view");
-		// Sl.NO text feild
 		tfSlNoSear = new TextField("Sl.No");
-		// DMake text box
-		tfDMakeSear = new TextField("Device Make");
-		// TExtFeild device Model
 		tfDModelSearch = new TextField("Device Model");
-		// Statuscombo box for search
 		cbstatusSearch = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		// TextField Device Code
 		tfDeviceCode = new TextField("Device Code");
-		// textfield Serial no
 		tfSlNo = new TextField("Sl.No");
-		// Textfield Device Make
 		tfDMake = new TextField("Device Make");
-		// Textfield Device Make
 		tfDEviceMake = new TextField("Device Make");
-		// Textfield Device Model
 		tfDModel = new TextField("Device Model");
-		// Statuscombo box for search
 		cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		// Renewed date
 		dfREnewedDate = new GERPPopupDateField("Renewed Date");
 		dfREnewedDate.setInputPrompt("Select Date");
-		// VAild date
 		dfVaildDate = new GERPPopupDateField("Vaild Date");
 		dfVaildDate.setInputPrompt("Select Date");
-		// build search layout
 		hlSearchLayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
@@ -168,11 +151,9 @@ public class CompanyDevices extends BaseUI {
 	}
 	
 	private void viewLogger() {
-		Item rowSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (rowSelected != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			CompanyDevicesDM enqdtl = beanCompanyDeviceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			setReadOnlyFalseFields();
-			// cbProduct.setReadOnly(false);
 			tfDeviceCode.setValue(enqdtl.getDeviceCode());
 			tfSlNo.setValue(enqdtl.getDeviceSlno());
 			tfDMake.setValue(enqdtl.getDeviceMake());
@@ -184,7 +165,7 @@ public class CompanyDevices extends BaseUI {
 		}
 	}
 	
-	public void setReadOnlyFalseFields() {
+	private void setReadOnlyFalseFields() {
 		tfDeviceCode.setReadOnly(false);
 		tfSlNo.setReadOnly(false);
 		tfDMake.setReadOnly(false);
@@ -194,7 +175,7 @@ public class CompanyDevices extends BaseUI {
 		cbstatus.setReadOnly(false);
 	}
 	
-	public void setReadOnlyTrueFields() {
+	private void setReadOnlyTrueFields() {
 		tfDeviceCode.setReadOnly(true);
 		tfSlNo.setReadOnly(true);
 		tfDMake.setReadOnly(true);
@@ -205,18 +186,17 @@ public class CompanyDevices extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search Company Devices
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.removeAllItems();
 		List<CompanyDevicesDM> companyDeviceList = new ArrayList<CompanyDevicesDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search CompanyDevice are "
 				+ companyid + ", " + tfSlNoSear.getValue() + ", " + tfDEviceMake.getValue());
-		
-		String devmk=tfDEviceMake.getValue().toString();
-		String devmdl=tfDModelSearch.getValue().toString();
-		companyDeviceList = serviceCompanyDevice.getCompanyDevicesList(companyid, tfSlNoSear.getValue(),
-				devmk, devmdl, null,(String) cbstatusSearch.getValue(),"F");
+		String devmk = tfDEviceMake.getValue().toString();
+		String devmdl = tfDModelSearch.getValue().toString();
+		companyDeviceList = serviceCompanyDevice.getCompanyDevicesList(companyid, tfSlNoSear.getValue(), devmk, devmdl,
+				null, (String) cbstatusSearch.getValue(), "F");
 		recordCnt = companyDeviceList.size();
 		beanCompanyDeviceDM = new BeanItemContainer<CompanyDevicesDM>(CompanyDevicesDM.class);
 		beanCompanyDeviceDM.addAll(companyDeviceList);

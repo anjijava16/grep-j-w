@@ -365,14 +365,9 @@ public class Material extends BaseUI {
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.removeAllItems();
 		List<MaterialDM> materialList = new ArrayList<MaterialDM>();
-		String materialName = tfMaterialName.getValue().toString();
-		Long branchId = null;
-		if (cbBranch.getValue() != null) {
-			branchId = ((Long) cbBranch.getValue());
-		}
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ "materialCode" + "," + materialName + "," + branchId + "," + cbMaterialStatus.getValue() + ","
-				+ companyId);
+				+ "materialCode" + "," + tfMaterialName.getValue() + "," + cbBranch.getValue() + ","
+				+ cbMaterialStatus.getValue() + "," + companyId);
 		materialList = serviceMaterial.getMaterialList(null, companyId, (Long) cbBranch.getValue(), null, null, null,
 				null, tfMaterialName.getValue(), (String) cbMaterialStatus.getValue(), "F");
 		recordCnt = materialList.size();
@@ -530,7 +525,7 @@ public class Material extends BaseUI {
 		hlSearchLayout.setSizeUndefined();
 	}
 	
-	protected void assembleUserInputLayout() {
+	private void assembleUserInputLayout() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Assembling User Input layout");
 		// Remove all components in User Input Layout
 		hlUserInputLayout.removeAllComponents();
@@ -1112,7 +1107,7 @@ public class Material extends BaseUI {
 	/*
 	 * matOwnerResetFields()-->this function is used for reset material owner fields
 	 */
-	protected void matOwnerResetFields() {
+	private void matOwnerResetFields() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Resetting the Material Owner UI controls");
 		cbMatOwnerEmployee.setValue(null);
@@ -1126,7 +1121,7 @@ public class Material extends BaseUI {
 	/*
 	 * matConsResetFields()-->this function is used for reset material consumer fields
 	 */
-	protected void matConsResetFields() {
+	private void matConsResetFields() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Resetting the Material Consumer UI controls");
 		cbMatConsBranch.setValue(null);
@@ -1139,7 +1134,7 @@ public class Material extends BaseUI {
 	/*
 	 * matSpecResetFields()-->this function is used for reset material specification fields
 	 */
-	protected void matSpecResetFields() {
+	private void matSpecResetFields() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Resetting the Material Specification UI controls");
 		tfMatSpecName.setValue("");
@@ -1152,7 +1147,7 @@ public class Material extends BaseUI {
 	/*
 	 * saveMatOwnerDetails()-->this function is used for save the material owner's details for temporary
 	 */
-	protected void saveMatOwnerDetails() {
+	private void saveMatOwnerDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Saving Material Owner Data... ");
 		validationmatowner();
@@ -1180,7 +1175,7 @@ public class Material extends BaseUI {
 	/*
 	 * saveMatSpecDetails()-->this function is used for save the material specification's details for temporary
 	 */
-	protected void saveMatSpecDetails() {
+	private void saveMatSpecDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Saving Material Specification Data... ");
 		validationmatspecification();
@@ -1204,7 +1199,7 @@ public class Material extends BaseUI {
 	/*
 	 * saveMatConsDetails()-->this function is used for save the material consumers's details for temporary
 	 */
-	protected void saveMatConsDetails() {
+	private void saveMatConsDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Saving Material Consumer Data... ");
 		validationmatconsumer();

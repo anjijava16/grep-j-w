@@ -148,6 +148,8 @@ public class QATest extends BaseTransUI {
 	private Comments comment;
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	private Long commentby;
+	// for test documents
+	private VerticalLayout hlDocumentLayout = new VerticalLayout();
 	
 	public QATest() {
 		// Get the logged in user name and company id from the session
@@ -313,6 +315,7 @@ public class QATest extends BaseTransUI {
 		resetQATstCndnRslt();
 		assembleSearchLayout();
 		loadSrchRslt();
+		hlDocumentLayout.setEnabled(false);
 	}
 	
 	private void loadSrchRslt() {
@@ -494,6 +497,7 @@ public class QATest extends BaseTransUI {
 		tabSheet.setHeight("320");
 		tabSheet.addTab(vlTstDtl, "Test Definition", null);
 		tabSheet.addTab(vlTstCndn, "Test Condition Result", null);
+		tabSheet.addTab(hlDocumentLayout, "Testing Documents");
 		tabSheet.addTab(vlTableForm, "Comments", null);
 		VerticalLayout vlAllComponent = new VerticalLayout();
 		vlAllComponent.addComponent(hlTstHdr);
@@ -607,6 +611,7 @@ public class QATest extends BaseTransUI {
 		loadSrchQACndnRsltList();
 		loadSrchQADtlList();
 		comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
+		hlDocumentLayout.setEnabled(false);
 	}
 	
 	private void loadProductDrgCodeList() {
@@ -724,6 +729,8 @@ public class QATest extends BaseTransUI {
 			listQATestCndtnReslt = serviceQATestCndRslt.getQATestCndtnResltDetails(null, qaTestHdrId, "Active");
 			comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
 			comment.loadsrch(true, null, companyid, null, null, null, qaTestHdrId);
+			new TestingDocuments(hlDocumentLayout, qaTestHdrId.toString(), "QA");
+			hlDocumentLayout.setEnabled(true);
 		}
 	}
 	
@@ -866,6 +873,7 @@ public class QATest extends BaseTransUI {
 			qaTestHdrDM.setLastupdateddate(DateUtils.getcurrentdate());
 			qaTestHdrDM.setLastupdatedby(userName);
 			serviceQATstHdr.saveQaTestHdr(qaTestHdrDM);
+			qaTestHdrId = qaTestHdrDM.getQatestHdrid();
 			@SuppressWarnings("unchecked")
 			Collection<QATestDtlDM> itemIds = (Collection<QATestDtlDM>) tblQATstDtl.getVisibleItemIds();
 			for (QATestDtlDM save : (Collection<QATestDtlDM>) itemIds) {
@@ -899,6 +907,8 @@ public class QATest extends BaseTransUI {
 			comment.resetFields();
 			comment.commentList = new ArrayList<CommentDM>();
 			comment.resettbl();
+			new TestingDocuments(hlDocumentLayout, qaTestHdrId.toString(), "QA");
+			hlDocumentLayout.setEnabled(true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

@@ -43,9 +43,11 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -65,13 +67,14 @@ public class RotoCheck extends BaseTransUI {
 	private BeanItemContainer<RotoCheckHdrDM> beanRotoCheckHdrDM = null;
 	private BeanItemContainer<RotoDtlDM> beanrotodtldm = null;
 	private Button btnAddDtls = new GERPButton("Add", "Addbt", this);
-	private FormLayout flHdrCol1, flHdrCol2;
+	private Button btndelete = new GERPButton("Delete", "delete", this);
 	private FormLayout fldtl1, fldtl2, fldtl3, fldtl4, fldtl5;
+	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4;
 	private VerticalLayout vlDtl, vlHdrshiftandDtlarm, vldtl;
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private HorizontalLayout hlHdr = new HorizontalLayout();
 	private HorizontalLayout hlHdrAndShift;
-	private Table tblRotoDetails;
+	private Table tblRotoDetails, tblRotoShift, tblRotoArm;
 	private Table tblRotoCheckDtl = new GERPTable();
 	private TabSheet dtlTab;
 	// Initialize the logger
@@ -101,6 +104,8 @@ public class RotoCheck extends BaseTransUI {
 	private HorizontalLayout hldtllayout = new HorizontalLayout();
 	private HorizontalLayout hlspecadd = new HorizontalLayout();
 	private VerticalLayout vlTableForm = new VerticalLayout();
+	private HorizontalLayout hlSearchLayout, hlDtlandArm, hlArm, hlShift, hlHdrslap;
+	private VerticalLayout vlShift, vlArm;
 	// local variables declaration
 	private String username;
 	private Long companyid, branchID, moduleId;
@@ -186,8 +191,8 @@ public class RotoCheck extends BaseTransUI {
 		cbStatus.setWidth("150");
 		buildviewDtl();
 		hlsearchlayout = new GERPAddEditHLayout();
-		assembleinputLayout();
 		assembleSearchLayout();
+		assembleinputLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
 		resetFields();
 		loadPlanDtlRslt();
@@ -251,25 +256,36 @@ public class RotoCheck extends BaseTransUI {
 	}
 	
 	private void assembleSearchLayout() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
-		hlsearchlayout.removeAllComponents();
-		// Remove all components in search layout
-		flcol1 = new FormLayout();
-		flcol2 = new FormLayout();
-		flcol1.addComponent(cbBranch);
-		flcol2.addComponent(cbStatus);
-		hlsearchlayout.addComponent(flcol1);
-		hlsearchlayout.addComponent(flcol2);
-		hlsearchlayout.setMargin(true);
-		hlsearchlayout.setSizeUndefined();
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Roto planning search layout");
+		tfRotoRef.setReadOnly(false);
+		hlSearchLayout.removeAllComponents();
+		hlSearchLayout.setMargin(true);
+		flHdrCol1 = new FormLayout();
+		flHdrCol2 = new FormLayout();
+		flHdrCol3 = new FormLayout();
+		flHdrCol4 = new FormLayout();
+		Label lbl = new Label();
+		flHdrCol4.addComponent(tfRotoRef);
+		flHdrCol1.addComponent(dfRotoDt);
+		flHdrCol2.addComponent(lbl);
+		flHdrCol3.addComponent(cbStatus);
+		hlSearchLayout.addComponent(flHdrCol4);
+		hlSearchLayout.addComponent(flHdrCol1);
+		hlSearchLayout.addComponent(flHdrCol2);
+		hlSearchLayout.addComponent(flHdrCol3);
+		hlSearchLayout.setMargin(true);
+		hlSearchLayout.setSizeUndefined();
 	}
 	
 	private void assembleinputLayout() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Form planning search layout");
 		// Remove all components in search layout
+		/*
+		 * vlArm.removeAllComponents(); vlDtl.removeAllComponents(); hlDtlandArm.removeAllComponents();
+		 */
+		hlSearchLayout.removeAllComponents();
 		flHdrCol1 = new FormLayout();
 		flHdrCol2 = new FormLayout();
-		// RotoCheck Header.
 		flHdrCol1.addComponent(cbBranch);
 		flHdrCol1.addComponent(cbPlanRef);
 		flHdrCol1.addComponent(tfRotoRef);
@@ -283,26 +299,17 @@ public class RotoCheck extends BaseTransUI {
 		hlHdr.addComponent(flHdrCol2);
 		hlHdr.setSpacing(true);
 		hlHdr.setMargin(true);
-		vlDtl = new VerticalLayout();
-		vlDtl.addComponent(tblRotoDetails);
-		hlHdrAndShift = new HorizontalLayout();
-		hlHdrAndShift.addComponent(hlHdr);
-		hlHdrAndShift.addComponent(GERPPanelGenerator.createPanel(vlDtl));
-		vlHdrshiftandDtlarm = new VerticalLayout();
-		vlHdrshiftandDtlarm.addComponent(GERPPanelGenerator.createPanel(hlHdrAndShift));
-		vlHdrshiftandDtlarm.setSpacing(true);
-		vlHdrshiftandDtlarm.setWidth("100%");
-		hlUserInputLayout.setSizeUndefined();
-		hlUserInputLayout.addComponent(vlHdrshiftandDtlarm);
-		hlUserInputLayout.setWidth("100%");
-		hlUserInputLayout.setMargin(false);
-		hlUserInputLayout.setSpacing(true);
-		// RotoCheck Details Layout
+		// Adding Arm Components
 		fldtl1 = new FormLayout();
 		fldtl2 = new FormLayout();
 		fldtl3 = new FormLayout();
 		fldtl4 = new FormLayout();
 		fldtl5 = new FormLayout();
+		HorizontalLayout hlBtn = new HorizontalLayout();
+		hlBtn.addComponent(btnAddDtls);
+		hlBtn.addComponent(btndelete);
+		fldtl1.addComponent(cbArmNo);
+		fldtl1.addComponent(tmOvenOn);
 		fldtl1.addComponent(cbArmNo);
 		fldtl1.addComponent(tmOvenOn);
 		fldtl1.addComponent(tmOvenOff);
@@ -327,27 +334,45 @@ public class RotoCheck extends BaseTransUI {
 		fldtl5.addComponent(tfKgCm);
 		fldtl5.addComponent(tfEmpNo);
 		fldtl5.addComponent(tfRemarksDtl);
-		hldtllayout.setMargin(true);
-		hldtllayout.setSpacing(true);
-		hldtllayout.addComponent(fldtl1);
-		hldtllayout.addComponent(fldtl2);
-		hldtllayout.addComponent(fldtl3);
-		hldtllayout.addComponent(fldtl4);
-		hldtllayout.addComponent(fldtl5);
-		vldtl.addComponent(GERPPanelGenerator.createPanel(hldtllayout));
-		vldtl.addComponent(tblRotoCheckDtl);
-		tblRotoCheckDtl.setWidth("1188px");
-		tblRotoCheckDtl.setPageLength(6);
-		vldtl.setWidth("100%");
-		tblMstScrSrchRslt.setVisible(false);
-		hlspecadd = new HorizontalLayout();
-		hlspecadd.addComponent(vldtl);
-		hlspecadd.addComponent(GERPPanelGenerator.createPanel(vldtl));
-		dtlTab = new TabSheet();
-		dtlTab.addTab(hlspecadd, "Roto Details");
-		dtlTab.addTab(vlTableForm, "Comments");
-		tblMstScrSrchRslt.setVisible(false);
-		vlSrchRsltContainer.addComponent(GERPPanelGenerator.createPanel(dtlTab));
+		fldtl5.addComponent(hlBtn);
+		hlArm = new HorizontalLayout();
+		hlArm.setSpacing(true);
+		hlArm.addComponent(fldtl1);
+		hlArm.addComponent(fldtl2);
+		hlArm.addComponent(fldtl3);
+		hlArm.setSpacing(true);
+		hlArm.setMargin(true);
+		hlHdrslap = new HorizontalLayout();
+		hlHdrslap.addComponent(fldtl1);
+		hlHdrslap.addComponent(fldtl2);
+		hlHdrslap.addComponent(fldtl3);
+		hlHdrslap.addComponent(fldtl4);
+		hlHdrslap.addComponent(fldtl5);
+		hlHdrslap.setSpacing(true);
+		hlHdrslap.setMargin(true);
+		vlArm = new VerticalLayout();
+		vlArm.addComponent(hlArm);
+		vlArm.addComponent(tblRotoArm);
+		vlDtl = new VerticalLayout();
+		vlDtl.addComponent(tblRotoDetails);
+		hlDtlandArm = new HorizontalLayout();
+		hlDtlandArm.addComponent(GERPPanelGenerator.createPanel(vlArm));
+		hlDtlandArm.addComponent(GERPPanelGenerator.createPanel(vlShift));
+		hlDtlandArm.setSpacing(true);
+		hlDtlandArm.setHeight("100%");
+		hlHdrAndShift = new HorizontalLayout();
+		hlHdrAndShift.addComponent(hlHdr);
+		hlHdrAndShift.addComponent(GERPPanelGenerator.createPanel(vlDtl));
+		vlHdrshiftandDtlarm = new VerticalLayout();
+		vlHdrshiftandDtlarm.addComponent(GERPPanelGenerator.createPanel(hlHdrAndShift));
+		vlHdrshiftandDtlarm.addComponent(GERPPanelGenerator.createPanel(hlDtlandArm));
+		vlHdrshiftandDtlarm.setSpacing(true);
+		vlHdrshiftandDtlarm.setWidth("100%");
+		hlUserInputLayout.setSizeUndefined();
+		hlUserInputLayout.addComponent(vlHdrshiftandDtlarm);
+		hlUserInputLayout.setWidth("100%");
+		hlUserInputLayout.setMargin(false);
+		hlUserInputLayout.setSpacing(true);
 	}
 	
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {

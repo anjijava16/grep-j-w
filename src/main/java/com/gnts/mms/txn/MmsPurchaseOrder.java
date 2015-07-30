@@ -652,12 +652,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	private void loadUomList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"MM_UOM");
 			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
 					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp
+					.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "MM_UOM"));
 			cbMatUom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -785,14 +784,14 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			if (poHdrDM.getVendorId() != null) {
 				cbVendor.setValue(poHdrDM.getVendorId());
 			}
-			Long uom = poHdrDM.getQuoteId();
-			Collection<?> uomid = cbQuoteRef.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long quoteid = poHdrDM.getQuoteId();
+			Collection<?> quoteids = cbQuoteRef.getItemIds();
+			for (Iterator<?> iterator = quoteids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbQuoteRef.getItem(itemId);
 				// Get the actual bean and use the data
 				MmsQuoteHdrDM st = (MmsQuoteHdrDM) item.getBean();
-				if (uom != null && uom.equals(st.getQuoteId())) {
+				if (quoteid != null && quoteid.equals(st.getQuoteId())) {
 					cbQuoteRef.setValue(itemId);
 				}
 			}
@@ -834,14 +833,14 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		if (tblPODetails.getValue() != null) {
 			MmsPoDtlDM editmmspodtllist = beanpodtl.getItem(tblPODetails.getValue()).getBean();
-			Long uom = editmmspodtllist.getMaterialid();
-			Collection<?> uomid = cbMaterial.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long matid = editmmspodtllist.getMaterialid();
+			Collection<?> matids = cbMaterial.getItemIds();
+			for (Iterator<?> iterator = matids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbMaterial.getItem(itemId);
 				// Get the actual bean and use the data
 				MmsQuoteDtlDM st = (MmsQuoteDtlDM) item.getBean();
-				if (uom != null && uom.equals(st.getMaterialid())) {
+				if (matid != null && matid.equals(st.getMaterialid())) {
 					cbMaterial.setValue(itemId);
 				}
 			}

@@ -126,10 +126,10 @@ public class DC extends BaseTransUI {
 			BASEConstants.INVOICE_STATUS);
 	private TextField tfDcNo, tfDCQty, rfGoodsuom;
 	private ComboBox cbVendor, cbClients, cbModeOfTrans, cbPersonName, cbEnquiry, cbGoodsType, cbMaterialId, cbProduct,
-			cbDCType, cbwindTechPers, cbwindcommPerson,cbDCTypeRNR;
+			cbDCType, cbwindTechPers, cbwindcommPerson, cbDCTypeRNR;
 	private DateField dfDcDt;
 	private TextArea taRemarks, taGoodsDesc;
-	private Table tblDtl;
+	private Table tblDCDetails;
 	private GERPTextArea taClientAddres = new GERPTextArea("Address");
 	private BeanItemContainer<DcHdrDM> beanDcHdrDM = null;
 	private BeanItemContainer<DCDtlDM> beanDcDtlDM = null;
@@ -195,15 +195,15 @@ public class DC extends BaseTransUI {
 			}
 		});
 		loadEnquiryList();
-		tblDtl = new GERPTable();
-		tblDtl.setPageLength(7);
-		tblDtl.addItemClickListener(new ItemClickListener() {
+		tblDCDetails = new GERPTable();
+		tblDCDetails.setPageLength(7);
+		tblDCDetails.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblDtl.isSelected(event.getItemId())) {
-					tblDtl.setImmediate(true);
+				if (tblDCDetails.isSelected(event.getItemId())) {
+					tblDCDetails.setImmediate(true);
 					btnAddDtl.setCaption("Add");
 					btnAddDtl.setStyleName("savebt");
 					btndelete.setEnabled(false);
@@ -227,7 +227,7 @@ public class DC extends BaseTransUI {
 		tfDcNo = new GERPTextField("DC No");
 		tfDcNo.setReadOnly(false);
 		// DC Type combobox
-		cbDCTypeRNR= new GERPComboBox("DC Type");
+		cbDCTypeRNR = new GERPComboBox("DC Type");
 		cbDCTypeRNR.addItem("Returnable");
 		cbDCTypeRNR.addItem("Non Returnable");
 		cbDCType = new GERPComboBox("Department");
@@ -510,7 +510,7 @@ public class DC extends BaseTransUI {
 		hlDCslap.setMargin(true);
 		vlDC = new VerticalLayout();
 		vlDC.addComponent(hlDCslap);
-		vlDC.addComponent(tblDtl);
+		vlDC.addComponent(tblDCDetails);
 		vlDC.setSpacing(true);
 		TabSheet dtlTab = new TabSheet();
 		dtlTab.addTab(vlDC, "DC Detail");
@@ -559,12 +559,12 @@ public class DC extends BaseTransUI {
 			beanDcDtlDM.addAll(DCDtlList);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the DCslap. result set");
-			tblDtl.setContainerDataSource(beanDcDtlDM);
-			tblDtl.setVisibleColumns(new Object[] { "goodsType", "goodsDesc", "dcQty", "status", "lastUpdateddt",
+			tblDCDetails.setContainerDataSource(beanDcDtlDM);
+			tblDCDetails.setVisibleColumns(new Object[] { "goodsType", "goodsDesc", "dcQty", "status", "lastUpdateddt",
 					"lastUpdatedby" });
-			tblDtl.setColumnHeaders(new String[] { "Goods Type", "Description", "DC Qty", "Status", "Updated Date",
-					"Updated By" });
-			tblDtl.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCntDtl);
+			tblDCDetails.setColumnHeaders(new String[] { "Goods Type", "Description", "DC Qty", "Status",
+					"Updated Date", "Updated By" });
+			tblDCDetails.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCntDtl);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -604,7 +604,7 @@ public class DC extends BaseTransUI {
 		cbEnquiry.setValue(null);
 		cbEnquiry.setRequired(true);
 		DCDtlList = new ArrayList<DCDtlDM>();
-		tblDtl.removeAllItems();
+		tblDCDetails.removeAllItems();
 	}
 	
 	// Method to edit the values from table into fields to update process
@@ -647,8 +647,8 @@ public class DC extends BaseTransUI {
 	
 	private void editDtls() {
 		hlUserInputLayout.setVisible(true);
-		if (tblDtl.getValue() != null) {
-			DCDtlDM dcDtlDM = beanDcDtlDM.getItem(tblDtl.getValue()).getBean();
+		if (tblDCDetails.getValue() != null) {
+			DCDtlDM dcDtlDM = beanDcDtlDM.getItem(tblDCDetails.getValue()).getBean();
 			cbGoodsType.setValue(dcDtlDM.getGoodsType());
 			Long matId = dcDtlDM.getMaterialId();
 			Collection<?> empColId = cbMaterialId.getItemIds();
@@ -735,7 +735,7 @@ public class DC extends BaseTransUI {
 		loadDCDtl();
 		assembleInputUserLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		tblDtl.setVisible(true);
+		tblDCDetails.setVisible(true);
 		try {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MM_DCNO").get(0);
 			tfDcNo.setReadOnly(false);
@@ -748,12 +748,12 @@ public class DC extends BaseTransUI {
 		}
 		catch (Exception e) {
 		}
-		tblDtl.setVisible(true);
+		tblDCDetails.setVisible(true);
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		btnAddDtl.setCaption("Add");
-		tblDtl.setVisible(true);
+		tblDCDetails.setVisible(true);
 		comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null);
 	}
 	
@@ -789,7 +789,7 @@ public class DC extends BaseTransUI {
 		cbModeOfTrans.setRequired(false);
 		cbPersonName.setRequired(false);
 		hlCmdBtnLayout.setVisible(true);
-		tblDtl.removeAllItems();
+		tblDCDetails.removeAllItems();
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
 		resetDCDetails();
@@ -936,7 +936,7 @@ public class DC extends BaseTransUI {
 			cbModeOfTrans.setComponentError(new UserError(GERPErrorCodes.NULL_MODE_OF_TRANSACTION));
 			errorFlag = true;
 		}
-		if (tblDtl.size() == 0) {
+		if (tblDCDetails.size() == 0) {
 			cbGoodsType.setComponentError(new UserError(GERPErrorCodes.NULL_GOODS_TYPE));
 			tfDCQty.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 			errorFlag = true;
@@ -988,18 +988,20 @@ public class DC extends BaseTransUI {
 			serviceDCHdr.saveOrUpdate(dcHdrDM);
 			dcHdrId = dcHdrDM.getDcId();
 			@SuppressWarnings("unchecked")
-			Collection<DCDtlDM> colPlanDtls = ((Collection<DCDtlDM>) tblDtl.getVisibleItemIds());
+			Collection<DCDtlDM> colPlanDtls = ((Collection<DCDtlDM>) tblDCDetails.getVisibleItemIds());
 			for (DCDtlDM saveDtl : (Collection<DCDtlDM>) colPlanDtls) {
 				saveDtl.setDcId(dcHdrDM.getDcId());
 				serviceDCDtlHdr.saveOrUpdate(saveDtl);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MM_DCNO");
-				System.out.println("companyid, branchID, moduleId-->" + companyid + branchID + moduleId);
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MM_DCNO").get(
+							0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "MM_DCNO");
 					}
+				}
+				catch (Exception e) {
 				}
 			}
 			comments.savedc(dcHdrDM.getDcId(), dcHdrDM.getDcStatus());
@@ -1019,8 +1021,8 @@ public class DC extends BaseTransUI {
 	private void saveDCDtlListDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		DCDtlDM dcDtlDM = new DCDtlDM();
-		if (tblDtl.getValue() != null) {
-			dcDtlDM = beanDcDtlDM.getItem(tblDtl.getValue()).getBean();
+		if (tblDCDetails.getValue() != null) {
+			dcDtlDM = beanDcDtlDM.getItem(tblDCDetails.getValue()).getBean();
 			DCDtlList.remove(dcDtlDM);
 		}
 		dcDtlDM.setGoodsType((String) cbGoodsType.getValue());
@@ -1127,8 +1129,8 @@ public class DC extends BaseTransUI {
 	
 	private void deleteDetails() {
 		DCDtlDM save = new DCDtlDM();
-		if (tblDtl.getValue() != null) {
-			save = beanDcDtlDM.getItem(tblDtl.getValue()).getBean();
+		if (tblDCDetails.getValue() != null) {
+			save = beanDcDtlDM.getItem(tblDCDetails.getValue()).getBean();
 			DCDtlList.remove(save);
 			resetDCDetails();
 			loadDCDtl();
@@ -1185,8 +1187,7 @@ public class DC extends BaseTransUI {
 	
 	private void loadClientContacts() {
 		try {
-			Long enquid = ((Long) cbEnquiry.getValue());
-			Long clientId = serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null)
+			Long clientId = serviceEnqHeader.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "F", null, null)
 					.get(0).getClientId();
 			BeanContainer<Long, ClientsContactsDM> beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(
 					ClientsContactsDM.class);

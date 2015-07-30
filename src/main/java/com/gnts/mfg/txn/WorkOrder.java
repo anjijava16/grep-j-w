@@ -59,7 +59,6 @@ import com.gnts.sms.domain.txn.SmsPOHdrDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsPODtlService;
 import com.gnts.sms.service.txn.SmsPOHdrService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -679,10 +678,8 @@ public class WorkOrder extends BaseTransUI {
 	}
 	
 	private void loadPurchseOrdDtlList() {
-		List<SmsPODtlDM> getPurchaseOrdDtl = new ArrayList<SmsPODtlDM>();
-		getPurchaseOrdDtl.addAll(serviceWrkOrdDtl.getPurchaseOrdDtlList((Long) cbPONumber.getValue()));
 		BeanItemContainer<SmsPODtlDM> beanPurchaseOrdDtl = new BeanItemContainer<SmsPODtlDM>(SmsPODtlDM.class);
-		beanPurchaseOrdDtl.addAll(getPurchaseOrdDtl);
+		beanPurchaseOrdDtl.addAll(serviceWrkOrdDtl.getPurchaseOrdDtlList((Long) cbPONumber.getValue()));
 		cbPrdName.setContainerDataSource(beanPurchaseOrdDtl);
 	}
 	
@@ -731,45 +728,44 @@ public class WorkOrder extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editWorkOrderHdrDetails() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			WorkOrderHdrDM editWorkOrderHdr = beanWrkOdrHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			wrkOdrHdrId = editWorkOrderHdr.getWorkOrdrId();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			WorkOrderHdrDM workOrderHdrDM = beanWrkOdrHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			wrkOdrHdrId = workOrderHdrDM.getWorkOrdrId();
 			wrkOdrDate.setReadOnly(false);
-			wrkOdrDate.setValue(editWorkOrderHdr.getWorkOrdrDtF());
+			wrkOdrDate.setValue(workOrderHdrDM.getWorkOrdrDtF());
 			wrkOdrDate.setReadOnly(true);
 			tfPlanRefNo.setReadOnly(false);
-			tfPlanRefNo.setValue((String) itselect.getItemProperty("workOrdrNo").getValue());
+			tfPlanRefNo.setValue(workOrderHdrDM.getWorkOrdrNo());
 			tfPlanRefNo.setReadOnly(true);
 			cbBranchName.setReadOnly(false);
-			cbBranchName.setValue(editWorkOrderHdr.getBranchId());
+			cbBranchName.setValue(workOrderHdrDM.getBranchId());
 			cbBranchName.setReadOnly(true);
 			cbEnquiryNumber.setReadOnly(false);
-			cbEnquiryNumber.setValue(editWorkOrderHdr.getEnquiryId());
+			cbEnquiryNumber.setValue(workOrderHdrDM.getEnquiryId());
 			cbEnquiryNumber.setReadOnly(true);
 			cbClientName.setReadOnly(false);
-			cbClientName.setValue(editWorkOrderHdr.getClientId());
+			cbClientName.setValue(workOrderHdrDM.getClientId());
 			cbClientName.setReadOnly(true);
 			cbPONumber.setReadOnly(false);
-			cbPONumber.setValue(editWorkOrderHdr.getPoId());
+			cbPONumber.setValue(workOrderHdrDM.getPoId());
 			cbPONumber.setReadOnly(true);
 			cbwrkOdrType.setReadOnly(false);
-			cbwrkOdrType.setValue(editWorkOrderHdr.getWorkOrdrTyp());
+			cbwrkOdrType.setValue(workOrderHdrDM.getWorkOrdrTyp());
 			cbwrkOdrType.setReadOnly(true);
-			if (editWorkOrderHdr.getWorkOrdrRmrks() != null) {
-				taWrkOdrHdrRemarks.setValue((String) itselect.getItemProperty("workOrdrRmrks").getValue());
+			if (workOrderHdrDM.getWorkOrdrRmrks() != null) {
+				taWrkOdrHdrRemarks.setValue(workOrderHdrDM.getWorkOrdrRmrks());
 			}
-			ogPriority.setValue(editWorkOrderHdr.getPriority());
-			ogMaterialUsage.setValue(editWorkOrderHdr.getMaterialUsage());
-			workordtype.setValue(editWorkOrderHdr.getIsSelf());
-			POnumberslect.setValue(editWorkOrderHdr.getIsLOI());
-			if (editWorkOrderHdr.getWorkOrdrSts().equals("Approved")) {
+			ogPriority.setValue(workOrderHdrDM.getPriority());
+			ogMaterialUsage.setValue(workOrderHdrDM.getMaterialUsage());
+			workordtype.setValue(workOrderHdrDM.getIsSelf());
+			POnumberslect.setValue(workOrderHdrDM.getIsLOI());
+			if (workOrderHdrDM.getWorkOrdrSts().equals("Approved")) {
 				cbWorkderStatus.setReadOnly(false);
-				cbWorkderStatus.setValue(itselect.getItemProperty("workOrdrSts").getValue());
+				cbWorkderStatus.setValue(workOrderHdrDM.getWorkOrdrSts());
 				cbWorkderStatus.setReadOnly(true);
 			} else {
 				cbWorkderStatus.setReadOnly(false);
-				cbWorkderStatus.setValue(itselect.getItemProperty("workOrdrSts").getValue());
+				cbWorkderStatus.setValue(workOrderHdrDM.getWorkOrdrSts());
 			}
 			workOdrDtlList = serviceWrkOrdDtl.getWorkOrderDtlList(null, Long.valueOf(wrkOdrHdrId), null, "F");
 		}
@@ -779,42 +775,40 @@ public class WorkOrder extends BaseTransUI {
 	}
 	
 	private void editWorkOrderDtlDetails() {
-		Item itselect = tblWrkOdrDtl.getItem(tblWrkOdrDtl.getValue());
-		if (itselect != null) {
-			WorkOrderDtlDM editWorkOrderdtl = new WorkOrderDtlDM();
-			System.out.println("tblWrkOdrDtl.getValue()--------------------->" + tblWrkOdrDtl.getValue());
-			editWorkOrderdtl = beanWrkOdrDtl.getItem(tblWrkOdrDtl.getValue()).getBean();
-			Long uom = editWorkOrderdtl.getProdId();
-			Collection<?> uomid = cbPrdName.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+		if (tblWrkOdrDtl.getValue() != null) {
+			WorkOrderDtlDM workOrderDtlDM = new WorkOrderDtlDM();
+			workOrderDtlDM = beanWrkOdrDtl.getItem(tblWrkOdrDtl.getValue()).getBean();
+			Long prodid = workOrderDtlDM.getProdId();
+			Collection<?> prodids = cbPrdName.getItemIds();
+			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbPrdName.getItem(itemId);
 				// Get the actual bean and use the data
 				SmsPODtlDM st = (SmsPODtlDM) item.getBean();
-				if (uom != null && uom.equals(st.getProductid())) {
+				if (prodid != null && prodid.equals(st.getProductid())) {
 					cbPrdName.setValue(itemId);
 				}
 			}
 			tfPrdName.setReadOnly(false);
-			tfPrdName.setValue((String) itselect.getItemProperty("productName").getValue());
+			tfPrdName.setValue(workOrderDtlDM.getProductName());
 			tfPrdName.setReadOnly(true);
 			tfWrkOdrQty.setReadOnly(false);
-			tfWrkOdrQty.setValue(itselect.getItemProperty("workOrdQty").getValue().toString());
+			tfWrkOdrQty.setValue(workOrderDtlDM.getWorkOrdQty().toString());
 			tfWrkOdrQty.setReadOnly(true);
-			tfPlnQty.setValue(itselect.getItemProperty("planQty").getValue().toString());
+			tfPlnQty.setValue(workOrderDtlDM.getPlanQty().toString());
 			tfBalQty.setReadOnly(false);
-			tfBalQty.setValue(itselect.getItemProperty("balQty").getValue().toString());
+			tfBalQty.setValue(workOrderDtlDM.getBalQty().toString());
 			tfBalQty.setReadOnly(true);
-			if (editWorkOrderdtl.getWorkOrdDlRmrks() != null) {
-				taWrkOdrDtlRmks.setValue((String) itselect.getItemProperty("workOrdDlRmrks").getValue());
+			if (workOrderDtlDM.getWorkOrdDlRmrks() != null) {
+				taWrkOdrDtlRmks.setValue(workOrderDtlDM.getWorkOrdDlRmrks());
 			}
-			if (editWorkOrderdtl.getCustomField1() != null) {
-				tfCustomField1.setValue(editWorkOrderdtl.getCustomField1());
+			if (workOrderDtlDM.getCustomField1() != null) {
+				tfCustomField1.setValue(workOrderDtlDM.getCustomField1());
 			}
-			if (editWorkOrderdtl.getCustomField2() != null) {
-				tfCustomField2.setValue(editWorkOrderdtl.getCustomField2());
+			if (workOrderDtlDM.getCustomField2() != null) {
+				tfCustomField2.setValue(workOrderDtlDM.getCustomField2());
 			}
-			delvrySchdDt.setValue(editWorkOrderdtl.getDlvrySchdl());
+			delvrySchdDt.setValue(workOrderDtlDM.getDlvrySchdl());
 		}
 	}
 	

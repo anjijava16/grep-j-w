@@ -86,7 +86,7 @@ public class MaterialVendorGroup extends BaseUI {
 	}
 	
 	// Build the UI components
-	public void buildview() {
+	private void buildview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Painting MaterialVendorGroup UI");
 		// Material Name ComboBox

@@ -28,6 +28,10 @@ import com.gnts.base.service.mst.ProductService;
 import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.sms.service.txn.SmsEnqHdrService;
+import com.gnts.sms.service.txn.SmsEnquirySpecService;
+import com.gnts.sms.service.txn.SmsPOHdrService;
+import com.gnts.sms.service.txn.SmsQuoteHdrService;
 import com.gnts.stt.mfg.domain.txn.RotoCheckDtlDM;
 import com.gnts.stt.mfg.service.txn.RotoCheckDtlService;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -62,6 +66,11 @@ public class ProductOverview implements ClickListener {
 			.getAttribute("clLayout");
 	private RotoCheckDtlService serviceRotoCheckDtl = (RotoCheckDtlService) SpringContextHelper.getBean("rotocheckdtl");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
+	private SmsEnqHdrService serviceEnquiryHdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
+	private SmsQuoteHdrService servicesmsquotehdr = (SmsQuoteHdrService) SpringContextHelper.getBean("smsquotehdr");
+	private SmsPOHdrService servicesmsPOHdr = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
+	private SmsEnquirySpecService serviceenqspec = (SmsEnquirySpecService) SpringContextHelper
+			.getBean("SmsEnquirySpec");
 	// Header container which holds, screen name, notification and page master
 	// buttons
 	private HorizontalLayout hlPageHdrContainter = (HorizontalLayout) UI.getCurrent().getSession()
@@ -86,7 +95,6 @@ public class ProductOverview implements ClickListener {
 	private PopupDateField dfInvoiceDate;
 	private TextField tfWorkorderRef;
 	private PopupDateField dfWorkorderDate;
-	private TextField cbPayperiod;
 	private Table tblProductSpec = new Table();
 	private Table tblEnquiryWorkflow = new Table();
 	private Table tblDieRequest = new Table();
@@ -204,36 +212,37 @@ public class ProductOverview implements ClickListener {
 		details1.addComponent(tfProductName);
 		taProductDesc = new TextArea("Description");
 		taProductDesc.setWidth("150px");
+		taProductDesc.setHeight("110px");
 		details1.addComponent(taProductDesc);
-		tfQuoteRef = new TextField("Quote Ref.");
-		tfQuoteRef.setWidth("150px");
-		details1.addComponent(tfQuoteRef);
+		FormLayout details2 = new FormLayout();
+		root.addComponent(details2);
 		taProductShortDesc = new TextArea("Short Desc.");
 		taProductShortDesc.setWidth("150px");
 		taProductShortDesc.setNullRepresentation("");
-		details1.addComponent(taProductShortDesc);
-		FormLayout details2 = new FormLayout();
-		root.addComponent(details2);
-		tfInvoiceRef = new TextField("Invoice Ref.");
-		tfInvoiceRef.setWidth("150px");
-		details2.addComponent(tfInvoiceRef);
-		tfPORef = new TextField("Order Ref.");
-		tfPORef.setWidth("150px");
-		details2.addComponent(tfPORef);
-		dfEnquiryDate = new PopupDateField("Marital Status");
-		dfEnquiryDate.setWidth("150px");
-		details2.addComponent(dfEnquiryDate);
+		details2.addComponent(taProductShortDesc);
 		tfEnquiryRef = new TextField("Enquiry Ref.");
 		tfEnquiryRef.setWidth("150px");
 		tfEnquiryRef.setNullRepresentation("");
 		details2.addComponent(tfEnquiryRef);
+		dfEnquiryDate = new PopupDateField("Enquiry Date");
+		dfEnquiryDate.setWidth("150px");
+		details2.addComponent(dfEnquiryDate);
+		tfQuoteRef = new TextField("Quote Ref.");
+		tfQuoteRef.setWidth("150px");
+		details2.addComponent(tfQuoteRef);
+		FormLayout details3 = new FormLayout();
 		dfQuoteDate = new PopupDateField("Quote Date");
 		dfQuoteDate.setWidth("150px");
-		details2.addComponent(dfQuoteDate);
-		FormLayout details3 = new FormLayout();
+		details3.addComponent(dfQuoteDate);
+		tfPORef = new TextField("Order Ref.");
+		tfPORef.setWidth("150px");
+		details3.addComponent(tfPORef);
 		dfOrderDate = new PopupDateField("Order Date");
 		dfOrderDate.setWidth("150px");
 		details3.addComponent(dfOrderDate);
+		tfInvoiceRef = new TextField("Invoice Ref.");
+		tfInvoiceRef.setWidth("150px");
+		details3.addComponent(tfInvoiceRef);
 		dfInvoiceDate = new PopupDateField("Invoice Date");
 		dfInvoiceDate.setWidth("150px");
 		details3.addComponent(dfInvoiceDate);
@@ -243,9 +252,6 @@ public class ProductOverview implements ClickListener {
 		dfWorkorderDate = new PopupDateField("Workorder Date");
 		dfWorkorderDate.setWidth("150px");
 		details3.addComponent(dfWorkorderDate);
-		cbPayperiod = new TextField("Pay period");
-		cbPayperiod.setWidth("150px");
-		details3.addComponent(cbPayperiod);
 		root.addComponent(details3);
 		return root;
 	}
@@ -297,6 +303,14 @@ public class ProductOverview implements ClickListener {
 		tfProductName.setValue("");
 		taProductDesc.setValue("");
 		taProductShortDesc.setValue("");
+		tfEnquiryRef.setValue("");
+		dfEnquiryDate.setValue(null);
+		tfQuoteRef.setValue("");
+		dfQuoteDate.setValue(null);
+		tfPORef.setValue("");
+		dfOrderDate.setValue(null);
+		tfInvoiceRef.setValue("");
+		dfInvoiceDate.setValue(null);
 	}
 	
 	private void viewProductDetails() {
@@ -328,6 +342,10 @@ public class ProductOverview implements ClickListener {
 				tfProductName.setValue(productDM.getProdname());
 				taProductDesc.setValue(productDM.getProddesc());
 				taProductShortDesc.setValue(productDM.getShortdesc());
+				try {
+				}
+				catch (Exception e) {
+				}
 			}
 		} else {
 			Notification.show("No data found", Type.ERROR_MESSAGE);

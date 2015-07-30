@@ -1238,7 +1238,7 @@ public class SmsInvoice extends BaseTransUI {
 				tfBasicValue.setReadOnly(true);
 			}
 			if (editInvoiceDtlDtllist.getInvoDtlStatus() != null) {
-				cbDtlStatus.setValue(editInvoiceDtlDtllist.getInvoDtlStatus().toString());
+				cbDtlStatus.setValue(editInvoiceDtlDtllist.getInvoDtlStatus());
 			}
 		}
 	}
@@ -1580,7 +1580,7 @@ public class SmsInvoice extends BaseTransUI {
 		}
 	}
 	
-	protected void saveInvoiceDtl() {
+	private void saveInvoiceDtl() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			SmsInvoiceDtlDM smsInvoiceDtlDM = new SmsInvoiceDtlDM();
@@ -1781,7 +1781,7 @@ public class SmsInvoice extends BaseTransUI {
 		}
 	}
 	
-	protected void resetInvoiceDetails() {
+	private void resetInvoiceDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbproduct.setValue(null);
 		cbproduct.setComponentError(null);

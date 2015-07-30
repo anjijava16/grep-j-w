@@ -136,7 +136,6 @@ public class WorkOrderPlan extends BaseTransUI {
 	private HorizontalLayout hlWorkOdrHdl;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(WorkOrder.class);
-	boolean flagtblPDtl = false;
 	private Button btnDtleWrkDtl = new GERPButton("Delete", "delete", this);
 	private Comments comment;
 	private VerticalLayout vlTableForm = new VerticalLayout();
@@ -225,7 +224,6 @@ public class WorkOrderPlan extends BaseTransUI {
 					tfProductName.setValue(workOrderDtlDM.getProductName());
 					tfWrkOdrPlnQty.setValue(workOrderDtlDM.getPlanQty().toString());
 					loadSrchWrkOdrPlnMtrlDtlRslt(false);
-					flagtblPDtl = true;
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -290,9 +288,7 @@ public class WorkOrderPlan extends BaseTransUI {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnsaveWrkOdrPlDtl.setCaption("Update");
 					btnsaveWrkOdrPlDtl.setStyleName("savebt");
-					flagtblPDtl = false;
 					editWorkOrderPlnDtlDetails();
-					flagtblPDtl = true;
 					btnDtleWrkDtl.setEnabled(true);
 				}
 			}
@@ -549,14 +545,14 @@ public class WorkOrderPlan extends BaseTransUI {
 		if (tblWrkOrdPlnDtl.getValue() != null) {
 			WorkOrderPlanProdDtlDM workOrderPlanDtlDM = new WorkOrderPlanProdDtlDM();
 			workOrderPlanDtlDM = beanWrkOdrPlnPrdDtl.getItem(tblWrkOrdPlnDtl.getValue()).getBean();
-			Long uom = workOrderPlanDtlDM.getProductId();
-			Collection<?> uomid = cbProductName.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long prodid = workOrderPlanDtlDM.getProductId();
+			Collection<?> prodids = cbProductName.getItemIds();
+			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbProductName.getItem(itemId);
 				// Get the actual bean and use the data
 				WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
-				if (uom != null && uom.equals(st.getProdId())) {
+				if (prodid != null && prodid.equals(st.getProdId())) {
 					cbProductName.setValue(itemId);
 				}
 			}

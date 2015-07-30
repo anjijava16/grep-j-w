@@ -113,7 +113,7 @@ public class Indent extends BaseTransUI {
 	private ListSelect cbMatName;
 	private PopupDateField dfIndDate, dfExpDt;
 	private TextArea taRemarks;
-	private Table tblDtl;
+	private Table tblIndentDtl;
 	private BeanItemContainer<IndentHdrDM> beanIndentHdrDM = null;
 	private BeanItemContainer<IndentDtlDM> beanIndentDtlDM = null;
 	// local variables declaration
@@ -158,16 +158,16 @@ public class Indent extends BaseTransUI {
 			}
 		});
 		btndelete.setEnabled(false);
-		tblDtl = new GERPTable();
-		tblDtl.setWidth("656px");
-		tblDtl.setPageLength(6);
-		tblDtl.addItemClickListener(new ItemClickListener() {
+		tblIndentDtl = new GERPTable();
+		tblIndentDtl.setWidth("656px");
+		tblIndentDtl.setPageLength(6);
+		tblIndentDtl.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblDtl.isSelected(event.getItemId())) {
-					tblDtl.setImmediate(true);
+				if (tblIndentDtl.isSelected(event.getItemId())) {
+					tblIndentDtl.setImmediate(true);
 					btnAddDtl.setCaption("Add");
 					btnAddDtl.setStyleName("savebt");
 					btndelete.setEnabled(false);
@@ -342,7 +342,7 @@ public class Indent extends BaseTransUI {
 		hlIndentDtl = new HorizontalLayout();
 		hlIndentDtl.addComponent(flIndentDtlCol1);
 		hlIndentDtl.addComponent(flIndentDtlCol2);
-		hlIndentDtl.addComponent(tblDtl);
+		hlIndentDtl.addComponent(tblIndentDtl);
 		hlIndentDtl.setSpacing(true);
 		hlIndentDtl.setMargin(true);
 		tfIndNo.setReadOnly(true);
@@ -400,11 +400,11 @@ public class Indent extends BaseTransUI {
 			beanIndentDtlDM.addAll(indentDtlList);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
-			tblDtl.setContainerDataSource(beanIndentDtlDM);
-			tblDtl.setVisibleColumns(new Object[] { "materialName", "materialUOM", "indentQty", "balenceQty", "status" });
-			tblDtl.setColumnHeaders(new String[] { "Material Name", "Material UOM", "Indent Qty", "Balance Qty",
+			tblIndentDtl.setContainerDataSource(beanIndentDtlDM);
+			tblIndentDtl.setVisibleColumns(new Object[] { "materialName", "materialUOM", "indentQty", "balenceQty", "status" });
+			tblIndentDtl.setColumnHeaders(new String[] { "Material Name", "Material UOM", "Indent Qty", "Balance Qty",
 					"Status" });
-			tblDtl.setColumnFooter("status", "No.of Records : " + recordCnt);
+			tblIndentDtl.setColumnFooter("status", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -441,7 +441,7 @@ public class Indent extends BaseTransUI {
 		cbMatName.setComponentError(null);
 		tfIndQty.setComponentError(null);
 		indentDtlList = new ArrayList<IndentDtlDM>();
-		tblDtl.removeAllItems();
+		tblIndentDtl.removeAllItems();
 	}
 	
 	// Method to edit the values from table into fields to update process
@@ -475,9 +475,9 @@ public class Indent extends BaseTransUI {
 	// Method to edit the values from table into fields to update process
 	private void editIntentDtls() {
 		hlUserInputLayout.setVisible(true);
-		if (tblDtl.getValue() != null) {
+		if (tblIndentDtl.getValue() != null) {
 			IndentDtlDM indentDtlDM = new IndentDtlDM();
-			indentDtlDM = beanIndentDtlDM.getItem(tblDtl.getValue()).getBean();
+			indentDtlDM = beanIndentDtlDM.getItem(tblIndentDtl.getValue()).getBean();
 			cbMatName.setValue(null);
 			Long matId = indentDtlDM.getMaterialId();
 			Collection<?> empColId = cbMatName.getItemIds();
@@ -554,7 +554,7 @@ public class Indent extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		btnAddDtl.setCaption("Add");
-		tblDtl.setVisible(true);
+		tblIndentDtl.setVisible(true);
 		tfIndNo.setReadOnly(false);
 		try {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNO").get(0);
@@ -596,7 +596,7 @@ public class Indent extends BaseTransUI {
 		tfIndNo.setReadOnly(false);
 		IndentDtlresetField();
 		hlCmdBtnLayout.setVisible(true);
-		tblDtl.removeAllItems();
+		tblIndentDtl.removeAllItems();
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
 		loadSrchRslt();
@@ -694,7 +694,7 @@ public class Indent extends BaseTransUI {
 			cbBranchId.setComponentError(new UserError(GERPErrorCodes.NULL_BRACH_NAME));
 			errorFlag = true;
 		}
-		if (tblDtl.size() == 0) {
+		if (tblIndentDtl.size() == 0) {
 			cbMatName.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_NAME));
 			cbuom.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
 			tfIndQty.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
@@ -733,7 +733,7 @@ public class Indent extends BaseTransUI {
 			serviceIndentHdr.saveorUpdateMmsIndentHdrDetails(indentObj);
 			indentHdrId = indentObj.getIndentId();
 			@SuppressWarnings("unchecked")
-			Collection<IndentDtlDM> colPlanDtls = ((Collection<IndentDtlDM>) tblDtl.getVisibleItemIds());
+			Collection<IndentDtlDM> colPlanDtls = ((Collection<IndentDtlDM>) tblIndentDtl.getVisibleItemIds());
 			for (IndentDtlDM saveDtl : (Collection<IndentDtlDM>) colPlanDtls) {
 				System.out.println("indentObj.getIndentId()-->" + indentObj.getIndentId());
 				saveDtl.setIndentHdrId(Long.valueOf(indentObj.getIndentId()));
@@ -777,13 +777,13 @@ public class Indent extends BaseTransUI {
 						}
 					}
 					System.out.println("count--->" + count);
-					if (tblDtl.getValue() != null) {
+					if (tblIndentDtl.getValue() != null) {
 						count = 0;
 					}
 					if (count == 0) {
 						IndentDtlDM indentDtlObj = new IndentDtlDM();
-						if (tblDtl.getValue() != null) {
-							indentDtlObj = beanIndentDtlDM.getItem(tblDtl.getValue()).getBean();
+						if (tblIndentDtl.getValue() != null) {
+							indentDtlObj = beanIndentDtlDM.getItem(tblIndentDtl.getValue()).getBean();
 							indentDtlList.remove(indentDtlObj);
 						}
 						UI.getCurrent().getSession().setAttribute("indqty", Long.valueOf(tfIndQty.getValue()));
@@ -864,8 +864,8 @@ public class Indent extends BaseTransUI {
 	// delete row in temporary table
 	private void deleteDetails() {
 		IndentDtlDM save = new IndentDtlDM();
-		if (tblDtl.getValue() != null) {
-			save = beanIndentDtlDM.getItem(tblDtl.getValue()).getBean();
+		if (tblIndentDtl.getValue() != null) {
+			save = beanIndentDtlDM.getItem(tblIndentDtl.getValue()).getBean();
 			indentDtlList.remove(save);
 			IndentDtlresetField();
 			loadIndentDtl();

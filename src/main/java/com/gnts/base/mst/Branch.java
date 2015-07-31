@@ -42,7 +42,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -64,7 +63,7 @@ public class Branch extends BaseUI {
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private StateService serviceState = (StateService) SpringContextHelper.getBean("mstate");
 	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
-	private CityService servicecity = (CityService) SpringContextHelper.getBean("city");
+	private CityService serviceCity = (CityService) SpringContextHelper.getBean("city");
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3;
 	// Parent layout for all the input controls
@@ -228,7 +227,7 @@ public class Branch extends BaseUI {
 	private void loadCityList() {
 		BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
 		beanCity.setBeanIdProperty("cityid");
-		beanCity.addAll(servicecity.getCityList(null, null, (Long) cbStateName.getValue(), "Active", companyid, "P"));
+		beanCity.addAll(serviceCity.getCityList(null, null, (Long) cbStateName.getValue(), "Active", companyid, "P"));
 		cbCityName.setContainerDataSource(beanCity);
 	}
 	
@@ -281,8 +280,6 @@ public class Branch extends BaseUI {
 	private void editBranch() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		branchId = sltedRcd.getItemProperty("branchId").getValue().toString();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Branch. Id -> "
 				+ branchId);
 		if (tblMstScrSrchRslt.getValue() != null) {
@@ -393,7 +390,6 @@ public class Branch extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		Boolean errorFlag = false;
 		tfBranchName.setComponentError(null);
-		// tfBranchName.setComponentError(null);
 		taBranchAddress.setComponentError(null);
 		cbCountryName.setComponentError(null);
 		cbStateName.setComponentError(null);

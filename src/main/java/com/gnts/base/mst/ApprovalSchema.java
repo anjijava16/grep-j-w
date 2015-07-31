@@ -41,7 +41,6 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -337,8 +336,7 @@ public class ApprovalSchema extends BaseUI {
 	protected void showAuditDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Getting audit record for Company. ID " + "");
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			ApprovalSchemaDM editApprSchm = beanApprovalSchema.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			apprSchmId = editApprSchm.getApprSchmId().toString();
 		}

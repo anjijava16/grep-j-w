@@ -180,7 +180,6 @@ public class Employee extends BaseUI {
 			.getBean("Qualification");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private EarningsService serviceEarnings = (EarningsService) SpringContextHelper.getBean("Earnings");
-	private BeanContainer<Long, DepartmentDM> beanDepartment = null;
 	private BeanItemContainer<EmployeeDM> beanEmployee = null;
 	private BeanItemContainer<EmployeeAddressDM> beanEmployeeAddress = new BeanItemContainer<EmployeeAddressDM>(
 			EmployeeAddressDM.class);
@@ -206,9 +205,6 @@ public class Employee extends BaseUI {
 			.getBean("EmployeeDeduction");
 	private EmployeeAllowanceService serviceEmpAllowance = (EmployeeAllowanceService) SpringContextHelper
 			.getBean("EmployeeAllowance");
-	private BeanContainer<Long, BranchDM> beanBranch = null;
-	private BeanContainer<Long, CountryDM> beanCountry = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
@@ -516,7 +512,7 @@ public class Employee extends BaseUI {
 		cbempskillid.setItemCaptionPropertyId("skillName");
 		cbempskillid.setWidth("200");
 		cbempskillid.setRequired(true);
-		loadempskilllsist();
+		loadSkillList();
 		tfempskillisprimary = new CheckBox("Primary Skills");
 		tfempskillisprimary.setWidth("200");
 		cbempskilllevel = new GERPComboBox("Skill Level");
@@ -991,16 +987,12 @@ public class Employee extends BaseUI {
 			public void buttonClick(ClickEvent event) {
 				try {
 					validationImmigration();
-					saveempimmgrtn();
+					saveEmpImmgrtn();
 					empimmgrtnResetfields();
 					new GERPSaveNotification();
 				}
 				catch (Exception e) {
 				}
-				// try {
-				// throw new ERPException.SaveException();
-				// }
-				// catch (SaveException e1) {
 				logger.error("Company ID : " + UI.getCurrent().getSession().getAttribute("loginCompanyId").toString()
 						+ " | User Name : " + UI.getCurrent().getSession().getAttribute("loginUserName").toString()
 						+ " > " + "Exception ");
@@ -1052,7 +1044,7 @@ public class Employee extends BaseUI {
 			public void buttonClick(ClickEvent event) {
 				try {
 					validateionbank();
-					saveempbank();
+					saveEmpBankDtls();
 					empbankResetfields();
 					new GERPSaveNotification();
 				}
@@ -1132,25 +1124,8 @@ public class Employee extends BaseUI {
 		tfempeduunivname.setWidth("200");
 		tfempeduscoredmark = new GERPTextField("Scored Mark");
 		tfempeduscoredmark.setWidth("200");
-		/*
-		 * tfempeduscoredmark.addValueChangeListener(new ValueChangeListener() {
-		 * @Override public void valueChange(ValueChangeEvent event) { if (tfempeduscoredmark.getValue() != null) { emp
-		 * = Long.valueOf(tfempeduscoredmark.getValue ()); //emp1 = Long.valueOf(tfempedutotalmark.getValue()); if
-		 * (emp>=emp1){ tfempeduscoredmark.setComponentError(new
-		 * UserError(GERPErrorCodes.NULL_EMPLOYEE_Education_SCOREDMARK)); }else {
-		 * tfempeduscoredmark.setComponentError(null); } } } });
-		 */
-		// tfempeduscoredmark.setRequired(true);
 		tfempedutotalmark = new GERPTextField("Total Mark");
 		tfempedutotalmark.setWidth("200");
-		/*
-		 * tfempedutotalmark.addValueChangeListener(new ValueChangeListener() {
-		 * @Override public void valueChange(ValueChangeEvent event) { if (tfempedutotalmark.getValue() != null) { //emp
-		 * = Long.valueOf(tfempeduscoredmark.getValue ()); emp1 = Long.valueOf(tfempedutotalmark.getValue()); if
-		 * (emp1>=emp){ tfempedutotalmark.setComponentError(new
-		 * UserError(GERPErrorCodes.NULL_EMPLOYEE_Education_TOTALMARK)); }else {
-		 * tfempedutotalmark.setComponentError(null); } } } });
-		 */
 		cbempedugradeached = new GERPComboBox("Grade");
 		cbempedugradeached.setItemCaptionPropertyId("lookupname");
 		cbempedugradeached.setWidth("200");
@@ -1165,7 +1140,7 @@ public class Employee extends BaseUI {
 			public void buttonClick(ClickEvent event) {
 				try {
 					validationeducation();
-					saveempeducation();
+					saveEmpEducation();
 					empeduResetfields();
 					new GERPSaveNotification();
 				}
@@ -2095,13 +2070,12 @@ public class Employee extends BaseUI {
 	/*
 	 * loadGenderType()-->this function is used for load the gender type
 	 */
-	public void loadGenderType() {
+	private void loadGenderType() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-				"BS_GENDER");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "BS_GENDER"));
 		cbGender.setContainerDataSource(beanCompanyLookUp);
 		cbempdepngender.setContainerDataSource(beanCompanyLookUp);
 	}
@@ -2109,64 +2083,62 @@ public class Employee extends BaseUI {
 	/*
 	 * loadDOCType()-->this function is used for load the DOC type
 	 */
-	public void loadDOCType() {
+	private void loadDOCType() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading DOC Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-				"HC_IMGDCTP");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp
+				.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "HC_IMGDCTP"));
 		cbempimmgdoctype.setContainerDataSource(beanCompanyLookUp);
 	}
 	
 	/*
 	 * loadaccttype-->this function is used for load the Account type
 	 */
-	public void loadaccttype() {
+	private void loadaccttype() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Account Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-				"HC_BNKACTP");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp
+				.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "HC_BNKACTP"));
 		cbempaccttype.setContainerDataSource(beanCompanyLookUp);
 	}
 	
 	/*
 	 * loadskilllavel()-->this function is used for load the skill level
 	 */
-	public void loadskilllavel() {
+	private void loadskilllavel() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading skill Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-				"HC_SKLLVL");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "HC_SKLLVL"));
 		cbempskilllevel.setContainerDataSource(beanCompanyLookUp);
 	}
 	
 	/*
 	 * loadaddresstype()-->this function is used for load the Address Type
 	 */
-	public void loadaddresstype() {
+	private void loadaddresstype() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Address Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-				"HC_ADRTYPE");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp
+				.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "HC_ADRTYPE"));
 		cbempadrstype.setContainerDataSource(beanCompanyLookUp);
 	}
 	
 	/*
 	 * loadCountryList()-->this function is used for load the Country list
 	 */
-	public void loadCountrydtlsbirthList() {
+	private void loadCountrydtlsbirthList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Country Search...");
-		List<CountryDM> countrylist = serviceCountry.getCountryList(null, null, null, null, "Active", "F");
-		beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(countrylist);
+		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "F"));
 		cbCountry.setContainerDataSource(beanCountry);
 		cbempdtlsbitrhcountry.setContainerDataSource(beanCountry);
 	}
@@ -2174,12 +2146,11 @@ public class Employee extends BaseUI {
 	/*
 	 * loadCountryList()-->this function is used for load the Country list
 	 */
-	public void loadCountrynationalList() {
+	private void loadCountrynationalList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Country Search...");
-		List<CountryDM> countrylist = serviceCountry.getCountryList(null, null, null, null, "Active", "F");
-		beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(countrylist);
+		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "F"));
 		cbCountry.setContainerDataSource(beanCountry);
 		cbempdtlsnationalid.setContainerDataSource(beanCountry);
 	}
@@ -2187,31 +2158,29 @@ public class Employee extends BaseUI {
 	/*
 	 * loadCountryList()-->this function is used for load the Country list
 	 */
-	public void loadCountryList() {
+	private void loadCountryList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Country Search...");
-		List<CountryDM> countrylist = serviceCountry.getCountryList(null, null, null, null, "Active", "F");
-		beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(countrylist);
+		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "F"));
 		cbCountry.setContainerDataSource(beanCountry);
 	}
 	
 	/*
 	 * loadCountryList()-->this function is used for load the Country list
 	 */
-	public void loadadrsCountryList() {
+	private void loadadrsCountryList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Country Search...");
-		List<CountryDM> countrylist = serviceCountry.getCountryList(null, null, null, null, "Active", "F");
-		beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(countrylist);
+		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "F"));
 		cbempadrscountryid.setContainerDataSource(beanCountry);
 	}
 	
 	/*
 	 * loadISDCode()-->this function is used for load ISD Code
 	 */
-	public void loadISDCode() {
+	private void loadISDCode() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Load ISD Code..." + isdCode);
 		isdCode = serviceCountry.getISDCodebyCountryId((Long) cbCountry.getValue());
 		tfISDCode.setReadOnly(false);
@@ -2222,24 +2191,24 @@ public class Employee extends BaseUI {
 	/*
 	 * loadBranchList()-->this function is used for load the Branch list
 	 */
-	public void loadBranchList() {
+	private void loadBranchList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		List<BranchDM> branchlist = servicebeanBranch.getBranchList(null, null, (Long) cbCountry.getValue(), "Active",
-				companyid, "P");
-		beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(branchlist);
+		beanBranch.addAll(servicebeanBranch.getBranchList(null, null, (Long) cbCountry.getValue(), "Active", companyid,
+				"P"));
 		cbBranch.setContainerDataSource(beanBranch);
 	}
 	
 	/*
 	 * loadMaritalList()-->this function is used for load the Marital list
 	 */
-	public void loadMaritalList() {
+	private void loadMaritalList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Marital Search...");
 		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 				"HC_MRTLSTS");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
 		beanCompanyLookUp.addAll(lookUpList);
 		cbempdtlsmaritalstatus.setContainerDataSource(beanCompanyLookUp);
@@ -2248,11 +2217,11 @@ public class Employee extends BaseUI {
 	/*
 	 * loadDepartmentList()-->this function is used for load the Department list
 	 */
-	public void loadDepartmentList() {
+	private void loadDepartmentList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
 		List<DepartmentDM> departmentlist = servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P");
 		departmentlist.add(new DepartmentDM(0L, "All Department"));
-		beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beanDepartment.setBeanIdProperty("deptid");
 		beanDepartment.addAll(departmentlist);
 		cbDepartment.setContainerDataSource(beanDepartment);
@@ -2261,13 +2230,12 @@ public class Employee extends BaseUI {
 	/*
 	 * loadempskilllsist()-->this function is used for load the skill list
 	 */
-	public void loadempskilllsist() {
+	private void loadSkillList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Skill Search...");
 			logger.info("skill------------>");
 			List<SkillsDM> skillslist = serviceSkills.getSkillsList(null, null, null, companyid, "Active", "P");
 			BeanItemContainer<SkillsDM> beanskills = new BeanItemContainer<SkillsDM>(SkillsDM.class);
-			// beanskills.setBeanIdProperty("skillId");
 			beanskills.addAll(skillslist);
 			cbempskillid.setContainerDataSource(beanskills);
 		}
@@ -2281,11 +2249,10 @@ public class Employee extends BaseUI {
 	 */
 	private void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading  Employee Search...");
-		List<EmployeeDM> employeelist = servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid,
-				null, null, null, null, "P");
 		BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanLoadEmployee.setBeanIdProperty("employeeid");
-		beanLoadEmployee.addAll(employeelist);
+		beanLoadEmployee.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+				null, null, "P"));
 		cbManager.setContainerDataSource(beanLoadEmployee);
 	}
 	
@@ -2294,12 +2261,10 @@ public class Employee extends BaseUI {
 	 */
 	private void loadempmenttypelist() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employment Search...");
-		List<EmploymentTypeDM> empmenttypelist = serviceEmploymentType.getEmpTypeList(null, null, companyid, "Active",
-				"F");
 		BeanContainer<Long, EmploymentTypeDM> benemptype = new BeanContainer<Long, EmploymentTypeDM>(
 				EmploymentTypeDM.class);
 		benemptype.setBeanIdProperty("empTypeId");
-		benemptype.addAll(empmenttypelist);
+		benemptype.addAll(serviceEmploymentType.getEmpTypeList(null, null, companyid, "Active", "F"));
 		cbempdtlsemptypeid.setContainerDataSource(benemptype);
 	}
 	
@@ -2337,7 +2302,6 @@ public class Employee extends BaseUI {
 		List<JobCandidateDM> jobcandidatelist = servicejobcandidate.getJobCandidateList(null, null, null, null,
 				"Active");
 		BeanItemContainer<JobCandidateDM> beanjobcandidate = new BeanItemContainer<JobCandidateDM>(JobCandidateDM.class);
-		// beanjobcandidate.setBeanIdProperty("candidateId");
 		beanjobcandidate.addAll(jobcandidatelist);
 		cbempdtlscandid.setContainerDataSource(beanjobcandidate);
 	}
@@ -2363,12 +2327,10 @@ public class Employee extends BaseUI {
 	private void loaddesignationlist() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading Designation Search...");
-		List<DesignationDM> designationlist = serviceDesignation.getDesignationList(null,
-				(Long) cbempdtlsgradid.getValue(), null, null, companyid, "Active", "F");
-		System.out.println("cbempdtlsgradid.getValue()---");
 		BeanContainer<Long, DesignationDM> beandesignation = new BeanContainer<Long, DesignationDM>(DesignationDM.class);
 		beandesignation.setBeanIdProperty("designationId");
-		beandesignation.addAll(designationlist);
+		beandesignation.addAll(serviceDesignation.getDesignationList(null, (Long) cbempdtlsgradid.getValue(), null,
+				null, companyid, "Active", "F"));
 		cbempdtlsdesignaton.setContainerDataSource(beandesignation);
 	}
 	
@@ -2380,7 +2342,8 @@ public class Employee extends BaseUI {
 				+ "Loading Education Grade Search...");
 		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 				"HC_EDUGRD");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
 		beanCompanyLookUp.addAll(lookUpList);
 		cbempedugradeached.setContainerDataSource(beanCompanyLookUp);
@@ -2390,21 +2353,19 @@ public class Employee extends BaseUI {
 	 * loadempeduqualification()-->this function is used for load the Qualification
 	 */
 	private void loadempeduqualification() {
-		try{
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading Qualification Search...");
-		logger.info("qualification--->");
-		BeanContainer<Long, QualificationDM> beaneducation = new BeanContainer<Long, QualificationDM>(
-				QualificationDM.class);
-		beaneducation.setBeanIdProperty("qualId");
-		beaneducation.addAll(serviceQualification.getQualificationList(null, null, companyid,
-				"Active", "F"));
-		cbempeduqualtnid.setContainerDataSource(beaneducation);
-		logger.info("qualification1--->");
-	}
-	catch (Exception e)
-	{
-	}
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Qualification Search...");
+			logger.info("qualification--->");
+			BeanContainer<Long, QualificationDM> beaneducation = new BeanContainer<Long, QualificationDM>(
+					QualificationDM.class);
+			beaneducation.setBeanIdProperty("qualId");
+			beaneducation.addAll(serviceQualification.getQualificationList(null, null, companyid, "Active", "F"));
+			cbempeduqualtnid.setContainerDataSource(beaneducation);
+			logger.info("qualification1--->");
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
@@ -2415,7 +2376,8 @@ public class Employee extends BaseUI {
 				+ "Loading Relationship Search...");
 		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 				"HC_CONTRLN");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
 		beanCompanyLookUp.addAll(lookUpList);
 		cbempdepnreltionship.setContainerDataSource(beanCompanyLookUp);
@@ -2429,7 +2391,8 @@ public class Employee extends BaseUI {
 				+ "Loading Identities Name Search...");
 		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 				"HC_IDNTYPE");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
 		beanCompanyLookUp.addAll(lookUpList);
 		cbempidenname.setContainerDataSource(beanCompanyLookUp);
@@ -2439,58 +2402,53 @@ public class Employee extends BaseUI {
 	private void editEmployee() {
 		flag = 1;
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		EmployeeDM editEmployeelist = beanEmployee.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		EmployeeDM employeeDM = beanEmployee.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		UserDM saveUsr = new UserDM();
 		userId = saveUsr.getUserid();
-		employeeid = editEmployeelist.getEmployeeid();
-		if (editEmployeelist.getEmployeecode() != null || editEmployeelist.getFirstname() != null
-				|| editEmployeelist.getLastname() != null || editEmployeelist.getPrimaryphone() != null
-				|| editEmployeelist.getPrimaryemail() != null) {
+		employeeid = employeeDM.getEmployeeid();
+		if (employeeDM.getEmployeecode() != null || employeeDM.getFirstname() != null
+				|| employeeDM.getLastname() != null || employeeDM.getPrimaryphone() != null
+				|| employeeDM.getPrimaryemail() != null) {
 			logger.info("editEmployee : " + "," + tfEmployeeCode.getValue() + "," + tfFirstName.getValue() + ","
 					+ tfLastName.getValue() + "," + tfPhonenumber.getValue() + "," + tfEmailid.getValue() + ","
 					+ cbEmpStatus.getValue() + "," + cbGender.getValue() + "," + cbDepartment.getValue() + ","
 					+ cbBranch.getValue() + "," + cbManager.getValue());
-			tfEmployeeCode.setValue((String) sltedRcd.getItemProperty("employeecode").getValue());
+			tfEmployeeCode.setValue(employeeDM.getEmployeecode());
 			tfEmployeeCode.setReadOnly(true);
-			tfFirstName.setValue(sltedRcd.getItemProperty("firstname").getValue().toString());
-			tfLastName.setValue(sltedRcd.getItemProperty("lastname").getValue().toString());
-			tfPhonenumber.setValue((String) sltedRcd.getItemProperty("primaryphone").getValue());
-			tfEmailid.setValue((String) sltedRcd.getItemProperty("primaryemail").getValue());
-			String stCode = sltedRcd.getItemProperty("empstatus").getValue().toString();
-			cbEmpStatus.setValue(stCode);
-			if (sltedRcd.getItemProperty("gender").getValue() != null) {
-				String genCode = sltedRcd.getItemProperty("gender").getValue().toString();
-				cbGender.setValue(genCode);
-			}
-			cbDepartment.setValue((Long) editEmployeelist.getDeptid());
-			cbManager.setValue((Long) editEmployeelist.getEmployeeid());
-			cbGender.setValue((String) editEmployeelist.getGender());
+			tfFirstName.setValue(employeeDM.getFirstname());
+			tfLastName.setValue(employeeDM.getLastname());
+			tfPhonenumber.setValue(employeeDM.getPrimaryphone());
+			tfEmailid.setValue(employeeDM.getPrimaryemail());
+			cbEmpStatus.setValue(employeeDM.getEmpstatus());
+			cbGender.setValue(employeeDM.getGender());
+			cbDepartment.setValue((Long) employeeDM.getDeptid());
+			cbManager.setValue((Long) employeeDM.getEmployeeid());
+			cbGender.setValue((String) employeeDM.getGender());
 		}
-		if (editEmployeelist.getDob() != null) {
-			dfDateofBirth.setValue(editEmployeelist.getDobinDt());
+		if (employeeDM.getDob() != null) {
+			dfDateofBirth.setValue(employeeDM.getDobinDt());
 		}
-		if (editEmployeelist.getDoj() != null) {
-			dfDateofJoin.setValue(editEmployeelist.getDojInDt());
+		if (employeeDM.getDoj() != null) {
+			dfDateofJoin.setValue(employeeDM.getDojInDt());
 		}
-		if (editEmployeelist.getCountryid() != null) {
-			cbCountry.setValue(editEmployeelist.getCountryid());
+		if (employeeDM.getCountryid() != null) {
+			cbCountry.setValue(employeeDM.getCountryid());
 		}
-		cbBranch.setValue((Long) editEmployeelist.getBranchid());
-		if (editEmployeelist.getLoginAccess() == null) {
-			editEmployeelist.setLoginAccess("N");
+		cbBranch.setValue((Long) employeeDM.getBranchid());
+		if (employeeDM.getLoginAccess() == null) {
+			employeeDM.setLoginAccess("N");
 		} else {
-			if (editEmployeelist.getLoginAccess().equals("Y")) {
+			if (employeeDM.getLoginAccess().equals("Y")) {
 				cbCreateUser.setValue(true);
-			} else if (editEmployeelist.getLoginAccess().equals("N")) {
+			} else if (employeeDM.getLoginAccess().equals("N")) {
 				cbCreateUser.setValue(false);
 			}
 		}
-		if (editEmployeelist.getEmpphoto() != null) {
+		if (employeeDM.getEmpphoto() != null) {
 			hlimage.removeAllComponents();
-			byte[] myimage = (byte[]) editEmployeelist.getEmpphoto();
+			byte[] myimage = (byte[]) employeeDM.getEmpphoto();
 			UploadUI uploadObject = new UploadUI(hlimage);
-			uploadObject.dispayImage(myimage, editEmployeelist.getFirstname());
+			uploadObject.dispayImage(myimage, employeeDM.getFirstname());
 		} else {
 			new UploadUI(hlimage);
 		}
@@ -2566,8 +2524,6 @@ public class Employee extends BaseUI {
 					cbempdtlscandid.setValue(itemid);
 				}
 			}
-			// cbempdtlscandid.setValue(empdtlsselected.getItemProperty("candidateid").getValue());
-			// EmployeeDtlsDM dtls = beanEmployeedtls.getItem(tblempdtls.getValue()).getBean();
 			if (empdtlsselected.getItemProperty("birthplace").getValue() != null) {
 				tfempdtlsbirthplace.setValue(empdtlsselected.getItemProperty("birthplace").getValue().toString());
 			}
@@ -2630,7 +2586,6 @@ public class Employee extends BaseUI {
 		try {
 			Item empimmgselected = tblempimmg.getItem(tblempimmg.getValue());
 			if (empimmgselected != null) {
-				// EmployeeImmgrtnDM empimmgobj = beanemployeeimmgrtn.getItem(tblempimmg.getValue()).getBean();
 				logger.info("editempimmgrtn-->" + empimmgselected.getItemProperty("doctype").getValue());
 				cbempimmgdoctype.setValue(empimmgselected.getItemProperty("doctype").getValue());
 				tfempimmgdocno.setValue(empimmgselected.getItemProperty("docno").getValue().toString());
@@ -2679,41 +2634,36 @@ public class Employee extends BaseUI {
 			EmployeeEducationDM empeduobj = beanemployeeeducation.getItem(tblempedu.getValue()).getBean();
 			cbempeduqualtnid.setValue((empeduselected.getItemProperty("qufiid").getValue()));
 			if (empeduselected != null) {
-			Long dtls = (Long) empeduselected.getItemProperty("qufiid").getValue();
-			Collection<?> dtlsid = cbempeduqualtnid.getItemIds();
-			for (java.util.Iterator<?> iterator = dtlsid.iterator(); iterator.hasNext();) {
-				Object itemid = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbempeduqualtnid.getItem(itemid);
-				QualificationDM st = (QualificationDM) item.getBean();
-				if (dtls != null && dtls.equals(st.getQualId())) {
-					cbempeduqualtnid.setValue(itemid);
+				Long dtls = (Long) empeduselected.getItemProperty("qufiid").getValue();
+				Collection<?> dtlsid = cbempeduqualtnid.getItemIds();
+				for (java.util.Iterator<?> iterator = dtlsid.iterator(); iterator.hasNext();) {
+					Object itemid = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbempeduqualtnid.getItem(itemid);
+					QualificationDM st = (QualificationDM) item.getBean();
+					if (dtls != null && dtls.equals(st.getQualId())) {
+						cbempeduqualtnid.setValue(itemid);
+					}
 				}
-			}
-			if (empeduselected.getItemProperty("subject").getValue() != null) {
-				tfempedusubject.setValue(empeduselected.getItemProperty("subject").getValue().toString());
-			}
-			// if (empeduselected.getItemProperty("durfrm").getValue() != null) {
-			// dfempedudurtnfrm.setValue(new Date(empeduselected.getItemProperty("durfrm").getValue().toString()));
-			// }
-			if (empeduobj.getDurfrm() != null)
-			;
-			{
-				dfempedudurtnfrm.setValue(empeduobj.getDurfrom());
-			}
-			if (empeduselected.getItemProperty("durto").getValue() != null) {
-				dfempedudurtnto.setValue(new Date(empeduselected.getItemProperty("durto").getValue().toString()));
-			}
-			if (empeduselected.getItemProperty("insname").getValue() != null) {
-				tfempeduinstitnname.setValue(empeduselected.getItemProperty("insname").getValue().toString());
-			}
-			if (empeduselected.getItemProperty("usityname").getValue() != null) {
-				tfempeduunivname.setValue(empeduselected.getItemProperty("usityname").getValue().toString());
-			}
-			tfempeduscoredmark.setValue(empeduselected.getItemProperty("srdmrks").getValue().toString());
-			tfempedutotalmark.setValue(empeduselected.getItemProperty("totmrks").getValue().toString());
-			cbempedugradeached.setValue(empeduselected.getItemProperty("gradeachcd").getValue().toString());
-			String stcode = empeduselected.getItemProperty("empednstatus").getValue().toString();
-			cbempedustatus.setValue(stcode);
+				if (empeduselected.getItemProperty("subject").getValue() != null) {
+					tfempedusubject.setValue(empeduselected.getItemProperty("subject").getValue().toString());
+				}
+				if (empeduobj.getDurfrm() != null) {
+					dfempedudurtnfrm.setValue(empeduobj.getDurfrom());
+				}
+				if (empeduselected.getItemProperty("durto").getValue() != null) {
+					dfempedudurtnto.setValue(new Date(empeduselected.getItemProperty("durto").getValue().toString()));
+				}
+				if (empeduselected.getItemProperty("insname").getValue() != null) {
+					tfempeduinstitnname.setValue(empeduselected.getItemProperty("insname").getValue().toString());
+				}
+				if (empeduselected.getItemProperty("usityname").getValue() != null) {
+					tfempeduunivname.setValue(empeduselected.getItemProperty("usityname").getValue().toString());
+				}
+				tfempeduscoredmark.setValue(empeduselected.getItemProperty("srdmrks").getValue().toString());
+				tfempedutotalmark.setValue(empeduselected.getItemProperty("totmrks").getValue().toString());
+				cbempedugradeached.setValue(empeduselected.getItemProperty("gradeachcd").getValue().toString());
+				String stcode = empeduselected.getItemProperty("empednstatus").getValue().toString();
+				cbempedustatus.setValue(stcode);
 			}
 		}
 	}
@@ -2725,8 +2675,6 @@ public class Employee extends BaseUI {
 	private void editempdepndent() {
 		Item empdepnselected = tblempdepn.getItem(tblempdepn.getValue());
 		if (empdepnselected != null) {
-			// EmployeeDependntsDM empdepobj;
-			// empdepobj = beanemployeedependent.getItem(tblempdepn.getValue()).getBean();
 			tfempdepndepname.setValue((empdepnselected.getItemProperty("dependntname").getValue().toString()));
 			cbempdepnreltionship.setValue(empdepnselected.getItemProperty("relationship").getValue().toString());
 			if (empdepnselected.getItemProperty("dob").getValue() != null) {
@@ -2747,7 +2695,6 @@ public class Employee extends BaseUI {
 		if (empidenselected != null) {
 			cbempidenname.setValue((empidenselected.getItemProperty("idntname").getValue().toString()));
 			tfempidenref.setValue((empidenselected.getItemProperty("idntref")).getValue().toString());
-			// dfempidendate.setValue(editdtls.gete);
 			if (empidenselected.getItemProperty("expdt").getValue() != null) {
 				dfempidendate.setValue(new Date(empidenselected.getItemProperty("expdt").getValue().toString()));
 			}
@@ -2788,19 +2735,9 @@ public class Employee extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		// remove the components in the search layout and input controls in the same container
 		resetFields();
-		// empdtlsResetfields();
-		// empskillResetfields();
-		// empaddressResetFields();
-		// empcontactsResetfields();
-		// empimmgrtnResetfields();
-		// empbankResetfields();
-		// empeduResetfields();
-		// empdepnResetfields();
-		// empidentitiesResetfields();
-		// empdtlsResetfields();
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, null, null, "BS_EMPNO");
-		tfEmployeeCode.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "BS_EMPNO").get(0);
+			tfEmployeeCode.setReadOnly(false);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				tfEmployeeCode.setReadOnly(true);
 			} else {
@@ -2832,6 +2769,8 @@ public class Employee extends BaseUI {
 					}
 				});
 			}
+		}
+		catch (Exception e) {
 		}
 		hlUserIPContainer.removeAllComponents();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
@@ -2898,8 +2837,6 @@ public class Employee extends BaseUI {
 				}
 			}
 		});
-		// resetFields();
-		// cbDepartment.removeItem(0L);
 		editEmployee();
 		loadsrcidentities(true);
 		loadsrcdepnndnts(true);
@@ -2933,12 +2870,14 @@ public class Employee extends BaseUI {
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		if ((tfEmployeeCode.getValue() == null) || tfEmployeeCode.getValue().trim().length() == 0) {
-			List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "BS_EMPNO");
-			for (SlnoGenDM slnoObj : slnoList) {
+			try {
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "BS_EMPNO").get(0);
 				if (slnoObj.getAutoGenYN().equals("N")) {
 					tfEmployeeCode.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_CODE));
 					errorFlag = true;
 				}
+			}
+			catch (Exception e) {
 			}
 		}
 		if ((tfFirstName.getValue() == null) || tfFirstName.getValue().trim().length() == 0) {
@@ -3220,25 +3159,6 @@ public class Employee extends BaseUI {
 			cbempedugradeached.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_Education_GRADE));
 			errorFlag = true;
 		}
-		// if (dfempedudurtnfrm.getValue() != null) {
-		// if (dfempedudurtnfrm.getValue().after(new Date()) || dfempedudurtnfrm.getValue().equals(new Date())) {
-		// dfempedudurtnfrm.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_Education_FROMDATE));
-		// errorFlag = true;
-		// } else {
-		// dtfrmdate = dfempedudurtnfrm.getValue();
-		// dfempedudurtnfrm.setComponentError(null);
-		//
-		// }
-		// }
-		//
-		//
-		// if (dfempedudurtnto.getValue().before(dtfrmdate)) {
-		// dfempedudurtnto.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_Education_TODATE));
-		// errorFlag = true;
-		// } else {
-		// dfempedudurtnto.setComponentError(null);
-		//
-		// }
 		scoredmark = Long.valueOf(tfempeduscoredmark.getValue());
 		totalmark = Long.valueOf(tfempedutotalmark.getValue());
 		if (scoredmark > totalmark) {
@@ -3295,7 +3215,7 @@ public class Employee extends BaseUI {
 	/*
 	 * saveEmployeeAddress()-->this function is used for save the Employee Address details for temporary
 	 */
-	protected void saveEmployeeAddress() {
+	private void saveEmployeeAddress() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Saving Employee Address details Data... ");
 		EmployeeAddressDM empaddrsobj = new EmployeeAddressDM();
@@ -3321,7 +3241,7 @@ public class Employee extends BaseUI {
 	/*
 	 * saveEmpSKillDetails()-->this function is used for save the Employee Skill details for temporary
 	 */
-	protected void saveEmpSKillDetails() {
+	private void saveEmpSKillDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Saving Employee Skill details Data... ");
@@ -3355,7 +3275,7 @@ public class Employee extends BaseUI {
 	/*
 	 * saveEmpDtls()-->this function is used for save the Employee Details for temporary
 	 */
-	protected void saveEmpDtls() {
+	private void saveEmpDtls() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Saving Employee Details Data... ");
@@ -3400,7 +3320,7 @@ public class Employee extends BaseUI {
 	/*
 	 * saveEmpContacts()-->this function is used for save the Employee Contact for temporary
 	 */
-	protected void saveEmpContacts() {
+	private void saveEmpContacts() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Saving Employee Contact Data... ");
 		try {
@@ -3441,7 +3361,7 @@ public class Employee extends BaseUI {
 	/*
 	 * saveempimmgrtn()-->this function is used for save the Employee Immigration for temporary
 	 */
-	protected void saveempimmgrtn() {
+	private void saveEmpImmgrtn() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Saving Employee Immigration Data... ");
 		EmployeeImmgrtnDM empimmgr = new EmployeeImmgrtnDM();
@@ -3449,7 +3369,6 @@ public class Employee extends BaseUI {
 			empimmgr = beanemployeeimmgrtn.getItem(tblempimmg.getValue()).getBean();
 			employeeimmglist.remove(empimmgr);
 		}
-		// empimmgr.setEmployeeid(employeeid);
 		empimmgr.setDoctype((String) cbempimmgdoctype.getValue());
 		empimmgr.setDocno((String) tfempimmgdocno.getValue().toString());
 		empimmgr.setIssuedate((Date) dfempimmgissuedf.getValue());
@@ -3467,7 +3386,7 @@ public class Employee extends BaseUI {
 	/*
 	 * saveempbank()-->this function is used for save the Employee Bank for temporary
 	 */
-	protected void saveempbank() {
+	private void saveEmpBankDtls() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Saving Employee Bank Data... ");
 		EmployeeBankDM employeebankObj = new EmployeeBankDM();
@@ -3491,7 +3410,7 @@ public class Employee extends BaseUI {
 	/*
 	 * saveempbank()-->this function is used for save the Employee Education for temporary
 	 */
-	protected void saveempeducation() {
+	private void saveEmpEducation() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Saving Employee Education Data... ");
 		EmployeeEducationDM employeeeduobj = new EmployeeEducationDM();
@@ -3523,7 +3442,7 @@ public class Employee extends BaseUI {
 	/*
 	 * saveempdepnndnt()-->this function is used for save the Employee Dependant for temporary
 	 */
-	protected void saveempdepnndnt() {
+	private void saveempdepnndnt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Saving Employee Dependant Data... ");
 		EmployeeDependntsDM empdepnobj = new EmployeeDependntsDM();
@@ -3548,7 +3467,7 @@ public class Employee extends BaseUI {
 	/*
 	 * saveempidentities()-->this function is used for save the Employee Identities for temporary
 	 */
-	protected void saveempidentities() {
+	private void saveempidentities() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Saving Employee Identities Data... ");
 		EmployeeIdentitiesDM empidenobj = new EmployeeIdentitiesDM();
@@ -3794,7 +3713,7 @@ public class Employee extends BaseUI {
 	/*
 	 * editMaterialConsumer()-->this function is used for restore the selected row's data to Employee Address
 	 */
-	protected void empaddressResetFields() {
+	private void empaddressResetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting the Employee Address UI controls");
 		cbempadrstype.setValue(null);
@@ -3818,7 +3737,7 @@ public class Employee extends BaseUI {
 	/*
 	 * empskillResetfields()-->this function is used for restore the selected row's data to Employee skill
 	 */
-	protected void empskillResetfields() {
+	private void empskillResetfields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting the Employee skill UI controls");
 		cbempskillid.setValue(null);
@@ -3834,7 +3753,7 @@ public class Employee extends BaseUI {
 	/*
 	 * empdtlsResetfields()-->this function is used for restore the selected row's data to Employee Details
 	 */
-	protected void empdtlsResetfields() {
+	private void empdtlsResetfields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting the Employee Details UI controls");
 		tfempdtlsbirthplace.setValue("");
@@ -3874,7 +3793,7 @@ public class Employee extends BaseUI {
 	/*
 	 * empcontactsResetfields()-->this function is used for restore the selected row's data to Employee Contact
 	 */
-	protected void empcontactsResetfields() {
+	private void empcontactsResetfields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting the Employee Contact UI controls");
 		tfempcontactname.setValue("");
@@ -3892,7 +3811,7 @@ public class Employee extends BaseUI {
 	/*
 	 * empimmgrtnResetfields()-->this function is used for restore the selected row's data to Employee Immigration
 	 */
-	protected void empimmgrtnResetfields() {
+	private void empimmgrtnResetfields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting the Employee Immigration UI controls");
 		cbempimmgdoctype.setValue(null);
@@ -3912,7 +3831,7 @@ public class Employee extends BaseUI {
 	/*
 	 * empbankResetfields()-->this function is used for restore the selected row's data to Employee Bank
 	 */
-	protected void empbankResetfields() {
+	private void empbankResetfields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting the Employee Bank UI controls");
 		tfempbankname.setValue("");
@@ -3932,7 +3851,7 @@ public class Employee extends BaseUI {
 	/*
 	 * empeduResetfields()-->this function is used for restore the selected row's data to Employee Education
 	 */
-	protected void empeduResetfields() {
+	private void empeduResetfields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting the Employee Education UI controls");
 		cbempeduqualtnid.setValue(null);
@@ -3957,7 +3876,7 @@ public class Employee extends BaseUI {
 	/*
 	 * empdepnResetfields()-->this function is used for restore the selected row's data to Employee Dependant
 	 */
-	protected void empdepnResetfields() {
+	private void empdepnResetfields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting the Employee Dependant UI controls");
 		tfempdepndepname.setValue("");
@@ -3973,7 +3892,7 @@ public class Employee extends BaseUI {
 	/*
 	 * empidentitiesResetfields()-->this function is used for restore the selected row's data to Employee Identities
 	 */
-	protected void empidentitiesResetfields() {
+	private void empidentitiesResetfields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting the EEmployee Identities UI controls");
 		cbempidenname.setValue(null);

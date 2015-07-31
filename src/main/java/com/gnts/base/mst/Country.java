@@ -44,7 +44,7 @@ public class Country extends BaseUI {
 	/**
 	 * 
 	 */
-	CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
+	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
 	// form layout for input controls
 	private FormLayout flCountryname, flCountrycode, flCountrystatus;
 	// Parent layout for all the input controls
@@ -60,7 +60,7 @@ public class Country extends BaseUI {
 	private int recordCnt = 0;
 	private String username;
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(Country.class);
+	private Logger logger = Logger.getLogger(Country.class);
 	
 	public Country() {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
@@ -103,7 +103,7 @@ public class Country extends BaseUI {
 		loadSrchRslt();
 	}
 	
-	protected void assembleSearchLayout() {
+	private void assembleSearchLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		/*
 		 * Adding user input layout to the search layout as all the fields in the user input are available in the search
@@ -114,7 +114,7 @@ public class Country extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	protected void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<CountryDM> countryList = new ArrayList<CountryDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + " for search parameters are "
@@ -138,6 +138,7 @@ public class Country extends BaseUI {
 	
 	// Base class implementations
 	// BaseUI searchDetails() implementation
+	@Override
 	protected void searchDetails() throws NoDataFoundException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + " Invoking search");
 		loadSrchRslt();

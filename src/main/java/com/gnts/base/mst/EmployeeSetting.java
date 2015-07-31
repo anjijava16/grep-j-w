@@ -80,12 +80,11 @@ public class EmployeeSetting extends BaseUI {
 	private PopupDateField dfDateofBirth;
 	private ComboBox cbDepartment, cbBranch, cbCountry;
 	private ComboBox cbEmpStatus = new GERPComboBox("Status", BASEConstants.M_BASE_USER, BASEConstants.USER_STATUS);
-	public Button btnEmpSave = new Button("Save");
+	private Button btnEmpSave = new Button("Save");
 	// local variables declaration
 	private Long companyid, userId;
 	private String username;
 	private Long employeeId;
-	public static boolean filevalue = false;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Department.class);
 	private static final long serialVersionUID = 1L;
@@ -158,7 +157,7 @@ public class EmployeeSetting extends BaseUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
-					SaveEmpDetails();
+					saveEmpDetails();
 					new GERPSaveNotification();
 				}
 				catch (Exception e) {
@@ -220,7 +219,7 @@ public class EmployeeSetting extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 	}
 	
 	// Reset the field values to default values
@@ -317,7 +316,7 @@ public class EmployeeSetting extends BaseUI {
 	/**
 	 * this method used to update the employee details
 	 */
-	private void SaveEmpDetails() throws ERPException.SaveException, FileNotFoundException, IOException {
+	private void saveEmpDetails() throws ERPException.SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			EmployeeDM empObj = new EmployeeDM();
@@ -363,7 +362,7 @@ public class EmployeeSetting extends BaseUI {
 	/*
 	 * loadCountryList()-->this function is used for load the Country list
 	 */
-	public void loadCountryList() {
+	private void loadCountryList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Country Search...");
 		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 		beanCountry.setBeanIdProperty("countryID");
@@ -374,7 +373,7 @@ public class EmployeeSetting extends BaseUI {
 	/*
 	 * loadDepartmentList()-->this function is used for load the Department list
 	 */
-	public void loadDepartmentList() {
+	private void loadDepartmentList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
 		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beanDepartment.setBeanIdProperty("deptid");
@@ -385,7 +384,7 @@ public class EmployeeSetting extends BaseUI {
 	/*
 	 * loadBranchList()-->this function is used for load the Branch list
 	 */
-	public void loadBranchList() {
+	private void loadBranchList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
 		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranch.setBeanIdProperty("branchId");

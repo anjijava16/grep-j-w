@@ -231,11 +231,10 @@ public class AccessConfig extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		tblScreenAccess.removeAllItems();
 		tblScreenAccess.addContainerProperty("screenname", String.class, "");
 		tblScreenAccess.addContainerProperty("screenid", String.class, "");
-		System.out.println(cbRole.getValue());
 		if (cbRole.getValue() != null && cbBranch.getValue() != null) {
 			appScreenList = appsConfigBean.getMBaseAppscreenUserList(Long.valueOf(cbRole.getValue().toString()),
 					companyid, Long.valueOf(cbBranch.getValue().toString()));
@@ -501,7 +500,7 @@ public class AccessConfig extends BaseUI {
 		resetFields();
 	}
 	
-	void saveFieldAccessDetails() {
+	private void saveFieldAccessDetails() {
 		@SuppressWarnings("unchecked")
 		Collection<FieldAccessConfigDM> itemIds = (Collection<FieldAccessConfigDM>) tblFieldAccess.getVisibleItemIds();
 		for (FieldAccessConfigDM fieldaccess : (Collection<FieldAccessConfigDM>) itemIds) {

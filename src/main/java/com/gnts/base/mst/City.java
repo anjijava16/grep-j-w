@@ -180,7 +180,7 @@ public class City extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		cbcountry.setVisible(false);
 		cbtimezone.setVisible(false);
 		cbregion.setVisible(false);
@@ -398,10 +398,6 @@ public class City extends BaseUI {
 			cbstate.setComponentError(new UserError(GERPErrorCodes.NULL_STATE_NAMECB));
 			errorFlag = true;
 		}
-		/*
-		 * if ((cbregion.getValue() == null)) { cbregion.setComponentError(new
-		 * UserError(GERPErrorCodes.NULL_REGION_NAME)); errorFlag = true; }
-		 */
 		logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Throwing ValidationException. User data is > " + tfcityname.getValue());
 		if (errorFlag) {
@@ -412,27 +408,27 @@ public class City extends BaseUI {
 	@Override
 	protected void saveDetails() throws ERPException.SaveException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		CityDM cityobj = new CityDM();
+		CityDM cityDM = new CityDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			cityobj = citybean.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			cityDM = citybean.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		cityobj.setCompanyid(companyid);
-		cityobj.setCityname(tfcityname.getValue().toString());
+		cityDM.setCompanyid(companyid);
+		cityDM.setCityname(tfcityname.getValue().toString());
 		if (cbstatus.getValue() != null) {
-			cityobj.setStatus((String) cbstatus.getValue());
+			cityDM.setStatus((String) cbstatus.getValue());
 		}
 		if (tftier.getValue() != "") {
-			cityobj.setTier(tftier.getValue());
+			cityDM.setTier(tftier.getValue());
 		}
-		cityobj.setStateId(Long.valueOf(cbstate.getValue().toString()));
-		cityobj.setCountryid(Long.valueOf(cbcountry.getValue().toString()));
-		cityobj.setTimezoneid(Long.valueOf(cbtimezone.getValue().toString()));
+		cityDM.setStateId(Long.valueOf(cbstate.getValue().toString()));
+		cityDM.setCountryid(Long.valueOf(cbcountry.getValue().toString()));
+		cityDM.setTimezoneid(Long.valueOf(cbtimezone.getValue().toString()));
 		if (cbregion.getValue() != null) {
-			cityobj.setRegionId(Long.valueOf(cbregion.getValue().toString()));
+			cityDM.setRegionId(Long.valueOf(cbregion.getValue().toString()));
 		}
-		cityobj.setLastupdateddt(DateUtils.getcurrentdate());
-		cityobj.setLastupdatedby(username);
-		serviceCity.saveAndUpdateCitydetails(cityobj);
+		cityDM.setLastupdateddt(DateUtils.getcurrentdate());
+		cityDM.setLastupdatedby(username);
+		serviceCity.saveAndUpdateCitydetails(cityDM);
 		resetFields();
 		loadSrchRslt();
 	}

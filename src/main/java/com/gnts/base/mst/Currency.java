@@ -42,7 +42,7 @@ import com.vaadin.ui.UI;
 
 //import com.vaadin.event.ShortcutAction.KeyCode;
 public class Currency extends BaseUI {
-	CurrencyService serviceCurrency = (CurrencyService) SpringContextHelper.getBean("currency");
+	private CurrencyService serviceCurrency = (CurrencyService) SpringContextHelper.getBean("currency");
 	// form layout for input controls
 	private FormLayout flCurrencyCode, flCurrencyName, flCurrencyStatus;
 	// Parent layout for all the input controls
@@ -59,7 +59,7 @@ public class Currency extends BaseUI {
 	private int recordCnt = 0;
 	private Long companyId;
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(Currency.class);
+	private Logger logger = Logger.getLogger(Currency.class);
 	private static final long serialVersionUID = 1L;
 	
 	// Constructor
@@ -120,7 +120,7 @@ public class Currency extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Loading Search...");
 		List<CurrencyDM> currencyList = new ArrayList<CurrencyDM>();

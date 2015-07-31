@@ -156,7 +156,7 @@ public class CompanyLookup extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		Long lookupcode = null;
 		Long moduleId = null;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");

@@ -75,7 +75,6 @@ public class Company extends BaseUI {
 	// BeanItem container of CompanyDM
 	private BeanItemContainer<CompanyDM> beansCompany = null;
 	// local variables declaration
-	String strCompanyId;
 	private String username;
 	private Long companyid;
 	private int recordCnt;
@@ -86,8 +85,7 @@ public class Company extends BaseUI {
 	// UserInput control layout
 	private HorizontalLayout hlUserInputLayout = new GERPAddEditHLayout();
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(Company.class);
-	public static boolean filevalue2 = false;
+	private Logger logger = Logger.getLogger(Company.class);
 	
 	// Constructor received the parameters from Login UI class
 	public Company() {
@@ -292,7 +290,7 @@ public class Company extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<CompanyDM> companyList = new ArrayList<CompanyDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
@@ -388,10 +386,9 @@ public class Company extends BaseUI {
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
-	protected void editCompanyDetails() {
+	private void editCompanyDetails() {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			CompanyDM editCompany = beansCompany.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			strCompanyId = editCompany.getCompanyid().toString();
 			if (editCompany.getCompanylogo() != null) {
 				hlimage.removeAllComponents();
 				byte[] myimage = (byte[]) editCompany.getCompanylogo();

@@ -9,8 +9,15 @@ import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.service.mst.BranchService;
+import com.gnts.base.service.mst.CityService;
 import com.gnts.base.service.mst.CompanyLookupService;
+import com.gnts.base.service.mst.CountryService;
+import com.gnts.base.service.mst.EmployeeService;
+import com.gnts.base.service.mst.ProductService;
 import com.gnts.base.service.mst.SlnoGenService;
+import com.gnts.base.service.mst.StateService;
+import com.gnts.crm.service.mst.ClientCategoryService;
+import com.gnts.crm.service.mst.ClientService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
@@ -27,14 +34,32 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
+import com.gnts.mfg.service.txn.WorkOrderDtlService;
+import com.gnts.mfg.service.txn.WorkOrderHdrService;
+import com.gnts.sms.domain.txn.SmsEnqHdrDM;
+import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
+import com.gnts.sms.domain.txn.SmsEnquirySpecDM;
+import com.gnts.sms.service.txn.SmsEnqHdrService;
+import com.gnts.sms.service.txn.SmsEnquiryDtlService;
+import com.gnts.sms.service.txn.SmsEnquirySpecService;
+import com.gnts.sms.txn.SmsComments;
+import com.gnts.sms.txn.SmsEnquiry;
+import com.gnts.stt.mfg.domain.txn.RotoArmDM;
 import com.gnts.stt.mfg.domain.txn.RotoCheckHdrDM;
 import com.gnts.stt.mfg.domain.txn.RotoDtlDM;
 import com.gnts.stt.mfg.domain.txn.RotoPlanDtlDM;
 import com.gnts.stt.mfg.domain.txn.RotoPlanHdrDM;
+import com.gnts.stt.mfg.domain.txn.RotoShiftDM;
+import com.gnts.stt.mfg.domain.txn.RotohdrDM;
+import com.gnts.stt.mfg.service.txn.RotoArmService;
 import com.gnts.stt.mfg.service.txn.RotoCheckHdrService;
 import com.gnts.stt.mfg.service.txn.RotoDtlService;
+import com.gnts.stt.mfg.service.txn.RotoPlanArmService;
 import com.gnts.stt.mfg.service.txn.RotoPlanDtlService;
 import com.gnts.stt.mfg.service.txn.RotoPlanHdrService;
+import com.gnts.stt.mfg.service.txn.RotoPlanShiftService;
+import com.gnts.stt.mfg.service.txn.RotoShiftService;
+import com.gnts.stt.mfg.service.txn.RotohdrService;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -45,12 +70,17 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
@@ -107,11 +137,64 @@ public class RotoCheck extends BaseTransUI {
 	private HorizontalLayout hlSearchLayout, hlDtlandArm, hlArm, hlShift, hlHdrslap;
 	private VerticalLayout vlShift, vlArm;
 	// local variables declaration
+
+	private RotohdrService serviceRotohdr = (RotohdrService) SpringContextHelper.getBean("rotohdr");
+	private RotoArmService serviceRotoArm = (RotoArmService) SpringContextHelper.getBean("rotoarm");
+	private RotoPlanShiftService serviceRotoplanshift = (RotoPlanShiftService) SpringContextHelper
+			.getBean("rotoplanshift");
+	private RotoPlanArmService serviceRotoplanarm = (RotoPlanArmService) SpringContextHelper.getBean("rotoplanarm");
+	private RotoShiftService serviceRotoShift = (RotoShiftService) SpringContextHelper.getBean("rotoshift");
+	private ClientService serviceClient = (ClientService) SpringContextHelper.getBean("clients");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private WorkOrderHdrService serviceWorkOrderHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
+	private WorkOrderDtlService serviceWorkOrderDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
+	// User Input Components for Work Order Details
+	private BeanItemContainer<RotohdrDM> beanRotohdrDM = null;
+	private BeanItemContainer<RotoShiftDM> beanRotoShiftDM = null;
+	private BeanItemContainer<RotoArmDM> beanRotoArmDM = null;
+	// Search Control Layout
+
+	// Roto Hdr Components
+	private TextField tfRotoRefno, tfRotoHdrqty, tfrotoplanedqty, tfPlnRef;
+	private ComboBox cbbranch, cbRotoPlan;
+	private DateField dfRotoDate;
+	private TextArea taHdrRemarks;
+	private ComboBox cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
+			BASEConstants.M_GENERIC_COLUMN);
+
+	// Roto Dtl Components
+	private TextField tfRotoDtlqty;
+	private ComboBox cbWorkorder, cbProduct, cbClient, cbDtlStatus, cbArmWorkorder;
+	private FormLayout flDtlCol1, flDtlCol2, flDtlCol3;
+	// Roto Shift Components
+	private TextField tfshiftname, tfTargetQty;
+	private ComboBox cbEmpname, cbSftStatus;
+	private FormLayout flshiftCol1, flshiftCol2, flshiftCol3;
+	private List<RotoShiftDM> listRotoShift = new ArrayList<RotoShiftDM>();
+	// Roto Arm Components
+	private TextField tfArmno, tfCycleNo, tfCycleCount, tfArmShiftName;
+	private ComboBox cbArmproduct, cbArmstatus, cbArmEmployee;
+	private FormLayout flArmCol1, flArmCol2, flArmCol3;
+	private Button btnAddShift = new GERPButton("Add", "Addbt", this);
+	private Button btnAddArm = new GERPButton("Add", "Addbt", this);
+	private Button btnShiftdelete = new GERPButton("Delete", "delete", this);
+	private Button btnArmDelete = new GERPButton("Delete", "delete", this);
+
 	private String username;
 	private Long companyid, branchID, moduleId;
 	private int recordCnt = 0;
 	private Long rotoplanId;
 	private Long productid, id;
+	private Long rotodtlid;
+	private Long rotoid;
+	private Long employeeid;
+	private int recordShiftCnt = 0;
+	private int recordArmCnt = 0;
+	private Boolean errorFlag = false;
+	private int count = 1;
+	private Long qty = 0L;
+	// Initialize logger
+
 	
 	// Constructor received the parameters from Login UI class
 	public RotoCheck() {
@@ -192,7 +275,6 @@ public class RotoCheck extends BaseTransUI {
 		buildviewDtl();
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
-		assembleinputLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
 		resetFields();
 		loadPlanDtlRslt();
@@ -255,125 +337,140 @@ public class RotoCheck extends BaseTransUI {
 		tfRemarksDtl.setWidth("150");
 	}
 	
-	private void assembleSearchLayout() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Roto planning search layout");
-		tfRotoRef.setReadOnly(false);
-		hlSearchLayout.removeAllComponents();
-		hlSearchLayout.setMargin(true);
-		flHdrCol1 = new FormLayout();
-		flHdrCol2 = new FormLayout();
-		flHdrCol3 = new FormLayout();
-		flHdrCol4 = new FormLayout();
-		Label lbl = new Label();
-		flHdrCol4.addComponent(tfRotoRef);
-		flHdrCol1.addComponent(dfRotoDt);
-		flHdrCol2.addComponent(lbl);
-		flHdrCol3.addComponent(cbStatus);
-		hlSearchLayout.addComponent(flHdrCol4);
-		hlSearchLayout.addComponent(flHdrCol1);
-		hlSearchLayout.addComponent(flHdrCol2);
-		hlSearchLayout.addComponent(flHdrCol3);
-		hlSearchLayout.setMargin(true);
-		hlSearchLayout.setSizeUndefined();
-	}
-	
-	private void assembleinputLayout() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Form planning search layout");
-		// Remove all components in search layout
-		/*
-		 * vlArm.removeAllComponents(); vlDtl.removeAllComponents(); hlDtlandArm.removeAllComponents();
-		 */
-		hlSearchLayout.removeAllComponents();
-		flHdrCol1 = new FormLayout();
-		flHdrCol2 = new FormLayout();
-		flHdrCol1.addComponent(cbBranch);
-		flHdrCol1.addComponent(cbPlanRef);
-		flHdrCol1.addComponent(tfRotoRef);
-		flHdrCol1.addComponent(dfRotoDt);
-		flHdrCol1.addComponent(tfPlanedQty);
-		flHdrCol2.addComponent(tfProdQty);
-		flHdrCol2.addComponent(tfRemarks);
-		flHdrCol2.addComponent(cbStatus);
-		hlHdr = new HorizontalLayout();
-		hlHdr.addComponent(flHdrCol1);
-		hlHdr.addComponent(flHdrCol2);
-		hlHdr.setSpacing(true);
-		hlHdr.setMargin(true);
-		// Adding Arm Components
-		fldtl1 = new FormLayout();
-		fldtl2 = new FormLayout();
-		fldtl3 = new FormLayout();
-		fldtl4 = new FormLayout();
-		fldtl5 = new FormLayout();
-		HorizontalLayout hlBtn = new HorizontalLayout();
-		hlBtn.addComponent(btnAddDtls);
-		hlBtn.addComponent(btndelete);
-		fldtl1.addComponent(cbArmNo);
-		fldtl1.addComponent(tmOvenOn);
-		fldtl1.addComponent(cbArmNo);
-		fldtl1.addComponent(tmOvenOn);
-		fldtl1.addComponent(tmOvenOff);
-		fldtl1.addComponent(tfOvenTotal);
-		fldtl1.addComponent(tmCharOn);
-		fldtl2.addComponent(tmCharOff);
-		fldtl2.addComponent(tfCharTot);
-		fldtl2.addComponent(tmCoolOn);
-		fldtl2.addComponent(tmCoolOff);
-		fldtl2.addComponent(tfCoolTot);
-		fldtl3.addComponent(tftempZ1);
-		fldtl3.addComponent(tftempZ2);
-		fldtl3.addComponent(tftempZ3);
-		fldtl3.addComponent(tfBoxModel);
-		fldtl3.addComponent(tfPwdTop);
-		fldtl4.addComponent(tfPwdBot);
-		fldtl4.addComponent(tfPowTotal);
-		fldtl4.addComponent(tfBoxWgTop);
-		fldtl4.addComponent(tfBoxWgBot);
-		fldtl4.addComponent(tfBoxWgTotal);
-		fldtl5.addComponent(tfCycles);
-		fldtl5.addComponent(tfKgCm);
-		fldtl5.addComponent(tfEmpNo);
-		fldtl5.addComponent(tfRemarksDtl);
-		fldtl5.addComponent(hlBtn);
-		hlArm = new HorizontalLayout();
-		hlArm.setSpacing(true);
-		hlArm.addComponent(fldtl1);
-		hlArm.addComponent(fldtl2);
-		hlArm.addComponent(fldtl3);
-		hlArm.setSpacing(true);
-		hlArm.setMargin(true);
-		hlHdrslap = new HorizontalLayout();
-		hlHdrslap.addComponent(fldtl1);
-		hlHdrslap.addComponent(fldtl2);
-		hlHdrslap.addComponent(fldtl3);
-		hlHdrslap.addComponent(fldtl4);
-		hlHdrslap.addComponent(fldtl5);
-		hlHdrslap.setSpacing(true);
-		hlHdrslap.setMargin(true);
-		vlArm = new VerticalLayout();
-		vlArm.addComponent(hlArm);
-		vlArm.addComponent(tblRotoArm);
-		vlDtl = new VerticalLayout();
-		vlDtl.addComponent(tblRotoDetails);
-		hlDtlandArm = new HorizontalLayout();
-		hlDtlandArm.addComponent(GERPPanelGenerator.createPanel(vlArm));
-		hlDtlandArm.addComponent(GERPPanelGenerator.createPanel(vlShift));
-		hlDtlandArm.setSpacing(true);
-		hlDtlandArm.setHeight("100%");
-		hlHdrAndShift = new HorizontalLayout();
-		hlHdrAndShift.addComponent(hlHdr);
-		hlHdrAndShift.addComponent(GERPPanelGenerator.createPanel(vlDtl));
-		vlHdrshiftandDtlarm = new VerticalLayout();
-		vlHdrshiftandDtlarm.addComponent(GERPPanelGenerator.createPanel(hlHdrAndShift));
-		vlHdrshiftandDtlarm.addComponent(GERPPanelGenerator.createPanel(hlDtlandArm));
-		vlHdrshiftandDtlarm.setSpacing(true);
-		vlHdrshiftandDtlarm.setWidth("100%");
-		hlUserInputLayout.setSizeUndefined();
-		hlUserInputLayout.addComponent(vlHdrshiftandDtlarm);
-		hlUserInputLayout.setWidth("100%");
-		hlUserInputLayout.setMargin(false);
-		hlUserInputLayout.setSpacing(true);
-	}
+
+
+private void assembleSearchLayout() {
+	logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Roto planning search layout");
+	tfRotoRefno.setReadOnly(false);
+	hlSearchLayout.removeAllComponents();
+	hlSearchLayout.setMargin(true);
+	flHdrCol1 = new FormLayout();
+	flHdrCol2 = new FormLayout();
+	flHdrCol3 = new FormLayout();
+	flHdrCol4 = new FormLayout();
+	Label lbl = new Label();
+	flHdrCol4.addComponent(tfRotoRefno);
+	flHdrCol1.addComponent(dfRotoDate);
+	flHdrCol2.addComponent(lbl);
+	flHdrCol3.addComponent(cbHdrStatus);
+	hlSearchLayout.addComponent(flHdrCol4);
+	hlSearchLayout.addComponent(flHdrCol1);
+	hlSearchLayout.addComponent(flHdrCol2);
+	hlSearchLayout.addComponent(flHdrCol3);
+	hlSearchLayout.setMargin(true);
+	hlSearchLayout.setSizeUndefined();
+}
+
+private void assembleInputUserLayout() {
+	logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Form planning search layout");
+	// Remove all components in search layout
+	/*
+	 * vlArm.removeAllComponents(); vlDtl.removeAllComponents(); hlDtlandArm.removeAllComponents();
+	 */
+	hlSearchLayout.removeAllComponents();
+	flHdrCol1 = new FormLayout();
+	flHdrCol2 = new FormLayout();
+	flHdrCol1.addComponent(cbbranch);
+	flHdrCol1.addComponent(cbRotoPlan);
+	flHdrCol1.addComponent(tfRotoRefno);
+	flHdrCol1.addComponent(dfRotoDate);
+	flHdrCol1.addComponent(tfrotoplanedqty);
+	flHdrCol2.addComponent(tfRotoHdrqty);
+	flHdrCol2.addComponent(taHdrRemarks);
+	flHdrCol2.addComponent(cbHdrStatus);
+	hlHdr = new HorizontalLayout();
+	hlHdr.addComponent(flHdrCol1);
+	hlHdr.addComponent(flHdrCol2);
+	hlHdr.setSpacing(true);
+	hlHdr.setMargin(true);
+	// Adding Arm Components
+	flArmCol1 = new FormLayout();
+	flArmCol2 = new FormLayout();
+	flArmCol3 = new FormLayout();
+	flArmCol1.addComponent(cbArmWorkorder);
+	flArmCol1.addComponent(tfArmno);
+	HorizontalLayout hlclycle = new HorizontalLayout();
+	hlclycle.addComponent(tfCycleNo);
+	hlclycle.addComponent(tfCycleCount);
+	hlclycle.setCaption("Cycle No");
+	flArmCol1.addComponent(hlclycle);
+	flArmCol1.addComponent(tfArmShiftName);
+	flArmCol2.addComponent(cbArmEmployee);
+	flArmCol2.addComponent(cbArmproduct);
+	flArmCol2.addComponent(cbArmstatus);
+	flArmCol3.addComponent(btnAddArm);
+	flArmCol3.addComponent(btnArmDelete);
+	hlArm = new HorizontalLayout();
+	hlArm.setSpacing(true);
+	hlArm.addComponent(flArmCol1);
+	hlArm.addComponent(flArmCol2);
+	hlArm.addComponent(flArmCol3);
+	hlArm.setSpacing(true);
+	hlArm.setMargin(true);
+	// Adding Shift Components
+	flshiftCol1 = new FormLayout();
+	flshiftCol2 = new FormLayout();
+	flshiftCol3 = new FormLayout();
+	flshiftCol1.addComponent(tfshiftname);
+	flshiftCol1.addComponent(cbEmpname);
+	flshiftCol2.addComponent(tfTargetQty);
+	flshiftCol2.addComponent(cbSftStatus);
+	flshiftCol3.addComponent(btnAddShift);
+	flshiftCol3.addComponent(btnShiftdelete);
+	flshiftCol3.setComponentAlignment(btnAddShift, Alignment.BOTTOM_CENTER);
+	vlShift = new VerticalLayout();
+	vlShift.setSpacing(true);
+	hlShift = new HorizontalLayout();
+	hlShift.setSpacing(true);
+	hlShift.addComponent(flshiftCol1);
+	hlShift.addComponent(flshiftCol2);
+	hlShift.addComponent(flshiftCol3);
+	vlShift.addComponent(hlShift);
+	vlShift.addComponent(tblRotoShift);
+	// Adding Dtl Components
+	flDtlCol1 = new FormLayout();
+	flDtlCol2 = new FormLayout();
+	flDtlCol3 = new FormLayout();
+	flDtlCol1.addComponent(cbClient);
+	flDtlCol1.addComponent(cbWorkorder);
+	flDtlCol2.addComponent(cbProduct);
+	flDtlCol2.addComponent(tfRotoDtlqty);
+	flDtlCol3.addComponent(cbDtlStatus);
+	HorizontalLayout hlBtn = new HorizontalLayout();
+	hlBtn.addComponent(btnAddDtls);
+	hlBtn.addComponent(btndelete);
+	flDtlCol3.addComponent(hlBtn);
+	hlHdrslap = new HorizontalLayout();
+	hlHdrslap.addComponent(flDtlCol1);
+	hlHdrslap.addComponent(flDtlCol2);
+	hlHdrslap.addComponent(flDtlCol3);
+	hlHdrslap.setSpacing(true);
+	hlHdrslap.setMargin(true);
+	vlArm = new VerticalLayout();
+	vlArm.addComponent(hlArm);
+	vlArm.addComponent(tblRotoArm);
+	vlDtl = new VerticalLayout();
+	vlDtl.addComponent(tblRotoDetails);
+	hlDtlandArm = new HorizontalLayout();
+	hlDtlandArm.addComponent(GERPPanelGenerator.createPanel(vlArm));
+	hlDtlandArm.addComponent(GERPPanelGenerator.createPanel(vlShift));
+	hlDtlandArm.setSpacing(true);
+	hlDtlandArm.setHeight("100%");
+	hlHdrAndShift = new HorizontalLayout();
+	hlHdrAndShift.addComponent(hlHdr);
+	hlHdrAndShift.addComponent(GERPPanelGenerator.createPanel(vlDtl));
+	vlHdrshiftandDtlarm = new VerticalLayout();
+	vlHdrshiftandDtlarm.addComponent(GERPPanelGenerator.createPanel(hlHdrAndShift));
+	vlHdrshiftandDtlarm.addComponent(GERPPanelGenerator.createPanel(hlDtlandArm));
+	vlHdrshiftandDtlarm.setSpacing(true);
+	vlHdrshiftandDtlarm.setWidth("100%");
+	hlUserInputLayout.setSizeUndefined();
+	hlUserInputLayout.addComponent(vlHdrshiftandDtlarm);
+	hlUserInputLayout.setWidth("100%");
+	hlUserInputLayout.setMargin(false);
+	hlUserInputLayout.setSpacing(true);
+}
+
 	
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		try {
@@ -481,7 +578,6 @@ public class RotoCheck extends BaseTransUI {
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		vlSrchRsltContainer.setVisible(true);
 		resetFields();
-		assembleinputLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		tfRotoRef.setReadOnly(false);
 		try {
@@ -507,7 +603,6 @@ public class RotoCheck extends BaseTransUI {
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		hlCmdBtnLayout.setVisible(false);
 		// reset the input controls to default value comment
-		assembleinputLayout();
 		loadPlanDtlRslt();
 	}
 	

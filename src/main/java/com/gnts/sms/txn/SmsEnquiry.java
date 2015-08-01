@@ -503,6 +503,7 @@ public class SmsEnquiry extends BaseTransUI {
 		hlsearchlayout.addComponent(flcol3);
 		hlsearchlayout.setMargin(true);
 		hlsearchlayout.setSizeUndefined();
+		assembleinputLayout();
 	}
 	
 	private void assembleinputLayout() {

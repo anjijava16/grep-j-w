@@ -19,10 +19,7 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.tools.domain.mst.FeedbackCatgryDM;
-import com.gnts.tools.service.mst.FeedbackAnswerService;
 import com.gnts.tools.service.mst.FeedbackCatgryService;
-import com.gnts.tools.service.mst.FeedbackQuestionService;
-import com.google.gwt.dom.client.Style.VerticalAlign;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -30,7 +27,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -40,10 +36,6 @@ public class FeedbackCatgryUI extends BaseUI {
 	private static final long serialVersionUID = 1L;
 	private FeedbackCatgryService sevicebeanfbCategory = (FeedbackCatgryService) SpringContextHelper
 			.getBean("feedbackcatgry");
-	private FeedbackQuestionService sevicebeanfbQuestion = (FeedbackQuestionService) SpringContextHelper
-			.getBean("feedbackquestion");
-	private FeedbackAnswerService sevicebeanfbAnswer = (FeedbackAnswerService) SpringContextHelper
-			.getBean("feedbackanswer");
 	// form layout for input controls
 	private FormLayout formLayout1, formLayout2, formLayout3;
 	// Parent layout for all the input controls
@@ -53,10 +45,8 @@ public class FeedbackCatgryUI extends BaseUI {
 	private HorizontalLayout hlSearchLayout;
 	// Add Input fields
 	private TextField tfcatename, tfweightage;
-	private TextField tfAnsname, tfscoreAns;
 	private ComboBox cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
-	private ComboBox cbAnstype;
 	private String loginUserName;
 	private Long companyId, fbcatgryId;
 	private String feedcatgry;

@@ -47,7 +47,7 @@ public class TimeZone extends BaseUI {
 	 */
 	private TextField tfTimeZoneCode, tfTimeZoneDesc;
 	private FormLayout flTimeZoneCode, flTimeZoneDesc;
-	TimeZoneService timezoneBean = (TimeZoneService) SpringContextHelper.getBean("timezone");
+	private TimeZoneService timezoneBean = (TimeZoneService) SpringContextHelper.getBean("timezone");
 	private BeanItemContainer<TimeZoneDM> beans = null;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
@@ -58,7 +58,7 @@ public class TimeZone extends BaseUI {
 	private int recordCnt = 0;
 	private String username;
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(TimeZone.class);
+	private Logger logger = Logger.getLogger(TimeZone.class);
 	
 	// Time Zone Constructor
 	public TimeZone() {

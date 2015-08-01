@@ -70,7 +70,7 @@ public class User extends BaseUI {
 	private PasswordField pfPassWord;
 	private ListSelect LSUserRole;
 	private ComboBox cbUserStatus;
-	public Button btnLogs = new Button("User Logs");
+	private Button btnLogs = new Button("User Logs");
 	// BeanItemContainer
 	private BeanItemContainer<UserDM> beanUserDM = null;
 	private BeanItemContainer<UserLoginDM> beanUserLoginDM = null;
@@ -80,7 +80,7 @@ public class User extends BaseUI {
 	private String username;
 	private String cmpNameFormat;
 	private String cmpCode;
-	public Long userId;
+	private Long userId;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(User.class);
 	private static final long serialVersionUID = 1L;
@@ -231,7 +231,7 @@ public class User extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<UserDM> userList = new ArrayList<UserDM>();
@@ -264,10 +264,9 @@ public class User extends BaseUI {
 	private void editUser() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		userId = ((Long) sltedRcd.getItemProperty("userid").getValue());
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			UserDM editUserObj = beanUserDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			userId = editUserObj.getUserid();
 			if (editUserObj.getLoginid() != null) {
 				tfLoginId.setReadOnly(false);
 				tfLoginId.setValue(editUserObj.getLoginid());
@@ -294,7 +293,7 @@ public class User extends BaseUI {
 				tfPswdExpDt.setReadOnly(true);
 			}
 			if (editUserObj.getLoginpassword() != null) {
-				pfPassWord.setValue(sltedRcd.getItemProperty("loginpassword").getValue().toString());
+				pfPassWord.setValue(editUserObj.getLoginpassword());
 			}
 			if (editUserObj.getLogincount() != null) {
 				tfloginCount.setReadOnly(false);
@@ -311,7 +310,7 @@ public class User extends BaseUI {
 				tfSystemUser.setValue(editUserObj.getSystemuseryn());
 				tfSystemUser.setReadOnly(true);
 			}
-			cbUserStatus.setValue(sltedRcd.getItemProperty("userstatus").getValue().toString());
+			cbUserStatus.setValue(editUserObj.getUserstatus());
 			// select roles
 			LSUserRole.setValue(null);
 			List<UserRolesDM> listUserRole = serviceUserRole.getRoleList(null, userId, cbUserStatus.getValue()
@@ -322,7 +321,7 @@ public class User extends BaseUI {
 		}
 	}
 	
-	public void UserLogs(Long userId) {
+	private void UserLogs(Long userId) {
 		List<UserLoginDM> userLoginList = null;
 		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		userId = ((Long) sltedRcd.getItemProperty("userid").getValue());
@@ -452,10 +451,9 @@ public class User extends BaseUI {
 	}
 	
 	private void loadUserRole() {
-		List<RoleDM> getUserRoleList = serviceRole.getRoleList(null, "Active", null, "F");
 		BeanContainer<Long, RoleDM> beanUser = new BeanContainer<Long, RoleDM>(RoleDM.class);
 		beanUser.setBeanIdProperty("roleId");
-		beanUser.addAll(getUserRoleList);
+		beanUser.addAll(serviceRole.getRoleList(null, "Active", null, "F"));
 		LSUserRole.setContainerDataSource(beanUser);
 	}
 }

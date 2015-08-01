@@ -50,7 +50,7 @@ public class VendorType extends BaseUI {
 	private VendorTypeService serviceVendorType = (VendorTypeService) SpringContextHelper.getBean("vendorType");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	// form layout for input controls
-	FormLayout flVendorTypeName, flBranchName, flStatus;
+	private FormLayout flVendorTypeName, flBranchName, flStatus;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
@@ -123,7 +123,7 @@ public class VendorType extends BaseUI {
 		hlSearchLayout.setComponentAlignment(hlUserInputLayout, Alignment.MIDDLE_LEFT);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<VendorTypeDM> vendorTypeList = new ArrayList<VendorTypeDM>();
@@ -160,7 +160,7 @@ public class VendorType extends BaseUI {
 		}
 	}
 	
-	public void loadBranchList() {
+	private void loadBranchList() {
 		List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
 		branchList.add(new BranchDM(0L, "All Branches"));
 		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);

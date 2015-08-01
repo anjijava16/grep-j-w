@@ -31,6 +31,7 @@ import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.mfg.domain.txn.QATestHdrDM;
+import com.gnts.mfg.domain.txn.QcTestHdrDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.service.txn.QATestDtlService;
 import com.gnts.mfg.service.txn.QATestHdrService;
@@ -40,9 +41,13 @@ import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
 import com.gnts.sms.domain.txn.SmsEnquirySpecDM;
+import com.gnts.sms.domain.txn.SmsInvoiceHdrDM;
+import com.gnts.sms.domain.txn.SmsPOHdrDM;
+import com.gnts.sms.domain.txn.SmsQuoteHdrDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsEnquiryDtlService;
 import com.gnts.sms.service.txn.SmsEnquirySpecService;
+import com.gnts.sms.service.txn.SmsInvoiceHdrService;
 import com.gnts.sms.service.txn.SmsPOHdrService;
 import com.gnts.sms.service.txn.SmsQuoteHdrService;
 import com.gnts.stt.mfg.domain.txn.EnquiryWorkflowDM;
@@ -89,12 +94,11 @@ public class ProductOverview implements ClickListener {
 	private SmsEnquiryDtlService serviceEnqDetail = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
 	private SmsQuoteHdrService serviceQuoteHdr = (SmsQuoteHdrService) SpringContextHelper.getBean("smsquotehdr");
 	private SmsPOHdrService servicesPOHdr = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
-	private SmsEnquirySpecService serviceEnqSpec = (SmsEnquirySpecService) SpringContextHelper
-			.getBean("SmsEnquirySpec");
+	private SmsEnquirySpecService serviceEnqSpec = (SmsEnquirySpecService) SpringContextHelper.getBean("SmsEnquirySpec");
+	private SmsInvoiceHdrService serviceInvoiceHdr = (SmsInvoiceHdrService) SpringContextHelper.getBean("smsInvoiceheader");
 	private RotoPlanDtlService serviceRotoplandtl = (RotoPlanDtlService) SpringContextHelper.getBean("rotoplandtl");
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
-	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper
-			.getBean("enquiryWorkflow");
+	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper.getBean("enquiryWorkflow");
 	private QcTestHdrService serviceQcTstHdr = (QcTestHdrService) SpringContextHelper.getBean("qcTestHdr");
 	private QCTestDtlService serviceQcTstDtl = (QCTestDtlService) SpringContextHelper.getBean("qcTestDtl");
 	private QATestDtlService serviceQATstDtl = (QATestDtlService) SpringContextHelper.getBean("qatestDetls");
@@ -119,7 +123,7 @@ public class ProductOverview implements ClickListener {
 	private TextField tfInvoiceRef;
 	private PopupDateField dfEnquiryDate;
 	private PopupDateField dfQuoteDate;
-	private PopupDateField dfOrderDate;
+	private PopupDateField dfPODate;
 	private PopupDateField dfInvoiceDate;
 	private TextField tfWorkorderRef;
 	private PopupDateField dfWorkorderDate;
@@ -156,6 +160,28 @@ public class ProductOverview implements ClickListener {
 	private PopupDateField dfDieSecDate = new PopupDateField("Ref Date");
 	private TextArea taTrailPerfomance = new TextArea("Trail Performance & Comments(by Roto)");
 	private TextArea taCmntsRectified = new TextArea("Comments Rectified");
+	// for production
+	private TextField tfExtMachine = new TextField("Machine Name");
+	private TextField tfExtRefNumber = new TextField("Ref. Number");
+	private PopupDateField dfExtDate = new PopupDateField("Extuder Date");
+	private TextField tfPulzRefNo = new TextField("Pulvrizer Ref.");
+	private PopupDateField dfPulzRefDate = new PopupDateField("Pulvrizer Date");
+	private TextField tfRotoRefNo = new TextField("Roto Ref No.");
+	private PopupDateField dfRotoRefDate = new PopupDateField("Ref Date");
+	private TextField tfArmNumber = new TextField("Arm Number");
+	private TextField tfAssemblyRef = new TextField("Assembly Ref.");
+	private PopupDateField dfAssemblyDate = new PopupDateField("Assembly DatTextFielde");
+	private TextField tfAssembledBy = new TextField("Assembled by");
+	private TextField tfFoamRefNumber = new TextField("Foam Ref No");
+	private TextField tfFoamRefDate = new TextField("Ref Date");
+	private TextField tfFoamBy = new TextField("Foam by");
+	// for signoff details
+	private TextField tfBatchNumber = new TextField("Batch Number");
+	private TextField tfInspectionNo = new TextField("Inspection No");
+	private PopupDateField dfSignoffDate = new PopupDateField("Signoff Date");
+	private TextField tfSignOffBy = new TextField("Signoff by");
+	// for Marketing Details
+	private TextField tfQuoteNumber = new TextField();
 	
 	public ProductOverview() {
 		// TODO Auto-generated constructor stub
@@ -225,17 +251,29 @@ public class ProductOverview implements ClickListener {
 		hlDieSection.setMargin(true);
 		hlDieSection.addComponent(buildDieRequest());
 		hlDieSection.addComponent(buildDieSection());
+		// for production
+		VerticalLayout vlProdLayout = new VerticalLayout();
+		vlProdLayout.addComponent(buildProductionDetails());
+		// for test layout
+		VerticalLayout vlTestLayout = new VerticalLayout();
+		vlTestLayout.setSpacing(true);
+		vlTestLayout.addComponent(tblQATestHdr);
+		vlTestLayout.addComponent(tblQCTestDetails);
+		// for signoff details
+		VerticalLayout vlSignoff = new VerticalLayout();
+		vlSignoff.addComponent(buildSignoffDetails());
 		// Add the components as tabs in the Accordion.
 		accordion.addTab(buildBasicInformation(), "Basic Information", null);
 		accordion.addTab(l3, "Marketing Information", null);
 		accordion.addTab(l2, "Design Information", null);
 		accordion.addTab(hlDieSection, "Die Information", null);
-		accordion.addTab(tblQATestHdr, "Production Information", null);
-		accordion.addTab(tblQCTestDetails, "Testing Information", null);
+		accordion.addTab(vlProdLayout, "Production Information", null);
+		accordion.addTab(vlTestLayout, "Testing Information", null);
+		accordion.addTab(vlTestLayout, "Signoff Information", null);
 		hlPageRootContainter.addComponent(accordion);
 		loadEnquirySpec(null, null);
 		getEnqWorkflowDetails(null);
-		getQATestHeaderDetails(null,null);
+		getQATestHeaderDetails(null, null);
 	}
 	
 	private Component buildBasicInformation() {
@@ -286,9 +324,9 @@ public class ProductOverview implements ClickListener {
 		tfPORef = new TextField("Order Ref.");
 		tfPORef.setWidth("150px");
 		details3.addComponent(tfPORef);
-		dfOrderDate = new PopupDateField("Order Date");
-		dfOrderDate.setWidth("150px");
-		details3.addComponent(dfOrderDate);
+		dfPODate = new PopupDateField("Order Date");
+		dfPODate.setWidth("150px");
+		details3.addComponent(dfPODate);
 		tfInvoiceRef = new TextField("Invoice Ref.");
 		tfInvoiceRef.setWidth("150px");
 		details3.addComponent(tfInvoiceRef);
@@ -304,7 +342,6 @@ public class ProductOverview implements ClickListener {
 		root.addComponent(details3);
 		return root;
 	}
-	
 	private Component buildEnquiryDetails() {
 		HorizontalLayout root = new HorizontalLayout();
 		root.setSpacing(true);
@@ -346,7 +383,6 @@ public class ProductOverview implements ClickListener {
 		taEnqRemarks.setWidth("1054px");
 		return vlEnquiry;
 	}
-	
 	private Component buildDieRequest() {
 		HorizontalLayout root = new HorizontalLayout();
 		root.setSpacing(true);
@@ -396,6 +432,65 @@ public class ProductOverview implements ClickListener {
 		vlDieSection.addComponent(taCmntsRectified);
 		taCmntsRectified.setWidth("1054px");
 		return vlDieSection;
+	}
+	private Component buildProductionDetails() {
+		HorizontalLayout root = new HorizontalLayout();
+		root.setSpacing(true);
+		root.addComponent(new FormLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(tfExtMachine);
+				addComponent(tfExtRefNumber);
+				addComponent(dfExtDate);
+			}
+		});
+		root.addComponent(new FormLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(tfPulzRefNo);
+				addComponent(dfPulzRefDate);
+			}
+		});
+		root.addComponent(new FormLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(tfRotoRefNo);
+				addComponent(dfRotoRefDate);
+				addComponent(tfArmNumber);
+			}
+		});
+		root.addComponent(new FormLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(tfAssemblyRef);
+				addComponent(dfAssemblyDate);
+				addComponent(tfAssembledBy);
+			}
+		});
+		root.addComponent(new FormLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(tfFoamRefNumber);
+				addComponent(tfFoamRefDate);
+				addComponent(tfFoamBy);
+			}
+		});
+		return root;
+	}
+	
+	private Component buildSignoffDetails() {
+		HorizontalLayout root = new HorizontalLayout();
+		root.setSpacing(true);
+		root.addComponent(new FormLayout(tfBatchNumber));
+		root.addComponent(new FormLayout(tfInspectionNo));
+		root.addComponent(new FormLayout(dfSignoffDate));
+		root.addComponent(new FormLayout(tfSignOffBy));
+		return root;
 	}
 	
 	private String viewProdImage(byte[] myimage, String name) {
@@ -450,7 +545,7 @@ public class ProductOverview implements ClickListener {
 		tfQuoteRef.setValue("");
 		dfQuoteDate.setValue(null);
 		tfPORef.setValue("");
-		dfOrderDate.setValue(null);
+		dfPODate.setValue(null);
 		tfInvoiceRef.setValue("");
 		dfInvoiceDate.setValue(null);
 	}
@@ -459,6 +554,7 @@ public class ProductOverview implements ClickListener {
 		// TODO Auto-generated method stub
 		resetFields();
 		RotoCheckDtlDM rotoCheckDtlDM = null;
+		Long poid = null;
 		try {
 			rotoCheckDtlDM = serviceRotoCheckDtl.getRotoCheckDtlDetatils(null, null, tfSerialNumber.getValue(), null,
 					"F").get(0);
@@ -493,6 +589,25 @@ public class ProductOverview implements ClickListener {
 						loadEnquiryDetails(workOrderHdrDM.getEnquiryId(), rotoCheckDtlDM.getProductId());
 						getEnqWorkflowDetails(workOrderHdrDM.getEnquiryId());
 						getQATestHeaderDetails(workOrderHdrDM.getWorkOrdrId(), rotoCheckDtlDM.getProductId());
+						getQCTestDetails(workOrderHdrDM.getWorkOrdrId());
+						try {
+							getQuoteDetails(workOrderHdrDM.getEnquiryId());
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+						try {
+							poid = getPODetails(workOrderHdrDM.getEnquiryId());
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+						try {
+							getInvoiceDetails(poid);
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -588,5 +703,41 @@ public class ProductOverview implements ClickListener {
 		tblQATestHdr.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Inspection Date", "Client Name",
 				"Product Name", "Work Ord.No", "QC. Result", "Status", "Last Updated Date", "Last Updated By" });
 		tblQATestHdr.setColumnAlignment("qatestHdrid", Align.RIGHT);
+	}
+	
+	private void getQCTestDetails(Long woOrdId) {
+		List<QcTestHdrDM> listQcTstHdr = new ArrayList<QcTestHdrDM>();
+		listQcTstHdr = serviceQcTstHdr.getQcTestHdrDetails(null, null, null, null, null, null);
+		BeanItemContainer<QcTestHdrDM> beanQcTstHdr = new BeanItemContainer<QcTestHdrDM>(QcTestHdrDM.class);
+		beanQcTstHdr.addAll(listQcTstHdr);
+		tblQCTestDetails.setContainerDataSource(beanQcTstHdr);
+		tblQCTestDetails.setVisibleColumns(new Object[] { "qctestid", "inspectionno", "inspectiondate", "branchName",
+				"prodName", "qcresult", "qcteststatus", "lastupdateddate", "lastupdatedby" });
+		tblQCTestDetails.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Inspection Date", "Branch Name",
+				"Product Name", "QC Result", "Status", "Last Updated Dt.", "Last Updated By" });
+		tblQCTestDetails.setColumnAlignment("qctestid", Align.RIGHT);
+	}
+	
+	private void getQuoteDetails(Long enquiryId) {
+		SmsQuoteHdrDM quoteHdrDM = serviceQuoteHdr.getSmsQuoteHdrList(null, null, null, null, null, null, "P",
+				enquiryId).get(0);
+		tfQuoteRef.setValue(quoteHdrDM.getQuoteRef());
+		tfQuoteNumber.setValue(quoteHdrDM.getQuoteNumber());
+		dfQuoteDate.setValue(quoteHdrDM.getQuoteDate());
+	}
+	
+	private Long getPODetails(Long enquiryId) {
+		SmsPOHdrDM poHdrDM = servicesPOHdr.getSmspohdrList(null, null, null, null, null, null, null, "P", enquiryId)
+				.get(0);
+		tfPORef.setValue(poHdrDM.getPono());
+		dfPODate.setValue(poHdrDM.getPodate());
+		return poHdrDM.getPoid();
+	}
+	
+	private void getInvoiceDetails(Long poid) {
+		SmsInvoiceHdrDM invoiceHdrDM = serviceInvoiceHdr.getSmsInvoiceHeaderList(null, null, null, null, poid, null,
+				null, "P").get(0);
+		tfInvoiceRef.setValue(invoiceHdrDM.getInvoiceNo());
+		dfInvoiceDate.setValue(invoiceHdrDM.getInvoiceDate());
 	}
 }

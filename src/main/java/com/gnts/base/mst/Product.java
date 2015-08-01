@@ -52,8 +52,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.ui.UploadUI;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.gcat.domain.mst.ProductColorDM;
-import com.gnts.gcat.domain.mst.ProductGalleryDM;
 import com.gnts.gcat.domain.txn.TagsDM;
 import com.gnts.gcat.mst.ProductGallery;
 import com.gnts.gcat.service.txn.TagsService;
@@ -83,19 +81,17 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
 public class Product extends BaseUI {
-	private ProductService ServiceProduct = (ProductService) SpringContextHelper.getBean("Product");
-	private CurrencyService ServiceCurrency = (CurrencyService) SpringContextHelper.getBean("currency");
+	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
+	private CurrencyService serviceCurrency = (CurrencyService) SpringContextHelper.getBean("currency");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private ProductCategoryService ServiceProdCtgry = (ProductCategoryService) SpringContextHelper
+	private ProductCategoryService serviceProdCtgry = (ProductCategoryService) SpringContextHelper
 			.getBean("ProductCategory");
-	private TagsService ServiceTag = (TagsService) SpringContextHelper.getBean("tags");
+	private TagsService serviceTag = (TagsService) SpringContextHelper.getBean("tags");
 	private ProductSpecificationService ServiceProdSpec = (ProductSpecificationService) SpringContextHelper
 			.getBean("prodspec");
-	ProductGallery productcolorGlry;
-	List<ProductGalleryDM> galleryList;
-	List<ProductColorDM> colorList;
+	private ProductGallery productcolorGlry;
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3;
 	// Parent layout for all the input controls
@@ -111,20 +107,18 @@ public class Product extends BaseUI {
 	private ComboBox cbprntProdct, cbprodCtgry, cbstatus, cbcurrency, cbbrand, cbbranchname, cbuom;
 	private TextArea taprodDesc, tadescription, tasrtDesc;
 	private CheckBox cbView, cbVisualizer;
-	public Button btnaddSpec = new GERPButton("Add", "addbt", this);
+	private Button btnaddSpec = new GERPButton("Add", "addbt", this);
 	private Table tblspec = new Table();
 	private GERPTokenField totag;
 	// Bean container
 	private BeanItemContainer<ProductDM> beanProductDM = null;
 	private BeanItemContainer<ProductSpecificationDM> beanProdSpecDM = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
-	List<ProductSpecificationDM> specList = null;
+	private List<ProductSpecificationDM> specList = null;
 	// local variables declaration
 	private Long prodId;
 	private Long companyid;
 	private int recordCnt = 0;
 	private String username;
-	public static boolean filevalue1 = false;
 	// for initialize logger
 	private Logger logger = Logger.getLogger(Product.class);
 	private static final long serialVersionUID = 1L;
@@ -297,7 +291,7 @@ public class Product extends BaseUI {
 		hlSearchLayout.setSizeUndefined();
 	}
 	
-	protected void assembleUserInputLayout() {
+	private void assembleUserInputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling User Input layout");
 		// Add Price and Currency in horizontal layout
 		HorizontalLayout hlpricecurency = new HorizontalLayout();
@@ -313,12 +307,8 @@ public class Product extends BaseUI {
 		flColumn3 = new GERPFormLayout();
 		flColumn1.addComponent(tfprodcode);
 		flColumn1.addComponent(tfProdName);
-		// flColumn1.addComponent(cbprodCtgry);
-		// flColumn1.addComponent(cbprntProdct);
 		flColumn1.addComponent(taprodDesc);
 		flColumn1.addComponent(tasrtDesc);
-		// flColumn1.addComponent(cbbrand);
-		// flColumn1.addComponent(cbbranchname);
 		flColumn1.addComponent(hlpricecurency);
 		flColumn1.setComponentAlignment(hlpricecurency, Alignment.TOP_LEFT);
 		flColumn1.addComponent(cbuom);
@@ -394,13 +384,13 @@ public class Product extends BaseUI {
 		hlUserInputLayout.setMargin(false);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Product Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<ProductDM> productList = new ArrayList<ProductDM>();
 		logger.info("" + "Product Category : Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Search Parameters are " + companyid + ", " + tfProdName.getValue() + ", " + tfProdName.getValue()
 				+ (String) cbstatus.getValue());
-		productList = ServiceProduct.getProductList(companyid, null, null, tfProdName.getValue().toString(),
+		productList = serviceProduct.getProductList(companyid, null, null, tfProdName.getValue().toString(),
 				(String) cbstatus.getValue(), null, null, "F");
 		recordCnt = productList.size();
 		beanProductDM = new BeanItemContainer<ProductDM>(ProductDM.class);
@@ -416,7 +406,7 @@ public class Product extends BaseUI {
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
 	
-	public void loadSrchspecRslt() {
+	private void loadSrchspecRslt() {
 		logger.info("Product Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblspec.removeAllItems();
 		tblspec.setWidth("400");
@@ -437,7 +427,7 @@ public class Product extends BaseUI {
 	}
 	
 	// load the BranchList
-	public void loadBranchList() {
+	private void loadBranchList() {
 		try {
 			List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
 			branchList.add(new BranchDM(0L, "All Branches"));
@@ -452,14 +442,14 @@ public class Product extends BaseUI {
 	}
 	
 	// load the BrandList
-	public void loadBrandList() {
+	private void loadBrandList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Brand Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"BS_PRDBRAND");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"BS_PRDBRAND"));
 			cbbrand.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -468,14 +458,14 @@ public class Product extends BaseUI {
 	}
 	
 	// Load Uom
-	public void loadUomList() {
+	private void loadUomList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"BS_PRODUOM");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"BS_PRODUOM"));
 			cbuom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -484,9 +474,9 @@ public class Product extends BaseUI {
 	}
 	
 	// load the Currency details for add
-	public void loadCurrencyaddList() {
+	private void loadCurrencyaddList() {
 		try {
-			List<CurrencyDM> getCurrencylist = ServiceCurrency.getCurrencyList(null, null, null, "Active", "P");
+			List<CurrencyDM> getCurrencylist = serviceCurrency.getCurrencyList(null, null, null, "Active", "P");
 			getCurrencylist.add(new CurrencyDM(0L, "All Currency", null));
 			BeanContainer<Long, CurrencyDM> BeanCurrency = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
 			BeanCurrency.setBeanIdProperty("ccyid");
@@ -499,13 +489,11 @@ public class Product extends BaseUI {
 	}
 	
 	// load the ParentProduct details for add
-	public void loadParentProdList() {
+	private void loadParentProdList() {
 		try {
-			List<ProductDM> getPrntProdlist = ServiceProduct.getProductList(null, null, null, null, "Active", null,
-					null, "P");
 			BeanContainer<Long, ProductDM> BeanProduct = new BeanContainer<Long, ProductDM>(ProductDM.class);
 			BeanProduct.setBeanIdProperty("prodid");
-			BeanProduct.addAll(getPrntProdlist);
+			BeanProduct.addAll(serviceProduct.getProductList(null, null, null, null, "Active", null, null, "P"));
 			cbprntProdct.setContainerDataSource(BeanProduct);
 		}
 		catch (Exception e) {
@@ -514,14 +502,12 @@ public class Product extends BaseUI {
 	}
 	
 	// load the Category details for add
-	public void loadCategoryaddList() {
+	private void loadCategoryaddList() {
 		try {
-			List<ProductCategoryListDM> getProdCtgrylist = ServiceProdCtgry.getProdCategoryList(null, null, null,
-					"Active", null, "P");
 			BeanContainer<Long, ProductCategoryListDM> beanCtgry = new BeanContainer<Long, ProductCategoryListDM>(
 					ProductCategoryListDM.class);
 			beanCtgry.setBeanIdProperty("cateid");
-			beanCtgry.addAll(getProdCtgrylist);
+			beanCtgry.addAll(serviceProdCtgry.getProdCategoryList(null, null, null, "Active", null, "P"));
 			cbprodCtgry.setContainerDataSource(beanCtgry);
 		}
 		catch (Exception e) {
@@ -530,9 +516,9 @@ public class Product extends BaseUI {
 	}
 	
 	// load the TagDesc details for add
-	public void loadTagDescList() {
+	private void loadTagDescList() {
 		try {
-			List<TagsDM> getProdCtgrylist = ServiceTag.getTagsList(null, null, "Active");
+			List<TagsDM> getProdCtgrylist = serviceTag.getTagsList(null, null, "Active");
 			getProdCtgrylist.add(new TagsDM());
 			BeanContainer<Long, TagsDM> TagsDM = new BeanContainer<Long, TagsDM>(TagsDM.class);
 			TagsDM.setBeanIdProperty("tagsid");
@@ -554,17 +540,9 @@ public class Product extends BaseUI {
 			if ((rowSelected.getItemProperty("prodname").getValue() != null)) {
 				tfProdName.setValue(editproductList.getProdname().toString());
 			}
-			/*
-			 * if ((rowSelected.getItemProperty("parentprodid").getValue() != null)) {
-			 * cbprntProdct.setValue(editproductList.getParentprodid()); }
-			 */
 			if ((rowSelected.getItemProperty("productcode").getValue() != null)) {
 				tfprodcode.setValue(editproductList.getProductcode().toString());
 			}
-			/*
-			 * if ((rowSelected.getItemProperty("cateName").getValue() != null)) {
-			 * cbprodCtgry.setValue(editproductList.getCateid()); }
-			 */
 			if ((rowSelected.getItemProperty("proddesc").getValue() != null)) {
 				taprodDesc.setValue(editproductList.getProddesc());
 			}
@@ -577,21 +555,9 @@ public class Product extends BaseUI {
 			if ((rowSelected.getItemProperty("uom").getValue() != null)) {
 				cbuom.setValue(editproductList.getUom().toString());
 			}
-			/*
-			 * if ((rowSelected.getItemProperty("brandname").getValue() != null)) {
-			 * cbbrand.setValue(editproductList.getBrandname()); }
-			 */
-			/*
-			 * if ((rowSelected.getItemProperty("branchid").getValue() != null)) {
-			 * cbbranchname.setValue(editproductList.getBranchid()); }
-			 */
 			if ((rowSelected.getItemProperty("ccyName").getValue() != null)) {
 				cbcurrency.setValue(editproductList.getCcyid());
 			}
-			/*
-			 * if ((rowSelected.getItemProperty("brandname").getValue() != null)) {
-			 * cbbrand.setValue(editproductList.getBrandname()); }
-			 */
 			if (("prodstatus") != null) {
 				String stCode = rowSelected.getItemProperty("prodstatus").getValue().toString();
 				cbstatus.setValue(stCode);
@@ -635,7 +601,6 @@ public class Product extends BaseUI {
 		hlUserInputLayout.setVisible(true);
 		Item specrowSelected = tblspec.getItem(tblspec.getValue());
 		if (specrowSelected != null) {
-			// ProductSpecificationDM editspec = beanProdSpecDM.getItem(tblspec.getValue()).getBean();
 			tfcode.setValue((String) specrowSelected.getItemProperty("speccode").getValue());
 			if ((specrowSelected.getItemProperty("specdesc").getValue() != null)) {
 				tadescription.setValue(specrowSelected.getItemProperty("specdesc").getValue().toString());
@@ -889,7 +854,7 @@ public class Product extends BaseUI {
 			}
 			productobj.setLastupdateddt(DateUtils.getcurrentdate());
 			productobj.setLastupdatedby(username);
-			ServiceProduct.saveorUpdateProductDetails(productobj);
+			serviceProduct.saveorUpdateProductDetails(productobj);
 			@SuppressWarnings("unchecked")
 			Collection<ProductSpecificationDM> itemIds = (Collection<ProductSpecificationDM>) tblspec
 					.getVisibleItemIds();
@@ -909,7 +874,7 @@ public class Product extends BaseUI {
 		}
 	}
 	
-	protected void savespecDetails() {
+	private void savespecDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			ProductSpecificationDM productspecobj = new ProductSpecificationDM();

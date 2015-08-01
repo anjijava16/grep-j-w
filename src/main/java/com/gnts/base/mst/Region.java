@@ -133,7 +133,7 @@ public class Region extends BaseUI {
 	}
 	
 	// load search result to table
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<RegionDM> regionList = new ArrayList<RegionDM>();

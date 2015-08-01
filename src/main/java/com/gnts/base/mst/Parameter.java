@@ -103,7 +103,7 @@ public class Parameter extends BaseUI {
 		dfParamEndDate = new GERPPopupDateField("Param. End Date");
 		dfParamEndDate.setInputPrompt("Select Date");
 		// Parameter status combo box
-		cbparameterstatus = new GERPComboBox("Status",BASEConstants.M_GENERIC_TABLE,BASEConstants.M_GENERIC_COLUMN);
+		cbparameterstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// build search layout
 		hlSearchLayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
@@ -111,7 +111,6 @@ public class Parameter extends BaseUI {
 		resetFields();
 		loadSrchRslt();
 	}
-	
 	private void assembleSearchLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		// Remove all components in User Input Layout
@@ -126,8 +125,7 @@ public class Parameter extends BaseUI {
 		hlSearchLayout.addComponent(flColumn2);
 		hlSearchLayout.setSizeUndefined();
 	}
-	
-	protected void assembleUserInputLayout() {
+	private void assembleUserInputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling User Input layout");
 		// Remove all components in Search Layout
 		hlUserInputLayout.removeAllComponents();
@@ -152,12 +150,12 @@ public class Parameter extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<ParameterDM> parameterList = new ArrayList<ParameterDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfparameterRef.getValue() + ", " + (String) cbparameterstatus.getValue());
-		parameterList = serviceParameter.getParameterList(null,null, tfparameterRef.getValue(),
+		parameterList = serviceParameter.getParameterList(null, null, tfparameterRef.getValue(),
 				(String) cbparameterstatus.getValue(), companyid);
 		recordCnt = parameterList.size();
 		beanparameterDM = new BeanItemContainer<ParameterDM>(ParameterDM.class);
@@ -167,8 +165,8 @@ public class Parameter extends BaseUI {
 		tblMstScrSrchRslt.setContainerDataSource(beanparameterDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "paramId", "moduleCode", "paramRef", "paramDesc",
 				"paramValue", "paramStatus", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Module Code", "Reference",
-				"Description", "Value", "Status", "Updated Date", "Updated By" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Module Code", "Reference", "Description", "Value",
+				"Status", "Updated Date", "Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("parameterId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
@@ -214,7 +212,7 @@ public class Parameter extends BaseUI {
 		}
 	}
 	
-	public void setReadOnlyFalseFields() {
+	private void setReadOnlyFalseFields() {
 		tfparameterRef.setReadOnly(false);
 		tfparametervalue.setReadOnly(false);
 		dfParamEndDate.setReadOnly(false);
@@ -224,7 +222,7 @@ public class Parameter extends BaseUI {
 		cbparameterstatus.setReadOnly(false);
 	}
 	
-	public void setReadOnlyTrueFields() {
+	private void setReadOnlyTrueFields() {
 		tfparameterRef.setReadOnly(true);
 		tfparametervalue.setReadOnly(true);
 		dfParamEndDate.setReadOnly(true);
@@ -250,7 +248,6 @@ public class Parameter extends BaseUI {
 			assembleSearchLayout();
 		}
 	}
-	
 	@Override
 	protected void resetSearchDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -310,8 +307,7 @@ public class Parameter extends BaseUI {
 				+ "Getting audit record for Parameter. ID " + parameterId);
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.M_BASE_PARAMETER);
 		UI.getCurrent().getSession().setAttribute("audittablepk", parameterId);
-	}
-	
+	}	
 	@Override
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
@@ -320,7 +316,6 @@ public class Parameter extends BaseUI {
 		loadSrchRslt();
 		setReadOnlyFalseFields();
 	}
-	
 	@Override
 	protected void saveDetails() throws SaveException {
 		if (tblMstScrSrchRslt.getValue() != null) {

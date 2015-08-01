@@ -55,7 +55,7 @@ public class ModuleControl extends BaseUI {
 	private ModuleControlService servicemodulectrl = (ModuleControlService) SpringContextHelper
 			.getBean("modulecontrol");
 	// form layout for input controls
-	FormLayout flModulecode, flStatus, flLisenced, fldfLicenseendDt, fldfLicensestartDt;
+	private FormLayout flModulecode, flStatus, flLisenced, fldfLicenseendDt, fldfLicensestartDt;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
@@ -89,7 +89,7 @@ public class ModuleControl extends BaseUI {
 		cbModuleCode = new GERPComboBox("Module Name");
 		cbModuleCode.setWidth("225");
 		cbModuleCode.setItemCaptionPropertyId("moduleName");
-		cbStatus = new GERPComboBox("Status",BASEConstants.M_GENERIC_TABLE,BASEConstants.M_GENERIC_COLUMN);
+		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// Module Control TextBoxes
 		tfModuleCode = new GERPTextField("Module Name");
 		tfModuleCode.setWidth("200");
@@ -97,11 +97,9 @@ public class ModuleControl extends BaseUI {
 		tfStatus.setWidth("75");
 		tflisence = new GERPTextField("Lisenced?");
 		tflisence.setWidth("75");
-		
 		// create form layouts to hold the input items
 		flModulecode = new GERPFormLayout();
 		loadSearchModulelist();
-		
 		flStatus = new GERPFormLayout();
 		flLisenced = new GERPFormLayout();
 		fldfLicenseendDt = new GERPFormLayout();
@@ -124,7 +122,7 @@ public class ModuleControl extends BaseUI {
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		resetFields();
-		loadSrchRslt();		
+		loadSrchRslt();
 	}
 	
 	private void assembleSearchLayout() {
@@ -172,7 +170,7 @@ public class ModuleControl extends BaseUI {
 	private void loadSearchModulelist() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Load search mo");
 		// Load the Active status screen only
-		List<ModuleDM> moduleList =  new ArrayList<ModuleDM>();
+		List<ModuleDM> moduleList = new ArrayList<ModuleDM>();
 		moduleList.add(new ModuleDM(0L, "All Modules"));
 		moduleList.addAll(servicemodulectrl.getModuleList());
 		BeanContainer<Long, ModuleDM> moduleControlBean = new BeanContainer<Long, ModuleDM>(ModuleDM.class);
@@ -182,7 +180,7 @@ public class ModuleControl extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		Long modulecodeid = null;
 		List<ModuleControlDM> modulecontrolList = new ArrayList<ModuleControlDM>();
@@ -191,7 +189,8 @@ public class ModuleControl extends BaseUI {
 		}
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ modulecodeid + ", " + (String) cbStatus.getValue() + ", " + companyId);
-		modulecontrolList = servicemodulectrl.getModuleControlList(modulecodeid, (String) cbStatus.getValue(), companyId);
+		modulecontrolList = servicemodulectrl.getModuleControlList(modulecodeid, (String) cbStatus.getValue(),
+				companyId);
 		recordCnt = modulecontrolList.size();
 		beansModuleControlDM = new BeanItemContainer<ModuleControlDM>(ModuleControlDM.class);
 		beansModuleControlDM.addAll(modulecontrolList);
@@ -202,8 +201,8 @@ public class ModuleControl extends BaseUI {
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No. of Records:" + recordCnt);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "modulecontrolid", "moduleName", "licensedyn", "ctrlstatus",
 				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Module", "Licensed", "Status",
-				"Updated Date", "Updated By" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Module", "Licensed", "Status", "Updated Date",
+				"Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("modulecontrolid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
@@ -246,7 +245,6 @@ public class ModuleControl extends BaseUI {
 			}
 		}
 	}
-	
 	@Override
 	protected void searchDetails() throws NoDataFoundException {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + " Invoking search");
@@ -279,7 +277,6 @@ public class ModuleControl extends BaseUI {
 	protected void addDetails() {
 		// No functionality is Here..!
 	}
-	
 	@Override
 	protected void editDetails() {
 		btnSave.setVisible(false);
@@ -291,12 +288,10 @@ public class ModuleControl extends BaseUI {
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		viewModuleControl();
 	}
-	
 	@Override
 	protected void validateDetails() throws ValidationException {
 		// No functionality is here...!
 	}
-	
 	@Override
 	protected void saveDetails() throws SaveException {
 		// No functionality is here...!

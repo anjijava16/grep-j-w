@@ -198,7 +198,7 @@ public class SerialNoGen extends BaseUI {
 		cbBranchName.setContainerDataSource(beansbranch);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<SlnoGenDM> slnoGList = new ArrayList<SlnoGenDM>();
@@ -394,30 +394,30 @@ public class SerialNoGen extends BaseUI {
 	@Override
 	protected void saveDetails() throws SaveException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		SlnoGenDM Slnoobj = new SlnoGenDM();
+		SlnoGenDM slnoGenDM = new SlnoGenDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			Slnoobj = beanSlnoGen.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			slnoGenDM = beanSlnoGen.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		Slnoobj.setCompanyId(companyid);
-		Slnoobj.setBranchId((Long) cbBranchName.getValue());
-		Slnoobj.setModuleId((Long) cbModuleName.getValue());
-		Slnoobj.setSlnogenLevel((String) cbSlnoGenLvl.getValue());
-		Slnoobj.setRefKey(tfReferenceKey.getValue());
-		Slnoobj.setKeyDesc(tfKeyDescription.getValue());
-		Slnoobj.setPrefixKey(tfPrefixKey.getValue());
-		Slnoobj.setPrefixCncat(tfPrefixConcat.getValue());
-		Slnoobj.setCurrSeqNo(Long.valueOf(tfCurrentSeqNo.getValue()));
-		Slnoobj.setSuffixKey(tfSuffixKey.getValue());
-		Slnoobj.setSuffixCncat(tfSuffixConcat.getValue());
-		Slnoobj.setLastSeqNo(tfLastSeqNumber.getValue());
-		Slnoobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-		Slnoobj.setLastupdatedby(username);
+		slnoGenDM.setCompanyId(companyid);
+		slnoGenDM.setBranchId((Long) cbBranchName.getValue());
+		slnoGenDM.setModuleId((Long) cbModuleName.getValue());
+		slnoGenDM.setSlnogenLevel((String) cbSlnoGenLvl.getValue());
+		slnoGenDM.setRefKey(tfReferenceKey.getValue());
+		slnoGenDM.setKeyDesc(tfKeyDescription.getValue());
+		slnoGenDM.setPrefixKey(tfPrefixKey.getValue());
+		slnoGenDM.setPrefixCncat(tfPrefixConcat.getValue());
+		slnoGenDM.setCurrSeqNo(Long.valueOf(tfCurrentSeqNo.getValue()));
+		slnoGenDM.setSuffixKey(tfSuffixKey.getValue());
+		slnoGenDM.setSuffixCncat(tfSuffixConcat.getValue());
+		slnoGenDM.setLastSeqNo(tfLastSeqNumber.getValue());
+		slnoGenDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+		slnoGenDM.setLastupdatedby(username);
 		if (ckAutoGeneration.getValue().equals(true)) {
-			Slnoobj.setAutoGenYN("Y");
+			slnoGenDM.setAutoGenYN("Y");
 		} else if (ckAutoGeneration.getValue().equals(false)) {
-			Slnoobj.setAutoGenYN("N");
+			slnoGenDM.setAutoGenYN("N");
 		}
-		serviceSlnogen.saveorupadateSlnoGeneration(Slnoobj);
+		serviceSlnogen.saveorupadateSlnoGeneration(slnoGenDM);
 		resetFields();
 		loadSrchRslt();
 	}

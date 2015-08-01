@@ -49,7 +49,7 @@ public class UserFav extends BaseUI {
 	private Long userId;
 	private int recordCnt = 0;
 	private String username;
-	List<UserFavDM> userfavList = new ArrayList<UserFavDM>();
+	private List<UserFavDM> userfavList = new ArrayList<UserFavDM>();
 	// Initialize logger
 	private Logger logger = Logger.getLogger(UserFav.class);
 	private static final long serialVersionUID = 1L;
@@ -142,7 +142,7 @@ public class UserFav extends BaseUI {
 	}
 
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username
 				+ " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();

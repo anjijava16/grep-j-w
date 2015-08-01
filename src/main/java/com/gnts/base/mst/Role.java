@@ -47,7 +47,7 @@ import com.vaadin.ui.UI;
 public class Role extends BaseUI {
 	private RoleService serviceRole = (RoleService) SpringContextHelper.getBean("role");
 	// form layout for input controls
-	FormLayout flRoleName, flRoleStatus;
+	private FormLayout flRoleName, flRoleStatus;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
@@ -62,7 +62,7 @@ public class Role extends BaseUI {
 	private Long companyId;
 	private String roleid;
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(Role.class);
+	private Logger logger = Logger.getLogger(Role.class);
 	private static final long serialVersionUID = 1L;
 	
 	// Constructor
@@ -112,7 +112,7 @@ public class Role extends BaseUI {
 		hlSearchLayout.setComponentAlignment(hlUserInputLayout, Alignment.MIDDLE_LEFT);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Search Parameters are " + ":" + tfRoleName.getValue() + "," + (String) cbRoleStatus.getValue()
 				+ ", " + companyId + ",F" + "Loading Search...");

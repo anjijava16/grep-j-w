@@ -142,7 +142,7 @@ public class ProductCategory extends BaseUI {
 		hlSearchLayout.setSizeUndefined();
 	}
 	
-	protected void assembleUserInputLayout() {
+	private void assembleUserInputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling User Input layout");
 		// Remove all components in Search Layout
 		hlUserInputLayout.removeAllComponents();
@@ -163,7 +163,7 @@ public class ProductCategory extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Productcat Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<ProductCategoryListDM> productList = new ArrayList<ProductCategoryListDM>();
 		logger.info("" + "Product Category : Company ID : " + companyid + " | User Name : " + username + " > "
@@ -200,7 +200,6 @@ public class ProductCategory extends BaseUI {
 		tfProdCtgryName.setComponentError(null);
 		cbProdCtgryStatus.setValue(cbProdCtgryStatus.getItemIds().iterator().next());
 	}
-	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editProductCategory() {
 		hlUserInputLayout.setVisible(true);
@@ -227,7 +226,6 @@ public class ProductCategory extends BaseUI {
 			}
 		}
 	}
-	
 	// Base class implementations
 	// BaseUI searchDetails() implementation
 	@Override
@@ -313,7 +311,6 @@ public class ProductCategory extends BaseUI {
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.M_BASE_PRODUCT_CATEGORY);
 		UI.getCurrent().getSession().setAttribute("audittablepk", cateid);
 	}
-	
 	@Override
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
@@ -321,7 +318,6 @@ public class ProductCategory extends BaseUI {
 		tfProdCtgryName.setRequired(false);
 		resetFields();
 	}
-	
 	private void loadCategoryList() {
 		BeanContainer<Long, ProductCategoryListDM> beanCtgry = new BeanContainer<Long, ProductCategoryListDM>(
 				ProductCategoryListDM.class);
@@ -329,7 +325,6 @@ public class ProductCategory extends BaseUI {
 		beanCtgry.addAll(serviceProductCategory.getProdCategoryList(null, null, null, null, null, "P"));
 		cbPrntCtgry.setContainerDataSource(beanCtgry);
 	}
-	
 	@Override
 	protected void saveDetails() throws SaveException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");

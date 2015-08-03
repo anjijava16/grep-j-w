@@ -883,11 +883,12 @@ public class SalesPO extends BaseTransUI {
 		recordCnt = smsPOHdrList.size();
 		beansmsPOHdr = new BeanItemContainer<SmsPOHdrDM>(SmsPOHdrDM.class);
 		beansmsPOHdr.addAll(smsPOHdrList);
+		
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beansmsPOHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "poid", "enqNo", "clientName", "pono", "lastupdateddt",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "poid", "enqNo", "clientName","clientCity", "pono", "lastupdateddt",
 				"lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry No.", "Client Name", "PO No.",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry No.", "Client Name","City", "PO No.",
 				"Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("poId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);

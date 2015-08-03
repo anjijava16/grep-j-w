@@ -69,6 +69,7 @@ import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsEnquiryDtlService;
 import com.gnts.sms.service.txn.SmsQuoteDtlService;
 import com.gnts.sms.service.txn.SmsQuoteHdrService;
+import com.gnts.stt.mfg.domain.txn.RotoPlanHdrDM;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -729,6 +730,8 @@ public class SalesQuote extends BaseTransUI {
 		btnsavepurQuote.setStyleName("add");
 	}
 	
+	
+	
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
@@ -773,9 +776,9 @@ public class SalesQuote extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblsmsQuoteDtl.setContainerDataSource(beansmsQuoteDtl);
-			tblsmsQuoteDtl.setVisibleColumns(new Object[] { "prodname", "custproddesc", "quoteqty"/* , "produom" */,
+			tblsmsQuoteDtl.setVisibleColumns(new Object[] { "prodname", "custproddesc","quoteqty",
 					"unitrate", "basicvalue", "customField1", "quodtlstatus", "lastupdateddt", "lastupdatedby" });
-			tblsmsQuoteDtl.setColumnHeaders(new String[] { "Product Name", "Description", "Quote Qty"/* , "UOM" */,
+			tblsmsQuoteDtl.setColumnHeaders(new String[] { "Product Name", "Description","Quote Qty",
 					"Unit Rate", "Basic Value", "Part No.", "Status", "Last Updated Date", "Last Updated By" });
 			tblsmsQuoteDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
@@ -1222,12 +1225,10 @@ public class SalesQuote extends BaseTransUI {
 	private void loadProductList(Boolean isFullList) {
 		try {
 			List<SmsEnquiryDtlDM> getQuoteDtl = new ArrayList<SmsEnquiryDtlDM>();
-			if (isFullList) {
-				getQuoteDtl.addAll(serviceEnqDetail.getsmsenquirydtllist(null, null, null, null, null, null));
-			} else {
+		
 				Long enquid = ((SmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId();
 				getQuoteDtl.addAll(serviceEnqDetail.getsmsenquirydtllist(null, enquid, null, null, null, null));
-			}
+			
 			BeanItemContainer<SmsEnquiryDtlDM> beanPlnDtl = new BeanItemContainer<SmsEnquiryDtlDM>(
 					SmsEnquiryDtlDM.class);
 			beanPlnDtl.addAll(getQuoteDtl);

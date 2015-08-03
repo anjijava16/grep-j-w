@@ -46,6 +46,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.server.UserError;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
@@ -82,7 +83,7 @@ public class ClientContacts extends BaseUI {
 	 * UI Components
 	 */
 	private TextField tfContactName, tfDesignation, tftechperson, tfcommercialper, tfPhoneNo, tfMobileno, tfEmailId,
-			tfCityname;
+			tfCityname,tfCountry;
 	private ComboBox cbClient, cbStatus, cbClienSalut;
 	private BeanItemContainer<ClientsContactsDM> beanclntcontact = null;
 	private OptionGroup ogpersontype = new OptionGroup("");
@@ -104,7 +105,7 @@ public class ClientContacts extends BaseUI {
 	}
 	
 	private void buildview() {
-		ogpersontype.addItems("Technical Person", "Contact Person");
+		ogpersontype.addItems("Technical Person", "Commercial Person");
 		ogpersontype.setValue("Technical Person");
 		tfContactName = new GERPTextField("Contact person");
 		tfContactName.addBlurListener(new BlurListener() {
@@ -163,6 +164,7 @@ public class ClientContacts extends BaseUI {
 				tfMobileno.setComponentError(null);
 			}
 		});
+		tfCountry = new GERPTextField("Country");
 		cbClient = new GERPComboBox("Client");
 		cbClient.setWidth(strWidth);
 		cbClient.setItemCaptionPropertyId("clientfullname");
@@ -174,22 +176,35 @@ public class ClientContacts extends BaseUI {
 				// TODO Auto-generated method stub
 				if (cbClient.getValue() != null) {
 					tfCityname.setReadOnly(false);
+					tfCountry.setReadOnly(false);
 					try {
 						tfCityname.setValue(serviceClients
 								.getClientDetails(null, (Long) cbClient.getValue(), null, null, null, null, null, null,
 										null, "F").get(0).getCityName());
+						tfCountry.setValue(serviceClients
+								.getClientDetails(null, (Long) cbClient.getValue(), null, null, null, null, null, null,
+										null, "F").get(0).getCountryName());						
 					}
 					catch (Exception e) {
 						e.printStackTrace();
 						tfCityname.setReadOnly(false);
+						tfCountry.setReadOnly(false);
 						tfCityname.setValue("");
 						tfCityname.setReadOnly(true);
+						tfCountry.setValue("");
+						tfCountry.setReadOnly(true);
+
 					}
 					tfCityname.setReadOnly(true);
 				} else {
 					tfCityname.setReadOnly(false);
+					tfCountry.setReadOnly(false);
+
 					tfCityname.setValue("");
 					tfCityname.setReadOnly(true);
+					tfCountry.setValue("");
+					tfCountry.setReadOnly(true);
+
 				}
 			}
 		});
@@ -284,6 +299,7 @@ public class ClientContacts extends BaseUI {
 		FormLayout1.addComponent(ogpersontype);
 		FormLayout1.addComponent(cbClient);
 		FormLayout1.addComponent(tfCityname);
+		FormLayout1.addComponent(tfCountry);
 		FormLayout2.addComponent(cbClienSalut);
 		FormLayout2.addComponent(tfEmailId);
 		FormLayout2.addComponent(tfMobileno);

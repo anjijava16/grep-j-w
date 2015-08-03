@@ -328,7 +328,7 @@ public class DC extends BaseTransUI {
 		cbVendor.setEnabled(false);
 		cbClients.setEnabled(false);
 		// Mode of transaction GERPComboBox
-		cbModeOfTrans = new GERPComboBox("Mode Of Transaction");
+		cbModeOfTrans = new GERPComboBox("Mode Of Dispatch");
 		cbModeOfTrans.setItemCaptionPropertyId("lookupname");
 		loadModeOfTransList();
 		// Person Name GERPComboBox

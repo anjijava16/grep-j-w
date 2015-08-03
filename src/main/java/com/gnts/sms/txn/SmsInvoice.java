@@ -879,9 +879,9 @@ public class SmsInvoice extends BaseTransUI {
 		beanInvoiceHdr.addAll(inviceHdrList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanInvoiceHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "invoiceId", "branchName", "enqNo", "clientName",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "invoiceId", "branchName", "enqNo", "clientName","clientCity",
 				"invoiceNo", "status", "lastUpdtDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Enquiry No.", "Client Name",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Enquiry No.", "Client Name","City",
 				"Invoice No", "Status", "Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("invoiceId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);

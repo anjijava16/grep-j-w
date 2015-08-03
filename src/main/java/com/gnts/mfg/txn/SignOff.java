@@ -468,7 +468,7 @@ public class SignOff extends BaseTransUI {
 				WorkOrderHdrDM.class);
 		beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
 		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyId, null, (Long) cbClient.getValue(), null,
-				null, null, "F", null, null));
+				null, null, "F", null, null,null,null));
 		cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
 	}
 	
@@ -481,7 +481,7 @@ public class SignOff extends BaseTransUI {
 					(serviceWorkOrderDtl.getWorkOrderDtlList(
 							null,
 							(serviceWorkOrderHdr.getWorkOrderHDRList(companyId, null, null, null, null, "Approved",
-									"F", (Long) cbWorkOrderNo.getValue(), null).get(0).getWorkOrdrId()), "Approved",
+									"F", (Long) cbWorkOrderNo.getValue(), null,null,null).get(0).getWorkOrdrId()), "Approved",
 							"F").get(0).getProdId()), null, null, "Active", null, null, "F"));
 			cbProduct.setContainerDataSource(beanProd);
 		}

@@ -730,7 +730,7 @@ public class ClientCases extends BaseTransUI {
 	private void loadworkorder() {
 		List<WorkOrderHdrDM> getsmsEnqNoHdr = new ArrayList<WorkOrderHdrDM>();
 		getsmsEnqNoHdr.addAll(serviceWrkOrdHdr.getWorkOrderHDRList(companyId, null, null, null, null, null, "F", null,
-				(Long) cbEnquiryNo.getValue()));
+				(Long) cbEnquiryNo.getValue(),null,null));
 		BeanContainer<Long, WorkOrderHdrDM> beansmsenqHdr = new BeanContainer<Long, WorkOrderHdrDM>(
 				WorkOrderHdrDM.class);
 		beansmsenqHdr.setBeanIdProperty("workOrdrId");

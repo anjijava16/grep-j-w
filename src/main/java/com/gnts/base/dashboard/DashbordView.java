@@ -9,8 +9,11 @@ import com.gnts.crm.service.mst.ClientService;
 import com.gnts.die.txn.DieRequest;
 import com.gnts.dsn.stt.txn.DesignDocuments;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.mfg.txn.WorkOrder;
+import com.gnts.mms.domain.mst.MaterialDM;
+import com.gnts.mms.domain.txn.MaterialStockDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsInvoiceHdrService;
 import com.gnts.sms.service.txn.SmsPOHdrService;
@@ -21,6 +24,8 @@ import com.gnts.sms.txn.SmsEnquiry;
 import com.gnts.sms.txn.SmsInvoice;
 import com.gnts.stt.dsn.domain.txn.ECRequestDM;
 import com.gnts.stt.dsn.service.txn.ECRequestService;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -28,12 +33,14 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -68,6 +75,7 @@ public class DashbordView implements ClickListener {
 	private ECRequestService ServiceEcrequest = (ECRequestService) SpringContextHelper.getBean("ecRequest");
 	VerticalLayout clMainLayout;
 	HorizontalLayout hlHeader;
+	private Table tblWorkorderStatus = new Table();
 	
 	public DashbordView() {
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
@@ -122,6 +130,8 @@ public class DashbordView implements ClickListener {
 		custom.addComponent(btnClientCount, "clientCount");
 		custom.addComponent(btnEnquiryDocs, "enquirydocuments");
 		custom.addComponent(btnDieRequest, "dieRequest");
+		custom.addComponent(new CalendarMonthly("WO_SCHEDULE"), "marketcalender");
+		loadWorkOrderStatus();
 	}
 	
 	private Component buildHeader() {
@@ -213,6 +223,35 @@ public class DashbordView implements ClickListener {
 			UI.getCurrent().getSession().setAttribute("IS_DIE_ENQ", true);
 			UI.getCurrent().getSession().setAttribute("screenName", "Die Request");
 			new DieRequest();
+		}
+	}
+	
+	private void loadWorkOrderStatus() {
+		try {
+			tblWorkorderStatus.removeAllItems();
+			BeanItemContainer<WorkOrderHdrDM> beanmaterialstock = new BeanItemContainer<WorkOrderHdrDM>(
+					WorkOrderHdrDM.class);
+			tblWorkorderStatus.setContainerDataSource(beanmaterialstock);
+			tblWorkorderStatus.setVisibleColumns(new Object[] { "workOrdrNo", "workOrdrTyp", "workOrdrRmrks",
+					"workOrdrSts", "effectiveStock" });
+			tblWorkorderStatus.setColumnHeaders(new String[] { "Material", "Stock Type", "UOM", "Curr. Stock",
+					"Eff. Stock" });
+			tblWorkorderStatus.setColumnWidth("materialName", 160);
+			tblWorkorderStatus.setColumnWidth("currentStock", 75);
+			tblWorkorderStatus.setColumnWidth("effectiveStock", 75);
+			tblWorkorderStatus.addGeneratedColumn("materialName", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<WorkOrderHdrDM> item = (BeanItem<WorkOrderHdrDM>) source.getItem(itemId);
+					return new Label((String) item.getItemProperty("workOrdrNo").getValue());
+				}
+			});
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	

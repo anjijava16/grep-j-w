@@ -12,6 +12,10 @@ import com.gnts.die.domain.txn.DieRequestDM;
 import com.gnts.die.service.txn.DieRequestService;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
+import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
+import com.gnts.mfg.service.txn.WorkOrderDtlService;
+import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -33,8 +37,10 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 	private static final long serialVersionUID = -5436777475398410597L;
 	private AssetMaintSchedService serviceMaintSched = (AssetMaintSchedService) SpringContextHelper
 			.getBean("AssetMaintSchedul");
+	private WorkOrderDtlService serviceWrkOrdDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
 	private DieRequestService serviceDieRequest = (DieRequestService) SpringContextHelper.getBean("dieRequest");
-	GregorianCalendar calendar = new GregorianCalendar();
+	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
+	private GregorianCalendar calendar = new GregorianCalendar();
 	private Calendar calendarComponent;
 	private Date currentMonthsFirstDate = null;
 	private Label label = new Label("", ContentMode.HTML);
@@ -168,7 +174,31 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 					event.setStyleName("color3");
 				}
 				event.setDescription("Ref. Number : " + dieRequestDM.getDieRefNumber() + " - \n Enquiry Number : "
-						+ dieRequestDM.getEnquiryNo() +" Change Note : "+ dieRequestDM.getChangeNote());
+						+ dieRequestDM.getEnquiryNo() + " Change Note : " + dieRequestDM.getChangeNote());
+				e.add(event);
+			}
+		} else if (type.equalsIgnoreCase("WO_SCHEDULE")) {
+			for (WorkOrderHdrDM workOrderHdrDM : serviceWrkOrdHdr.getWorkOrderHDRList(null, null, null, null, null,
+					null, "F", null, null, fromStartDate, toEndDate)) {
+				calendar.setTime(workOrderHdrDM.getWorkOrdrDtF());
+				calendar.add(GregorianCalendar.DATE, 2);
+				CalendarTestEvent event = getNewEvent("Ref. Number : " + workOrderHdrDM.getWorkOrdrNo()
+						+ " - \n Enquiry Number : " + workOrderHdrDM.getEnqNo(), workOrderHdrDM.getWorkOrdrDtF(),
+						workOrderHdrDM.getWorkOrdrDtF());
+				if (workOrderHdrDM.getWorkOrdrDtF().after(new Date())) {
+					event.setStyleName("color1");
+				} else if (workOrderHdrDM.getWorkOrdrDtF().equals(new Date())) {
+					event.setStyleName("color4");
+				} else {
+					event.setStyleName("color3");
+				}
+				String workordDtl = "";
+				for (WorkOrderDtlDM workOrderDtlDM : serviceWrkOrdDtl.getWorkOrderDtlList(null,
+						workOrderHdrDM.getWorkOrdrId(), null, "F")) {
+					workordDtl += workOrderDtlDM.getProdName() + "(" + workOrderDtlDM.getPlanQty() + " P - "
+							+ workOrderDtlDM.getWorkOrdQty() + " W - " + workOrderDtlDM.getBalQty() + " B)\n";
+				}
+				event.setDescription(workordDtl);
 				e.add(event);
 			}
 		}

@@ -29,6 +29,8 @@ import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.ComboBox;
@@ -49,7 +51,8 @@ public class EBReading extends BaseTransUI {
 	private Logger logger = Logger.getLogger(EBReading.class);
 	// User Input Fields for EC Request
 	private TextField tfMainKwHr, tfC1, tfC2, tfC3, tfC4, tfC5, tfKvaHr, tfR1, tfR2, tfR3, tfR4, tfR5, tfRkvaHrCag,
-			tfLead, tfPfc, tfPerDayUnit, tfPf, tfUnitCharge, tfAdjstCharge, tfHalfUnitCharge, tfCHours,tfKvaMdr;
+			tfLead, tfPfc, tfPerDayUnit, tfPf, tfUnitCharge, tfAdjstCharge, tfHalfUnitCharge, tfCHours, tfKvaMdr,
+			tfOffPeakHrs;
 	private PopupDateField dfRefDate;
 	private TextArea taMachineRunDetails, taRemarks;
 	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
@@ -83,10 +86,38 @@ public class EBReading extends BaseTransUI {
 		// EC Request Components Definition
 		tfMainKwHr = new GERPNumberField("Main KW HR");
 		tfC1 = new GERPNumberField("C1");
+		tfC1.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				getCalcDetails();
+			}
+		});
 		tfC2 = new GERPNumberField("C2");
+		tfC2.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				getCalcDetails();
+			}
+		});
 		tfC3 = new GERPNumberField("C3");
 		tfC4 = new GERPNumberField("C4");
 		tfC5 = new GERPNumberField("C5");
+		tfC5.setHeight("18px");
+		tfC5.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				getCalcDetails1();
+			}
+		});
 		tfRkvaHrCag = new GERPNumberField("RKVA HR CAG");
 		tfR1 = new GERPNumberField("R1");
 		tfR2 = new GERPNumberField("R2");
@@ -94,7 +125,7 @@ public class EBReading extends BaseTransUI {
 		tfR4 = new GERPNumberField("R4");
 		tfR5 = new GERPNumberField("R5");
 		tfKvaHr = new GERPNumberField("KVA HR");
-		tfKvaMdr= new GERPNumberField("KVA MDR");
+		tfKvaMdr = new GERPNumberField("KVA MDR");
 		tfLead = new GERPNumberField("Lead");
 		tfPfc = new GERPNumberField("PFC");
 		tfPerDayUnit = new GERPNumberField("Per Day Unit");
@@ -111,6 +142,7 @@ public class EBReading extends BaseTransUI {
 		dfRefDate.setDateFormat("dd-MMM-yyyy");
 		dfRefDate.setWidth("130px");
 		cbStatus.setWidth("150");
+		tfOffPeakHrs = new GERPNumberField("OFF Peak Hrs.");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
@@ -165,7 +197,7 @@ public class EBReading extends BaseTransUI {
 		flcol4.addComponent(tfUnitCharge);
 		flcol4.addComponent(tfAdjstCharge);
 		flcol4.addComponent(tfHalfUnitCharge);
-		flcol4.addComponent(cbStatus);
+		flcol4.addComponent(tfOffPeakHrs);
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
 		hllayout.addComponent(flcol2);
@@ -196,7 +228,7 @@ public class EBReading extends BaseTransUI {
 		List<EbReadingDM> list = new ArrayList<EbReadingDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + null + "," + tfMainKwHr.getValue() + ", " + (String) cbStatus.getValue());
-		list = serviceEBReading.getEbReadingDetailList(null, null, null, null,null);
+		list = serviceEBReading.getEbReadingDetailList(null, null, null, null, null);
 		recordCnt = list.size();
 		beanECReq = new BeanItemContainer<EbReadingDM>(EbReadingDM.class);
 		beanECReq.addAll(list);
@@ -457,10 +489,7 @@ public class EBReading extends BaseTransUI {
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		dfRefDate.setValue(null);
-		
-		EbReadingDM ebReadingDM=serviceEBReading.getEbReadingDetailList(null, null, null, "Y",null).get(0);
-		
-		tfC1.setValue(ebReadingDM.getC1().toString());
+		tfC1.setValue("0");
 		tfC2.setValue("0");
 		tfC3.setValue("0");
 		tfC4.setValue("0");
@@ -472,7 +501,7 @@ public class EBReading extends BaseTransUI {
 		tfR4.setValue("0");
 		tfR5.setValue("0");
 		tfKvaMdr.setValue("0");
-		tfCHours.setValue("");
+		tfCHours.setValue("0");
 		tfRkvaHrCag.setValue("0");
 		tfLead.setValue("0");
 		tfPfc.setValue("0");
@@ -481,10 +510,13 @@ public class EBReading extends BaseTransUI {
 		tfUnitCharge.setValue("0");
 		tfMainKwHr.setValue("0");
 		tfAdjstCharge.setValue("0");
+		tfHalfUnitCharge.setReadOnly(false);
 		tfHalfUnitCharge.setValue("0");
 		taMachineRunDetails.setValue("");
 		taRemarks.setValue("");
-		cbStatus.setValue(null);
+		cbStatus.setValue("Active");
+		tfOffPeakHrs.setReadOnly(false);
+		tfOffPeakHrs.setValue("0");
 	}
 	
 	@Override
@@ -514,7 +546,6 @@ public class EBReading extends BaseTransUI {
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/ebreading"); // ebreading is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {
@@ -528,6 +559,44 @@ public class EBReading extends BaseTransUI {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private void getCalcDetails() {
+		EbReadingDM ebReadingDM = null;
+		try {
+			ebReadingDM = serviceEBReading.getEbReadingDetailList(null, null, null, null, "Y").get(0);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			tfHalfUnitCharge.setReadOnly(false);
+			tfHalfUnitCharge.setValue((new BigDecimal(tfC1.getValue()).subtract(ebReadingDM.getC1())
+					.add((new BigDecimal(tfC2.getValue()).subtract(ebReadingDM.getC2())))) + "");
+			tfHalfUnitCharge.setReadOnly(true);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void getCalcDetails1() {
+		EbReadingDM ebReadingDM = null;
+		try {
+			ebReadingDM = serviceEBReading.getEbReadingDetailList(null, null, null, null, "Y").get(0);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			tfOffPeakHrs.setReadOnly(false);
+			tfOffPeakHrs.setValue((new BigDecimal(tfC5.getValue()).subtract(ebReadingDM.getC5())
+					.multiply(new BigDecimal("400"))) + "");
+			tfOffPeakHrs.setReadOnly(true);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

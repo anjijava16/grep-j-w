@@ -94,11 +94,14 @@ public class ProductOverview implements ClickListener {
 	private SmsEnquiryDtlService serviceEnqDetail = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
 	private SmsQuoteHdrService serviceQuoteHdr = (SmsQuoteHdrService) SpringContextHelper.getBean("smsquotehdr");
 	private SmsPOHdrService servicesPOHdr = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
-	private SmsEnquirySpecService serviceEnqSpec = (SmsEnquirySpecService) SpringContextHelper.getBean("SmsEnquirySpec");
-	private SmsInvoiceHdrService serviceInvoiceHdr = (SmsInvoiceHdrService) SpringContextHelper.getBean("smsInvoiceheader");
+	private SmsEnquirySpecService serviceEnqSpec = (SmsEnquirySpecService) SpringContextHelper
+			.getBean("SmsEnquirySpec");
+	private SmsInvoiceHdrService serviceInvoiceHdr = (SmsInvoiceHdrService) SpringContextHelper
+			.getBean("smsInvoiceheader");
 	private RotoPlanDtlService serviceRotoplandtl = (RotoPlanDtlService) SpringContextHelper.getBean("rotoplandtl");
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
-	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper.getBean("enquiryWorkflow");
+	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper
+			.getBean("enquiryWorkflow");
 	private QcTestHdrService serviceQcTstHdr = (QcTestHdrService) SpringContextHelper.getBean("qcTestHdr");
 	private QCTestDtlService serviceQcTstDtl = (QCTestDtlService) SpringContextHelper.getBean("qcTestDtl");
 	private QATestDtlService serviceQATstDtl = (QATestDtlService) SpringContextHelper.getBean("qatestDetls");
@@ -342,6 +345,7 @@ public class ProductOverview implements ClickListener {
 		root.addComponent(details3);
 		return root;
 	}
+	
 	private Component buildEnquiryDetails() {
 		HorizontalLayout root = new HorizontalLayout();
 		root.setSpacing(true);
@@ -383,9 +387,11 @@ public class ProductOverview implements ClickListener {
 		taEnqRemarks.setWidth("1054px");
 		return vlEnquiry;
 	}
+	
 	private Component buildDieRequest() {
 		HorizontalLayout root = new HorizontalLayout();
 		root.setSpacing(true);
+		root.setMargin(true);
 		root.addComponent(new FormLayout() {
 			private static final long serialVersionUID = 1L;
 			{
@@ -420,11 +426,18 @@ public class ProductOverview implements ClickListener {
 	private Component buildDieSection() {
 		HorizontalLayout root = new HorizontalLayout();
 		root.setSpacing(true);
-		root.addComponent(new FormLayout(tfDieModel));
-		root.addComponent(new FormLayout(tfWorkNature));
-		root.addComponent(new FormLayout(tfDieRegBy));
-		root.addComponent(new FormLayout(tfDieRecvBy));
-		root.addComponent(new FormLayout(dfDieSecDate));
+		root.setMargin(true);
+		root.addComponent(new HorizontalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(tfDieModel);
+				addComponent(tfWorkNature);
+				addComponent(tfDieRegBy);
+				addComponent(tfDieRecvBy);
+				addComponent(dfDieSecDate);
+			}
+		});
 		VerticalLayout vlDieSection = new VerticalLayout();
 		vlDieSection.addComponent(root);
 		vlDieSection.addComponent(taTrailPerfomance);
@@ -433,6 +446,7 @@ public class ProductOverview implements ClickListener {
 		taCmntsRectified.setWidth("1054px");
 		return vlDieSection;
 	}
+	
 	private Component buildProductionDetails() {
 		HorizontalLayout root = new HorizontalLayout();
 		root.setSpacing(true);
@@ -585,7 +599,7 @@ public class ProductOverview implements ClickListener {
 							rotoCheckDtlDM.getRotoid(), null, rotoCheckDtlDM.getProductId(), null).get(0);
 					try {
 						WorkOrderHdrDM workOrderHdrDM = serviceWrkOrdHdr.getWorkOrderHDRList(rotoPlanDtlDM.getWoId(),
-								null, null, null, null, null, "F", null, null).get(0);
+								null, null, null, null, null, "F", null, null,null,null).get(0);
 						loadEnquiryDetails(workOrderHdrDM.getEnquiryId(), rotoCheckDtlDM.getProductId());
 						getEnqWorkflowDetails(workOrderHdrDM.getEnquiryId());
 						getQATestHeaderDetails(workOrderHdrDM.getWorkOrdrId(), rotoCheckDtlDM.getProductId());

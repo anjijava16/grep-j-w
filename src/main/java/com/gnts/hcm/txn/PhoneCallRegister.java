@@ -239,7 +239,7 @@ public class PhoneCallRegister extends BaseTransUI {
 				+ phoneRegid);
 		if (tblMstScrSrchRslt.getValue() != null) {
 			PhoneRegDM phoneRegDM = beanPhoneReg.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfCallDate.setValue(phoneRegDM.getCallDate());
+			dfCallDate.setValue(phoneRegDM.getCallDateD());
 			cbEmployee.setValue(phoneRegDM.getEmployeeId());
 			cbDepartment.setValue(phoneRegDM.getDeptId());
 			cbStatus.setValue(phoneRegDM.getStatus());

@@ -129,6 +129,7 @@ public class Outpass extends BaseTransUI {
 		});
 		cbVehicle.addItems("Company", "Personal");
 		cbVehicleName = new GERPComboBox("Vehicle Name");
+		cbVehicleName.setItemCaptionPropertyId("assetName");
 		cbVehicleName.setWidth("130");
 		loadVehicleName();
 		tfTimeIn = new GERPTimeField("Time In");
@@ -298,14 +299,10 @@ public class Outpass extends BaseTransUI {
 	 * Load vehicle list.
 	 */
 	private void loadVehicleName() {
-		// getAssetDetailList(Long companyid,Long assetId, String assetName, Long brandId, Long deptId,String
-		// CatgryId,String status)
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
 		BeanContainer<Long, AssetDetailsDM> beanDepartment = new BeanContainer<Long, AssetDetailsDM>(
 				AssetDetailsDM.class);
-		beanDepartment.setBeanIdProperty("assetName");
-		beanDepartment
-				.addAll(serviceassetdetails.getAssetDetailList(companyid, null, null, null, null, null, "Active"));
+		beanDepartment.setBeanIdProperty("assetId");
+		beanDepartment.addAll(serviceassetdetails.getAssetDetailList(companyid, null, null, null, null, "9050", null));
 		cbVehicleName.setContainerDataSource(beanDepartment);
 	}
 	

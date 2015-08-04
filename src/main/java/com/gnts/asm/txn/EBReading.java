@@ -12,12 +12,15 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.asm.domain.txn.EbReadingDM;
 import com.gnts.asm.service.txn.EbReadingService;
+import com.gnts.base.domain.mst.EmployeeDM;
+import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPNumberField;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
+import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
@@ -28,6 +31,7 @@ import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
@@ -47,19 +51,21 @@ public class EBReading extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	// Bean Creation
 	private EbReadingService serviceEBReading = (EbReadingService) SpringContextHelper.getBean("ebReading");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(EBReading.class);
 	// User Input Fields for EC Request
 	private TextField tfMainKwHr, tfC1, tfC2, tfC3, tfC4, tfC5, tfKvaHr, tfR1, tfR2, tfR3, tfR4, tfR5, tfRkvaHrCag,
 			tfLead, tfPfc, tfPerDayUnit, tfPf, tfUnitCharge, tfAdjstCharge, tfHalfUnitCharge, tfCHours, tfKvaMdr,
-			tfOffPeakHrs;
+			tfOffPeakHrs, oneUnitChrO, oneUnitChrP;
 	private PopupDateField dfRefDate;
 	private TextArea taMachineRunDetails, taRemarks;
+	private GERPComboBox cbEmploye;
 	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<EbReadingDM> beanECReq = null;
 	// form layout for input controls EC Request
-	private FormLayout flcol1, flcol2, flcol3, flcol4;
+	private FormLayout flcol1, flcol2, flcol3, flcol4, flcol5;
 	// Search Control Layout
 	private HorizontalLayout hlsearchlayout;
 	// Parent layout for all the input controls EC Request
@@ -69,6 +75,7 @@ public class EBReading extends BaseTransUI {
 	private Long ebReadingId;
 	private String username;
 	private Long companyid;
+	private Long dpmt = (long) 209;
 	private int recordCnt = 0;
 	
 	// Constructor received the parameters from Login UI class
@@ -84,7 +91,17 @@ public class EBReading extends BaseTransUI {
 	private void buildview() {
 		logger.info("CompanyId" + companyid + "username" + username + "painting ECRequest UI");
 		// EC Request Components Definition
+		getunitvalues();
 		tfMainKwHr = new GERPNumberField("Main KW HR");
+		tfMainKwHr.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				getCalcDetailsPDU();
+			}
+		});
 		tfC1 = new GERPNumberField("C1");
 		tfC1.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
@@ -143,6 +160,24 @@ public class EBReading extends BaseTransUI {
 		dfRefDate.setWidth("130px");
 		cbStatus.setWidth("150");
 		tfOffPeakHrs = new GERPNumberField("OFF Peak Hrs.");
+		oneUnitChrO = new GERPTextField("One Unit(Other)");
+		oneUnitChrO.setWidth("150");
+		oneUnitChrP = new GERPTextField("One Unit(Peak)");
+		oneUnitChrP.setWidth("150");
+		cbEmploye = new GERPComboBox("Employee");
+		cbEmploye.setItemCaptionPropertyId("firstname");
+		loadEmployeeList();
+		cbEmploye.setWidth("150");
+		tfC1.setWidth("70");
+		tfC2.setWidth("70");
+		tfC3.setWidth("70");
+		tfC4.setWidth("70");
+		tfC5.setWidth("70");
+		tfR1.setWidth("70");
+		tfR2.setWidth("70");
+		tfR3.setWidth("70");
+		tfR4.setWidth("70");
+		tfR5.setWidth("70");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
@@ -174,35 +209,40 @@ public class EBReading extends BaseTransUI {
 		flcol2 = new FormLayout();
 		flcol3 = new FormLayout();
 		flcol4 = new FormLayout();
+		flcol5 = new FormLayout();
 		flcol1.addComponent(dfRefDate);
-		flcol1.addComponent(tfC1);
-		flcol1.addComponent(tfC2);
-		flcol1.addComponent(tfC3);
-		flcol1.addComponent(tfC4);
-		flcol1.addComponent(tfC5);
-		flcol2.addComponent(tfMainKwHr);
-		flcol2.addComponent(tfR1);
-		flcol2.addComponent(tfR2);
-		flcol2.addComponent(tfR3);
-		flcol2.addComponent(tfR4);
-		flcol2.addComponent(tfR5);
-		flcol3.addComponent(tfRkvaHrCag);
-		flcol3.addComponent(tfLead);
-		flcol3.addComponent(tfKvaHr);
-		flcol3.addComponent(tfPfc);
-		flcol3.addComponent(tfCHours);
-		flcol3.addComponent(tfKvaMdr);
-		flcol4.addComponent(tfPerDayUnit);
-		flcol4.addComponent(tfPf);
-		flcol4.addComponent(tfUnitCharge);
-		flcol4.addComponent(tfAdjstCharge);
-		flcol4.addComponent(tfHalfUnitCharge);
-		flcol4.addComponent(tfOffPeakHrs);
+		flcol1.addComponent(cbEmploye);
+		flcol1.addComponent(oneUnitChrO);
+		flcol1.addComponent(oneUnitChrP);
+		flcol1.addComponent(tfMainKwHr);
+		flcol2.addComponent(tfC1);
+		flcol2.addComponent(tfC2);
+		flcol2.addComponent(tfC3);
+		flcol2.addComponent(tfC4);
+		flcol2.addComponent(tfC5);
+		flcol3.addComponent(tfR1);
+		flcol3.addComponent(tfR2);
+		flcol3.addComponent(tfR3);
+		flcol3.addComponent(tfR4);
+		flcol3.addComponent(tfR5);
+		flcol4.addComponent(tfRkvaHrCag);
+		flcol4.addComponent(tfLead);
+		flcol4.addComponent(tfKvaHr);
+		flcol4.addComponent(tfPfc);
+		flcol4.addComponent(tfCHours);
+		flcol4.addComponent(tfKvaMdr);
+		flcol5.addComponent(tfPerDayUnit);
+		flcol5.addComponent(tfPf);
+		flcol5.addComponent(tfUnitCharge);
+		flcol5.addComponent(tfAdjstCharge);
+		flcol5.addComponent(tfHalfUnitCharge);
+		flcol5.addComponent(tfOffPeakHrs);
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
 		hllayout.addComponent(flcol2);
 		hllayout.addComponent(flcol3);
 		hllayout.addComponent(flcol4);
+		hllayout.addComponent(flcol5);
 		hllayout.setMargin(true);
 		hllayout.setSpacing(true);
 		hlUserIPContainer.addComponent(new VerticalLayout() {
@@ -324,6 +364,15 @@ public class EBReading extends BaseTransUI {
 			if (ebReadingDM.getKvaMdr() != null) {
 				tfKvaMdr.setValue(ebReadingDM.getKvaMdr().toString());
 			}
+			if (ebReadingDM.getEmployeeId() != null) {
+				cbEmploye.setValue(ebReadingDM.getEmployeeId().toString());
+			}
+			if (ebReadingDM.getOneUnitO() != null) {
+				oneUnitChrO.setValue(ebReadingDM.getOneUnitO().toString());
+			}
+			if (ebReadingDM.getOneUnitP() != null) {
+				oneUnitChrP.setValue(ebReadingDM.getOneUnitP().toString());
+			}
 			cbStatus.setValue(ebReadingDM.getStatus());
 		}
 	}
@@ -401,6 +450,15 @@ public class EBReading extends BaseTransUI {
 		}
 		if (tfKvaMdr.getValue() != null) {
 			ebReadingDM.setKvaMdr(new BigDecimal(tfKvaMdr.getValue()));
+		}
+		if (cbEmploye.getValue() != null) {
+			ebReadingDM.setEmployeeId((Long) cbEmploye.getValue());
+		}
+		if (oneUnitChrO.getValue() != null) {
+			ebReadingDM.setOneUnitO(oneUnitChrO.getValue());
+		}
+		if (oneUnitChrP.getValue() != null) {
+			ebReadingDM.setOneUnitP(oneUnitChrP.getValue());
 		}
 		ebReadingDM.setMachineRunDetails(taMachineRunDetails.getValue());
 		ebReadingDM.setRemarks(taRemarks.getValue());
@@ -517,6 +575,7 @@ public class EBReading extends BaseTransUI {
 		cbStatus.setValue("Active");
 		tfOffPeakHrs.setReadOnly(false);
 		tfOffPeakHrs.setValue("0");
+		cbEmploye.setValue(null);
 	}
 	
 	@Override
@@ -562,6 +621,15 @@ public class EBReading extends BaseTransUI {
 		}
 	}
 	
+	// Load Employee List
+	private void loadEmployeeList() {
+		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+		beanInitiatedBy.setBeanIdProperty("employeeid");
+		beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, dpmt, "Active", companyid, null, null, null,
+				null, "P"));
+		cbEmploye.setContainerDataSource(beanInitiatedBy);
+	}
+	
 	private void getCalcDetails() {
 		EbReadingDM ebReadingDM = null;
 		try {
@@ -572,8 +640,9 @@ public class EBReading extends BaseTransUI {
 		}
 		try {
 			tfHalfUnitCharge.setReadOnly(false);
-			tfHalfUnitCharge.setValue((new BigDecimal(tfC1.getValue()).subtract(ebReadingDM.getC1())
-					.add((new BigDecimal(tfC2.getValue()).subtract(ebReadingDM.getC2())))) + "");
+			tfHalfUnitCharge.setValue((new BigDecimal(tfC1.getValue()).subtract(ebReadingDM.getC1()).add(
+					(new BigDecimal(tfC2.getValue()).subtract(ebReadingDM.getC2()))).multiply(new BigDecimal(
+					oneUnitChrP.getValue()))) + "");
 			tfHalfUnitCharge.setReadOnly(true);
 		}
 		catch (Exception e) {
@@ -592,8 +661,46 @@ public class EBReading extends BaseTransUI {
 		try {
 			tfOffPeakHrs.setReadOnly(false);
 			tfOffPeakHrs.setValue((new BigDecimal(tfC5.getValue()).subtract(ebReadingDM.getC5())
-					.multiply(new BigDecimal("400"))) + "");
+					.multiply(new BigDecimal("400")).divide(new BigDecimal("2")).multiply(new BigDecimal(oneUnitChrO
+					.getValue()))) + "");
 			tfOffPeakHrs.setReadOnly(true);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void getCalcDetailsPDU() {
+		EbReadingDM ebReadingDM = null;
+		try {
+			ebReadingDM = serviceEBReading.getEbReadingDetailList(null, null, null, null, "Y").get(0);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			tfPerDayUnit.setReadOnly(false);
+			tfPerDayUnit.setValue((new BigDecimal(tfMainKwHr.getValue()).subtract(ebReadingDM.getMainKwHr())
+					.multiply(new BigDecimal("400"))) + "");
+			tfPerDayUnit.setReadOnly(true);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Load Last Unit Values.
+	private void getunitvalues() {
+		EbReadingDM ebReadingDM = null;
+		try {
+			ebReadingDM = serviceEBReading.getEbReadingDetailList(null, null, null, null, "Y").get(0);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			oneUnitChrO.setValue(ebReadingDM.getOneUnitO());
+			oneUnitChrP.setValue(ebReadingDM.getOneUnitP());
 		}
 		catch (Exception e) {
 			e.printStackTrace();

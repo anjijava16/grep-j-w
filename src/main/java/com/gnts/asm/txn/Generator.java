@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.asm.domain.txn.AssetDetailsDM;
+import com.gnts.asm.domain.txn.EbReadingDM;
 import com.gnts.asm.domain.txn.GeneratorDM;
 import com.gnts.asm.service.txn.AssetDetailsService;
 import com.gnts.asm.service.txn.GeneratorService;
@@ -37,6 +38,8 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.ComboBox;
@@ -91,9 +94,11 @@ public class Generator extends BaseTransUI {
 		buildview();
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void buildview() {
 		logger.info("CompanyId" + companyid + "username" + username + "painting Generator UI");
 		// EC Request Components Definition
+		getunitvalues();
 		tfDiselOpenBal = new GERPTextField("Disel Open Balance");
 		tfGenTotalTime = new GERPTextField("Generator Total time");
 		tfGenTotalTime.setValue("0");
@@ -145,6 +150,20 @@ public class Generator extends BaseTransUI {
 			}
 		});
 		tfTotalTime = new GERPTextField("Session Run Time");
+		tfTotalTime.addBlurListener(new BlurListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				getunitvalues();
+			}
+		});
+			
+		
 		tfTotalCost = new GERPTextField("Total Cost");
 		tfGenStartTime = new GERPTimeField("Start Time");
 		tfGenStartTime.addValueChangeListener(new ValueChangeListener() {
@@ -642,4 +661,21 @@ public class Generator extends BaseTransUI {
 			}
 		}
 	}
+	// Load Last Unit Values.
+	private void getunitvalues() {
+		GeneratorDM generatorDM = null;
+		try {
+			generatorDM = serviceGenerator.getGeneratorDetailList(null, null,dfRefDate.getValue(), null, "Y",null).get(0);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			tfGenTotalTime.setValue(new BigDecimal(tfGenTotalTime.getValue()).add(generatorDM.getGenTotalTime()).toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
+

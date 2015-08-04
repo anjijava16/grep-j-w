@@ -58,8 +58,8 @@ public class DashboardHCMView implements ClickListener {
 	private PhoneRegService servicephonereg = (PhoneRegService) SpringContextHelper.getBean("phoneregister");
 	static final long serialVersionUID = 1L;
 	private Label lblDashboardTitle;
-	VerticalLayout clMainLayout;
-	HorizontalLayout hlHeader;
+	private VerticalLayout clMainLayout;
+	private HorizontalLayout hlHeader;
 	private Button btnEmployeeCount = new Button("100", this);
 	private Button btnEmpAtten = new Button("10", this);
 	private Button btnAttenProcess = new Button("10", this);
@@ -86,6 +86,7 @@ public class DashboardHCMView implements ClickListener {
 	
 	private void buildView(VerticalLayout clMainLayout, HorizontalLayout hlHeader) {
 		clMainLayout.setImmediate(true);
+		clMainLayout.setMargin(true);
 		clMainLayout.addLayoutClickListener(new LayoutClickListener() {
 			/**
 			 * 
@@ -148,8 +149,11 @@ public class DashboardHCMView implements ClickListener {
 		custom.addComponent(btnPhoneReg, "phonereg");
 		custom.addComponent(tblOutpass, "tableoutpass");
 		custom.addComponent(tblVisitpass, "tablevisitorpass");
-		custom.addComponent(tblEmplLeave, "tableempleave");
+		//custom.addComponent(tblEmplLeave, "tableempleave");
 		custom.addComponent(tblPhoneReg, "tablephonereg");
+		custom.addComponent(new CalendarMonthly("EMP_LEAVE"), "employeeleave");
+		
+		
 		tblOutpass.setHeight("300px");
 		tblVisitpass.setHeight("300px");
 		tblEmplLeave.setHeight("300px");
@@ -166,7 +170,7 @@ public class DashboardHCMView implements ClickListener {
 			// logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
 			tblEmplLeave.removeAllItems();
 			BeanItemContainer<EmployeeLeaveDM> beanempleave = new BeanItemContainer<EmployeeLeaveDM>(EmployeeLeaveDM.class);
-			beanempleave.addAll(serviceemployeeleave.getempleaveList(null, null, null, null, null));
+			beanempleave.addAll(serviceemployeeleave.getempleaveList(null, null, null, null, null,null,"P"));
 			tblEmplLeave.setContainerDataSource(beanempleave);
 			tblEmplLeave.setVisibleColumns(new Object[] { "employeeid", "leavetypeid", "noofdays", "leavereason", "appmgr",
 					"empleavestatus" });
@@ -275,55 +279,55 @@ public class DashboardHCMView implements ClickListener {
 			UI.getCurrent().getSession().setAttribute("screenName", "Employee");
 			new Employee();
 		}
-		if (event.getButton() == btnEmpAtten) {
+		else if (event.getButton() == btnEmpAtten) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Employee Attendence");
 			new EmployeeAttendence();
 		}
-		if (event.getButton() == btnPayslip) {
+		else if (event.getButton() == btnPayslip) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Payslip");
 			new Payslip();
 		}
-		if (event.getButton() == btnAttenProcess) {
+		else if (event.getButton() == btnAttenProcess) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Attendenece Process");
 			new AttendenceProc();
 		}
-		if (event.getButton() == btnJobVacancy) {
+		else if (event.getButton() == btnJobVacancy) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Job Vaccancy");
 			new JobVaccancy();
 		}
-		if (event.getButton() == btnEmpLeave) {
+		else if (event.getButton() == btnEmpLeave) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Employee Leave");
 			new EmployeeLeave();
 		}
-		if (event.getButton() == btnOutpass) {
+		else if (event.getButton() == btnOutpass) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Outpass");
 			new Outpass();
 		}
-		if (event.getButton() == btnVisitPass) {
+		else if (event.getButton() == btnVisitPass) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Visitor Pass");
 			new VisitorPass();
 		}
-		if (event.getButton() == btnCourier) {
+		else if (event.getButton() == btnCourier) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Courier");
 			new Courier();
 		}
-		if (event.getButton() == btnPhoneReg) {
+		else if (event.getButton() == btnPhoneReg) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Phone Register");

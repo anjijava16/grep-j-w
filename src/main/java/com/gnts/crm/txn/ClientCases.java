@@ -352,7 +352,7 @@ public class ClientCases extends BaseTransUI {
 	 * 
 	 * @param search
 	 */
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
@@ -413,7 +413,6 @@ public class ClientCases extends BaseTransUI {
 			if (editCaselist.getCaseDescription() != null) {
 				taCaseDesc.setValue(editCaselist.getCaseDescription().toString());
 			}
-			logger.info("cbClient---->" + cbClient);
 			cbEmployee.setValue(editCaselist.getAssignedTo());
 			cbPriority.setValue(editCaselist.getCasePriority());
 			cbSevrity.setValue(editCaselist.getCaseSevrity());
@@ -592,58 +591,58 @@ public class ClientCases extends BaseTransUI {
 	@Override
 	protected void saveDetails() throws SaveException {
 		try {
-			ClientCasesDM ClntCaseobj = new ClientCasesDM();
+			ClientCasesDM clientCasesDM = new ClientCasesDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				ClntCaseobj = beanClntCases.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				clientCasesDM = beanClntCases.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			ClntCaseobj.setCaseDescription(taCaseDesc.getValue());
+			clientCasesDM.setCaseDescription(taCaseDesc.getValue());
 			if (cbEmployee.getValue() != null) {
-				ClntCaseobj.setAssignedTo((Long) cbEmployee.getValue());
+				clientCasesDM.setAssignedTo((Long) cbEmployee.getValue());
 			} else {
 				cbEmployee.setComponentError(new UserError("Select assigned to"));
 			}
 			if (cbCaseCategory.getValue() != null) {
-				ClntCaseobj.setCaseCategory(cbCaseCategory.getValue().toString());
+				clientCasesDM.setCaseCategory(cbCaseCategory.getValue().toString());
 			}
-			ClntCaseobj.setCaseDescription(taCaseDesc.getValue());
+			clientCasesDM.setCaseDescription(taCaseDesc.getValue());
 			if (cbPriority.getValue() != null) {
-				ClntCaseobj.setCasePriority((String) cbPriority.getValue());
+				clientCasesDM.setCasePriority((String) cbPriority.getValue());
 			}
 			if (cbSevrity.getValue() != null) {
-				ClntCaseobj.setCaseSevrity(cbSevrity.getValue().toString());
+				clientCasesDM.setCaseSevrity(cbSevrity.getValue().toString());
 			}
-			ClntCaseobj.setCaseresltn(tfCaseResult.getValue());
+			clientCasesDM.setCaseresltn(tfCaseResult.getValue());
 			if (cbClntCaseStatus.getValue() != null) {
-				ClntCaseobj.setCaseStatus(cbClntCaseStatus.getValue().toString());
+				clientCasesDM.setCaseStatus(cbClntCaseStatus.getValue().toString());
 			}
 			if (tfCaseTitle.getValue().toString().trim().length() > 0) {
-				ClntCaseobj.setCaseTitle(tfCaseTitle.getValue());
+				clientCasesDM.setCaseTitle(tfCaseTitle.getValue());
 			}
 			if (cbClient.getValue() != null) {
-				ClntCaseobj.setClientId(Long.valueOf(cbClient.getValue().toString()));
+				clientCasesDM.setClientId(Long.valueOf(cbClient.getValue().toString()));
 			}
-			tfCaseResult.setValue(ClntCaseobj.getCaseresltn());
+			tfCaseResult.setValue(clientCasesDM.getCaseresltn());
 			if (tfEffortDays.getValue() != null && tfEffortDays.getValue().trim().length() > 0) {
-				ClntCaseobj.setEffortDays(Long.valueOf(tfEffortDays.getValue()));
+				clientCasesDM.setEffortDays(Long.valueOf(tfEffortDays.getValue()));
 			}
-			ClntCaseobj.setEnquiryId((Long) cbEnquiryNo.getValue());
-			ClntCaseobj.setPoid((Long) cbPONo.getValue());
-			ClntCaseobj.setLastUpdatedBy(userName);
-			ClntCaseobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			ClntCaseobj.setProdid(((SmsPODtlDM) cbprdname.getValue()).getProductid());
+			clientCasesDM.setEnquiryId((Long) cbEnquiryNo.getValue());
+			clientCasesDM.setPoid((Long) cbPONo.getValue());
+			clientCasesDM.setLastUpdatedBy(userName);
+			clientCasesDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+			clientCasesDM.setProdid(((SmsPODtlDM) cbprdname.getValue()).getProductid());
 			tfpartNo.setReadOnly(false);
 			tfDrgNo.setReadOnly(false);
-			ClntCaseobj.setPartno(tfpartNo.getValue());
-			ClntCaseobj.setDrgno(tfDrgNo.getValue());
+			clientCasesDM.setPartno(tfpartNo.getValue());
+			clientCasesDM.setDrgno(tfDrgNo.getValue());
 			tfpartNo.setReadOnly(true);
 			tfDrgNo.setReadOnly(true);
-			ClntCaseobj.setWoId((Long) cbwoNo.getValue());
-			serviceCase.saveClientCasesDetails(ClntCaseobj);
+			clientCasesDM.setWoId((Long) cbwoNo.getValue());
+			serviceCase.saveClientCasesDetails(clientCasesDM);
 			resetFields();
-			System.out.println("CLIENTCASES->>" + ClntCaseobj.getClientCaseId());
-			comment.saveclientcases(ClntCaseobj.getClientCaseId());
+			System.out.println("CLIENTCASES->>" + clientCasesDM.getClientCaseId());
+			comment.saveclientcases(clientCasesDM.getClientCaseId());
 			comment.resetfields();
-			document.saveclientcases(ClntCaseobj.getClientCaseId());
+			document.saveclientcases(clientCasesDM.getClientCaseId());
 			document.ResetFields();
 			resetFields();
 			loadSrchRslt();
@@ -728,31 +727,25 @@ public class ClientCases extends BaseTransUI {
 	
 	// load Workorderid
 	private void loadworkorder() {
-		List<WorkOrderHdrDM> getsmsEnqNoHdr = new ArrayList<WorkOrderHdrDM>();
-		getsmsEnqNoHdr.addAll(serviceWrkOrdHdr.getWorkOrderHDRList(companyId, null, null, null, null, null, "F", null,
-				(Long) cbEnquiryNo.getValue(),null,null));
 		BeanContainer<Long, WorkOrderHdrDM> beansmsenqHdr = new BeanContainer<Long, WorkOrderHdrDM>(
 				WorkOrderHdrDM.class);
 		beansmsenqHdr.setBeanIdProperty("workOrdrId");
-		beansmsenqHdr.addAll(getsmsEnqNoHdr);
+		beansmsenqHdr.addAll(serviceWrkOrdHdr.getWorkOrderHDRList(companyId, null, null, null, null, null, "F", null,
+				(Long) cbEnquiryNo.getValue(), null, null));
 		cbwoNo.setContainerDataSource(beansmsenqHdr);
 	}
 	
 	private void loadPurchaseOrdNo() {
-		List<SmsPOHdrDM> getPurchseList = new ArrayList<SmsPOHdrDM>();
-		getPurchseList.addAll(servicePurchaseOrdHdr.getSmspohdrList(null, null, companyId, null, null, null, null, "F",
-				(Long) cbEnquiryNo.getValue()));
 		BeanContainer<Long, SmsPOHdrDM> beanPurchaseOrdHdr = new BeanContainer<Long, SmsPOHdrDM>(SmsPOHdrDM.class);
 		beanPurchaseOrdHdr.setBeanIdProperty("poid");
-		beanPurchaseOrdHdr.addAll(getPurchseList);
+		beanPurchaseOrdHdr.addAll(servicePurchaseOrdHdr.getSmspohdrList(null, null, companyId, null, null, null, null,
+				"F", (Long) cbEnquiryNo.getValue()));
 		cbPONo.setContainerDataSource(beanPurchaseOrdHdr);
 	}
 	
 	private void loadPurchseOrdDtlList() {
-		List<SmsPODtlDM> getPurchaseOrdDtl = new ArrayList<SmsPODtlDM>();
-		getPurchaseOrdDtl.addAll(serviceWrkOrdDtl.getPurchaseOrdDtlList((Long) cbPONo.getValue()));
 		BeanItemContainer<SmsPODtlDM> beanPurchaseOrdDtl = new BeanItemContainer<SmsPODtlDM>(SmsPODtlDM.class);
-		beanPurchaseOrdDtl.addAll(getPurchaseOrdDtl);
+		beanPurchaseOrdDtl.addAll(serviceWrkOrdDtl.getPurchaseOrdDtlList((Long) cbPONo.getValue()));
 		cbprdname.setContainerDataSource(beanPurchaseOrdDtl);
 	}
 	

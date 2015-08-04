@@ -35,11 +35,12 @@ import com.vaadin.ui.Button.ClickListener;
 public class DesignDocuments implements ClickListener {
 	private static final long serialVersionUID = 1L;
 	private DocumentsService serviceDocuments = (DocumentsService) SpringContextHelper.getBean("documents");
-	private VerticalLayout hlPageRootContainter = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
+	private VerticalLayout hlPageRootContainter = (VerticalLayout) UI.getCurrent().getSession()
+			.getAttribute("clLayout");
 	private SmsEnqHdrService serviceEnqHeader = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	// Header container which holds, screen name, notification and page master
 	// buttons
-	private  HorizontalLayout hlPageHdrContainter = (HorizontalLayout) UI.getCurrent().getSession()
+	private HorizontalLayout hlPageHdrContainter = (HorizontalLayout) UI.getCurrent().getSession()
 			.getAttribute("hlLayout");
 	private HorizontalLayout hlPageTitleLayout;
 	private Button btnScreenName;
@@ -136,7 +137,7 @@ public class DesignDocuments implements ClickListener {
 			if (cbEnquiry.getValue() != null) {
 				System.out.println("cbEnquiry.getValue()--->" + cbEnquiry.getValue());
 				documentList = serviceDocuments.getDocumentDetails(null, null, (Long) cbEnquiry.getValue(), null, null,
-						null, null, null, null,null,null);
+						null, null, null, null, null, null);
 			}
 			int recordcount = documentList.size();
 			beanDocuments = new BeanItemContainer<DocumentsDM>(DocumentsDM.class);
@@ -155,17 +156,19 @@ public class DesignDocuments implements ClickListener {
 	
 	// Load Enquiry List
 	private void loadEnquiryList() {
-		List<SmsEnqHdrDM> getsmsEnqNoHdr = new ArrayList<SmsEnqHdrDM>();
-		getsmsEnqNoHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyId, null, null, null, null, "P", null, null));
 		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
 		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(getsmsEnqNoHdr);
+		beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyId, null, null, null, null, "P", null, null));
 		cbEnquiry.setContainerDataSource(beansmsenqHdr);
 	}
 	
 	private void saveDetails() {
-		Boolean isDocUploaded = (Boolean) UI.getCurrent().getSession().getAttribute("IS_DOC_UPLOAD");
-		System.out.println("isDocUploaded--->" + isDocUploaded);
+		Boolean isDocUploaded = false;
+		try {
+			isDocUploaded = (Boolean) UI.getCurrent().getSession().getAttribute("IS_DOC_UPLOAD");
+		}
+		catch (Exception e) {
+		}
 		if (isDocUploaded) {
 			byte[] uploadedDoc = (byte[]) UI.getCurrent().getSession().getAttribute("UPLOAD_FILE_BYTE");
 			String filename = (String) UI.getCurrent().getSession().getAttribute("UPLOAD_FILE_NAME");

@@ -446,7 +446,7 @@ public class Leads extends BaseUI {
 		cbCity.setContainerDataSource(beanCity);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<LeadsDM> LeadList = new ArrayList<LeadsDM>();
@@ -598,59 +598,58 @@ public class Leads extends BaseUI {
 	protected void saveDetails() throws SaveException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
-			LeadsDM Leadobj = new LeadsDM();
+			LeadsDM leadsDM = new LeadsDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				Leadobj = beanLead.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				leadsDM = beanLead.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			Leadobj.setCompanyId(companyid);
-			Leadobj.setCompaignId((Long) cbCampaign.getValue());
-			Leadobj.setFirstName(tfFirstName.getValue());
-			Leadobj.setLastName(tfLastName.getValue());
-			Leadobj.setDesignation(tfDesignation.getValue());
-			Leadobj.setCompanyName(tfCompanyName.getValue());
-			Leadobj.setEmailId(tfEmailId.getValue());
-			Leadobj.setAddress(Leadobj.getAddress());
-			Leadobj.setWebsite(tfWebsite.getValue());
+			leadsDM.setCompanyId(companyid);
+			leadsDM.setCompaignId((Long) cbCampaign.getValue());
+			leadsDM.setFirstName(tfFirstName.getValue());
+			leadsDM.setLastName(tfLastName.getValue());
+			leadsDM.setDesignation(tfDesignation.getValue());
+			leadsDM.setCompanyName(tfCompanyName.getValue());
+			leadsDM.setEmailId(tfEmailId.getValue());
+			leadsDM.setAddress(leadsDM.getAddress());
+			leadsDM.setWebsite(tfWebsite.getValue());
 			if (tfNoOfEmp.getValue().toString().trim().length() > 0) {
-				Leadobj.setNoOfEmployees(Long.valueOf(tfNoOfEmp.getValue()));
+				leadsDM.setNoOfEmployees(Long.valueOf(tfNoOfEmp.getValue()));
 			}
-			Leadobj.setRemarks(taremarks.getValue());
-			Leadobj.setAddress(taAddress.getValue());
-			Leadobj.setPhoneNo(tfPhoneNo.getValue());
-			Leadobj.setPostalCode(tfPostalCode.getValue());
-			Leadobj.setLeadSource((String) cblead.getValue());
-			Leadobj.setPhoneNo(Leadobj.getPhoneNo());
+			leadsDM.setRemarks(taremarks.getValue());
+			leadsDM.setAddress(taAddress.getValue());
+			leadsDM.setPhoneNo(tfPhoneNo.getValue());
+			leadsDM.setPostalCode(tfPostalCode.getValue());
+			leadsDM.setLeadSource((String) cblead.getValue());
+			leadsDM.setPhoneNo(leadsDM.getPhoneNo());
 			if (tfRevenue.getValue() != null) {
-				Leadobj.setRevenue(Long.valueOf(tfRevenue.getValue()));
+				leadsDM.setRevenue(Long.valueOf(tfRevenue.getValue()));
 			}
 			if (cbClientCat.getValue() != null) {
-				Leadobj.setClientCatId((Long) (cbClientCat.getValue()));
+				leadsDM.setClientCatId((Long) (cbClientCat.getValue()));
 			}
 			if (cbCountry.getValue() != null) {
-				Leadobj.setCountryId((Long) cbCountry.getValue());
+				leadsDM.setCountryId((Long) cbCountry.getValue());
 			}
 			if (cbcurrency.getValue() != null) {
-				Leadobj.setCcyId((Long) cbcurrency.getValue());
+				leadsDM.setCcyId((Long) cbcurrency.getValue());
 			}
 			logger.info(" (Long) cbCountryName.getValue() is > " + cbCountry.getValue());
 			if (cbState.getValue() != null) {
-				Leadobj.setStateId(Long.valueOf(cbState.getValue().toString()));
+				leadsDM.setStateId(Long.valueOf(cbState.getValue().toString()));
 			}
 			logger.info(" (Long) cbState.getValue() is > " + cbState.getValue());
 			if (cbCity.getValue() != null) {
-				Leadobj.setCityId(Long.valueOf(cbCity.getValue().toString()));
+				leadsDM.setCityId(Long.valueOf(cbCity.getValue().toString()));
 			}
 			if (cbLeadStatus.getValue() != null) {
-				Leadobj.setLeadStatus((String) cbLeadStatus.getValue());
+				leadsDM.setLeadStatus((String) cbLeadStatus.getValue());
 			}
-			Leadobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			Leadobj.setLastUpdatedBy(username);
-			logger.info(" saveOrUpdateLeads() > " + Leadobj);
-			serviceLead.saveOrUpdateLeads(Leadobj);
-			System.out.println("LEADS->>" + Leadobj.getLeadId());
-			comment.saveLeads(Leadobj.getLeadId());
+			leadsDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+			leadsDM.setLastUpdatedBy(username);
+			logger.info(" saveOrUpdateLeads() > " + leadsDM);
+			serviceLead.saveOrUpdateLeads(leadsDM);
+			comment.saveLeads(leadsDM.getLeadId());
 			comment.resetfields();
-			document.saveLeads(Leadobj.getLeadId());
+			document.saveLeads(leadsDM.getLeadId());
 			document.ResetFields();
 			resetFields();
 			loadSrchRslt();

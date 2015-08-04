@@ -167,7 +167,7 @@ public class FundRequest extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<FundRequestDM> actpayablesList = new ArrayList<FundRequestDM>();

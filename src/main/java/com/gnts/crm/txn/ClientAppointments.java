@@ -109,8 +109,8 @@ public class ClientAppointments extends BaseUI {
 	 * UI Components
 	 */
 	private TextArea taObjectives, taMeetRemarks;
-	private ComboBox cbTypeofContact, cbLead, cbClient, cbCampaign, cbCase, cbEmployee, cbContact, cbMeetingType, cbPriority,
-			cbMeetingStatus, cbPreviewAppoint, cbOppertunity;
+	private ComboBox cbTypeofContact, cbLead, cbClient, cbCampaign, cbCase, cbEmployee, cbContact, cbMeetingType,
+			cbPriority, cbMeetingStatus, cbPreviewAppoint, cbOppertunity;
 	private TabSheet tabAppointment;
 	private PopupDateField dueDate;
 	private PopupDateField scheduleDt;
@@ -415,7 +415,6 @@ public class ClientAppointments extends BaseUI {
 		});
 		dueDate = new GERPPopupDateField("Due Date");
 		dueDate.setDateFormat("dd-MMM-yyyy");
-		// dueDate.addValidator(new DateValidation("Invalid date entered"));
 		dueDate.setImmediate(true);
 		cbMeetingType = new GERPComboBox("Meeting Type");
 		cbMeetingType.setItemCaptionPropertyId("lookupname");
@@ -525,7 +524,7 @@ public class ClientAppointments extends BaseUI {
 	 * 
 	 * @param search
 	 */
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		try {
 			tblMstScrSrchRslt.removeAllItems();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
@@ -976,21 +975,12 @@ public class ClientAppointments extends BaseUI {
 		cbPriority.setValue(cbPriority.getItemIds().iterator().next());
 	}
 	
-	public void cbVisibleFalse() {
+	private void cbVisibleFalse() {
 		cbCampaign.setVisible(false);
 		cbLead.setVisible(false);
 		cbCase.setVisible(false);
 		cbContact.setVisible(false);
 		cbOppertunity.setVisible(false);
 		cbClient.setVisible(false);
-	}
-	
-	public void cbReset() {
-		cbCampaign.setValue(null);
-		cbLead.setValue(null);
-		cbCase.setValue(null);
-		cbContact.setValue(null);
-		cbOppertunity.setValue(null);
-		cbClient.setValue(null);
 	}
 }

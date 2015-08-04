@@ -53,6 +53,7 @@ import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
+import com.gnts.mfg.txn.TestingDocuments;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
@@ -171,6 +172,8 @@ public class DieRequest extends BaseTransUI {
 	private GERPTable tblDieBillofMaterial = new GERPTable();
 	private Button btnAddBOM = new GERPButton("Add", "add");
 	private List<DieBOMDtlDM> listDieBOMDtl = new ArrayList<DieBOMDtlDM>();
+	// for test documents
+	private VerticalLayout hlDocumentLayout = new VerticalLayout();
 	
 	// Constructor received the parameters from Login UI class
 	public DieRequest() {
@@ -517,6 +520,7 @@ public class DieRequest extends BaseTransUI {
 		hlUserIPContainer.addComponent(tbDieRequest);
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
+		tbDieRequest.addTab(hlDocumentLayout, "Design Documents");
 		// for disable tabs
 		if (UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ") == null
 				|| (Boolean) UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ")) {
@@ -581,12 +585,11 @@ public class DieRequest extends BaseTransUI {
 	}
 	
 	private void loadInputTypes() {
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-				"DIE_MTR_INPUT");
 		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
 				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+				"DIE_MTR_INPUT"));
 		cbMTInput.setContainerDataSource(beanCompanyLookUp);
 	}
 	
@@ -672,6 +675,12 @@ public class DieRequest extends BaseTransUI {
 			tfDrawingNumber.setValue(dieRequestDM.getDieRefNumber());
 			taChangeNote.setValue(dieRequestDM.getChangeNote());
 			cbStatus.setValue(dieRequestDM.getStatus());
+			try {
+				new TestingDocuments(hlDocumentLayout, dieRequestDM.getEnquiryId().toString(), "DR");
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

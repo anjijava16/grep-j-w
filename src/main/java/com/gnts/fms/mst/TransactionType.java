@@ -120,7 +120,7 @@ public class TransactionType extends BaseUI {
 		hlSearchLayout.setComponentAlignment(hlUserInputLayout, Alignment.MIDDLE_LEFT);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + "," + (String) cbstatus.getValue()
 				+ ", " + companyId + "Loading Search...");

@@ -231,9 +231,6 @@ public class TransactionApprovel implements ClickListener {
 	 */
 	private void buildNotifications(ClickEvent event) {
 		notifications = new Window();
-		VerticalLayout l = new VerticalLayout();
-		l.setMargin(true);
-		l.setSpacing(true);
 		notifications.setWidth("178px");
 		notifications.addStyleName("notifications");
 		notifications.setClosable(false);
@@ -254,7 +251,7 @@ public class TransactionApprovel implements ClickListener {
 	 * populatedAndConfig()-->this function used to load the list to the table
 	 * @param search if(search==true)--> it performs search operation else it loads all values
 	 */
-	public void populateAndConfig(boolean search) {
+	private void populateAndConfig(boolean search) {
 		try {
 			tblTransactions.removeAllItems();
 			List<TransactionsDM> list = new ArrayList<TransactionsDM>();
@@ -276,7 +273,7 @@ public class TransactionApprovel implements ClickListener {
 		getExportTableDetails();
 	}
 	
-	void getEditableTable() {
+	private void getEditableTable() {
 		tblTransactions.setEditable(true);
 		tblTransactions.setTableFieldFactory(new TableFieldFactory() {
 			private static final long serialVersionUID = 1L;
@@ -339,7 +336,7 @@ public class TransactionApprovel implements ClickListener {
 		chkApproveAll.setValue(false);
 	}
 	
-	void saveDetails() {
+	private void saveDetails() {
 		@SuppressWarnings("unchecked")
 		Collection<TransactionsDM> itemIds = (Collection<TransactionsDM>) tblTransactions.getVisibleItemIds();
 		for (TransactionsDM transOld : (Collection<TransactionsDM>) itemIds) {

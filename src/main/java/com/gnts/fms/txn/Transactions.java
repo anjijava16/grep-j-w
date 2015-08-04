@@ -152,11 +152,9 @@ public class Transactions extends BaseTransUI {
 		cbAccountReference.setItemCaptionPropertyId("accountname");
 		loadAccountTypeList();
 		cbDepartmentName.setItemCaptionPropertyId("ccyname");
-		// loadDepartmentList();
 		cbTransactionType.setItemCaptionPropertyId("transtypename");
 		loadMTranstypeList();
 		cbProjectName.setItemCaptionPropertyId("projectName");
-		// loadProjectList();
 		tfChequeNumber.setMaxLength(30);
 		cbPaymentMode.setItemCaptionPropertyId("lookupname");
 		loadPaymentmodeList();
@@ -308,7 +306,7 @@ public class Transactions extends BaseTransUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<TransactionsDM> transList = new ArrayList<TransactionsDM>();
@@ -333,11 +331,11 @@ public class Transactions extends BaseTransUI {
 	
 	private void editTransactions() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			TransactionsDM transList = beanTransactionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			transactionId = transList.getAccTxnId();
-			if (transList.getTransdt() != null) {
+			TransactionsDM transactionsDM = beanTransactionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			transactionId = transactionsDM.getAccTxnId();
+			if (transactionsDM.getTransdt() != null) {
 				try {
-					dfTransactionDate.setValue(transList.getTransdt());
+					dfTransactionDate.setValue(transactionsDM.getTransdt());
 				}
 				catch (Exception e) {
 					dfTransactionDate.setValue(null);
@@ -345,12 +343,12 @@ public class Transactions extends BaseTransUI {
 			} else {
 				dfTransactionDate.setValue(null);
 			}
-			if (transList.getValueDate() == null) {
-				transList.setValueDate(dfTransactionDate.getValue());
+			if (transactionsDM.getValueDate() == null) {
+				transactionsDM.setValueDate(dfTransactionDate.getValue());
 			}
 			// For select account number
-			if (transList.getAccountId() != null) {
-				Long editaccount = transList.getAccountId();
+			if (transactionsDM.getAccountId() != null) {
+				Long editaccount = transactionsDM.getAccountId();
 				Collection<?> coll1 = cbAccountReference.getItemIds();
 				for (Iterator<?> iterator = coll1.iterator(); iterator.hasNext();) {
 					Object itemid = (Object) iterator.next();
@@ -365,8 +363,8 @@ public class Transactions extends BaseTransUI {
 				}
 			}
 			// For select Transaction type
-			if (transList.getTranstypeid() != null) {
-				Long edittranstype = transList.getTranstypeid();
+			if (transactionsDM.getTranstypeid() != null) {
+				Long edittranstype = transactionsDM.getTranstypeid();
 				Collection<?> coll2 = cbTransactionType.getItemIds();
 				for (Iterator<?> iterator = coll2.iterator(); iterator.hasNext();) {
 					Object itemid = (Object) iterator.next();
@@ -380,29 +378,29 @@ public class Transactions extends BaseTransUI {
 					}
 				}
 			}
-			if (transList.getTransamount() != null) {
-				tfTransactionAmount.setValue(transList.getTransamount().toString());
+			if (transactionsDM.getTransamount() != null) {
+				tfTransactionAmount.setValue(transactionsDM.getTransamount().toString());
 			}
-			if (transList.getChequedt() != null) {
-				dfChequeDate.setValue(transList.getChequedt());
+			if (transactionsDM.getChequedt() != null) {
+				dfChequeDate.setValue(transactionsDM.getChequedt());
 			}
-			if (transList.getChequeNo() != null) {
-				tfChequeNumber.setValue(transList.getChequeNo());
+			if (transactionsDM.getChequeNo() != null) {
+				tfChequeNumber.setValue(transactionsDM.getChequeNo());
 			}
-			if (transList.getInstruremark() != null) {
-				tfInstrumentRemarks.setValue(transList.getInstruremark());
+			if (transactionsDM.getInstruremark() != null) {
+				tfInstrumentRemarks.setValue(transactionsDM.getInstruremark());
 			}
-			if (transList.getPaymentmode() != null) {
-				cbPaymentMode.setValue(transList.getPaymentmode());
+			if (transactionsDM.getPaymentmode() != null) {
+				cbPaymentMode.setValue(transactionsDM.getPaymentmode());
 			}
-			if (transList.getAppremarks() != null) {
-				tfApproverRemarks.setValue(transList.getAppremarks());
+			if (transactionsDM.getAppremarks() != null) {
+				tfApproverRemarks.setValue(transactionsDM.getAppremarks());
 			}
 			tfVoucherNo.setReadOnly(false);
-			tfVoucherNo.setValue(transList.getVoucherNo());
-			cbStatus.setValue(transList.getTxnStatus());
-			tfAccount.setValue(transList.getAccountRefName());
-			tfRefDetails.setValue(transList.getRefDetails());
+			tfVoucherNo.setValue(transactionsDM.getVoucherNo());
+			cbStatus.setValue(transactionsDM.getTxnStatus());
+			tfAccount.setValue(transactionsDM.getAccountRefName());
+			tfRefDetails.setValue(transactionsDM.getRefDetails());
 		}
 	}
 	

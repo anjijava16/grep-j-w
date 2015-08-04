@@ -40,7 +40,6 @@ import com.gnts.stt.dsn.domain.txn.ECNoteDM;
 import com.gnts.stt.dsn.domain.txn.ECRequestDM;
 import com.gnts.stt.dsn.service.txn.ECNoteService;
 import com.gnts.stt.dsn.service.txn.ECRequestService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -96,8 +95,7 @@ public class ECNote extends BaseTransUI {
 	private int recordCnt = 0;
 	private SmsComments comments;
 	private String status;
-	@SuppressWarnings("unused")
-	private Long branchId, employeeId, roleId, appScreenId;
+	private Long branchId;
 	
 	// Constructor received the parameters from Login UI class
 	public ECNote() {
@@ -105,10 +103,7 @@ public class ECNote extends BaseTransUI {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
-		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
-		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
-		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside ECNote() constructor");
 		buildview();
 	}
@@ -276,12 +271,10 @@ public class ECNote extends BaseTransUI {
 	
 	// Load Enquiry List
 	private void loadEnquiryList(Long enquiryId) {
-		List<SmsEnqHdrDM> getsmsEnqNoHdr = new ArrayList<SmsEnqHdrDM>();
-		getsmsEnqNoHdr.addAll(serviceEnqHeader
-				.getSmsEnqHdrList(companyid, enquiryId, null, null, null, "P", null, null));
 		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
 		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(getsmsEnqNoHdr);
+		beansmsenqHdr
+				.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, enquiryId, null, null, null, "P", null, null));
 		cbEnquiry.setContainerDataSource(beansmsenqHdr);
 		cbEnquiry.setValue(cbEnquiry.getItemIds().iterator().next());
 	}
@@ -289,11 +282,9 @@ public class ECNote extends BaseTransUI {
 	// Load Product List
 	private void loadProduct(Long prodid) {
 		try {
-			List<ProductDM> ProductList = serviceProduct.getProductList(companyid, prodid, null, null, "Active", null,
-					null, "P");
 			BeanContainer<Long, ProductDM> beanProduct = new BeanContainer<Long, ProductDM>(ProductDM.class);
 			beanProduct.setBeanIdProperty("prodid");
-			beanProduct.addAll(ProductList);
+			beanProduct.addAll(serviceProduct.getProductList(companyid, prodid, null, null, "Active", null, null, "P"));
 			cbProduct.setContainerDataSource(beanProduct);
 			cbProduct.setValue(cbProduct.getItemIds().iterator().next());
 		}
@@ -305,11 +296,10 @@ public class ECNote extends BaseTransUI {
 	// Load Client List
 	private void loadSmsClientList(Long clientid) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
-		List<ClientDM> clientlist = serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null,
-				null, "Active", "P");
 		BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
 		beanclientDM.setBeanIdProperty("clientId");
-		beanclientDM.addAll(clientlist);
+		beanclientDM.addAll(serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null, null,
+				"Active", "P"));
 		cbClient.setContainerDataSource(beanclientDM);
 		cbClient.setValue(cbClient.getItemIds().iterator().next());
 	}
@@ -329,9 +319,7 @@ public class ECNote extends BaseTransUI {
 	private void editECNote() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecnid -> " + ecnid);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			ECNoteDM ecNoteDM = beanECNote.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			ecnid = ecNoteDM.getEcnid();
 			tfECNNumber.setReadOnly(false);

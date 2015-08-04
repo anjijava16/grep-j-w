@@ -177,7 +177,7 @@ public class AccountReceivables extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<AccountReceivablesDM> actReceivablesList = new ArrayList<AccountReceivablesDM>();
@@ -217,17 +217,17 @@ public class AccountReceivables extends BaseUI {
 	
 	private void editActReceivables() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			AccountReceivablesDM actpayablesList = beansAccountReceivablesDM.getItem(tblMstScrSrchRslt.getValue())
+			AccountReceivablesDM accountReceivablesDM = beansAccountReceivablesDM.getItem(tblMstScrSrchRslt.getValue())
 					.getBean();
-			primaryid = actpayablesList.getAccrcbleId().toString();
-			if (actpayablesList.getBranchId() != null) {
-				cbBranchName.setValue(actpayablesList.getBranchId());
+			primaryid = accountReceivablesDM.getAccrcbleId().toString();
+			if (accountReceivablesDM.getBranchId() != null) {
+				cbBranchName.setValue(accountReceivablesDM.getBranchId());
 			}
-			if (actpayablesList.getEntryDate() != null) {
-				dfEntryDate.setValue(actpayablesList.getEntryDate());
+			if (accountReceivablesDM.getEntryDate() != null) {
+				dfEntryDate.setValue(accountReceivablesDM.getEntryDate());
 			}
-			if (actpayablesList.getAccountId() != null) {
-				Long editaccount = actpayablesList.getAccountId();
+			if (accountReceivablesDM.getAccountId() != null) {
+				Long editaccount = accountReceivablesDM.getAccountId();
 				Collection<?> coll1 = cbAccountReference.getItemIds();
 				for (Iterator<?> iterator = coll1.iterator(); iterator.hasNext();) {
 					Object itemid = (Object) iterator.next();
@@ -241,23 +241,23 @@ public class AccountReceivables extends BaseUI {
 					}
 				}
 			}
-			if (actpayablesList.getInvoiceNo() != null) {
-				tfInvoiceNo.setValue(actpayablesList.getInvoiceNo().toString());
+			if (accountReceivablesDM.getInvoiceNo() != null) {
+				tfInvoiceNo.setValue(accountReceivablesDM.getInvoiceNo().toString());
 			}
-			if (actpayablesList.getInvoiceDate() != null) {
-				dfInvoiceDate.setValue(actpayablesList.getInvoiceDate());
+			if (accountReceivablesDM.getInvoiceDate() != null) {
+				dfInvoiceDate.setValue(accountReceivablesDM.getInvoiceDate());
 			}
-			if (actpayablesList.getInvoiceAmt() != null) {
-				tfInvoiceAmt.setValue(actpayablesList.getInvoiceAmt().toString());
+			if (accountReceivablesDM.getInvoiceAmt() != null) {
+				tfInvoiceAmt.setValue(accountReceivablesDM.getInvoiceAmt().toString());
 			}
-			if (actpayablesList.getBalanceAmt() != null) {
-				tfBalanceAmt.setValue(actpayablesList.getBalanceAmt().toString());
+			if (accountReceivablesDM.getBalanceAmt() != null) {
+				tfBalanceAmt.setValue(accountReceivablesDM.getBalanceAmt().toString());
 			}
-			if (actpayablesList.getPaidAmt() != null) {
-				tfPaidAmt.setValue(actpayablesList.getPaidAmt().toString());
+			if (accountReceivablesDM.getPaidAmt() != null) {
+				tfPaidAmt.setValue(accountReceivablesDM.getPaidAmt().toString());
 			}
-			if (actpayablesList.getRemarks() != null) {
-				tfRemarks.setValue(actpayablesList.getRemarks());
+			if (accountReceivablesDM.getRemarks() != null) {
+				tfRemarks.setValue(accountReceivablesDM.getRemarks());
 			}
 		}
 	}

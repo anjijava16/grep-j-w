@@ -178,7 +178,7 @@ public class AccountPayables extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<AccountPayablesDM> actpayablesList = new ArrayList<AccountPayablesDM>();
@@ -218,17 +218,17 @@ public class AccountPayables extends BaseUI {
 	
 	private void editActPayables() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			AccountPayablesDM actpayablesList = beansAccountPayablesDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			primaryid = actpayablesList.getAccPayableId().toString();
-			if (actpayablesList.getBranchId() != null) {
-				cbBranchName.setValue(actpayablesList.getBranchId());
+			AccountPayablesDM accountPayablesDM = beansAccountPayablesDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			primaryid = accountPayablesDM.getAccPayableId().toString();
+			if (accountPayablesDM.getBranchId() != null) {
+				cbBranchName.setValue(accountPayablesDM.getBranchId());
 			}
-			if (actpayablesList.getEntryDate() != null) {
-				dfEntryDate.setValue(actpayablesList.getEntryDate());
+			if (accountPayablesDM.getEntryDate() != null) {
+				dfEntryDate.setValue(accountPayablesDM.getEntryDate());
 			}
 			// For select account number
-			if (actpayablesList.getAccountId() != null) {
-				Long editaccount = actpayablesList.getAccountId();
+			if (accountPayablesDM.getAccountId() != null) {
+				Long editaccount = accountPayablesDM.getAccountId();
 				Collection<?> coll1 = cbAccountReference.getItemIds();
 				for (Iterator<?> iterator = coll1.iterator(); iterator.hasNext();) {
 					Object itemid = (Object) iterator.next();
@@ -242,29 +242,29 @@ public class AccountPayables extends BaseUI {
 					}
 				}
 			}
-			if (actpayablesList.getBillNo() != null) {
-				tfBillNo.setValue(actpayablesList.getBillNo().toString());
+			if (accountPayablesDM.getBillNo() != null) {
+				tfBillNo.setValue(accountPayablesDM.getBillNo().toString());
 			}
-			if (actpayablesList.getBillDate() != null) {
-				dfBillDate.setValue(actpayablesList.getBillDate());
+			if (accountPayablesDM.getBillDate() != null) {
+				dfBillDate.setValue(accountPayablesDM.getBillDate());
 			}
-			if (actpayablesList.getInvoiceAmt() != null) {
-				tfInvoiceAmt.setValue(actpayablesList.getInvoiceAmt().toString());
+			if (accountPayablesDM.getInvoiceAmt() != null) {
+				tfInvoiceAmt.setValue(accountPayablesDM.getInvoiceAmt().toString());
 			}
 			tfBalanceAmt.setReadOnly(false);
-			if (actpayablesList.getBalanceAmt() != null) {
-				tfBalanceAmt.setValue(actpayablesList.getBalanceAmt().toString());
+			if (accountPayablesDM.getBalanceAmt() != null) {
+				tfBalanceAmt.setValue(accountPayablesDM.getBalanceAmt().toString());
 			}
 			tfBalanceAmt.setReadOnly(true);
 			tfPaidAmt.setReadOnly(false);
-			if (actpayablesList.getPaidAmt() != null) {
-				tfPaidAmt.setValue(actpayablesList.getPaidAmt().toString());
+			if (accountPayablesDM.getPaidAmt() != null) {
+				tfPaidAmt.setValue(accountPayablesDM.getPaidAmt().toString());
 			}
 			tfPaidAmt.setReadOnly(true);
-			if (actpayablesList.getRemarks() != null) {
-				tfRemarks.setValue(actpayablesList.getRemarks());
+			if (accountPayablesDM.getRemarks() != null) {
+				tfRemarks.setValue(accountPayablesDM.getRemarks());
 			}
-			cbStatus.setValue(actpayablesList.getPayStatus());
+			cbStatus.setValue(accountPayablesDM.getPayStatus());
 		}
 	}
 	
@@ -296,10 +296,8 @@ public class AccountPayables extends BaseUI {
 	protected void addDetails() {
 		logger.info("Company ID :" + companyId + " | User Name : " + loginUserName + " > " + "Adding new record...");
 		cbAccountReference.setComponentError(null);
-		// cbActionedBy.setComponentError(null);
 		cbBranchName.setRequired(true);
 		cbAccountReference.setRequired(true);
-		// cbActionedBy.setRequired(true);
 		// remove the components in the search layout and input controls in the same container
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
@@ -323,7 +321,6 @@ public class AccountPayables extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Validating Data ");
 		cbBranchName.setComponentError(null);
 		cbAccountReference.setComponentError(null);
-		// cbActionedBy.setComponentError(null);
 		Boolean errorFlag = false;
 		if ((cbBranchName.getValue() == null)) {
 			cbBranchName.setComponentError(new UserError(GERPErrorCodes.BRANCH_NAME));
@@ -342,16 +339,16 @@ public class AccountPayables extends BaseUI {
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Saving Data... ");
 		try {
-			AccountPayablesDM actPayablesobj = new AccountPayablesDM();
+			AccountPayablesDM accountPayablesDM = new AccountPayablesDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				actPayablesobj = beansAccountPayablesDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				accountPayablesDM = beansAccountPayablesDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			actPayablesobj.setCompanyId(companyId);
-			actPayablesobj.setBranchId((Long) cbBranchName.getValue());
-			actPayablesobj.setEntryDate(dfEntryDate.getValue());
-			actPayablesobj.setAccountId(((AccountsDM) cbAccountReference.getValue()).getAccountId());
-			actPayablesobj.setBillNo(tfBillNo.getValue());
-			actPayablesobj.setBillDate(dfBillDate.getValue());
+			accountPayablesDM.setCompanyId(companyId);
+			accountPayablesDM.setBranchId((Long) cbBranchName.getValue());
+			accountPayablesDM.setEntryDate(dfEntryDate.getValue());
+			accountPayablesDM.setAccountId(((AccountsDM) cbAccountReference.getValue()).getAccountId());
+			accountPayablesDM.setBillNo(tfBillNo.getValue());
+			accountPayablesDM.setBillDate(dfBillDate.getValue());
 			BigDecimal transamount = new BigDecimal("0");
 			BigDecimal closebalance = new BigDecimal("0");
 			BigDecimal accountbalance = new BigDecimal("0");
@@ -365,18 +362,18 @@ public class AccountPayables extends BaseUI {
 			}
 			accountbalance = accountbalance.subtract(transamount);
 			closebalance = accountbalance;
-			actPayablesobj.setInvoiceAmt(transamount);
-			actPayablesobj.setBalanceAmt(closebalance);
-			actPayablesobj.setPaidAmt(transamount);
-			actPayablesobj.setActionedBy(empId);
+			accountPayablesDM.setInvoiceAmt(transamount);
+			accountPayablesDM.setBalanceAmt(closebalance);
+			accountPayablesDM.setPaidAmt(transamount);
+			accountPayablesDM.setActionedBy(empId);
 			if (cbStatus.getValue() != null) {
-				actPayablesobj.setPayStatus((String) cbStatus.getValue());
+				accountPayablesDM.setPayStatus((String) cbStatus.getValue());
 			}
-			actPayablesobj.setPreparedBy(empId);
-			actPayablesobj.setRemarks(tfRemarks.getValue());
-			actPayablesobj.setLastUpadatedBy(loginUserName);
-			actPayablesobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			serviceAccountPayables.saveDetails(actPayablesobj);
+			accountPayablesDM.setPreparedBy(empId);
+			accountPayablesDM.setRemarks(tfRemarks.getValue());
+			accountPayablesDM.setLastUpadatedBy(loginUserName);
+			accountPayablesDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+			serviceAccountPayables.saveDetails(accountPayablesDM);
 			serviceAccountPayables.updateAccountBalance(((AccountsDM) cbAccountReference.getValue()).getAccountId(),
 					closebalance, null);
 			resetSearchDetails();

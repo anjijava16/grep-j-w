@@ -63,7 +63,6 @@ public class PNCCenters extends BaseUI {
 	// BeanContainer
 	private BeanItemContainer<PNCCentersDM> beanPNCCenter = null;
 	private ListSelect lSDeptName = new ListSelect("Department Name");
-	public Long pncid;
 	// Local variables declaration
 	private Long companyid;
 	private int recordCnt = 0;
@@ -142,7 +141,7 @@ public class PNCCenters extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<PNCCentersDM> pncCenterList = new ArrayList<PNCCentersDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "

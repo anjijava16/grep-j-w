@@ -232,7 +232,7 @@ public class BankBranch extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			List<BankBranchDM> bankBranchList = new ArrayList<BankBranchDM>();

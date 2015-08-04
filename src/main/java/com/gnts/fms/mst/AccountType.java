@@ -118,7 +118,7 @@ public class AccountType extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Search Parameters are " + ":" + tfAccountType.getValue() + "," + (String) cbstatus.getValue() + ", "
 				+ companyId + ",F" + "Loading Search...");

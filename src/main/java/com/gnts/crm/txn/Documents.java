@@ -60,9 +60,8 @@ public class Documents implements ClickListener {
 	private String basepath1, basepath;
 	private String userName, strWidth = "170px";
 	private CompanyLookupDM documentTypeLookup;
-	private BeanContainer<String, CompanyLookupDM> beanCompLookUp = null;
 	private int recordcount = 0;
-	List<DocumentsDM> documentList = new ArrayList<DocumentsDM>();
+	private List<DocumentsDM> documentList = new ArrayList<DocumentsDM>();
 	private Long leadId, clntContactId, clientId, campaignId, clntCaseId, clntOppertunityId, quoteId, enquiryId,
 			moduleId;
 	private TextField tfDocumentName;
@@ -78,7 +77,7 @@ public class Documents implements ClickListener {
 			Long contactId, Long clntCampaingId, Long caseId) {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		moduleId =(Long)(UI.getCurrent().getSession().getAttribute("moduleId"));
+		moduleId = (Long) (UI.getCurrent().getSession().getAttribute("moduleId"));
 		quoteId = (Long) (UI.getCurrent().getSession().getAttribute("quoteid"));
 		enquiryId = ((Long) UI.getCurrent().getSession().getAttribute("enquiryid"));
 		clntOppertunityId = oppertunityId;
@@ -238,7 +237,7 @@ public class Documents implements ClickListener {
 		HorizontalLayout hluserInput = new HorizontalLayout();
 		hluserInput.addComponent(flcolumn1);
 		hluserInput.addComponent(flcolumn2);
-		//hluserInput.setComponentAlignment(flcolumn2, Alignment.BOTTOM_CENTER);
+		// hluserInput.setComponentAlignment(flcolumn2, Alignment.BOTTOM_CENTER);
 		hluserInput.setSpacing(true);
 		hluserInput.setMargin(true);
 		hluserInput.addComponent(tblDocuments);
@@ -260,7 +259,7 @@ public class Documents implements ClickListener {
 			Long oppurtunuityId, Long caseId) {
 		if (from) {
 			documentList = serviceDoc.getDocumentDetails(companyId, null, null, clientId, clntContactId, leadId,
-					campaingnId, clntOppertunityId, clntCaseId,null,null);
+					campaingnId, clntOppertunityId, clntCaseId, null, null);
 			recordcount = documentList.size();
 		}
 		try {
@@ -404,40 +403,33 @@ public class Documents implements ClickListener {
 	}
 	
 	public void savecontact(Long contactId) {
-		System.out.println("saveid1-->>" + contactId);
 		@SuppressWarnings("unchecked")
 		Collection<DocumentsDM> itemIds = (Collection<DocumentsDM>) tblDocuments.getVisibleItemIds();
 		for (DocumentsDM savecontacts : (Collection<DocumentsDM>) itemIds) {
 			savecontacts.setContactId(contactId);
-			System.out.println("saveid2-->>" + contactId);
 			serviceDoc.saveOrUpdateDocumentsDetails(savecontacts);
 		}
 	}
 	
 	public void savecampaign(Long campaingnId) {
-		System.out.println("saveid1-->>" + campaingnId);
 		@SuppressWarnings("unchecked")
 		Collection<DocumentsDM> itemIds = (Collection<DocumentsDM>) tblDocuments.getVisibleItemIds();
 		for (DocumentsDM savecampaign : (Collection<DocumentsDM>) itemIds) {
 			savecampaign.setCampaignId(campaingnId);
-			System.out.println("saveid2-->>" + campaingnId);
 			serviceDoc.saveOrUpdateDocumentsDetails(savecampaign);
 		}
 	}
 	
 	public void saveLeads(Long leadId) {
-		System.out.println("saveid1-->>" + leadId);
 		@SuppressWarnings("unchecked")
 		Collection<DocumentsDM> itemIds = (Collection<DocumentsDM>) tblDocuments.getVisibleItemIds();
 		for (DocumentsDM saveleads : (Collection<DocumentsDM>) itemIds) {
 			saveleads.setLeadId(leadId);
-			System.out.println("saveid2-->>" + leadId);
 			serviceDoc.saveOrUpdateDocumentsDetails(saveleads);
 		}
 	}
 	
 	public void saveclientcases(Long caseId) {
-		System.out.println("saveid1-->>" + caseId);
 		@SuppressWarnings("unchecked")
 		Collection<DocumentsDM> itemIds = (Collection<DocumentsDM>) tblDocuments.getVisibleItemIds();
 		for (DocumentsDM savecases : (Collection<DocumentsDM>) itemIds) {
@@ -448,7 +440,6 @@ public class Documents implements ClickListener {
 	}
 	
 	public void saveClientOppurtunuity(Long oppertunityId) {
-		System.out.println("saveid1-->>" + oppertunityId);
 		@SuppressWarnings("unchecked")
 		Collection<DocumentsDM> itemIds = (Collection<DocumentsDM>) tblDocuments.getVisibleItemIds();
 		for (DocumentsDM saveoppertunuity : (Collection<DocumentsDM>) itemIds) {
@@ -518,11 +509,9 @@ public class Documents implements ClickListener {
 	 */
 	private void loadOppertunityTypeByLookUpList() {
 		try {
-			List<CompanyLookupDM> statusLookUpList = servicecompany.getCompanyLookUpByLookUp(companyId, moduleId,
-					"Active", "CM_DOCTYPE");
-			beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
 			beanCompLookUp.setBeanIdProperty("lookupname");
-			beanCompLookUp.addAll(statusLookUpList);
+			beanCompLookUp.addAll(servicecompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "CM_DOCTYPE"));
 			cbDocumentType.setContainerDataSource(beanCompLookUp);
 		}
 		catch (Exception e) {

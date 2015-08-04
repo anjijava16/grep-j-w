@@ -46,10 +46,10 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
 public class RotoCheck extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
@@ -93,14 +93,12 @@ public class RotoCheck extends BaseTransUI {
 	private HorizontalLayout hlsearchlayout;
 	// Parent layout for all the input controls EC Request
 	private HorizontalLayout hlDtlandArm, hlArm, hlHdrslap;
-	private HorizontalLayout hlSearchLayout = new HorizontalLayout();
 	private VerticalLayout vlArm;
 	// local variables declaration
 	private String username;
 	private Long companyid, branchID, moduleId;
 	private int recordCnt = 0;
 	private Long rotoplanId;
-	private Long productid, id;
 	
 	// Constructor received the parameters from Login UI class
 	public RotoCheck() {
@@ -180,11 +178,11 @@ public class RotoCheck extends BaseTransUI {
 		dfRotoDt.setWidth("130px");
 		cbStatus.setWidth("150");
 		buildviewDtl();
-		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
+		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
-		assembleinputLayout();
+		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
 		resetFields();
-		loadPlanDtlRslt();
+		loadSrchRslt();
 	}
 	
 	// Roto Check Details
@@ -247,8 +245,8 @@ public class RotoCheck extends BaseTransUI {
 	private void assembleSearchLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Roto planning search layout");
 		tfRotoRef.setReadOnly(false);
-		hlSearchLayout.removeAllComponents();
-		hlSearchLayout.setMargin(true);
+		hlsearchlayout.removeAllComponents();
+		hlsearchlayout.setMargin(true);
 		flHdrCol1 = new FormLayout();
 		flHdrCol2 = new FormLayout();
 		flHdrCol3 = new FormLayout();
@@ -258,12 +256,12 @@ public class RotoCheck extends BaseTransUI {
 		flHdrCol1.addComponent(dfRotoDt);
 		flHdrCol2.addComponent(lbl);
 		flHdrCol3.addComponent(cbStatus);
-		hlSearchLayout.addComponent(flHdrCol4);
-		hlSearchLayout.addComponent(flHdrCol1);
-		hlSearchLayout.addComponent(flHdrCol2);
-		hlSearchLayout.addComponent(flHdrCol3);
-		hlSearchLayout.setMargin(true);
-		hlSearchLayout.setSizeUndefined();
+		hlsearchlayout.addComponent(flHdrCol4);
+		hlsearchlayout.addComponent(flHdrCol1);
+		hlsearchlayout.addComponent(flHdrCol2);
+		hlsearchlayout.addComponent(flHdrCol3);
+		hlsearchlayout.setMargin(true);
+		hlsearchlayout.setSizeUndefined();
 	}
 	
 	private void assembleinputLayout() {
@@ -272,7 +270,7 @@ public class RotoCheck extends BaseTransUI {
 		/*
 		 * vlArm.removeAllComponents(); vlDtl.removeAllComponents(); hlDtlandArm.removeAllComponents();
 		 */
-		hlSearchLayout.removeAllComponents();
+		hlsearchlayout.removeAllComponents();
 		flHdrCol1 = new FormLayout();
 		flHdrCol2 = new FormLayout();
 		flHdrCol1.addComponent(cbBranch);
@@ -360,8 +358,16 @@ public class RotoCheck extends BaseTransUI {
 		hlUserInputLayout.setWidth("100%");
 		hlUserInputLayout.setMargin(false);
 		hlUserInputLayout.setSpacing(true);
+		tblMstScrSrchRslt.setVisible(false);
+		
+		hlCmdBtnLayout.setVisible(false);
+
+		
+		hlUserIPContainer.addComponent(hlUserInputLayout);
+		
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
@@ -380,8 +386,6 @@ public class RotoCheck extends BaseTransUI {
 			for (RotoDtlDM rotoDtl : (Collection<RotoDtlDM>) ((Collection<RotoDtlDM>) tblRotoDetails
 					.getVisibleItemIds())) {
 				rotoDtl.setRotoid(rotocheckhdrDM.getRotoid());
-				id = rotocheckhdrDM.getRotoid();
-				productid = rotoDtl.getProductid();
 				serviceRotoDtl.saveRotoDtl(rotoDtl);
 			}
 			resetFields();
@@ -463,13 +467,10 @@ public class RotoCheck extends BaseTransUI {
 	@Override
 	protected void addDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
-		// remove the components in the search layout and input controls in the same container
-		hlUserInputLayout.removeAllComponents();
-		hlUserIPContainer.addComponent(hlUserInputLayout);
+		// cbclient.setRequired(true);
 		vlSrchRsltContainer.setVisible(true);
-		resetFields();
 		assembleinputLayout();
-		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
+		resetFields();
 		tfRotoRef.setReadOnly(false);
 		try {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STT_MF_RTONO").get(0);
@@ -537,7 +538,13 @@ public class RotoCheck extends BaseTransUI {
 	
 	@Override
 	protected void cancelDetails() {
-		// TODO Auto-generated method stub
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
+		tblMstScrSrchRslt.setValue(null);
+		assembleSearchLayout();
+		hlCmdBtnLayout.setVisible(true);
+		tblMstScrSrchRslt.setVisible(true);
+		resetFields();
+		loadSrchRslt();
 	}
 	
 	@Override

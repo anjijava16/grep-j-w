@@ -46,7 +46,6 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.server.UserError;
-import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
@@ -325,7 +324,7 @@ public class ClientContacts extends BaseUI {
 		hlUserInputLayout.setSizeUndefined();
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		List<ClientsContactsDM> clientContactList = new ArrayList<ClientsContactsDM>();
 		clientContactList = serviceClntContact.getClientContactsDetails(companyId, null, (Long) cbClient.getValue(),
 				(String) tfContactName.getValue(), (String) cbStatus.getValue(), null);
@@ -456,49 +455,49 @@ public class ClientContacts extends BaseUI {
 	protected void saveDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
 		try {
-			ClientsContactsDM Contactobj = new ClientsContactsDM();
+			ClientsContactsDM contactobj = new ClientsContactsDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				Contactobj = beanclntcontact.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				contactobj = beanclntcontact.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			Contactobj.setContactName(tfContactName.getValue());
-			Contactobj.setDesignation(tfDesignation.getValue());
+			contactobj.setContactName(tfContactName.getValue());
+			contactobj.setDesignation(tfDesignation.getValue());
 			if (ogpersontype.getValue() != null) {
-				Contactobj.setTechPerson(ogpersontype.getValue().toString());
+				contactobj.setTechPerson(ogpersontype.getValue().toString());
 			}
 			if (cbClient.getValue() != null) {
-				Contactobj.setClientId((Long) cbClient.getValue());
+				contactobj.setClientId((Long) cbClient.getValue());
 			}
 			if (cbClienSalut.getValue() != null) {
-				Contactobj.setContactSalut(cbClienSalut.getValue().toString());
+				contactobj.setContactSalut(cbClienSalut.getValue().toString());
 			}
 			if (tfEmailId.getValue() != "") {
-				Contactobj.setEmailId(tfEmailId.getValue());
+				contactobj.setEmailId(tfEmailId.getValue());
 			}
 			System.out.println("LeadIDloader" + cbClienSalut.getValue());
-			Contactobj.setMobileNo(tfMobileno.getValue());
-			Contactobj.setPhoneNo(tfPhoneNo.getValue());
+			contactobj.setMobileNo(tfMobileno.getValue());
+			contactobj.setPhoneNo(tfPhoneNo.getValue());
 			if ((Boolean) UI.getCurrent().getSession().getAttribute("isFileUploaded")) {
 				try {
-					Contactobj.setContactphoto((byte[]) UI.getCurrent().getSession().getAttribute("imagebyte"));
+					contactobj.setContactphoto((byte[]) UI.getCurrent().getSession().getAttribute("imagebyte"));
 				}
 				catch (Exception e) {
 					e.printStackTrace();
 				}
 			} else {
-				Contactobj.setContactphoto(null);
+				contactobj.setContactphoto(null);
 			}
 			if (cbStatus.getValue() != null) {
-				Contactobj.setContactStatus(cbStatus.getValue().toString());
+				contactobj.setContactStatus(cbStatus.getValue().toString());
 			}
-			Contactobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			Contactobj.setLastUpdatedBy(userName);
-			serviceClntContact.saveOrdUpdateClientContacts(Contactobj);
-			System.out.println("saveOrdUpdateClientContacts" + Contactobj);
+			contactobj.setLastUpdatedDt(DateUtils.getcurrentdate());
+			contactobj.setLastUpdatedBy(userName);
+			serviceClntContact.saveOrdUpdateClientContacts(contactobj);
+			System.out.println("saveOrdUpdateClientContacts" + contactobj);
 			resetFields();
-			comment.savecontact(Contactobj.getContactId());
-			System.out.println("contactsaved" + Contactobj.getContactId());
+			comment.savecontact(contactobj.getContactId());
+			System.out.println("contactsaved" + contactobj.getContactId());
 			comment.resetfields();
-			document.savecontact(Contactobj.getContactId());
+			document.savecontact(contactobj.getContactId());
 			document.ResetFields();
 			loadSrchRslt();
 		}

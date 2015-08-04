@@ -194,9 +194,9 @@ public class AccountOwners extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			AccountOwnersDM editAccountOwnerlist = new AccountOwnersDM();
-			editAccountOwnerlist = beanAccountOwnerDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			String accno = editAccountOwnerlist.getAccountno();
+			AccountOwnersDM accountOwnersDM = new AccountOwnersDM();
+			accountOwnersDM = beanAccountOwnerDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			String accno = accountOwnersDM.getAccountno();
 			Collection<?> acccol = cbAccountNo.getItemIds();
 			for (Iterator<?> iteratorclient = acccol.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
@@ -207,11 +207,11 @@ public class AccountOwners extends BaseUI {
 					cbAccountNo.setValue(itemIdClient);
 				}
 			}
-			if (editAccountOwnerlist.getEmpid() != null) {
-				cbEmpName.setValue(editAccountOwnerlist.getEmpid());
+			if (accountOwnersDM.getEmpid() != null) {
+				cbEmpName.setValue(accountOwnersDM.getEmpid());
 			}
-			if (editAccountOwnerlist.getAcctOwnerstatus() != null) {
-				cbStatus.setValue(editAccountOwnerlist.getAcctOwnerstatus());
+			if (accountOwnersDM.getAcctOwnerstatus() != null) {
+				cbStatus.setValue(accountOwnersDM.getAcctOwnerstatus());
 			}
 		}
 	}

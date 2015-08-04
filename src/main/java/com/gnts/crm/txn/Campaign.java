@@ -393,7 +393,7 @@ public class Campaign extends BaseUI {
 		hlUserInputLayout.setMargin(true);
 	}
 	
-	public void hluserInputReadonlyTrue() {
+	private void hluserInputReadonlyTrue() {
 		tfcampaign.setReadOnly(true);
 		CampaignOpenDt.setReadOnly(true);
 		CampaignOpenDt.setReadOnly(true);
@@ -420,7 +420,7 @@ public class Campaign extends BaseUI {
 		cbreview.setReadOnly(true);
 	}
 	
-	public void hluserInputReadonlyFalse() {
+	private void hluserInputReadonlyFalse() {
 		tfcampaign.setReadOnly(false);
 		CampaignOpenDt.setReadOnly(false);
 		CampaignCloseDt.setReadOnly(false);
@@ -448,7 +448,7 @@ public class Campaign extends BaseUI {
 		cbreview.setReadOnly(false);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		try {
 			tblMstScrSrchRslt.removeAllItems();
 			List<CampaignDM> compaingList = new ArrayList<CampaignDM>();
@@ -636,11 +636,10 @@ public class Campaign extends BaseUI {
 	 * this method used to load the employee list based on company id and status
 	 */
 	private void loadEmployeeList() {
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null,
-				null, null, "P");
 		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(empList);
+		beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null, null,
+				null, "P"));
 		cbaction.setContainerDataSource(beanEmployee);
 		cbEmployee.setContainerDataSource(beanEmployee);
 		cbreview.setContainerDataSource(beanEmployee);

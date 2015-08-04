@@ -40,7 +40,6 @@ import com.gnts.sms.service.txn.SmsEnquiryDtlService;
 import com.gnts.sms.txn.SmsComments;
 import com.gnts.stt.dsn.domain.txn.ECRequestDM;
 import com.gnts.stt.dsn.service.txn.ECRequestService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -90,7 +89,7 @@ public class ECRequest extends BaseTransUI {
 	private HorizontalLayout hllayout = new HorizontalLayout();
 	private HorizontalLayout hllayout1 = new HorizontalLayout();
 	// Parent layout for all the input controls Sms Comments
-	VerticalLayout vlTableForm = new VerticalLayout();
+	private VerticalLayout vlTableForm = new VerticalLayout();
 	// local variables declaration
 	private Long ecrid;
 	private String username;
@@ -98,8 +97,7 @@ public class ECRequest extends BaseTransUI {
 	private int recordCnt = 0;
 	private SmsComments comments;
 	private String status;
-	@SuppressWarnings("unused")
-	private Long branchId, EmployeeId, roleId, appScreenId;
+	private Long branchId;
 	
 	// Constructor received the parameters from Login UI class
 	public ECRequest() {
@@ -107,10 +105,7 @@ public class ECRequest extends BaseTransUI {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
-		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
-		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside ECRequest() constructor");
 		buildview();
@@ -284,23 +279,19 @@ public class ECRequest extends BaseTransUI {
 	
 	// Load Enquiry List
 	private void loadEnquiryList() {
-		List<SmsEnqHdrDM> getsmsEnqNoHdr = new ArrayList<SmsEnqHdrDM>();
-		getsmsEnqNoHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
 		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
 		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(getsmsEnqNoHdr);
+		beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
 		cbEnquiry.setContainerDataSource(beansmsenqHdr);
 	}
 	
 	// Load Product List
 	private void loadProduct() {
 		try {
-			List<SmsEnquiryDtlDM> listEnqDtls = new ArrayList<SmsEnquiryDtlDM>();
-			Long enquid = ((Long) cbEnquiry.getValue());
-			listEnqDtls.addAll(serviceEnqDetails.getsmsenquirydtllist(null, enquid, null, null, null, null));
 			BeanItemContainer<SmsEnquiryDtlDM> beanEnqDtl = new BeanItemContainer<SmsEnquiryDtlDM>(
 					SmsEnquiryDtlDM.class);
-			beanEnqDtl.addAll(listEnqDtls);
+			beanEnqDtl.addAll(serviceEnqDetails.getsmsenquirydtllist(null, (Long) cbEnquiry.getValue(), null, null,
+					null, null));
 			cbProduct.setContainerDataSource(beanEnqDtl);
 		}
 		catch (Exception e) {
@@ -311,12 +302,11 @@ public class ECRequest extends BaseTransUI {
 	// Load Client List
 	private void loadSmsClientList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
-		List<ClientDM> clientlist = serviceClients.getClientDetails(companyid,
-				serviceEnqHeader.getSmsEnqHdrList(null, (Long) cbEnquiry.getValue(), null, null, null, "F", null, null)
-						.get(0).getClientId(), null, null, null, null, null, null, "Active", "P");
 		BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
 		beanclientDM.setBeanIdProperty("clientId");
-		beanclientDM.addAll(clientlist);
+		beanclientDM.addAll(serviceClients.getClientDetails(companyid,
+				serviceEnqHeader.getSmsEnqHdrList(null, (Long) cbEnquiry.getValue(), null, null, null, "F", null, null)
+						.get(0).getClientId(), null, null, null, null, null, null, "Active", "P"));
 		cbClient.setContainerDataSource(beanclientDM);
 		cbClient.setValue(cbClient.getItemIds().iterator().next());
 	}
@@ -326,10 +316,9 @@ public class ECRequest extends BaseTransUI {
 	 */
 	private void loadFromDeptList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P");
 		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
+		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
 		cbFromDept.setContainerDataSource(beanDepartment);
 	}
 	
@@ -338,10 +327,9 @@ public class ECRequest extends BaseTransUI {
 	 */
 	private void loadToDeptList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P");
 		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
+		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
 		cbToDept.setContainerDataSource(beanDepartment);
 	}
 	
@@ -349,9 +337,7 @@ public class ECRequest extends BaseTransUI {
 	private void editECRequest() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> " + ecrid);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			ECRequestDM ecRequestDM = beanECReq.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			ecrid = ecRequestDM.getEcrid();
 			tfECRNumber.setReadOnly(false);
@@ -451,7 +437,6 @@ public class ECRequest extends BaseTransUI {
 		tfECRNumber.setReadOnly(false);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
-		// cbclient.setRequired(true);
 		// reload the search using the defaults
 		loadSrchRslt();
 	}
@@ -511,7 +496,6 @@ public class ECRequest extends BaseTransUI {
 			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
 			errorFlag = true;
 		}
-		
 		if ((dfECRDate.getValue() == null)) {
 			dfECRDate.setComponentError(new UserError(GERPErrorCodes.SELECT_DATE));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "

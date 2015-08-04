@@ -161,7 +161,6 @@ public class FinancePlan extends BaseUI {
 		 */
 		hlSearchLayout.removeAllComponents();
 		tfFpDescription.setRequired(false);
-		// tfAccountNumber.setRequired(false);
 		flFormLayout1 = new FormLayout();
 		flFormLayout2 = new FormLayout();
 		flFormLayout3 = new FormLayout();
@@ -175,7 +174,6 @@ public class FinancePlan extends BaseUI {
 		hlSearchLayout.addComponent(flFormLayout1);
 		hlSearchLayout.addComponent(flFormLayout2);
 		hlSearchLayout.addComponent(flFormLayout3);
-		// hlSearchLayout.addComponent(hlUserInputLayout);
 		hlSearchLayout.setSizeUndefined();
 		hlSearchLayout.setSpacing(true);
 		hlSearchLayout.setMargin(true);
@@ -224,7 +222,7 @@ public class FinancePlan extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<FinancePlanDM> finPlanList = new ArrayList<FinancePlanDM>();
@@ -308,48 +306,48 @@ public class FinancePlan extends BaseUI {
 	
 	private void editFinancePlan() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			FinancePlanDM finPlanList = beansFinancePlanDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			primaryid = finPlanList.getFpid().toString();
-			if (finPlanList.getFpdesc() != null) {
-				tfFpDescription.setValue(finPlanList.getFpdesc());
+			FinancePlanDM financePlanDM = beansFinancePlanDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			primaryid = financePlanDM.getFpid().toString();
+			if (financePlanDM.getFpdesc() != null) {
+				tfFpDescription.setValue(financePlanDM.getFpdesc());
 			}
-			if (finPlanList.getBranchid() != null) {
-				cbBranchName.setValue(finPlanList.getBranchid());
+			if (financePlanDM.getBranchid() != null) {
+				cbBranchName.setValue(financePlanDM.getBranchid());
 			}
-			if (finPlanList.getFpcategory() != null) {
-				cbFpCategory.setValue(finPlanList.getFpcategory());
+			if (financePlanDM.getFpcategory() != null) {
+				cbFpCategory.setValue(financePlanDM.getFpcategory());
 			}
-			if (finPlanList.getFpamount() != null) {
-				tfFpAmount.setValue(finPlanList.getFpamount().toString());
+			if (financePlanDM.getFpamount() != null) {
+				tfFpAmount.setValue(financePlanDM.getFpamount().toString());
 			}
-			if (finPlanList.getCcyid() != null) {
-				cbCurrency.setValue(finPlanList.getCcyid());
+			if (financePlanDM.getCcyid() != null) {
+				cbCurrency.setValue(financePlanDM.getCcyid());
 			}
-			if (finPlanList.getLastexpensedt() != null) {
-				dfLastExpenseDate.setValue(finPlanList.getLastexpensedt());
+			if (financePlanDM.getLastexpensedt() != null) {
+				dfLastExpenseDate.setValue(financePlanDM.getLastexpensedt());
 			}
-			if (finPlanList.getRecurduration() != null) {
-				tfRegularDuration.setValue(finPlanList.getRecurduration());
+			if (financePlanDM.getRecurduration() != null) {
+				tfRegularDuration.setValue(financePlanDM.getRecurduration());
 			}
-			if (finPlanList.getNextexpensedt() != null) {
-				dfNextExpenseDate.setValue(finPlanList.getNextexpensedt());
+			if (financePlanDM.getNextexpensedt() != null) {
+				dfNextExpenseDate.setValue(financePlanDM.getNextexpensedt());
 			}
-			if (finPlanList.getDeptid() != null) {
-				cbDepartmentName.setValue(finPlanList.getDeptid());
+			if (financePlanDM.getDeptid() != null) {
+				cbDepartmentName.setValue(financePlanDM.getDeptid());
 			}
-			if (finPlanList.getOwnerid() != null) {
-				cbOwnerName.setValue(finPlanList.getOwnerid());
+			if (financePlanDM.getOwnerid() != null) {
+				cbOwnerName.setValue(financePlanDM.getOwnerid());
 			}
-			if (finPlanList.getTranstypeid() != null) {
-				cbTransactionType.setValue(finPlanList.getTranstypeid());
+			if (financePlanDM.getTranstypeid() != null) {
+				cbTransactionType.setValue(financePlanDM.getTranstypeid());
 			}
-			if (finPlanList.getProjid() != null) {
-				cbProjectName.setValue(finPlanList.getProjid());
+			if (financePlanDM.getProjid() != null) {
+				cbProjectName.setValue(financePlanDM.getProjid());
 			}
-			if (finPlanList.getRemarks() != null) {
-				tfRemarks.setValue(finPlanList.getRemarks());
+			if (financePlanDM.getRemarks() != null) {
+				tfRemarks.setValue(financePlanDM.getRemarks());
 			}
-			finPlanList.setFpstatus(((String) cbStatus.getValue()));
+			financePlanDM.setFpstatus(((String) cbStatus.getValue()));
 		}
 	}
 	

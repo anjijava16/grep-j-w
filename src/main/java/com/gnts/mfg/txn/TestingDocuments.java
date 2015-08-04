@@ -101,6 +101,9 @@ public class TestingDocuments implements ClickListener {
 			} else if (docType.equalsIgnoreCase("QA")) {
 				documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null,
 						null, null, Long.valueOf(testTypeId));
+			} else if (docType.equalsIgnoreCase("DR")) {
+				documentList = serviceDocuments.getDocumentDetails(null, null, Long.valueOf(testTypeId), null, null,
+						null, null, null, null, null, null);
 			}
 		}
 		catch (Exception e) {
@@ -134,6 +137,8 @@ public class TestingDocuments implements ClickListener {
 				documentsDM.setQcTestId(Long.valueOf(testTypeId));
 			} else if (docType.equalsIgnoreCase("QA")) {
 				documentsDM.setQaTestId(Long.valueOf(testTypeId));
+			} else if (docType.equalsIgnoreCase("DR")) {
+				documentsDM.setEnquiryid(Long.valueOf(testTypeId));
 			}
 			documentsDM.setDocumentType("pdf");
 			documentsDM.setLastUpdatedBy(username);
@@ -165,7 +170,6 @@ public class TestingDocuments implements ClickListener {
 	public void buttonClick(ClickEvent event) {
 		// TODO Auto-generated method stub
 		if (event.getButton() == btnSave) {
-			System.out.println("call save Details....");
 			saveDetails();
 		}
 	}

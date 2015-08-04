@@ -228,7 +228,7 @@ public class Opportunity extends BaseUI {
 		// build search layout
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		tblMstScrSrchRslt.removeAllItems();
 		List<OppertunitiesDM> clntOppertunityList = new ArrayList<OppertunitiesDM>();
 		clntOppertunityList = serviceOppertunity.getClientOppertunityDetails(companyId, null,

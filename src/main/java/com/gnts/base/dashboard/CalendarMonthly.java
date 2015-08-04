@@ -12,6 +12,8 @@ import com.gnts.die.domain.txn.DieRequestDM;
 import com.gnts.die.service.txn.DieRequestService;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.hcm.domain.txn.EmployeeLeaveDM;
+import com.gnts.hcm.service.txn.EmployeeLeaveService;
 import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.service.txn.WorkOrderDtlService;
@@ -40,6 +42,7 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 	private WorkOrderDtlService serviceWrkOrdDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
 	private DieRequestService serviceDieRequest = (DieRequestService) SpringContextHelper.getBean("dieRequest");
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
+	private EmployeeLeaveService serviceEmplLeave = (EmployeeLeaveService) SpringContextHelper.getBean("EmployeeLeave");
 	private GregorianCalendar calendar = new GregorianCalendar();
 	private Calendar calendarComponent;
 	private Date currentMonthsFirstDate = null;
@@ -199,6 +202,19 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 							+ workOrderDtlDM.getWorkOrdQty() + " W - " + workOrderDtlDM.getBalQty() + " B)\n";
 				}
 				event.setDescription(workordDtl);
+				e.add(event);
+			}
+		} else if (type.equalsIgnoreCase("EMP_LEAVE")) {
+			for (EmployeeLeaveDM employeeLeaveDM : serviceEmplLeave.getempleaveList(null, null, null, null,
+					fromStartDate, toEndDate, "F")) {
+				GregorianCalendar calendar = new GregorianCalendar();
+				calendar.setTime(employeeLeaveDM.getDatetoo());
+				calendar.add(GregorianCalendar.DATE, 1);
+				CalendarTestEvent event = getNewEvent(employeeLeaveDM.getEmployeeName(), employeeLeaveDM.getDatefrm(),
+						calendar.getTime());
+				event.setStyleName("color3");
+				event.setDescription("No of day(s) : " + employeeLeaveDM.getNoofdays() + " \n - Reason : "
+						+ employeeLeaveDM.getLeavereason());
 				e.add(event);
 			}
 		}

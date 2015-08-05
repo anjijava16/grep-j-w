@@ -118,7 +118,7 @@ public class AssetCategory extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<AssetCategoryDM> assetCtgryList = new ArrayList<AssetCategoryDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "

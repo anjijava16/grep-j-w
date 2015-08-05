@@ -372,14 +372,14 @@ public class PurchaseEnquiry extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<SmsPurEnqHdrDM> SmsPurEnqHdrList = new ArrayList<SmsPurEnqHdrDM>();
+		List<SmsPurEnqHdrDM> listPurEnq = new ArrayList<SmsPurEnqHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbBranch.getValue() + ", " + cbEnqStatus.getValue());
-		SmsPurEnqHdrList = serviceSmsPurEnqHdr.getSmsPurEnqHdrList(companyid, null, tfEnqNo.getValue(),
+		listPurEnq = serviceSmsPurEnqHdr.getSmsPurEnqHdrList(companyid, null, tfEnqNo.getValue(),
 				(Long) cbBranch.getValue(), (String) cbEnqStatus.getValue(), username);
-		recordCnt = SmsPurEnqHdrList.size();
+		recordCnt = listPurEnq.size();
 		beanSmsPurEnqHdrDM = new BeanItemContainer<SmsPurEnqHdrDM>(SmsPurEnqHdrDM.class);
-		beanSmsPurEnqHdrDM.addAll(SmsPurEnqHdrList);
+		beanSmsPurEnqHdrDM.addAll(listPurEnq);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the PurchaseEnquiry. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanSmsPurEnqHdrDM);
@@ -770,7 +770,7 @@ public class PurchaseEnquiry extends BaseUI {
 		}
 	}
 	
-	public void saveEnqDtl() {
+	private void saveEnqDtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			int count = 0;

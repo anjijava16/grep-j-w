@@ -1163,7 +1163,7 @@ public class PurchasePO extends BaseUI {
 		}
 	}
 	
-	protected void savePurchaseQuoteDetails() {
+	private void savePurchaseQuoteDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			int count = 0;

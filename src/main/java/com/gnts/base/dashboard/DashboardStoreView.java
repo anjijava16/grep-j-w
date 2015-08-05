@@ -3,6 +3,7 @@ package com.gnts.base.dashboard;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -10,11 +11,13 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.mms.domain.mst.MaterialDM;
+import com.gnts.mms.domain.txn.GatepassHdrDM;
 import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.domain.txn.MaterialLedgerDM;
 import com.gnts.mms.domain.txn.MaterialStockDM;
 import com.gnts.mms.mst.Material;
 import com.gnts.mms.service.mst.MaterialService;
+import com.gnts.mms.service.txn.GatepassHdrService;
 import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.MaterialLedgerService;
 import com.gnts.mms.service.txn.MaterialStockService;
@@ -66,11 +69,13 @@ public class DashboardStoreView implements ClickListener {
 			.getBean("materialstock");
 	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
+	private GatepassHdrService serviceGatepass = (GatepassHdrService) SpringContextHelper.getBean("gatepasshdr");
 	private Logger logger = Logger.getLogger(DashboardStoreView.class);
 	private Table tblMstScrSrchRslt = new Table();
 	private Table tblMaterialInward = new Table();
 	private Table tblMaterialOutward = new Table();
 	private Table tblIndent = new Table();
+	private Table tblGatepass = new Table();
 	private ComboBox cbMaterial;
 	private Long companyId;
 	
@@ -120,6 +125,7 @@ public class DashboardStoreView implements ClickListener {
 		custom.addComponent(btnGatepass, "gatepass");
 		custom.addComponent(btnDC, "dc");
 		custom.addComponent(btnStockReport, "stockreport");
+		custom.addComponent(tblGatepass, "nonreturngoods");
 		cbMaterial = new ComboBox();
 		cbMaterial.setItemCaptionPropertyId("materialName");
 		cbMaterial.setWidth("180");
@@ -146,10 +152,13 @@ public class DashboardStoreView implements ClickListener {
 		tblMaterialInward.setWidth("510px");
 		tblMaterialOutward.setWidth("510px");
 		tblMaterialOutward.setHeight("450px");
+		tblGatepass.setWidth("100%");
+		tblGatepass.setHeight("450px");
 		loadStockDetails();
 		loadEnquiryList();
 		loadMaterialInwardDetails();
 		loadDeliveryDetails();
+		loadMaterialGatepass();
 	}
 	
 	private void loadStockDetails() {
@@ -285,15 +294,52 @@ public class DashboardStoreView implements ClickListener {
 		}
 	}
 	
+	private void loadMaterialGatepass() {
+		tblMstScrSrchRslt.removeAllItems();
+		List<GatepassHdrDM> gatepass = new ArrayList<GatepassHdrDM>();
+		BeanItemContainer<GatepassHdrDM> beanGatePassHdr = new BeanItemContainer<GatepassHdrDM>(GatepassHdrDM.class);
+		gatepass = serviceGatepass.getGatepassHdrList(companyId, null, "Returnable", null, null, null, "Pending", null,
+				"F");
+		beanGatePassHdr.addAll(gatepass);
+		tblGatepass.setContainerDataSource(beanGatePassHdr);
+		tblGatepass.setVisibleColumns(new Object[] { "gatepassId", "gatepassDt", "gatepassType", "returnDate",
+				"gatepassStatus", "lastUpdatedDt", "lastUpdatedBy" });
+		tblGatepass.setColumnHeaders(new String[] { "Ref.No", "Gate Pass Date ", "Gate Pass Type", "Return Date",
+				"Status", "Updated Date", "Updated By" });
+		tblGatepass.setPageLength(13);
+		tblGatepass.setColumnAlignment("gatepassId", Align.RIGHT);
+		tblGatepass.addGeneratedColumn("gatepassStatus", new ColumnGenerator() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				@SuppressWarnings("unchecked")
+				BeanItem<GatepassHdrDM> item = (BeanItem<GatepassHdrDM>) source.getItem(itemId);
+				GatepassHdrDM gatepassHdrDM = (GatepassHdrDM) item.getBean();
+				if (gatepassHdrDM.getReturnDate() != null && gatepassHdrDM.getReturnDate().before(new Date())) {
+					return new Label(
+							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
+									+ gatepassHdrDM.getGatepassStatus() + "</h1>", ContentMode.HTML);
+				} else if (gatepassHdrDM.getReturnDate() != null && gatepassHdrDM.getReturnDate().after(new Date())) {
+					return new Label(
+							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#6CD4BD;font-size:12px'>"
+									+ gatepassHdrDM.getGatepassStatus() + "</h1>", ContentMode.HTML);
+				} else {
+					return new Label(
+							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
+									+ gatepassHdrDM.getGatepassStatus() + "</h1>", ContentMode.HTML);
+				}
+			}
+		});
+	}
+	
 	// Loading Material List
 	private void loadMaterialList() {
 		try {
-			List<MaterialDM> list = new ArrayList<MaterialDM>();
-			list.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null, "Active",
-					"P"));
 			BeanContainer<Long, MaterialDM> beanmaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 			beanmaterial.setBeanIdProperty("materialId");
-			beanmaterial.addAll(list);
+			beanmaterial.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null,
+					"Active", "P"));
 			cbMaterial.setContainerDataSource(beanmaterial);
 		}
 		catch (Exception e) {

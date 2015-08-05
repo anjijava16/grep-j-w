@@ -473,7 +473,6 @@ public class ClientContacts extends BaseUI {
 			if (tfEmailId.getValue() != "") {
 				contactobj.setEmailId(tfEmailId.getValue());
 			}
-			System.out.println("LeadIDloader" + cbClienSalut.getValue());
 			contactobj.setMobileNo(tfMobileno.getValue());
 			contactobj.setPhoneNo(tfPhoneNo.getValue());
 			if ((Boolean) UI.getCurrent().getSession().getAttribute("isFileUploaded")) {
@@ -492,10 +491,8 @@ public class ClientContacts extends BaseUI {
 			contactobj.setLastUpdatedDt(DateUtils.getcurrentdate());
 			contactobj.setLastUpdatedBy(userName);
 			serviceClntContact.saveOrdUpdateClientContacts(contactobj);
-			System.out.println("saveOrdUpdateClientContacts" + contactobj);
 			resetFields();
 			comment.savecontact(contactobj.getContactId());
-			System.out.println("contactsaved" + contactobj.getContactId());
 			comment.resetfields();
 			document.savecontact(contactobj.getContactId());
 			document.ResetFields();

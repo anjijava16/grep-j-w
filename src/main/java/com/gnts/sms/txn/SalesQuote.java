@@ -69,8 +69,6 @@ import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsEnquiryDtlService;
 import com.gnts.sms.service.txn.SmsQuoteDtlService;
 import com.gnts.sms.service.txn.SmsQuoteHdrService;
-import com.gnts.stt.mfg.domain.txn.RotoPlanHdrDM;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -111,7 +109,6 @@ public class SalesQuote extends BaseTransUI {
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
-	private BeanContainer<Long, ClientsContactsDM> beanclientcontact = null;
 	// form layout for input controls for Sales Quote Header
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4, flColumn5;
 	// form layout for input controls for Sales Quote Details
@@ -138,9 +135,8 @@ public class SalesQuote extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	// BeanItem container
 	private BeanItemContainer<SmsQuoteHdrDM> beansmsQuoteHdr = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private BeanItemContainer<SmsQuoteDtlDM> beansmsQuoteDtl = null;
-	List<SmsQuoteDtlDM> smsQuoteDtlList = new ArrayList<SmsQuoteDtlDM>();
+	private List<SmsQuoteDtlDM> smsQuoteDtlList = new ArrayList<SmsQuoteDtlDM>();
 	// local variables declaration
 	private String username;
 	private Long companyid;
@@ -157,13 +153,12 @@ public class SalesQuote extends BaseTransUI {
 	private Long branchId;
 	private Long screenId;
 	private Long moduleId;
-	public static boolean filevalue1 = false;
 	private SmsComments comments;
-	VerticalLayout vlTableForm = new VerticalLayout();
+	private VerticalLayout vlTableForm = new VerticalLayout();
 	private String status;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(PurchaseQuote.class);
-	public Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btndelete = new GERPButton("Delete", "delete", this);
 	
 	// Constructor received the parameters from Login UI class
 	public SalesQuote() {
@@ -643,13 +638,6 @@ public class SalesQuote extends BaseTransUI {
 		ed.setCaption("ED");
 		flColumn2.addComponent(ed);
 		flColumn2.setComponentAlignment(ed, Alignment.TOP_LEFT);
-		/*
-		 * HorizontalLayout hed = new HorizontalLayout(); hed.addComponent(tfHEDPer); hed.addComponent(tfHEDValue);
-		 * hed.setCaption("HED"); flColumn2.addComponent(hed); flColumn2.setComponentAlignment(hed, Alignment.TOP_LEFT);
-		 * HorizontalLayout cess = new HorizontalLayout(); cess.addComponent(tfCessPer); cess.addComponent(tfCessValue);
-		 * cess.setCaption("CESS"); flColumn2.addComponent(cess); flColumn2.setComponentAlignment(cess,
-		 * Alignment.TOP_LEFT);
-		 */
 		flColumn2.addComponent(tfSubTaxTotal);
 		HorizontalLayout vp = new HorizontalLayout();
 		vp.addComponent(tfVatPer);
@@ -730,8 +718,6 @@ public class SalesQuote extends BaseTransUI {
 		btnsavepurQuote.setStyleName("add");
 	}
 	
-	
-	
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
@@ -753,7 +739,6 @@ public class SalesQuote extends BaseTransUI {
 				"status", "lastupdateddt", "lastupdatedby" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Quote No", "Enquiry No", "Status",
 				"Last Updated Date", "Last Updated By" });
-		// tblMstScrSrchRslt.setColumnAlignment("quoteId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
 	
@@ -776,10 +761,10 @@ public class SalesQuote extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblsmsQuoteDtl.setContainerDataSource(beansmsQuoteDtl);
-			tblsmsQuoteDtl.setVisibleColumns(new Object[] { "prodname", "custproddesc","quoteqty",
-					"unitrate", "basicvalue", "customField1", "quodtlstatus", "lastupdateddt", "lastupdatedby" });
-			tblsmsQuoteDtl.setColumnHeaders(new String[] { "Product Name", "Description","Quote Qty",
-					"Unit Rate", "Basic Value", "Part No.", "Status", "Last Updated Date", "Last Updated By" });
+			tblsmsQuoteDtl.setVisibleColumns(new Object[] { "prodname", "custproddesc", "quoteqty", "unitrate",
+					"basicvalue", "customField1", "quodtlstatus", "lastupdateddt", "lastupdatedby" });
+			tblsmsQuoteDtl.setColumnHeaders(new String[] { "Product Name", "Description", "Quote Qty", "Unit Rate",
+					"Basic Value", "Part No.", "Status", "Last Updated Date", "Last Updated By" });
 			tblsmsQuoteDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
@@ -788,12 +773,11 @@ public class SalesQuote extends BaseTransUI {
 	}
 	
 	// Load BranchList
-	public void loadBranchList() {
+	private void loadBranchList() {
 		try {
-			List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
 			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanbranch.setBeanIdProperty("branchId");
-			beanbranch.addAll(branchList);
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
@@ -802,14 +786,14 @@ public class SalesQuote extends BaseTransUI {
 	}
 	
 	// Load Uom List
-	public void loadUomList() {
+	private void loadUomList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"SM_UOM");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp
+					.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "SM_UOM"));
 			cbUom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -819,22 +803,20 @@ public class SalesQuote extends BaseTransUI {
 	
 	// Load EnquiryNo
 	private void loadEnquiryNo() {
-		List<SmsEnqHdrDM> getsmsEnqNoHdr = new ArrayList<SmsEnqHdrDM>();
-		getsmsEnqNoHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "F", null, null));
 		BeanItemContainer<SmsEnqHdrDM> beansmsenqHdr = new BeanItemContainer<SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.addAll(getsmsEnqNoHdr);
+		beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "F", null, null));
 		cbEnqNo.setContainerDataSource(beansmsenqHdr);
 	}
 	
 	// Load PaymentTerms
-	public void loadPaymentTerms() {
+	private void loadPaymentTerms() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"SM_PAYTRM");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"SM_PAYTRM"));
 			cbpaymetTerms.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -843,14 +825,13 @@ public class SalesQuote extends BaseTransUI {
 	}
 	
 	// Load FreightTerms
-	public void loadFreightTerms() {
+	private void loadFreightTerms() {
 		try {
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"SM_FRTTRM");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"SM_FRTTRM"));
 			cbFreightTerms.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -859,14 +840,14 @@ public class SalesQuote extends BaseTransUI {
 	}
 	
 	// Load WarrentyTerms
-	public void loadWarentyTerms() {
+	private void loadWarentyTerms() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"SM_WRNTRM");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"SM_WRNTRM"));
 			cbWarrentyTerms.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -875,14 +856,13 @@ public class SalesQuote extends BaseTransUI {
 	}
 	
 	// Load DeliveryTerms
-	public void loadDeliveryTerms() {
+	private void loadDeliveryTerms() {
 		try {
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"SM_DELTRM");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"SM_DELTRM"));
 			cbDelTerms.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -895,10 +875,7 @@ public class SalesQuote extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlCmdBtnLayout.setVisible(false);
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected QuoteId -> "
-				+ quoteId);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			SmsQuoteHdrDM editsmsQuotlist = beansmsQuoteHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			quoteId = editsmsQuotlist.getQuoteId();
 			cbBranch.setValue(editsmsQuotlist.getBranchId());
@@ -1013,8 +990,8 @@ public class SalesQuote extends BaseTransUI {
 			if (editsmsQuotlist.getTecPerson() != null) {
 				cbwindTechPers.setValue(editsmsQuotlist.getTecPerson());
 			}
-			if (sltedRcd.getItemProperty("quoteDoc").getValue() != null) {
-				byte[] certificate = (byte[]) sltedRcd.getItemProperty("quoteDoc").getValue();
+			if (editsmsQuotlist.getQuoteDoc() != null) {
+				byte[] certificate = editsmsQuotlist.getQuoteDoc();
 				UploadDocumentUI test = new UploadDocumentUI(hlquoteDoc);
 				test.displaycertificate(certificate);
 			} else {
@@ -1026,20 +1003,12 @@ public class SalesQuote extends BaseTransUI {
 		comments = new SmsComments(vlTableForm, null, null, null, null, null, null, null, null, quoteId, null, null,
 				status);
 		comments.loadsrch(true, null, null, null, null, null, null, null, null, quoteId, null, null, null);
-		/*
-		 * comments.commentList = serviceComment.getSmsCommentsList(null, null, null, QuoteId, null, null, null, null,
-		 * null, null, null, null);
-		 */
-		System.out.println("QuoteId===>" + quoteId);
 	}
 	
 	// Reset the selected row's data into Sales Quote Detail input components
 	private void editQuoteDtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		Item sltedRcd = tblsmsQuoteDtl.getItem(tblsmsQuoteDtl.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected QuoteId -> "
-				+ quoteId);
-		if (sltedRcd != null) {
+		if (tblsmsQuoteDtl.getValue() != null) {
 			SmsQuoteDtlDM editsmsQuoteDtllist = beansmsQuoteDtl.getItem(tblsmsQuoteDtl.getValue()).getBean();
 			// QuoteId = editsmsQuoteDtllist.getQuoteid();
 			Long uom = editsmsQuoteDtllist.getProductid();
@@ -1225,10 +1194,8 @@ public class SalesQuote extends BaseTransUI {
 	private void loadProductList(Boolean isFullList) {
 		try {
 			List<SmsEnquiryDtlDM> getQuoteDtl = new ArrayList<SmsEnquiryDtlDM>();
-		
-				Long enquid = ((SmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId();
-				getQuoteDtl.addAll(serviceEnqDetail.getsmsenquirydtllist(null, enquid, null, null, null, null));
-			
+			Long enquid = ((SmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId();
+			getQuoteDtl.addAll(serviceEnqDetail.getsmsenquirydtllist(null, enquid, null, null, null, null));
 			BeanItemContainer<SmsEnquiryDtlDM> beanPlnDtl = new BeanItemContainer<SmsEnquiryDtlDM>(
 					SmsEnquiryDtlDM.class);
 			beanPlnDtl.addAll(getQuoteDtl);
@@ -1744,11 +1711,11 @@ public class SalesQuote extends BaseTransUI {
 			Long enquid = ((SmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId();
 			Long clientId = serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null)
 					.get(0).getClientId();
-			List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null,
-					clientId, null, "Active", "Technical Person");
-			beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
+			BeanContainer<Long, ClientsContactsDM> beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(
+					ClientsContactsDM.class);
 			beanclientcontact.setBeanIdProperty("contactName");
-			beanclientcontact.addAll(listclientconDtls);
+			beanclientcontact.addAll(serviceClntContact.getClientContactsDetails(companyid, null, clientId, null,
+					"Active", "Technical Person"));
 			cbwindTechPers.setContainerDataSource(beanclientcontact);
 			cbwindTechPers.setItemCaptionPropertyId("contactName");
 		}
@@ -1762,11 +1729,11 @@ public class SalesQuote extends BaseTransUI {
 			Long enquid = ((SmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryId();
 			Long clientId = serviceEnqHeader.getSmsEnqHdrList(companyid, enquid, null, null, null, "F", null, null)
 					.get(0).getClientId();
-			List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null,
-					clientId, null, "Active", "Contact Person");
-			beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(ClientsContactsDM.class);
+			BeanContainer<Long, ClientsContactsDM> beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(
+					ClientsContactsDM.class);
 			beanclientcontact.setBeanIdProperty("contactName");
-			beanclientcontact.addAll(listclientconDtls);
+			beanclientcontact.addAll(serviceClntContact.getClientContactsDetails(companyid, null, clientId, null,
+					"Active", "Contact Person"));
 			cbwindcommPerson.setContainerDataSource(beanclientcontact);
 			cbwindcommPerson.setItemCaptionPropertyId("contactName");
 		}

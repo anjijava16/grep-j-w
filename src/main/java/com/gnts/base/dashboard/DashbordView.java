@@ -71,8 +71,8 @@ public class DashbordView implements ClickListener {
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private ProductService ServiceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private ECRequestService ServiceEcrequest = (ECRequestService) SpringContextHelper.getBean("ecRequest");
-	VerticalLayout clMainLayout;
-	HorizontalLayout hlHeader;
+	private VerticalLayout clMainLayout;
+	private HorizontalLayout hlHeader;
 	private Table tblWorkorderStatus = new Table();
 	
 	public DashbordView() {

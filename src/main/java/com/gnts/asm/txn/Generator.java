@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.asm.domain.txn.AssetDetailsDM;
-import com.gnts.asm.domain.txn.EbReadingDM;
 import com.gnts.asm.domain.txn.GeneratorDM;
 import com.gnts.asm.service.txn.AssetDetailsService;
 import com.gnts.asm.service.txn.GeneratorService;
@@ -38,8 +37,6 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.ComboBox;
@@ -94,7 +91,6 @@ public class Generator extends BaseTransUI {
 		buildview();
 	}
 	
-	@SuppressWarnings("deprecation")
 	private void buildview() {
 		logger.info("CompanyId" + companyid + "username" + username + "painting Generator UI");
 		// EC Request Components Definition

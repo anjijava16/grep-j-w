@@ -18,6 +18,8 @@ import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.service.txn.WorkOrderDtlService;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
+import com.gnts.stt.mfg.domain.txn.EnquiryWorkflowDM;
+import com.gnts.stt.mfg.service.txn.EnquiryWorkflowService;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -43,6 +45,8 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 	private DieRequestService serviceDieRequest = (DieRequestService) SpringContextHelper.getBean("dieRequest");
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private EmployeeLeaveService serviceEmplLeave = (EmployeeLeaveService) SpringContextHelper.getBean("EmployeeLeave");
+	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper
+			.getBean("enquiryWorkflow");
 	private GregorianCalendar calendar = new GregorianCalendar();
 	private Calendar calendarComponent;
 	private Date currentMonthsFirstDate = null;
@@ -216,6 +220,23 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 				event.setDescription("No of day(s) : " + employeeLeaveDM.getNoofdays() + " \n - Reason : "
 						+ employeeLeaveDM.getLeavereason());
 				e.add(event);
+			}
+		} else if (type.equalsIgnoreCase("DESIGN_VIEW")) {
+			for (EnquiryWorkflowDM enquiryWorkflowDM : serviceWorkflow.getEnqWorkflowList(null, null, null,
+					fromStartDate, toEndDate)) {
+				try {
+					GregorianCalendar calendar = new GregorianCalendar();
+					calendar.setTime(enquiryWorkflowDM.getTargetDate());
+					calendar.add(GregorianCalendar.DATE, 1);
+					CalendarTestEvent event = getNewEvent(enquiryWorkflowDM.getPendingName(),
+							enquiryWorkflowDM.getTargetDate(), calendar.getTime());
+					event.setStyleName("color3");
+					event.setDescription("Enquiry No : " + enquiryWorkflowDM.getEnquiryRef() + " \n - Request : "
+							+ enquiryWorkflowDM.getWorkflowRequest());
+					e.add(event);
+				}
+				catch (Exception e1) {
+				}
 			}
 		}
 		return e;

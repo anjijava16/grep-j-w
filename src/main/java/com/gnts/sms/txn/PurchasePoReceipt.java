@@ -455,7 +455,6 @@ public class PurchasePoReceipt extends BaseUI {
 					"Last Updated Date", "Last Updated By" });
 			tblReceiptDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 			tblReceiptDtl.setPageLength(6);
-			System.out.println("Load===>");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -479,12 +478,11 @@ public class PurchasePoReceipt extends BaseUI {
 	private void loadUomList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"SM_UOM");
 			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
 					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp
+					.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "SM_UOM"));
 			cbUom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
@@ -782,7 +780,6 @@ public class PurchasePoReceipt extends BaseUI {
 			}
 			receiptobj.setBranchId((Long) cbBranch.getValue());
 			receiptobj.setReceiptDate((Date) dfReceiptDt.getValue());
-			// receiptobj.setReceiptDate(DateUtils.getcurrentdate());
 			if (tfDocType.getValue() != null) {
 				receiptobj.setReceiptdocType(tfDocType.getValue().toString());
 			}
@@ -834,7 +831,7 @@ public class PurchasePoReceipt extends BaseUI {
 		}
 	}
 	
-	public void saveReceiptDtl() {
+	private void saveReceiptDtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			PurPoReceiptDtlDM purReceiptDtlObj = new PurPoReceiptDtlDM();

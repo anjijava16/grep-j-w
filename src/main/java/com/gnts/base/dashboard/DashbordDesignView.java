@@ -46,7 +46,6 @@ public class DashbordDesignView implements ClickListener {
 	private Button btnWOCount = new Button("7", this);
 	private Button btnProductCount = new Button("17", this);
 	private Button btnClientCount = new Button("22", this);
-	// private Button btnNotify = new Button("<h2><font-size=4>5</font></h2>");
 	private Button btnNotify = new Button();
 	private Window notificationsWindow;
 	private SmsEnqHdrService serviceenqhdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
@@ -66,7 +65,6 @@ public class DashbordDesignView implements ClickListener {
 	
 	private void buildView(VerticalLayout clMainLayout, HorizontalLayout hlHeader) {
 		btnNotify.setHtmlContentAllowed(true);
-		// HorizontalLayout tools = new HorizontalLayout(notificationsButton, btnTest);
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("dashdesign");
 		btnEnquiryCount.setCaption(serviceenqhdr.getSMSEnquiryListCount(null, null, null, null, null, null, null, null)
@@ -81,7 +79,6 @@ public class DashbordDesignView implements ClickListener {
 		btnProductCount.setStyleName("borderless-coloredbig");
 		btnClientCount.setStyleName("borderless-coloredbig");
 		btnNotify.setIcon(new ThemeResource("img/download.png"));
-		//btnNotify.setStyleName("myButton");
 		VerticalLayout root = new VerticalLayout();
 		root.addComponent(buildHeader());
 		clMainLayout.removeAllComponents();
@@ -93,14 +90,13 @@ public class DashbordDesignView implements ClickListener {
 		hlHeader.addComponent(btnNotify);
 		hlHeader.setComponentAlignment(btnNotify, Alignment.TOP_RIGHT);
 		clMainLayout.addComponent(custom);
-		// MultipleAxes multipleAxes = new MultipleAxes();
-		// custom.addComponent(multipleAxes.getChart(), "marketchart");
 		custom.addComponent(btnEnquiryCount, "enquirycount");
 		custom.addComponent(btnEnquiryWorkflow, "quotationcount");
 		custom.addComponent(btnECRequest, "pocount");
 		custom.addComponent(btnECNote, "invoicecount");
 		custom.addComponent(btnProductCount, "productCount");
 		custom.addComponent(btnClientCount, "clientCount");
+		custom.addComponent(new CalendarMonthly("DESIGN_VIEW"), "designview");
 	}
 	
 	private Component buildHeader() {
@@ -190,7 +186,6 @@ public class DashbordDesignView implements ClickListener {
 			hrLayout.addStyleName("notification-item");
 			Label titleLabel = new Label("\n" + "<small>Status : </small><b><font color=blue><font size=4>"
 					+ n.getEnquiryStatus() + "</font></b>", ContentMode.HTML);
-			// Label titleLabel = new Label(n.getEnquiryStatus());
 			Label titleLabel1 = new Label("<small>Enquiry No: </small><font color=green>" + n.getEnquiryNo()
 					+ "</font>", ContentMode.HTML);
 			Label titleLabel2 = new Label("<small>Branch : </small><font color=green>" + n.getBranchName() + "</font>",

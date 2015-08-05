@@ -65,7 +65,7 @@ public class Tax extends BaseUI {
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private ParameterService serviceParameter = (ParameterService) SpringContextHelper.getBean("parameter");
-	List<TaxSlapDM> taxSlapList = new ArrayList<TaxSlapDM>();
+	private List<TaxSlapDM> taxSlapList = new ArrayList<TaxSlapDM>();
 	// form layout for input controls
 	private FormLayout fltaxCol1, fltaxCol2, fltaxCol3, flColumn4, flTaxslapCol1, flTaxslapCol2, flTaxslapCol3,
 			flTaxslapCol4;
@@ -86,7 +86,6 @@ public class Tax extends BaseUI {
 	private Table tblTaxslap;
 	private BeanItemContainer<TaxDM> beanTaxDM = null;
 	private BeanItemContainer<TaxSlapDM> beanTaxslapDM = null;
-	private BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = null;
 	// local variables declaration
 	private String taxSlapId;
 	private Long companyid;
@@ -99,7 +98,7 @@ public class Tax extends BaseUI {
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Tax.class);
 	private static final long serialVersionUID = 1L;
-	public Button btnDelete = new GERPButton("Delete", "delete", this);
+	private Button btnDelete = new GERPButton("Delete", "delete", this);
 	
 	// Constructor received the parameters from Login UI class
 	public Tax() {
@@ -324,23 +323,22 @@ public class Tax extends BaseUI {
 	private void editTaxDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			TaxDM editTax = beanTaxDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			taxId = editTax.getTaxid();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Tax. Id -> "
 					+ taxId);
-			if (sltedRcd.getItemProperty("taxname").getValue() != null) {
-				tfTaxName.setValue(sltedRcd.getItemProperty("taxname").getValue().toString());
+			if (editTax.getTaxname() != null) {
+				tfTaxName.setValue(editTax.getTaxname());
 			}
 			if (editTax.getFinyear() != null) {
 				tffinanceYr.setReadOnly(false);
 				tffinanceYr.setValue(editTax.getFinyear());
 				tffinanceYr.setReadOnly(true);
 			}
-			cbTaxStatus.setValue(sltedRcd.getItemProperty("taxstatus").getValue().toString());
-			if (sltedRcd.getItemProperty("gender").getValue() != null) {
-				cbGender.setValue(sltedRcd.getItemProperty("gender").getValue());
+			cbTaxStatus.setValue(editTax.getTaxstatus());
+			if (editTax.getGender() != null) {
+				cbGender.setValue(editTax.getGender());
 			}
 			taxSlapList.addAll(serviceTaxslap.getTaxSlapList(null, taxId, (String) cbStatus.getValue(), "F"));
 		}
@@ -576,13 +574,12 @@ public class Tax extends BaseUI {
 	/*
 	 * loadGenderType()-->this function is used for load the gender type
 	 */
-	public void loadGenderType() {
+	private void loadGenderType() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-				"BS_GENDER");
-		beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(CompanyLookupDM.class);
+		BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(
+				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("cmplookupid");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "BS_GENDER"));
 		cbGender.setContainerDataSource(beanCompanyLookUp);
 	}
 	

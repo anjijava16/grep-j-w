@@ -268,13 +268,15 @@ public class PurchaseQuote extends BaseUI {
 		cbBranch.setWidth("150");
 		cbBranch.setItemCaptionPropertyId("branchName");
 		loadBranchList();
-		List<ApprovalSchemaDM> list = servicepurchaeQuoteHdr.getReviewerId(companyid, screenId, branchId, roleId);
-		for (ApprovalSchemaDM obj : list) {
+		try {
+			ApprovalSchemaDM obj = servicepurchaeQuoteHdr.getReviewerId(companyid, screenId, branchId, roleId).get(0);
 			if (obj.getApprLevel().equals("Reviewer")) {
 				cbStatus = new GERPComboBox("Status", BASEConstants.T_SMS_P_QUOTE_HDR, BASEConstants.QUOTE_STATUS_RV);
 			} else {
 				cbStatus = new GERPComboBox("Status", BASEConstants.T_SMS_P_QUOTE_HDR, BASEConstants.QUOTE_STATUS);
 			}
+		}
+		catch (Exception e) {
 		}
 		cbStatus.setWidth("120");
 		tfcityName = new TextField("City Name");
@@ -371,7 +373,7 @@ public class PurchaseQuote extends BaseUI {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (DtlValidation()) {
+				if (dtlValidation()) {
 					savePurchaseQuoteDetails();
 				}
 			}
@@ -594,19 +596,19 @@ public class PurchaseQuote extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<PurchaseQuotHdrDM> PurQuoteHdrList = new ArrayList<PurchaseQuotHdrDM>();
+		List<PurchaseQuotHdrDM> listPurQuoteHdr = new ArrayList<PurchaseQuotHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
 		String eno = null;
 		if (cbEnqNo.getValue() != null) {
 			eno = (((SmsPurEnqHdrDM) cbEnqNo.getValue()).getEnquiryNo());
 		}
-		PurQuoteHdrList = servicepurchaeQuoteHdr.getPurchaseQuotHdrList(null, companyid, (Long) cbBranch.getValue(),
+		listPurQuoteHdr = servicepurchaeQuoteHdr.getPurchaseQuotHdrList(null, companyid, (Long) cbBranch.getValue(),
 				eno, (String) cbStatus.getValue(), (String) tfvendorName.getValue(), (String) tfQuoteRef.getValue(),
 				null, "F");
-		recordCnt = PurQuoteHdrList.size();
+		recordCnt = listPurQuoteHdr.size();
 		beanQuoteHdr = new BeanItemContainer<PurchaseQuotHdrDM>(PurchaseQuotHdrDM.class);
-		beanQuoteHdr.addAll(PurQuoteHdrList);
+		beanQuoteHdr.addAll(listPurQuoteHdr);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanQuoteHdr);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "quoteId", "branchName", "vendorName", "quoteRef",
@@ -961,15 +963,11 @@ public class PurchaseQuote extends BaseUI {
 		hlUserInputLayout.setSpacing(true);
 		hlUserInputLayout.setSizeUndefined();
 		cbBranch.setRequired(true);
-		// cbEnqNo.setRequired(true);
-		// tfQuoteQunt.setRequired(true);
 		tfBasicValue.setRequired(true);
-		// cbUom.setRequired(true);
 		tfUnitRate.setRequired(true);
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
 		cbproduct.setRequired(true);
-		// cbUom.setRequired(true);
 		lblNotification.setValue("");
 		assembleInputUserLayout();
 		resetFields();
@@ -997,13 +995,13 @@ public class PurchaseQuote extends BaseUI {
 				errorFlag = true;
 			}
 		}
-		DtlValidation();
+		dtlValidation();
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
 	}
 	
-	private boolean DtlValidation() {
+	private boolean dtlValidation() {
 		boolean isValid = true;
 		cbproduct.setComponentError(null);
 		tfUnitRate.setComponentError(null);
@@ -1031,7 +1029,7 @@ public class PurchaseQuote extends BaseUI {
 	@Override
 	protected void saveDetails() {
 		try {
-			DtlValidation();
+			dtlValidation();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			PurchaseQuotHdrDM purchaseQuotHdrDM = new PurchaseQuotHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
@@ -1144,7 +1142,7 @@ public class PurchaseQuote extends BaseUI {
 		}
 	}
 	
-	protected void savePurchaseQuoteDetails() {
+	private void savePurchaseQuoteDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			int count = 0;

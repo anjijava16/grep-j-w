@@ -421,7 +421,7 @@ public class AssetDetails extends BaseTransUI {
 		cbreview.setContainerDataSource(beanemployee);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();

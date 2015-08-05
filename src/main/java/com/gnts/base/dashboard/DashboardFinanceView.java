@@ -19,8 +19,8 @@ public class DashboardFinanceView implements ClickListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Label lblDashboardTitle;
-	VerticalLayout clMainLayout;
-	HorizontalLayout hlHeader;
+	private VerticalLayout clMainLayout;
+	private HorizontalLayout hlHeader;
 	private Button btnAccountsCount = new Button("100", this);
 	private Button btnTransCount = new Button("10", this);
 	

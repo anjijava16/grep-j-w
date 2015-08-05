@@ -41,7 +41,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -221,16 +220,15 @@ public class OrgNews extends BaseUI {
 	
 	private void editnews() {
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		newsId = sltedRcd.getItemProperty("newsId").getValue().toString();
-		if (sltedRcd != null) {
-			OrgNewsDM editorglist = beanNews.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			rtaNewsDesc.setValue(editorglist.getNewsDesc());
-			tfNewsTitle.setValue(editorglist.getNewsTitle());
-			cbBranch.setValue(editorglist.getBranchId());
-			cbDepartment.setValue(editorglist.getDeptId());
-			dfValidFrom.setValue(editorglist.getValidFromInDt());
-			dfValidTo.setValue(editorglist.getValidToInDt());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			OrgNewsDM orgNewsDM = beanNews.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			newsId = orgNewsDM.getnewsId().toString();
+			rtaNewsDesc.setValue(orgNewsDM.getNewsDesc());
+			tfNewsTitle.setValue(orgNewsDM.getNewsTitle());
+			cbBranch.setValue(orgNewsDM.getBranchId());
+			cbDepartment.setValue(orgNewsDM.getDeptId());
+			dfValidFrom.setValue(orgNewsDM.getValidFromInDt());
+			dfValidTo.setValue(orgNewsDM.getValidToInDt());
 			cbNewsStatus.setValue(cbNewsStatus.getItemIds().iterator().next());
 		}
 	}

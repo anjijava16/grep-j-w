@@ -551,7 +551,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 	}
 	
 	// This function is used for save the Sales Enquiry details for temporary
-	public void saveSDADetails() {
+	private void saveSDADetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			SmsSDADtlDM smsSDADtlDM = new SmsSDADtlDM();
@@ -634,13 +634,6 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 		hlDtlCompnts.removeAllComponents();
 		vlSrchRsltContainer.setVisible(true);
 		tblSDADetails.setVisible(true);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_ENQRYNO");
-		tfSDANumber.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfSDANumber.setReadOnly(true);
-			}
-		}
 		if (tfSDANumber.getValue() == null || tfSDANumber.getValue().trim().length() == 0) {
 			tfSDANumber.setReadOnly(false);
 		}

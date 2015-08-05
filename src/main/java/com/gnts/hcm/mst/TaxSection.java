@@ -382,7 +382,7 @@ public class TaxSection extends BaseUI {
 		}
 	}
 	
-	public boolean validateDtls() {
+	private boolean validateDtls() {
 		boolean isValid = true;
 		try {
 			Long.valueOf(tftaxlimit.getValue());

@@ -484,7 +484,6 @@ public class Leads extends BaseUI {
 			tfDesignation.setValue(editleadlist.getDesignation());
 			if (editleadlist.getNoOfEmployees() != null && !"null".equals(editleadlist.getNoOfEmployees())) {
 				tfNoOfEmp.setValue(editleadlist.getNoOfEmployees().toString());
-				;
 			}
 			tfPhoneNo.setValue(editleadlist.getPhoneNo());
 			tfPostalCode.setValue(editleadlist.getPostalCode());

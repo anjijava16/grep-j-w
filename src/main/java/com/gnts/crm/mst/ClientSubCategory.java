@@ -146,7 +146,7 @@ public class ClientSubCategory extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameter
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<ClientSubCategoryDM> subCatList = new ArrayList<ClientSubCategoryDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "

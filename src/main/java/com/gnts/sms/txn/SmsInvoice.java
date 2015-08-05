@@ -1942,7 +1942,6 @@ public class SmsInvoice extends BaseTransUI {
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
 			parameterMap.put("INVHDR", invoiceId);
 			Report rpt = new Report(parameterMap, connection);
-			System.out.println("invoicetype----------------->" + invoicetype);
 			if (invoicetype.equals("Invoice")) {
 				rpt.setReportName(basepath + "/WEB-INF/reports/invoice_Report1"); // productlist is the name of my
 																					// jasper

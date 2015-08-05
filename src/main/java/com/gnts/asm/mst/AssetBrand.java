@@ -129,7 +129,7 @@ public class AssetBrand extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	protected void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<AssetBrandDM> assetList = new ArrayList<AssetBrandDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "

@@ -62,7 +62,7 @@ public class WorkDays extends BaseUI {
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private StaticCodesService serviceStatic = (StaticCodesService) SpringContextHelper.getBean("staticCodes");
 	// form layout for input controls
-	FormLayout flBranchName;
+	private FormLayout flBranchName;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
@@ -160,14 +160,13 @@ public class WorkDays extends BaseUI {
 	
 	// load the lookup details for search
 	private void loadsearchworkDaysList() {
-		List<BranchDM> list = serviceBranch.getBranchList(null, null, null, null, companyId, "P");
 		BeanContainer<String, BranchDM> auditConfigbean = new BeanContainer<String, BranchDM>(BranchDM.class);
 		auditConfigbean.setBeanIdProperty("branchId");
-		auditConfigbean.addAll(list);
+		auditConfigbean.addAll(serviceBranch.getBranchList(null, null, null, null, companyId, "P"));
 		cbBranch.setContainerDataSource(auditConfigbean);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		btnCancel.setVisible(false);
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Search Parameters are " + ":" + cbBranch.getValue() + "Loading Search...");
@@ -192,11 +191,7 @@ public class WorkDays extends BaseUI {
 				if (workDaysList.size() != 0) {
 					for (WorkDaysDM test : workDaysList) {
 						obj2.setCode("false");
-						System.out.println("test.getWorkDay()="+test.getWorkDay());
-						System.out.println("obj.getCode().toString()="+obj.getCode());
-						System.out.println("test.getWorkYN()-->"+test.getWorkYN());
 						if (test.getWorkDay() == Long.valueOf(obj.getCode().toString()) && test.getWorkYN().equals("Y")) {
-							System.out.println("inside --> true");
 							obj2.setCode("true");
 							break;
 						}
@@ -275,7 +270,7 @@ public class WorkDays extends BaseUI {
 				workObj.setWorkDay(Long.valueOf(i));
 				workObj.setBranchId((Long) cbBranch.getValue());
 				workObj.setCmpId(companyId);
-				System.out.println("pojo1.getCode()-->"+pojo1.getCode());
+				System.out.println("pojo1.getCode()-->" + pojo1.getCode());
 				if (pojo1.getCode().equals("true")) {
 					workObj.setWorkYN("Y");
 				} else {

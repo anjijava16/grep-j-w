@@ -101,10 +101,9 @@ public class ProductStock extends BaseUI {
 	}
 	
 	private void loadBranchList() {
-		List<BranchDM> branchlist = serviceBranch.getBranchList(null, null, null, null, companyid, "P");
 		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(branchlist);
+		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, null, companyid, "P"));
 		cbbranchid.setContainerDataSource(beanbranch);
 	}
 	

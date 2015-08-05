@@ -201,7 +201,7 @@ public class EnquiryWorkflow implements ClickListener {
 			logger.info("getEnqWorkflowDetails : Loading ...");
 			tblEnquiryWorkflow.removeAllItems();
 			List<EnquiryWorkflowDM> listWorkflow = new ArrayList<EnquiryWorkflowDM>();
-			listWorkflow = serviceWorkflow.getEnqWorkflowList(null, enquiryId, null);
+			listWorkflow = serviceWorkflow.getEnqWorkflowList(null, enquiryId, null,null,null);
 			beanWorkflow = new BeanItemContainer<EnquiryWorkflowDM>(EnquiryWorkflowDM.class);
 			beanWorkflow.addAll(listWorkflow);
 			tblEnquiryWorkflow.setContainerDataSource(beanWorkflow);

@@ -177,7 +177,7 @@ public class SalesPO extends BaseTransUI {
 	private String status;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(SalesPO.class);
-	public Button btndelete = new GERPButton("Delete", "delete", this);
+	private Button btndelete = new GERPButton("Delete", "delete", this);
 	
 	// Constructor received the parameters from Login UI class
 	public SalesPO() {
@@ -541,7 +541,6 @@ public class SalesPO extends BaseTransUI {
 				}
 			}
 		});
-		// loadProduct();
 		tacustproddesc.setWidth("150");
 		tfBasicValue = new TextField("Basic value");
 		tfBasicValue.setWidth("110");
@@ -1690,7 +1689,6 @@ public class SalesPO extends BaseTransUI {
 		tfSubTaxTotal.setValue("0");
 		tfversionNo.setValue("0");
 		cbquoteNo.setValue(null);
-		// cbpaymetTerms.setValue(null);
 		tfPackingValue.setReadOnly(false);
 		tfPackingValue.setValue("0");
 		try {

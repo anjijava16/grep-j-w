@@ -498,7 +498,7 @@ public class Client extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
@@ -639,7 +639,6 @@ public class Client extends BaseUI {
 		// remove the components in the search layout and input controls in the
 		// same container
 		hlUserInputLayout.removeAllComponents();
-		// hlUserInput.removeAllComponents();
 		hlCmdBtnLayout.setVisible(false);
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(hlUserInputLayout);

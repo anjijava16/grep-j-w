@@ -511,7 +511,6 @@ public class ClientCases extends BaseTransUI {
 		cbClntCaseStatus.setValue(cbClntCaseStatus.getItemIds().iterator().next());
 		cbEmployee.setValue(null);
 		hlCmdBtnLayout.setVisible(true);
-		// loadSrchRslt();
 	}
 	
 	@Override
@@ -639,7 +638,6 @@ public class ClientCases extends BaseTransUI {
 			clientCasesDM.setWoId((Long) cbwoNo.getValue());
 			serviceCase.saveClientCasesDetails(clientCasesDM);
 			resetFields();
-			System.out.println("CLIENTCASES->>" + clientCasesDM.getClientCaseId());
 			comment.saveclientcases(clientCasesDM.getClientCaseId());
 			comment.resetfields();
 			document.saveclientcases(clientCasesDM.getClientCaseId());
@@ -717,11 +715,9 @@ public class ClientCases extends BaseTransUI {
 	
 	// Load EnquiryNo
 	private void loadEnquiryNo() {
-		List<SmsEnqHdrDM> getsmsEnqNoHdr = new ArrayList<SmsEnqHdrDM>();
-		getsmsEnqNoHdr.addAll(serviceEnquiryHdr.getSmsEnqHdrList(companyId, null, null, null, null, "P", null, null));
 		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
 		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(getsmsEnqNoHdr);
+		beansmsenqHdr.addAll(serviceEnquiryHdr.getSmsEnqHdrList(companyId, null, null, null, null, "P", null, null));
 		cbEnquiryNo.setContainerDataSource(beansmsenqHdr);
 	}
 	

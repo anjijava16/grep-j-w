@@ -55,7 +55,6 @@ import com.gnts.sms.service.txn.PurchasePODtlService;
 import com.gnts.sms.service.txn.PurchasePOHdrService;
 import com.gnts.sms.service.txn.VendorBillDtlService;
 import com.gnts.sms.service.txn.VendorBillHdrService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -126,7 +125,6 @@ public class VendorBill extends BaseTransUI {
 	private String username;
 	private Long companyid;
 	private int recordCnt;
-	private Long QuoteId;
 	private Long employeeId;
 	private Long roleId;
 	private Long branchId;
@@ -649,12 +647,10 @@ public class VendorBill extends BaseTransUI {
 	// Load Product
 	private void loadProduct() {
 		try {
-			List<PurchasePODtlDM> getQuoteDtl = new ArrayList<PurchasePODtlDM>();
 			Long poId = ((PurchasePOHdrDM) cbpoNo.getValue()).getPoId();
-			getQuoteDtl.addAll(servicePurchasePODtl.getPurchaseOrdDtlList(null, poId, null, null));
 			BeanItemContainer<PurchasePODtlDM> beanPlnDtl = new BeanItemContainer<PurchasePODtlDM>(
 					PurchasePODtlDM.class);
-			beanPlnDtl.addAll(getQuoteDtl);
+			beanPlnDtl.addAll(servicePurchasePODtl.getPurchaseOrdDtlList(null, poId, null, null));
 			cbproduct.setContainerDataSource(beanPlnDtl);
 		}
 		catch (Exception e) {
@@ -664,10 +660,8 @@ public class VendorBill extends BaseTransUI {
 	
 	// Load PoNo
 	private void loadPoNo() {
-		List<PurchasePOHdrDM> getPoHdr = new ArrayList<PurchasePOHdrDM>();
-		getPoHdr.addAll(servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, null, null, null, null));
 		BeanItemContainer<PurchasePOHdrDM> beanPurPoDM = new BeanItemContainer<PurchasePOHdrDM>(PurchasePOHdrDM.class);
-		beanPurPoDM.addAll(getPoHdr);
+		beanPurPoDM.addAll(servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, null, null, null, null));
 		cbpoNo.setContainerDataSource(beanPurPoDM);
 	}
 	
@@ -675,10 +669,7 @@ public class VendorBill extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlCmdBtnLayout.setVisible(false);
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected QuoteId -> "
-				+ QuoteId);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			VendorBillHdrDM editVendorBillHdrlist = beanVendorBillHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			billId = editVendorBillHdrlist.getBillId();
 			cbBranch.setValue(editVendorBillHdrlist.getBranchId());

@@ -119,7 +119,7 @@ public class ClientCategory extends BaseUI {
 		hlSearchLayout.setComponentAlignment(hlUserInputLayout, Alignment.MIDDLE_LEFT);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<ClientCategoryDM> clntList = new ArrayList<ClientCategoryDM>();

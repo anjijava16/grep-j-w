@@ -35,7 +35,6 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -200,15 +199,14 @@ public class Holiday extends BaseUI {
 	// fields in the input form
 	private void editHoliday() {
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		holidayid = itselect.getItemProperty("holidayId").getValue().toString();
-		if (itselect != null) {
-			HolidaysDM editHoliday = beanHolidayDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfHolidayName.setValue(editHoliday.getHolidayName());
-			cbstatus.setValue(itselect.getItemProperty("holidayStatus").getValue());
-			dtHolidayDate.setValue(editHoliday.getHolidayDateInDt());
-			cbHolidayHrs.setValue(itselect.getItemProperty("holidaySession").getValue());
-			cbBranch.setValue(editHoliday.getBranchId());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			HolidaysDM holidaysDM = beanHolidayDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			holidayid = holidaysDM.getHolidayId().toString();
+			tfHolidayName.setValue(holidaysDM.getHolidayName());
+			cbstatus.setValue(holidaysDM.getHolidayStatus());
+			dtHolidayDate.setValue(holidaysDM.getHolidayDateInDt());
+			cbHolidayHrs.setValue(holidaysDM.getHolidaySession());
+			cbBranch.setValue(holidaysDM.getBranchId());
 		}
 	}
 	
@@ -357,9 +355,7 @@ public class Holiday extends BaseUI {
 	// Load foreignkey details
 	private void loadBranchlist() {
 		List<BranchDM> list = new ArrayList<BranchDM>();
-		BranchDM branch = new BranchDM();
-		branch.setBranchId(0L);
-		branch.setBranchName("All Branchces");
+		BranchDM branch = new BranchDM(0L, "All Branchces");
 		list.add(branch);
 		list.addAll(branchbean.getBranchList(null, null, null, "Active", companyid, "P"));
 		BeanContainer<Long, BranchDM> beanState = new BeanContainer<Long, BranchDM>(BranchDM.class);

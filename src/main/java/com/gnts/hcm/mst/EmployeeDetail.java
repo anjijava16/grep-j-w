@@ -589,7 +589,7 @@ public class EmployeeDetail implements ClickListener {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading Search Result....");
 		tblLeave.removeAllItems();
 		List<EmployeeLeaveDM> list = serviceleave.getempleaveList(null,
-				((EmployeeDM) cbEmployee.getValue()).getEmployeeid(), null, null, "F");
+				((EmployeeDM) cbEmployee.getValue()).getEmployeeid(), null, null,null,null, "F");
 		BeanItemContainer<EmployeeLeaveDM> beanLeave = new BeanItemContainer<EmployeeLeaveDM>(EmployeeLeaveDM.class);
 		beanLeave.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "

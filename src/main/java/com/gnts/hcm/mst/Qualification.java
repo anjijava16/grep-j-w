@@ -78,6 +78,7 @@ public class Qualification extends BaseUI {
 	// Build the UI components
 	private void buildview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting Qualification UI");
+		tblMstScrSrchRslt.setVisible(false);
 		// Qualification Name text field
 		tfQualificationName = new GERPTextField("Qualification Name");
 		tfQualificationName.setMaxLength(25);
@@ -114,8 +115,8 @@ public class Qualification extends BaseUI {
 		List<QualificationDM> QualList = new ArrayList<QualificationDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfQualificationName.getValue() + ", " + cbStatus.getValue());
-		QualList = serviceQualification
-				.getQualificationList(null, tfQualificationName.getValue(), companyid,(String)cbStatus.getValue(), "F");
+		QualList = serviceQualification.getQualificationList(null, null, null, null, "F");
+		// .getQualificationList(null, tfQualificationName.getValue(), companyid,(String)cbStatus.getValue(), "F");
 		recordCnt = QualList.size();
 		beanQualificationDM = new BeanItemContainer<QualificationDM>(QualificationDM.class);
 		beanQualificationDM.addAll(QualList);
@@ -206,8 +207,11 @@ public class Qualification extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assembleSearchLayout();
 		tfQualificationName.setRequired(false);
+		tblMstScrSrchRslt.setValue(null);
 		resetFields();
 		loadSrchRslt();
+		tblMstScrSrchRslt.setVisible(true);
+
 	}
 	
 	@Override

@@ -12,6 +12,7 @@
  **/
 package com.gnts.mms.txn;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -44,6 +45,7 @@ import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.IndentIssueDtlService;
 import com.gnts.mms.service.txn.IndentIssueHdrService;
 import com.gnts.mms.service.txn.MaterialLedgerService;
+import com.gnts.mms.service.txn.MaterialStockService;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -78,10 +80,13 @@ public class IndentIssue extends BaseTransUI {
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private IndentHdrService serviceIndHdr = (IndentHdrService) SpringContextHelper.getBean("IndentHdr");
 	private IndentDtlService serviceIndentDtlDM = (IndentDtlService) SpringContextHelper.getBean("IndentDtl");
+	private MaterialStockService serviceMaterialStock = (MaterialStockService) SpringContextHelper
+			.getBean("materialstock");
 	private List<IndentIssueDtlDM> indentDtlList = null;
 	// form layout for input controls
 	private FormLayout flIndentIssueCol1, flIndentIssueCol2, flIndentIssueCol3, flColumn4, flColumn5,
-			flIndentIssueDtlCol1, flIndentIssueDtlCol2, flIndentIssueDtlCol3, flIndentIssueDtlCol4;
+			flIndentIssueDtlCol1, flIndentIssueDtlCol2, flIndentIssueDtlCol3, flIndentIssueDtlCol4,
+			flIndentIssueDtlCol5;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private HorizontalLayout hlIndent = new HorizontalLayout();
@@ -96,7 +101,7 @@ public class IndentIssue extends BaseTransUI {
 	// Dtl Status ComboBox
 	private ComboBox cbIndStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
-	private TextField tfIssueQty, tfBalanceQty;
+	private TextField tfIssueQty, tfBalanceQty, tfStockQty;
 	private ComboBox cbIssuedTo, cbMatName, cbIntNo;
 	private DateField dfIssueDt;
 	private TextField taRemarks;
@@ -220,14 +225,21 @@ public class IndentIssue extends BaseTransUI {
 				// TODO Auto-generated method stub
 				if (cbMatName.getValue() != null) {
 					tfBalanceQty.setValue(((IndentDtlDM) cbMatName.getValue()).getBalenceQty() + "");
+					loadMaterial();
 				}
 			}
 		});
 		// Indent Qty.GERPTextField
 		tfIssueQty = new GERPTextField("Issue Qty.");
 		tfIssueQty.setValue("0");
+		tfIssueQty.setWidth("70");
 		tfBalanceQty = new GERPTextField("Balance Qty");
 		tfBalanceQty.setValue("0");
+		tfBalanceQty.setWidth("70");
+		tfStockQty = new GERPTextField("Stock Qty");
+		tfStockQty.setValue("0");
+		tfStockQty.setWidth("70");
+		tfStockQty.setReadOnly(true);
 		// Hdr Combobox
 		cbDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// Indent No text field
@@ -288,15 +300,18 @@ public class IndentIssue extends BaseTransUI {
 		flIndentIssueDtlCol2 = new FormLayout();
 		flIndentIssueDtlCol3 = new FormLayout();
 		flIndentIssueDtlCol4 = new FormLayout();
+		flIndentIssueDtlCol5 = new FormLayout();
 		flIndentIssueDtlCol1.addComponent(cbMatName);
 		flIndentIssueDtlCol2.addComponent(tfBalanceQty);
-		flIndentIssueDtlCol3.addComponent(tfIssueQty);
-		flIndentIssueDtlCol4.addComponent(cbDtlStatus);
+		flIndentIssueDtlCol3.addComponent(tfStockQty);
+		flIndentIssueDtlCol4.addComponent(tfIssueQty);
+		flIndentIssueDtlCol5.addComponent(cbDtlStatus);
 		hlIndentslap = new HorizontalLayout();
 		hlIndentslap.addComponent(flIndentIssueDtlCol1);
 		hlIndentslap.addComponent(flIndentIssueDtlCol2);
 		hlIndentslap.addComponent(flIndentIssueDtlCol3);
 		hlIndentslap.addComponent(flIndentIssueDtlCol4);
+		hlIndentslap.addComponent(flIndentIssueDtlCol5);
 		hlIndentslap.addComponent(btnAddDtl);
 		hlIndentslap.setComponentAlignment(btnAddDtl, Alignment.MIDDLE_LEFT);
 		hlIndentslap.addComponent(btndelete);
@@ -317,6 +332,14 @@ public class IndentIssue extends BaseTransUI {
 		hlUserInputLayout.setWidth("100%");
 		hlUserInputLayout.setMargin(false);
 		hlUserInputLayout.setSpacing(true);
+	}
+	//Load Stock of Selected Material.
+	private void loadMaterial() {
+		tfStockQty.setReadOnly(false);
+		tfStockQty.setValue(serviceMaterialStock
+				.getMaterialStockList((Long) cbMatName.getValue(), null, null, null, null, null, "F").get(0)
+				.getEffectiveStock().toString());
+		tfStockQty.setReadOnly(true);
 	}
 	
 	private void loadSrchRslt() {

@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cashvoucher" pageWidth="595" pageHeight="400" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3762ec32-ae9c-41ac-a870-03f613bd17bf">
 	<property name="ireport.zoom" value="1.4641000000000013"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="259"/>
+	<property name="ireport.y" value="0"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -29,32 +29,21 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select atxn.* from t_fms_account_txns atxn where  acctxn_id=$P{ATXNID}]]>
+		<![CDATA[select acc.account_name,atxn.acc_ref_name,atxn.trans_date,atxn.trans_amount,atxn.ref_details,atxn.instrument_remarks
+,pkg_app_utils.fn_amount_to_words(atxn.trans_amount) amount_to_words,'( by ' || atxn.payment_mode||' )' payment_mode
+from t_fms_account_txns atxn,t_fms_accounts acc
+where
+acc.account_id = atxn.account_id
+and acctxn_id=$P{ATXNID}]]>
 	</queryString>
-	<field name="ACCTXN_ID" class="java.math.BigDecimal"/>
-	<field name="TRANS_DATE" class="java.sql.Timestamp"/>
-	<field name="VALUE_DATE" class="java.sql.Timestamp"/>
-	<field name="COMPANY_ID" class="java.math.BigDecimal"/>
-	<field name="ACCOUNT_ID" class="java.math.BigDecimal"/>
-	<field name="VOUCHER_NO" class="java.lang.String"/>
-	<field name="EMPLOYEE_ID" class="java.math.BigDecimal"/>
-	<field name="TRANS_TYPE_ID" class="java.math.BigDecimal"/>
-	<field name="OPEN_BALANCE" class="java.math.BigDecimal"/>
-	<field name="TRANS_AMOUNT" class="java.math.BigDecimal"/>
-	<field name="CLOSE_BALANCE" class="java.math.BigDecimal"/>
-	<field name="CHEQUE_NO" class="java.lang.String"/>
-	<field name="CHEQUE_DATE" class="java.sql.Timestamp"/>
-	<field name="INSTRUMENT_REMARKS" class="java.lang.String"/>
-	<field name="PAYMENT_MODE" class="java.lang.String"/>
-	<field name="PREPARED_BY" class="java.math.BigDecimal"/>
-	<field name="TXN_STATUS" class="java.lang.String"/>
-	<field name="ACTIONED_DT" class="java.sql.Timestamp"/>
-	<field name="ACTIONED_BY" class="java.math.BigDecimal"/>
-	<field name="APP_REMARKS" class="java.lang.String"/>
-	<field name="LAST_UPDATED_DT" class="java.sql.Timestamp"/>
-	<field name="LAST_UPDATED_BY" class="java.lang.String"/>
+	<field name="ACCOUNT_NAME" class="java.lang.String"/>
 	<field name="ACC_REF_NAME" class="java.lang.String"/>
+	<field name="TRANS_DATE" class="java.sql.Timestamp"/>
+	<field name="TRANS_AMOUNT" class="java.math.BigDecimal"/>
 	<field name="REF_DETAILS" class="java.lang.String"/>
+	<field name="INSTRUMENT_REMARKS" class="java.lang.String"/>
+	<field name="AMOUNT_TO_WORDS" class="java.lang.String"/>
+	<field name="PAYMENT_MODE" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -78,7 +67,7 @@
 				<text><![CDATA[Coimbatore - 641 050.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="d5f94875-0133-4f81-8546-b55ab4dfe378" x="277" y="3" width="100" height="20"/>
+				<reportElement uuid="d5f94875-0133-4f81-8546-b55ab4dfe378" x="51" y="3" width="504" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font size="15" isBold="true" isUnderline="true"/>
 				</textElement>
@@ -216,6 +205,66 @@
 			<line>
 				<reportElement uuid="1486a04d-e686-46a5-ba75-2d9e6125144c" x="421" y="306" width="1" height="51"/>
 			</line>
+			<textField>
+				<reportElement uuid="58fddff5-9ca7-48d5-b641-99a7621c62bd" x="2" y="121" width="255" height="20"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{ACCOUNT_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="912dada8-b818-44fc-8b51-e508c0871518" x="2" y="146" width="255" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{ACC_REF_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="d52de76a-fbe7-4c4c-8a81-a33a55fdec5c" x="331" y="120" width="65" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TRANS_AMOUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="26e03863-29af-42fd-9ffd-7fff76d41cc1" x="259" y="146" width="71" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TRANS_AMOUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="eada13de-f2ce-4438-bf71-d7a2447cef58" x="257" y="190" width="72" height="17"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TRANS_AMOUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="1ffad4ca-37ad-492d-b463-fe71d8e72524" x="332" y="190" width="63" height="17"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TRANS_AMOUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="32d44a6e-39d8-465e-9b83-dd2eb9e867f7" x="84" y="211" width="469" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{REF_DETAILS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="07f1f358-4e36-47c7-a8cf-7f0214cb55b2" x="84" y="232" width="468" height="48"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{INSTRUMENT_REMARKS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="5170f21e-c7df-4782-b100-066f311b448e" x="83" y="281" width="472" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{AMOUNT_TO_WORDS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement uuid="cd9238c8-506a-4bf0-a79d-4f9a087c068f" x="462" y="46" width="91" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TRANS_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d1c14bc3-4349-4cf5-a023-35c18be693ee" x="3" y="98" width="100" height="22"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[To ]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="101b6c5b-eb0d-44d6-94ec-a95c02ff2d2e" x="5" y="167" width="252" height="18"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{PAYMENT_MODE}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 </jasperReport>

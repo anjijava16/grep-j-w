@@ -609,7 +609,7 @@ public class Transactions extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			parameterMap.put("TXNID", transactionId);
+			parameterMap.put("ATXNID", transactionId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/cashvoucher"); // pif is the name of my jasper
 			rpt.callReport(basepath, "Preview");

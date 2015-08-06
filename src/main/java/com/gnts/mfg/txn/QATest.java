@@ -1046,10 +1046,10 @@ public class QATest extends BaseTransUI {
 	}
 	
 	private void deleteSpecDetails() {
-		QATestDtlDM aATestDtlDM = new QATestDtlDM();
+		QATestDtlDM qaTestDtlDM = new QATestDtlDM();
 		if (tblQATstDtl.getValue() != null) {
-			aATestDtlDM = beanQATstDtl.getItem(tblQATstDtl.getValue()).getBean();
-			listQATestDtl.remove(aATestDtlDM);
+			qaTestDtlDM = beanQATstDtl.getItem(tblQATstDtl.getValue()).getBean();
+			listQATestDtl.remove(qaTestDtlDM);
 			resetQATestDefDtl();
 			tblQATstDtl.setValue("");
 			loadSrchQADtlList();

@@ -114,7 +114,7 @@ public class ProductOverview implements ClickListener {
 	private Button btnScreenName;
 	private GERPTextField tfSerialNumber = new GERPTextField("Serial Number");
 	private Button btnSearch = new GERPButton("Search", "searchbt", this);
-	// profile components
+	// for basic information
 	private Image imgProduct;
 	private TextField tfProductCode;
 	private TextField tfProductName;
@@ -550,6 +550,7 @@ public class ProductOverview implements ClickListener {
 	}
 	
 	private void resetFields() {
+		// for basic information
 		tfProductCode.setValue("");
 		tfProductName.setValue("");
 		taProductDesc.setValue("");
@@ -562,16 +563,175 @@ public class ProductOverview implements ClickListener {
 		dfPODate.setValue(null);
 		tfInvoiceRef.setValue("");
 		dfInvoiceDate.setValue(null);
+		tfWorkorderRef.setValue("");
+		dfWorkorderDate.setValue(null);
+		// for enquiry information
+		tfEnquiryNumber.setValue("");
+		tfBranchName.setValue("");
+		tfClientCode.setValue("");
+		tfClientName.setValue("");
+		tfModeofEnquiry.setValue("");
+		dfEnquiryDate1.setValue(null);
+		tfDrawingNo.setValue("");
+		tfPartNumber.setValue("");
+		taEnqRemarks.setValue("");
+		// for die information
+		dfDieReqDate.setValue(null);
+		tfDieReqNumber.setValue("");
+		tfNoofDie.setValue("");
+		tfIsNewDie.setValue("");
+		dfDieComplDate.setValue(null);
+		tfDieStatus.setValue("");
+		taDieChangeNote.setValue("");
+		tfDieModel.setValue("");
+		tfWorkNature.setValue("");
+		tfDieRegBy.setValue("");
+		tfDieRecvBy.setValue("");
+		dfDieSecDate.setValue(null);
+		taTrailPerfomance.setValue("");
+		taCmntsRectified.setValue("");
+		// for production information
+		tfExtMachine.setValue("");
+		tfExtRefNumber.setValue("");
+		dfExtDate.setValue(null);
+		tfPulzRefNo.setValue("");
+		dfPulzRefDate.setValue(null);
+		tfRotoRefNo.setValue("");
+		dfRotoRefDate.setValue(null);
+		tfArmNumber.setValue("");
+		tfAssemblyRef.setValue("");
+		dfAssemblyDate.setValue(null);
+		tfAssembledBy.setValue("");
+		tfFoamRefNumber.setValue("");
+		tfFoamRefDate.setValue(null);
+		tfFoamBy.setValue("");
+	}
+	
+	private void setReadOnlyFalse() {
+		// for basic information
+		tfProductCode.setReadOnly(false);
+		tfProductName.setReadOnly(false);
+		taProductDesc.setReadOnly(false);
+		taProductShortDesc.setReadOnly(false);
+		tfEnquiryRef.setReadOnly(false);
+		dfEnquiryDate.setReadOnly(false);
+		tfQuoteRef.setReadOnly(false);
+		dfQuoteDate.setReadOnly(false);
+		tfPORef.setReadOnly(false);
+		dfPODate.setReadOnly(false);
+		tfInvoiceRef.setReadOnly(false);
+		dfInvoiceDate.setReadOnly(false);
+		tfWorkorderRef.setReadOnly(false);
+		dfWorkorderDate.setReadOnly(false);
+		// for enquiry information
+		tfEnquiryNumber.setReadOnly(false);
+		tfBranchName.setReadOnly(false);
+		tfClientCode.setReadOnly(false);
+		tfClientName.setReadOnly(false);
+		tfModeofEnquiry.setReadOnly(false);
+		dfEnquiryDate1.setReadOnly(false);
+		tfDrawingNo.setReadOnly(false);
+		tfPartNumber.setReadOnly(false);
+		taEnqRemarks.setReadOnly(false);
+		// for die information
+		dfDieReqDate.setReadOnly(false);
+		tfDieReqNumber.setReadOnly(false);
+		tfNoofDie.setReadOnly(false);
+		tfIsNewDie.setReadOnly(false);
+		dfDieComplDate.setReadOnly(false);
+		tfDieStatus.setReadOnly(false);
+		taDieChangeNote.setReadOnly(false);
+		tfDieModel.setReadOnly(false);
+		tfWorkNature.setReadOnly(false);
+		tfDieRegBy.setReadOnly(false);
+		tfDieRecvBy.setReadOnly(false);
+		dfDieSecDate.setReadOnly(false);
+		taTrailPerfomance.setReadOnly(false);
+		taCmntsRectified.setReadOnly(false);
+		// for production information
+		tfExtMachine.setReadOnly(false);
+		tfExtRefNumber.setReadOnly(false);
+		dfExtDate.setReadOnly(false);
+		tfPulzRefNo.setReadOnly(false);
+		dfPulzRefDate.setReadOnly(false);
+		tfRotoRefNo.setReadOnly(false);
+		dfRotoRefDate.setReadOnly(false);
+		tfArmNumber.setReadOnly(false);
+		tfAssemblyRef.setReadOnly(false);
+		dfAssemblyDate.setReadOnly(false);
+		tfAssembledBy.setReadOnly(false);
+		tfFoamRefNumber.setReadOnly(false);
+		tfFoamRefDate.setReadOnly(false);
+		tfFoamBy.setReadOnly(false);
+	}
+	
+	private void setReadOnlyTrue() {
+		// for basic information
+		tfProductCode.setReadOnly(true);
+		tfProductName.setReadOnly(true);
+		taProductDesc.setReadOnly(true);
+		taProductShortDesc.setReadOnly(true);
+		tfEnquiryRef.setReadOnly(true);
+		dfEnquiryDate.setReadOnly(true);
+		tfQuoteRef.setReadOnly(true);
+		dfQuoteDate.setReadOnly(true);
+		tfPORef.setReadOnly(true);
+		dfPODate.setReadOnly(true);
+		tfInvoiceRef.setReadOnly(true);
+		dfInvoiceDate.setReadOnly(true);
+		tfWorkorderRef.setReadOnly(true);
+		dfWorkorderDate.setReadOnly(true);
+		// for enquiry information
+		tfEnquiryNumber.setReadOnly(true);
+		tfBranchName.setReadOnly(true);
+		tfClientCode.setReadOnly(true);
+		tfClientName.setReadOnly(true);
+		tfModeofEnquiry.setReadOnly(true);
+		dfEnquiryDate1.setReadOnly(true);
+		tfDrawingNo.setReadOnly(true);
+		tfPartNumber.setReadOnly(true);
+		taEnqRemarks.setReadOnly(true);
+		// for die information
+		dfDieReqDate.setReadOnly(true);
+		tfDieReqNumber.setReadOnly(true);
+		tfNoofDie.setReadOnly(true);
+		tfIsNewDie.setReadOnly(true);
+		dfDieComplDate.setReadOnly(true);
+		tfDieStatus.setReadOnly(true);
+		taDieChangeNote.setReadOnly(true);
+		tfDieModel.setReadOnly(true);
+		tfWorkNature.setReadOnly(true);
+		tfDieRegBy.setReadOnly(true);
+		tfDieRecvBy.setReadOnly(true);
+		dfDieSecDate.setReadOnly(true);
+		taTrailPerfomance.setReadOnly(true);
+		taCmntsRectified.setReadOnly(true);
+		// for production information
+		tfExtMachine.setReadOnly(true);
+		tfExtRefNumber.setReadOnly(true);
+		dfExtDate.setReadOnly(true);
+		tfPulzRefNo.setReadOnly(true);
+		dfPulzRefDate.setReadOnly(true);
+		tfRotoRefNo.setReadOnly(true);
+		dfRotoRefDate.setReadOnly(true);
+		tfArmNumber.setReadOnly(true);
+		tfAssemblyRef.setReadOnly(true);
+		dfAssemblyDate.setReadOnly(true);
+		tfAssembledBy.setReadOnly(true);
+		tfFoamRefNumber.setReadOnly(true);
+		tfFoamRefDate.setReadOnly(true);
+		tfFoamBy.setReadOnly(true);
 	}
 	
 	private void viewProductDetails() {
 		// TODO Auto-generated method stub
+		setReadOnlyFalse();
 		resetFields();
 		RotoCheckDtlDM rotoCheckDtlDM = null;
 		Long poid = null;
 		try {
 			rotoCheckDtlDM = serviceRotoCheckDtl.getRotoCheckDtlDetatils(null, null, tfSerialNumber.getValue(), null,
-					"F").get(0);
+					"P").get(0);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -599,7 +759,7 @@ public class ProductOverview implements ClickListener {
 							rotoCheckDtlDM.getRotoid(), null, rotoCheckDtlDM.getProductId(), null).get(0);
 					try {
 						WorkOrderHdrDM workOrderHdrDM = serviceWrkOrdHdr.getWorkOrderHDRList(rotoPlanDtlDM.getWoId(),
-								null, null, null, null, null, "F", null, null,null,null).get(0);
+								null, null, null, null, null, "F", null, null, null, null).get(0);
 						loadEnquiryDetails(workOrderHdrDM.getEnquiryId(), rotoCheckDtlDM.getProductId());
 						getEnqWorkflowDetails(workOrderHdrDM.getEnquiryId());
 						getQATestHeaderDetails(workOrderHdrDM.getWorkOrdrId(), rotoCheckDtlDM.getProductId());
@@ -634,6 +794,7 @@ public class ProductOverview implements ClickListener {
 		} else {
 			Notification.show("No data found", Type.ERROR_MESSAGE);
 		}
+		setReadOnlyTrue();
 	}
 	
 	private void loadEnquiryDetails(Long enquiryId, Long productId) {
@@ -685,7 +846,7 @@ public class ProductOverview implements ClickListener {
 			tblEnquiryWorkflow.removeAllItems();
 			List<EnquiryWorkflowDM> listWorkflow = new ArrayList<EnquiryWorkflowDM>();
 			if (enquiryId != null) {
-				listWorkflow = serviceWorkflow.getEnqWorkflowList(null, enquiryId, null);
+				listWorkflow = serviceWorkflow.getEnqWorkflowList(null, enquiryId, null, null, null);
 			}
 			BeanItemContainer<EnquiryWorkflowDM> beanWorkflow = new BeanItemContainer<EnquiryWorkflowDM>(
 					EnquiryWorkflowDM.class);

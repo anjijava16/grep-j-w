@@ -54,7 +54,6 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -62,6 +61,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
@@ -92,7 +92,6 @@ public class SignOff extends BaseTransUI {
 	private SignOffDtlService serviceSignoffDtl = (SignOffDtlService) SpringContextHelper.getBean("SignoffDtl");
 	private List<SignOffDtlDM> listSignOffDtlDM = null;
 	private BeanItemContainer<SignOffDtlDM> beanSignoffDtl = null;
-	private FormLayout flSignOffDtlCmp1, flSignOffDtlCmp2, flSignOffDtlCmp3;
 	private HorizontalLayout hlSignOffDtl = new HorizontalLayout();
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	private HorizontalLayout hlDtlNCmt = new HorizontalLayout();
@@ -104,6 +103,10 @@ public class SignOff extends BaseTransUI {
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private SlnoGenService serviceSLNo = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private QATestHdrService serviceQATestHdr = (QATestHdrService) SpringContextHelper.getBean("qatesthdr");
+	private FormLayout flTstHdr1, flTstHdr2, flTstHdr3, flTstHdr4;
+	private FormLayout flTstCndn1, flTstCndn2, flTstCndn3, flTstCndn4;
+	private FormLayout flTstDtl1, flTstDtl2, flTstDtl3, flTstDtl4, flTstDtl5;
+	private VerticalLayout hlDocumentLayout = new VerticalLayout();
 	private Logger logger = Logger.getLogger(QCTestType.class);
 	private int recordCnt;
 	private Long signOffHdrId;
@@ -308,6 +311,8 @@ public class SignOff extends BaseTransUI {
 		 */
 		// Set required fields
 		// Removing components from search layout and re-initializing form layouts
+		// QATest Header Components adding to the User input layout
+		// ========================================================================
 		hlSearchLayout.removeAllComponents();
 		hlUserInputLayout.removeAllComponents();
 		hlDtlNCmt.removeAllComponents();
@@ -326,75 +331,79 @@ public class SignOff extends BaseTransUI {
 		cbSignOffDtStatus.setRequired(true);
 		cbSignOffHdrStatus.setRequired(true);
 		// QATest Header Components adding to the User input layout
-		flSignOffCmp1 = new FormLayout();
-		flSignOffCmp2 = new FormLayout();
-		flSignOffCmp3 = new FormLayout();
-		flSignOffCmp4 = new FormLayout();
+		flTstHdr1 = new FormLayout();
+		flTstHdr2 = new FormLayout();
+		flTstHdr3 = new FormLayout();
+		flTstHdr4 = new FormLayout();
+		flTstHdr1.addComponent(tfbatchNo);
+		flTstHdr1.addComponent(pdBatchDate);
+		flTstHdr1.addComponent(cbBranch);
+		flTstHdr2.addComponent(cbClient);
+		flTstHdr2.addComponent(cbWorkOrderNo);
+		flTstHdr2.addComponent(cbProduct);
+		flTstHdr3.addComponent(tfbatchQty);
+		flTstHdr3.addComponent(tfbatchTested);
+		flTstHdr3.addComponent(cbSignOffHdrStatus);
+		flTstHdr4.addComponent(taRemaks);
+		HorizontalLayout hlTstHdr = new HorizontalLayout();
+		hlTstHdr.addComponent(flTstHdr1);
+		hlTstHdr.addComponent(flTstHdr2);
+		hlTstHdr.addComponent(flTstHdr3);
+		hlTstHdr.addComponent(flTstHdr4);
+		hlTstHdr.setMargin(true);
+		hlTstHdr.setSpacing(true);
+		// QA Test Details Components adding to the user input layout
+		flTstDtl1 = new FormLayout();
+		flTstDtl2 = new FormLayout();
+		flTstDtl3 = new FormLayout();
+		flTstDtl4 = new FormLayout();
+		flTstDtl5 = new FormLayout();
+		flTstDtl1.addComponent(cbInspectionNo);
+		flTstDtl2.addComponent(tfProductSlNo);
+		flTstDtl3.addComponent(cbSignOffDtStatus);
+		HorizontalLayout hlTstDtl = new HorizontalLayout();
+		hlTstDtl.addComponent(flTstDtl1);
+		hlTstDtl.addComponent(flTstDtl2);
+		hlTstDtl.addComponent(flTstDtl3);
+		hlTstDtl.addComponent(flTstDtl4);
+		hlTstDtl.addComponent(flTstDtl5);
+		hlTstDtl.setMargin(true);
+		hlTstDtl.setSpacing(true);
+		VerticalLayout vlTstDtl = new VerticalLayout();
+		vlTstDtl.addComponent(hlTstDtl);
+		vlTstDtl.addComponent(tblSignOffDtl);
+		// QA Test Condition Components adding to user input layout
+		flTstCndn1 = new FormLayout();
+		flTstCndn2 = new FormLayout();
+		flTstCndn3 = new FormLayout();
+		flTstCndn4 = new FormLayout();
+		HorizontalLayout hlTstCndnRslt = new HorizontalLayout();
+		hlTstCndnRslt.addComponent(flTstCndn1);
+		hlTstCndnRslt.addComponent(flTstCndn2);
+		hlTstCndnRslt.addComponent(flTstCndn3);
+		hlTstCndnRslt.addComponent(flTstCndn4);
+		hlTstCndnRslt.setSpacing(true);
+		hlTstCndnRslt.setMargin(true);
+		VerticalLayout vlTstCndn = new VerticalLayout();
+		vlTstCndn.addComponent(hlTstCndnRslt);
+		//vlTstCndn.addComponent(tblSignOffDtl);
 		//
-		flSignOffCmp1.addComponent(tfbatchNo);
-		flSignOffCmp1.addComponent(pdBatchDate);
-		flSignOffCmp1.addComponent(cbBranch);
-		flSignOffCmp2.addComponent(cbClient);
-		flSignOffCmp2.addComponent(cbWorkOrderNo);
-		flSignOffCmp2.addComponent(cbProduct);
-		flSignOffCmp3.addComponent(tfbatchQty);
-		flSignOffCmp3.addComponent(tfbatchTested);
-		flSignOffCmp3.addComponent(cbSignOffHdrStatus);
-		flSignOffCmp4.addComponent(taRemaks);
-		//
-		hlSignOffHdr.addComponent(flSignOffCmp1);
-		hlSignOffHdr.addComponent(flSignOffCmp2);
-		hlSignOffHdr.addComponent(flSignOffCmp3);
-		hlSignOffHdr.addComponent(flSignOffCmp4);
-		hlSignOffHdr.setSpacing(true);
-		hlSignOffHdr.setMargin(true);
-		//
-		flSignOffDtlCmp1 = new FormLayout();
-		flSignOffDtlCmp2 = new FormLayout();
-		flSignOffDtlCmp3 = new FormLayout();
-		flSignOffDtlCmp1.addComponent(cbInspectionNo);
-		flSignOffDtlCmp1.addComponent(tfProductSlNo);
-		flSignOffDtlCmp2.addComponent(cbSignOffDtStatus);
-		flSignOffDtlCmp2.addComponent(new HorizontalLayout() {
-			private static final long serialVersionUID = 1L;
-			{
-				setSpacing(true);
-				addComponent(btnAdd);
-				addComponent(btnDetlIns);
-			}
-		});
-		//
-		hlSignOffDtl.addComponent(flSignOffDtlCmp1);
-		hlSignOffDtl.addComponent(flSignOffDtlCmp2);
-		hlSignOffDtl.addComponent(flSignOffDtlCmp3);
-		hlSignOffDtl.setComponentAlignment(flSignOffDtlCmp3, Alignment.BOTTOM_CENTER);
-		hlSignOffDtl.setSpacing(true);
-		hlSignOffDtl.setMargin(true);
-		//
-		VerticalLayout vlSignOffHdr = new VerticalLayout();
-		vlSignOffHdr.addComponent(hlSignOffHdr);
-		vlSignOffHdr.addComponent(GERPPanelGenerator.createPanel(hlSignOffHdr));
-		vlSignOffHdr.setSpacing(true);
-		//
-		VerticalLayout vlSignOffDtl = new VerticalLayout();
-		vlSignOffDtl.addComponent(hlSignOffDtl);
-		vlSignOffDtl.addComponent(tblSignOffDtl);
-		//
-		hlDtlNCmt.addComponent(vlSignOffDtl);
-		hlDtlNCmt.addComponent(GERPPanelGenerator.createPanel(vlSignOffDtl));
-		hlDtlNCmt.addComponent(vlTableForm);
-		hlDtlNCmt.addComponent(GERPPanelGenerator.createPanel(vlTableForm));
-		hlDtlNCmt.setWidth("100%");
-		hlDtlNCmt.setSpacing(true);
-		//
-		VerticalLayout vlSignOff = new VerticalLayout();
-		vlSignOff.addComponent(vlSignOffHdr);
-		vlSignOff.addComponent(hlDtlNCmt);
-		vlSignOff.setSpacing(true);
-		//
-		hlUserInputLayout.addComponent(vlSignOff);
+		TabSheet tabSheet = new TabSheet();
+		tabSheet.setWidth("100%");
+		tabSheet.setHeight("320");
+		tabSheet.addTab(vlTstDtl, "Inspection Detail", null);
+		tabSheet.addTab(vlTstCndn, "Test Condition Result", null);
+		tabSheet.addTab(hlDocumentLayout, "Testing Documents");
+		tabSheet.addTab(vlTableForm, "Comments", null);
+		VerticalLayout vlAllComponent = new VerticalLayout();
+		vlAllComponent.addComponent(hlTstHdr);
+		vlAllComponent.addComponent(GERPPanelGenerator.createPanel(hlTstHdr));
+		vlAllComponent.addComponent(tabSheet);
+		vlAllComponent.setSpacing(true);
+		vlAllComponent.setWidth("100%");
+		// adding form layouts into user input layouts
+		hlUserInputLayout.addComponent(vlAllComponent);
 		hlUserInputLayout.setWidth("100%");
-		hlUserInputLayout.setSpacing(true);
 	}
 	
 	private void loadSrchRslt() {
@@ -468,7 +477,7 @@ public class SignOff extends BaseTransUI {
 				WorkOrderHdrDM.class);
 		beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
 		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyId, null, (Long) cbClient.getValue(), null,
-				null, null, "F", null, null,null,null));
+				null, null, "F", null, null, null, null));
 		cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
 	}
 	
@@ -481,8 +490,8 @@ public class SignOff extends BaseTransUI {
 					(serviceWorkOrderDtl.getWorkOrderDtlList(
 							null,
 							(serviceWorkOrderHdr.getWorkOrderHDRList(companyId, null, null, null, null, "Approved",
-									"F", (Long) cbWorkOrderNo.getValue(), null,null,null).get(0).getWorkOrdrId()), "Approved",
-							"F").get(0).getProdId()), null, null, "Active", null, null, "F"));
+									"F", (Long) cbWorkOrderNo.getValue(), null, null, null).get(0).getWorkOrdrId()),
+							"Approved", "F").get(0).getProdId()), null, null, "Active", null, null, "F"));
 			cbProduct.setContainerDataSource(beanProd);
 		}
 		catch (Exception e) {

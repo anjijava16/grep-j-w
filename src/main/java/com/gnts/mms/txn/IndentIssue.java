@@ -40,6 +40,7 @@ import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.domain.txn.IndentIssueDtlDM;
 import com.gnts.mms.domain.txn.IndentIssueHdrDM;
 import com.gnts.mms.domain.txn.MaterialLedgerDM;
+import com.gnts.mms.domain.txn.MaterialStockDM;
 import com.gnts.mms.service.txn.IndentDtlService;
 import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.IndentIssueDtlService;
@@ -233,6 +234,17 @@ public class IndentIssue extends BaseTransUI {
 		tfIssueQty = new GERPTextField("Issue Qty.");
 		tfIssueQty.setValue("0");
 		tfIssueQty.setWidth("70");
+		tfIssueQty.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (tfIssueQty.getValue() != null) {
+					loadCalc();
+				}
+			}
+		});
 		tfBalanceQty = new GERPTextField("Balance Qty");
 		tfBalanceQty.setValue("0");
 		tfBalanceQty.setWidth("70");
@@ -333,14 +345,6 @@ public class IndentIssue extends BaseTransUI {
 		hlUserInputLayout.setMargin(false);
 		hlUserInputLayout.setSpacing(true);
 	}
-	//Load Stock of Selected Material.
-	private void loadMaterial() {
-		tfStockQty.setReadOnly(false);
-		tfStockQty.setValue(serviceMaterialStock
-				.getMaterialStockList((Long) cbMatName.getValue(), null, null, null, null, null, "F").get(0)
-				.getEffectiveStock().toString());
-		tfStockQty.setReadOnly(true);
-	}
 	
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
@@ -406,6 +410,9 @@ public class IndentIssue extends BaseTransUI {
 		tfIssueQty.setComponentError(null);
 		indentDtlList = new ArrayList<IndentIssueDtlDM>();
 		tblDtl.removeAllItems();
+		tfStockQty.setReadOnly(false);
+		tfStockQty.setValue(null);
+		tfStockQty.setReadOnly(false);
 	}
 	
 	// Method to edit the values from table into fields to update process
@@ -448,6 +455,11 @@ public class IndentIssue extends BaseTransUI {
 			}
 			if (indentIssueDtlDM.getIssueQty() != null) {
 				tfIssueQty.setValue(indentIssueDtlDM.getIssueQty().toString());
+			}
+			if (indentIssueDtlDM.getStockQty() != null) {
+				tfStockQty.setReadOnly(false);
+				tfStockQty.setValue(indentIssueDtlDM.getStockQty().toString());
+				tfStockQty.setReadOnly(true);
 			}
 			cbDtlStatus.setValue(indentIssueDtlDM.getStatus());
 		}
@@ -528,6 +540,9 @@ public class IndentIssue extends BaseTransUI {
 		cbIssuedTo.setComponentError(null);
 		cbMatName.setComponentError(null);
 		tfIssueQty.setComponentError(null);
+		tfStockQty.setReadOnly(false);
+		tfStockQty.setComponentError(null);
+		tfStockQty.setReadOnly(true);
 		cbIntNo.setRequired(false);
 		dfIssueDt.setRequired(false);
 		cbIssuedTo.setRequired(false);
@@ -567,6 +582,9 @@ public class IndentIssue extends BaseTransUI {
 		cbMatName.setValue(null);
 		tfBalanceQty.setValue(null);
 		tfIssueQty.setValue(null);
+		tfStockQty.setReadOnly(false);
+		tfStockQty.setValue(null);
+		tfStockQty.setReadOnly(true);
 		// cbMatName.setContainerDataSource(null);
 		cbDtlStatus.setValue(cbDtlStatus.getItemIds().iterator().next());
 	}
@@ -789,6 +807,11 @@ public class IndentIssue extends BaseTransUI {
 					if (cbDtlStatus.getValue() != null) {
 						indentDtlObj.setStatus((String) cbDtlStatus.getValue());
 					}
+					tfIssueQty.setReadOnly(false);		
+					if (tfIssueQty.getValue() != null) {
+						indentDtlObj.setStockQty(Long.parseLong(tfStockQty.getValue()));
+					}
+					tfIssueQty.setReadOnly(true);
 					indentDtlObj.setLastUpdatedDt(DateUtils.getcurrentdate());
 					indentDtlObj.setLastUpdatedBy(username);
 					indentDtlList.add(indentDtlObj);
@@ -813,6 +836,9 @@ public class IndentIssue extends BaseTransUI {
 	 * loadMaterialList()-->this function is used for load the Material name
 	 */
 	private void loadMaterialList() {
+		tfStockQty.setReadOnly(false);
+		tfStockQty.setValue(null);
+		tfStockQty.setReadOnly(true);
 		BeanItemContainer<IndentDtlDM> beanIndentDtl = new BeanItemContainer<IndentDtlDM>(IndentDtlDM.class);
 		beanIndentDtl
 				.addAll(serviceIndentDtlDM.getIndentDtlDMList(null, (Long) cbIntNo.getValue(), null, "Active", "F"));
@@ -841,6 +867,24 @@ public class IndentIssue extends BaseTransUI {
 		beanIndentHdrDM.addAll(serviceIndHdr.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null,
 				"F"));
 		cbIntNo.setContainerDataSource(beanIndentHdrDM);
+	}
+	
+	// Load Stock of Selected Material.
+	private void loadMaterial() {
+		tfStockQty.setReadOnly(false);
+		tfStockQty.setValue(serviceMaterialStock
+				.getMaterialStockList(((IndentDtlDM) cbMatName.getValue()).getMaterialId(), null, null, null, null,
+						null, "F").get(0).getCurrentStock().toString());
+		tfStockQty.setReadOnly(true);
+	}
+	
+	private void loadCalc() {
+		tfStockQty.setReadOnly(false);
+		if (cbMatName != null && tfIssueQty != null) {
+			Long ltotalOty = new BigDecimal(tfStockQty.getValue()).subtract(new BigDecimal(tfIssueQty.getValue())).longValue();
+			tfStockQty.setValue(ltotalOty.toString());
+		}
+		tfStockQty.setReadOnly(true);
 	}
 	
 	private void deleteDetails() {

@@ -228,13 +228,13 @@ public class AccountPayables extends BaseUI {
 			}
 			// For select account number
 			if (accountPayablesDM.getAccountId() != null) {
-				Long editaccount = accountPayablesDM.getAccountId();
-				Collection<?> coll1 = cbAccountReference.getItemIds();
-				for (Iterator<?> iterator = coll1.iterator(); iterator.hasNext();) {
+				Long accid = accountPayablesDM.getAccountId();
+				Collection<?> accids = cbAccountReference.getItemIds();
+				for (Iterator<?> iterator = accids.iterator(); iterator.hasNext();) {
 					Object itemid = (Object) iterator.next();
 					BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemid);
 					AccountsDM edit = (AccountsDM) item.getBean();
-					if (editaccount != null && editaccount.equals(edit.getAccountId())) {
+					if (accid != null && accid.equals(edit.getAccountId())) {
 						cbAccountReference.setValue(itemid);
 						break;
 					} else {

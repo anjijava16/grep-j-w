@@ -211,14 +211,14 @@ public class FundRequest extends BaseUI {
 			if (fundRequestDM.getFundrqsrDt() != null) {
 				dfFundReqDt.setValue(fundRequestDM.getFundrqsrDt());
 			}
-			Long uom = fundRequestDM.getAccountId();
-			Collection<?> uomid = cbAccountReference.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long accid = fundRequestDM.getAccountId();
+			Collection<?> accids = cbAccountReference.getItemIds();
+			for (Iterator<?> iterator = accids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemId);
 				// Get the actual bean and use the data
 				AccountsDM st = (AccountsDM) item.getBean();
-				if (uom != null && uom.equals(st.getAccountId())) {
+				if (accid != null && accid.equals(st.getAccountId())) {
 					cbAccountReference.setValue(itemId);
 				}
 			}

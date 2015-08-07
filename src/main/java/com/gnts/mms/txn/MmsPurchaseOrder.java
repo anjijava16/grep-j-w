@@ -567,11 +567,32 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfGrandtotal.setReadOnly(false);
 		tfGrandtotal.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getGrandTotal().toString());
 		tfGrandtotal.setReadOnly(true);
-		tfpaymetTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getPaymentTerms().toString());
-		tfFreightTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getFreightTerms().toString());
-		tfquoteNum.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getQuoteNumber().toString());
-		tfWarrentyTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getWarrantyTerms().toString());
-		tfDelTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getDeliveryTerms().toString());
+		try {
+			tfpaymetTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getPaymentTerms().toString());
+		}
+		catch (Exception e) {
+		}
+		try {
+			tfFreightTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getFreightTerms().toString());
+		}
+		catch (Exception e) {
+		}
+		try {
+			tfquoteNum.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getQuoteNumber().toString());
+		}
+		catch (Exception e) {
+		}
+		try {
+			tfWarrentyTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getWarrantyTerms().toString());
+		}
+		catch (Exception e) {
+		}
+		try {
+			tfDelTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getDeliveryTerms().toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		// load quote details
 		listPODetails = new ArrayList<MmsPoDtlDM>();
 		MmsQuoteDtlDM quoteDtlDMobj = serviceMmsQuoteDtlService.getmmsquotedtllist(null,
@@ -583,6 +604,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		mmspodtl.setPoqty(quoteDtlDMobj.getQuoteqty());
 		mmspodtl.setMaterialuom(quoteDtlDMobj.getMatuom());
 		mmspodtl.setBasicvalue(quoteDtlDMobj.getBasicvalue());
+		mmspodtl.setPodtlstatus("Active");
 		mmspodtl.setLastupdatedby(username);
 		mmspodtl.setLastupdatedt(DateUtils.getcurrentdate());
 		listPODetails.add(mmspodtl);
@@ -625,7 +647,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		}
 		tfBasicValue.setReadOnly(false);
 		tfBasicValue.setValue(sum.toString());
-		// tfBasicValue.setReadOnly(true);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Taxslap. result set");
 		tblPODetails.setContainerDataSource(beanpodtl);
 		tblPODetails.setVisibleColumns(new Object[] { "materialname", "materialuom", "poqty", "unitrate", "basicvalue",
@@ -636,11 +657,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	
 	private void loadBranchList() {
 		try {
-			List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyid, "P");
-			branchList.add(new BranchDM(0L, "All Branches"));
 			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanbranch.setBeanIdProperty("branchId");
-			beanbranch.addAll(branchList);
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
@@ -792,7 +811,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				// Get the actual bean and use the data
 				MmsQuoteHdrDM st = (MmsQuoteHdrDM) item.getBean();
 				if (quoteid != null && quoteid.equals(st.getQuoteId())) {
+					cbQuoteRef.setReadOnly(false);
 					cbQuoteRef.setValue(itemId);
+					cbQuoteRef.setReadOnly(true);
 				}
 			}
 			if (poHdrDM.getDutyExempt().equals("Y")) {

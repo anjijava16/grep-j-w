@@ -18,7 +18,10 @@
 package com.gnts.fms.txn;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.CurrencyDM;
@@ -42,7 +45,9 @@ import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
+import com.gnts.erputil.ui.Database;
+import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.fms.domain.mst.AccountTypeDM;
 import com.gnts.fms.domain.mst.BankBranchDM;
@@ -59,6 +64,7 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
@@ -70,7 +76,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
-public class Accounts extends BaseUI {
+public class Accounts extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	// Bean creation
 	private AccountsService serviceAccounts = (AccountsService) SpringContextHelper.getBean("accounts");
@@ -726,6 +732,7 @@ public class Accounts extends BaseUI {
 				accountsobj.setLastupdateddt(DateUtils.getcurrentdate());
 				accountsobj.setLastupdatedby(username);
 				serviceAccounts.saveDetails(accountsobj);
+				accId = accountsobj.getAccountId();
 				// for save Account Owner details
 				logger.info("User Account Owner> split------------" + lsAccountOwners.getValue().toString());
 				String[] split = lsAccountOwners.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "")
@@ -815,5 +822,35 @@ public class Accounts extends BaseUI {
 	private void autogen() {
 		cbBankName.setVisible(true);
 		cbBankBranch.setVisible(true);
+	}
+	
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
+			parameterMap.put("ACCID", accId);
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "/WEB-INF/reports/AccountTransactionsReport"); // AccountTransactionsReport is
+																						// the name of my jasper
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

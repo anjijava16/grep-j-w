@@ -227,13 +227,13 @@ public class AccountReceivables extends BaseUI {
 				dfEntryDate.setValue(accountReceivablesDM.getEntryDate());
 			}
 			if (accountReceivablesDM.getAccountId() != null) {
-				Long editaccount = accountReceivablesDM.getAccountId();
-				Collection<?> coll1 = cbAccountReference.getItemIds();
-				for (Iterator<?> iterator = coll1.iterator(); iterator.hasNext();) {
+				Long accid = accountReceivablesDM.getAccountId();
+				Collection<?> accids = cbAccountReference.getItemIds();
+				for (Iterator<?> iterator = accids.iterator(); iterator.hasNext();) {
 					Object itemid = (Object) iterator.next();
 					BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemid);
 					AccountsDM edit = (AccountsDM) item.getBean();
-					if (editaccount != null && editaccount.equals(edit.getAccountId())) {
+					if (accid != null && accid.equals(edit.getAccountId())) {
 						cbAccountReference.setValue(itemid);
 						break;
 					} else {

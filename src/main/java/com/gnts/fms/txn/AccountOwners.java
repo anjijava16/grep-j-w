@@ -197,8 +197,8 @@ public class AccountOwners extends BaseUI {
 			AccountOwnersDM accountOwnersDM = new AccountOwnersDM();
 			accountOwnersDM = beanAccountOwnerDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			String accno = accountOwnersDM.getAccountno();
-			Collection<?> acccol = cbAccountNo.getItemIds();
-			for (Iterator<?> iteratorclient = acccol.iterator(); iteratorclient.hasNext();) {
+			Collection<?> accnos = cbAccountNo.getItemIds();
+			for (Iterator<?> iteratorclient = accnos.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
 				BeanItem<?> itemclient = (BeanItem<?>) cbAccountNo.getItem(itemIdClient);
 				// Get the actual bean and use the data

@@ -500,7 +500,6 @@ public class FinancePlan extends BaseUI {
 				finobj.setFpstatus((String) cbStatus.getValue());
 			}
 			finobj.setActionedby(empId);
-			;
 			finobj.setRemarks(tfRemarks.getValue());
 			finobj.setLastupdatedby(loginUserName);
 			finobj.setLastupdateddt(DateUtils.getcurrentdate());

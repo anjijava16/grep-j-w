@@ -259,7 +259,7 @@ public class Documents implements ClickListener {
 			Long oppurtunuityId, Long caseId) {
 		if (from) {
 			documentList = serviceDoc.getDocumentDetails(companyId, null, null, clientId, clntContactId, leadId,
-					campaingnId, clntOppertunityId, clntCaseId, null, null);
+					campaingnId, clntOppertunityId, clntCaseId, null, null,null);
 			recordcount = documentList.size();
 		}
 		try {

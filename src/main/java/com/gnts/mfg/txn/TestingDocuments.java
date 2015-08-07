@@ -97,13 +97,16 @@ public class TestingDocuments implements ClickListener {
 		try {
 			if (docType.equalsIgnoreCase("QC")) {
 				documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null,
-						null, Long.valueOf(testTypeId), null);
+						null, Long.valueOf(testTypeId), null, null);
 			} else if (docType.equalsIgnoreCase("QA")) {
 				documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null,
-						null, null, Long.valueOf(testTypeId));
+						null, null, Long.valueOf(testTypeId), null);
 			} else if (docType.equalsIgnoreCase("DR")) {
 				documentList = serviceDocuments.getDocumentDetails(null, null, Long.valueOf(testTypeId), null, null,
-						null, null, null, null, null, null);
+						null, null, null, null, null, null, null);
+			} else if (docType.equalsIgnoreCase("SIGN_OFF")) {
+				documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null,
+						null, null, null, Long.valueOf(testTypeId));
 			}
 		}
 		catch (Exception e) {
@@ -139,6 +142,8 @@ public class TestingDocuments implements ClickListener {
 				documentsDM.setQaTestId(Long.valueOf(testTypeId));
 			} else if (docType.equalsIgnoreCase("DR")) {
 				documentsDM.setEnquiryid(Long.valueOf(testTypeId));
+			} else if (docType.equalsIgnoreCase("SIGN_OFF")) {
+				documentsDM.setSignOffId(Long.valueOf(testTypeId));
 			}
 			documentsDM.setDocumentType("pdf");
 			documentsDM.setLastUpdatedBy(username);

@@ -137,7 +137,7 @@ public class DesignDocuments implements ClickListener {
 			if (cbEnquiry.getValue() != null) {
 				System.out.println("cbEnquiry.getValue()--->" + cbEnquiry.getValue());
 				documentList = serviceDocuments.getDocumentDetails(null, null, (Long) cbEnquiry.getValue(), null, null,
-						null, null, null, null, null, null);
+						null, null, null, null, null, null,null);
 			}
 			int recordcount = documentList.size();
 			beanDocuments = new BeanItemContainer<DocumentsDM>(DocumentsDM.class);

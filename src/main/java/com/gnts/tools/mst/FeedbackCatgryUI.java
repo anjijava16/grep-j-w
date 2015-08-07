@@ -20,7 +20,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.tools.domain.mst.FeedbackCatgryDM;
 import com.gnts.tools.service.mst.FeedbackCatgryService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
@@ -48,12 +47,12 @@ public class FeedbackCatgryUI extends BaseUI {
 	private ComboBox cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private String loginUserName;
-	private Long companyId, fbcatgryId;
+	private Long companyId;
 	private String feedcatgry;
 	private int recordCnt = 0;
 	private BeanItemContainer<FeedbackCatgryDM> beanPFeedbackCatgryDM = null;
 	private Logger logger = Logger.getLogger(FeedbackCatgryUI.class);
-	FeedbackQestion question;
+	public FeedbackQestion question;
 	
 	public FeedbackCatgryUI() {
 		// Get the logged in user name and company id from the session
@@ -66,9 +65,6 @@ public class FeedbackCatgryUI extends BaseUI {
 	private void buildView() {
 		tfcatename = new GERPTextField("Feedback Category");
 		tfweightage = new GERPTextField("weightage (%)");
-		// cbAnstype.setNullSelectionAllowed(false);
-		// cbAnstype.setItemCaptionPropertyId("pnccode");
-		// sloadAnstypeList();
 		// create form layouts to hold the input items
 		formLayout1 = new FormLayout();
 		formLayout2 = new FormLayout();
@@ -119,8 +115,6 @@ public class FeedbackCatgryUI extends BaseUI {
 		tabFeedback.addTab(vlCommetTblLayout, "FeedQuestion");
 		tabFeedback.setWidth("100%");
 		tabFeedback.setSizeFull();
-		/*HorizontalLayout hlinput = new HorizontalLayout();
-		hlinput.addComponent(tabs);*/
 		hlUserInputLayout.addComponent(tabFeedback);
 		hlUserInputLayout.setSpacing(true);
 		hlUserInputLayout.setMargin(true);
@@ -130,11 +124,10 @@ public class FeedbackCatgryUI extends BaseUI {
 		hlUserInputLayout.setSizeFull();
 		hlUserInputLayout.setMargin(false);
 		
-		// hh.addComponent(hlinput);
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 			List<FeedbackCatgryDM> feedbackList = new ArrayList<FeedbackCatgryDM>();
@@ -190,20 +183,15 @@ public class FeedbackCatgryUI extends BaseUI {
 		// Add input controls in the same container
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		// new feedback
-		// cbPNCCenters.setRequired(true);
 		// reset the input controls to default value
 		question = new FeedbackQestion(vlCommetTblLayout, null);
-//		hlUserInputLayout.removeAllComponents();
 		resetFields();
 	}
 	
 	private void editfeedbackcat() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			FeedbackCatgryDM feedbackdm = beanPFeedbackCatgryDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			fbcatgryId = feedbackdm.getFbcatgryId();
-			String stCode = itselect.getItemProperty("catgryStatus").getValue().toString();
-			cbstatus.setValue(stCode);
+			cbstatus.setValue(feedbackdm.getCatgryStatus());
 			tfcatename.setValue(feedbackdm.getCatgryName());
 			tfweightage.setValue(Long.valueOf(feedbackdm.getWeightage()).toString());
 		}
@@ -256,7 +244,6 @@ public class FeedbackCatgryUI extends BaseUI {
 		feedbackctgDM.setLastupdateddt(DateUtils.getcurrentdate());
 		feedbackctgDM.setLastupdatedby(loginUserName);
 		sevicebeanfbCategory.saveorupdatefbCatgryDetails(feedbackctgDM);
-//		question.saveFeedbackQuestions(feedbackctgDM.getFbcatgryId());
 		resetFields();
 		loadSrchRslt();
 	}
@@ -276,8 +263,6 @@ public class FeedbackCatgryUI extends BaseUI {
 		vlSrchRsltContainer.removeAllComponents();
 		vlSrchRsltContainer.addComponent(tblMstScrSrchRslt);
 		vlSrchRsltContainer.setExpandRatio(tblMstScrSrchRslt, 1);
-		
-
 		resetFields();
 		loadSrchRslt();
 	}

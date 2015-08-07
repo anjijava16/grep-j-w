@@ -104,7 +104,6 @@ public class SignOff extends BaseTransUI {
 	private SlnoGenService serviceSLNo = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private QATestHdrService serviceQATestHdr = (QATestHdrService) SpringContextHelper.getBean("qatesthdr");
 	private FormLayout flTstHdr1, flTstHdr2, flTstHdr3, flTstHdr4;
-	private FormLayout flTstCndn1, flTstCndn2, flTstCndn3, flTstCndn4;
 	private FormLayout flTstDtl1, flTstDtl2, flTstDtl3, flTstDtl4, flTstDtl5;
 	private VerticalLayout hlDocumentLayout = new VerticalLayout();
 	private Logger logger = Logger.getLogger(QCTestType.class);
@@ -174,8 +173,10 @@ public class SignOff extends BaseTransUI {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				try {
-					loadProductList();
-					cbProduct.setValue(cbProduct.getItemIds().iterator().next());
+					if (cbWorkOrderNo.getValue() != null) {
+						loadProductList();
+						cbProduct.setValue(cbProduct.getItemIds().iterator().next());
+					}
 				}
 				catch (Exception e) {
 				}
@@ -372,27 +373,10 @@ public class SignOff extends BaseTransUI {
 		VerticalLayout vlTstDtl = new VerticalLayout();
 		vlTstDtl.addComponent(hlTstDtl);
 		vlTstDtl.addComponent(tblSignOffDtl);
-		// QA Test Condition Components adding to user input layout
-		flTstCndn1 = new FormLayout();
-		flTstCndn2 = new FormLayout();
-		flTstCndn3 = new FormLayout();
-		flTstCndn4 = new FormLayout();
-		HorizontalLayout hlTstCndnRslt = new HorizontalLayout();
-		hlTstCndnRslt.addComponent(flTstCndn1);
-		hlTstCndnRslt.addComponent(flTstCndn2);
-		hlTstCndnRslt.addComponent(flTstCndn3);
-		hlTstCndnRslt.addComponent(flTstCndn4);
-		hlTstCndnRslt.setSpacing(true);
-		hlTstCndnRslt.setMargin(true);
-		VerticalLayout vlTstCndn = new VerticalLayout();
-		vlTstCndn.addComponent(hlTstCndnRslt);
-		//vlTstCndn.addComponent(tblSignOffDtl);
-		//
 		TabSheet tabSheet = new TabSheet();
 		tabSheet.setWidth("100%");
 		tabSheet.setHeight("320");
 		tabSheet.addTab(vlTstDtl, "Inspection Detail", null);
-		tabSheet.addTab(vlTstCndn, "Test Condition Result", null);
 		tabSheet.addTab(hlDocumentLayout, "Testing Documents");
 		tabSheet.addTab(vlTableForm, "Comments", null);
 		VerticalLayout vlAllComponent = new VerticalLayout();
@@ -578,6 +562,7 @@ public class SignOff extends BaseTransUI {
 						(String) cbSignOffDtStatus.getValue());
 				comment = new Comments(vlTableForm, companyId, null, null, null, signOffHdrId, commentby);
 				comment.loadsrch(true, null, companyId, null, null, null, signOffHdrId);
+				new TestingDocuments(hlDocumentLayout, signOffHdrId.toString(), "SIGN_OFF");
 			}
 		}
 		catch (Exception e) {
@@ -709,6 +694,7 @@ public class SignOff extends BaseTransUI {
 			signOffHdr.setLastupdatedby(userName);
 			signOffHdr.setLastupdateddt(DateUtils.getcurrentdate());
 			serviceSignoffHdr.saveSignoffHdr(signOffHdr);
+			signOffHdrId = signOffHdr.getQasignoffid();
 			@SuppressWarnings("unchecked")
 			Collection<SignOffDtlDM> itemIds = (Collection<SignOffDtlDM>) tblSignOffDtl.getVisibleItemIds();
 			for (SignOffDtlDM save : (Collection<SignOffDtlDM>) itemIds) {
@@ -733,6 +719,7 @@ public class SignOff extends BaseTransUI {
 			comment.saveqaSignOffId(signOffHdr.getQasignoffid());
 			comment.resetFields();
 			comment.resettbl();
+			new TestingDocuments(hlDocumentLayout, signOffHdrId.toString(), "SIGN_OFF");
 		}
 		catch (Exception e) {
 			e.printStackTrace();

@@ -40,14 +40,12 @@ import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.domain.txn.IndentIssueDtlDM;
 import com.gnts.mms.domain.txn.IndentIssueHdrDM;
 import com.gnts.mms.domain.txn.MaterialLedgerDM;
-import com.gnts.mms.domain.txn.MaterialStockDM;
 import com.gnts.mms.service.txn.IndentDtlService;
 import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.IndentIssueDtlService;
 import com.gnts.mms.service.txn.IndentIssueHdrService;
 import com.gnts.mms.service.txn.MaterialLedgerService;
 import com.gnts.mms.service.txn.MaterialStockService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -419,8 +417,7 @@ public class IndentIssue extends BaseTransUI {
 	private void editHdrIndentDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			IndentIssueHdrDM editHdrIndent = beanIndentIssueHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			issueId = editHdrIndent.getIssueId();
 			System.out.println("issueId-->" + issueId);

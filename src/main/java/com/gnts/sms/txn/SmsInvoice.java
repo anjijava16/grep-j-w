@@ -879,10 +879,10 @@ public class SmsInvoice extends BaseTransUI {
 		beanInvoiceHdr.addAll(inviceHdrList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanInvoiceHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "invoiceId", "branchName", "enqNo", "clientName","clientCity",
-				"invoiceNo", "status", "lastUpdtDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Enquiry No.", "Client Name","City",
-				"Invoice No", "Status", "Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "invoiceId", "branchName", "enqNo", "clientName",
+				"clientCity", "invoiceNo", "status", "lastUpdtDate", "lastUpdatedBy" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Enquiry No.", "Client Name",
+				"City", "Invoice No", "Status", "Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("invoiceId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
@@ -1199,14 +1199,13 @@ public class SmsInvoice extends BaseTransUI {
 		loadInvoiceDtl();
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null,
 				invoiceId, status);
-		comments.loadsrch(true, null, null, null, null, null, null, null, null, null, null, invoiceId, null);
 	}
 	
 	private void editInvoiceDtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		if (tblInvoicDtl.getValue() != null) {
-			SmsInvoiceDtlDM editInvoiceDtlDtllist = beanInvoiceDtl.getItem(tblInvoicDtl.getValue()).getBean();
-			Long prdid = editInvoiceDtlDtllist.getProductId();
+			SmsInvoiceDtlDM invoiceDtlDM = beanInvoiceDtl.getItem(tblInvoicDtl.getValue()).getBean();
+			Long prdid = invoiceDtlDM.getProductId();
 			Collection<?> productids = cbproduct.getItemIds();
 			for (Iterator<?> iterator = productids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -1217,28 +1216,28 @@ public class SmsInvoice extends BaseTransUI {
 					cbproduct.setValue(itemId);
 				}
 			}
-			if (editInvoiceDtlDtllist.getCusProdCode() != null) {
-				tfcusProdCode.setValue(editInvoiceDtlDtllist.getCusProdCode().toString());
+			if (invoiceDtlDM.getCusProdCode() != null) {
+				tfcusProdCode.setValue(invoiceDtlDM.getCusProdCode().toString());
 			}
-			if (editInvoiceDtlDtllist.getCusProdDesc() != null) {
-				taCustProdDessc.setValue(editInvoiceDtlDtllist.getCusProdDesc());
+			if (invoiceDtlDM.getCusProdDesc() != null) {
+				taCustProdDessc.setValue(invoiceDtlDM.getCusProdDesc());
 			}
-			if (editInvoiceDtlDtllist.getUnitRate() != null) {
-				tfUnitRate.setValue(editInvoiceDtlDtllist.getUnitRate().toString());
+			if (invoiceDtlDM.getUnitRate() != null) {
+				tfUnitRate.setValue(invoiceDtlDM.getUnitRate().toString());
 			}
-			if (editInvoiceDtlDtllist.getInvoiceQty() != null) {
-				tfInvoiceQty.setValue(editInvoiceDtlDtllist.getInvoiceQty().toString());
+			if (invoiceDtlDM.getInvoiceQty() != null) {
+				tfInvoiceQty.setValue(invoiceDtlDM.getInvoiceQty().toString());
 			}
-			if (editInvoiceDtlDtllist.getProductUom() != null) {
-				cbUom.setValue(editInvoiceDtlDtllist.getProductUom().toString());
+			if (invoiceDtlDM.getProductUom() != null) {
+				cbUom.setValue(invoiceDtlDM.getProductUom().toString());
 			}
-			if (editInvoiceDtlDtllist.getBasicValue() != null) {
+			if (invoiceDtlDM.getBasicValue() != null) {
 				tfBasicValue.setReadOnly(false);
-				tfBasicValue.setValue(editInvoiceDtlDtllist.getBasicValue().toString());
+				tfBasicValue.setValue(invoiceDtlDM.getBasicValue().toString());
 				tfBasicValue.setReadOnly(true);
 			}
-			if (editInvoiceDtlDtllist.getInvoDtlStatus() != null) {
-				cbDtlStatus.setValue(editInvoiceDtlDtllist.getInvoDtlStatus());
+			if (invoiceDtlDM.getInvoDtlStatus() != null) {
+				cbDtlStatus.setValue(invoiceDtlDM.getInvoDtlStatus());
 			}
 		}
 	}
@@ -1333,12 +1332,14 @@ public class SmsInvoice extends BaseTransUI {
 		cbClient.setRequired(true);
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_INVNO ");
 		tfInvNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_INVNO ").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				tfInvNo.setReadOnly(true);
 			}
+		}
+		catch (Exception e) {
 		}
 		cbproduct.setRequired(true);
 		cbUom.setRequired(true);
@@ -1378,7 +1379,6 @@ public class SmsInvoice extends BaseTransUI {
 				errorFlag = true;
 			}
 		}
-		System.out.println("ogInvoiceType.getValue()" + ogInvoiceType.getValue());
 		if (!ogInvoiceType.getValue().equals("Invoice") && !ogInvoiceType.getValue().equals("Proforma Invoice")) {
 			ogInvoiceType.setComponentError(new UserError("Please select Invoice Type"));
 			errorFlag = true;

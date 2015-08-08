@@ -124,7 +124,7 @@ public class PurchasePoReceipt extends BaseUI {
 	private String username;
 	private Long receiptId;
 	private Long branchId;
-	private Long EmployeeId;
+	private Long employeeId;
 	private Long moduleId;
 	private Long roleId, appScreenId;
 	private String receiptid;
@@ -140,7 +140,7 @@ public class PurchasePoReceipt extends BaseUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
@@ -169,7 +169,7 @@ public class PurchasePoReceipt extends BaseUI {
 				BeanItem<?> item = (BeanItem<?>) cbPoNo.getItem(itemId);
 				if (item != null) {
 					loadProduct();
-					podtls();
+					savePODetails();
 				}
 			}
 		});
@@ -504,7 +504,7 @@ public class PurchasePoReceipt extends BaseUI {
 		}
 	}
 	
-	private void podtls() {
+	private void savePODetails() {
 		receiptDtlList = new ArrayList<PurPoReceiptDtlDM>();
 		for (PurchasePODtlDM purchasePOrecDtlDM : servicePurchasePODtl.getPurchaseOrdDtlList(null,
 				((PurchasePOHdrDM) cbPoNo.getValue()).getPoId(), null, null)) {
@@ -598,14 +598,14 @@ public class PurchasePoReceipt extends BaseUI {
 		hlUserInputLayout.setVisible(true);
 		if (tblReceiptDtl.getValue() != null) {
 			PurPoReceiptDtlDM purPoReceiptDtlDM = beanPurPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
-			Long uom = purPoReceiptDtlDM.getProductId();
-			Collection<?> uomid = cbProduct.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long poid = purPoReceiptDtlDM.getProductId();
+			Collection<?> poids = cbProduct.getItemIds();
+			for (Iterator<?> iterator = poids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
 				// Get the actual bean and use the data
 				PurchasePODtlDM st = (PurchasePODtlDM) item.getBean();
-				if (uom != null && uom.equals(st.getProductId())) {
+				if (poid != null && poid.equals(st.getProductId())) {
 					cbProduct.setValue(itemId);
 				}
 			}
@@ -766,12 +766,14 @@ public class PurchasePoReceipt extends BaseUI {
 				receiptobj = beanPurPoReceiptHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				receiptobj.setLotNo(tfLotNo.getValue());
 			} else {
-				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_LOTNO");
-				logger.info("Serial No Generation  Data...===> " + companyid + "," + branchId + "," + moduleId);
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_LOTNO")
+							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						receiptobj.setLotNo(slnoObj.getKeyDesc());
 					}
+				}
+				catch (Exception e) {
 				}
 			}
 			receiptobj.setCompanyId(companyid);
@@ -794,7 +796,7 @@ public class PurchasePoReceipt extends BaseUI {
 				receiptobj.setBillraisedYN("N");
 			}
 			receiptobj.setProjectStatus(cbHdrStatus.getValue().toString());
-			receiptobj.setPreparedBy(EmployeeId);
+			receiptobj.setPreparedBy(employeeId);
 			receiptobj.setReviewedBy(null);
 			receiptobj.setActionedBy(null);
 			receiptobj.setLastUpdtDate(DateUtils.getcurrentdate());
@@ -815,11 +817,14 @@ public class PurchasePoReceipt extends BaseUI {
 			}
 			comments.saveReceipt(receiptobj.getReceiptId(), receiptobj.getProjectStatus());
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_LOTNO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_LOTNO")
+							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_LOTNO");
 					}
+				}
+				catch (Exception e) {
 				}
 			}
 			receiptResetFields();
@@ -862,7 +867,6 @@ public class PurchasePoReceipt extends BaseUI {
 			purReceiptDtlObj.setReceiptEvd(fileContents);
 			receiptDtlList.add(purReceiptDtlObj);
 			loadReceiptDtl();
-			System.out.println("SaveDtl===>");
 			receiptResetFields();
 		}
 		catch (Exception e) {

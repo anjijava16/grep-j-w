@@ -115,7 +115,7 @@ public class ProductReturnHdr extends BaseUI {
 	private FormLayout fl1, fl2, fl3, fl4, fl11, fl12, fl13, fl14;
 	private String username;
 	private Long companyid;
-	private Long EmployeeId;
+	private Long employeeId;
 	private Long productreturnId;
 	private Long prodreturnid;
 	private int recordcnt = 0, recordcntdtls = 0;
@@ -517,14 +517,14 @@ public class ProductReturnHdr extends BaseUI {
 		try {
 			if (tblrepdtls.getValue() != null) {
 				ProductReturnDtlDM productReturnDtlDM = beanprodctretdtls.getItem(tblrepdtls.getValue()).getBean();
-				Long uom = productReturnDtlDM.getProdid();
-				Collection<?> uomid = cbdtlprodid.getItemIds();
-				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+				Long prodid = productReturnDtlDM.getProdid();
+				Collection<?> prodids = cbdtlprodid.getItemIds();
+				for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 					Object itemId = (Object) iterator.next();
 					BeanItem<?> item = (BeanItem<?>) cbdtlprodid.getItem(itemId);
 					// Get the actual bean and use the data
 					ProductDM st = (ProductDM) item.getBean();
-					if (uom != null && uom.equals(st.getProdid())) {
+					if (prodid != null && prodid.equals(st.getProdid())) {
 						cbdtlprodid.setValue(itemId);
 					}
 				}
@@ -557,7 +557,7 @@ public class ProductReturnHdr extends BaseUI {
 		}
 	}
 	
-	protected void validatereturndtls() throws ValidationException {
+	private void validatereturndtls() throws ValidationException {
 		cbdtlprodid.setComponentError(null);
 		cbdtlstocktyp.setComponentError(null);
 		tfdtlreturnqty.setComponentError(null);
@@ -596,7 +596,7 @@ public class ProductReturnHdr extends BaseUI {
 			rethdrobj.setReturnDocId(tfreturndoc.getValue());
 			rethdrobj.setReturnDate(dfretdocdate.getValue());
 			rethdrobj.setReturnRemarks(tfreturnremark.getValue());
-			rethdrobj.setPreparedby(EmployeeId);
+			rethdrobj.setPreparedby(employeeId);
 			rethdrobj.setReviewedby(null);
 			rethdrobj.setActionedby(null);
 			if (cbprdstatus.getValue() != null) {
@@ -669,7 +669,7 @@ public class ProductReturnHdr extends BaseUI {
 		}
 	}
 	
-	protected void prodretdtlsResetfields() {
+	private void prodretdtlsResetfields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting the Employee Bank UI controls");
 		cbdtlstocktyp.setValue(null);

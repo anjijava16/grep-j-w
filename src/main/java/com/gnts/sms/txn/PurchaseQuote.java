@@ -550,8 +550,6 @@ public class PurchaseQuote extends BaseUI {
 		flDtlColumn4 = new FormLayout();
 		flDtlColumn5 = new FormLayout();
 		flDtlColumn1.addComponent(cbproduct);
-		// flDtlColumn2.addComponent(tfQuoteQunt);
-		// flDtlColumn2.addComponent(cbUom);
 		HorizontalLayout hlQtyUom = new HorizontalLayout();
 		hlQtyUom.addComponent(tfQuoteQunt);
 		hlQtyUom.addComponent(cbUom);
@@ -853,14 +851,14 @@ public class PurchaseQuote extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		if (tblPurQuDtl.getValue() != null) {
 			PurchaseQuotDtlDM purchaseQuotDtlDM = beanQuoteDtl.getItem(tblPurQuDtl.getValue()).getBean();
-			Long uom = purchaseQuotDtlDM.getProductId();
-			Collection<?> uomid = cbproduct.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long poid = purchaseQuotDtlDM.getProductId();
+			Collection<?> prodids = cbproduct.getItemIds();
+			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbproduct.getItem(itemId);
 				// Get the actual bean and use the data
 				SmsPurEnqDtlDM st = (SmsPurEnqDtlDM) item.getBean();
-				if (uom != null && uom.equals(st.getProductId())) {
+				if (poid != null && poid.equals(st.getProductId())) {
 					cbproduct.setValue(itemId);
 				}
 			}

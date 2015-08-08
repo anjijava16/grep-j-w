@@ -784,14 +784,13 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 	private void loadclienTecCont() {
 		try {
 			Long clientId = serviceEnqHeader
-					.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "F", null, null).get(0)
+					.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "P", null, null).get(0)
 					.getClientId();
-			List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null,
-					clientId, null, "Active", "Technical Person");
 			BeanContainer<Long, ClientsContactsDM> beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(
 					ClientsContactsDM.class);
 			beanclientcontact.setBeanIdProperty("contactName");
-			beanclientcontact.addAll(listclientconDtls);
+			beanclientcontact.addAll(serviceClntContact.getClientContactsDetails(companyid, null, clientId, null,
+					"Active", "Technical Person"));
 			cbwindTechPers.setContainerDataSource(beanclientcontact);
 			cbwindTechPers.setItemCaptionPropertyId("contactName");
 		}
@@ -803,14 +802,13 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 	private void loadclientCommCont() {
 		try {
 			Long clientId = serviceEnqHeader
-					.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "F", null, null).get(0)
+					.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "P", null, null).get(0)
 					.getClientId();
-			List<ClientsContactsDM> listclientconDtls = serviceClntContact.getClientContactsDetails(companyid, null,
-					clientId, null, "Active", "Contact Person");
 			BeanContainer<Long, ClientsContactsDM> beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(
 					ClientsContactsDM.class);
 			beanclientcontact.setBeanIdProperty("contactName");
-			beanclientcontact.addAll(listclientconDtls);
+			beanclientcontact.addAll(serviceClntContact.getClientContactsDetails(companyid, null, clientId, null,
+					"Active", "Contact Person"));
 			cbwindcommPerson.setContainerDataSource(beanclientcontact);
 			cbwindcommPerson.setItemCaptionPropertyId("contactName");
 		}

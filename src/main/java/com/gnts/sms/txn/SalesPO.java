@@ -1082,7 +1082,6 @@ public class SalesPO extends BaseTransUI {
 			cbBranch.setValue(smspoHdrobj.getBranchid());
 			tfPONumber.setReadOnly(false);
 			tfPONumber.setValue(smspoHdrobj.getPono());
-			// tfPONo.setReadOnly(true);
 			dfPODt.setValue(smspoHdrobj.getPodate());
 			taRemark.setValue(smspoHdrobj.getPoremark());
 			tfversionNo.setValue(smspoHdrobj.getVersionno().toString());
@@ -1153,14 +1152,14 @@ public class SalesPO extends BaseTransUI {
 				System.out.println("smspoHdrobj.getEnquiryId()" + smspoHdrobj.getEnquiryId());
 				cbEnquiryNumber.setValue(smspoHdrobj.getEnquiryId());
 			}
-			Long uom = smspoHdrobj.getQuoteid();
-			Collection<?> uomid = cbquoteNo.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long quote = smspoHdrobj.getQuoteid();
+			Collection<?> quoteids = cbquoteNo.getItemIds();
+			for (Iterator<?> iterator = quoteids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbquoteNo.getItem(itemId);
 				// Get the actual bean and use the data
 				SmsQuoteHdrDM sh = (SmsQuoteHdrDM) item.getBean();
-				if (uom != null && uom.equals(sh.getQuoteId())) {
+				if (quote != null && quote.equals(sh.getQuoteId())) {
 					cbquoteNo.setValue(itemId);
 				}
 			}
@@ -1207,15 +1206,15 @@ public class SalesPO extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		if (tblSmsPODtl.getValue() != null) {
 			SmsPODtlDM editsmspoDtllist = beansmsPODtl.getItem(tblSmsPODtl.getValue()).getBean();
-			Long uom = editsmspoDtllist.getProductid();
+			Long prodid = editsmspoDtllist.getProductid();
 			if (cbquoteNo.getValue() != null) {
-				Collection<?> uomid = cbproduct.getItemIds();
-				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+				Collection<?> prodids = cbproduct.getItemIds();
+				for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 					Object itemId = (Object) iterator.next();
 					BeanItem<?> item = (BeanItem<?>) cbproduct.getItem(itemId);
 					// Get the actual bean and use the data
 					SmsQuoteDtlDM st = (SmsQuoteDtlDM) item.getBean();
-					if (uom != null && uom.equals(st.getProductid())) {
+					if (prodid != null && prodid.equals(st.getProductid())) {
 						cbproduct.setValue(itemId);
 					}
 				}
@@ -1226,7 +1225,7 @@ public class SalesPO extends BaseTransUI {
 					BeanItem<?> item = (BeanItem<?>) cbproduct.getItem(itemId);
 					// Get the actual bean and use the data
 					ProductDM st = (ProductDM) item.getBean();
-					if (uom != null && uom.equals(st.getProdid())) {
+					if (prodid != null && prodid.equals(st.getProdid())) {
 						cbproduct.setValue(itemId);
 					}
 				}
@@ -1755,7 +1754,7 @@ public class SalesPO extends BaseTransUI {
 		cbClient.setValue("");
 	}
 	
-	protected void poDetailsResetFields() {
+	private void poDetailsResetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbproduct.setValue(null);
 		tfQuoteQty.setReadOnly(false);
@@ -1920,7 +1919,7 @@ public class SalesPO extends BaseTransUI {
 		return (percent.multiply(value).divide(new BigDecimal("100"))).setScale(2, RoundingMode.CEILING);
 	}
 	
-	void getEditableTable() {
+	private void getEditableTable() {
 		tblSmsAccept.setEditable(true);
 		tblSmsAccept.setTableFieldFactory(new TableFieldFactory() {
 			private static final long serialVersionUID = 1L;
@@ -2002,7 +2001,6 @@ public class SalesPO extends BaseTransUI {
 		if (((SmsQuoteHdrDM) cbquoteNo.getValue()).getDeliveryTerms() != null) {
 			cbDelTerms.setValue(((SmsQuoteHdrDM) cbquoteNo.getValue()).getDeliveryTerms().toString());
 		}
-		// cbStatus.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getStatus().toString());
 		// load quote details
 		smsPODtllList = new ArrayList<SmsPODtlDM>();
 		for (SmsQuoteDtlDM SmsQuoteDtlDM : servicesmseQuoteDtl.getsmsquotedtllist(null,
@@ -2054,7 +2052,7 @@ public class SalesPO extends BaseTransUI {
 	}
 	
 	// Load Product List
-	public void loadfullProduct() {
+	private void loadfullProduct() {
 		try {
 			List<ProductDM> ProductList = serviceProduct.getProductList(companyid, null, null, null, "Active", null,
 					null, "P");

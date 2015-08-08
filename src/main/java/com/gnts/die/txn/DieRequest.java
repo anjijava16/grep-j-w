@@ -524,8 +524,10 @@ public class DieRequest extends BaseTransUI {
 		// for disable tabs
 		if (UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ") == null
 				|| (Boolean) UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ")) {
-			// vlDieSection.setEnabled(false);
-			// vlMoldTrialRequest.setEnabled(false);
+			 vlDieSection.setEnabled(false);
+			 vlMoldTrialRequest.setEnabled(false);
+			 vlDieCompletion.setEnabled(false);
+			 hlDocumentLayout.setEnabled(false);
 		}
 	}
 	

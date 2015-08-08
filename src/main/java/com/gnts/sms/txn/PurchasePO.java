@@ -884,14 +884,14 @@ public class PurchasePO extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		if (tblPurDetails.getValue() != null) {
 			PurchasePODtlDM purchasePODtlDM = beanPurchasePODtl.getItem(tblPurDetails.getValue()).getBean();
-			Long uom = purchasePODtlDM.getProductId();
-			Collection<?> uomid = cbProduct.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long prodid = purchasePODtlDM.getProductId();
+			Collection<?> prodids = cbProduct.getItemIds();
+			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
 				// Get the actual bean and use the data
 				PurchaseQuotDtlDM st = (PurchaseQuotDtlDM) item.getBean();
-				if (uom != null && uom.equals(st.getProductId())) {
+				if (prodid != null && prodid.equals(st.getProductId())) {
 					cbProduct.setValue(itemId);
 				}
 			}

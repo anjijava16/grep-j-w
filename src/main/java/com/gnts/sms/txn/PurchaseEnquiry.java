@@ -521,14 +521,14 @@ public class PurchaseEnquiry extends BaseUI {
 		if (tblSmsEnqDtl.getValue() != null) {
 			SmsPurEnqDtlDM purEnqDtlDM = beanSmsPurEnqDtlDM.getItem(tblSmsEnqDtl.getValue()).getBean();
 			lsProduct.setValue(null);
-			Long uom = purEnqDtlDM.getProductId();
-			Collection<?> uomid = lsProduct.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long prodid = purEnqDtlDM.getProductId();
+			Collection<?> prodids = lsProduct.getItemIds();
+			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) lsProduct.getItem(itemId);
 				// Get the actual bean and use the data
 				ProductDM st = (ProductDM) item.getBean();
-				if (uom != null && uom.equals(st.getProdid())) {
+				if (prodid != null && prodid.equals(st.getProdid())) {
 					lsProduct.select(itemId);
 				}
 			}

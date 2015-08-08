@@ -143,7 +143,7 @@ public class ProductParked extends BaseUI {
 		hlSearchLayout.setSizeUndefined();
 	}
 	
-	protected void assembleUserInputLayout() {
+	private void assembleUserInputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling User Input layout");
 		btnSave.setVisible(false);
 		// Remove all components in Search Layout
@@ -190,7 +190,7 @@ public class ProductParked extends BaseUI {
 		}
 	}
 	
-	public void setReadOnlyFalseFields() {
+	private void setReadOnlyFalseFields() {
 		cbProductse.setReadOnly(false);
 		cbBranchse.setReadOnly(false);
 		dfParkedDate.setReadOnly(false);
@@ -203,7 +203,7 @@ public class ProductParked extends BaseUI {
 		taRemarks.setReadOnly(false);
 	}
 	
-	public void setReadOnlyTrueFields() {
+	private void setReadOnlyTrueFields() {
 		cbProductse.setReadOnly(true);
 		cbBranchse.setReadOnly(true);
 		dfParkedDate.setReadOnly(true);

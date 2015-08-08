@@ -44,8 +44,10 @@ import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.base.service.mst.StateService;
 import com.gnts.crm.domain.mst.ClientCategoryDM;
 import com.gnts.crm.domain.mst.ClientDM;
+import com.gnts.crm.domain.txn.DocumentsDM;
 import com.gnts.crm.service.mst.ClientCategoryService;
 import com.gnts.crm.service.mst.ClientService;
+import com.gnts.crm.service.txn.DocumentsService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
@@ -66,6 +68,7 @@ import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.stt.txn.EnquiryWorkflow;
+import com.gnts.mfg.txn.TestingDocuments;
 import com.gnts.saarc.util.SerialNumberGenerator;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
@@ -81,6 +84,8 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
@@ -114,6 +119,7 @@ public class SmsEnquiry extends BaseTransUI {
 	private SmsEnquiryDtlService serviceenqdtl = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
 	private SmsEnquirySpecService serviceenqspec = (SmsEnquirySpecService) SpringContextHelper
 			.getBean("SmsEnquirySpec");
+	private DocumentsService serviceDocuments = (DocumentsService) SpringContextHelper.getBean("documents");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private CityService serviceCity = (CityService) SpringContextHelper.getBean("city");
@@ -143,6 +149,12 @@ public class SmsEnquiry extends BaseTransUI {
 	private GERPTextField tfCustomField2 = new GERPTextField("Drawing Number");
 	private Table tblEnqDetails = new GERPTable();
 	private BeanItemContainer<SmsEnquiryDtlDM> beandtl = null;
+	// Document Data
+	private GERPTextField tfEnquiry = new GERPTextField("Enquiry");
+	private GERPTextField tfDocumentName = new GERPTextField("Document Name");
+	private GERPTextArea taComments = new GERPTextArea("Comments");
+	private GERPButton btnSave = new GERPButton("Save", "add", this);
+	private GERPTable tblDocuments = new GERPTable();
 	// commom data
 	private Window mywindow = new Window("Add New Client");
 	private Button saveClient = new Button("Save", this);
@@ -172,6 +184,7 @@ public class SmsEnquiry extends BaseTransUI {
 	private FormLayout fldtl1, fldtl2, fldtl3, fldtl4, fldtl5;
 	// form layout for input controls Sales Enquiry Specification
 	private FormLayout flspec1, flspec2, flspec3, flspec4, flspec5;
+	private FormLayout fldoc1, fldoc2, fldoc3, fldoc4, fldoc5;
 	// Search Control Layout
 	private HorizontalLayout hlsearchlayout;
 	// Parent layout for all the input controls Sales Enquiry Header
@@ -185,13 +198,18 @@ public class SmsEnquiry extends BaseTransUI {
 	private HorizontalLayout hlspecadd1 = new HorizontalLayout();
 	private HorizontalLayout hlEnquiryWorkflow = new HorizontalLayout();
 	private HorizontalLayout hlspec = new HorizontalLayout();
+	private HorizontalLayout hldoc = new HorizontalLayout();
 	private VerticalLayout vlspec = new VerticalLayout();
+	private VerticalLayout vldoc = new VerticalLayout();
 	// Parent layout for all the input controls Sms Comments
 	private VerticalLayout vlTableForm = new VerticalLayout();
+	// Document Layout
+	private VerticalLayout hlDocumentLayout = new VerticalLayout();
+	private BeanItemContainer<DocumentsDM> beanDocuments = null;
 	// local variables declaration
 	private Long enquiryId;
 	private String username;
-	private Long companyid, moduleId;
+	private Long companyid, moduleId, enqNoLong;
 	private int recordCnt = 0;
 	private SmsComments comments;
 	private String status;
@@ -464,6 +482,26 @@ public class SmsEnquiry extends BaseTransUI {
 		}
 		catch (Exception e) {
 		}
+		// Document Components
+		hlDocumentLayout.addLayoutClickListener(new LayoutClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+				try {
+					tfEnquiryNo.setReadOnly(false);
+					if (tfEnquiryNo.getValue() != null) {
+						loadSearchResult();
+					}
+					tfEnquiryNo.setReadOnly(true);
+				}
+				catch (Exception e) {
+				}
+			}
+		});
 	}
 	
 	private void deleteEnquirySpec() {
@@ -600,6 +638,27 @@ public class SmsEnquiry extends BaseTransUI {
 		vlspec.addComponent(tblspec);
 		tblspec.setPageLength(10);
 		tblspec.setWidth("1188px");
+		// Document Specification
+		fldoc1 = new FormLayout();
+		fldoc2 = new FormLayout();
+		fldoc3 = new FormLayout();
+		fldoc4 = new FormLayout();
+		fldoc5 = new FormLayout();
+		fldoc1.addComponent(tfEnquiry);
+		fldoc2.addComponent(tfDocumentName);
+		fldoc3.addComponent(taComments);
+		fldoc4.addComponent(btnSave);
+		hldoc.setMargin(true);
+		hldoc.addComponent(fldoc1);
+		hldoc.addComponent(fldoc2);
+		hldoc.addComponent(fldoc3);
+		hldoc.addComponent(fldoc4);
+		hldoc.setMargin(true);
+		hldoc.setSpacing(true);
+		vldoc.addComponent(GERPPanelGenerator.createPanel(hldoc));
+		vldoc.addComponent(tblDocuments);
+		tblDocuments.setPageLength(10);
+		tblDocuments.setWidth("1188px");
 		// tblspec.setStyleName(Runo.TABLE_BORDERLESS);
 		loadEnquirySpec(false, null);
 		// vlspec.setWidth("200%");
@@ -608,10 +667,13 @@ public class SmsEnquiry extends BaseTransUI {
 		hlspecadd.addComponent(GERPPanelGenerator.createPanel(vldtl));
 		hlspecadd1.addComponent(vlspec);
 		hlspecadd1.setSpacing(true);
+		hlDocumentLayout.addComponent(vldoc);
+		hlDocumentLayout.setSpacing(true);
 		dtlTab = new TabSheet();
 		dtlTab.addTab(hlspecadd, "Sales Enquiry Detail");
 		dtlTab.addTab(hlspecadd1, "Sales Enquiry Specification");
 		dtlTab.addTab(hlEnquiryWorkflow, "Enquiry Workflow");
+		dtlTab.addTab(hlDocumentLayout, "Documents");
 		dtlTab.addTab(vlTableForm, "Comments");
 		// new EnquiryWorkflow(hlEnquiryWorkflow, enquiryId, username);
 		// dtlTab.setWidth("100%");
@@ -727,9 +789,9 @@ public class SmsEnquiry extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the SMSENQUIRY. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanhdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "enquiryNo", "clientName", "enquiryStatus",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "enquiryNo", "clientName","cityName", "enquiryStatus",
 				"lastUpdateddt", "lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry No", "Client Name", "Status",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry No", "Client Name","City", "Status",
 				"Last Updated date", "Last Updated by" });
 		tblMstScrSrchRslt.setColumnAlignment("enquiryId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
@@ -793,6 +855,33 @@ public class SmsEnquiry extends BaseTransUI {
 				"Enquiry Specification Status", "Last Updated Date", "Last Updated By" });
 		tblspec.setColumnAlignment("enquiryspecid", Align.RIGHT);
 		tblspec.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+	}
+	
+	// Load Documents Datas
+	private void loadSearchResult() {
+		tfEnquiryNo.setReadOnly(false);
+		tfEnquiry.setValue(tfEnquiryNo.getValue());
+	//	enqNoLong = Long.valueOf(tfEnquiry.getValue());
+		try {
+			List<DocumentsDM> documentList = new ArrayList<DocumentsDM>();
+			if (tfEnquiryNo.getValue() != null) {
+				System.out.println("cbEnquiry.getValue()--->" + tfEnquiry.getValue()); //Long.valueOf(tfEnquiry.getValue())
+			}
+			int recordcount = documentList.size();
+			beanDocuments = new BeanItemContainer<DocumentsDM>(DocumentsDM.class);
+			beanDocuments.addAll(serviceDocuments.getDocumentDetails(null, null,this.enquiryId, null, null, null, null, null,
+					null, null, null, null));
+			tblDocuments.setSelectable(true);
+			tblDocuments.setContainerDataSource(beanDocuments);
+			tblDocuments.setVisibleColumns(new Object[] { "documentId", "documentName", "lastUpdatedBy" });
+			tblDocuments.setColumnHeaders(new String[] { "Ref.Id", "Document Name", "Uploaded By" });
+			tblDocuments.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordcount);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("error during populate values on the table, The Error is ----->" + e);
+		}
+		tfEnquiryNo.setReadOnly(true);
 	}
 	
 	// Load Branch List

@@ -107,14 +107,12 @@ public class RotoCheck extends BaseTransUI {
 	private Long companyid, branchID, moduleId;
 	private Long rotodtlid;
 	private Long rotoid;
-	private Long productid;
 	private int recordCnt = 0;
 	private int recordArmCnt = 0;
 	private Boolean errorFlag = false;
 	private Long rotoplanId;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(RotoCheck.class);
-	private Long id;
 	private static final long serialVersionUID = 1L;
 	
 	public RotoCheck() {
@@ -441,14 +439,14 @@ public class RotoCheck extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		tblMstScrSrchRslt.setPageLength(14);
-		List<RotohdrDM> RotoList = new ArrayList<RotohdrDM>();
+		List<RotohdrDM> listRotoHdr = new ArrayList<RotohdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfRotoRef.getValue() + ", " + cbStatus.getValue());
-		RotoList = serviceRotohdr.getRotohdrDetatils(null, (String) cbPlanRef.getValue(), companyid,
+		listRotoHdr = serviceRotohdr.getRotohdrDetatils(null, (String) cbPlanRef.getValue(), companyid,
 				dfRotoDt.getValue(), cbStatus.getValue().toString(), "F");
-		recordCnt = RotoList.size();
+		recordCnt = listRotoHdr.size();
 		beanRotohdrDM = new BeanItemContainer<RotohdrDM>(RotohdrDM.class);
-		beanRotohdrDM.addAll(RotoList);
+		beanRotohdrDM.addAll(listRotoHdr);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Roto. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanRotohdrDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "rotoid", "rotorefno", "rotodate", "rotostatus",
@@ -714,8 +712,6 @@ public class RotoCheck extends BaseTransUI {
 			Collection<RotoDtlDM> rotoDtls = ((Collection<RotoDtlDM>) tblRotoDetails.getVisibleItemIds());
 			for (RotoDtlDM rotoDtl : (Collection<RotoDtlDM>) rotoDtls) {
 				rotoDtl.setRotoid(rotohdrDM.getRotoid());
-				id = rotohdrDM.getRotoid();
-				productid = rotoDtl.getProductid();
 				serviceRotoDtl.saveRotoDtl(rotoDtl);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
@@ -770,9 +766,8 @@ public class RotoCheck extends BaseTransUI {
 	}
 	
 	private void loadRotoPlanList() {
-		List<RotoPlanHdrDM> PlanList = serviceRotoplanhdr.getRotoPlanHdrDetails(null, companyid, null, "Active");
 		BeanItemContainer<RotoPlanHdrDM> beanrotoplanhdr = new BeanItemContainer<RotoPlanHdrDM>(RotoPlanHdrDM.class);
-		beanrotoplanhdr.addAll(PlanList);
+		beanrotoplanhdr.addAll(serviceRotoplanhdr.getRotoPlanHdrDetails(null, companyid, null, "Active"));
 		cbPlanRef.setContainerDataSource(beanrotoplanhdr);
 	}
 	

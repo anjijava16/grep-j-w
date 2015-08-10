@@ -391,14 +391,14 @@ public class Assembly extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<AsmblyHdrDM> AssemblyHdrList = new ArrayList<AsmblyHdrDM>();
+		List<AsmblyHdrDM> listAssemblyHdr = new ArrayList<AsmblyHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ companyid + ", " + cbPlndQty.getValue() + ", " + cbHdrStatus.getValue());
-		AssemblyHdrList = serviceAsmblyHdr.getAsmblyHdrDMs(null, null, (String) tfplnRefNo.getValue(),
+		listAssemblyHdr = serviceAsmblyHdr.getAsmblyHdrDMs(null, null, (String) tfplnRefNo.getValue(),
 				dfAsmDt.getValue(), null, (String) cbHdrStatus.getValue(), "F");
-		recordCnt = AssemblyHdrList.size();
+		recordCnt = listAssemblyHdr.size();
 		beanAsmblyHdr = new BeanItemContainer<AsmblyHdrDM>(AsmblyHdrDM.class);
-		beanAsmblyHdr.addAll(AssemblyHdrList);
+		beanAsmblyHdr.addAll(listAssemblyHdr);
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
 				+ "Got the AssemblyHdr. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanAsmblyHdr);
@@ -958,10 +958,9 @@ public class Assembly extends BaseTransUI {
 			loadShiftRslt();
 		}
 	}
-
+	
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
-		
 	}
 }

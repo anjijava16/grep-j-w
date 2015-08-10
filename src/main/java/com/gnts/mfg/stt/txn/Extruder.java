@@ -1072,7 +1072,6 @@ public class Extruder extends BaseTransUI {
 			tfMtrlQty.setComponentError(new UserError(GERPErrorCodes.PRDCT_QTY_LONG));
 			isValid = false;
 		}
-		System.out.println("isValid--->" + isValid);
 		return isValid;
 	}
 	

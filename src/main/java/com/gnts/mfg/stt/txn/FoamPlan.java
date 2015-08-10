@@ -109,7 +109,7 @@ public class FoamPlan extends BaseTransUI {
 	private TextField tfplanDtlQty;
 	private ComboBox cbWorkorder, cbProduct, cbDtlStatus, cbClient;
 	private FormLayout flDtlCol1, flDtlCol2, flDtlCol3, flDtlCol4, flDtlCol5;
-	private List<FoamPlanDtlDM> FormPlanDtlList = null;
+	private List<FoamPlanDtlDM> listFoamPlanDetails = null;
 	// FormPlan Shift Components
 	private TextField tfshiftname, tfTargetQty;
 	private ComboBox cbSftstatus, cbEmpName;
@@ -456,14 +456,14 @@ public class FoamPlan extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<FoamPlanHdrDM> FormPlanList = new ArrayList<FoamPlanHdrDM>();
+		List<FoamPlanHdrDM> listFoamPlan = new ArrayList<FoamPlanHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfFormplanRefNo.getValue() + ", " + cbHdrStatus.getValue());
-		FormPlanList = serviceFormPlanHdr.getFormPlanHdrDetails(null, dfplanDt.getValue(), companyid,
+		listFoamPlan = serviceFormPlanHdr.getFormPlanHdrDetails(null, dfplanDt.getValue(), companyid,
 				(String) cbHdrStatus.getValue(), (String) tfplnRefNo.getValue());
-		recordCnt = FormPlanList.size();
+		recordCnt = listFoamPlan.size();
 		beanFormPlanHdrDM = new BeanItemContainer<FoamPlanHdrDM>(FoamPlanHdrDM.class);
-		beanFormPlanHdrDM.addAll(FormPlanList);
+		beanFormPlanHdrDM.addAll(listFoamPlan);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the FormPlan. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanFormPlanHdrDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "formplanid", "formplanreffno", "formplandate",
@@ -479,9 +479,9 @@ public class FoamPlan extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | saveasmblPlnDtlListDetails User Name : " + username + " > "
 				+ "Search Parameters are " + companyid + ", " + cbClient.getValue() + ", " + tfplanDtlQty.getValue()
 				+ (String) cbDtlStatus.getValue() + ", " + foamplndtlid);
-		recordCnt = FormPlanDtlList.size();
+		recordCnt = listFoamPlanDetails.size();
 		beanFormPlanDtlDM = new BeanItemContainer<FoamPlanDtlDM>(FoamPlanDtlDM.class);
-		beanFormPlanDtlDM.addAll(FormPlanDtlList);
+		beanFormPlanDtlDM.addAll(listFoamPlanDetails);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the PlanDtl. result set");
 		tblFormplanDtl.setContainerDataSource(beanFormPlanDtlDM);
 		tblFormplanDtl.setVisibleColumns(new Object[] { "clientname", "woNo", "prodName", "plannedqty",
@@ -540,7 +540,7 @@ public class FoamPlan extends BaseTransUI {
 		cbSftstatus.setValue(cbSftstatus.getItemIds().iterator().next());
 		cbWorkorder.setComponentError(null);
 		cbProduct.setComponentError(null);
-		FormPlanDtlList = new ArrayList<FoamPlanDtlDM>();
+		listFoamPlanDetails = new ArrayList<FoamPlanDtlDM>();
 		formShiftList = new ArrayList<FoamPlanShiftDM>();
 		tblFormplanDtl.removeAllItems();
 		tblShift.removeAllItems();
@@ -565,7 +565,7 @@ public class FoamPlan extends BaseTransUI {
 			tfplanHdrQty.setValue(editFormPlan.getPlannedqty().toString());
 			taRemarks.setValue(editFormPlan.getRemark());
 			cbHdrStatus.setValue(editFormPlan.getFoamplnstatus());
-			FormPlanDtlList.addAll(serviceFormPlanDtl.getFormPlanDtl(null, Long.valueOf(formplanid), null, null,
+			listFoamPlanDetails.addAll(serviceFormPlanDtl.getFormPlanDtl(null, Long.valueOf(formplanid), null, null,
 					(String) cbHdrStatus.getValue()));
 			formShiftList.addAll(serviceFormPlanShift.getFormPlanShift(null, Long.valueOf(formplanid), null,
 					(String) cbHdrStatus.getValue()));
@@ -981,7 +981,7 @@ public class FoamPlan extends BaseTransUI {
 			FoamPlanDtlDM foamPlanDtlDM = new FoamPlanDtlDM();
 			if (tblFormplanDtl.getValue() != null) {
 				foamPlanDtlDM = beanFormPlanDtlDM.getItem(tblFormplanDtl.getValue()).getBean();
-				FormPlanDtlList.remove(foamPlanDtlDM);
+				listFoamPlanDetails.remove(foamPlanDtlDM);
 			}
 			if (cbClient.getValue() != null) {
 				foamPlanDtlDM.setClientid(((ClientDM) cbClient.getValue()).getClientId());
@@ -1001,7 +1001,7 @@ public class FoamPlan extends BaseTransUI {
 			}
 			foamPlanDtlDM.setLastupdateddt(DateUtils.getcurrentdate());
 			foamPlanDtlDM.setLastupdatedby(username);
-			FormPlanDtlList.add(foamPlanDtlDM);
+			listFoamPlanDetails.add(foamPlanDtlDM);
 			loadPlanDtlRslt();
 			btnAddDtls.setCaption("Add");
 			btnAddDtls.setStyleName("savebt");
@@ -1109,7 +1109,7 @@ public class FoamPlan extends BaseTransUI {
 		FoamPlanDtlDM remove = new FoamPlanDtlDM();
 		if (tblFormplanDtl.getValue() != null) {
 			remove = beanFormPlanDtlDM.getItem(tblFormplanDtl.getValue()).getBean();
-			FormPlanDtlList.remove(remove);
+			listFoamPlanDetails.remove(remove);
 			foamplanDtlResetFields();
 			loadPlanDtlRslt();
 		}

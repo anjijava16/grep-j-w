@@ -1025,7 +1025,7 @@ public class AssemblyPlan extends BaseTransUI {
 	/*
 	 * loadBranchList()-->this function is used for load the branch name
 	 */
-	public void loadBranchList() {
+	private void loadBranchList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
 		BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranchDM.setBeanIdProperty("branchId");
@@ -1036,7 +1036,7 @@ public class AssemblyPlan extends BaseTransUI {
 	/*
 	 * loadEmployeeList()-->this function is used for load the employee name
 	 */
-	public void loadEmployeeList() {
+	private void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
 		BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
 		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null, null,

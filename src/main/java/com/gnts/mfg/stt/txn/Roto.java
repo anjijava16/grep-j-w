@@ -593,14 +593,14 @@ public class Roto extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		tblMstScrSrchRslt.setPageLength(14);
-		List<RotohdrDM> RotoList = new ArrayList<RotohdrDM>();
+		List<RotohdrDM> listRotoHdr = new ArrayList<RotohdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfRotoRefno.getValue() + ", " + cbHdrStatus.getValue());
-		RotoList = serviceRotohdr.getRotohdrDetatils(null, (String) tfPlnRef.getValue(), companyid,
+		listRotoHdr = serviceRotohdr.getRotohdrDetatils(null, (String) tfPlnRef.getValue(), companyid,
 				dfRotoDate.getValue(), cbHdrStatus.getValue().toString(), "F");
-		recordCnt = RotoList.size();
+		recordCnt = listRotoHdr.size();
 		beanRotohdrDM = new BeanItemContainer<RotohdrDM>(RotohdrDM.class);
-		beanRotohdrDM.addAll(RotoList);
+		beanRotohdrDM.addAll(listRotoHdr);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Roto. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanRotohdrDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "rotoid", "rotorefno", "rotodate", "rotostatus",

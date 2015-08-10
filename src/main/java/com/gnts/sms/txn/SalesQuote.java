@@ -172,12 +172,14 @@ public class SalesQuote extends BaseTransUI {
 	private GERPButton btnAddTech = new GERPButton("Save/Update", "savebt");
 	private Table tblTechnicalTerms = new Table();
 	private BeanItemContainer<QuoteTechCondDM> beanQuoteTech = null;
+	private List<QuoteTechCondDM> listTechnicalTerms = new ArrayList<QuoteTechCondDM>();
 	// for commercial Terms
 	private TextField tfTermsCode = new TextField("Code");
 	private TextArea taTermsDesc = new TextArea("Description");
 	private GERPButton btnAddComm = new GERPButton("Save/Update", "savebt");
 	private Table tblCommercialTerms = new Table();
 	private BeanItemContainer<QuoteCommCondDM> beanQuoteComm = null;
+	private List<QuoteCommCondDM> listCommercialTerms = new ArrayList<QuoteCommCondDM>();
 	
 	// Constructor received the parameters from Login UI class
 	public SalesQuote() {
@@ -569,14 +571,58 @@ public class SalesQuote extends BaseTransUI {
 				getCalculatedValues();
 			}
 		});
+		btnAddTech.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				saveTechnicalTerms();
+			}
+		});
+		btnAddComm.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				saveCommercialTerms();
+			}
+		});
+		tblCommercialTerms.addItemClickListener(new ItemClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				if (tblCommercialTerms.isSelected(event.getItemId())) {
+					resetCommercialTerms();
+				} else {
+					((AbstractSelect) event.getSource()).select(event.getItemId());
+					editCommercialTerms();
+				}
+			}
+		});
+		tblTechnicalTerms.addItemClickListener(new ItemClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				if (tblTechnicalTerms.isSelected(event.getItemId())) {
+					resetTechnicalTerms();
+				} else {
+					((AbstractSelect) event.getSource()).select(event.getItemId());
+					editTechnicalTerms();
+				}
+			}
+		});
 		hlSearchLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		assembleSearchLayout();
 		resetFields();
 		loadSrchRslt();
 		loadQuotationDetailList();
-		loadLoadQuoteCommTerms(true);
-		loadLoadQuoteTechTerms(true);
+		loadCommmercialTerms(true);
+		loadTechnicalTerms(true);
 		btnsavepurQuote.setStyleName("add");
 	}
 	
@@ -827,31 +873,30 @@ public class SalesQuote extends BaseTransUI {
 		}
 	}
 	
-	private void loadLoadQuoteCommTerms(Boolean fromdb) {
+	private void loadCommmercialTerms(Boolean fromdb) {
 		tblCommercialTerms.removeAllItems();
-		List<QuoteCommCondDM> list = new ArrayList<QuoteCommCondDM>();
 		if (fromdb) {
-			list = serviceQuoteCommCond.getQuoteCommCondDetails(null, quoteId, null, null);
+			listCommercialTerms = serviceQuoteCommCond.getQuoteCommCondDetails(null, quoteId, null, null);
 		}
 		beanQuoteComm = new BeanItemContainer<QuoteCommCondDM>(QuoteCommCondDM.class);
-		beanQuoteComm.addAll(list);
+		beanQuoteComm.addAll(listCommercialTerms);
 		tblCommercialTerms.setContainerDataSource(beanQuoteComm);
 		tblCommercialTerms.setVisibleColumns(new Object[] { "code", "description", "lastupdateddt", "lastupdatedby" });
 		tblCommercialTerms.setColumnHeaders(new String[] { "Code", "Description", "Last Updated Date",
 				"Last Updated By" });
 	}
 	
-	private void loadLoadQuoteTechTerms(Boolean fromdb) {
+	private void loadTechnicalTerms(Boolean fromdb) {
 		tblTechnicalTerms.removeAllItems();
-		List<QuoteTechCondDM> list = new ArrayList<QuoteTechCondDM>();
 		if (fromdb) {
-			list = serviceQuoteTechCond.getQuoteTechCondDetails(null, quoteId, null);
+			listTechnicalTerms = serviceQuoteTechCond.getQuoteTechCondDetails(null, quoteId, null);
 		}
 		beanQuoteTech = new BeanItemContainer<QuoteTechCondDM>(QuoteTechCondDM.class);
-		beanQuoteTech.addAll(list);
-		tblTechnicalTerms.setContainerDataSource(beanQuoteComm);
+		beanQuoteTech.addAll(listTechnicalTerms);
+		tblTechnicalTerms.setContainerDataSource(beanQuoteTech);
 		tblTechnicalTerms.setVisibleColumns(new Object[] { "description", "lastupdateddt", "lastupdatedby" });
 		tblTechnicalTerms.setColumnHeaders(new String[] { "Description", "Last Updated Date", "Last Updated By" });
+		tblTechnicalTerms.setColumnWidth("description", 500);
 	}
 	
 	// Load BranchList
@@ -1322,7 +1367,6 @@ public class SalesQuote extends BaseTransUI {
 		hlSearchLayout.removeAllComponents();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		hlUserInputLayout.setSpacing(true);
-		// cbEnqNo.setRequired(true);
 		tfQuoteQunt.setRequired(true);
 		cbUom.setRequired(true);
 		tfUnitRate.setRequired(true);
@@ -1361,6 +1405,7 @@ public class SalesQuote extends BaseTransUI {
 		comments = new SmsComments(vlTableForm, null, companyid, null, quoteId, null, null, null, null, null, null,
 				null, null);
 		cbEnqNo.setRequired(true);
+		// for load Technical Terms
 	}
 	
 	@Override
@@ -1571,7 +1616,7 @@ public class SalesQuote extends BaseTransUI {
 	}
 	
 	// saveSalesQuoteDetails()-->this function is used for save the Sales Quote details for temporary
-	protected void saveSalesQuoteDetails() {
+	private void saveSalesQuoteDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			SmsQuoteDtlDM smsQuotDtlobj = new SmsQuoteDtlDM();
@@ -1803,5 +1848,56 @@ public class SalesQuote extends BaseTransUI {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void resetTechnicalTerms() {
+		taTechnicalTerms.setValue("");
+	}
+	
+	private void resetCommercialTerms() {
+		tfTermsCode.setValue("");
+		taTermsDesc.setValue("");
+	}
+	
+	private void saveTechnicalTerms() {
+		QuoteTechCondDM quoteTechCondDM = new QuoteTechCondDM();
+		if (tblCommercialTerms.getValue() != null) {
+			quoteTechCondDM = beanQuoteTech.getItem(tblTechnicalTerms.getValue()).getBean();
+		}
+		quoteTechCondDM.setDescription(taTechnicalTerms.getValue());
+		quoteTechCondDM.setQuoteId(quoteId);
+		quoteTechCondDM.setLastupdatedby(username);
+		quoteTechCondDM.setStatus("Active");
+		quoteTechCondDM.setLastupdateddt(DateUtils.getcurrentdate());
+		listTechnicalTerms.add(quoteTechCondDM);
+		loadTechnicalTerms(false);
+		resetTechnicalTerms();
+	}
+	
+	private void saveCommercialTerms() {
+		QuoteCommCondDM quoteCommCondDM = new QuoteCommCondDM();
+		if (tblCommercialTerms.getValue() != null) {
+			quoteCommCondDM = beanQuoteComm.getItem(tblCommercialTerms.getValue()).getBean();
+		}
+		quoteCommCondDM.setCode(tfTermsCode.getValue());
+		quoteCommCondDM.setDescription(taTermsDesc.getValue());
+		quoteCommCondDM.setQuoteId(quoteId);
+		quoteCommCondDM.setStatus("Active");
+		quoteCommCondDM.setLastupdatedby(username);
+		quoteCommCondDM.setLastupdateddt(DateUtils.getcurrentdate());
+		listCommercialTerms.add(quoteCommCondDM);
+		loadCommmercialTerms(false);
+		resetCommercialTerms();
+	}
+	
+	private void editTechnicalTerms() {
+		QuoteTechCondDM quoteTechCondDM = beanQuoteTech.getItem(tblTechnicalTerms.getValue()).getBean();
+		taTechnicalTerms.setValue(quoteTechCondDM.getDescription());
+	}
+	
+	private void editCommercialTerms() {
+		QuoteCommCondDM quoteCommCondDM = beanQuoteComm.getItem(tblCommercialTerms.getValue()).getBean();
+		tfTermsCode.setValue(quoteCommCondDM.getCode());
+		taTermsDesc.setValue(quoteCommCondDM.getDescription());
 	}
 }

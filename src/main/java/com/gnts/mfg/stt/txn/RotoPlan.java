@@ -817,23 +817,23 @@ public class RotoPlan extends BaseTransUI {
 	private void saveRotoPlnShiftListDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			RotoPlanShiftDM RotoPlanShiftObj = new RotoPlanShiftDM();
+			RotoPlanShiftDM rotoPlanShiftObj = new RotoPlanShiftDM();
 			if (tblShift.getValue() != null) {
-				RotoPlanShiftObj = beanRotoPlanShiftDM.getItem(tblShift.getValue()).getBean();
-				listRotoPlanShift.remove(RotoPlanShiftObj);
+				rotoPlanShiftObj = beanRotoPlanShiftDM.getItem(tblShift.getValue()).getBean();
+				listRotoPlanShift.remove(rotoPlanShiftObj);
 			}
-			RotoPlanShiftObj.setShiftname(tfShiftName.getValue());
+			rotoPlanShiftObj.setShiftname(tfShiftName.getValue());
 			if (cbEmpName.getValue() != null) {
-				RotoPlanShiftObj.setEmployeeid(((EmployeeDM) cbEmpName.getValue()).getEmployeeid());
-				RotoPlanShiftObj.setEmpName(((EmployeeDM) cbEmpName.getValue()).getFirstlastname());
+				rotoPlanShiftObj.setEmployeeid(((EmployeeDM) cbEmpName.getValue()).getEmployeeid());
+				rotoPlanShiftObj.setEmpName(((EmployeeDM) cbEmpName.getValue()).getFirstlastname());
 			}
-			RotoPlanShiftObj.setTargetqty(Long.valueOf(tfTargetQty.getValue()));
+			rotoPlanShiftObj.setTargetqty(Long.valueOf(tfTargetQty.getValue()));
 			if (cbStatus.getValue() != null) {
-				RotoPlanShiftObj.setShftstatus((String) cbStatus.getValue());
+				rotoPlanShiftObj.setShftstatus((String) cbStatus.getValue());
 			}
-			RotoPlanShiftObj.setLastupdatedDt(DateUtils.getcurrentdate());
-			RotoPlanShiftObj.setLastupdatedBy(username);
-			listRotoPlanShift.add(RotoPlanShiftObj);
+			rotoPlanShiftObj.setLastupdatedDt(DateUtils.getcurrentdate());
+			rotoPlanShiftObj.setLastupdatedBy(username);
+			listRotoPlanShift.add(rotoPlanShiftObj);
 			loadShiftRslt();
 			btnAddShift.setCaption("Add");
 		}
@@ -846,26 +846,26 @@ public class RotoPlan extends BaseTransUI {
 	private void saveRotoPlnArmListDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			RotoPlanArmDM RotoPlanArmObj = new RotoPlanArmDM();
+			RotoPlanArmDM rotoPlanArmObj = new RotoPlanArmDM();
 			if (tblarm.getValue() != null) {
-				RotoPlanArmObj = beanRotoPlanarmDM.getItem(tblarm.getValue()).getBean();
-				listRotoPlanArm.remove(RotoPlanArmObj);
+				rotoPlanArmObj = beanRotoPlanarmDM.getItem(tblarm.getValue()).getBean();
+				listRotoPlanArm.remove(rotoPlanArmObj);
 			}
-			RotoPlanArmObj.setArmNo(Long.valueOf(tfarmno.getValue()));
-			RotoPlanArmObj.setNoOfcycle(Long.valueOf(tfnoofcycle.getValue()));
+			rotoPlanArmObj.setArmNo(Long.valueOf(tfarmno.getValue()));
+			rotoPlanArmObj.setNoOfcycle(Long.valueOf(tfnoofcycle.getValue()));
 			/* RotoPlanArmObj.setWoId(Long.valueOf((cbarmwono.getValue().toString()))); */
 			if (cbarmwono.getValue() != null) {
-				RotoPlanArmObj.setWoId(((WorkOrderHdrDM) cbarmwono.getValue()).getWorkOrdrId());
-				RotoPlanArmObj.setWorkOrdrNo(((WorkOrderHdrDM) cbarmwono.getValue()).getWorkOrdrNo());
+				rotoPlanArmObj.setWoId(((WorkOrderHdrDM) cbarmwono.getValue()).getWorkOrdrId());
+				rotoPlanArmObj.setWorkOrdrNo(((WorkOrderHdrDM) cbarmwono.getValue()).getWorkOrdrNo());
 			}
-			RotoPlanArmObj.setProductId(((WorkOrderDtlDM) cbArmProd.getValue()).getProdId());
-			RotoPlanArmObj.setProdname(((WorkOrderDtlDM) cbArmProd.getValue()).getProductName());
+			rotoPlanArmObj.setProductId(((WorkOrderDtlDM) cbArmProd.getValue()).getProdId());
+			rotoPlanArmObj.setProdname(((WorkOrderDtlDM) cbArmProd.getValue()).getProductName());
 			if (cbArmstatus.getValue() != null) {
-				RotoPlanArmObj.setRtarmStatus((String) cbArmstatus.getValue());
+				rotoPlanArmObj.setRtarmStatus((String) cbArmstatus.getValue());
 			}
-			RotoPlanArmObj.setLastupdatedDt(DateUtils.getcurrentdate());
-			RotoPlanArmObj.setLastupdatedBy(username);
-			listRotoPlanArm.add(RotoPlanArmObj);
+			rotoPlanArmObj.setLastupdatedDt(DateUtils.getcurrentdate());
+			rotoPlanArmObj.setLastupdatedBy(username);
+			listRotoPlanArm.add(rotoPlanArmObj);
 			loadRotoArmList();
 			btnAddArm.setCaption("Add");
 		}
@@ -878,30 +878,30 @@ public class RotoPlan extends BaseTransUI {
 	private void saveRotoPlnDtlListDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			RotoPlanDtlDM RotoPlanDtlObj = new RotoPlanDtlDM();
+			RotoPlanDtlDM rotoPlanDtlObj = new RotoPlanDtlDM();
 			if (tblrotoplanDtl.getValue() != null) {
-				RotoPlanDtlObj = beanRotoPlandtlDM.getItem(tblrotoplanDtl.getValue()).getBean();
-				listRotoPlanDetail.remove(RotoPlanDtlObj);
+				rotoPlanDtlObj = beanRotoPlandtlDM.getItem(tblrotoplanDtl.getValue()).getBean();
+				listRotoPlanDetail.remove(rotoPlanDtlObj);
 			}
 			if (cbClientId.getValue() != null) {
-				RotoPlanDtlObj.setClientId(((ClientDM) cbClientId.getValue()).getClientId());
-				RotoPlanDtlObj.setClientname(((ClientDM) cbClientId.getValue()).getClientName());
+				rotoPlanDtlObj.setClientId(((ClientDM) cbClientId.getValue()).getClientId());
+				rotoPlanDtlObj.setClientname(((ClientDM) cbClientId.getValue()).getClientName());
 			}
 			if (cbWO.getValue() != null) {
-				RotoPlanDtlObj.setWoId(((WorkOrderHdrDM) cbWO.getValue()).getWorkOrdrId());
-				RotoPlanDtlObj.setWoNo(((WorkOrderHdrDM) cbWO.getValue()).getWorkOrdrNo());
+				rotoPlanDtlObj.setWoId(((WorkOrderHdrDM) cbWO.getValue()).getWorkOrdrId());
+				rotoPlanDtlObj.setWoNo(((WorkOrderHdrDM) cbWO.getValue()).getWorkOrdrNo());
 			}
-			RotoPlanDtlObj.setPlannedqty(Long.valueOf(tfPlanDtlQty.getValue()));
+			rotoPlanDtlObj.setPlannedqty(Long.valueOf(tfPlanDtlQty.getValue()));
 			if (cbProd.getValue() != null) {
-				RotoPlanDtlObj.setProductId(((WorkOrderDtlDM) cbProd.getValue()).getProdId());
-				RotoPlanDtlObj.setProductname(((WorkOrderDtlDM) cbProd.getValue()).getProdName());
+				rotoPlanDtlObj.setProductId(((WorkOrderDtlDM) cbProd.getValue()).getProdId());
+				rotoPlanDtlObj.setProductname(((WorkOrderDtlDM) cbProd.getValue()).getProdName());
 			}
 			if (cbDtlStatus.getValue() != null) {
-				RotoPlanDtlObj.setRtoplndtlstatus((String) cbDtlStatus.getValue());
+				rotoPlanDtlObj.setRtoplndtlstatus((String) cbDtlStatus.getValue());
 			}
-			RotoPlanDtlObj.setLastupdatedDt(DateUtils.getcurrentdate());
-			RotoPlanDtlObj.setLastupdatedBy(username);
-			listRotoPlanDetail.add(RotoPlanDtlObj);
+			rotoPlanDtlObj.setLastupdatedDt(DateUtils.getcurrentdate());
+			rotoPlanDtlObj.setLastupdatedBy(username);
+			listRotoPlanDetail.add(rotoPlanDtlObj);
 			loadRotoDtlList();
 			btnAddDtls.setCaption("Add");
 		}

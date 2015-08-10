@@ -9,9 +9,9 @@ import com.gnts.crm.service.mst.ClientService;
 import com.gnts.die.txn.DieRequest;
 import com.gnts.dsn.stt.txn.DesignDocuments;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.mfg.txn.WorkOrder;
+import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsInvoiceHdrService;
 import com.gnts.sms.service.txn.SmsPOHdrService;
@@ -62,7 +62,7 @@ public class DashbordView implements ClickListener {
 	private Button btnDieRequest = new Button("10", this);
 	private Button btnNotify = new Button();
 	private Window notificationsWindow;
-	private SmsEnqHdrService serviceenqhdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
+	private SmsEnqHdrService serviceEnquiry = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private SmsQuoteHdrService servicesmsQuoteHdr = (SmsQuoteHdrService) SpringContextHelper.getBean("smsquotehdr");
 	private SmsPOHdrService servicePurchaseOrd = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
@@ -73,7 +73,7 @@ public class DashbordView implements ClickListener {
 	private ECRequestService ServiceEcrequest = (ECRequestService) SpringContextHelper.getBean("ecRequest");
 	private VerticalLayout clMainLayout;
 	private HorizontalLayout hlHeader;
-	private Table tblWorkorderStatus = new Table();
+	private Table tblStatus = new Table();
 	
 	public DashbordView() {
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
@@ -86,8 +86,8 @@ public class DashbordView implements ClickListener {
 		btnNotify.setIcon(new ThemeResource("img/download.png"));
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("dashmarket");
-		btnEnquiryCount.setCaption(serviceenqhdr.getSMSEnquiryListCount(null, null, null, null, null, null, null, null)
-				.toString());
+		btnEnquiryCount.setCaption(serviceEnquiry
+				.getSMSEnquiryListCount(null, null, null, null, null, null, null, null).toString());
 		btnQuotationCount.setCaption(servicesmsQuoteHdr.getSMSQuoteCount(null, null, null, null, null, null, null)
 				.toString());
 		btnPOCount.setCaption(servicePurchaseOrd.getSMSPOListCount(null, null, companyId, null, null, null, null, null)
@@ -129,6 +129,7 @@ public class DashbordView implements ClickListener {
 		custom.addComponent(btnEnquiryDocs, "enquirydocuments");
 		custom.addComponent(btnDieRequest, "dieRequest");
 		custom.addComponent(new CalendarMonthly("WO_SCHEDULE"), "marketcalender");
+		custom.addComponent(tblStatus, "workorderstatus");
 		loadWorkOrderStatus();
 	}
 	
@@ -226,25 +227,27 @@ public class DashbordView implements ClickListener {
 	
 	private void loadWorkOrderStatus() {
 		try {
-			tblWorkorderStatus.removeAllItems();
-			BeanItemContainer<WorkOrderHdrDM> beanmaterialstock = new BeanItemContainer<WorkOrderHdrDM>(
-					WorkOrderHdrDM.class);
-			tblWorkorderStatus.setContainerDataSource(beanmaterialstock);
-			tblWorkorderStatus.setVisibleColumns(new Object[] { "workOrdrNo", "workOrdrTyp", "workOrdrRmrks",
-					"workOrdrSts", "effectiveStock" });
-			tblWorkorderStatus.setColumnHeaders(new String[] { "Material", "Stock Type", "UOM", "Curr. Stock",
-					"Eff. Stock" });
-			tblWorkorderStatus.setColumnWidth("materialName", 160);
-			tblWorkorderStatus.setColumnWidth("currentStock", 75);
-			tblWorkorderStatus.setColumnWidth("effectiveStock", 75);
-			tblWorkorderStatus.addGeneratedColumn("materialName", new ColumnGenerator() {
+			tblStatus.removeAllItems();
+			tblStatus.setWidth("100%");
+			// tblStatus.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
+			BeanItemContainer<SmsEnqHdrDM> beanEnquiry = new BeanItemContainer<SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beanEnquiry.addAll(serviceEnquiry.getSmsEnqHdrList(null, null, null, null, "Open", "P", null, null));
+			tblStatus.setContainerDataSource(beanEnquiry);
+			tblStatus.setVisibleColumns(new Object[] { "enquiryId", "companyId", "branchId", "enquiryNo",
+					"enquiryDate", "dueDate", "clientId", "modeofEnq", "remarks", "preparedBy", "reviewedBy",
+					"actionedBy" });
+			tblStatus.setColumnHeaders(new String[] { "Enquiry", "Quotation", "Purchase Order", "Invoice", "Workorder",
+					"Design", "Die", "Roto", "QC", "Assembly", "Foam", "Signoff" });
+			tblStatus.addGeneratedColumn("enquiryId", new ColumnGenerator() {
 				private static final long serialVersionUID = 1L;
 				
 				@Override
 				public Object generateCell(Table source, Object itemId, Object columnId) {
 					@SuppressWarnings("unchecked")
-					BeanItem<WorkOrderHdrDM> item = (BeanItem<WorkOrderHdrDM>) source.getItem(itemId);
-					return new Label((String) item.getItemProperty("workOrdrNo").getValue());
+					BeanItem<SmsEnqHdrDM> item = (BeanItem<SmsEnqHdrDM>) source.getItem(itemId);
+					return new Label("<font color=green>"
+							+ (String) item.getItemProperty("enquiryNo").getValue() + " - "
+							+ (String) item.getItemProperty("enquiryStatus").getValue() + "</font>", ContentMode.HTML);
 				}
 			});
 		}
@@ -280,7 +283,6 @@ public class DashbordView implements ClickListener {
 				titleLabel.addStyleName("notification-title");
 				fmlayout.addComponents(titleLabel);
 				fmlayout.addComponents(titleLabel1);
-				// fmlayout.addComponents(titleLabel2);
 				fmlayout.addComponent(titleLabel3);
 				fmlayout.addComponent(titleLabel4);
 				fmlayout.addComponent(titleLabel5);

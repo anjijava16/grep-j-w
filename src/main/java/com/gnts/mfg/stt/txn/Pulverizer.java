@@ -309,12 +309,12 @@ public class Pulverizer extends BaseTransUI {
 		if (cbBranchName.getValue() != null) {
 			brnchid = ((Long) cbBranchName.getValue());
 		}
-		List<PulvizHdrDM> PulvizhdrList = new ArrayList<PulvizHdrDM>();
-		PulvizhdrList = Pulvizhdrservice.getPulvizHdrDetails(null, brnchid, (String) tfPulRefNumber.getValue(),
+		List<PulvizHdrDM> listPulvizHdr = new ArrayList<PulvizHdrDM>();
+		listPulvizHdr = Pulvizhdrservice.getPulvizHdrDetails(null, brnchid, (String) tfPulRefNumber.getValue(),
 				(Date) dfPulvizDate.getValue(), (String) cbHdrStatus.getValue(), "F");
-		recordCnt = PulvizhdrList.size();
+		recordCnt = listPulvizHdr.size();
 		beanPulvizHdrDM = new BeanItemContainer<PulvizHdrDM>(PulvizHdrDM.class);
-		beanPulvizHdrDM.addAll(PulvizhdrList);
+		beanPulvizHdrDM.addAll(listPulvizHdr);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the PulvizerHdr result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanPulvizHdrDM);

@@ -20,6 +20,7 @@ import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPTextArea;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.erputil.tool.EmailTrigger;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.ui.UploadDocumentUI;
@@ -80,7 +81,7 @@ public class EnquiryWorkflow implements ClickListener {
 	private VerticalLayout hlDocumentUpload = new VerticalLayout();
 	private BeanItemContainer<EnquiryWorkflowDM> beanWorkflow;
 	private String username;
-	private Long enquiryId, companyid,workflowId;
+	private Long enquiryId, companyid, workflowId;
 	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private Logger logger = Logger.getLogger(EnquiryWorkflow.class);
 	
@@ -105,7 +106,7 @@ public class EnquiryWorkflow implements ClickListener {
 		cbPendingWith.setRequired(true);
 		cbFromDept.setRequired(true);
 		cbToDept.setRequired(true);
-		//tfExistingCase.setNullRepresentation("---");
+		// tfExistingCase.setNullRepresentation("---");
 		cbExistingCase = new GERPComboBox("Existing Case Model");
 		cbExistingCase.setReadOnly(false);
 		cbExistingCase.setWidth("150");
@@ -201,12 +202,13 @@ public class EnquiryWorkflow implements ClickListener {
 			logger.info("getEnqWorkflowDetails : Loading ...");
 			tblEnquiryWorkflow.removeAllItems();
 			List<EnquiryWorkflowDM> listWorkflow = new ArrayList<EnquiryWorkflowDM>();
-			listWorkflow = serviceWorkflow.getEnqWorkflowList(null, enquiryId, null,null,null);
+			listWorkflow = serviceWorkflow.getEnqWorkflowList(null, enquiryId, null, null, null);
 			beanWorkflow = new BeanItemContainer<EnquiryWorkflowDM>(EnquiryWorkflowDM.class);
 			beanWorkflow.addAll(listWorkflow);
 			tblEnquiryWorkflow.setContainerDataSource(beanWorkflow);
 			tblEnquiryWorkflow.setVisibleColumns(new Object[] { "enqWorkflowId", "reworkOn", "fromDeptName",
-					"initiatorName", "toDeptName", "pendingName", "workflowRequest", "status", "lastUpdatedDate", "lastUpdatedBy" });
+					"initiatorName", "toDeptName", "pendingName", "workflowRequest", "status", "lastUpdatedDate",
+					"lastUpdatedBy" });
 			tblEnquiryWorkflow.setColumnHeaders(new String[] { "Ref.Id", "Date", "From", "Initiated By", "To",
 					"Pending With", "Request", "Status", "Last Updated date", "Last Updated by" });
 			tblEnquiryWorkflow.setColumnAlignment("enqWorkflowId", Align.RIGHT);
@@ -253,7 +255,7 @@ public class EnquiryWorkflow implements ClickListener {
 		enquiryWorkflowDM.setFromDept((Long) cbFromDept.getValue());
 		enquiryWorkflowDM.setToDept((Long) cbToDept.getValue());
 		enquiryWorkflowDM.setReworkOn(dfReworkdate.getValue());
-		enquiryWorkflowDM.setExistingCaseModel(cbExistingCase.getValue().toString());
+		enquiryWorkflowDM.setExistingCaseModel((String) cbExistingCase.getValue());
 		enquiryWorkflowDM.setFusionedCaseModel(tfFusionedCase.getValue());
 		enquiryWorkflowDM.setNewDieCaseModel(tfNewDieCase.getValue());
 		enquiryWorkflowDM.setBottomTopCaseModel(tfBottomTopCase.getValue());
@@ -275,9 +277,15 @@ public class EnquiryWorkflow implements ClickListener {
 		enquiryWorkflowDM.setLastUpdatedDate(new Date());
 		enquiryWorkflowDM.setLastUpdatedBy(username);
 		serviceWorkflow.saveOrUpdateEnqWorkflow(enquiryWorkflowDM);
-		workflowId=enquiryWorkflowDM.getEnqWorkflowId();
+		workflowId = enquiryWorkflowDM.getEnqWorkflowId();
 		resetWorkflowFields();
 		getEnqWorkflowDetails();
+		try {
+			new EmailTrigger("soundar@gnts.in", workflowId.toString(), "Enquiry Workflow");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private Boolean validateDetails() {
@@ -307,7 +315,7 @@ public class EnquiryWorkflow implements ClickListener {
 	
 	private void editWorkflowDetails() {
 		EnquiryWorkflowDM enquiryWorkflowDM = beanWorkflow.getItem(tblEnquiryWorkflow.getValue()).getBean();
-		workflowId=enquiryWorkflowDM.getEnqWorkflowId();
+		workflowId = enquiryWorkflowDM.getEnqWorkflowId();
 		cbInitiatedBy.setValue(enquiryWorkflowDM.getInitiatedBy());
 		cbPendingWith.setValue(enquiryWorkflowDM.getPendingWith());
 		cbFromDept.setValue(enquiryWorkflowDM.getFromDept());
@@ -355,7 +363,8 @@ public class EnquiryWorkflow implements ClickListener {
 			logger.info("load loadInitiatedByList details" + e);
 		}
 	}
-	//Load Existing case models from Lookup
+	
+	// Load Existing case models from Lookup
 	public void loadcasemodelList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");

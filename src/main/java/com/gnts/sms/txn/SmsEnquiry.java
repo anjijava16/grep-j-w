@@ -133,7 +133,7 @@ public class SmsEnquiry extends BaseTransUI {
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(SmsEnquiry.class);
 	// User Input Fields for Sales Enquiry Header
-	private TextField tfEnquiryNo, tfclientname;
+	private TextField tfEnquiryNo, tfclientname,tfClientCity;
 	private TextArea taRemarks, tAclientAddrs;
 	private PopupDateField dfEnquiryDate, dfDueDate;
 	private ComboBox cbBranch, cbmodeofenquiry, cbClient;
@@ -256,6 +256,8 @@ public class SmsEnquiry extends BaseTransUI {
 		cbClient.setWidth("150");
 		tfclientname = new GERPTextField("Client Name");
 		tfclientname.setReadOnly(true);
+		tfClientCity = new GERPTextField("Client City");
+		tfClientCity.setReadOnly(true);
 		cbClient.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -264,19 +266,27 @@ public class SmsEnquiry extends BaseTransUI {
 				// TODO Auto-generated method stub
 				if (cbClient.getValue() != null) {
 					tfclientname.setReadOnly(false);
+					tfClientCity.setReadOnly(false);
 					try {
 						tfclientname.setValue(serviceClients
 								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
 										null, null, null, null, "Active", "P").get(0).getClientName());
+						tfClientCity.setValue(serviceClients
+								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
+										null, null, null, null, "Active", "P").get(0).getCityName());
+						System.out.println("=============================================>"+tfClientCity);
 					}
 					catch (Exception e) {
 					}
 					tfclientname.setReadOnly(true);
+					tfClientCity.setReadOnly(true);
 				}
 			}
 		});
 		tfclientname.setImmediate(true);
 		tfclientname.setWidth("150");
+		tfClientCity.setImmediate(true);
+		tfClientCity.setWidth("150");
 		loadSmsClientList();
 		cbmodeofenquiry = new GERPComboBox("Mode of Enquiry");
 		cbmodeofenquiry.setItemCaptionPropertyId("lookupname");
@@ -563,6 +573,7 @@ public class SmsEnquiry extends BaseTransUI {
 		test.setCaption("Client Code");
 		flcol2.addComponent(test);
 		flcol2.addComponent(tfclientname);
+		flcol2.addComponent(tfClientCity);
 		flcol3.addComponent(cbmodeofenquiry);
 		flcol3.addComponent(dfEnquiryDate);
 		flcol4.addComponent(dfDueDate);
@@ -789,9 +800,9 @@ public class SmsEnquiry extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the SMSENQUIRY. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanhdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "enquiryNo", "clientName","cityName", "enquiryStatus",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "enquiryNo", "clientName","enquiryStatus",
 				"lastUpdateddt", "lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry No", "Client Name","City", "Status",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry No", "Client Name", "Status",
 				"Last Updated date", "Last Updated by" });
 		tblMstScrSrchRslt.setColumnAlignment("enquiryId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
@@ -1424,6 +1435,9 @@ public class SmsEnquiry extends BaseTransUI {
 		tfclientname.setReadOnly(false);
 		tfclientname.setValue("");
 		tfclientname.setReadOnly(true);
+		tfClientCity.setReadOnly(false);
+		tfClientCity.setValue("");
+		tfClientCity.setReadOnly(true);
 		tfEnquiryNo.setComponentError(null);
 		cbBranch.setValue(null);
 		cbBranch.setComponentError(null);

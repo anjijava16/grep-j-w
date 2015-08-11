@@ -16,6 +16,7 @@ import com.gnts.erputil.components.GERPNumberField;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPTable;
+import com.gnts.erputil.components.GERPTextArea;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
@@ -42,10 +43,10 @@ import com.vaadin.server.VaadinService;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -53,12 +54,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table.Align;
 
-/*private GERPPopupDateField dfVisitDt;
- private GERPComboBox cbWO,cbPurposeVisit;
- private GERPTextField tfPjtName, tfClientName,tfPerName,tfPerPhone,tfTest,tfClentCity;
- private GERPNumberField tfNoPerson;
- private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
- BASEConstants.M_GENERIC_COLUMN);*/
 public class CustomerVisit extends BaseTransUI {
 	private RotoArmService serviceRotoArm = (RotoArmService) SpringContextHelper.getBean("rotoarm");
 	private RotoPlanDtlService serviceRotoplandtl = (RotoPlanDtlService) SpringContextHelper.getBean("rotoplandtl");
@@ -77,9 +72,11 @@ public class CustomerVisit extends BaseTransUI {
 	private VerticalLayout vlShift, vlArm, vlDtl, vlHdrshiftandDtlarm;
 	// Data Fields
 	private GERPPopupDateField dfVisitDt, dfFormDt;
-	private GERPComboBox cbWO, cbPurposeVisit;
-	private GERPTextField tfPjtName, tfClientName, tfPerName, tfPerPhone, tfTest, tfClentCity;
+	private GERPComboBox cbWO, cbPurposeVisit, cbEnqNo;
+	private GERPTextField tfPjtName, tfClientName, tfPerName, tfPerPhone, tfClentCity;
 	private GERPNumberField tnNoPerson;
+	private GERPTextArea taPurposeRe;
+	private CheckBox checkBx1,checkBx2,checkBx3,checkBx4,checkBx5,checkBx6,checkBx7;
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private ComboBox cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
@@ -88,7 +85,7 @@ public class CustomerVisit extends BaseTransUI {
 	private ComboBox cbDtlStatus;
 	private FormLayout flDtlCol1, flDtlCol2, flDtlCol3;
 	private ComboBox cbSftStatus;
-	private FormLayout flshiftCol1, flshiftCol2, flshiftCol3;
+	private FormLayout flshiftCol1, flshiftCol2, flshiftCol3,flshiftCol4;
 	private List<RotoShiftDM> listRotoShift = new ArrayList<RotoShiftDM>();
 	private ComboBox cbArmstatus;
 	private FormLayout flArmCol1, flArmCol2, flArmCol3;
@@ -98,7 +95,7 @@ public class CustomerVisit extends BaseTransUI {
 	private Button btnArmDelete = new GERPButton("Delete", "delete", this);
 	private Button btndelete = new GERPButton("Delete", "delete", this);
 	private Button btnShiftdelete = new GERPButton("Delete", "delete", this);
-	private Button btnAddMain = new GERPButton("Add", "Addbt", this);
+	private Button btnAddMain = new GERPButton("Add", "add", this);
 	private Button btnDelMain = new GERPButton("Delete", "delete", this);
 	private String username;
 	private Long companyid, branchID, moduleId;
@@ -252,12 +249,12 @@ public class CustomerVisit extends BaseTransUI {
 			}
 		});
 		// Main Customer Datas
-		dfVisitDt = new GERPPopupDateField("Date of Visit");
+		dfVisitDt = new GERPPopupDateField("Visit Date");
 		dfVisitDt.setRequired(true);
 		dfVisitDt.setDateFormat("dd-MMM-yyyy");
 		dfVisitDt.setInputPrompt("Select Date");
 		dfVisitDt.setWidth("130px");
-		dfFormDt = new GERPPopupDateField("Form Date");
+		dfFormDt = new GERPPopupDateField("Date");
 		dfFormDt.setDateFormat("dd-MMM-yyyy");
 		dfFormDt.setInputPrompt("Select Date");
 		dfFormDt.setWidth("130px");
@@ -265,6 +262,8 @@ public class CustomerVisit extends BaseTransUI {
 		cbWO.setWidth("150");
 		cbPurposeVisit = new GERPComboBox("Purpose");
 		cbWO.setWidth("150");
+		cbEnqNo = new GERPComboBox("Enquiry No.");
+		cbEnqNo.setWidth("150");
 		tfPjtName = new GERPTextField("Project Name");
 		tfPjtName.setWidth("150");
 		tfClientName = new GERPTextField("Cilent Name");
@@ -273,8 +272,9 @@ public class CustomerVisit extends BaseTransUI {
 		tfPerName.setWidth("150");
 		tfPerPhone = new GERPTextField("Contact");
 		tfPerPhone.setWidth("150");
-		tfTest = new GERPTextField("Test");
-		tfTest.setWidth("150");
+		taPurposeRe = new GERPTextArea("Remarks");
+		taPurposeRe.setWidth("150");
+		taPurposeRe.setHeight("50");
 		tfClentCity = new GERPTextField("Client City");
 		tfClentCity.setWidth("150");
 		tnNoPerson = new GERPNumberField("No.of Person");
@@ -287,8 +287,16 @@ public class CustomerVisit extends BaseTransUI {
 		cbArmstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbArmstatus.setWidth("150px");
-		cbSftStatus.setWidth("150px");
+		cbSftStatus.setWidth("100px");
 		cbHdrStatus.setWidth("150px");
+		//Check Box Department.
+		checkBx1=new CheckBox("HOD-Prod.");
+		checkBx2=new CheckBox("Planing");
+		checkBx3=new CheckBox("Production");
+		checkBx4=new CheckBox("QC");
+		checkBx5=new CheckBox("Maintenance");
+		checkBx6=new CheckBox("HR");
+		checkBx7=new CheckBox("Die");
 		hlSearchLayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
@@ -310,17 +318,14 @@ public class CustomerVisit extends BaseTransUI {
 		flHdrCol2 = new FormLayout();
 		flHdrCol3 = new FormLayout();
 		flHdrCol4 = new FormLayout();
-		Label lbl = new Label();
-		// flHdrCol4.addComponent(tfRotoRefno);
-		// flHdrCol1.addComponent(dfRotoDate);
-		flHdrCol2.addComponent(lbl);
-		flHdrCol1.addComponent(cbWO);
-		flHdrCol2.addComponent(dfVisitDt);
-		flHdrCol3.addComponent(cbHdrStatus);
-		hlSearchLayout.addComponent(flHdrCol4);
+		flHdrCol1.addComponent(cbEnqNo);
+		flHdrCol2.addComponent(cbWO);
+		flHdrCol3.addComponent(dfVisitDt);
+		flHdrCol4.addComponent(cbHdrStatus);
 		hlSearchLayout.addComponent(flHdrCol1);
 		hlSearchLayout.addComponent(flHdrCol2);
 		hlSearchLayout.addComponent(flHdrCol3);
+		hlSearchLayout.addComponent(flHdrCol4);
 		hlSearchLayout.setMargin(true);
 		hlSearchLayout.setSizeUndefined();
 	}
@@ -337,12 +342,14 @@ public class CustomerVisit extends BaseTransUI {
 		flHdrCol3 = new FormLayout();
 		flHdrCol1.addComponent(dfFormDt);
 		flHdrCol1.addComponent(tfPjtName);
+		flHdrCol1.addComponent(cbEnqNo);
 		flHdrCol1.addComponent(cbWO);
 		flHdrCol1.addComponent(tfClientName);
 		flHdrCol1.addComponent(tfClentCity);
 		flHdrCol2.addComponent(dfVisitDt);
 		flHdrCol2.addComponent(cbPurposeVisit);
-		flHdrCol2.addComponent(tfTest);
+		flHdrCol2.addComponent(taPurposeRe);
+		flHdrCol2.addComponent(tnNoPerson);
 		flHdrCol2.addComponent(cbHdrStatus);
 		flHdrCol3.addComponent(btnAddMain);
 		flHdrCol3.addComponent(btnDelMain);
@@ -356,9 +363,8 @@ public class CustomerVisit extends BaseTransUI {
 		flArmCol1 = new FormLayout();
 		flArmCol2 = new FormLayout();
 		flArmCol3 = new FormLayout();
-		flArmCol1.addComponent(tnNoPerson);
 		flArmCol1.addComponent(tfPerName);
-		flArmCol2.addComponent(tfPerPhone);
+		flArmCol1.addComponent(tfPerPhone);
 		flArmCol2.addComponent(cbArmstatus);
 		flArmCol3.addComponent(btnAddArm);
 		flArmCol3.addComponent(btnArmDelete);
@@ -373,11 +379,20 @@ public class CustomerVisit extends BaseTransUI {
 		flshiftCol1 = new FormLayout();
 		flshiftCol2 = new FormLayout();
 		flshiftCol3 = new FormLayout();
+		flshiftCol4 = new FormLayout();
+
 		// flshiftCol1.addComponent(tfshiftname);
-		flshiftCol2.addComponent(cbSftStatus);
-		flshiftCol3.addComponent(btnAddShift);
-		flshiftCol3.addComponent(btnShiftdelete);
-		flshiftCol3.setComponentAlignment(btnAddShift, Alignment.BOTTOM_CENTER);
+		flshiftCol1.addComponent(checkBx1);
+		flshiftCol1.addComponent(checkBx2);
+		flshiftCol1.addComponent(checkBx3);
+		flshiftCol2.addComponent(checkBx4);
+		flshiftCol2.addComponent(checkBx7);
+		flshiftCol2.addComponent(checkBx6);
+		flshiftCol3.addComponent(checkBx5);
+		flshiftCol4.addComponent(cbSftStatus);
+		flshiftCol4.addComponent(btnAddShift);
+		flshiftCol4.addComponent(btnShiftdelete);
+		flshiftCol4.setComponentAlignment(btnAddShift, Alignment.BOTTOM_CENTER);
 		vlShift = new VerticalLayout();
 		vlShift.setSpacing(true);
 		hlShift = new HorizontalLayout();
@@ -385,6 +400,7 @@ public class CustomerVisit extends BaseTransUI {
 		hlShift.addComponent(flshiftCol1);
 		hlShift.addComponent(flshiftCol2);
 		hlShift.addComponent(flshiftCol3);
+		hlShift.addComponent(flshiftCol4);
 		vlShift.addComponent(hlShift);
 		vlShift.addComponent(tblRotoShift);
 		// Adding Dtl Components
@@ -554,9 +570,7 @@ public class CustomerVisit extends BaseTransUI {
 		assembleInputUserLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		/*
-		 * cbbranch.setRequired(true); dfRotoDate.setRequired(true); tfshiftname.setRequired(true);
-		 * cbEmpname.setRequired(true); cbWorkorder.setRequired(true); cbProduct.setRequired(true);
-		 * cbClient.setRequired(true); cbArmproduct.setRequired(true);
+		 * cbbranch.setRequired(true);
 		 */
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);

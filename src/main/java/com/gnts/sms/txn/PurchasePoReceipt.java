@@ -532,41 +532,41 @@ public class PurchasePoReceipt extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			PurPoReceiptsHdrDM editReceiptHdrlist = beanPurPoReceiptHdrDM.getItem(tblMstScrSrchRslt.getValue())
+			PurPoReceiptsHdrDM receiptsHdrDM = beanPurPoReceiptHdrDM.getItem(tblMstScrSrchRslt.getValue())
 					.getBean();
-			receiptId = editReceiptHdrlist.getReceiptId();
-			cbBranch.setValue(editReceiptHdrlist.getBranchId());
+			receiptId = receiptsHdrDM.getReceiptId();
+			cbBranch.setValue(receiptsHdrDM.getBranchId());
 			tfLotNo.setReadOnly(false);
-			tfLotNo.setValue(editReceiptHdrlist.getLotNo());
+			tfLotNo.setValue(receiptsHdrDM.getLotNo());
 			tfLotNo.setReadOnly(true);
-			cbPoNo.setValue(editReceiptHdrlist.getPoId());
-			if (editReceiptHdrlist.getReceiptDate() != null) {
-				dfReceiptDt.setValue(editReceiptHdrlist.getReceiptDate());
+			cbPoNo.setValue(receiptsHdrDM.getPoId());
+			if (receiptsHdrDM.getReceiptDate() != null) {
+				dfReceiptDt.setValue(receiptsHdrDM.getReceiptDate());
 			}
-			if (editReceiptHdrlist.getVendordcNo() != null) {
-				tfVenorDcNo.setValue(editReceiptHdrlist.getVendordcNo());
+			if (receiptsHdrDM.getVendordcNo() != null) {
+				tfVenorDcNo.setValue(receiptsHdrDM.getVendordcNo());
 			}
-			if (editReceiptHdrlist.getVendorDate() != null) {
-				dfDocDt.setValue(editReceiptHdrlist.getVendorDate());
+			if (receiptsHdrDM.getVendorDate() != null) {
+				dfDocDt.setValue(receiptsHdrDM.getVendorDate());
 			}
-			if (editReceiptHdrlist.getReceiptdocType() != null) {
-				tfDocType.setValue(editReceiptHdrlist.getReceiptdocType());
+			if (receiptsHdrDM.getReceiptdocType() != null) {
+				tfDocType.setValue(receiptsHdrDM.getReceiptdocType());
 			}
-			if (editReceiptHdrlist.getVendorinvoiceNo() != null) {
-				tfvenInvNo.setValue(editReceiptHdrlist.getVendorinvoiceNo());
+			if (receiptsHdrDM.getVendorinvoiceNo() != null) {
+				tfvenInvNo.setValue(receiptsHdrDM.getVendorinvoiceNo());
 			}
-			if (editReceiptHdrlist.getVendorinvoiceDate() != null) {
-				dfInvDt.setValue(editReceiptHdrlist.getVendorinvoiceDate());
+			if (receiptsHdrDM.getVendorinvoiceDate() != null) {
+				dfInvDt.setValue(receiptsHdrDM.getVendorinvoiceDate());
 			}
-			if (editReceiptHdrlist.getReceiptRemark() != null) {
-				taReceiptRemark.setValue(editReceiptHdrlist.getReceiptRemark());
+			if (receiptsHdrDM.getReceiptRemark() != null) {
+				taReceiptRemark.setValue(receiptsHdrDM.getReceiptRemark());
 			}
-			if (editReceiptHdrlist.getBillraisedYN().equals("Y")) {
+			if (receiptsHdrDM.getBillraisedYN().equals("Y")) {
 				ckBillRaised.setValue(true);
 			} else {
 				ckBillRaised.setValue(false);
 			}
-			Long uom = editReceiptHdrlist.getPoId();
+			Long uom = receiptsHdrDM.getPoId();
 			Collection<?> uomid = cbPoNo.getItemIds();
 			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -577,9 +577,9 @@ public class PurchasePoReceipt extends BaseUI {
 					cbPoNo.setValue(itemId);
 				}
 			}
-			cbHdrStatus.setValue(editReceiptHdrlist.getProjectStatus());
-			if (editReceiptHdrlist.getVendorrefDoc() != null) {
-				byte[] certificate = editReceiptHdrlist.getVendorrefDoc();
+			cbHdrStatus.setValue(receiptsHdrDM.getProjectStatus());
+			if (receiptsHdrDM.getVendorrefDoc() != null) {
+				byte[] certificate = receiptsHdrDM.getVendorrefDoc();
 				UploadDocumentUI test = new UploadDocumentUI(hlrefDoc);
 				test.displaycertificate(certificate);
 			} else {
@@ -839,33 +839,33 @@ public class PurchasePoReceipt extends BaseUI {
 	private void saveReceiptDtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
-			PurPoReceiptDtlDM purReceiptDtlObj = new PurPoReceiptDtlDM();
+			PurPoReceiptDtlDM receiptDtlDM = new PurPoReceiptDtlDM();
 			if (tblReceiptDtl.getValue() != null) {
-				purReceiptDtlObj = beanPurPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
+				receiptDtlDM = beanPurPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
 			}
-			purReceiptDtlObj.setProductId(((PurchasePODtlDM) cbProduct.getValue()).getProductId());
-			purReceiptDtlObj.setProductName(((PurchasePODtlDM) cbProduct.getValue()).getProductName());
-			purReceiptDtlObj.setProductUom(cbUom.getValue().toString());
+			receiptDtlDM.setProductId(((PurchasePODtlDM) cbProduct.getValue()).getProductId());
+			receiptDtlDM.setProductName(((PurchasePODtlDM) cbProduct.getValue()).getProductName());
+			receiptDtlDM.setProductUom(cbUom.getValue().toString());
 			if (tfrejQty.getValue() != null && tfrejQty.getValue().trim().length() > 0) {
-				purReceiptDtlObj.setRejectQty(Long.valueOf(tfrejQty.getValue()));
+				receiptDtlDM.setRejectQty(Long.valueOf(tfrejQty.getValue()));
 			}
-			purReceiptDtlObj.setRejectReason(taRejectReason.getValue().toString());
+			receiptDtlDM.setRejectReason(taRejectReason.getValue().toString());
 			if (tfrecpQty.getValue() != null && tfrecpQty.getValue().trim().length() > 0) {
-				purReceiptDtlObj.setReceiptQty(Long.valueOf(tfrecpQty.getValue()));
+				receiptDtlDM.setReceiptQty(Long.valueOf(tfrecpQty.getValue()));
 			}
 			if (cbDtlStatus.getValue() != null) {
-				purReceiptDtlObj.setRecpDtlStatus((cbDtlStatus.getValue().toString()));
+				receiptDtlDM.setRecpDtlStatus((cbDtlStatus.getValue().toString()));
 			}
-			purReceiptDtlObj.setLastupdateddt(DateUtils.getcurrentdate());
-			purReceiptDtlObj.setLastupdatedby(username);
+			receiptDtlDM.setLastupdateddt(DateUtils.getcurrentdate());
+			receiptDtlDM.setLastupdatedby(username);
 			File file = new File(GERPConstants.DOCUMENT_PATH);
 			byte fileContent[] = new byte[(int) file.length()];
 			FileInputStream fio = new FileInputStream(file);
 			byte fileContents[] = new byte[(int) file.length()];
 			fio.read(fileContent);
 			fio.close();
-			purReceiptDtlObj.setReceiptEvd(fileContents);
-			receiptDtlList.add(purReceiptDtlObj);
+			receiptDtlDM.setReceiptEvd(fileContents);
+			receiptDtlList.add(receiptDtlDM);
 			loadReceiptDtl();
 			receiptResetFields();
 		}

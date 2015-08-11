@@ -388,12 +388,12 @@ public class Company extends BaseUI {
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editCompanyDetails() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			CompanyDM editCompany = beansCompany.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (editCompany.getCompanylogo() != null) {
+			CompanyDM companyDM = beansCompany.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			if (companyDM.getCompanylogo() != null) {
 				hlimage.removeAllComponents();
-				byte[] myimage = (byte[]) editCompany.getCompanylogo();
+				byte[] myimage = (byte[]) companyDM.getCompanylogo();
 				UploadUI uploadObject = new UploadUI(hlimage);
-				uploadObject.dispayImage(myimage, editCompany.getCompanyname());
+				uploadObject.dispayImage(myimage, companyDM.getCompanyname());
 			} else {
 				try {
 					new UploadUI(hlimage);
@@ -402,75 +402,75 @@ public class Company extends BaseUI {
 					e.printStackTrace();
 				}
 			}
-			if (editCompany.getCompanyaddress() != null) {
-				tfComapnyAddress.setValue(editCompany.getCompanyaddress());
+			if (companyDM.getCompanyaddress() != null) {
+				tfComapnyAddress.setValue(companyDM.getCompanyaddress());
 			}
 			tfCompanyName.setReadOnly(false);
-			tfCompanyName.setValue(editCompany.getCompanyname());
+			tfCompanyName.setValue(companyDM.getCompanyname());
 			tfCompanyName.setReadOnly(true);
-			if (editCompany.getCompanycode() != null) {
+			if (companyDM.getCompanycode() != null) {
 				tfCompanyCode.setReadOnly(false);
-				tfCompanyCode.setValue(editCompany.getCompanycode());
+				tfCompanyCode.setValue(companyDM.getCompanycode());
 				tfCompanyCode.setReadOnly(true);
 			}
-			if (editCompany.getPostcode() != null) {
-				tfPostCode.setValue(editCompany.getPostcode());
+			if (companyDM.getPostcode() != null) {
+				tfPostCode.setValue(companyDM.getPostcode());
 			}
-			if (editCompany.getCstno() != null) {
-				tfCstNo.setValue(editCompany.getCstno());
+			if (companyDM.getCstno() != null) {
+				tfCstNo.setValue(companyDM.getCstno());
 			}
-			if (editCompany.getEccno() != null) {
-				tfEccNo.setValue(editCompany.getEccno());
+			if (companyDM.getEccno() != null) {
+				tfEccNo.setValue(companyDM.getEccno());
 			}
-			if (editCompany.getEmailid() != null) {
-				tfEmail.setValue(editCompany.getEmailid());
+			if (companyDM.getEmailid() != null) {
+				tfEmail.setValue(companyDM.getEmailid());
 			}
-			if (editCompany.getEmployerno() != null) {
-				tfEmpNo.setValue(editCompany.getEmployerno());
+			if (companyDM.getEmployerno() != null) {
+				tfEmpNo.setValue(companyDM.getEmployerno());
 			}
-			if (editCompany.getEsino() != null) {
-				tfEsiNo.setValue(editCompany.getEsino());
+			if (companyDM.getEsino() != null) {
+				tfEsiNo.setValue(companyDM.getEsino());
 			}
-			if (editCompany.getFaxno() != null) {
-				tfFaxNo.setValue(editCompany.getFaxno());
+			if (companyDM.getFaxno() != null) {
+				tfFaxNo.setValue(companyDM.getFaxno());
 			}
-			if (editCompany.getPanno() != null) {
-				tfPanNo.setValue(editCompany.getPanno());
+			if (companyDM.getPanno() != null) {
+				tfPanNo.setValue(companyDM.getPanno());
 			}
-			if (editCompany.getPfno() != null) {
-				tfPfNo.setValue(editCompany.getPfno());
+			if (companyDM.getPfno() != null) {
+				tfPfNo.setValue(companyDM.getPfno());
 			}
-			if (editCompany.getPhone() != null) {
-				tfPhoneNo.setValue(editCompany.getPhone());
+			if (companyDM.getPhone() != null) {
+				tfPhoneNo.setValue(companyDM.getPhone());
 			}
-			if (editCompany.getEmailid() != null) {
-				tfEmail.setValue(editCompany.getEmailid());
+			if (companyDM.getEmailid() != null) {
+				tfEmail.setValue(companyDM.getEmailid());
 			}
-			if (editCompany.getRegno() != null) {
-				tfRegNo.setValue(editCompany.getRegno());
+			if (companyDM.getRegno() != null) {
+				tfRegNo.setValue(companyDM.getRegno());
 			}
-			if (editCompany.getServicetaxno() != null) {
-				tfServTaxNo.setValue(editCompany.getServicetaxno());
+			if (companyDM.getServicetaxno() != null) {
+				tfServTaxNo.setValue(companyDM.getServicetaxno());
 			}
-			if (editCompany.getStno() != null) {
-				tfStNo.setValue(editCompany.getStno());
+			if (companyDM.getStno() != null) {
+				tfStNo.setValue(companyDM.getStno());
 			}
-			if (editCompany.getTanno() != null) {
-				tfTanNo.setValue(editCompany.getTanno());
+			if (companyDM.getTanno() != null) {
+				tfTanNo.setValue(companyDM.getTanno());
 			}
-			if (editCompany.getTinno() != null) {
-				tfTinNo.setValue(editCompany.getTinno());
+			if (companyDM.getTinno() != null) {
+				tfTinNo.setValue(companyDM.getTinno());
 			}
-			if (editCompany.getWebsite() != null) {
-				tfWebSite.setValue(editCompany.getWebsite());
+			if (companyDM.getWebsite() != null) {
+				tfWebSite.setValue(companyDM.getWebsite());
 			}
 			cbStatus.setReadOnly(false);
-			cbStatus.setValue(editCompany.getCompanystatus());
+			cbStatus.setValue(companyDM.getCompanystatus());
 			cbStatus.setReadOnly(true);
-			cbCountry.setValue(Long.valueOf(editCompany.getCountryid()));
-			cbState.setValue(Long.valueOf(editCompany.getStateid()).toString());
-			cbCity.setValue(Long.valueOf(editCompany.getCityid()).toString());
-			cbCurrency.setValue(Long.valueOf(editCompany.getCityid()));
+			cbCountry.setValue(Long.valueOf(companyDM.getCountryid()));
+			cbState.setValue(Long.valueOf(companyDM.getStateid()).toString());
+			cbCity.setValue(Long.valueOf(companyDM.getCityid()).toString());
+			cbCurrency.setValue(Long.valueOf(companyDM.getCityid()));
 		}
 	}
 	

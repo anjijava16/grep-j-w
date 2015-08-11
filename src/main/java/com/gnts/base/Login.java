@@ -33,7 +33,6 @@ import javax.servlet.annotation.WebServlet;
 import org.apache.log4j.Logger;
 import com.gnts.asm.txn.AssetComplaintRegister;
 import com.gnts.base.dashboard.DashbordDesignView;
-import com.gnts.base.dashboard.DashbordView;
 import com.gnts.base.domain.mst.AppScreensDM;
 import com.gnts.base.domain.mst.AppScreensMenuDM;
 import com.gnts.base.domain.mst.CompanyDM;
@@ -107,7 +106,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 	private VerticalLayout vlAddSingIn;
 	private VerticalLayout vlLocal;
 	private String loginuserName = "", strSystemUser, userFullName = "";
-	Date passwordExDt = null;
+	private Date passwordExDt = null;
 	private VerticalLayout vlSingIn = new VerticalLayout();
 	private Label lblExpand, lblCollapse, lblerror, lblPasswordError;
 	private Label lblLastLogedin = new Label();
@@ -120,7 +119,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 	private boolean blIsEditMode = false;
 	private VerticalLayout vlTreeLayout;
 	private VerticalLayout vlPinLayout;
-	String sessionId, clientIP, getsessionId, adjustTime;
+	private String sessionId, clientIP, adjustTime;
 	private TextField tfUsername;
 	private ComboBox cbSearchScreenCode = new ComboBox();
 	private PasswordField pfPassword, pfPreviesePass, pfNewPassword, pfConformPassword;
@@ -132,10 +131,10 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 	private Image imgExpand, imgCollapse, imgPin, imgUnpin, imgGlob, imgProfile, imgHelp, imgCustomer, imgSingOut,
 			imgMonitor, imgFavorite, imgAssetIssue;
 	private Tree treeMenu;
-	String versionVar = "BS_APPVER";
-	String copyrightVar = "BS_APPCPR";
-	String paramRefVersion;
-	String paramRefCopyright;
+	private String versionVar = "BS_APPVER";
+	private String copyrightVar = "BS_APPCPR";
+	private String paramRefVersion;
+	private String paramRefCopyright;
 	private Long loginCompanyId, userId, userLoginId, roleId, branchId, appScreenId, moduleId, employeeid, deptId,
 			quoteId, enquiryId, timezoneId, currenyId, countryid;
 	private String currencysymbol;
@@ -515,7 +514,6 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 					userId = mbaseuser.getUserid();
 					VaadinSession vSession = UI.getCurrent().getSession();
 					WrappedSession wSession = vSession.getSession();
-					getsessionId = mbaseuser.getSessionid();
 					sessionId = wSession.getId();
 					clientIP = Page.getCurrent().getWebBrowser().getAddress();
 					passwordExDt = mbaseuser.getPasswordexpiredtInDt();
@@ -525,13 +523,6 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 					companyCode = mbaseuser.getCompanyCode();
 					timezoneId = mbaseuser.getTimezoneid();
 					loginuserName = tfUsername.getValue();
-					/*
-					 * if (mbaseuser.getCompanyid().getCcyid() != null) { currenyId =
-					 * mbaseuser.getCompanyid().getCcyid(); } strSystemUser = mbaseuser.getSystemuseryn(); adjustTime =
-					 * mbaseuser.getTimezoneid().getClockadjust(); String time = "*60*1000"; adjustTime = adjustTime +
-					 * time; lblUserTimeZone.setValue("<font size=\"1\"color=\"white\">User Timezone: " +
-					 * mbaseuser.getTimezoneid().getTimezonecode() + "-" + mbaseuser.getTimezoneid().getTimezonedesc());
-					 */
 				}
 				List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", loginCompanyId,
 						null, userId, null, null, "F");
@@ -565,13 +556,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 					vlErrorpanel.addComponent(lblerror);
 					tfUsername.focus();
 					valid = false;
-				}
-				/*
-				 * else if(!getsessionId.equals("")) { lblerror.setValue("The user name already active");
-				 * vlErrorpanel.removeAllComponents(); vlErrorpanel.addComponent(lblerror); tfUsername.focus();
-				 * valid=false; }
-				 */
-				else if (diffInDays <= 5 && diffInDays >= 1) {
+				} else if (diffInDays <= 5 && diffInDays >= 1) {
 					lblerror.setValue("Warning pwd exp");
 					vlErrorpanel.removeAllComponents();
 					vlErrorpanel.addComponent(lblerror);
@@ -669,7 +654,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 					if (loginuserName.equalsIgnoreCase("design")) {
 						new DashbordDesignView();
 					} else {
-						new DashbordView();
+						new Dashboard();
 					}
 					clContent.addComponent(clArgumentLayout);
 					DateFormat gmtFormat = new SimpleDateFormat();
@@ -902,8 +887,10 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 				targetClass = "com.gnts.base.dashboard.DieDashboardView";
 			} else if (sreenName.equalsIgnoreCase("Production Management")) {
 				targetClass = "com.gnts.base.dashboard.DashboardProduction";
-			} else {
+			} else if (sreenName.equalsIgnoreCase("Sales Management")) {
 				targetClass = "com.gnts.base.dashboard.DashbordView";
+			} else {
+				targetClass = "com.gnts.base.mst.Dashboard";
 			}
 		}
 		System.out.println("test1" + targetClass);

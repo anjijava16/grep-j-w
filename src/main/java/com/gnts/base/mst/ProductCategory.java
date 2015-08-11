@@ -165,15 +165,15 @@ public class ProductCategory extends BaseUI {
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
 		logger.info("Productcat Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<ProductCategoryListDM> productList = new ArrayList<ProductCategoryListDM>();
+		List<ProductCategoryListDM> listProdCat = new ArrayList<ProductCategoryListDM>();
 		logger.info("" + "Product Category : Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Search Parameters are " + companyid + ", " + tfProdCtgryName.getValue() + ", "
 				+ tfPrntCtgryName.getValue() + (String) cbProdCtgryStatus.getValue());
-		productList = serviceProductCategory.getProdCategoryList(null, null, tfProdCtgryName.getValue(),
+		listProdCat = serviceProductCategory.getProdCategoryList(null, null, tfProdCtgryName.getValue(),
 				(String) cbProdCtgryStatus.getValue(), tfPrntCtgryName.getValue(), "F");
-		recordCnt = productList.size();
+		recordCnt = listProdCat.size();
 		beanProdCtgryListDM = new BeanItemContainer<ProductCategoryListDM>(ProductCategoryListDM.class);
-		beanProdCtgryListDM.addAll(productList);
+		beanProdCtgryListDM.addAll(listProdCat);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the ParentCategory. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanProdCtgryListDM);
@@ -328,32 +328,32 @@ public class ProductCategory extends BaseUI {
 	@Override
 	protected void saveDetails() throws SaveException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		ProductCategoryDM productcategoryobj = new ProductCategoryDM();
+		ProductCategoryDM productCategoryDM = new ProductCategoryDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
 			Item rowSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-			productcategoryobj.setCateid((Long) rowSelected.getItemProperty("cateid").getValue());
+			productCategoryDM.setCateid((Long) rowSelected.getItemProperty("cateid").getValue());
 		}
-		productcategoryobj.setCompanyid(companyid);
-		productcategoryobj.setCatename(tfProdCtgryName.getValue().toString());
-		productcategoryobj.setShortdesc(tfShortDesc.getValue().toString());
-		productcategoryobj.setCatedesc(taProdCtgryDesc.getValue().toString());
-		productcategoryobj.setParentcateid((Long) cbPrntCtgry.getValue());
+		productCategoryDM.setCompanyid(companyid);
+		productCategoryDM.setCatename(tfProdCtgryName.getValue().toString());
+		productCategoryDM.setShortdesc(tfShortDesc.getValue().toString());
+		productCategoryDM.setCatedesc(taProdCtgryDesc.getValue().toString());
+		productCategoryDM.setParentcateid((Long) cbPrntCtgry.getValue());
 		if (cbProdCtgryStatus.getValue() != null) {
-			productcategoryobj.setCatestatus((String) cbProdCtgryStatus.getValue());
+			productCategoryDM.setCatestatus((String) cbProdCtgryStatus.getValue());
 		}
 		if ((Boolean) UI.getCurrent().getSession().getAttribute("isFileUploaded")) {
 			try {
-				productcategoryobj.setCateimage((byte[]) UI.getCurrent().getSession().getAttribute("imagebyte"));
+				productCategoryDM.setCateimage((byte[]) UI.getCurrent().getSession().getAttribute("imagebyte"));
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
-			productcategoryobj.setCateimage(null);
+			productCategoryDM.setCateimage(null);
 		}
-		productcategoryobj.setLastupdateddt(DateUtils.getcurrentdate());
-		productcategoryobj.setLastupdatedby(username);
-		serviceProductCategory.saveorUpdateCategoryDetails(productcategoryobj);
+		productCategoryDM.setLastupdateddt(DateUtils.getcurrentdate());
+		productCategoryDM.setLastupdatedby(username);
+		serviceProductCategory.saveorUpdateCategoryDetails(productCategoryDM);
 		resetFields();
 		loadSrchRslt();
 	}

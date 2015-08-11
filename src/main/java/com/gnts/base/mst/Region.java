@@ -152,8 +152,6 @@ public class Region extends BaseUI {
 				"Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("regionId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
-		// tfRegionName.setRequired(false);
-		// cbCountry.setRequired(false);
 	}
 	
 	// Reset the field values to default values
@@ -165,7 +163,6 @@ public class Region extends BaseUI {
 		cbCountry.setComponentError(null);
 		cbCountry.setValue(countryid);
 		cbRegionStatus.setValue(cbRegionStatus.getItemIds().iterator().next());
-		// loadSrchRslt();
 	}
 	
 	// Based on the selected record, the data would be populated into user input
@@ -173,13 +170,15 @@ public class Region extends BaseUI {
 	private void editRegion() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		RegionDM regionDM = beanRegion.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		regId = regionDM.getRegionId().toString();
-		if (regionDM.getRegionName() != null) {
-			tfRegionName.setValue(regionDM.getRegionName());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			RegionDM regionDM = beanRegion.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			regId = regionDM.getRegionId().toString();
+			if (regionDM.getRegionName() != null) {
+				tfRegionName.setValue(regionDM.getRegionName());
+			}
+			cbRegionStatus.setValue(regionDM.getStatus());
+			cbCountry.setValue(regionDM.getCountryId());
 		}
-		cbRegionStatus.setValue(regionDM.getStatus());
-		cbCountry.setValue(regionDM.getCountryId());
 	}
 	
 	// BaseUI searchDetails() implementation

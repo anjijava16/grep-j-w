@@ -59,13 +59,13 @@ public class AuditConfig extends BaseUI {
 	private HorizontalLayout hlSearchLayout;
 	// User Input Components
 	private ComboBox cbTableName = new GERPComboBox("Table Name");
-	CheckBox ckBox;
+	private CheckBox ckBox;
 	// local variables declaration
 	private int recordCnt = 0;
 	private String strLoginUserName;
 	private Long companyId;
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(AuditConfig.class);
+	private Logger logger = Logger.getLogger(AuditConfig.class);
 	private static final long serialVersionUID = 1L;
 	
 	// Constructor
@@ -130,7 +130,6 @@ public class AuditConfig extends BaseUI {
 		 * block. hence the same layout used as is
 		 */
 		hlSearchLayout.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-//		hlSearchLayout.setComponentAlignment(hlUserInputLayout, Alignment.MIDDLE_LEFT);
 	}
 	
 	// load the lookup details for search

@@ -1061,135 +1061,135 @@ public class SmsInvoice extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(false);
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			SmsInvoiceHdrDM editSmsInvoice = beanInvoiceHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			invoiceId = editSmsInvoice.getInvoiceId();
-			invoicetype = editSmsInvoice.getInvoiceType();
-			if (editSmsInvoice.getInvoiceType() != null) {
-				ogInvoiceType.setValue(editSmsInvoice.getInvoiceType());
+			SmsInvoiceHdrDM invoiceHdrDM = beanInvoiceHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			invoiceId = invoiceHdrDM.getInvoiceId();
+			invoicetype = invoiceHdrDM.getInvoiceType();
+			if (invoiceHdrDM.getInvoiceType() != null) {
+				ogInvoiceType.setValue(invoiceHdrDM.getInvoiceType());
 			}
-			cbBranch.setValue(editSmsInvoice.getBranchId());
-			cbPONumber.setValue(editSmsInvoice.getPoId());
-			if (editSmsInvoice.getInvoiceNo() != null) {
+			cbBranch.setValue(invoiceHdrDM.getBranchId());
+			cbPONumber.setValue(invoiceHdrDM.getPoId());
+			if (invoiceHdrDM.getInvoiceNo() != null) {
 				tfInvNo.setReadOnly(false);
-				tfInvNo.setValue(editSmsInvoice.getInvoiceNo());
+				tfInvNo.setValue(invoiceHdrDM.getInvoiceNo());
 				tfInvNo.setReadOnly(true);
 			}
-			if (editSmsInvoice.getEnquiryId() != null) {
-				cbEnqNumber.setValue(editSmsInvoice.getEnquiryId());
+			if (invoiceHdrDM.getEnquiryId() != null) {
+				cbEnqNumber.setValue(invoiceHdrDM.getEnquiryId());
 			}
-			if (editSmsInvoice.getClientId() != null) {
-				cbClient.setValue(editSmsInvoice.getClientId());
+			if (invoiceHdrDM.getClientId() != null) {
+				cbClient.setValue(invoiceHdrDM.getClientId());
 			}
-			if (editSmsInvoice.getPoId() != null) {
-				cbPONumber.setValue(editSmsInvoice.getPoId());
+			if (invoiceHdrDM.getPoId() != null) {
+				cbPONumber.setValue(invoiceHdrDM.getPoId());
 			}
-			dfInvoiceDt.setValue(editSmsInvoice.getInvoiceDate());
-			dfprpnDt.setValue(editSmsInvoice.getPrepnDtTime());
-			dfRemovelDt.setValue(editSmsInvoice.getShipmntDtTime());
-			if (editSmsInvoice.getDespatchedBy() != null) {
-				cbDispatchBy.setValue(editSmsInvoice.getDespatchedBy().toString());
+			dfInvoiceDt.setValue(invoiceHdrDM.getInvoiceDate());
+			dfprpnDt.setValue(invoiceHdrDM.getPrepnDtTime());
+			dfRemovelDt.setValue(invoiceHdrDM.getShipmntDtTime());
+			if (invoiceHdrDM.getDespatchedBy() != null) {
+				cbDispatchBy.setValue(invoiceHdrDM.getDespatchedBy().toString());
 			}
-			if (editSmsInvoice.getCarrier() != null) {
-				cbCarrier.setValue(editSmsInvoice.getCarrier().toString());
+			if (invoiceHdrDM.getCarrier() != null) {
+				cbCarrier.setValue(invoiceHdrDM.getCarrier().toString());
 			}
-			if (editSmsInvoice.getLrNo() != null) {
-				tfLrNo.setValue(editSmsInvoice.getLrNo());
+			if (invoiceHdrDM.getLrNo() != null) {
+				tfLrNo.setValue(invoiceHdrDM.getLrNo());
 			}
-			dfLRDate.setValue(editSmsInvoice.getLrDate());
-			dfDelNotDt.setValue(editSmsInvoice.getDeliveryNoteDt());
-			dfedd.setValue(editSmsInvoice.getEdd());
-			if (editSmsInvoice.getDeliveryNoteNo() != null) {
-				tfDelNOtNo.setValue(editSmsInvoice.getDeliveryNoteNo());
+			dfLRDate.setValue(invoiceHdrDM.getLrDate());
+			dfDelNotDt.setValue(invoiceHdrDM.getDeliveryNoteDt());
+			dfedd.setValue(invoiceHdrDM.getEdd());
+			if (invoiceHdrDM.getDeliveryNoteNo() != null) {
+				tfDelNOtNo.setValue(invoiceHdrDM.getDeliveryNoteNo());
 			}
 			tfBasictotal.setReadOnly(false);
-			tfBasictotal.setValue(editSmsInvoice.getBasicTotal().toString());
+			tfBasictotal.setValue(invoiceHdrDM.getBasicTotal().toString());
 			tfBasictotal.setReadOnly(true);
-			tfpackingPer.setValue(editSmsInvoice.getPackingPrcnt().toString());
+			tfpackingPer.setValue(invoiceHdrDM.getPackingPrcnt().toString());
 			tfPaclingValue.setReadOnly(false);
-			tfPaclingValue.setValue(editSmsInvoice.getPackinValue().toString());
+			tfPaclingValue.setValue(invoiceHdrDM.getPackinValue().toString());
 			tfPaclingValue.setReadOnly(true);
-			if (editSmsInvoice.getDiscountPercent() != null) {
-				tfDiscountPer.setValue(editSmsInvoice.getDiscountPercent().toString());
+			if (invoiceHdrDM.getDiscountPercent() != null) {
+				tfDiscountPer.setValue(invoiceHdrDM.getDiscountPercent().toString());
 			}
-			if (editSmsInvoice.getDiscountValue() != null) {
-				tfDiscountValue.setValue(editSmsInvoice.getDiscountValue().toString());
+			if (invoiceHdrDM.getDiscountValue() != null) {
+				tfDiscountValue.setValue(invoiceHdrDM.getDiscountValue().toString());
 			}
 			tfSubTotal.setReadOnly(false);
-			tfSubTotal.setValue(editSmsInvoice.getSubTotal().toString());
+			tfSubTotal.setValue(invoiceHdrDM.getSubTotal().toString());
 			tfSubTotal.setReadOnly(true);
-			tfVatPer.setValue(editSmsInvoice.getVatPrcnt().toString());
+			tfVatPer.setValue(invoiceHdrDM.getVatPrcnt().toString());
 			tfVatValue.setReadOnly(false);
-			tfVatValue.setValue(editSmsInvoice.getVatValue().toString());
+			tfVatValue.setValue(invoiceHdrDM.getVatValue().toString());
 			tfVatValue.setReadOnly(true);
-			tfEDPer.setValue(editSmsInvoice.getEdPrcnt().toString());
+			tfEDPer.setValue(invoiceHdrDM.getEdPrcnt().toString());
 			tfEDValue.setReadOnly(false);
-			tfEDValue.setValue(editSmsInvoice.getEdValue().toString());
+			tfEDValue.setValue(invoiceHdrDM.getEdValue().toString());
 			tfEDValue.setReadOnly(true);
-			tfHEDPer.setValue(editSmsInvoice.getHedPrcnt().toString());
+			tfHEDPer.setValue(invoiceHdrDM.getHedPrcnt().toString());
 			tfHEDValue.setReadOnly(false);
-			tfHEDValue.setValue(editSmsInvoice.getHedValue().toString());
+			tfHEDValue.setValue(invoiceHdrDM.getHedValue().toString());
 			tfHEDValue.setReadOnly(true);
-			tfCessPer.setValue(editSmsInvoice.getCessPrcnt().toString());
+			tfCessPer.setValue(invoiceHdrDM.getCessPrcnt().toString());
 			tfCessValue.setReadOnly(false);
-			tfCessValue.setValue(editSmsInvoice.getCessValue().toString());
+			tfCessValue.setValue(invoiceHdrDM.getCessValue().toString());
 			tfCessValue.setReadOnly(true);
-			tfCstPer.setValue(editSmsInvoice.getCstPrcnt().toString());
+			tfCstPer.setValue(invoiceHdrDM.getCstPrcnt().toString());
 			tfCstValue.setReadOnly(false);
-			tfCstValue.setValue(editSmsInvoice.getCstValue().toString());
+			tfCstValue.setValue(invoiceHdrDM.getCstValue().toString());
 			tfCstValue.setReadOnly(true);
 			tfSubTaxTotal.setReadOnly(false);
-			tfSubTaxTotal.setValue(editSmsInvoice.getSubTaxTotal().toString());
+			tfSubTaxTotal.setValue(invoiceHdrDM.getSubTaxTotal().toString());
 			tfSubTaxTotal.setReadOnly(true);
-			if (editSmsInvoice.getDisTotal() != null) {
+			if (invoiceHdrDM.getDisTotal() != null) {
 				tfDisToatal.setReadOnly(false);
-				tfDisToatal.setValue(editSmsInvoice.getDisTotal().toString());
+				tfDisToatal.setValue(invoiceHdrDM.getDisTotal().toString());
 			}
-			if (editSmsInvoice.getPdcChharges() != null) {
+			if (invoiceHdrDM.getPdcChharges() != null) {
 				tfPDCCharges.setReadOnly(false);
-				tfPDCCharges.setValue(editSmsInvoice.getPdcChharges().toString());
+				tfPDCCharges.setValue(invoiceHdrDM.getPdcChharges().toString());
 			} else {
 				tfPDCCharges.setReadOnly(false);
 				tfPDCCharges.setValue("0");
 			}
-			tfFreightPer.setValue(editSmsInvoice.getFreightPrcnt().toString());
-			tfFreightValue.setValue(editSmsInvoice.getFreightValue().toString());
-			tfOtherPer.setValue((editSmsInvoice.getOtherPrcnt().toString()));
-			tfOtherValue.setValue((editSmsInvoice.getOtherValue().toString()));
+			tfFreightPer.setValue(invoiceHdrDM.getFreightPrcnt().toString());
+			tfFreightValue.setValue(invoiceHdrDM.getFreightValue().toString());
+			tfOtherPer.setValue((invoiceHdrDM.getOtherPrcnt().toString()));
+			tfOtherValue.setValue((invoiceHdrDM.getOtherValue().toString()));
 			tfGrandtotal.setReadOnly(false);
-			tfGrandtotal.setValue(editSmsInvoice.getGrandTotal().toString());
+			tfGrandtotal.setValue(invoiceHdrDM.getGrandTotal().toString());
 			tfGrandtotal.setReadOnly(true);
-			if (editSmsInvoice.getPaymentTerms() != null) {
-				cbpaymetTerms.setValue(editSmsInvoice.getPaymentTerms().toString());
+			if (invoiceHdrDM.getPaymentTerms() != null) {
+				cbpaymetTerms.setValue(invoiceHdrDM.getPaymentTerms().toString());
 			}
-			if (editSmsInvoice.getFrightTerms() != null) {
-				cbFreightTerms.setValue(editSmsInvoice.getFrightTerms());
+			if (invoiceHdrDM.getFrightTerms() != null) {
+				cbFreightTerms.setValue(invoiceHdrDM.getFrightTerms());
 			}
-			if (editSmsInvoice.getWarrantyTerms() != null) {
-				cbWarrentyTerms.setValue(editSmsInvoice.getWarrantyTerms());
+			if (invoiceHdrDM.getWarrantyTerms() != null) {
+				cbWarrentyTerms.setValue(invoiceHdrDM.getWarrantyTerms());
 			}
-			if (editSmsInvoice.getDeliveryTerms() != null) {
-				cbDelTerms.setValue(editSmsInvoice.getDeliveryTerms());
+			if (invoiceHdrDM.getDeliveryTerms() != null) {
+				cbDelTerms.setValue(invoiceHdrDM.getDeliveryTerms());
 			}
-			if (editSmsInvoice.getShippingAddress() != null) {
-				taShpnAddr.setValue(editSmsInvoice.getShippingAddress());
+			if (invoiceHdrDM.getShippingAddress() != null) {
+				taShpnAddr.setValue(invoiceHdrDM.getShippingAddress());
 			}
-			if (editSmsInvoice.getInvoiceAddress() != null) {
-				taInvoiceOrd.setValue(editSmsInvoice.getInvoiceAddress());
+			if (invoiceHdrDM.getInvoiceAddress() != null) {
+				taInvoiceOrd.setValue(invoiceHdrDM.getInvoiceAddress());
 			}
-			if (editSmsInvoice.getStatus() != null) {
-				cbStatus.setValue(editSmsInvoice.getStatus().toString());
+			if (invoiceHdrDM.getStatus() != null) {
+				cbStatus.setValue(invoiceHdrDM.getStatus().toString());
 			}
-			if (editSmsInvoice.getDutyExempted().equals("Y")) {
+			if (invoiceHdrDM.getDutyExempted().equals("Y")) {
 				chkDutyExe.setValue(true);
 			} else {
 				chkDutyExe.setValue(false);
 			}
-			if (editSmsInvoice.getCformReqd().equals("Y")) {
+			if (invoiceHdrDM.getCformReqd().equals("Y")) {
 				chkCformReq.setValue(true);
 			} else {
 				chkCformReq.setValue(false);
 			}
-			if (editSmsInvoice.getPdcReqd().equals("Y")) {
+			if (invoiceHdrDM.getPdcReqd().equals("Y")) {
 				ckPdcRqu.setValue(true);
 			} else {
 				ckPdcRqu.setValue(false);
@@ -1421,133 +1421,133 @@ public class SmsInvoice extends BaseTransUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			SmsInvoiceHdrDM smsInvoiceHdrobj = new SmsInvoiceHdrDM();
+			SmsInvoiceHdrDM invoiceHdrDM = new SmsInvoiceHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				smsInvoiceHdrobj = beanInvoiceHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				invoiceHdrDM = beanInvoiceHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			if (tfInvNo.getValue() != null) {
-				smsInvoiceHdrobj.setInvoiceNo(tfInvNo.getValue());
+				invoiceHdrDM.setInvoiceNo(tfInvNo.getValue());
 			}
 			invoicetype = (String) ogInvoiceType.getValue();
-			smsInvoiceHdrobj.setInvoiceType((String) ogInvoiceType.getValue());
-			smsInvoiceHdrobj.setBranchId((Long) cbBranch.getValue());
-			smsInvoiceHdrobj.setClientId((Long) cbClient.getValue());
-			smsInvoiceHdrobj.setInvoiceDate(dfInvoiceDt.getValue());
-			smsInvoiceHdrobj.setPrepnDtTime(dfprpnDt.getValue());
-			smsInvoiceHdrobj.setShipmntDtTime(new Date());
-			smsInvoiceHdrobj.setCompanyId(companyid);
+			invoiceHdrDM.setInvoiceType((String) ogInvoiceType.getValue());
+			invoiceHdrDM.setBranchId((Long) cbBranch.getValue());
+			invoiceHdrDM.setClientId((Long) cbClient.getValue());
+			invoiceHdrDM.setInvoiceDate(dfInvoiceDt.getValue());
+			invoiceHdrDM.setPrepnDtTime(dfprpnDt.getValue());
+			invoiceHdrDM.setShipmntDtTime(new Date());
+			invoiceHdrDM.setCompanyId(companyid);
 			if (cbPONumber.getValue() != null) {
-				smsInvoiceHdrobj.setPoId(((Long) cbPONumber.getValue()));
+				invoiceHdrDM.setPoId(((Long) cbPONumber.getValue()));
 			}
 			if (cbEnqNumber.getValue() != null) {
-				smsInvoiceHdrobj.setEnquiryId(((Long) cbEnqNumber.getValue()));
+				invoiceHdrDM.setEnquiryId(((Long) cbEnqNumber.getValue()));
 			}
 			if (tfBasictotal.getValue() != null && tfBasictotal.getValue().trim().length() > 0) {
-				smsInvoiceHdrobj.setBasicTotal(new BigDecimal(tfBasictotal.getValue()));
+				invoiceHdrDM.setBasicTotal(new BigDecimal(tfBasictotal.getValue()));
 			}
-			smsInvoiceHdrobj.setPackingPrcnt((new BigDecimal(tfpackingPer.getValue())));
+			invoiceHdrDM.setPackingPrcnt((new BigDecimal(tfpackingPer.getValue())));
 			if (tfPaclingValue.getValue() != null && tfPaclingValue.getValue().trim().length() > 0) {
-				smsInvoiceHdrobj.setPackinValue(new BigDecimal(tfPaclingValue.getValue()));
+				invoiceHdrDM.setPackinValue(new BigDecimal(tfPaclingValue.getValue()));
 			}
-			smsInvoiceHdrobj.setDiscountPercent((new BigDecimal(tfDiscountPer.getValue())));
+			invoiceHdrDM.setDiscountPercent((new BigDecimal(tfDiscountPer.getValue())));
 			if (tfDiscountValue.getValue() != null && tfDiscountValue.getValue().trim().length() > 0) {
-				smsInvoiceHdrobj.setDiscountValue(new BigDecimal(tfDiscountValue.getValue()));
+				invoiceHdrDM.setDiscountValue(new BigDecimal(tfDiscountValue.getValue()));
 			}
-			smsInvoiceHdrobj.setSubTotal(new BigDecimal(tfSubTotal.getValue()));
-			smsInvoiceHdrobj.setVatPrcnt((new BigDecimal(tfVatPer.getValue())));
+			invoiceHdrDM.setSubTotal(new BigDecimal(tfSubTotal.getValue()));
+			invoiceHdrDM.setVatPrcnt((new BigDecimal(tfVatPer.getValue())));
 			if (tfVatValue.getValue() != null && tfVatValue.getValue().trim().length() > 0) {
-				smsInvoiceHdrobj.setVatValue((new BigDecimal(tfVatValue.getValue())));
+				invoiceHdrDM.setVatValue((new BigDecimal(tfVatValue.getValue())));
 			}
 			if (tfEDPer.getValue() != null && tfEDPer.getValue().trim().length() > 0) {
-				smsInvoiceHdrobj.setEdPrcnt((new BigDecimal(tfEDPer.getValue())));
+				invoiceHdrDM.setEdPrcnt((new BigDecimal(tfEDPer.getValue())));
 			}
 			if (tfEDValue.getValue() != null && tfEDValue.getValue().trim().length() > 0) {
-				smsInvoiceHdrobj.setEdValue(new BigDecimal(tfEDValue.getValue()));
+				invoiceHdrDM.setEdValue(new BigDecimal(tfEDValue.getValue()));
 			}
-			smsInvoiceHdrobj.setHedValue(new BigDecimal(tfHEDValue.getValue()));
-			smsInvoiceHdrobj.setHedPrcnt((new BigDecimal(tfHEDPer.getValue())));
-			smsInvoiceHdrobj.setCessPrcnt((new BigDecimal(tfCessPer.getValue())));
-			smsInvoiceHdrobj.setCessValue(new BigDecimal(tfCessValue.getValue()));
-			smsInvoiceHdrobj.setCstPrcnt((new BigDecimal(tfCstPer.getValue())));
+			invoiceHdrDM.setHedValue(new BigDecimal(tfHEDValue.getValue()));
+			invoiceHdrDM.setHedPrcnt((new BigDecimal(tfHEDPer.getValue())));
+			invoiceHdrDM.setCessPrcnt((new BigDecimal(tfCessPer.getValue())));
+			invoiceHdrDM.setCessValue(new BigDecimal(tfCessValue.getValue()));
+			invoiceHdrDM.setCstPrcnt((new BigDecimal(tfCstPer.getValue())));
 			if (tfCstValue.getValue() != null && tfCstValue.getValue().trim().length() > 0) {
-				smsInvoiceHdrobj.setCstValue((new BigDecimal(tfCstValue.getValue())));
+				invoiceHdrDM.setCstValue((new BigDecimal(tfCstValue.getValue())));
 			}
-			smsInvoiceHdrobj.setSubTaxTotal(new BigDecimal(tfSubTaxTotal.getValue()));
-			smsInvoiceHdrobj.setFreightPrcnt(new BigDecimal(tfFreightPer.getValue()));
-			smsInvoiceHdrobj.setFreightValue(new BigDecimal(tfFreightValue.getValue()));
-			smsInvoiceHdrobj.setOtherPrcnt(new BigDecimal(tfOtherPer.getValue()));
-			smsInvoiceHdrobj.setOtherValue(new BigDecimal(tfOtherValue.getValue()));
-			smsInvoiceHdrobj.setPdcChharges(new BigDecimal(tfPDCCharges.getValue()));
+			invoiceHdrDM.setSubTaxTotal(new BigDecimal(tfSubTaxTotal.getValue()));
+			invoiceHdrDM.setFreightPrcnt(new BigDecimal(tfFreightPer.getValue()));
+			invoiceHdrDM.setFreightValue(new BigDecimal(tfFreightValue.getValue()));
+			invoiceHdrDM.setOtherPrcnt(new BigDecimal(tfOtherPer.getValue()));
+			invoiceHdrDM.setOtherValue(new BigDecimal(tfOtherValue.getValue()));
+			invoiceHdrDM.setPdcChharges(new BigDecimal(tfPDCCharges.getValue()));
 			if (tfDisToatal.getValue() != null) {
-				smsInvoiceHdrobj.setDisTotal(new BigDecimal(tfDisToatal.getValue()));
+				invoiceHdrDM.setDisTotal(new BigDecimal(tfDisToatal.getValue()));
 			}
 			if (tfPDCCharges.getValue() != null) {
-				smsInvoiceHdrobj.setPdcChharges(new BigDecimal(tfPDCCharges.getValue()));
+				invoiceHdrDM.setPdcChharges(new BigDecimal(tfPDCCharges.getValue()));
 			}
-			smsInvoiceHdrobj.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
+			invoiceHdrDM.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
 			if (cbpaymetTerms.getValue() != null) {
-				smsInvoiceHdrobj.setPaymentTerms((cbpaymetTerms.getValue().toString()));
+				invoiceHdrDM.setPaymentTerms((cbpaymetTerms.getValue().toString()));
 			}
 			if (cbFreightTerms.getValue() != null) {
-				smsInvoiceHdrobj.setFrightTerms(cbFreightTerms.getValue().toString());
+				invoiceHdrDM.setFrightTerms(cbFreightTerms.getValue().toString());
 			}
 			if (cbWarrentyTerms.getValue() != null) {
-				smsInvoiceHdrobj.setWarrantyTerms((cbWarrentyTerms.getValue().toString()));
+				invoiceHdrDM.setWarrantyTerms((cbWarrentyTerms.getValue().toString()));
 			}
 			if (cbDelTerms.getValue() != null) {
-				smsInvoiceHdrobj.setDeliveryTerms(cbDelTerms.getValue().toString());
+				invoiceHdrDM.setDeliveryTerms(cbDelTerms.getValue().toString());
 			}
-			smsInvoiceHdrobj.setInvoiceAddress(taInvoiceOrd.getValue());
-			smsInvoiceHdrobj.setShippingAddress(taShpnAddr.getValue());
+			invoiceHdrDM.setInvoiceAddress(taInvoiceOrd.getValue());
+			invoiceHdrDM.setShippingAddress(taShpnAddr.getValue());
 			if (chkDutyExe.getValue().equals(true)) {
-				smsInvoiceHdrobj.setDutyExempted("Y");
+				invoiceHdrDM.setDutyExempted("Y");
 			} else if (chkDutyExe.getValue().equals(false)) {
-				smsInvoiceHdrobj.setDutyExempted("N");
+				invoiceHdrDM.setDutyExempted("N");
 			}
 			if (chkCformReq.getValue().equals(true)) {
-				smsInvoiceHdrobj.setCformReqd("Y");
+				invoiceHdrDM.setCformReqd("Y");
 			} else if (chkCformReq.getValue().equals(false)) {
-				smsInvoiceHdrobj.setCformReqd("N");
+				invoiceHdrDM.setCformReqd("N");
 			}
 			if (ckPdcRqu.getValue().equals(true)) {
-				smsInvoiceHdrobj.setPdcReqd("Y");
+				invoiceHdrDM.setPdcReqd("Y");
 			} else if (ckPdcRqu.getValue().equals(false)) {
-				smsInvoiceHdrobj.setPdcReqd("N");
+				invoiceHdrDM.setPdcReqd("N");
 			}
 			if (cbStatus.getValue() != null) {
-				smsInvoiceHdrobj.setStatus(cbStatus.getValue().toString());
+				invoiceHdrDM.setStatus(cbStatus.getValue().toString());
 			}
-			smsInvoiceHdrobj.setDespatchedBy((String) cbDispatchBy.getValue());
+			invoiceHdrDM.setDespatchedBy((String) cbDispatchBy.getValue());
 			if (cbCarrier.getValue() != null) {
-				smsInvoiceHdrobj.setCarrier(cbCarrier.getValue().toString());
+				invoiceHdrDM.setCarrier(cbCarrier.getValue().toString());
 			}
-			smsInvoiceHdrobj.setLrNo(tfLrNo.getValue());
-			smsInvoiceHdrobj.setLrDate(dfLRDate.getValue());
-			smsInvoiceHdrobj.setDeliveryNoteNo(tfDelNOtNo.getValue());
-			smsInvoiceHdrobj.setDeliveryNoteDt(dfDelNotDt.getValue());
-			smsInvoiceHdrobj.setEdd(dfedd.getValue());
-			smsInvoiceHdrobj.setPreparedBy(EmployeeId);
-			smsInvoiceHdrobj.setReviewedBy(null);
-			smsInvoiceHdrobj.setActionedBy(null);
-			smsInvoiceHdrobj.setLastUpdtDate(DateUtils.getcurrentdate());
-			smsInvoiceHdrobj.setLastUpdatedBy(username);
+			invoiceHdrDM.setLrNo(tfLrNo.getValue());
+			invoiceHdrDM.setLrDate(dfLRDate.getValue());
+			invoiceHdrDM.setDeliveryNoteNo(tfDelNOtNo.getValue());
+			invoiceHdrDM.setDeliveryNoteDt(dfDelNotDt.getValue());
+			invoiceHdrDM.setEdd(dfedd.getValue());
+			invoiceHdrDM.setPreparedBy(EmployeeId);
+			invoiceHdrDM.setReviewedBy(null);
+			invoiceHdrDM.setActionedBy(null);
+			invoiceHdrDM.setLastUpdtDate(DateUtils.getcurrentdate());
+			invoiceHdrDM.setLastUpdatedBy(username);
 			file = new File(GERPConstants.DOCUMENT_PATH);
 			FileInputStream fio = new FileInputStream(file);
 			byte fileContents[] = new byte[(int) file.length()];
 			fio.read(fileContents);
 			fio.close();
-			smsInvoiceHdrobj.setInvoiceDocumet(fileContents);
+			invoiceHdrDM.setInvoiceDocumet(fileContents);
 			validateInvoiceDetails();
-			serviceInvoiceHdr.saveOrUpdateSmsInvoiceHeader(smsInvoiceHdrobj);
+			serviceInvoiceHdr.saveOrUpdateSmsInvoiceHeader(invoiceHdrDM);
 			@SuppressWarnings("unchecked")
 			Collection<SmsInvoiceDtlDM> itemIds = (Collection<SmsInvoiceDtlDM>) tblInvoicDtl.getVisibleItemIds();
 			for (SmsInvoiceDtlDM save : (Collection<SmsInvoiceDtlDM>) itemIds) {
-				save.setInvoiceId(Long.valueOf(smsInvoiceHdrobj.getInvoiceId().toString()));
+				save.setInvoiceId(Long.valueOf(invoiceHdrDM.getInvoiceId().toString()));
 				serviceInvoiceDtl.saveOrUpdateSmsInvoiceDtl(save);
 				Long invoicedqty = save.getInvoiceQty();
 				servicesmspodtl.updateInvoiceOrderQty(((Long) cbPONumber.getValue()), save.getProductId(), invoicedqty);
 			}
-			comments.saveInvoice(smsInvoiceHdrobj.getInvoiceId(), smsInvoiceHdrobj.getStatus());
+			comments.saveInvoice(invoiceHdrDM.getInvoiceId(), invoiceHdrDM.getStatus());
 			if (tblMstScrSrchRslt.getValue() == null) {
 				if (ogInvoiceType.getValue().toString().equalsIgnoreCase("Invoice")) {
 					try {
@@ -1583,31 +1583,31 @@ public class SmsInvoice extends BaseTransUI {
 	private void saveInvoiceDtl() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			SmsInvoiceDtlDM smsInvoiceDtlDM = new SmsInvoiceDtlDM();
+			SmsInvoiceDtlDM invoiceDtlDM = new SmsInvoiceDtlDM();
 			if (tblInvoicDtl.getValue() != null) {
-				smsInvoiceDtlDM = beanInvoiceDtl.getItem(tblInvoicDtl.getValue()).getBean();
-				invoiceDtllList.remove(smsInvoiceDtlDM);
+				invoiceDtlDM = beanInvoiceDtl.getItem(tblInvoicDtl.getValue()).getBean();
+				invoiceDtllList.remove(invoiceDtlDM);
 			}
-			smsInvoiceDtlDM.setProductId(((SmsPODtlDM) cbproduct.getValue()).getProductid());
-			smsInvoiceDtlDM.setProductName(((SmsPODtlDM) cbproduct.getValue()).getProdname());
+			invoiceDtlDM.setProductId(((SmsPODtlDM) cbproduct.getValue()).getProductid());
+			invoiceDtlDM.setProductName(((SmsPODtlDM) cbproduct.getValue()).getProdname());
 			if (tfUnitRate.getValue() != null && tfUnitRate.getValue().trim().length() > 0) {
-				smsInvoiceDtlDM.setUnitRate((Long.valueOf(tfUnitRate.getValue())));
+				invoiceDtlDM.setUnitRate((Long.valueOf(tfUnitRate.getValue())));
 			}
 			if (tfInvoiceQty.getValue() != null && tfInvoiceQty.getValue().trim().length() > 0) {
-				smsInvoiceDtlDM.setInvoiceQty((Long.valueOf(tfInvoiceQty.getValue())));
+				invoiceDtlDM.setInvoiceQty((Long.valueOf(tfInvoiceQty.getValue())));
 			}
-			smsInvoiceDtlDM.setProductUom(((SmsPODtlDM) cbproduct.getValue()).getProduom());
+			invoiceDtlDM.setProductUom(((SmsPODtlDM) cbproduct.getValue()).getProduom());
 			if (tfBasicValue.getValue() != null && tfBasicValue.getValue().trim().length() > 0) {
-				smsInvoiceDtlDM.setBasicValue(new BigDecimal(tfBasicValue.getValue()));
+				invoiceDtlDM.setBasicValue(new BigDecimal(tfBasicValue.getValue()));
 			}
 			if (cbDtlStatus.getValue() != null) {
-				smsInvoiceDtlDM.setInvoDtlStatus(cbDtlStatus.getValue().toString());
+				invoiceDtlDM.setInvoDtlStatus(cbDtlStatus.getValue().toString());
 			}
-			smsInvoiceDtlDM.setCusProdCode(tfcusProdCode.getValue());
-			smsInvoiceDtlDM.setCusProdDesc(taCustProdDessc.getValue());
-			smsInvoiceDtlDM.setLastUpdtDate(DateUtils.getcurrentdate());
-			smsInvoiceDtlDM.setLastUpdatedBy(username);
-			invoiceDtllList.add(smsInvoiceDtlDM);
+			invoiceDtlDM.setCusProdCode(tfcusProdCode.getValue());
+			invoiceDtlDM.setCusProdDesc(taCustProdDessc.getValue());
+			invoiceDtlDM.setLastUpdtDate(DateUtils.getcurrentdate());
+			invoiceDtlDM.setLastUpdatedBy(username);
+			invoiceDtllList.add(invoiceDtlDM);
 			loadInvoiceDtl();
 			getCalculatedValues();
 		}

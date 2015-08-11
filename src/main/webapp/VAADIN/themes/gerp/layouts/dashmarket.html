@@ -1,47 +1,45 @@
 <html lang="en">
 
-<head>     
-	<title>Dashboard</title>   
-      
-        <!-- CSS INCLUDE -->        
-        <link rel="stylesheet" type="text/css" id="theme" href="widget.css"/>
-        
-        <!-- EOF CSS INCLUDE -->  
-<style>
+<head>
+<title>Dashboard</title>
 
+<!-- CSS INCLUDE -->
+<link rel="stylesheet" type="text/css" id="theme" href="widget.css" />
+
+<!-- EOF CSS INCLUDE -->
+<style>
 .navigation {
-    border: 1px solid transparent;
-    margin-bottom: 20px;
-    min-height: 50px;
-    position: relative;
+	border: 1px solid transparent;
+	margin-bottom: 20px;
+	min-height: 50px;
+	position: relative;
 }
 
-
 .page-container {
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 15px;
-    padding-right: 15px;
-    clear: both;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 15px;
+	padding-right: 15px;
+	clear: both;
 }
 
 .row {
-    margin-left: -15px;
-    margin-right: -15px;
-	clear:both;
+	margin-left: -15px;
+	margin-right: -15px;
+	clear: both;
 }
 
 .col-md-12 {
-    width: 100%;
+	width: 100%;
 }
 
 .col-md-3 {
-    width: 20%;
-    float:left;
+	width: 20%;
+	float: left;
 }
 
 .col-md-2 {
-    width: 15%;
+	width: 15%;
 }
 
 /*.page-container {
@@ -55,210 +53,219 @@
 .column_3 {
     width: 19%;
 }*/
-</style>		
-    </head>
-    <body>
-    	
-		<div class="page-container">
+</style>
+</head>
+<body>
+
+	<div class="page-container">
 		<div style="height: 10px"></div>
-			<div class="row">
-				<div class="col-md-3 float_left">
-					<div class="widget widget-default widget-item-icon">
-						<div class="widget-main-title">
+		<div class="row">
+			<div class="col-md-3 float_left">
+				<div class="widget widget-default widget-item-icon">
+					<div class="widget-main-title">
 						<span>Products</span>
-						</div>
-		                <div class="widget-item-left widget-danger">
-		                    <span class="fa fa-suitcase"></span>
-		                </div>
-		                    <div class="widget-data">
-		                        <div class="widget-int num-count" location="productCount">6,504</div>
-		                        
-		                        <div class="widget-subtitle">Total Products</div>
-		                    </div>
-						  
-						
-		            </div>
-				</div>
-				<div class="col-md-3 float_left">
-					<div class="widget widget-default widget-item-icon">
-						<div class="widget-main-title">
-						<span>Clients</span>
-						</div>
-		                <div class="widget-item-left widget-warning">
-		                    <span class="fa fa-users"></span>
-		                </div>
-		                    <div class="widget-data">
-		                        <div class="widget-int num-count" location="clientCount">2,102</div>
-		                       
-		                        <div class="widget-subtitle">Total Clients</div>
-		                    </div>
-						  
-						
-		            </div>
-				</div>
-				<div class="col-md-3 float_left">
-					<div class="widget widget-default widget-item-icon">
-						<div class="widget-main-title">
-						<span>Enquiry Documents</span>
-						</div>
-		                <div class="widget-item-left widget-info">
-		                    <span class="fa fa-money"></span>
-		                </div>
-		                    <div class="widget-data">
-		                        <div class="widget-int num-count" location="enquirydocuments">307</div>
-		                        
-		                    </div>
-						   
-						
-		            </div>
-				</div>
-				<div class="col-md-3 float_left">
-					<div class="widget widget-default widget-item-icon">
-						<div class="widget-main-title">
-						<span>Total Leads</span>
-						</div>
-		                <div class="widget-item-left widget-success">
-		                    <span class="fa fa-users"></span>
-		                </div>
-		                    <div class="widget-data">
-		                        <div class="widget-int num-count" location="dieRequest">$375K</div>
-		                       
-		                        <div class="widget-subtitle">Die Request</div>
-		                    </div>
-						  
-						
-		            </div>
+					</div>
+					<div class="widget-item-left widget-danger">
+						<span class="fa fa-suitcase"></span>
+					</div>
+					<div class="widget-data">
+						<div class="widget-int num-count" location="productCount">6,504</div>
+
+						<div class="widget-subtitle">Total Products</div>
+					</div>
+
+
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-2 float_left">
-					<div onclick="location.href='#';" class="widget widget-default widget-item-icon widget-item-icon-bottom">
+			<div class="col-md-3 float_left">
+				<div class="widget widget-default widget-item-icon">
+					<div class="widget-main-title">
+						<span>Clients</span>
+					</div>
+					<div class="widget-item-left widget-warning">
+						<span class="fa fa-users"></span>
+					</div>
+					<div class="widget-data">
+						<div class="widget-int num-count" location="clientCount">2,102</div>
+
+						<div class="widget-subtitle">Total Clients</div>
+					</div>
+
+
+				</div>
+			</div>
+			<div class="col-md-3 float_left">
+				<div class="widget widget-default widget-item-icon">
+					<div class="widget-main-title">
+						<span>Enquiry Documents</span>
+					</div>
+					<div class="widget-item-left widget-info">
+						<span class="fa fa-money"></span>
+					</div>
+					<div class="widget-data">
+						<div class="widget-int num-count" location="enquirydocuments">307</div>
+
+					</div>
+
+
+				</div>
+			</div>
+			<div class="col-md-3 float_left">
+				<div class="widget widget-default widget-item-icon">
+					<div class="widget-main-title">
+						<span>Total Leads</span>
+					</div>
+					<div class="widget-item-left widget-success">
+						<span class="fa fa-users"></span>
+					</div>
+					<div class="widget-data">
+						<div class="widget-int num-count" location="dieRequest">$375K</div>
+
+						<div class="widget-subtitle">Die Request</div>
+					</div>
+
+
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2 float_left">
+				<div onclick="location.href='#';"
+					class="widget widget-default widget-item-icon widget-item-icon-bottom">
 					<div class="widget-main-title">
 						<span>Sales Enquires</span>
-						</div>
-				        <div class="row">
-							<div class="col-md-4">
-								<div class="widget-item-left widget-item-small widget-primary ">
-						            <span class="fa fa-pencil-square-o"></span>
-						        </div>
+					</div>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="widget-item-left widget-item-small widget-primary ">
+								<span class="fa fa-pencil-square-o"></span>
 							</div>
-							<div class="col-md-8">                           
-								<div class="widget-small-data">
-								    <div class="widget-small-int num-count" style="margin-left: -50px;" location="enquirycount">548</div>
-								    <div class="widget-subtitle" style="margin-left: -30px;">Pending Enquires</div>
-								    
-								</div>
-							</div>  
-						</div>      
-				        
-				    </div>
+						</div>
+						<div class="col-md-8">
+							<div class="widget-small-data">
+								<div class="widget-small-int num-count"
+									style="margin-left: -50px;" location="enquirycount">548</div>
+								<div class="widget-subtitle" style="margin-left: -30px;">Pending
+									Enquires</div>
+
+							</div>
+						</div>
+					</div>
+
 				</div>
-				<div class="col-md-2 float_left">
-					<div onclick="location.href='#';" class="widget widget-default widget-item-icon widget-item-icon-bottom">
+			</div>
+			<div class="col-md-2 float_left">
+				<div onclick="location.href='#';"
+					class="widget widget-default widget-item-icon widget-item-icon-bottom">
 					<div class="widget-main-title">
 						<span>Sales Quotations</span>
-						</div>
-				        <div class="row">
-							<div class="col-md-4">
-								<div class="widget-item-left widget-item-small widget-primary ">
-						            <span class="fa fa-file-text"></span>
-						        </div>
+					</div>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="widget-item-left widget-item-small widget-primary ">
+								<span class="fa fa-file-text"></span>
 							</div>
-							<div class="col-md-8">                           
-								<div class="widget-small-data">
-								    <div class="widget-small-int num-count" location="quotationcount">548</div>
-								    <div class="widget-subtitle">Pending Quotations</div>
-								    
-								</div>
-							</div>  
-						</div>      
-				        
-				    </div>
+						</div>
+						<div class="col-md-8">
+							<div class="widget-small-data">
+								<div class="widget-small-int num-count"
+									location="quotationcount">548</div>
+								<div class="widget-subtitle">Pending Quotations</div>
+
+							</div>
+						</div>
+					</div>
+
 				</div>
-				<div class="col-md-2 float_left">
-					<div onclick="location.href='#';" class="widget widget-default widget-item-icon widget-item-icon-bottom">
+			</div>
+			<div class="col-md-2 float_left">
+				<div onclick="location.href='#';"
+					class="widget widget-default widget-item-icon widget-item-icon-bottom">
 					<div class="widget-main-title">
 						<span>Sales Purchase Orders</span>
-						</div>
-				        <div class="row">
-							<div class="col-md-4">
-								<div class="widget-item-left widget-item-small widget-primary ">
-						            <span class="fa fa-list-alt"></span>
-						        </div>
+					</div>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="widget-item-left widget-item-small widget-primary ">
+								<span class="fa fa-list-alt"></span>
 							</div>
-							<div class="col-md-8">                           
-								<div class="widget-small-data">
-								    <div class="widget-small-int num-count" location="pocount"></div>
-								    <div class="widget-subtitle">Pending Orders</div>
-								    
-								</div>
-							</div>  
-						</div>      
-				        
-				    </div>
+						</div>
+						<div class="col-md-8">
+							<div class="widget-small-data">
+								<div class="widget-small-int num-count" location="pocount"></div>
+								<div class="widget-subtitle">Pending Orders</div>
+
+							</div>
+						</div>
+					</div>
+
 				</div>
-				<div class="col-md-2 float_left">
-					<div onclick="location.href='#';" class="widget widget-default widget-item-icon widget-item-icon-bottom">
+			</div>
+			<div class="col-md-2 float_left">
+				<div onclick="location.href='#';"
+					class="widget widget-default widget-item-icon widget-item-icon-bottom">
 					<div class="widget-main-title">
 						<span>Sales Invoice</span>
-						</div>
-				        <div class="row">
-							<div class="col-md-4">
-								<div class="widget-item-left widget-item-small widget-primary ">
-						            <span class="fa fa-inr"></span>
-						        </div>
+					</div>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="widget-item-left widget-item-small widget-primary ">
+								<span class="fa fa-inr"></span>
 							</div>
-							<div class="col-md-8">                           
-								<div class="widget-small-data">
-								    <div class="widget-small-int num-count" location="invoicecount"></div>
-								    <div class="widget-subtitle">Pending Invoices</div>
-								    
-								</div>
-							</div>  
-						</div>      
-				        
-				    </div>
+						</div>
+						<div class="col-md-8">
+							<div class="widget-small-data">
+								<div class="widget-small-int num-count" location="invoicecount"></div>
+								<div class="widget-subtitle">Pending Invoices</div>
+
+							</div>
+						</div>
+					</div>
+
 				</div>
-				<div class="col-md-2 float_left">
-					<div onclick="location.href='#';" class="widget widget-default widget-item-icon widget-item-icon-bottom">
+			</div>
+			<div class="col-md-2 float_left">
+				<div onclick="location.href='#';"
+					class="widget widget-default widget-item-icon widget-item-icon-bottom">
 					<div class="widget-main-title">
 						<span>Work Orders</span>
-						</div>
-				        <div class="row">
-							<div class="col-md-4">
-								<div class="widget-item-left widget-item-small widget-primary ">
-						            <span class="fa fa-cogs"></span>
-						        </div>
+					</div>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="widget-item-left widget-item-small widget-primary ">
+								<span class="fa fa-cogs"></span>
 							</div>
-							<div class="col-md-8">                           
-								<div class="widget-small-data">
-								    <div class="widget-small-int num-count" location="workordercount">548</div>
-								    <div class="widget-subtitle">Pending Workorders</div>
-								    
-								</div>
-							</div>  
-						</div>      
-				        
-				    </div>
+						</div>
+						<div class="col-md-8">
+							<div class="widget-small-data">
+								<div class="widget-small-int num-count"
+									location="workordercount">548</div>
+								<div class="widget-subtitle">Pending Workorders</div>
+
+							</div>
+						</div>
+					</div>
+
 				</div>
-				
 			</div>
-			<div class="row grid" style="min-height:280px;" >
-			<div class="widget-main-title">
-						<span>Workorder Calender</span>
-						
-						</div>
-						<div location="marketcalender"></div>
-			</div>
-			<br/>
-			<div class="row grid" style="min-height:280px;" >
-			<div class="widget-main-title">
-						<span>Workorder Status</span>
-						
-						</div>
-						<div location="workorderstatus"></div>
-			</div>
-			
+
 		</div>
-	</body>
+		<div class="row grid" style="min-height: 280px;">
+			<div class="widget-main-title">
+				<span>Workorder Calender</span>
+
+			</div>
+			<div location="marketcalender"></div>
+		</div>
+		<br />
+		<div class="row grid" style="min-height: 280px;">
+			<div class="widget-main-title">
+				<span>Overall Status</span>
+
+			</div>
+			<div location="workorderstatus"></div>
+		</div>
+
+	</div>
+</body>
 </html>

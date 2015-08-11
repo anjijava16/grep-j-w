@@ -822,18 +822,18 @@ public class SalesQuote extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<SmsQuoteHdrDM> smsQuoteHdrList = new ArrayList<SmsQuoteHdrDM>();
+		List<SmsQuoteHdrDM> listQuoteHdr = new ArrayList<SmsQuoteHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
 		String eno = null;
 		if (cbEnqNo.getValue() != null) {
 			eno = (((SmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryNo());
 		}
-		smsQuoteHdrList = servicesmsQuoteHdr.getSmsQuoteHdrList(companyid, null, (Long) cbBranch.getValue(),
+		listQuoteHdr = servicesmsQuoteHdr.getSmsQuoteHdrList(companyid, null, (Long) cbBranch.getValue(),
 				(String) cbStatus.getValue(), (String) tfQuoteNumber.getValue(), eno, "F", null);
-		recordCnt = smsQuoteHdrList.size();
+		recordCnt = listQuoteHdr.size();
 		beansmsQuoteHdr = new BeanItemContainer<SmsQuoteHdrDM>(SmsQuoteHdrDM.class);
-		beansmsQuoteHdr.addAll(smsQuoteHdrList);
+		beansmsQuoteHdr.addAll(listQuoteHdr);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beansmsQuoteHdr);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "quoteId", "branchName", "quoteNumber", "enquiryNo",

@@ -10,21 +10,21 @@ import org.apache.log4j.Logger;
 import com.gnts.erputil.util.DateUtils;
 
 public class EmailTrigger {
-	// private String to ="soundar@gnts.in";
 	// private String from = "soundar@gntstech.com";
-	private String from = "webmaster@gntstech.com";
+	 private String from = "webmaster@gntstech.com";
+	//private String from = "soundar@gnts.in";
 	// private String to,from;
 	private Session session;
-	private String To;
+	private String toaddress;
 	private String hostname = "mail.gntstech.com";
 	// private String hostname = "mail.gnts.in";
 	private String portno = "25";
 	private String password = "GntS@2013", messageBody = "", heading = "";
-	private static Logger log = Logger.getLogger(EmailTrigger.class);
+	private Logger log = Logger.getLogger(EmailTrigger.class);
 	
 	public EmailTrigger(String to, String messagebody, String header) {
 		messageBody = messagebody;
-		To = to;
+		toaddress = to;
 		heading = header;
 		biuldview();
 	}
@@ -57,7 +57,7 @@ public class EmailTrigger {
 			log.info("MailTrigger in side try  ");
 			MimeMessage message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(from));// change accordingly
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(To));
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(toaddress));
 			message.setSubject(heading);
 			message.setText(messageBody);
 			message.setSentDate(DateUtils.getcurrentdate());
@@ -70,7 +70,6 @@ public class EmailTrigger {
 		}
 		catch (Exception e) {
 			log.info("Exception fot Mail" + e);
-			// throw new RuntimeException(e);
 			e.printStackTrace();
 		}
 	}

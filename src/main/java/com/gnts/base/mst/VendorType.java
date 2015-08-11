@@ -268,19 +268,19 @@ public class VendorType extends BaseUI {
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
-		VendorTypeDM vendorTypeobj = new VendorTypeDM();
+		VendorTypeDM vendorTypeDM = new VendorTypeDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			vendorTypeobj = beanVendortypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			vendorTypeDM = beanVendortypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		vendorTypeobj.setCompanyid(companyId);
-		vendorTypeobj.setVendortypename(tfvendortypename.getValue().toString());
-		vendorTypeobj.setBranchid((Long) cbBranchname.getValue());
+		vendorTypeDM.setCompanyid(companyId);
+		vendorTypeDM.setVendortypename(tfvendortypename.getValue().toString());
+		vendorTypeDM.setBranchid((Long) cbBranchname.getValue());
 		if (cbStatus.getValue() != null) {
-			vendorTypeobj.setVendortypestatus((String) cbStatus.getValue());
+			vendorTypeDM.setVendortypestatus((String) cbStatus.getValue());
 		}
-		vendorTypeobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-		vendorTypeobj.setLastUpdatedBy(userName);
-		serviceVendorType.saveorUpdateVendorTypeDetails(vendorTypeobj);
+		vendorTypeDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+		vendorTypeDM.setLastUpdatedBy(userName);
+		serviceVendorType.saveorUpdateVendorTypeDetails(vendorTypeDM);
 		resetFields();
 		loadSrchRslt();
 	}

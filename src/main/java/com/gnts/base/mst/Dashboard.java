@@ -24,9 +24,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
+import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.domain.txn.HolidaysDM;
 import com.gnts.base.domain.txn.OrgNewsDM;
 import com.gnts.base.rpt.PayrollChart;
+import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.base.service.txn.HolidayService;
 import com.gnts.base.service.txn.OrgNewsService;
 import com.gnts.erputil.components.DummyDataGenerator;
@@ -34,6 +36,7 @@ import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.SparklineChart;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -44,12 +47,14 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class Dashboard {
-	private Table tblHoliday, tblEvaluation;
+	private Table tblHoliday, tblBirthday, tblNews;
 	private HolidayService serviceHoliday = (HolidayService) SpringContextHelper.getBean("holidays");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private OrgNewsService serviceNews = (OrgNewsService) SpringContextHelper.getBean("news");
 	private Logger log = Logger.getLogger(Dashboard.class);
 	private BeanItemContainer<HolidaysDM> beans = null;
@@ -57,8 +62,8 @@ public class Dashboard {
 	private HorizontalLayout vlMainLayout;
 	private VerticalLayout vlnew, vlEval;
 	private Long companyId, branchId;
-	private Accordion accordion;
-	private Label lblNews, lblFormTittle;
+	private Accordion accordionHoli, accordionNews, accordionEval;
+	private Label lblFormTittle;
 	
 	public Dashboard() {
 		branchId = Long.valueOf(UI.getCurrent().getSession().getAttribute("branchId").toString());
@@ -74,29 +79,36 @@ public class Dashboard {
 		tblHoliday = new Table();
 		tblHoliday.setPageLength(7);
 		tblHoliday.setSizeFull();
-		tblEvaluation = new Table();
-		tblEvaluation.setPageLength(3);
-		tblEvaluation.setSizeFull();
+		tblBirthday = new Table();
+		tblBirthday.setPageLength(3);
+		tblBirthday.setSizeFull();
+		tblNews = new Table();
+		tblNews.setPageLength(7);
+		tblNews.setSizeFull();
 		lblFormTittle = new Label();
 		lblFormTittle.setContentMode(ContentMode.HTML);
 		lblFormTittle.setValue("&nbsp;&nbsp;<b>" + "Dashboard");
 		vlnew = new VerticalLayout();
 		vlnew.setWidth("300px");
 		vlnew.setHeight("240px");
+		vlnew.addComponent(tblNews);
 		vlEval = new VerticalLayout();
 		vlEval.setWidth("250px");
 		vlEval.setHeight("200px");
+		vlEval.addComponent(tblBirthday);
 		vltable = new VerticalLayout();
 		vltable.addComponent(tblHoliday);
 		vlEvalTable = new VerticalLayout();
-		vlEvalTable.addComponent(tblEvaluation);
-		accordion = new Accordion();
-		accordion.setHeight("360px");
-		accordion.setWidth("350px");
-		accordion.addTab(vlEval, "Evaluation Details");
-		accordion.addTab(vltable, "Holidays");
-		accordion.addTab(vlnew, "News");
-		accordion.setSelectedTab(vltable);
+		vlEvalTable.addComponent(tblBirthday);
+		accordionHoli = new Accordion();
+		accordionNews = new Accordion();
+		accordionEval = new Accordion();
+		accordionHoli.setHeight("360px");
+		accordionHoli.setWidth("350px");
+		accordionEval.addTab(vlEval, "Birthday Wishes");
+		accordionHoli.addTab(vltable, "Holidays");
+		accordionNews.addTab(vlnew, "News");
+		accordionHoli.setSelectedTab(vltable);
 		VerticalLayout vlchart = new VerticalLayout();
 		new PayrollChart(vlchart, null);
 		vlMainLayout = new HorizontalLayout();
@@ -104,12 +116,22 @@ public class Dashboard {
 		vlMainLayout.setSpacing(true);
 		vlMainLayout.setMargin(true);
 		clMainLayout.addComponent(buildSparklines());
+		clMainLayout.addComponent(new HorizontalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				addComponent(accordionHoli);
+				addComponent(accordionNews);
+				addComponent(accordionEval);
+				setSpacing(true);
+			}
+		});
 		clMainLayout.addComponent(vlMainLayout);
+		clMainLayout.setSpacing(true);
 		hlHeader.addComponent(lblFormTittle);
 		hlHeader.setComponentAlignment(lblFormTittle, Alignment.MIDDLE_LEFT);
 		hlHeader.setExpandRatio(lblFormTittle, 1);
 		populateAndConfigureTableNew();
-		populateAndConfigEval();
+		loadBirthDayDetails();
 		loadNewsDetails();
 	}
 	
@@ -128,19 +150,38 @@ public class Dashboard {
 		tblHoliday.setColumnWidth("holidayDate", 100);
 	}
 	
-	private void populateAndConfigEval() {
+	private void loadBirthDayDetails() {
+		List<EmployeeDM> list = serviceEmployee.getEmployeeList(null, null, null, null, null, null, null, null,
+				null, "P");
+		if (list != null) {
+			tblBirthday.removeAllItems();
+			BeanItemContainer<EmployeeDM> beansNews = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+			beansNews.addAll(list);
+			tblBirthday.setContainerDataSource(beansNews);
+			tblBirthday.setVisibleColumns(new Object[] { "dob", "firstlastname" });
+			tblBirthday.setColumnHeaders(new String[] { " Date", "Employee Name " });
+		}
 	}
 	
 	private void loadNewsDetails() {
-		List<OrgNewsDM> newsList = serviceNews.getNewsList(null, null, null, "Active", companyId, branchId, null);
+		List<OrgNewsDM> newsList = serviceNews.getNewsList(null, null, null, "Active", companyId, null, null);
 		if (newsList != null) {
-			lblNews = new Label();
-			lblNews.setContentMode(ContentMode.HTML);
-			for (OrgNewsDM newObject : newsList) {
-				lblNews.setValue("<marquee scrollamount=\"4\" direction=\"up\">" + newObject.getNewsDesc()
-						+ "<br> </marquee>");
-				vlnew.addComponent(lblNews);
-			}
+			tblNews.removeAllItems();
+			BeanItemContainer<OrgNewsDM> beansNews = new BeanItemContainer<OrgNewsDM>(OrgNewsDM.class);
+			beansNews.addAll(newsList);
+			tblNews.setContainerDataSource(beansNews);
+			tblNews.setVisibleColumns(new Object[] { "newsTitle", "newsDesc" });
+			tblNews.setColumnHeaders(new String[] { " Title", "Description " });
+			tblNews.addGeneratedColumn("newsDesc", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<OrgNewsDM> item = (BeanItem<OrgNewsDM>) source.getItem(itemId);
+					return new Label((String) item.getItemProperty("newsDesc").getValue(), ContentMode.HTML);
+				}
+			});
 		}
 	}
 	

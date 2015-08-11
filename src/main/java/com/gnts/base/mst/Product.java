@@ -533,58 +533,56 @@ public class Product extends BaseUI {
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editProduct() {
 		hlUserInputLayout.setVisible(true);
-		Item rowSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (rowSelected != null) {
-			ProductDM editproductList = beanProductDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			prodId = editproductList.getProdid();
-			if ((rowSelected.getItemProperty("prodname").getValue() != null)) {
-				tfProdName.setValue(editproductList.getProdname().toString());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			ProductDM productDM = beanProductDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			prodId = productDM.getProdid();
+			if ((productDM.getProdname() != null)) {
+				tfProdName.setValue(productDM.getProdname().toString());
 			}
-			if ((rowSelected.getItemProperty("productcode").getValue() != null)) {
-				tfprodcode.setValue(editproductList.getProductcode().toString());
+			if ((productDM.getProductcode() != null)) {
+				tfprodcode.setValue(productDM.getProductcode().toString());
 			}
-			if ((rowSelected.getItemProperty("proddesc").getValue() != null)) {
-				taprodDesc.setValue(editproductList.getProddesc());
+			if ((productDM.getProddesc() != null)) {
+				taprodDesc.setValue(productDM.getProddesc());
 			}
-			if ((rowSelected.getItemProperty("price").getValue() != null)) {
-				tfprice.setValue(editproductList.getPrice().toString());
+			if ((productDM.getPrice() != null)) {
+				tfprice.setValue(productDM.getPrice().toString());
 			}
-			if ((rowSelected.getItemProperty("shortdesc").getValue() != null)) {
-				tasrtDesc.setValue(editproductList.getShortdesc().toString());
+			if ((productDM.getShortdesc() != null)) {
+				tasrtDesc.setValue(productDM.getShortdesc().toString());
 			}
-			if ((rowSelected.getItemProperty("uom").getValue() != null)) {
-				cbuom.setValue(editproductList.getUom().toString());
+			if ((productDM.getUom() != null)) {
+				cbuom.setValue(productDM.getUom().toString());
 			}
-			if ((rowSelected.getItemProperty("ccyName").getValue() != null)) {
-				cbcurrency.setValue(editproductList.getCcyid());
+			if ((productDM.getCcyid() != null)) {
+				cbcurrency.setValue(productDM.getCcyid());
 			}
-			if (("prodstatus") != null) {
-				String stCode = rowSelected.getItemProperty("prodstatus").getValue().toString();
-				cbstatus.setValue(stCode);
+			if (productDM.getProdstatus() != null) {
+				cbstatus.setValue(productDM.getProdstatus());
 			}
-			if ((rowSelected.getItemProperty("proddesc").getValue() != null)) {
-				taprodDesc.setValue(rowSelected.getItemProperty("proddesc").getValue().toString());
+			if ((productDM.getProddesc() != null)) {
+				taprodDesc.setValue(productDM.getProddesc());
 			}
-			if (editproductList.getView360yn().equals("Y")) {
+			if (productDM.getView360yn().equals("Y")) {
 				cbView.setValue(true);
 			} else {
 				cbView.setValue(false);
 			}
-			if (editproductList.getVisualizeryn().equals("Y")) {
+			if (productDM.getVisualizeryn().equals("Y")) {
 				cbVisualizer.setValue(true);
 			} else {
 				cbVisualizer.setValue(false);
 			}
-			if (editproductList.getProdimg() != null) {
+			if (productDM.getProdimg() != null) {
 				hlProdCtgryImg.removeAllComponents();
-				byte[] myimage = (byte[]) editproductList.getProdimg();
+				byte[] myimage = (byte[]) productDM.getProdimg();
 				UploadUI uploadObject = new UploadUI(hlProdCtgryImg);
-				uploadObject.dispayImage(myimage, editproductList.getProdname());
+				uploadObject.dispayImage(myimage, productDM.getProdname());
 			} else {
 				new UploadUI(hlProdCtgryImg);
 			}
-			if (editproductList.getProddoc() != null) {
-				byte[] certificate = (byte[]) editproductList.getProddoc();
+			if (productDM.getProddoc() != null) {
+				byte[] certificate = (byte[]) productDM.getProddoc();
 				UploadDocumentUI test = new UploadDocumentUI(hlprodDoc);
 				test.displaycertificate(certificate);
 			} else {

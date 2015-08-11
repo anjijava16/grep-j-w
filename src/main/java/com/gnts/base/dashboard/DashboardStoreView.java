@@ -461,7 +461,6 @@ public class DashboardStoreView implements ClickListener {
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/materialstock"); // materialstock is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

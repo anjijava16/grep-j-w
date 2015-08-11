@@ -26,9 +26,9 @@ import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.LookupService;
 import com.gnts.base.service.mst.ModuleService;
 import com.gnts.erputil.BASEConstants;
-import com.gnts.erputil.util.DateUtils;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
@@ -36,8 +36,7 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
-import com.gnts.erputil.components.GERPPanelGenerator;
-import com.vaadin.data.Item;
+import com.gnts.erputil.util.DateUtils;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -96,7 +95,7 @@ public class CompanyLookup extends BaseUI {
 		tflookupname = new GERPTextField("Lookup Value");
 		tflookupname.setMaxLength(100);
 		// CompanyLookup status combo box
-		cbstatus = new GERPComboBox("Status",BASEConstants.M_GENERIC_TABLE,BASEConstants.M_GENERIC_COLUMN);
+		cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// LookupCode combo box of CompanyLookup
 		cbLookupCode = new GERPComboBox("Lookup Ref.");
 		cbLookupCode.setItemCaptionPropertyId("lookupdesc");
@@ -139,7 +138,7 @@ public class CompanyLookup extends BaseUI {
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		assembleSearchLayout();
 		resetFields();
-		loadLookupListAll();		
+		loadLookupListAll();
 		loadSrchRslt();
 	}
 	
@@ -162,8 +161,7 @@ public class CompanyLookup extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<CompanyLookupDM> lookuplist = new ArrayList<CompanyLookupDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tflookupname.getValue() + "," + lookupcode + ","
-				+ ((String) cbstatus.getValue()));
+				+ companyid + ", " + tflookupname.getValue() + "," + lookupcode + "," + ((String) cbstatus.getValue()));
 		if (cbLookupCode.getValue() != null) {
 			lookupcode = ((Long) cbLookupCode.getValue());
 		}
@@ -179,8 +177,8 @@ public class CompanyLookup extends BaseUI {
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "cmplookupid", "moduleName", "lookupDesc", "lookupname",
 				"lookupstatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Code", "Lookup Ref. ", "Value",
-				"Status", "Updated Date", "Updated By" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Code", "Lookup Ref. ", "Value", "Status",
+				"Updated Date", "Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("cmplookupid", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		tblMstScrSrchRslt.setSelectable(true);
@@ -188,7 +186,7 @@ public class CompanyLookup extends BaseUI {
 	
 	// load the ModuleDeatils List details for form
 	private void loadmodulelist() {
-		List<ModuleDM> moduleList =  new ArrayList<ModuleDM>();
+		List<ModuleDM> moduleList = new ArrayList<ModuleDM>();
 		moduleList.add(new ModuleDM(0L, "All Modules"));
 		moduleList.addAll(servModuleBean.getModuleList(companyid));
 		BeanContainer<Long, ModuleDM> modulebean = new BeanContainer<Long, ModuleDM>(ModuleDM.class);
@@ -197,26 +195,26 @@ public class CompanyLookup extends BaseUI {
 		cbModuleCode.setContainerDataSource(modulebean);
 	}
 	
-	// load the lookupDetails List details for form without 
+	// load the lookupDetails List details for form without
 	private void loadLookupList() {
-		List<LookupDM> lookupList = new ArrayList<LookupDM>();		
+		List<LookupDM> lookupList = new ArrayList<LookupDM>();
 		loadLookupBean(lookupList);
 	}
 	
 	private void loadLookupListAll() {
-		List<LookupDM> lookupList = new ArrayList<LookupDM>();		
-		lookupList.add(new LookupDM(0L, "ALL", "All Lookup"));					
+		List<LookupDM> lookupList = new ArrayList<LookupDM>();
+		lookupList.add(new LookupDM(0L, "ALL", "All Lookup"));
 		loadLookupBean(lookupList);
-	}	
+	}
 	
 	private void loadLookupBean(List<LookupDM> lookupList) {
-		lookupList.addAll(serviceLookUp.getLookupList(((Long) cbModuleCode.getValue()), null, null, "Active","D"));
+		lookupList.addAll(serviceLookUp.getLookupList(((Long) cbModuleCode.getValue()), null, null, "Active", "D"));
 		BeanContainer<Long, LookupDM> lookupbean = new BeanContainer<Long, LookupDM>(LookupDM.class);
 		lookupbean.setBeanIdProperty("lookupid");
 		lookupbean.addAll(lookupList);
-		cbLookupCode.setContainerDataSource(lookupbean);		
+		cbLookupCode.setContainerDataSource(lookupbean);
 	}
-
+	
 	// Reset the field values to default values
 	@Override
 	protected void resetFields() {
@@ -233,21 +231,18 @@ public class CompanyLookup extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editCompanyLookUp() {
-		String lookupId = null;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item rowSelect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		companyLookUpId = rowSelect.getItemProperty("cmplookupid").getValue().toString();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Selected CompanyLookup. Id -> " + lookupId);
-		CompanyLookupDM editCmpyLookUp = beansCompanyLookup.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		if (rowSelect != null) {
-			tflookupname.setValue(rowSelect.getItemProperty("lookupname").getValue().toString());
+				+ "Selected CompanyLookup. Id -> ");
+		if (tblMstScrSrchRslt.getValue() != null) {
+			CompanyLookupDM companyLookupDM = beansCompanyLookup.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			companyLookUpId = companyLookupDM.getCmplookupid().toString();
+			tflookupname.setValue(companyLookupDM.getLookupname());
+			cbModuleCode.setValue((Long) companyLookupDM.getModuleid());
+			cbLookupCode.setValue((Long) companyLookupDM.getLookupid());
+			cbstatus.setValue(companyLookupDM.getLookupstatus());
 		}
-		cbModuleCode.setValue((Long) editCmpyLookUp.getModuleid());
-		cbLookupCode.setValue((Long) editCmpyLookUp.getLookupid());
-		String stCode = rowSelect.getItemProperty("lookupstatus").getValue().toString();
-		cbstatus.setValue(stCode);
 	}
 	
 	// Base class implementations
@@ -341,7 +336,7 @@ public class CompanyLookup extends BaseUI {
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Throwing ValidationException. User data is > " + tflookupname.getValue());
 		}
-		 if (cbModuleCode.getValue() == null) {
+		if (cbModuleCode.getValue() == null) {
 			cbModuleCode.setComponentError(new UserError(GERPErrorCodes.NULL_COMPANY_LOOKUP_MODULE_CODE));
 			errorFlag = true;
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -362,30 +357,29 @@ public class CompanyLookup extends BaseUI {
 	protected void saveDetails() throws ERPException.SaveException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
-		CompanyLookupDM lookupobj = new CompanyLookupDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			lookupobj = beansCompanyLookup.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			CompanyLookupDM lookupobj = new CompanyLookupDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				lookupobj = beansCompanyLookup.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
+			lookupobj.setLookupname(tflookupname.getValue().toString());
+			lookupobj.setCompanyid(companyid);
+			if (cbLookupCode.getValue() != null) {
+				lookupobj.setLookupid((Long) cbLookupCode.getValue());
+			}
+			if (cbModuleCode.getValue() != null) {
+				lookupobj.setModuleid((Long) cbModuleCode.getValue());
+			}
+			if (cbstatus.getValue() != null) {
+				lookupobj.setLookupstatus((String) cbstatus.getValue());
+			}
+			lookupobj.setLastupdateddt(DateUtils.getcurrentdate());
+			lookupobj.setLastupdatedby(username);
+			serviceCompanyLookup.saveorUpdateCompanyLookupDetails(lookupobj);
+			resetFields();
+			loadSrchRslt();
 		}
-		lookupobj.setLookupname(tflookupname.getValue().toString());
-		lookupobj.setCompanyid(companyid);
-		if (cbLookupCode.getValue() != null) {
-			lookupobj.setLookupid((Long) cbLookupCode.getValue());
-		}
-		if (cbModuleCode.getValue() != null) {
-			lookupobj.setModuleid((Long) cbModuleCode.getValue());
-		}
-		if (cbstatus.getValue() != null) {
-			lookupobj.setLookupstatus((String)cbstatus.getValue());
-		}
-		lookupobj.setLastupdateddt(DateUtils.getcurrentdate());
-		lookupobj.setLastupdatedby(username);
-		serviceCompanyLookup.saveorUpdateCompanyLookupDetails(lookupobj);
-		resetFields();
-		loadSrchRslt();
-	}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-		
 }

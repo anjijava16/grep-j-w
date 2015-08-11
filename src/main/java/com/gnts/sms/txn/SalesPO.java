@@ -512,8 +512,6 @@ public class SalesPO extends BaseTransUI {
 							tfQuoteQty.setValue("0");
 						}
 						tfQuoteQty.setCaption("Quote Qty(" + ((SmsQuoteDtlDM) cbproduct.getValue()).getProduom() + ")");
-						System.out.println("((SmsQuoteDtlDM) cbproduct.getValue()).getCustomField1()"
-								+ ((SmsQuoteDtlDM) cbproduct.getValue()).getCustomField1());
 						if (((SmsQuoteDtlDM) cbproduct.getValue()).getCustomField1() != null) {
 							System.out.println("not null");
 							tfCustomField1.setValue(((SmsQuoteDtlDM) cbproduct.getValue()).getCustomField1());
@@ -882,12 +880,11 @@ public class SalesPO extends BaseTransUI {
 		recordCnt = smsPOHdrList.size();
 		beansmsPOHdr = new BeanItemContainer<SmsPOHdrDM>(SmsPOHdrDM.class);
 		beansmsPOHdr.addAll(smsPOHdrList);
-		
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beansmsPOHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "poid", "enqNo", "clientName","clientCity", "pono", "lastupdateddt",
-				"lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry No.", "Client Name","City", "PO No.",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "poid", "enqNo", "clientName", "clientCity", "pono",
+				"lastupdateddt", "lastupdatedby" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry No.", "Client Name", "City", "PO No.",
 				"Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("poId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
@@ -1077,82 +1074,82 @@ public class SalesPO extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(false);
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			SmsPOHdrDM smspoHdrobj = beansmsPOHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			poid = smspoHdrobj.getPoid();
-			cbBranch.setValue(smspoHdrobj.getBranchid());
+			SmsPOHdrDM poHdrDM = beansmsPOHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			poid = poHdrDM.getPoid();
+			cbBranch.setValue(poHdrDM.getBranchid());
 			tfPONumber.setReadOnly(false);
-			tfPONumber.setValue(smspoHdrobj.getPono());
-			dfPODt.setValue(smspoHdrobj.getPodate());
-			taRemark.setValue(smspoHdrobj.getPoremark());
-			tfversionNo.setValue(smspoHdrobj.getVersionno().toString());
+			tfPONumber.setValue(poHdrDM.getPono());
+			dfPODt.setValue(poHdrDM.getPodate());
+			taRemark.setValue(poHdrDM.getPoremark());
+			tfversionNo.setValue(poHdrDM.getVersionno().toString());
 			tfBasictotal.setReadOnly(false);
-			tfBasictotal.setValue(smspoHdrobj.getBasictotal().toString());
+			tfBasictotal.setValue(poHdrDM.getBasictotal().toString());
 			tfBasictotal.setReadOnly(true);
-			tfpackingPer.setValue(smspoHdrobj.getPackingprnct().toString());
+			tfpackingPer.setValue(poHdrDM.getPackingprnct().toString());
 			tfPackingValue.setReadOnly(false);
-			tfPackingValue.setValue(smspoHdrobj.getPackingvalue().toString());
+			tfPackingValue.setValue(poHdrDM.getPackingvalue().toString());
 			tfPackingValue.setReadOnly(true);
-			if (smspoHdrobj.getDiscountPercent() != null) {
-				tfDiscountPer.setValue(smspoHdrobj.getDiscountPercent().toString());
+			if (poHdrDM.getDiscountPercent() != null) {
+				tfDiscountPer.setValue(poHdrDM.getDiscountPercent().toString());
 			}
-			if (smspoHdrobj.getDiscountValue() != null) {
+			if (poHdrDM.getDiscountValue() != null) {
 				tfDiscountValue.setReadOnly(false);
-				tfDiscountValue.setValue(smspoHdrobj.getDiscountValue().toString());
+				tfDiscountValue.setValue(poHdrDM.getDiscountValue().toString());
 				tfDiscountValue.setReadOnly(true);
 			}
 			tfSubTotal.setReadOnly(false);
-			tfSubTotal.setValue(smspoHdrobj.getSubtotal().toString());
+			tfSubTotal.setValue(poHdrDM.getSubtotal().toString());
 			tfSubTotal.setReadOnly(true);
-			tfVatPer.setValue(smspoHdrobj.getVatprnct().toString());
+			tfVatPer.setValue(poHdrDM.getVatprnct().toString());
 			tfVatValue.setReadOnly(false);
-			tfVatValue.setValue(smspoHdrobj.getVatvalue().toString());
+			tfVatValue.setValue(poHdrDM.getVatvalue().toString());
 			tfVatValue.setReadOnly(true);
-			tfEDPer.setValue(smspoHdrobj.getEdprnct().toString());
+			tfEDPer.setValue(poHdrDM.getEdprnct().toString());
 			tfEDValue.setReadOnly(false);
-			tfEDValue.setValue(smspoHdrobj.getEdvalue().toString());
+			tfEDValue.setValue(poHdrDM.getEdvalue().toString());
 			tfEDValue.setReadOnly(true);
-			tfHEDPer.setValue(smspoHdrobj.getHedprnct().toString());
+			tfHEDPer.setValue(poHdrDM.getHedprnct().toString());
 			tfHEDValue.setReadOnly(false);
-			tfHEDValue.setValue(smspoHdrobj.getHedvalue().toString());
+			tfHEDValue.setValue(poHdrDM.getHedvalue().toString());
 			tfHEDValue.setReadOnly(true);
-			tfCessPer.setValue(smspoHdrobj.getCessprnct().toString());
+			tfCessPer.setValue(poHdrDM.getCessprnct().toString());
 			tfCessValue.setReadOnly(false);
-			tfCessValue.setValue(smspoHdrobj.getCessvalue().toString());
+			tfCessValue.setValue(poHdrDM.getCessvalue().toString());
 			tfCessValue.setReadOnly(true);
-			tfCstPer.setValue(smspoHdrobj.getCstprnct().toString());
+			tfCstPer.setValue(poHdrDM.getCstprnct().toString());
 			tfCstValue.setReadOnly(false);
-			tfCstValue.setValue(smspoHdrobj.getCstvalue().toString());
+			tfCstValue.setValue(poHdrDM.getCstvalue().toString());
 			tfCstValue.setReadOnly(true);
 			tfSubTaxTotal.setReadOnly(false);
-			tfSubTaxTotal.setValue(smspoHdrobj.getSubtaxtotal().toString());
+			tfSubTaxTotal.setValue(poHdrDM.getSubtaxtotal().toString());
 			tfSubTaxTotal.setReadOnly(true);
-			tfFreightPer.setValue(smspoHdrobj.getFreightprnct().toString());
-			tfFreightValue.setValue(smspoHdrobj.getFreightvalue().toString());
-			tfOtherPer.setValue((smspoHdrobj.getOthersprnct().toString()));
-			tfOtherValue.setValue((smspoHdrobj.getOthersvalue().toString()));
+			tfFreightPer.setValue(poHdrDM.getFreightprnct().toString());
+			tfFreightValue.setValue(poHdrDM.getFreightvalue().toString());
+			tfOtherPer.setValue((poHdrDM.getOthersprnct().toString()));
+			tfOtherValue.setValue((poHdrDM.getOthersvalue().toString()));
 			tfGrandtotal.setReadOnly(false);
-			tfGrandtotal.setValue(smspoHdrobj.getGrandtotal().toString());
+			tfGrandtotal.setValue(poHdrDM.getGrandtotal().toString());
 			tfGrandtotal.setReadOnly(true);
-			if (smspoHdrobj.getPaymentterms() != null) {
-				cbpaymetTerms.setValue(smspoHdrobj.getPaymentterms().toString());
+			if (poHdrDM.getPaymentterms() != null) {
+				cbpaymetTerms.setValue(poHdrDM.getPaymentterms().toString());
 			}
-			if (smspoHdrobj.getFreighttterms() != null) {
-				cbFreightTerms.setValue(smspoHdrobj.getFreighttterms().toString());
+			if (poHdrDM.getFreighttterms() != null) {
+				cbFreightTerms.setValue(poHdrDM.getFreighttterms().toString());
 			}
-			if (smspoHdrobj.getWarrantyterms() != null) {
-				cbWarrentyTerms.setValue(smspoHdrobj.getWarrantyterms().toString());
+			if (poHdrDM.getWarrantyterms() != null) {
+				cbWarrentyTerms.setValue(poHdrDM.getWarrantyterms().toString());
 			}
-			if ((smspoHdrobj.getDeliveryterms() != null)) {
-				cbDelTerms.setValue(smspoHdrobj.getDeliveryterms().toString());
+			if ((poHdrDM.getDeliveryterms() != null)) {
+				cbDelTerms.setValue(poHdrDM.getDeliveryterms().toString());
 			}
-			if (smspoHdrobj.getPotype() != null) {
-				cbpoType.setValue(smspoHdrobj.getPotype());
+			if (poHdrDM.getPotype() != null) {
+				cbpoType.setValue(poHdrDM.getPotype());
 			}
-			if (smspoHdrobj.getEnquiryId() != null) {
-				System.out.println("smspoHdrobj.getEnquiryId()" + smspoHdrobj.getEnquiryId());
-				cbEnquiryNumber.setValue(smspoHdrobj.getEnquiryId());
+			if (poHdrDM.getEnquiryId() != null) {
+				System.out.println("smspoHdrobj.getEnquiryId()" + poHdrDM.getEnquiryId());
+				cbEnquiryNumber.setValue(poHdrDM.getEnquiryId());
 			}
-			Long quote = smspoHdrobj.getQuoteid();
+			Long quote = poHdrDM.getQuoteid();
 			Collection<?> quoteids = cbquoteNo.getItemIds();
 			for (Iterator<?> iterator = quoteids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -1163,34 +1160,34 @@ public class SalesPO extends BaseTransUI {
 					cbquoteNo.setValue(itemId);
 				}
 			}
-			if (smspoHdrobj.getDutyexempted().equals("Y")) {
+			if (poHdrDM.getDutyexempted().equals("Y")) {
 				chkDutyExe.setValue(true);
 			} else {
 				chkDutyExe.setValue(false);
 			}
-			if (smspoHdrobj.getCformreqd().equals("Y")) {
+			if (poHdrDM.getCformreqd().equals("Y")) {
 				chkCformReq.setValue(true);
 			} else {
 				chkCformReq.setValue(false);
 			}
-			if (smspoHdrobj.getPdcreqd().equals("Y")) {
+			if (poHdrDM.getPdcreqd().equals("Y")) {
 				ckPdcRqu.setValue(true);
 			} else {
 				ckPdcRqu.setValue(false);
 			}
-			if (smspoHdrobj.getLiquidatedDamage() != null) {
-				taLiquidatedDamage.setValue(smspoHdrobj.getLiquidatedDamage());
+			if (poHdrDM.getLiquidatedDamage() != null) {
+				taLiquidatedDamage.setValue(poHdrDM.getLiquidatedDamage());
 			}
-			if (smspoHdrobj.getClientid() != null) {
-				cbClient.setValue(smspoHdrobj.getClientid());
+			if (poHdrDM.getClientid() != null) {
+				cbClient.setValue(poHdrDM.getClientid());
 			}
-			if (smspoHdrobj.getShippingaddr() != null) {
-				taShipmentAddr.setValue(smspoHdrobj.getShippingaddr());
+			if (poHdrDM.getShippingaddr() != null) {
+				taShipmentAddr.setValue(poHdrDM.getShippingaddr());
 			}
-			if (smspoHdrobj.getInvoiceaddr() != null) {
-				taInvoiceAddr.setValue(smspoHdrobj.getInvoiceaddr());
+			if (poHdrDM.getInvoiceaddr() != null) {
+				taInvoiceAddr.setValue(poHdrDM.getInvoiceaddr());
 			}
-			cbStatus.setValue(smspoHdrobj.getPostatus());
+			cbStatus.setValue(poHdrDM.getPostatus());
 			smsPODtllList = servicesmspodtl.getsmspodtllist(null, poid, null, null, null, null, null);
 		}
 		loadPODetails();
@@ -2003,15 +2000,15 @@ public class SalesPO extends BaseTransUI {
 		}
 		// load quote details
 		smsPODtllList = new ArrayList<SmsPODtlDM>();
-		for (SmsQuoteDtlDM SmsQuoteDtlDM : servicesmseQuoteDtl.getsmsquotedtllist(null,
+		for (SmsQuoteDtlDM quoteDtlDM : servicesmseQuoteDtl.getsmsquotedtllist(null,
 				((SmsQuoteHdrDM) cbquoteNo.getValue()).getQuoteId(), null, null)) {
 			SmsPODtlDM smspoDtlDM = new SmsPODtlDM();
-			smspoDtlDM.setProductid(SmsQuoteDtlDM.getProductid());
-			smspoDtlDM.setProdname(SmsQuoteDtlDM.getProdname());
-			smspoDtlDM.setUnitrate(SmsQuoteDtlDM.getUnitrate());
-			smspoDtlDM.setPoqty(SmsQuoteDtlDM.getQuoteqty());
-			smspoDtlDM.setProduom(SmsQuoteDtlDM.getProduom());
-			smspoDtlDM.setBasicvalue(SmsQuoteDtlDM.getBasicvalue());
+			smspoDtlDM.setProductid(quoteDtlDM.getProductid());
+			smspoDtlDM.setProdname(quoteDtlDM.getProdname());
+			smspoDtlDM.setUnitrate(quoteDtlDM.getUnitrate());
+			smspoDtlDM.setPoqty(quoteDtlDM.getQuoteqty());
+			smspoDtlDM.setProduom(quoteDtlDM.getProduom());
+			smspoDtlDM.setBasicvalue(quoteDtlDM.getBasicvalue());
 			smspoDtlDM.setPodtlstatus("Active");
 			smspoDtlDM.setLastupdatedby(username);
 			smspoDtlDM.setLastupdateddt(DateUtils.getcurrentdate());

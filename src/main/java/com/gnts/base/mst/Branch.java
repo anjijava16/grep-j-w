@@ -235,14 +235,14 @@ public class Branch extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<BranchDM> BranchList = new ArrayList<BranchDM>();
+		List<BranchDM> listBranch = new ArrayList<BranchDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfBranchName.getValue() + ",");
-		BranchList = serviceBranch.getBranchList(null, tfBranchName.getValue(), null, (String) cbStatus.getValue()
+		listBranch = serviceBranch.getBranchList(null, tfBranchName.getValue(), null, (String) cbStatus.getValue()
 				.toString(), companyid, "F");
-		recordCnt = BranchList.size();
+		recordCnt = listBranch.size();
 		beanBranch = new BeanItemContainer<BranchDM>(BranchDM.class);
-		beanBranch.addAll(BranchList);
+		beanBranch.addAll(listBranch);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Branch. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanBranch);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "branchId", "branchName", "cityName", "stateName",

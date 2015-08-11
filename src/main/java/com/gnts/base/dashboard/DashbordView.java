@@ -131,6 +131,12 @@ public class DashbordView implements ClickListener {
 		custom.addComponent(new CalendarMonthly("WO_SCHEDULE"), "marketcalender");
 		custom.addComponent(tblStatus, "workorderstatus");
 		loadWorkOrderStatus();
+		try {
+			//new EmailTrigger("soundar@gnts.in", "Test Message", "Test Message");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private Component buildHeader() {
@@ -245,9 +251,9 @@ public class DashbordView implements ClickListener {
 				public Object generateCell(Table source, Object itemId, Object columnId) {
 					@SuppressWarnings("unchecked")
 					BeanItem<SmsEnqHdrDM> item = (BeanItem<SmsEnqHdrDM>) source.getItem(itemId);
-					return new Label("<font color=green>"
-							+ (String) item.getItemProperty("enquiryNo").getValue() + " - "
-							+ (String) item.getItemProperty("enquiryStatus").getValue() + "</font>", ContentMode.HTML);
+					return new Label("<font color=green>" + (String) item.getItemProperty("enquiryNo").getValue()
+							+ " - " + (String) item.getItemProperty("enquiryStatus").getValue() + "</font>",
+							ContentMode.HTML);
 				}
 			});
 		}

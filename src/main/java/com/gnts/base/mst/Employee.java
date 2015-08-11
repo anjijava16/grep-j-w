@@ -1377,7 +1377,6 @@ public class Employee extends BaseUI {
 		tblempskilltbl.removeAllItems();
 		tblempskilltbl.setPageLength(15);
 		tblempskilltbl.setWidth("100%");
-		// employeeSkillList = new ArrayList<EmployeeSkillDM>();
 		if (fromdb) {
 			employeeSkillList = new ArrayList<EmployeeSkillDM>();
 			employeeSkillList.addAll(serviceemployeeskill.gethcmemployeeskilllist(null, employeeid, null, null, null,

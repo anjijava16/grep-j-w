@@ -265,52 +265,52 @@ public class User extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			UserDM editUserObj = beanUserDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			userId = editUserObj.getUserid();
-			if (editUserObj.getLoginid() != null) {
+			UserDM userDM = beanUserDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			userId = userDM.getUserid();
+			if (userDM.getLoginid() != null) {
 				tfLoginId.setReadOnly(false);
-				tfLoginId.setValue(editUserObj.getLoginid());
+				tfLoginId.setValue(userDM.getLoginid());
 				tfLoginId.setReadOnly(true);
 			}
-			if (editUserObj.getCreationdt() != null) {
+			if (userDM.getCreationdt() != null) {
 				tfLoginCreationDt.setReadOnly(false);
-				tfLoginCreationDt.setValue(editUserObj.getCreationdt());
+				tfLoginCreationDt.setValue(userDM.getCreationdt());
 				tfLoginCreationDt.setReadOnly(true);
 			}
-			if (editUserObj.getPasswordchangedt() != null) {
+			if (userDM.getPasswordchangedt() != null) {
 				tfPswdChangeDt.setReadOnly(false);
-				tfPswdChangeDt.setValue(editUserObj.getPasswordchangedt());
+				tfPswdChangeDt.setValue(userDM.getPasswordchangedt());
 				tfPswdChangeDt.setReadOnly(true);
 			}
-			if (editUserObj.getLastlogindt() != null) {
+			if (userDM.getLastlogindt() != null) {
 				tfLastLoginDt.setReadOnly(false);
-				tfLastLoginDt.setValue(editUserObj.getLastlogindt());
+				tfLastLoginDt.setValue(userDM.getLastlogindt());
 				tfLastLoginDt.setReadOnly(true);
 			}
-			if (editUserObj.getPasswordexpiredtInDt() != null) {
+			if (userDM.getPasswordexpiredtInDt() != null) {
 				tfPswdExpDt.setReadOnly(false);
-				tfPswdExpDt.setValue(editUserObj.getPasswordexpiredt());
+				tfPswdExpDt.setValue(userDM.getPasswordexpiredt());
 				tfPswdExpDt.setReadOnly(true);
 			}
-			if (editUserObj.getLoginpassword() != null) {
-				pfPassWord.setValue(editUserObj.getLoginpassword());
+			if (userDM.getLoginpassword() != null) {
+				pfPassWord.setValue(userDM.getLoginpassword());
 			}
-			if (editUserObj.getLogincount() != null) {
+			if (userDM.getLogincount() != null) {
 				tfloginCount.setReadOnly(false);
-				tfloginCount.setValue(editUserObj.getLogincount().toString());
+				tfloginCount.setValue(userDM.getLogincount().toString());
 				tfloginCount.setReadOnly(true);
 			}
-			if (editUserObj.getTimezoneid() != null) {
+			if (userDM.getTimezoneid() != null) {
 				tfTimeZone.setReadOnly(false);
-				tfTimeZone.setValue(editUserObj.getTimezonedesc());
+				tfTimeZone.setValue(userDM.getTimezonedesc());
 				tfTimeZone.setReadOnly(true);
 			}
-			if (editUserObj.getSystemuseryn() != null) {
+			if (userDM.getSystemuseryn() != null) {
 				tfSystemUser.setReadOnly(false);
-				tfSystemUser.setValue(editUserObj.getSystemuseryn());
+				tfSystemUser.setValue(userDM.getSystemuseryn());
 				tfSystemUser.setReadOnly(true);
 			}
-			cbUserStatus.setValue(editUserObj.getUserstatus());
+			cbUserStatus.setValue(userDM.getUserstatus());
 			// select roles
 			LSUserRole.setValue(null);
 			List<UserRolesDM> listUserRole = serviceUserRole.getRoleList(null, userId, cbUserStatus.getValue()
@@ -415,17 +415,17 @@ public class User extends BaseUI {
 	protected void saveDetails() throws ERPException.SaveException {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			UserDM saveUser = new UserDM();
+			UserDM userDM = new UserDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				saveUser = beanUserDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				userDM = beanUserDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			saveUser.setLoginpassword(pfPassWord.getValue());
-			saveUser.setLastupdatedby(username);
-			saveUser.setLastupdateddt(DateUtils.getcurrentdate());
+			userDM.setLoginpassword(pfPassWord.getValue());
+			userDM.setLastupdatedby(username);
+			userDM.setLastupdateddt(DateUtils.getcurrentdate());
 			if (cbUserStatus.getValue() != null) {
-				saveUser.setUserstatus((String) cbUserStatus.getValue());
+				userDM.setUserstatus((String) cbUserStatus.getValue());
 			}
-			serviceUser.saveorUpdateUserDetails(saveUser);
+			serviceUser.saveorUpdateUserDetails(userDM);
 			resetFields();
 			loadSrchRslt();
 			// for save UserRole details

@@ -17,7 +17,6 @@
 package com.gnts.base.mst;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.ModuleControlDM;
@@ -36,7 +35,6 @@ import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.ComboBox;
@@ -210,41 +208,36 @@ public class ModuleControl extends BaseUI {
 	// Based on the selected record, the data would be populated into user input
 	// fields in the input form
 	private void viewModuleControl() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			ModuleControlDM moduleCntrl = beansModuleControlDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (itselect.getItemProperty("ctrlstatus").getValue().toString() != null
-					&& !"null".equals(itselect.getItemProperty("ctrlstatus").getValue().toString())) {
+		if (tblMstScrSrchRslt.getValue() != null) {
+			ModuleControlDM moduleControlDM = beansModuleControlDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			if (moduleControlDM.getCtrlstatus() != null) {
 				tfStatus.setReadOnly(false);
-				tfStatus.setValue(moduleCntrl.getCtrlstatus());
+				tfStatus.setValue(moduleControlDM.getCtrlstatus());
 				tfStatus.setReadOnly(true);
 			}
-			if (itselect.getItemProperty("licensedyn").getValue().toString() != null
-					&& !"null".equals(itselect.getItemProperty("licensedyn").getValue().toString())) {
+			if (moduleControlDM.getLicensedyn() != null && !"null".equals(moduleControlDM.getLicensedyn())) {
 				tflisence.setReadOnly(false);
-				tflisence.setValue(moduleCntrl.getLicensedyn());
+				tflisence.setValue(moduleControlDM.getLicensedyn());
 				tflisence.setReadOnly(true);
 			}
-			if (itselect.getItemProperty("moduleCode").getValue().toString() != null
-					&& !"null".equals(itselect.getItemProperty("moduleCode").getValue().toString())) {
+			if (moduleControlDM.getModuleName() != null && !"null".equals(moduleControlDM.getModuleName())) {
 				tfModuleCode.setReadOnly(false);
-				tfModuleCode.setValue(moduleCntrl.getModuleName());
+				tfModuleCode.setValue(moduleControlDM.getModuleName());
 				tfModuleCode.setReadOnly(true);
 			}
-			if (itselect.getItemProperty("licensestartdt").getValue().toString() != null
-					&& !"null".equals(itselect.getItemProperty("licensestartdt").getValue().toString())) {
+			if (moduleControlDM.getLicensestartdt() != null) {
 				dfLicensestartDt.setReadOnly(false);
-				dfLicensestartDt.setValue((Date) itselect.getItemProperty("licensestartdt").getValue());
+				dfLicensestartDt.setValue(moduleControlDM.getLicensestartdt());
 				dfLicensestartDt.setReadOnly(true);
 			}
-			if (itselect.getItemProperty("licenseenddt").getValue().toString() != null
-					&& !"null".equals(itselect.getItemProperty("licenseenddt").getValue().toString())) {
+			if (moduleControlDM.getLicenseenddt() != null) {
 				dfLicenseendDt.setReadOnly(false);
-				dfLicenseendDt.setValue((Date) itselect.getItemProperty("licenseenddt").getValue());
+				dfLicenseendDt.setValue(moduleControlDM.getLicenseenddt());
 				dfLicenseendDt.setReadOnly(true);
 			}
 		}
 	}
+	
 	@Override
 	protected void searchDetails() throws NoDataFoundException {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + " Invoking search");
@@ -277,6 +270,7 @@ public class ModuleControl extends BaseUI {
 	protected void addDetails() {
 		// No functionality is Here..!
 	}
+	
 	@Override
 	protected void editDetails() {
 		btnSave.setVisible(false);
@@ -288,10 +282,12 @@ public class ModuleControl extends BaseUI {
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		viewModuleControl();
 	}
+	
 	@Override
 	protected void validateDetails() throws ValidationException {
 		// No functionality is here...!
 	}
+	
 	@Override
 	protected void saveDetails() throws SaveException {
 		// No functionality is here...!

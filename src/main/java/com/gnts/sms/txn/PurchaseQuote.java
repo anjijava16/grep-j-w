@@ -819,14 +819,14 @@ public class PurchaseQuote extends BaseUI {
 				ckPdcRqu.setValue(false);
 			}
 			cbVendorName.setValue(editPurchaseQuotlist.getVendorId());
-			Long uom = editPurchaseQuotlist.getEnquiryId();
-			Collection<?> uomid = cbEnqNo.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long enqid = editPurchaseQuotlist.getEnquiryId();
+			Collection<?> enqids = cbEnqNo.getItemIds();
+			for (Iterator<?> iterator = enqids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbEnqNo.getItem(itemId);
 				// Get the actual bean and use the data
 				SmsPurEnqHdrDM st = (SmsPurEnqHdrDM) item.getBean();
-				if (uom != null && uom.equals(st.getEnquiryId())) {
+				if (enqid != null && enqid.equals(st.getEnquiryId())) {
 					cbEnqNo.setValue(itemId);
 				}
 			}

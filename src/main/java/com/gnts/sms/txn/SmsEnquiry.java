@@ -68,7 +68,6 @@ import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.stt.txn.EnquiryWorkflow;
-import com.gnts.mfg.txn.TestingDocuments;
 import com.gnts.saarc.util.SerialNumberGenerator;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
@@ -133,7 +132,7 @@ public class SmsEnquiry extends BaseTransUI {
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(SmsEnquiry.class);
 	// User Input Fields for Sales Enquiry Header
-	private TextField tfEnquiryNo, tfclientname,tfClientCity;
+	private TextField tfEnquiryNo, tfclientname, tfClientCity;
 	private TextArea taRemarks, tAclientAddrs;
 	private PopupDateField dfEnquiryDate, dfDueDate;
 	private ComboBox cbBranch, cbmodeofenquiry, cbClient;
@@ -184,7 +183,7 @@ public class SmsEnquiry extends BaseTransUI {
 	private FormLayout fldtl1, fldtl2, fldtl3, fldtl4, fldtl5;
 	// form layout for input controls Sales Enquiry Specification
 	private FormLayout flspec1, flspec2, flspec3, flspec4, flspec5;
-	private FormLayout fldoc1, fldoc2, fldoc3, fldoc4, fldoc5;
+	private FormLayout fldoc1, fldoc2, fldoc3, fldoc4;
 	// Search Control Layout
 	private HorizontalLayout hlsearchlayout;
 	// Parent layout for all the input controls Sales Enquiry Header
@@ -209,7 +208,7 @@ public class SmsEnquiry extends BaseTransUI {
 	// local variables declaration
 	private Long enquiryId;
 	private String username;
-	private Long companyid, moduleId, enqNoLong;
+	private Long companyid, moduleId;
 	private int recordCnt = 0;
 	private SmsComments comments;
 	private String status;
@@ -274,7 +273,7 @@ public class SmsEnquiry extends BaseTransUI {
 						tfClientCity.setValue(serviceClients
 								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
 										null, null, null, null, "Active", "P").get(0).getCityName());
-						System.out.println("=============================================>"+tfClientCity);
+						System.out.println("=============================================>" + tfClientCity);
 					}
 					catch (Exception e) {
 					}
@@ -654,7 +653,6 @@ public class SmsEnquiry extends BaseTransUI {
 		fldoc2 = new FormLayout();
 		fldoc3 = new FormLayout();
 		fldoc4 = new FormLayout();
-		fldoc5 = new FormLayout();
 		fldoc1.addComponent(tfEnquiry);
 		fldoc2.addComponent(tfDocumentName);
 		fldoc3.addComponent(taComments);
@@ -800,7 +798,7 @@ public class SmsEnquiry extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the SMSENQUIRY. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanhdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "enquiryNo", "clientName","enquiryStatus",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "enquiryNo", "clientName", "enquiryStatus",
 				"lastUpdateddt", "lastUpdatedby" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry No", "Client Name", "Status",
 				"Last Updated date", "Last Updated by" });
@@ -854,7 +852,6 @@ public class SmsEnquiry extends BaseTransUI {
 					(String) cbspecstatus.getValue(), "F");
 		}
 		recordCnt = enqspecList.size();
-		System.out.println("loadspec---->" + enqspecList.size());
 		beanpec = new BeanItemContainer<SmsEnquirySpecDM>(SmsEnquirySpecDM.class);
 		beanpec.addAll(enqspecList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -872,16 +869,16 @@ public class SmsEnquiry extends BaseTransUI {
 	private void loadSearchResult() {
 		tfEnquiryNo.setReadOnly(false);
 		tfEnquiry.setValue(tfEnquiryNo.getValue());
-	//	enqNoLong = Long.valueOf(tfEnquiry.getValue());
+		// enqNoLong = Long.valueOf(tfEnquiry.getValue());
 		try {
 			List<DocumentsDM> documentList = new ArrayList<DocumentsDM>();
 			if (tfEnquiryNo.getValue() != null) {
-				System.out.println("cbEnquiry.getValue()--->" + tfEnquiry.getValue()); //Long.valueOf(tfEnquiry.getValue())
+				System.out.println("cbEnquiry.getValue()--->" + tfEnquiry.getValue()); // Long.valueOf(tfEnquiry.getValue())
 			}
 			int recordcount = documentList.size();
 			beanDocuments = new BeanItemContainer<DocumentsDM>(DocumentsDM.class);
-			beanDocuments.addAll(serviceDocuments.getDocumentDetails(null, null,this.enquiryId, null, null, null, null, null,
-					null, null, null, null));
+			beanDocuments.addAll(serviceDocuments.getDocumentDetails(null, null, this.enquiryId, null, null, null,
+					null, null, null, null, null, null));
 			tblDocuments.setSelectable(true);
 			tblDocuments.setContainerDataSource(beanDocuments);
 			tblDocuments.setVisibleColumns(new Object[] { "documentId", "documentName", "lastUpdatedBy" });
@@ -967,20 +964,20 @@ public class SmsEnquiry extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			SmsEnqHdrDM enqhdrList1 = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			enquiryId = enqhdrList1.getEnquiryId();
-			cbBranch.setValue(enqhdrList1.getBranchId());
+			SmsEnqHdrDM enqHdrDM = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			enquiryId = enqHdrDM.getEnquiryId();
+			cbBranch.setValue(enqHdrDM.getBranchId());
 			tfEnquiryNo.setReadOnly(false);
-			tfEnquiryNo.setValue(enqhdrList1.getEnquiryNo());
+			tfEnquiryNo.setValue(enqHdrDM.getEnquiryNo());
 			tfEnquiryNo.setReadOnly(true);
-			cbClient.setValue(enqhdrList1.getClientId());
-			dfEnquiryDate.setValue(enqhdrList1.getEnquiryDate());
-			dfDueDate.setValue(enqhdrList1.getDueDate());
-			cbEnquiryStatus.setValue(enqhdrList1.getEnquiryStatus());
-			System.out.println("enqhdrList1.getModeofEnq()-->" + enqhdrList1.getModeofEnq());
-			cbmodeofenquiry.setValue(enqhdrList1.getModeofEnq());
-			if (enqhdrList1.getRemarks() != null) {
-				taRemarks.setValue(enqhdrList1.getRemarks().toString());
+			cbClient.setValue(enqHdrDM.getClientId());
+			dfEnquiryDate.setValue(enqHdrDM.getEnquiryDate());
+			dfDueDate.setValue(enqHdrDM.getDueDate());
+			cbEnquiryStatus.setValue(enqHdrDM.getEnquiryStatus());
+			System.out.println("enqhdrList1.getModeofEnq()-->" + enqHdrDM.getModeofEnq());
+			cbmodeofenquiry.setValue(enqHdrDM.getModeofEnq());
+			if (enqHdrDM.getRemarks() != null) {
+				taRemarks.setValue(enqHdrDM.getRemarks().toString());
 			}
 			enqdtlList = serviceenqdtl.getsmsenquirydtllist(null, enquiryId, null, null,
 					(String) cbEnquiryStatus.getValue(), "F");
@@ -1000,36 +997,36 @@ public class SmsEnquiry extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hldtllayout.setVisible(true);
 		if (tblEnqDetails.getValue() != null) {
-			SmsEnquiryDtlDM enqdtllist1 = beandtl.getItem(tblEnqDetails.getValue()).getBean();
-			Long uom = enqdtllist1.getProductid();
-			Collection<?> uomid = cdProduct.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			SmsEnquiryDtlDM enquiryDtlDM = beandtl.getItem(tblEnqDetails.getValue()).getBean();
+			Long prodid = enquiryDtlDM.getProductid();
+			Collection<?> prodids = cdProduct.getItemIds();
+			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cdProduct.getItem(itemId);
 				// Get the actual bean and use the data
 				ProductDM st = (ProductDM) item.getBean();
-				if (uom != null && uom.equals(st.getProdid())) {
+				if (prodid != null && prodid.equals(st.getProdid())) {
 					cdProduct.setValue(itemId);
 				}
 			}
-			if (enqdtllist1.getEnquiryqty() != null) {
-				tfEnqQty.setValue(enqdtllist1.getEnquiryqty().toString());
+			if (enquiryDtlDM.getEnquiryqty() != null) {
+				tfEnqQty.setValue(enquiryDtlDM.getEnquiryqty().toString());
 			}
 			cdenqdtlstatus.setValue(cdenqdtlstatus.getItemIds().iterator().next());
-			if (enqdtllist1.getCustprodcode() != null) {
-				custprodcode.setValue(enqdtllist1.getCustprodcode().toString());
+			if (enquiryDtlDM.getCustprodcode() != null) {
+				custprodcode.setValue(enquiryDtlDM.getCustprodcode().toString());
 			}
-			if (enqdtllist1.getRequirementdesc() != null) {
-				tarequmentdesc.setValue(enqdtllist1.getRequirementdesc().toString());
+			if (enquiryDtlDM.getRequirementdesc() != null) {
+				tarequmentdesc.setValue(enquiryDtlDM.getRequirementdesc().toString());
 			}
-			if (enqdtllist1.getCustproddesc() != null) {
-				tacustproddesc.setValue(enqdtllist1.getCustproddesc().toString());
+			if (enquiryDtlDM.getCustproddesc() != null) {
+				tacustproddesc.setValue(enquiryDtlDM.getCustproddesc().toString());
 			}
-			if (enqdtllist1.getCustomField1() != null) {
-				tfCustomField1.setValue(enqdtllist1.getCustomField1());
+			if (enquiryDtlDM.getCustomField1() != null) {
+				tfCustomField1.setValue(enquiryDtlDM.getCustomField1());
 			}
-			if (enqdtllist1.getCustomField2() != null) {
-				tfCustomField2.setValue(enqdtllist1.getCustomField2());
+			if (enquiryDtlDM.getCustomField2() != null) {
+				tfCustomField2.setValue(enquiryDtlDM.getCustomField2());
 			}
 		}
 	}
@@ -1113,16 +1110,13 @@ public class SmsEnquiry extends BaseTransUI {
 			for (SmsEnquirySpecDM save1 : (Collection<SmsEnquirySpecDM>) itemIds) {
 				save1.setEnquirydtlid((save.getEnquirydtlid()));
 				save1.setEnquiryid(smsEnqHdrDM.getEnquiryId());
-				System.out.println("EEEE=>" + save1.getEnquiryspecid());
 				serviceenqspec.saveOrUpdateSmsEnqSpecDetails(save1);
 			}
 		}
 		if (tblMstScrSrchRslt.getValue() == null) {
 			System.out.println("inside1" + moduleId);
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_ENQRYNO").get(0);
-			System.out.println("inside3");
 			if (slnoObj.getAutoGenYN().equals("Y")) {
-				System.out.println("inside2");
 				serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_ENQRYNO");
 			}
 		}
@@ -1178,7 +1172,6 @@ public class SmsEnquiry extends BaseTransUI {
 		if (tblspec.getValue() != null) {
 			smsEnquirySpecDM = beanpec.getItem(tblspec.getValue()).getBean();
 		}
-		System.out.println("EID=>" + enquiryId);
 		smsEnquirySpecDM.setSpeccode(tfspeccode.getValue().toString());
 		smsEnquirySpecDM.setSpecdesc(taspecdesc.getValue().toString());
 		smsEnquirySpecDM.setEnqryspecstatus(((String) cbspecstatus.getValue()));
@@ -1236,16 +1229,18 @@ public class SmsEnquiry extends BaseTransUI {
 		resetFields();
 		cbBranch.setValue(branchId);
 		tfEnquiryNo.setReadOnly(true);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, null, moduleId, "SM_ENQRYNO");
-		for (SlnoGenDM slnoObj : slnoList) {
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, moduleId, "SM_ENQRYNO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				tfEnquiryNo.setReadOnly(true);
 			} else {
 				tfEnquiryNo.setReadOnly(false);
 			}
-			tblspec.setVisible(true);
-			tblEnqDetails.setVisible(true);
 		}
+		catch (Exception e) {
+		}
+		tblspec.setVisible(true);
+		tblEnqDetails.setVisible(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
 				null);
 	}
@@ -1261,13 +1256,6 @@ public class SmsEnquiry extends BaseTransUI {
 		vlSrchRsltContainer.setVisible(true);
 		tblEnqDetails.setVisible(true);
 		tblspec.setVisible(true);
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_ENQRYNO");
-		tfEnquiryNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfEnquiryNo.setReadOnly(true);
-			}
-		}
 		if (tfEnquiryNo.getValue() == null || tfEnquiryNo.getValue().trim().length() == 0) {
 			tfEnquiryNo.setReadOnly(false);
 		}
@@ -1321,20 +1309,21 @@ public class SmsEnquiry extends BaseTransUI {
 			}
 		}
 		if ((tfEnquiryNo.getValue() == null) || tfEnquiryNo.getValue().trim().length() == 0) {
-			List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_ENQRYNO");
-			for (SlnoGenDM slnoObj : slnoList) {
+			try {
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_ENQRYNO")
+						.get(0);
 				if (slnoObj.getAutoGenYN().equals("N")) {
 					tfEnquiryNo.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_CODE));
 					errorFlag = true;
 				}
 			}
+			catch (Exception e) {
+			}
 		} else {
 			tfEnquiryNo.setComponentError(null);
 			errorFlag = false;
 		}
-		// tfenqty.setComponentError(null);
 		cdProduct.setComponentError(null);
-		System.out.println("_______________---------------->" + tblEnqDetails.size());
 		if (tblEnqDetails.size() == 0) {
 			cdProduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
 			errorFlag = true;

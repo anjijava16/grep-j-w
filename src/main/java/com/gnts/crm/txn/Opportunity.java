@@ -251,30 +251,30 @@ public class Opportunity extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Selected opportunuity. Id -> " + oppertunityId);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			OppertunitiesDM editopportunuitylist = beanClntOppertunity.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			oppertunityId = editopportunuitylist.getOppertunityId();
-			if (editopportunuitylist.getBusinessValue() != null
-					&& !"null".equals(editopportunuitylist.getBusinessValue())) {
-				tfBusinessValue.setValue(editopportunuitylist.getBusinessValue().toString());
+			OppertunitiesDM oppertunitiesDM = beanClntOppertunity.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			oppertunityId = oppertunitiesDM.getOppertunityId();
+			if (oppertunitiesDM.getBusinessValue() != null
+					&& !"null".equals(oppertunitiesDM.getBusinessValue())) {
+				tfBusinessValue.setValue(oppertunitiesDM.getBusinessValue().toString());
 			} else {
 				tfBusinessValue.setValue("0");
 			}
-			tfOppertName.setValue(editopportunuitylist.getOppertunityName());
-			if (editopportunuitylist.getWinProbability() != null
-					&& !"null".equals(editopportunuitylist.getWinProbability())) {
-				tfWinProb.setValue(editopportunuitylist.getWinProbability().toString());
+			tfOppertName.setValue(oppertunitiesDM.getOppertunityName());
+			if (oppertunitiesDM.getWinProbability() != null
+					&& !"null".equals(oppertunitiesDM.getWinProbability())) {
+				tfWinProb.setValue(oppertunitiesDM.getWinProbability().toString());
 			} else {
 				tfWinProb.setValue("0");
 			}
-			cbOppertType.setValue(editopportunuitylist.getOppertunityType());
-			cbCampaign.setValue(editopportunuitylist.getCampaingnId());
-			cbEmployee.setValue(editopportunuitylist.getAssignedTo());
-			cbClient.setValue(editopportunuitylist.getClientId());
-			if (editopportunuitylist.getRemarks() != null && !"null".equals(editopportunuitylist.getRemarks())) {
-				taRemarks.setValue(editopportunuitylist.getRemarks());
+			cbOppertType.setValue(oppertunitiesDM.getOppertunityType());
+			cbCampaign.setValue(oppertunitiesDM.getCampaingnId());
+			cbEmployee.setValue(oppertunitiesDM.getAssignedTo());
+			cbClient.setValue(oppertunitiesDM.getClientId());
+			if (oppertunitiesDM.getRemarks() != null && !"null".equals(oppertunitiesDM.getRemarks())) {
+				taRemarks.setValue(oppertunitiesDM.getRemarks());
 			}
 			try {
-				closingDt.setValue(editopportunuitylist.getClosingDate1());
+				closingDt.setValue(oppertunitiesDM.getClosingDate1());
 			}
 			catch (Exception e) {
 				logger.info("convert closing date to date" + e);

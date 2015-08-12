@@ -46,8 +46,6 @@ import com.gnts.hcm.service.txn.EmpAppraisalDtlService;
 import com.gnts.hcm.service.txn.EmpAppraisalHdrService;
 import com.gnts.hcm.service.txn.KpiGroupService;
 import com.gnts.hcm.service.txn.KpiService;
-import com.gnts.mms.domain.txn.IndentDtlDM;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -80,7 +78,7 @@ public class EmployeeAppraisal extends BaseUI {
 	private KpiService servicekpi = (KpiService) SpringContextHelper.getBean("Kpi");
 	private AppraisalLevelsService serviceappraisallevel = (AppraisalLevelsService) SpringContextHelper
 			.getBean("AppraisalLevels");
-	List<EmpAppraisalDtlDM> empAppraisalDtlList = new ArrayList<EmpAppraisalDtlDM>();
+	private List<EmpAppraisalDtlDM> empAppraisalDtlList = new ArrayList<EmpAppraisalDtlDM>();
 	// form layout for input controls
 	private FormLayout fcol1, fcol2, fcol3, fcolt1, fcolt2, fcolt3, fcolt4, fcolt5, fcolDtl1, fcolDtl2, fcolDtl3,
 			fcolDtl4;
@@ -101,7 +99,6 @@ public class EmployeeAppraisal extends BaseUI {
 	private GERPTextArea tacomnts, taremarks, comments;
 	// local variables declaration
 	private String aprisalId;
-	List<IndentDtlDM> indentDtlList = null;
 	private String username;
 	private Boolean errorFlag = false;
 	private Long companyid, employeeid;
@@ -109,7 +106,7 @@ public class EmployeeAppraisal extends BaseUI {
 	// Initialize logger
 	private Logger logger = Logger.getLogger(EmployeeAppraisal.class);
 	private static final long serialVersionUID = 1L;
-	public Button btnDelete = new GERPButton("Delete", "delete", this);
+	private Button btnDelete = new GERPButton("Delete", "delete", this);
 	
 	// Constructor received the parameters from Login UI class
 	public EmployeeAppraisal() {
@@ -122,7 +119,7 @@ public class EmployeeAppraisal extends BaseUI {
 		buildview();
 	}
 	
-	public void buildview() {
+	private void buildview() {
 		// Initialization for EmpAprisal Details user input components
 		btnAddEmpAprisalDtl = new GERPButton("Add", "add");
 		btnAddEmpAprisalDtl.addClickListener(new ClickListener() {
@@ -243,7 +240,7 @@ public class EmployeeAppraisal extends BaseUI {
 		btnAddEmpAprisalDtl.setStyleName("add");
 	}
 	
-	public void assemblesearchlayout() {
+	private void assemblesearchlayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		// Remove all components in search layout
 		hlsearchlayout.removeAllComponents();
@@ -261,7 +258,7 @@ public class EmployeeAppraisal extends BaseUI {
 		hlsearchlayout.setSizeUndefined();
 	}
 	
-	public void assembleuserinputlayout() {
+	private void assembleuserinputlayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		// Remove all components in search layout
 		hlsearchlayout.removeAllComponents();
@@ -396,12 +393,9 @@ public class EmployeeAppraisal extends BaseUI {
 	}
 	
 	// Method to edit the values from table into fields to update process
-	protected void editEmpAppraisalHdrDetails() {
+	private void editEmpAppraisalHdrDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected aprisal.Id-> "
-				+ aprisalId);
-		if (sltedRcd != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			EmpAppraisalHdrDM editEmpAppraisalHdr = beanEmpAppraisalHdrDM.getItem(tblMstScrSrchRslt.getValue())
 					.getBean();
 			aprisalId = editEmpAppraisalHdr.getAppraisalid().toString();
@@ -434,12 +428,11 @@ public class EmployeeAppraisal extends BaseUI {
 	}
 	
 	private void editEmpAppraisalDtlDetails() {
-		Item sltedRcd = tblEmpAprisalDtl.getItem(tblEmpAprisalDtl.getValue());
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected appraisaldtl.Id ");
-		if (sltedRcd != null) {
-			EmpAppraisalDtlDM editempappDtllist = new EmpAppraisalDtlDM();
-			editempappDtllist = beanEmpAppraisalDtlDM.getItem(tblEmpAprisalDtl.getValue()).getBean();
-			Long uom = editempappDtllist.getAppraiseeid();
+		if (tblEmpAprisalDtl.getValue() != null) {
+			EmpAppraisalDtlDM empAppraisalDtlDM = new EmpAppraisalDtlDM();
+			empAppraisalDtlDM = beanEmpAppraisalDtlDM.getItem(tblEmpAprisalDtl.getValue()).getBean();
+			Long uom = empAppraisalDtlDM.getAppraiseeid();
 			Collection<?> uomid = cbapprsename.getItemIds();
 			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -450,7 +443,7 @@ public class EmployeeAppraisal extends BaseUI {
 					cbapprsename.setValue(itemId);
 				}
 			}
-			Long som = editempappDtllist.getKpiid();
+			Long som = empAppraisalDtlDM.getKpiid();
 			Collection<?> somid = cbkpiname.getItemIds();
 			for (Iterator<?> iterator = somid.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -461,7 +454,7 @@ public class EmployeeAppraisal extends BaseUI {
 					cbkpiname.setValue(itemId);
 				}
 			}
-			Long pom = editempappDtllist.getApprlevelid();
+			Long pom = empAppraisalDtlDM.getApprlevelid();
 			Collection<?> pomid = cvapprlevelname.getItemIds();
 			for (Iterator<?> iterator = pomid.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -472,8 +465,8 @@ public class EmployeeAppraisal extends BaseUI {
 					cvapprlevelname.setValue(itemId);
 				}
 			}
-			tfkpiRating.setValue(sltedRcd.getItemProperty("kpirating").getValue().toString());
-			comments.setValue(sltedRcd.getItemProperty("comments").getValue().toString());
+			tfkpiRating.setValue(empAppraisalDtlDM.getKpirating().toString());
+			comments.setValue(empAppraisalDtlDM.getComments());
 		}
 	}
 	
@@ -494,7 +487,7 @@ public class EmployeeAppraisal extends BaseUI {
 		}
 	}
 	
-	protected void resetsearch() {
+	private void resetsearch() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbempname.setReadOnly(false);
 		cbempname.setValue(null);
@@ -745,22 +738,22 @@ public class EmployeeAppraisal extends BaseUI {
 			}
 			System.out.println("count--->" + count);
 			if (count == 0) {
-				EmpAppraisalDtlDM EmpAppDtlObj = new EmpAppraisalDtlDM();
+				EmpAppraisalDtlDM empAppDtlObj = new EmpAppraisalDtlDM();
 				if (tblEmpAprisalDtl.getValue() != null) {
-					EmpAppDtlObj = beanEmpAppraisalDtlDM.getItem(tblEmpAprisalDtl.getValue()).getBean();
-					empAppraisalDtlList.remove(EmpAppDtlObj);
+					empAppDtlObj = beanEmpAppraisalDtlDM.getItem(tblEmpAprisalDtl.getValue()).getBean();
+					empAppraisalDtlList.remove(empAppDtlObj);
 				}
-				EmpAppDtlObj.setAppraiseeid(((EmployeeDM) cbapprsename.getValue()).getEmployeeid());
-				EmpAppDtlObj.setFirstlastname(((EmployeeDM) cbapprsename.getValue()).getFirstlastname());
-				EmpAppDtlObj.setKpiid(((KpiDM) cbkpiname.getValue()).getKpiId());
-				EmpAppDtlObj.setKpiName(((KpiDM) cbkpiname.getValue()).getKpiName());
-				EmpAppDtlObj.setApprlevelid(((AppraisalLevelsDM) cvapprlevelname.getValue()).getApprlevelid());
-				EmpAppDtlObj.setLevelname(((AppraisalLevelsDM) cvapprlevelname.getValue()).getLevelname());
-				EmpAppDtlObj.setKpirating(Long.valueOf(tfkpiRating.getValue()));
-				EmpAppDtlObj.setComments(comments.getValue());
-				EmpAppDtlObj.setLastupdateddt(DateUtils.getcurrentdate());
-				EmpAppDtlObj.setLastupdatedby(username);
-				empAppraisalDtlList.add(EmpAppDtlObj);
+				empAppDtlObj.setAppraiseeid(((EmployeeDM) cbapprsename.getValue()).getEmployeeid());
+				empAppDtlObj.setFirstlastname(((EmployeeDM) cbapprsename.getValue()).getFirstlastname());
+				empAppDtlObj.setKpiid(((KpiDM) cbkpiname.getValue()).getKpiId());
+				empAppDtlObj.setKpiName(((KpiDM) cbkpiname.getValue()).getKpiName());
+				empAppDtlObj.setApprlevelid(((AppraisalLevelsDM) cvapprlevelname.getValue()).getApprlevelid());
+				empAppDtlObj.setLevelname(((AppraisalLevelsDM) cvapprlevelname.getValue()).getLevelname());
+				empAppDtlObj.setKpirating(Long.valueOf(tfkpiRating.getValue()));
+				empAppDtlObj.setComments(comments.getValue());
+				empAppDtlObj.setLastupdateddt(DateUtils.getcurrentdate());
+				empAppDtlObj.setLastupdatedby(username);
+				empAppraisalDtlList.add(empAppDtlObj);
 				loaddtlRslt();
 				empAppraisalDtlresetFields();
 			} else {
@@ -777,11 +770,10 @@ public class EmployeeAppraisal extends BaseUI {
 	 */
 	private void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
-		List<EmployeeDM> employeelist = serviceemployee.getEmployeeList(null, null, null, "Active", companyid,
-				employeeid, null, null, null, "P");
 		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(employeelist);
+		beanEmployee.addAll(serviceemployee.getEmployeeList(null, null, null, "Active", companyid, employeeid, null,
+				null, null, "P"));
 		cbempname.setContainerDataSource(beanEmployee);
 	}
 	
@@ -803,10 +795,9 @@ public class EmployeeAppraisal extends BaseUI {
 	 */
 	private void loadKpiGroupNameList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading KpiGroupNameList");
-		List<KpiGroupDM> kpigrouplist = servicegroupkpi.getkpigrouplist(null, null, companyid, null, "Active", "P");
 		BeanContainer<Long, KpiGroupDM> beankpigroup = new BeanContainer<Long, KpiGroupDM>(KpiGroupDM.class);
 		beankpigroup.setBeanIdProperty("kpigrpid");
-		beankpigroup.addAll(kpigrouplist);
+		beankpigroup.addAll(servicegroupkpi.getkpigrouplist(null, null, companyid, null, "Active", "P"));
 		cbkpigpname.setContainerDataSource(beankpigroup);
 	}
 	
@@ -815,10 +806,9 @@ public class EmployeeAppraisal extends BaseUI {
 	 */
 	private void loadAppraiseeNameList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading AppraiseeNameList");
-		List<EmployeeDM> employeelist = serviceemployee.getEmployeeList(null, null, null, "Active", companyid,
-				employeeid, null, null, null, "F");
 		BeanItemContainer<EmployeeDM> beanappraiseename = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanappraiseename.addAll(employeelist);
+		beanappraiseename.addAll(serviceemployee.getEmployeeList(null, null, null, "Active", companyid, employeeid,
+				null, null, null, "P"));
 		cbapprsename.setContainerDataSource(beanappraiseename);
 	}
 	
@@ -827,9 +817,8 @@ public class EmployeeAppraisal extends BaseUI {
 	 */
 	private void loadKpiNameList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading KpiNameList");
-		List<KpiDM> kpinamelist = servicekpi.getKpiList(null, null, null, null, "Active", "F");
 		BeanItemContainer<KpiDM> beankpi = new BeanItemContainer<KpiDM>(KpiDM.class);
-		beankpi.addAll(kpinamelist);
+		beankpi.addAll(servicekpi.getKpiList(null, null, null, null, "Active", "F"));
 		cbkpiname.setContainerDataSource(beankpi);
 	}
 	
@@ -838,11 +827,9 @@ public class EmployeeAppraisal extends BaseUI {
 	 */
 	private void loadApprlevelNameList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading ApprlevelNameList");
-		List<AppraisalLevelsDM> levelslist = serviceappraisallevel.getAppraisalLevelsList(null, null, null, "Active",
-				"F");
 		BeanItemContainer<AppraisalLevelsDM> beanlevels = new BeanItemContainer<AppraisalLevelsDM>(
 				AppraisalLevelsDM.class);
-		beanlevels.addAll(levelslist);
+		beanlevels.addAll(serviceappraisallevel.getAppraisalLevelsList(null, null, null, "Active", "F"));
 		cvapprlevelname.setContainerDataSource(beanlevels);
 	}
 	

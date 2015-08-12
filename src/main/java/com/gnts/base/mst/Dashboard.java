@@ -58,7 +58,7 @@ public class Dashboard {
 	private OrgNewsService serviceNews = (OrgNewsService) SpringContextHelper.getBean("news");
 	private Logger log = Logger.getLogger(Dashboard.class);
 	private BeanItemContainer<HolidaysDM> beans = null;
-	private VerticalLayout vltable, vlEvalTable;
+	private VerticalLayout vltable;
 	private HorizontalLayout vlMainLayout;
 	private VerticalLayout vlnew, vlEval;
 	private Long companyId, branchId;
@@ -98,8 +98,6 @@ public class Dashboard {
 		vlEval.addComponent(tblBirthday);
 		vltable = new VerticalLayout();
 		vltable.addComponent(tblHoliday);
-		vlEvalTable = new VerticalLayout();
-		vlEvalTable.addComponent(tblBirthday);
 		accordionHoli = new Accordion();
 		accordionNews = new Accordion();
 		accordionEval = new Accordion();
@@ -151,12 +149,21 @@ public class Dashboard {
 	}
 	
 	private void loadBirthDayDetails() {
-		List<EmployeeDM> list = serviceEmployee.getEmployeeList(null, null, null, null, null, null, null, null,
-				null, "P");
+		List<EmployeeDM> list = serviceEmployee.getEmployeeList(null, null, null, null, null, null, null, null, null,
+				"P");
 		if (list != null) {
 			tblBirthday.removeAllItems();
 			BeanItemContainer<EmployeeDM> beansNews = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-			beansNews.addAll(list);
+			for (EmployeeDM employeeDM : list) {
+				try {
+					if (DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(DateUtils.getMonthAndYear(new Date()))) {
+						beansNews.addBean(employeeDM);
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			tblBirthday.setContainerDataSource(beansNews);
 			tblBirthday.setVisibleColumns(new Object[] { "dob", "firstlastname" });
 			tblBirthday.setColumnHeaders(new String[] { " Date", "Employee Name " });

@@ -73,7 +73,6 @@ public class EmployeeProximity extends BaseUI {
 	private ComboBox cbStatus;
 	// BeanItemContainer
 	private BeanItemContainer<EmployeeProximityDM> beanEmployeeProximityDM = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployeeDM = null;
 	// local variables declaration
 	private Long companyId, employeeId;
 	private int recordCnt = 0;
@@ -334,11 +333,10 @@ public class EmployeeProximity extends BaseUI {
 	
 	private void loadEmployeeList() {
 		try {
-			List<EmployeeDM> empList = servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyId,
-					employeeId, null, null, null, "F");
-			beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(empList);
+			beanEmployeeDM.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyId,
+					employeeId, null, null, null, "P"));
 			cbEmployeeName.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {

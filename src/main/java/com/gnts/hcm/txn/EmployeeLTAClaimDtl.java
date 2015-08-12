@@ -39,7 +39,6 @@ import com.gnts.hcm.domain.mst.AllowanceDM;
 import com.gnts.hcm.domain.txn.EmpltaclaimdtlsDM;
 import com.gnts.hcm.service.mst.AllowanceService;
 import com.gnts.hcm.service.txn.EmpltaclaimdtlsService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -47,9 +46,9 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class EmployeeLTAClaimDtl extends BaseUI {
 	private static final long serialVersionUID = 1L;
@@ -73,7 +72,6 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 	private String username;
 	private Long companyid;
 	private int recordCnt;
-	public static boolean filevalue = false;
 	private String pkEmpLtaClaimId;
 	
 	// Constructor
@@ -132,7 +130,7 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 		loadSrchRslt();
 	}
 	
-	public void assemblsearch() {
+	private void assemblsearch() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search");
 		hlsearchlayout.removeAllComponents();
 		flcolumn1 = new GERPFormLayout();
@@ -150,7 +148,7 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 		hlsearchlayout.setMargin(true);
 	}
 	
-	public void assemblUserInputLayout() {
+	private void assemblUserInputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling User Input layout");
 		hluserInputlayout.removeAllComponents();
 		flcolumn1 = new GERPFormLayout();
@@ -179,7 +177,7 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 		hluserInputlayout.setMargin(true);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.removeAllItems();
@@ -269,36 +267,33 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 		tblMstScrSrchRslt.setVisible(true);
 		hlCmdBtnLayout.setVisible(true);
 		hluserInputlayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
-			EmpltaclaimdtlsDM editClaimDtlsList = beanEmpltaclaimdtlsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			String stcode = sltedRcd.getItemProperty("claimstatus").getValue().toString();
-			cbstatus.setValue(stcode);
-			cbEmpName.setValue(editClaimDtlsList.getEmpid());
-			cbAllowanceName.setValue(editClaimDtlsList.getAllowanceid());
-			dfClaimDt.setValue((Date) sltedRcd.getItemProperty("claimdt").getValue());
-			if (editClaimDtlsList.getCurblkperiod() != null) {
-				tfCurntBlkPeriod.setValue(sltedRcd.getItemProperty("curblkperiod").getValue().toString());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			EmpltaclaimdtlsDM empltaclaimdtlsDM = beanEmpltaclaimdtlsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			cbstatus.setValue(empltaclaimdtlsDM.getClaimstatus());
+			cbEmpName.setValue(empltaclaimdtlsDM.getEmpid());
+			cbAllowanceName.setValue(empltaclaimdtlsDM.getAllowanceid());
+			dfClaimDt.setValue(empltaclaimdtlsDM.getClaimdt());
+			if (empltaclaimdtlsDM.getCurblkperiod() != null) {
+				tfCurntBlkPeriod.setValue(empltaclaimdtlsDM.getCurblkperiod());
 			}
-			if (editClaimDtlsList.getClaimblkperiod() != null) {
-				tfClaimBlkPeriod.setValue(sltedRcd.getItemProperty("claimblkperiod").getValue().toString());
+			if (empltaclaimdtlsDM.getClaimblkperiod() != null) {
+				tfClaimBlkPeriod.setValue(empltaclaimdtlsDM.getClaimblkperiod());
 			}
-			if (editClaimDtlsList.getAllwamt() != null) {
-				tfAlwncAmt.setValue(sltedRcd.getItemProperty("allwamt").getValue().toString());
+			if (empltaclaimdtlsDM.getAllwamt() != null) {
+				tfAlwncAmt.setValue(empltaclaimdtlsDM.getAllwamt().toString());
 			}
-			cbModeOfTravel.setValue(editClaimDtlsList.getModeoftravel());
-			if (editClaimDtlsList.getClaimamt() != null) {
-				tfClaimAmt.setValue(sltedRcd.getItemProperty("claimamt").getValue().toString());
+			cbModeOfTravel.setValue(empltaclaimdtlsDM.getModeoftravel());
+			if (empltaclaimdtlsDM.getClaimamt() != null) {
+				tfClaimAmt.setValue(empltaclaimdtlsDM.getClaimamt().toString());
 			}
-			if (editClaimDtlsList.getPaidpayrollid() != null) {
-				tfPaidPayroll.setValue(sltedRcd.getItemProperty("paidpayrollid").getValue().toString());
+			if (empltaclaimdtlsDM.getPaidpayrollid() != null) {
+				tfPaidPayroll.setValue(empltaclaimdtlsDM.getPaidpayrollid().toString());
 			}
-			cbstatus.setValue(sltedRcd.getItemProperty("claimstatus").getValue());
-			cbApprovedBy.setValue(editClaimDtlsList.getApprby());
-			dfPaidDt.setValue((Date) sltedRcd.getItemProperty("paiddt").getValue());
-			dfAprvDt.setValue((Date) sltedRcd.getItemProperty("apprdt").getValue());
-			if (editClaimDtlsList.getAppramt() != null) {
-				tfAprvAmt.setValue(sltedRcd.getItemProperty("appramt").getValue().toString());
+			cbApprovedBy.setValue(empltaclaimdtlsDM.getApprby());
+			dfPaidDt.setValue(empltaclaimdtlsDM.getPaiddt());
+			dfAprvDt.setValue(empltaclaimdtlsDM.getApprdt());
+			if (empltaclaimdtlsDM.getAppramt() != null) {
+				tfAprvAmt.setValue(empltaclaimdtlsDM.getAppramt().toString());
 			}
 		}
 	}
@@ -348,11 +343,11 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 		}
 		catch (Exception e) {
 			if (Long.valueOf(tfAlwncAmt.getValue()).equals("0")) {
-//				tfAlwncAmt.setComponentError(new UserError(GERPErrorCodes.NULL_ALLOW_AMT));
+				// tfAlwncAmt.setComponentError(new UserError(GERPErrorCodes.NULL_ALLOW_AMT));
 				tfAlwncAmt.setComponentError(new UserError("Please Enter Allowance Claim Amount"));
 				errorflag = true;
 			} else {
-//				tfAlwncAmt.setComponentError(new UserError(GERPErrorCodes.Amount_CHAR_VALIDATION));
+				// tfAlwncAmt.setComponentError(new UserError(GERPErrorCodes.Amount_CHAR_VALIDATION));
 				tfAlwncAmt.setComponentError(new UserError("Please Enter Allowance Claim Amount"));
 				errorflag = true;
 			}
@@ -370,7 +365,7 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 				tfAprvAmt.setComponentError(new UserError(GERPErrorCodes.NULL_CLAIM_AMT));
 				errorflag = true;
 			} else {
-//				tfAprvAmt.setComponentError(new UserError(GERPErrorCodes.Amount_CHAR_VALIDATION));
+				// tfAprvAmt.setComponentError(new UserError(GERPErrorCodes.Amount_CHAR_VALIDATION));
 				tfAprvAmt.setComponentError(new UserError(GERPErrorCodes.NULL_CLAIM_AMT));
 				errorflag = true;
 			}
@@ -381,9 +376,8 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 		}
 		if ((dfPaidDt.getValue() != null) || (dfAprvDt.getValue() != null)) {
 			if (dfPaidDt.getValue().after(dfAprvDt.getValue())) {
-//				dfAprvDt.setComponentError(new UserError(GERPErrorCodes.LTA_DATE_OUTOFRANGE));
+				// dfAprvDt.setComponentError(new UserError(GERPErrorCodes.LTA_DATE_OUTOFRANGE));
 				dfAprvDt.setComponentError(new UserError("Approved Date Should be Lesser than Paid Date"));
-				
 				errorflag = true;
 			} else {
 				dfAprvDt.setComponentError(null);

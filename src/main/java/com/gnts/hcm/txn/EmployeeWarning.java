@@ -213,11 +213,10 @@ public class EmployeeWarning extends BaseTransUI {
 	
 	// Load Employee List
 	private void loadEmployeeList() {
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "P");
 		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanInitiatedBy.setBeanIdProperty("employeeid");
-		beanInitiatedBy.addAll(empList);
+		beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+				null, "P"));
 		cbEmployee.setContainerDataSource(beanInitiatedBy);
 	}
 	

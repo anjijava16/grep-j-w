@@ -193,15 +193,15 @@ public class ITInvestDecl extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		tblMstScrSrchRslt.setPageLength(13);
-		List<ITInvestDecDM> loadITInvestDecDM = new ArrayList<ITInvestDecDM>();
+		List<ITInvestDecDM> listITInvestDec = new ArrayList<ITInvestDecDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ companyId + ", " + (Long) cbEmployeeName.getValue() + ", " + (String) tfSectnCode.getValue()
 				+ (String) cbStatus.getValue());
-		loadITInvestDecDM = serviceITInvestDec.getITInvestList(null, (Long) cbEmployeeName.getValue(),
+		listITInvestDec = serviceITInvestDec.getITInvestList(null, (Long) cbEmployeeName.getValue(),
 				(String) tfSectnCode.getValue(), (String) cbStatus.getValue(), "P");
-		recordCnt = loadITInvestDecDM.size();
+		recordCnt = listITInvestDec.size();
 		beanITInvestDecDM = new BeanItemContainer<ITInvestDecDM>(ITInvestDecDM.class);
-		beanITInvestDecDM.addAll(loadITInvestDecDM);
+		beanITInvestDecDM.addAll(listITInvestDec);
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Got the ITInvestDec. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanITInvestDecDM);
@@ -282,37 +282,37 @@ public class ITInvestDecl extends BaseUI {
 	private void editItInvestDeclDetails() {
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			ITInvestDecDM editItinvestDeclList = beanITInvestDecDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if ((editItinvestDeclList.getEmpId() != null)) {
-				cbEmployeeName.setValue(editItinvestDeclList.getEmpId());
+			ITInvestDecDM itinvestDecDM = beanITInvestDecDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			if ((itinvestDecDM.getEmpId() != null)) {
+				cbEmployeeName.setValue(itinvestDecDM.getEmpId());
 			}
-			if ((editItinvestDeclList.getFinYear() != null)) {
+			if ((itinvestDecDM.getFinYear() != null)) {
 				tfFinYear.setReadOnly(false);
-				tfFinYear.setValue(editItinvestDeclList.getFinYear());
+				tfFinYear.setValue(itinvestDecDM.getFinYear());
 			}
-			if ((editItinvestDeclList.getSecCode() != null)) {
-				tfSectnCode.setValue(editItinvestDeclList.getSecCode());
+			if ((itinvestDecDM.getSecCode() != null)) {
+				tfSectnCode.setValue(itinvestDecDM.getSecCode());
 			}
-			if (editItinvestDeclList.getInvestDate() != null) {
-				dfInvstedDt.setValue(editItinvestDeclList.getInvestDate());
+			if (itinvestDecDM.getInvestDate() != null) {
+				dfInvstedDt.setValue(itinvestDecDM.getInvestDate());
 			}
-			if ((editItinvestDeclList.getInvestAmt() != null)) {
-				tfInvstdAmt.setValue(editItinvestDeclList.getInvestAmt().toString());
+			if ((itinvestDecDM.getInvestAmt() != null)) {
+				tfInvstdAmt.setValue(itinvestDecDM.getInvestAmt().toString());
 			}
-			if ((editItinvestDeclList.getAppAmt() != null)) {
-				tfApprvdAmt.setValue(editItinvestDeclList.getAppAmt().toString());
+			if ((itinvestDecDM.getAppAmt() != null)) {
+				tfApprvdAmt.setValue(itinvestDecDM.getAppAmt().toString());
 			}
-			if ((editItinvestDeclList.getVerifiedBy() != null)) {
-				tfVerifdBy.setValue(editItinvestDeclList.getVerifiedBy().toString());
+			if ((itinvestDecDM.getVerifiedBy() != null)) {
+				tfVerifdBy.setValue(itinvestDecDM.getVerifiedBy().toString());
 			}
-			if (editItinvestDeclList.getVerifiedDt() != null) {
-				dfVerifdDt.setValue(editItinvestDeclList.getVerifiedDt());
+			if (itinvestDecDM.getVerifiedDt() != null) {
+				dfVerifdDt.setValue(itinvestDecDM.getVerifiedDt());
 			}
-			if (editItinvestDeclList.getStatus() != null) {
-				cbStatus.setValue(editItinvestDeclList.getStatus());
+			if (itinvestDecDM.getStatus() != null) {
+				cbStatus.setValue(itinvestDecDM.getStatus());
 			}
-			if (editItinvestDeclList.getProofDoc() != null) {
-				byte[] certificate = editItinvestDeclList.getProofDoc();
+			if (itinvestDecDM.getProofDoc() != null) {
+				byte[] certificate = itinvestDecDM.getProofDoc();
 				UploadDocumentUI test = new UploadDocumentUI(vlappdoc);
 				test.displaycertificate(certificate);
 			} else {

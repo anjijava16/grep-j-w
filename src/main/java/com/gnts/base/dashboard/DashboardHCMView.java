@@ -198,7 +198,7 @@ public class DashboardHCMView implements ClickListener {
 			// logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
 			tblPhoneReg.removeAllItems();
 			BeanItemContainer<PhoneRegDM> beanphonereg = new BeanItemContainer<PhoneRegDM>(PhoneRegDM.class);
-			beanphonereg.addAll(servicephonereg.getPhoneRegList(null, null, null, null, null));
+			beanphonereg.addAll(servicephonereg.getPhoneRegList(null, null, null, null, null,null,null));
 			tblPhoneReg.setContainerDataSource(beanphonereg);
 			tblPhoneReg.setVisibleColumns(new Object[] { "callDate", "callType", "companyName", "employeeId",
 					"phoneNumber", "interNo" });

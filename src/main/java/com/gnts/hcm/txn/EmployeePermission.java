@@ -230,11 +230,10 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 	private void loadAppMgrList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "loading Approve Manager List...");
-		List<EmployeeDM> employeelist = serviceemployee.getEmployeeList(null, null, null,/* department */
-				"Active", companyid, null, null, null, null, "P");
 		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(employeelist);
+		beanEmployee.addAll(serviceemployee.getEmployeeList(null, null, null,/* department */
+				"Active", companyid, null, null, null, null, "P"));
 		cbPermissionApprmgr.setContainerDataSource(beanEmployee);
 	}
 	

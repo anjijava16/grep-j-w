@@ -218,17 +218,17 @@ public class KpiGrp extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Editing the selected record");
 		if (tblMstScrSrchRslt.getValue() != null) {
-			KpiGroupDM editKpiGrpObj = beanKpiGroupDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (editKpiGrpObj.getKpigroupname() != null) {
-				tfKpigrpName.setValue(editKpiGrpObj.getKpigroupname());
+			KpiGroupDM kpiGroupDM = beanKpiGroupDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			if (kpiGroupDM.getKpigroupname() != null) {
+				tfKpigrpName.setValue(kpiGroupDM.getKpigroupname());
 			}
-			if (editKpiGrpObj.getWeightage() != null) {
-				tfWeightage.setValue((editKpiGrpObj.getWeightage()).toString());
+			if (kpiGroupDM.getWeightage() != null) {
+				tfWeightage.setValue((kpiGroupDM.getWeightage()).toString());
 			}
-			if (editKpiGrpObj.getGrpstatus() != null) {
-				cbStatus.setValue(editKpiGrpObj.getGrpstatus());
+			if (kpiGroupDM.getGrpstatus() != null) {
+				cbStatus.setValue(kpiGroupDM.getGrpstatus());
 			}
-			cbJobClasfn.setValue(editKpiGrpObj.getJobclasfnid());
+			cbJobClasfn.setValue(kpiGroupDM.getJobclasfnid());
 		}
 	}
 	

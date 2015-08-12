@@ -81,7 +81,7 @@ public class AppraisalLevels extends BaseUI {
 		buidview();
 	}
 	
-	public void buidview() {
+	private void buidview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "building appraisallevel UI");
 		txlevelname = new GERPTextField("Level Name");
 		cbapprasallvl = new GERPComboBox("Appraisal Level");
@@ -104,7 +104,7 @@ public class AppraisalLevels extends BaseUI {
 		loadSrchRslt();
 	}
 	
-	public void assemblsearch() {
+	private void assemblsearch() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search");
 		hlsearchlayout.removeAllComponents();
 		flcolumn1 = new GERPFormLayout();
@@ -149,17 +149,17 @@ public class AppraisalLevels extends BaseUI {
 		hluserInputlayout.setMargin(true);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.removeAllItems();
-		List<AppraisalLevelsDM> AppraisalList = new ArrayList<AppraisalLevelsDM>();
+		List<AppraisalLevelsDM> listAppraisalLvl = new ArrayList<AppraisalLevelsDM>();
 		String levelname = txlevelname.getValue().toString();
-		AppraisalList = appraisallevelservice.getAppraisalLevelsList(null, (String) cbapprasallvl.getValue(),
+		listAppraisalLvl = appraisallevelservice.getAppraisalLevelsList(null, (String) cbapprasallvl.getValue(),
 				levelname, (String) cblvlstatus.getValue(), "F");
-		recordCnt = AppraisalList.size();
+		recordCnt = listAppraisalLvl.size();
 		beanAppraisalLevelsDM = new BeanItemContainer<AppraisalLevelsDM>(AppraisalLevelsDM.class);
-		beanAppraisalLevelsDM.addAll(AppraisalList);
+		beanAppraisalLevelsDM.addAll(listAppraisalLvl);
 		tblMstScrSrchRslt.setContainerDataSource(beanAppraisalLevelsDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "apprlevelid", "levelname", "appraisallevel",
 				"appraisaldetails", "levelstatus", "lastupdateddt", "lastupdatedby" });

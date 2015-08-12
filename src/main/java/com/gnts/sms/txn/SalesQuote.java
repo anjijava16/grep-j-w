@@ -1290,8 +1290,6 @@ public class SalesQuote extends BaseTransUI {
 		tfSubTaxTotal.setReadOnly(false);
 		tfSubTaxTotal.setValue(subtaxTotal.toString());
 		tfSubTaxTotal.setReadOnly(true);
-		System.out.println("subtaxTotal" + subtaxTotal);
-		System.out.println("tfVatPer.getValue()" + tfVatPer.getValue());
 		BigDecimal vatvalue = gerPercentageValue(new BigDecimal(tfVatPer.getValue()), subtaxTotal);
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue(vatvalue.toString());
@@ -1405,7 +1403,9 @@ public class SalesQuote extends BaseTransUI {
 		comments = new SmsComments(vlTableForm, null, companyid, null, quoteId, null, null, null, null, null, null,
 				null, null);
 		cbEnqNo.setRequired(true);
-		// for load Technical Terms
+		// for load Technical and Commercial Terms
+		addDefaultCommercialTerms();
+		addDefaultTechnicalTerms();
 	}
 	
 	@Override
@@ -1589,6 +1589,28 @@ public class SalesQuote extends BaseTransUI {
 			for (SmsQuoteDtlDM save : (Collection<SmsQuoteDtlDM>) itemIds) {
 				save.setQuoteid(Long.valueOf(quoteHdrDM.getQuoteId()));
 				servicesmseQuoteDtl.saveOrUpdatesmsquotedtlDetails(save);
+			}
+			try {
+				@SuppressWarnings("unchecked")
+				Collection<QuoteCommCondDM> commIds = (Collection<QuoteCommCondDM>) tblCommercialTerms
+						.getVisibleItemIds();
+				for (QuoteCommCondDM quoteCommCondDM : (Collection<QuoteCommCondDM>) commIds) {
+					quoteCommCondDM.setQuoteId(Long.valueOf(quoteHdrDM.getQuoteId()));
+					serviceQuoteCommCond.saveOrUpdateDetails(quoteCommCondDM);
+				}
+			}
+			catch (Exception e) {
+			}
+			try {
+				@SuppressWarnings("unchecked")
+				Collection<QuoteTechCondDM> techIds = (Collection<QuoteTechCondDM>) tblTechnicalTerms
+						.getVisibleItemIds();
+				for (QuoteTechCondDM quoteTechCondDM : (Collection<QuoteTechCondDM>) techIds) {
+					quoteTechCondDM.setQuoteId(Long.valueOf(quoteHdrDM.getQuoteId()));
+					serviceQuoteTechCond.saveOrUpdateDetails(quoteTechCondDM);
+				}
+			}
+			catch (Exception e) {
 			}
 			tfQuoteNumber.setReadOnly(false);
 			tfQuoteNumber.setValue(quoteHdrDM.getQuoteNumber());
@@ -1857,6 +1879,41 @@ public class SalesQuote extends BaseTransUI {
 	private void resetCommercialTerms() {
 		tfTermsCode.setValue("");
 		taTermsDesc.setValue("");
+	}
+	
+	private void addDefaultCommercialTerms() {
+		listCommercialTerms.clear();
+		for (CompanyLookupDM companyLookupDM : serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+				"QUOTE_COMM")) {
+			try {
+				String[] list = companyLookupDM.getLookupname().split(":::");
+				QuoteCommCondDM quoteCommCondDM = new QuoteCommCondDM();
+				quoteCommCondDM.setCode(list[0]);
+				quoteCommCondDM.setDescription(list[1]);
+				quoteCommCondDM.setStatus("Active");
+				quoteCommCondDM.setLastupdatedby(username);
+				quoteCommCondDM.setLastupdateddt(DateUtils.getcurrentdate());
+				listCommercialTerms.add(quoteCommCondDM);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		loadCommmercialTerms(false);
+	}
+	
+	private void addDefaultTechnicalTerms() {
+		listTechnicalTerms.clear();
+		for (CompanyLookupDM companyLookupDM : serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+				"QUOTE_TECH")) {
+			QuoteTechCondDM quoteTechCondDM = new QuoteTechCondDM();
+			quoteTechCondDM.setDescription(companyLookupDM.getLookupname());
+			quoteTechCondDM.setLastupdatedby(username);
+			quoteTechCondDM.setStatus("Active");
+			quoteTechCondDM.setLastupdateddt(DateUtils.getcurrentdate());
+			listTechnicalTerms.add(quoteTechCondDM);
+		}
+		loadTechnicalTerms(false);
 	}
 	
 	private void saveTechnicalTerms() {

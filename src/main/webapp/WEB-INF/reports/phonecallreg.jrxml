@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="phonecallreg" pageWidth="600" pageHeight="842" columnWidth="560" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ed5a03a3-3f1a-4368-90ca-7487e7561d48">
+	<property name="ireport.zoom" value="1.2100000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[select e.first_name || ' ' || e.last_name first_name,p.call_date,p.phone_number,p.companyname,d.dept_name,p.inter_no,p.phone_time,p.purpose
+from T_STT_PHONE_REG p,m_base_employee e,m_base_department d
+where e.employee_id = p.employee_id
+and d.dept_id =p.dept_id]]>
+	</queryString>
+	<field name="FIRST_NAME" class="java.lang.String"/>
+	<field name="CALL_DATE" class="java.sql.Timestamp"/>
+	<field name="PHONE_NUMBER" class="java.lang.String"/>
+	<field name="COMPANYNAME" class="java.lang.String"/>
+	<field name="DEPT_NAME" class="java.lang.String"/>
+	<field name="INTER_NO" class="java.lang.String"/>
+	<field name="PHONE_TIME" class="java.lang.String"/>
+	<field name="PURPOSE" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="108" splitType="Stretch">
+			<line>
+				<reportElement uuid="6806382c-5356-427b-879c-118aaa461c2f" x="0" y="79" width="560" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.75"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="9dcdd9bd-ebcc-4207-8be1-a4dbda270297" x="0" y="104" width="560" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.75"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="a12273c9-15af-478d-a6b1-0061bb855bed" x="1" y="85" width="30" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8a2ac77e-b6fb-4f0d-8c96-ee8e530e0871" x="144" y="85" width="64" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1c90ef15-6e21-4b83-8073-6e774f99ae57" x="209" y="85" width="69" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Phone]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7e708980-5f5e-4586-bf34-6d2f49baa2d1" x="1" y="52" width="328" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Outgoing Calls Register]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6a631a06-031f-4a8f-8630-0e0f91ec2aeb" x="1" y="26" width="559" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[Malumichampatti, Coimbatore - 641 050]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="98af3512-5d09-462e-bf04-dc46410176e9" x="281" y="85" width="64" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Company]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="cef6449f-c16f-468e-b58d-6920ce99e532" x="428" y="85" width="57" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Inter]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="288c9008-0019-4485-985d-76bc4a7dfdca" x="1" y="1" width="559" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC Tool Tech (P) Ltd.,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a21ccd3a-befa-49f1-a073-ebc90b1d2636" x="32" y="85" width="112" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Emp Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="98af3512-5d09-462e-bf04-dc46410176e9" x="348" y="85" width="76" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Department]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="cef6449f-c16f-468e-b58d-6920ce99e532" x="487" y="85" width="69" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Time]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="33" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="1d74dfff-b8ec-4e6f-b678-cee247e1c1e6" x="0" y="2" width="23" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement uuid="b4c1af87-3d6d-47b5-9053-011a8b10a74e" x="209" y="2" width="69" height="16"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{PHONE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="47c8a964-d93e-42a2-bf2a-aba9118269dd" x="281" y="2" width="64" height="16"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{COMPANYNAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="b03fc619-49fb-46a5-bfb6-b25de66bafe0" x="32" y="2" width="112" height="16"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yyyy" isBlankWhenNull="true">
+				<reportElement uuid="005f5d50-f36f-4cd0-95f7-07645e86400a" x="144" y="2" width="64" height="16"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{CALL_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="47c8a964-d93e-42a2-bf2a-aba9118269dd" x="348" y="2" width="76" height="16"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{DEPT_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement uuid="bd70f58c-7ffb-4382-80a4-23540003d6b8" x="428" y="2" width="57" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{INTER_NO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="3da37716-f04a-4833-971e-6fe486e3e00d" x="487" y="2" width="73" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PHONE_TIME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="28" splitType="Stretch">
+			<line>
+				<reportElement uuid="95fdb274-757d-4bbb-8dcc-be17404a9f80" x="0" y="2" width="560" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.75"/>
+				</graphicElement>
+			</line>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement uuid="503fafed-155d-4797-bbe1-9403c0aef7e5" x="1" y="7" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="921251f4-12c3-4204-88aa-e2f9eaaea8d1" x="437" y="7" width="80" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="f80d9044-b4dd-4994-befa-bc4ec4eb133f" x="516" y="7" width="40" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

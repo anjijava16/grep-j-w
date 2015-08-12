@@ -44,7 +44,6 @@ import com.gnts.hcm.service.mst.EarningsService;
 import com.gnts.hcm.service.mst.EmployeeDtlsService;
 import com.gnts.hcm.service.mst.GradeEarningService;
 import com.gnts.hcm.service.txn.EmployeeEarningService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -90,7 +89,6 @@ public class EmployeeEarning extends BaseUI {
 	// Initialize logger
 	private Logger logger = Logger.getLogger(EmployeeEarningDM.class);
 	private static final long serialVersionUID = 1L;
-	BigDecimal prPt, prAmt;
 	
 	// Constructor
 	public EmployeeEarning() {
@@ -251,7 +249,7 @@ public class EmployeeEarning extends BaseUI {
 	private void loadEmployeeList() {
 		try {
 			List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, null, companyId, null, null,
-					null, null, "F");
+					null, null, "P");
 			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
 			beanEmployeeDM.addAll(empList);
@@ -397,12 +395,10 @@ public class EmployeeEarning extends BaseUI {
 	}
 	
 	private void editEmpEarning() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
+		if (tblMstScrSrchRslt.getValue() != null) {
 			EmployeeEarningDM empEarning = beanEmployeeEarn.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			cbEmpName.setReadOnly(false);
 			cbEmpName.setValue(empEarning.getEmployeeid());
-			System.out.println("Employee--->" + empEarning.getEmployeeid());
 			cbEmpName.setReadOnly(true);
 			cbFlatPercnt.setReadOnly(false);
 			cbFlatPercnt.setValue(empEarning.getIsflatpercent());
@@ -412,22 +408,18 @@ public class EmployeeEarning extends BaseUI {
 			cbEarnCode.setReadOnly(true);
 			if (empEarning.getEarnpercent() != null) {
 				tfEarnPerct.setReadOnly(false);
-				tfEarnPerct.setValue(itselect.getItemProperty("earnpercent").getValue().toString());
-			}
-			if (tfEarnPerct.getValue() != null) {
-				prPt = (new BigDecimal(tfEarnPerct.getValue()));
+				tfEarnPerct.setValue(empEarning.getEarnpercent().toString());
 			}
 			if (empEarning.getEarnamt() != null) {
-				tfEarnAmt.setValue(itselect.getItemProperty("earnamt").getValue().toString());
-				prAmt = (new BigDecimal(tfEarnAmt.getValue()));
+				tfEarnAmt.setValue(empEarning.getEarnamt().toString());
 				if (empEarning.getEffdt() != null) {
 					dfEffDt.setValue(empEarning.getEffdt());
 				}
 				if (empEarning.getPrevamt() != null) {
-					tfPreAmt.setValue(itselect.getItemProperty("prevamt").getValue().toString());
+					tfPreAmt.setValue(empEarning.getPrevamt().toString());
 				}
 				if (empEarning.getPrevpercent() != null) {
-					tfPrePercnt.setValue(itselect.getItemProperty("prevpercent").getValue().toString());
+					tfPrePercnt.setValue(empEarning.getPrevpercent().toString());
 				}
 				if (empEarning.getLastpaidt() != null) {
 					dfLastPaidDt.setValue(empEarning.getLastpaidt());
@@ -442,7 +434,7 @@ public class EmployeeEarning extends BaseUI {
 						ckFlag.setValue(false);
 					}
 				}
-				cbStatus.setValue(itselect.getItemProperty("empearnstatus").getValue());
+				cbStatus.setValue(empEarning.getEmpearnstatus());
 			}
 		}
 	}

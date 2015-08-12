@@ -159,7 +159,7 @@ public class SmsInvoice extends BaseTransUI {
 	private GERPTable tblInvoicDtl;
 	private int recordCnt;
 	private Long invoiceId;
-	private Long EmployeeId;
+	private Long employeeId;
 	private File file;
 	private Long roleId;
 	private Long branchId;
@@ -178,7 +178,7 @@ public class SmsInvoice extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
@@ -1526,7 +1526,7 @@ public class SmsInvoice extends BaseTransUI {
 			invoiceHdrDM.setDeliveryNoteNo(tfDelNOtNo.getValue());
 			invoiceHdrDM.setDeliveryNoteDt(dfDelNotDt.getValue());
 			invoiceHdrDM.setEdd(dfedd.getValue());
-			invoiceHdrDM.setPreparedBy(EmployeeId);
+			invoiceHdrDM.setPreparedBy(employeeId);
 			invoiceHdrDM.setReviewedBy(null);
 			invoiceHdrDM.setActionedBy(null);
 			invoiceHdrDM.setLastUpdtDate(DateUtils.getcurrentdate());

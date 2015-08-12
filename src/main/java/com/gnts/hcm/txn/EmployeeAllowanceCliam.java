@@ -178,10 +178,10 @@ public class EmployeeAllowanceCliam extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeAllowanceClaimDM> EmpAllowanceCliamList = new ArrayList<EmployeeAllowanceClaimDM>();
+		List<EmployeeAllowanceClaimDM> listAllClaim = new ArrayList<EmployeeAllowanceClaimDM>();
 		Long empId = null;
 		if (cbEmpName.getValue() != null) {
 			empId = ((Long.valueOf(cbEmpName.getValue().toString())));
@@ -192,11 +192,11 @@ public class EmployeeAllowanceCliam extends BaseUI {
 		}
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + dtPaidDt.getValue() + (String) cbStatus.getValue() + ", " + empId + "," + alwncId);
-		EmpAllowanceCliamList = serviceEmpAllowanceCliam.getempawclaimlist(null, (Long) cbEmpName.getValue(),
+		listAllClaim = serviceEmpAllowanceCliam.getempawclaimlist(null, (Long) cbEmpName.getValue(),
 				(Date) dfAlowncClaimDt.getValue(), (Long) cbEmpAlwncName.getValue(), "Approved", "F");
-		recordCnt = EmpAllowanceCliamList.size();
+		recordCnt = listAllClaim.size();
 		beanEmpAllowanceDM = new BeanItemContainer<EmployeeAllowanceClaimDM>(EmployeeAllowanceClaimDM.class);
-		beanEmpAllowanceDM.addAll(EmpAllowanceCliamList);
+		beanEmpAllowanceDM.addAll(listAllClaim);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the EmpAllowanceCliam. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanEmpAllowanceDM);

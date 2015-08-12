@@ -463,8 +463,8 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 		if (tblSDADetails.getValue() != null) {
 			SmsSDADtlDM smsSDADtlDM = beanSDADetails.getItem(tblSDADetails.getValue()).getBean();
 			Long prodid = smsSDADtlDM.getProductId();
-			Collection<?> uomid = cbProduct.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Collection<?> prodids = cbProduct.getItemIds();
+			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
 				// Get the actual bean and use the data
@@ -764,7 +764,6 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			parameterMap.put("SDAID", sdaHeaderId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/sda"); // productlist is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

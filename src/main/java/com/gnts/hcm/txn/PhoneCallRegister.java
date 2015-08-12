@@ -55,8 +55,8 @@ public class PhoneCallRegister extends BaseTransUI {
 			.getBean("companyLookUp");
 	// User Input Fields for EC Request
 	private GERPPopupDateField dfCallDate;
-	private GERPComboBox cbEmployee, cbDepartment, cbCallType,tfCompany;
-	private GERPTextField tfPhoneNumber,tfIntercom, tfTime;
+	private GERPComboBox cbEmployee, cbDepartment, cbCallType, tfCompany;
+	private GERPTextField tfPhoneNumber, tfIntercom, tfTime;
 	private TextArea taPurpose;
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
@@ -126,6 +126,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
 		resetFields();
 		loadSrchRslt();
+		btnPrint.setVisible(true);
 	}
 	
 	private void assembleSearchLayout() {
@@ -178,7 +179,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + null + "," + tfPhoneNumber.getValue() + ", " + (String) cbStatus.getValue());
 		list = servicePhoneReg.getPhoneRegList(null, (Long) cbEmployee.getValue(), null, null,
-				(String) cbStatus.getValue());
+				(String) cbStatus.getValue(), null, null);
 		recordCnt = list.size();
 		beanPhoneReg = new BeanItemContainer<PhoneRegDM>(PhoneRegDM.class);
 		beanPhoneReg.addAll(list);
@@ -265,7 +266,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		phoneRegDM.setStatus((String) cbStatus.getValue());
 		phoneRegDM.setPhoneNumber(tfPhoneNumber.getValue());
 		phoneRegDM.setInterNo(tfIntercom.getValue());
-		phoneRegDM.setCompanyName((String)tfCompany.getValue());
+		phoneRegDM.setCompanyName((String) tfCompany.getValue());
 		phoneRegDM.setPurpose(taPurpose.getValue());
 		phoneRegDM.setPhoneTime(tfTime.getValue());
 		phoneRegDM.setLastUpdatedBy(username);
@@ -289,12 +290,12 @@ public class PhoneCallRegister extends BaseTransUI {
 		lblNotification.setCaption("");
 		// reload the search using the defaults
 		loadSrchRslt();
+		btnPrint.setVisible(true);
 	}
 	
 	@Override
 	protected void addDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
-		// cbclient.setRequired(true);
 		tfPhoneNumber.setReadOnly(true);
 		hllayout.removeAllComponents();
 		vlSrchRsltContainer.setVisible(true);
@@ -353,6 +354,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		resetFields();
 		loadSrchRslt();
 		tfPhoneNumber.setReadOnly(false);
+		btnPrint.setVisible(true);
 	}
 	
 	@Override
@@ -398,9 +400,8 @@ public class PhoneCallRegister extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			parameterMap.put("ECRID", phoneRegid);
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "/WEB-INF/reports/ecr"); // ecr is the name of my jasper
+			rpt.setReportName(basepath + "/WEB-INF/reports/phonecallreg"); // phonecallreg is the name of my jasper
 			// file.
 			rpt.callReport(basepath, "Preview");
 		}

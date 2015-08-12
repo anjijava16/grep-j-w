@@ -82,15 +82,13 @@ public class EmployeeDeduction extends BaseUI {
 	private TextField tfDecnPerct, tfDecnAmt, tfPreAmt, tfPrePercnt;
 	// BeanItemContainer
 	private BeanItemContainer<EmployeeDeductionDM> beanEmployeeDecn = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployeeDM = null;
-	private BeanContainer<Long, DeductionDM> beanDeduction = null;
 	// local variables declaration
 	private Long companyId;
 	private int recordCnt = 0;
 	private String userName, deductionId;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(EmployeeDeductionDM.class);
-	BigDecimal prevsamt, prevspt;
+	private BigDecimal prevsamt, prevspt;
 	private static final long serialVersionUID = 1L;
 	
 	// Constructor
@@ -208,11 +206,10 @@ public class EmployeeDeduction extends BaseUI {
 	
 	private void loadEmployeeList() {
 		try {
-			List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, companyId, null, null,
-					null, "F");
-			beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(empList);
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, companyId, null, null,
+					null, "P"));
 			cbEmpName.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
@@ -222,11 +219,10 @@ public class EmployeeDeduction extends BaseUI {
 	
 	private void loadDedcnList() {
 		try {
-			List<DeductionDM> dedcnList = serviceDeduction.getDuctionList(null, null, companyId, null, null,
-					"F");
-			beanDeduction = new BeanContainer<Long, DeductionDM>(DeductionDM.class);
+			BeanContainer<Long, DeductionDM> beanDeduction = new BeanContainer<Long, DeductionDM>(DeductionDM.class);
 			beanDeduction.setBeanIdProperty("deductionId");
-			beanDeduction.addAll(dedcnList);
+			beanDeduction.addAll(serviceDeduction.getDuctionList(null, null, companyId, null, null,
+					"F"));
 			cbDedcnCode.setContainerDataSource(beanDeduction);
 		}
 		catch (Exception ex) {

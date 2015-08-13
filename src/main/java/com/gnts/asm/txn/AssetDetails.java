@@ -124,7 +124,7 @@ public class AssetDetails extends BaseTransUI {
 		// category
 		cbcategory = new GERPComboBox("Category");
 		cbcategory.setItemCaptionPropertyId("catgryName");
-		loadcategory();
+		loadCategory();
 		// Initialization for btnSearch
 		btnSearch = new Button("Search", this);
 		btnSearch.setStyleName("searchbt");
@@ -188,7 +188,7 @@ public class AssetDetails extends BaseTransUI {
 		cbBrandId.setWidth("148");
 		cbBrandId.setNullSelectionAllowed(false);
 		cbBrandId.setItemCaptionPropertyId("brandname");
-		loadbrandDetails();
+		loadBrandDetails();
 		cbBrandId.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -371,7 +371,7 @@ public class AssetDetails extends BaseTransUI {
 	}
 	
 	// Load Branch list for pnlmain's combo Box
-	private void loadbrandDetails() {
+	private void loadBrandDetails() {
 		BeanContainer<Long, AssetBrandDM> beanbrand = new BeanContainer<Long, AssetBrandDM>(AssetBrandDM.class);
 		beanbrand.setBeanIdProperty("brandid");
 		beanbrand.addAll(serviceBrand.getAssetBrandList(companyid, null, "Active", "P"));
@@ -399,7 +399,7 @@ public class AssetDetails extends BaseTransUI {
 		}
 	}
 	
-	private void loadcategory() {
+	private void loadCategory() {
 		BeanContainer<Long, AssetCategoryDM> assetCategorydm = new BeanContainer<Long, AssetCategoryDM>(
 				AssetCategoryDM.class);
 		assetCategorydm.setBeanIdProperty("catgryId");
@@ -709,7 +709,6 @@ public class AssetDetails extends BaseTransUI {
 		cbBrandId.setValue(null);
 		cbBrandId.setRequired(false);
 		cbBrandId.setComponentError(null);
-		// cbbranch.setValue(branchId);
 		cbbranch.setValue(cbbranch.getItemIds().iterator().next());
 		cbDeptId.setValue(null);
 		cbDeptId.setRequired(false);

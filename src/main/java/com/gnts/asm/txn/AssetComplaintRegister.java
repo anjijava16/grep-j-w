@@ -12,6 +12,7 @@ import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPTextArea;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.erputil.tool.EmailTrigger;
 import com.gnts.erputil.util.DateUtils;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.server.UserError;
@@ -87,8 +88,8 @@ public class AssetComplaintRegister extends Window {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// TODO Auto-generated method stub
-				ConfirmDialog.show(UI.getCurrent(), "Please Confirm:", "Are you really sure?", "Raise Ticket", "Not quite",
-						new ConfirmDialog.Listener() {
+				ConfirmDialog.show(UI.getCurrent(), "Please Confirm:", "Are you really sure?", "Raise Ticket",
+						"Not quite", new ConfirmDialog.Listener() {
 							private static final long serialVersionUID = 1L;
 							
 							public void onClose(ConfirmDialog dialog) {
@@ -147,6 +148,11 @@ public class AssetComplaintRegister extends Window {
 		assetMaintDetailDM.setLastUpdatedBy(username);
 		assetMaintDetailDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 		serviceAssetMaintDetails.saveOrUpdateAssetMaintDetail(assetMaintDetailDM);
+		try {
+			new EmailTrigger("maintenance@saarccases.com", taComplaint.getValue(), (String) cbMaintType.getValue());
+		}
+		catch (Exception e) {
+		}
 		close();
 	}
 	
@@ -155,7 +161,7 @@ public class AssetComplaintRegister extends Window {
 		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
 				AssetDetailsDM.class);
 		beanAssetDetails.setBeanIdProperty("assetId");
-		beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null, null,null));
+		beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null, null, null));
 		cbAssetName.setContainerDataSource(beanAssetDetails);
 	}
 	

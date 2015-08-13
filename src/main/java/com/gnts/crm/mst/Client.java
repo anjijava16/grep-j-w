@@ -571,32 +571,32 @@ public class Client extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Dept. Id -> "
 				+ clientId);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			ClientDM editClientlist = beanClnt.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			clientId = editClientlist.getClientId();
-			tfClntName.setValue(editClientlist.getClientName());
-			taClntAddrss.setValue(editClientlist.getClientAddress());
-			cbClntCategory.setValue(editClientlist.getClientCatId());
-			cbClntSubCategory.setValue(editClientlist.getClientSubCatId());
-			cbCampaign.setValue(editClientlist.getCampaignId());
-			cbAssignedto.setValue(editClientlist.getAssignedTo());
-			cbClientrate.setValue(editClientlist.getClinetRating());
-			if (editClientlist.getRevenue() != null && !equals(editClientlist.getRevenue())) {
-				tfRevenue.setValue(editClientlist.getRevenue().toString());
+			ClientDM clientDM = beanClnt.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			clientId = clientDM.getClientId();
+			tfClntName.setValue(clientDM.getClientName());
+			taClntAddrss.setValue(clientDM.getClientAddress());
+			cbClntCategory.setValue(clientDM.getClientCatId());
+			cbClntSubCategory.setValue(clientDM.getClientSubCatId());
+			cbCampaign.setValue(clientDM.getCampaignId());
+			cbAssignedto.setValue(clientDM.getAssignedTo());
+			cbClientrate.setValue(clientDM.getClinetRating());
+			if (clientDM.getRevenue() != null && !equals(clientDM.getRevenue())) {
+				tfRevenue.setValue(clientDM.getRevenue().toString());
 			}
-			cbclntindustry.setValue(editClientlist.getClientIndustry());
-			if (editClientlist.getClientCode() != null) {
-				tfclntcode.setValue(editClientlist.getClientCode());
+			cbclntindustry.setValue(clientDM.getClientIndustry());
+			if (clientDM.getClientCode() != null) {
+				tfclntcode.setValue(clientDM.getClientCode());
 			}
-			cbLeads.setValue(editClientlist.getLeadId());
-			tfEmail.setValue(editClientlist.getEmailId());
-			tffaxno.setValue(editClientlist.getFaxNo());
-			tfphnno.setValue(editClientlist.getPhoneNo());
-			tfpostcd.setValue(editClientlist.getPostalCode());
-			tfWebsite.setValue(editClientlist.getWebsite());
-			tfotherDetails.setValue(editClientlist.getOtherDetails());
-			cbCountry.setValue((editClientlist.getCountryId()));
-			cbState.setValue(editClientlist.getStateId().toString());
-			cbcity.setValue(editClientlist.getCityId().toString());
+			cbLeads.setValue(clientDM.getLeadId());
+			tfEmail.setValue(clientDM.getEmailId());
+			tffaxno.setValue(clientDM.getFaxNo());
+			tfphnno.setValue(clientDM.getPhoneNo());
+			tfpostcd.setValue(clientDM.getPostalCode());
+			tfWebsite.setValue(clientDM.getWebsite());
+			tfotherDetails.setValue(clientDM.getOtherDetails());
+			cbCountry.setValue((clientDM.getCountryId()));
+			cbState.setValue(clientDM.getStateId().toString());
+			cbcity.setValue(clientDM.getCityId().toString());
 		}
 		comment = new Comments(vlCommetTblLayout, employeeid, null, null, clientId, null, null, null);
 		document = new Documents(vlDocumentLayout, null, null, clientId, null, null, null);

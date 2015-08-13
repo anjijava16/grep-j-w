@@ -118,7 +118,7 @@ public class WorkOrder extends BaseTransUI {
 	private TextArea taWrkOdrHdrRemarks;
 	private PopupDateField wrkOdrDate;
 	private OptionGroup workordtype = new OptionGroup("");
-	private OptionGroup POnumberslect = new OptionGroup("");
+	private OptionGroup opPONumbers = new OptionGroup("");
 	private ComboBox cbBranchName, cbClientName, cbwrkOdrType, cbPONumber, cbWorkderStatus, cbEnquiryNumber;
 	// BeanItem container of TestGroupDM
 	private BeanItemContainer<WorkOrderHdrDM> beanWrkOdrHdr = null;
@@ -193,11 +193,11 @@ public class WorkOrder extends BaseTransUI {
 				}
 			}
 		});
-		POnumberslect.addItems("LOI", "PO");
-		POnumberslect.setStyleName("displayblock");
-		POnumberslect.setValue("PO");
-		POnumberslect.setImmediate(true);
-		POnumberslect.addValueChangeListener(new ValueChangeListener() {
+		opPONumbers.addItems("LOI", "PO");
+		opPONumbers.setStyleName("displayblock");
+		opPONumbers.setValue("PO");
+		opPONumbers.setImmediate(true);
+		opPONumbers.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
@@ -533,7 +533,7 @@ public class WorkOrder extends BaseTransUI {
 		flOdrHdrColumn1.addComponent(cbBranchName);
 		flOdrHdrColumn1.addComponent(cbEnquiryNumber);
 		flOdrHdrColumn2.addComponent(cbClientName);
-		flOdrHdrColumn2.addComponent(POnumberslect);
+		flOdrHdrColumn2.addComponent(opPONumbers);
 		flOdrHdrColumn2.addComponent(cbPONumber);
 		// adding components into second column in form layout2
 		flOdrHdrColumn3.addComponent(wrkOdrDate);
@@ -758,7 +758,7 @@ public class WorkOrder extends BaseTransUI {
 			ogPriority.setValue(workOrderHdrDM.getPriority());
 			ogMaterialUsage.setValue(workOrderHdrDM.getMaterialUsage());
 			workordtype.setValue(workOrderHdrDM.getIsSelf());
-			POnumberslect.setValue(workOrderHdrDM.getIsLOI());
+			opPONumbers.setValue(workOrderHdrDM.getIsLOI());
 			if (workOrderHdrDM.getWorkOrdrSts().equals("Approved")) {
 				cbWorkderStatus.setReadOnly(false);
 				cbWorkderStatus.setValue(workOrderHdrDM.getWorkOrdrSts());
@@ -965,7 +965,7 @@ public class WorkOrder extends BaseTransUI {
 				cbClientName.setComponentError(null);
 			}
 		}
-		if (POnumberslect.getValue().toString().equalsIgnoreCase("PO")) {
+		if (opPONumbers.getValue().toString().equalsIgnoreCase("PO")) {
 			if (cbPONumber.getValue() == null) {
 				cbPONumber.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_HDR_PONO));
 				errorFlag = true;
@@ -1022,7 +1022,7 @@ public class WorkOrder extends BaseTransUI {
 			wrkOdHdr.setLastUpdatedDt(DateUtils.getcurrentdate());
 			wrkOdHdr.setLastUpdatedBy(username);
 			wrkOdHdr.setEnquiryId(Long.valueOf(cbEnquiryNumber.getValue().toString()));
-			wrkOdHdr.setIsLOI(POnumberslect.getValue().toString());
+			wrkOdHdr.setIsLOI(opPONumbers.getValue().toString());
 			wrkOdHdr.setIsSelf(workordtype.getValue().toString());
 			serviceWrkOrdHdr.saveOrUpdateWrkOdrHdrDetails(wrkOdHdr);
 			wrkOdrHdrId = wrkOdHdr.getWorkOrdrId();
@@ -1163,9 +1163,9 @@ public class WorkOrder extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			parameterMap.put("saleid", wrkOdrHdrId);
+			parameterMap.put("WOID", wrkOdrHdrId);
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "/WEB-INF/reports/pem_pendpymt_rpt"); // productlist is the name of my jasper
+			rpt.setReportName(basepath + "/WEB-INF/reports/workorder"); // workorder is the name of my jasper
 			// file.
 			rpt.callReport(basepath, "Preview");
 		}
@@ -1202,10 +1202,10 @@ public class WorkOrder extends BaseTransUI {
 	}
 	
 	private void changeworkorderPOstatus() {
-		if (POnumberslect.getValue() != null) {
-			if (POnumberslect.getValue().toString().equalsIgnoreCase("LOI")) {
+		if (opPONumbers.getValue() != null) {
+			if (opPONumbers.getValue().toString().equalsIgnoreCase("LOI")) {
 				cbPONumber.setRequired(false);
-			} else if (POnumberslect.getValue().toString().equalsIgnoreCase("PO")) {
+			} else if (opPONumbers.getValue().toString().equalsIgnoreCase("PO")) {
 				cbPONumber.setRequired(true);
 			}
 		}

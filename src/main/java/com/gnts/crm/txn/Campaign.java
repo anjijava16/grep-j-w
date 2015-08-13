@@ -100,7 +100,7 @@ public class Campaign extends BaseUI {
 			tfActResponseCount, tfActRoi;
 	private ComboBox cbCampaignType, cbEmployee, cbCurrencyName, cbproduct, cbstatus, cbaction, cbreview;
 	private TextArea taComments;
-	private PopupDateField CampaignOpenDt, CampaignCloseDt, searchCampaignDt;
+	private PopupDateField dtCampaignStart, dtCampaignEnd, searchCampaignDt;
 	private BeanItemContainer<CampaignDM> beanCampaign = null;
 	private Long moduleId, clntCampaignId, employeeid;
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
@@ -154,12 +154,12 @@ public class Campaign extends BaseUI {
 		cbaction.setItemCaptionPropertyId("firstname");
 		cbreview.setWidth(strWidth);
 		cbreview.setItemCaptionPropertyId("firstname");
-		CampaignOpenDt = new GERPPopupDateField("Start Date");
-		CampaignOpenDt.setRequired(true);
-		CampaignOpenDt.setDateFormat("dd-MMM-yyyy");
-		CampaignCloseDt = new GERPPopupDateField("End Date");
-		CampaignCloseDt.setDateFormat("dd-MMM-yyyy");
-		CampaignCloseDt.setRequired(true);
+		dtCampaignStart = new GERPPopupDateField("Start Date");
+		dtCampaignStart.setRequired(true);
+		dtCampaignStart.setDateFormat("dd-MMM-yyyy");
+		dtCampaignEnd = new GERPPopupDateField("End Date");
+		dtCampaignEnd.setDateFormat("dd-MMM-yyyy");
+		dtCampaignEnd.setRequired(true);
 		cbCampaignType = new GERPComboBox("Campaign Type");
 		cbCampaignType.setItemCaptionPropertyId("lookupname");
 		cbCampaignType.setWidth(strWidth);
@@ -273,8 +273,8 @@ public class Campaign extends BaseUI {
 	
 	private void assembleSearchLayout() {
 		hlSearchLayout.removeAllComponents();
-		CampaignOpenDt.setRequired(false);
-		CampaignCloseDt.setRequired(false);
+		dtCampaignStart.setRequired(false);
+		dtCampaignEnd.setRequired(false);
 		flColumn1 = new FormLayout();
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
@@ -297,8 +297,8 @@ public class Campaign extends BaseUI {
 	private void assembleUserInputLayout() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Assembling search layout");
 		// add the form layouts into user input layout
-		CampaignCloseDt.setRequired(true);
-		CampaignOpenDt.setRequired(true);
+		dtCampaignEnd.setRequired(true);
+		dtCampaignStart.setRequired(true);
 		hlUserInputLayout.removeAllComponents();
 		hlInput.removeAllComponents();
 		flColumn1 = new FormLayout();
@@ -307,8 +307,8 @@ public class Campaign extends BaseUI {
 		flColumn4 = new FormLayout();
 		flColumn1.addComponent(tfcampaign);
 		tfcampaign.setRequired(true);
-		flColumn1.addComponent(CampaignOpenDt);
-		flColumn1.addComponent(CampaignCloseDt);
+		flColumn1.addComponent(dtCampaignStart);
+		flColumn1.addComponent(dtCampaignEnd);
 		flColumn1.addComponent(cbEmployee);
 		flColumn1.addComponent(cbCampaignType);
 		cbCampaignType.setRequired(true);
@@ -395,8 +395,8 @@ public class Campaign extends BaseUI {
 	
 	private void hluserInputReadonlyTrue() {
 		tfcampaign.setReadOnly(true);
-		CampaignOpenDt.setReadOnly(true);
-		CampaignOpenDt.setReadOnly(true);
+		dtCampaignStart.setReadOnly(true);
+		dtCampaignStart.setReadOnly(true);
 		cbEmployee.setReadOnly(true);
 		cbCampaignType.setReadOnly(true);
 		tfTagetAudieance.setReadOnly(true);
@@ -422,8 +422,8 @@ public class Campaign extends BaseUI {
 	
 	private void hluserInputReadonlyFalse() {
 		tfcampaign.setReadOnly(false);
-		CampaignOpenDt.setReadOnly(false);
-		CampaignCloseDt.setReadOnly(false);
+		dtCampaignStart.setReadOnly(false);
+		dtCampaignEnd.setReadOnly(false);
 		cbEmployee.setReadOnly(false);
 		cbCampaignType.setReadOnly(false);
 		tfTagetAudieance.setReadOnly(false);
@@ -483,46 +483,46 @@ public class Campaign extends BaseUI {
 	private void editCampaignDetails() {
 		logger.info("EditCampaignDetails------>+e");
 		if (tblMstScrSrchRslt.getValue() != null) {
-			CampaignDM editCampaign = beanCampaign.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			campaingnId = editCampaign.getCampaingnId();
-			if (editCampaign.getActulRespCount() != null && !"null".equals(editCampaign.getActulRespCount())) {
-				tfActResponseCount.setValue(editCampaign.getActulRespCount().toString());
+			CampaignDM campaignDM = beanCampaign.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			campaingnId = campaignDM.getCampaingnId();
+			if (campaignDM.getActulRespCount() != null && !"null".equals(campaignDM.getActulRespCount())) {
+				tfActResponseCount.setValue(campaignDM.getActulRespCount().toString());
 			}
-			if (editCampaign.getActulRoi() != null && !"null".equals(editCampaign.getActulRoi())) {
-				tfActRoi.setValue(editCampaign.getActulRoi().toString());
+			if (campaignDM.getActulRoi() != null && !"null".equals(campaignDM.getActulRoi())) {
+				tfActRoi.setValue(campaignDM.getActulRoi().toString());
 			}
-			if (editCampaign.getActulSalesCount() != null && !"null".equals(editCampaign.getActulSalesCount())) {
-				tfActSalesCount.setValue(editCampaign.getActulSalesCount().toString());
+			if (campaignDM.getActulSalesCount() != null && !"null".equals(campaignDM.getActulSalesCount())) {
+				tfActSalesCount.setValue(campaignDM.getActulSalesCount().toString());
 			}
-			if (editCampaign.getActulBudget() != null && !"null".equals(editCampaign.getActulBudget())) {
-				tfActualBudget.setValue(editCampaign.getActulBudget().toString());
+			if (campaignDM.getActulBudget() != null && !"null".equals(campaignDM.getActulBudget())) {
+				tfActualBudget.setValue(campaignDM.getActulBudget().toString());
 			}
-			if (editCampaign.getActulRevenue() != null && !"null".equals(editCampaign.getActulRevenue())) {
-				tfAcualRev.setValue(editCampaign.getActulRevenue().toString());
+			if (campaignDM.getActulRevenue() != null && !"null".equals(campaignDM.getActulRevenue())) {
+				tfAcualRev.setValue(campaignDM.getActulRevenue().toString());
 			}
-			if (editCampaign.getExptdRespCount() != null && !"null".equals(editCampaign.getExptdRespCount())) {
-				tfExpResepCount.setValue(editCampaign.getExptdRespCount().toString());
+			if (campaignDM.getExptdRespCount() != null && !"null".equals(campaignDM.getExptdRespCount())) {
+				tfExpResepCount.setValue(campaignDM.getExptdRespCount().toString());
 			}
-			if (editCampaign.getExptdRevenue() != null && !"null".equals(editCampaign.getExptdRevenue())) {
-				tfExpRevenue.setValue(editCampaign.getExptdRevenue().toString());
+			if (campaignDM.getExptdRevenue() != null && !"null".equals(campaignDM.getExptdRevenue())) {
+				tfExpRevenue.setValue(campaignDM.getExptdRevenue().toString());
 			}
-			if (editCampaign.getExptdRoi() != null && !"null".equals(editCampaign.getExptdRoi())) {
-				tfExpRoi.setValue(editCampaign.getExptdRoi().toString());
+			if (campaignDM.getExptdRoi() != null && !"null".equals(campaignDM.getExptdRoi())) {
+				tfExpRoi.setValue(campaignDM.getExptdRoi().toString());
 			}
-			if (editCampaign.getExptdSalesCount() != null && !"null".equals(editCampaign.getExptdSalesCount())) {
-				tfExpSalesCount.setValue(editCampaign.getExptdSalesCount().toString());
+			if (campaignDM.getExptdSalesCount() != null && !"null".equals(campaignDM.getExptdSalesCount())) {
+				tfExpSalesCount.setValue(campaignDM.getExptdSalesCount().toString());
 			}
-			if (editCampaign.getExptdBudget() != null && !"null".equals(editCampaign.getExptdBudget())) {
-				tfExptdBudget.setValue(editCampaign.getExptdBudget().toString());
+			if (campaignDM.getExptdBudget() != null && !"null".equals(campaignDM.getExptdBudget())) {
+				tfExptdBudget.setValue(campaignDM.getExptdBudget().toString());
 			}
-			CampaignOpenDt.setValue(editCampaign.getCampaignStartDateInt());
-			CampaignCloseDt.setValue(editCampaign.getCampaignEndDateInt());
-			tfcampaign.setValue(editCampaign.getCampaignname());
-			tfProduct.setValue(editCampaign.getProductId().toString());
-			cbCurrencyName.setValue(editCampaign.getCcyid());
-			cbCampaignType.setValue(editCampaign.getCampaignType().toString());
-			cbproduct.setValue(editCampaign.getProductId());
-			Long prodid = editCampaign.getProductId();
+			dtCampaignStart.setValue(campaignDM.getCampaignStartDateInt());
+			dtCampaignEnd.setValue(campaignDM.getCampaignEndDateInt());
+			tfcampaign.setValue(campaignDM.getCampaignname());
+			tfProduct.setValue(campaignDM.getProductId().toString());
+			cbCurrencyName.setValue(campaignDM.getCcyid());
+			cbCampaignType.setValue(campaignDM.getCampaignType().toString());
+			cbproduct.setValue(campaignDM.getProductId());
+			Long prodid = campaignDM.getProductId();
 			Collection<?> ProductIdcol = cbproduct.getItemIds();
 			for (Iterator<?> iteratorclient = ProductIdcol.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
@@ -545,7 +545,7 @@ public class Campaign extends BaseUI {
 					cbreview.setValue(null);
 				}
 			}
-			cbEmployee.setValue(editCampaign.getCampaignOwner());
+			cbEmployee.setValue(campaignDM.getCampaignOwner());
 			Collection<?> Emp = cbaction.getItemIds();
 			for (Iterator<?> iterator = Emp.iterator(); iterator.hasNext();) {
 				Object itemId4 = (Object) iterator.next();
@@ -558,18 +558,18 @@ public class Campaign extends BaseUI {
 					cbaction.setValue(null);
 				}
 			}
-			cbaction.setValue(editCampaign.getActionedby());
-			cbreview.setValue(editCampaign.getReviewdby());
-			if (editCampaign.getTargetAudience() != null && !"null".equals(editCampaign.getTargetAudience())) {
-				tfTagetAudieance.setValue(editCampaign.getTargetAudience());
+			cbaction.setValue(campaignDM.getActionedby());
+			cbreview.setValue(campaignDM.getReviewdby());
+			if (campaignDM.getTargetAudience() != null && !"null".equals(campaignDM.getTargetAudience())) {
+				tfTagetAudieance.setValue(campaignDM.getTargetAudience());
 			}
-			if (editCampaign.getTargetSize() != null && !"null".equals(editCampaign.getTargetSize())) {
-				tfTargetSize.setValue(editCampaign.getTargetSize().toString());
+			if (campaignDM.getTargetSize() != null && !"null".equals(campaignDM.getTargetSize())) {
+				tfTargetSize.setValue(campaignDM.getTargetSize().toString());
 			}
-			if (editCampaign.getComments() != null && !"null".equals(editCampaign.getComments())) {
-				taComments.setValue(editCampaign.getComments());
+			if (campaignDM.getComments() != null && !"null".equals(campaignDM.getComments())) {
+				taComments.setValue(campaignDM.getComments());
 			}
-			cbstatus.setValue(editCampaign.getStatus());
+			cbstatus.setValue(campaignDM.getStatus());
 			if (cbstatus.getValue().equals("Approved") || cbstatus.getValue().equals("Closed")) {
 				hluserInputReadonlyTrue();
 			}
@@ -717,19 +717,19 @@ public class Campaign extends BaseUI {
 		} else {
 			tfcampaign.setComponentError(null);
 		}
-		if (CampaignOpenDt.getValue() == null) {
-			CampaignOpenDt.setComponentError(new UserError(GERPErrorCodes.NULL_CAMPAIGN_DATE));
+		if (dtCampaignStart.getValue() == null) {
+			dtCampaignStart.setComponentError(new UserError(GERPErrorCodes.NULL_CAMPAIGN_DATE));
 			errorflag = true;
 		} else {
-			CampaignOpenDt.setComponentError(null);
+			dtCampaignStart.setComponentError(null);
 		}
-		if ((CampaignCloseDt.getValue() != null) || (CampaignCloseDt.getValue() != null)) {
-			if (CampaignOpenDt.getValue().after(CampaignCloseDt.getValue())) {
-				CampaignCloseDt.setComponentError(new UserError(GERPErrorCodes.CRM_DATE_OUTOFRANGE));
+		if ((dtCampaignEnd.getValue() != null) || (dtCampaignEnd.getValue() != null)) {
+			if (dtCampaignStart.getValue().after(dtCampaignEnd.getValue())) {
+				dtCampaignEnd.setComponentError(new UserError(GERPErrorCodes.CRM_DATE_OUTOFRANGE));
 				errorflag = true;
 			}
 		} else {
-			CampaignCloseDt.setComponentError(null);
+			dtCampaignEnd.setComponentError(null);
 		}
 		if (cbCampaignType.getValue() == null) {
 			cbCampaignType.setComponentError(new UserError(GERPErrorCodes.NULL_CAMPAIGN_TYPE));
@@ -746,83 +746,83 @@ public class Campaign extends BaseUI {
 	protected void saveDetails() {
 		try {
 			logger.info("CampaignsaveDetails------>");
-			CampaignDM campaignobj = new CampaignDM();
+			CampaignDM campaignDM = new CampaignDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				campaignobj = beanCampaign.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				campaignDM = beanCampaign.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			if (cbEmployee.getValue() != null) {
-				campaignobj.setCampaignOwner((Long) cbEmployee.getValue());
+				campaignDM.setCampaignOwner((Long) cbEmployee.getValue());
 			}
-			campaignobj.setCampaignStartDate(CampaignOpenDt.getValue());
-			campaignobj.setCampaignEndDate(CampaignCloseDt.getValue());
+			campaignDM.setCampaignStartDate(dtCampaignStart.getValue());
+			campaignDM.setCampaignEndDate(dtCampaignEnd.getValue());
 			if (cbCurrencyName.getValue() != null) {
-				campaignobj.setCcyid((Long) cbCurrencyName.getValue());
+				campaignDM.setCcyid((Long) cbCurrencyName.getValue());
 			}
 			if (tfTargetSize.getValue() != null && tfTargetSize.getValue().trim().length() > 0) {
-				campaignobj.setTargetSize(Long.valueOf(tfTargetSize.getValue().toString()));
+				campaignDM.setTargetSize(Long.valueOf(tfTargetSize.getValue().toString()));
 			}
-			campaignobj.setComments(taComments.getValue());
+			campaignDM.setComments(taComments.getValue());
 			if (tfActualBudget.getValue() != null && tfActualBudget.getValue().trim().length() > 0) {
-				campaignobj.setActulBudget(Long.valueOf(tfActualBudget.getValue()));
+				campaignDM.setActulBudget(Long.valueOf(tfActualBudget.getValue()));
 			}
 			if (tfActResponseCount.getValue() != null && tfActResponseCount.getValue().trim().length() > 0) {
-				campaignobj.setActulRespCount(Long.valueOf(tfActResponseCount.getValue()));
+				campaignDM.setActulRespCount(Long.valueOf(tfActResponseCount.getValue()));
 			}
 			if (tfAcualRev.getValue() != null && tfAcualRev.getValue().trim().length() > 0) {
-				campaignobj.setActulRevenue(Long.valueOf(tfAcualRev.getValue()));
+				campaignDM.setActulRevenue(Long.valueOf(tfAcualRev.getValue()));
 			}
 			if (tfActRoi.getValue() != null && tfActRoi.getValue().trim().length() > 0) {
-				campaignobj.setActulRoi(Long.valueOf(tfActRoi.getValue().toString()));
+				campaignDM.setActulRoi(Long.valueOf(tfActRoi.getValue().toString()));
 			}
 			if (tfActSalesCount.getValue() != null && tfActSalesCount.getValue().trim().length() > 0) {
-				campaignobj.setActulSalesCount(Long.valueOf(tfActSalesCount.getValue()));
+				campaignDM.setActulSalesCount(Long.valueOf(tfActSalesCount.getValue()));
 			}
-			campaignobj.setCampaignType(cbCampaignType.getValue().toString());
-			campaignobj.setComments(taComments.getValue());
+			campaignDM.setCampaignType(cbCampaignType.getValue().toString());
+			campaignDM.setComments(taComments.getValue());
 			if (tfExptdBudget.getValue() != null && tfExptdBudget.getValue().trim().length() > 0) {
-				campaignobj.setExptdBudget(Long.valueOf(tfExptdBudget.getValue()));
+				campaignDM.setExptdBudget(Long.valueOf(tfExptdBudget.getValue()));
 			}
 			if (tfExpResepCount.getValue() != null && tfExpResepCount.getValue().trim().length() > 0) {
-				campaignobj.setExptdRespCount(Long.valueOf(tfExpResepCount.getValue()));
+				campaignDM.setExptdRespCount(Long.valueOf(tfExpResepCount.getValue()));
 			}
 			if (tfExpRevenue.getValue() != null && tfExpRevenue.getValue().trim().length() > 0) {
-				campaignobj.setExptdRevenue(Long.valueOf(tfExpRevenue.getValue()));
+				campaignDM.setExptdRevenue(Long.valueOf(tfExpRevenue.getValue()));
 			}
 			if (tfExpRoi.getValue() != null && tfExpRoi.getValue().trim().length() > 0) {
-				campaignobj.setExptdRoi(Long.valueOf(tfExpRoi.getValue()));
+				campaignDM.setExptdRoi(Long.valueOf(tfExpRoi.getValue()));
 			}
 			if (tfExpSalesCount.getValue() != null && tfExpSalesCount.getValue().trim().length() > 0) {
-				campaignobj.setExptdSalesCount(Long.valueOf(tfExpSalesCount.getValue()));
+				campaignDM.setExptdSalesCount(Long.valueOf(tfExpSalesCount.getValue()));
 			}
 			if (cbproduct.getValue() != null) {
-				campaignobj.setProductId(((ProductDM) cbproduct.getValue()).getProdid());
+				campaignDM.setProductId(((ProductDM) cbproduct.getValue()).getProdid());
 			}
-			campaignobj.setProductName(tfProduct.getValue());
+			campaignDM.setProductName(tfProduct.getValue());
 			if (cbstatus.getValue() != null) {
-				campaignobj.setStatus(cbstatus.getValue().toString());
+				campaignDM.setStatus(cbstatus.getValue().toString());
 			}
-			campaignobj.setCampaignname(tfcampaign.getValue());
-			campaignobj.setCompanyId(companyId);
-			campaignobj.setLastUpdatedBy(userName);
-			campaignobj.setLastUpdatedDt(DateUtils.getcurrentdate());
+			campaignDM.setCampaignname(tfcampaign.getValue());
+			campaignDM.setCompanyId(companyId);
+			campaignDM.setLastUpdatedBy(userName);
+			campaignDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 			if (tfTagetAudieance.getValue().toString().trim().length() > 0) {
-				campaignobj.setTargetAudience(tfTagetAudieance.getValue());
+				campaignDM.setTargetAudience(tfTagetAudieance.getValue());
 			}
 			if (tfTargetSize.getValue().toString().trim().length() > 0) {
-				campaignobj.setTargetSize(Long.valueOf(tfTargetSize.getValue()));
+				campaignDM.setTargetSize(Long.valueOf(tfTargetSize.getValue()));
 			}
-			campaignobj.setPreparedby(employeeid);
+			campaignDM.setPreparedby(employeeid);
 			if (cbaction != null) {
-				campaignobj.setActionedby((Long) cbaction.getValue());
+				campaignDM.setActionedby((Long) cbaction.getValue());
 			}
 			if (cbreview.getValue() != null) {
-				campaignobj.setReviewdby((Long) cbreview.getValue());
+				campaignDM.setReviewdby((Long) cbreview.getValue());
 			}
-			serviceCampaign.saveOrUpdateCampaignDetails(campaignobj);
+			serviceCampaign.saveOrUpdateCampaignDetails(campaignDM);
 			loadSrchRslt();
-			comment.savecampaign(campaignobj.getCampaingnId());
+			comment.savecampaign(campaignDM.getCampaingnId());
 			comment.resetfields();
-			document.savecampaign(campaignobj.getCampaingnId());
+			document.savecampaign(campaignDM.getCampaingnId());
 			document.ResetFields();
 		}
 		catch (Exception e) {
@@ -879,8 +879,8 @@ public class Campaign extends BaseUI {
 		cbEmployee.setValue(null);
 		cbproduct.setValue(null);
 		cbproduct.setComponentError(null);
-		CampaignOpenDt.setValue(null);
-		CampaignCloseDt.setValue(null);
+		dtCampaignStart.setValue(null);
+		dtCampaignEnd.setValue(null);
 		searchCampaignDt.setValue(null);
 		cbCurrencyName.setValue(cbCurrencyName.getItemIds().iterator().next());
 		cbCampaignType.setValue(null);

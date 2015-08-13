@@ -165,10 +165,10 @@ public class AssetBrand extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			AssetBrandDM enqdtl = beanAssetbrand.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfBrandName.setValue(enqdtl.getBrandname());
-			cbBrandStatus.setValue((String) enqdtl.getBrandstatus());
-			assetId = enqdtl.getBrandid().toString();
+			AssetBrandDM assetBrandDM = beanAssetbrand.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			tfBrandName.setValue(assetBrandDM.getBrandname());
+			cbBrandStatus.setValue((String) assetBrandDM.getBrandstatus());
+			assetId = assetBrandDM.getBrandid().toString();
 		}
 	}
 	

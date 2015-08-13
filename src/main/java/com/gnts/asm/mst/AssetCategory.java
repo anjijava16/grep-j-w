@@ -153,10 +153,10 @@ public class AssetCategory extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			AssetCategoryDM enqdtl = beanAssetCatgry.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfCategoryName.setValue(enqdtl.getCatgryName());
+			AssetCategoryDM assetCategoryDM = beanAssetCatgry.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			tfCategoryName.setValue(assetCategoryDM.getCatgryName());
 			cbCatgryStatus.setValue((String) cbCatgryStatus.getValue());
-			assetCatgryId = enqdtl.getCatgryId();
+			assetCatgryId = assetCategoryDM.getCatgryId();
 		}
 	}
 	

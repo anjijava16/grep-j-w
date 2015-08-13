@@ -72,8 +72,8 @@ public class AccessConfig extends BaseUI {
 	private AccessConfigService serviceAccessConfig = (AccessConfigService) SpringContextHelper.getBean("accessconfig");
 	private FieldAccessConfigService serviceFieldAccess = (FieldAccessConfigService) SpringContextHelper
 			.getBean("fieldAccessConfig");
-	private BranchService servBranchBean = (BranchService) SpringContextHelper.getBean("mbranch");
-	private RoleService servicebeanRole = (RoleService) SpringContextHelper.getBean("role");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	private RoleService serviceRole = (RoleService) SpringContextHelper.getBean("role");
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2;
 	// Parent layout for all the input controls
@@ -294,11 +294,11 @@ public class AccessConfig extends BaseUI {
 		tblFieldAccess.setEditable(true);
 		BeanItemContainer<FieldAccessConfigDM> auditConfigBean = new BeanItemContainer<FieldAccessConfigDM>(
 				FieldAccessConfigDM.class);
-		for (FieldAccessConfigDM auditList : auditConfigList) {
-			if (auditList.getViewYN().equals("Y")) {
-				auditList.setViewYN("true");
+		for (FieldAccessConfigDM fieldAccessConfigDM : auditConfigList) {
+			if (fieldAccessConfigDM.getViewYN().equals("Y")) {
+				fieldAccessConfigDM.setViewYN("true");
 			} else {
-				auditList.setViewYN("false");
+				fieldAccessConfigDM.setViewYN("false");
 			}
 		}
 		auditConfigBean.addAll(auditConfigList);
@@ -516,14 +516,14 @@ public class AccessConfig extends BaseUI {
 	private void loadRoleList() {
 		BeanContainer<Long, RoleDM> beanRole = new BeanContainer<Long, RoleDM>(RoleDM.class);
 		beanRole.setBeanIdProperty("roleId");
-		beanRole.addAll(servicebeanRole.getRoleList(null, "Active", companyid, "P"));
+		beanRole.addAll(serviceRole.getRoleList(null, "Active", companyid, "P"));
 		cbRole.setContainerDataSource(beanRole);
 	}
 	
 	private void loadBranchList() {
 		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(servBranchBean.getBranchList(null, null, null, "Active", companyid, "P"));
+		beanBranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
 		cbBranch.setContainerDataSource(beanBranch);
 	}
 }

@@ -202,18 +202,18 @@ public class ClientInformation implements ClickListener {
 	
 	public void saveClientinformDetails() {
 		validateAll();
-		ClientInformationDM saveClntinform = new ClientInformationDM();
+		ClientInformationDM clientInformationDM = new ClientInformationDM();
 		if (tblinform.getValue() != null) {
-			saveClntinform = beanClntinform.getItem(tblinform.getValue()).getBean();
-			informlist.remove(saveClntinform);
+			clientInformationDM = beanClntinform.getItem(tblinform.getValue()).getBean();
+			informlist.remove(clientInformationDM);
 		}
-		saveClntinform.setClntinfodesc(tainfodesc.getValue());
-		saveClntinform.setClntinfocode(tfinfocode.getValue());
-		saveClntinform.setClntinfostatus((String) cbstatus.getValue());
-		saveClntinform.setLastupdateddt(DateUtils.getcurrentdate());
-		saveClntinform.setLastupdatedby(userName);
+		clientInformationDM.setClntinfodesc(tainfodesc.getValue());
+		clientInformationDM.setClntinfocode(tfinfocode.getValue());
+		clientInformationDM.setClntinfostatus((String) cbstatus.getValue());
+		clientInformationDM.setLastupdateddt(DateUtils.getcurrentdate());
+		clientInformationDM.setLastupdatedby(userName);
 		if (tfinfocode.isValid() && tainfodesc.isValid() && cbstatus.isValid()) {
-			informlist.add(saveClntinform);
+			informlist.add(clientInformationDM);
 			resetfields();
 			loadsrch(false, null);
 		}

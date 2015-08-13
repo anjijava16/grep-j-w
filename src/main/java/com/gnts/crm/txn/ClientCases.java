@@ -384,20 +384,20 @@ public class ClientCases extends BaseTransUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Selected Dept. Id -> "
 				+ clientCaseId);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			ClientCasesDM editCaselist = beanClntCases.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			clientCaseId = editCaselist.getClientCaseId();
-			tfCaseResult.setValue(editCaselist.getCaseresltn());
-			cbEnquiryNo.setValue(editCaselist.getEnquiryId());
-			cbClient.setValue(editCaselist.getClientId());
-			cbPONo.setValue(editCaselist.getPoid());
-			cbwoNo.setValue(editCaselist.getWoId());
+			ClientCasesDM clientCasesDM = beanClntCases.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			clientCaseId = clientCasesDM.getClientCaseId();
+			tfCaseResult.setValue(clientCasesDM.getCaseresltn());
+			cbEnquiryNo.setValue(clientCasesDM.getEnquiryId());
+			cbClient.setValue(clientCasesDM.getClientId());
+			cbPONo.setValue(clientCasesDM.getPoid());
+			cbwoNo.setValue(clientCasesDM.getWoId());
 			tfpartNo.setReadOnly(false);
 			tfDrgNo.setReadOnly(false);
-			tfpartNo.setValue(editCaselist.getPartno());
-			tfDrgNo.setValue(editCaselist.getDrgno());
+			tfpartNo.setValue(clientCasesDM.getPartno());
+			tfDrgNo.setValue(clientCasesDM.getDrgno());
 			tfpartNo.setReadOnly(true);
 			tfDrgNo.setReadOnly(true);
-			Long prodid = editCaselist.getProdid();
+			Long prodid = clientCasesDM.getProdid();
 			Collection<?> prodids = cbprdname.getItemIds();
 			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -408,16 +408,16 @@ public class ClientCases extends BaseTransUI {
 					cbprdname.setValue(itemId);
 				}
 			}
-			tfCaseTitle.setValue(editCaselist.getCaseTitle());
-			tfEffortDays.setValue(editCaselist.getEffortDays().toString());
-			if (editCaselist.getCaseDescription() != null) {
-				taCaseDesc.setValue(editCaselist.getCaseDescription().toString());
+			tfCaseTitle.setValue(clientCasesDM.getCaseTitle());
+			tfEffortDays.setValue(clientCasesDM.getEffortDays().toString());
+			if (clientCasesDM.getCaseDescription() != null) {
+				taCaseDesc.setValue(clientCasesDM.getCaseDescription().toString());
 			}
-			cbEmployee.setValue(editCaselist.getAssignedTo());
-			cbPriority.setValue(editCaselist.getCasePriority());
-			cbSevrity.setValue(editCaselist.getCaseSevrity());
-			cbCaseCategory.setValue(editCaselist.getCaseCategory());
-			cbClntCaseStatus.setValue(editCaselist.getCaseStatus());
+			cbEmployee.setValue(clientCasesDM.getAssignedTo());
+			cbPriority.setValue(clientCasesDM.getCasePriority());
+			cbSevrity.setValue(clientCasesDM.getCaseSevrity());
+			cbCaseCategory.setValue(clientCasesDM.getCaseCategory());
+			cbClntCaseStatus.setValue(clientCasesDM.getCaseStatus());
 		}
 		comment.loadsrch(true, null, null, null, null, null, clientCaseId);
 		document.loadsrcrslt(true, null, null, null, null, null, clientCaseId);

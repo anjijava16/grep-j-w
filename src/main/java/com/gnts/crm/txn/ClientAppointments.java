@@ -559,41 +559,41 @@ public class ClientAppointments extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Selected Appointement. Id -> " + appointId);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			ClientAppointmentsDM editappointmentlist = beanAppointment.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			appointId = editappointmentlist.getAppointId().toString();
-			taMeetRemarks.setValue(editappointmentlist.getMeetingRemakrs());
-			if (editappointmentlist.getCompaignId() != null) {
+			ClientAppointmentsDM appointmentsDM = beanAppointment.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			appointId = appointmentsDM.getAppointId().toString();
+			taMeetRemarks.setValue(appointmentsDM.getMeetingRemakrs());
+			if (appointmentsDM.getCompaignId() != null) {
 				cbTypeofContact.setValue("Campaign");
-				cbCampaign.setValue(editappointmentlist.getCompaignId());
+				cbCampaign.setValue(appointmentsDM.getCompaignId());
 			}
-			if (editappointmentlist.getClientId() != null) {
+			if (appointmentsDM.getClientId() != null) {
 				cbTypeofContact.setValue("Client Name");
-				cbClient.setValue(editappointmentlist.getClientId());
+				cbClient.setValue(appointmentsDM.getClientId());
 			}
-			if (editappointmentlist.getLeadId() != null) {
+			if (appointmentsDM.getLeadId() != null) {
 				cbTypeofContact.setValue("Lead Name");
-				cbLead.setValue(editappointmentlist.getLeadId());
+				cbLead.setValue(appointmentsDM.getLeadId());
 			}
-			if (editappointmentlist.getContactId() != null) {
+			if (appointmentsDM.getContactId() != null) {
 				cbTypeofContact.setValue("Contact Name");
-				cbContact.setValue(editappointmentlist.getContactId());
+				cbContact.setValue(appointmentsDM.getContactId());
 			}
-			if (editappointmentlist.getClientCaseId() != null) {
+			if (appointmentsDM.getClientCaseId() != null) {
 				cbTypeofContact.setValue("Client Case");
-				cbCase.setValue(editappointmentlist.getClientCaseId());
+				cbCase.setValue(appointmentsDM.getClientCaseId());
 			}
-			if (editappointmentlist.getOppertunityid() != null) {
+			if (appointmentsDM.getOppertunityid() != null) {
 				cbTypeofContact.setValue("Opportunity Provider");
-				cbOppertunity.setValue(editappointmentlist.getOppertunityid());
+				cbOppertunity.setValue(appointmentsDM.getOppertunityid());
 			}
-			taObjectives.setValue(editappointmentlist.getObjective());
-			cbMeetingType.setValue(editappointmentlist.getMeetingType());
-			cbPriority.setValue(editappointmentlist.getPriority());
-			cbPreviewAppoint.setValue(editappointmentlist.getPrevAppointmentId());
-			cbEmployee.setValue(editappointmentlist.getOwnerId());
-			scheduleDt.setValue(editappointmentlist.getScheduleDtInt());
-			dueDate.setValue(editappointmentlist.getDueDateDt());
-			cbMeetingStatus.setValue(editappointmentlist.getMeetingStatus());
+			taObjectives.setValue(appointmentsDM.getObjective());
+			cbMeetingType.setValue(appointmentsDM.getMeetingType());
+			cbPriority.setValue(appointmentsDM.getPriority());
+			cbPreviewAppoint.setValue(appointmentsDM.getPrevAppointmentId());
+			cbEmployee.setValue(appointmentsDM.getOwnerId());
+			scheduleDt.setValue(appointmentsDM.getScheduleDtInt());
+			dueDate.setValue(appointmentsDM.getDueDateDt());
+			cbMeetingStatus.setValue(appointmentsDM.getMeetingStatus());
 		}
 	}
 	
@@ -859,52 +859,52 @@ public class ClientAppointments extends BaseUI {
 	protected void saveDetails() throws SaveException {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
-			ClientAppointmentsDM saveAppointment = new ClientAppointmentsDM();
+			ClientAppointmentsDM appointment = new ClientAppointmentsDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				saveAppointment = beanAppointment.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				appointment = beanAppointment.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			if (cbClient.getValue() != null) {
-				saveAppointment.setClientId(Long.valueOf(cbClient.getValue().toString()));
+				appointment.setClientId(Long.valueOf(cbClient.getValue().toString()));
 			}
 			if (cbCampaign.getValue() != null) {
-				saveAppointment.setCompaignId((Long) cbCampaign.getValue());
+				appointment.setCompaignId((Long) cbCampaign.getValue());
 			}
 			if (cbLead.getValue() != null) {
-				saveAppointment.setLeadId(Long.valueOf(cbLead.getValue().toString()));
+				appointment.setLeadId(Long.valueOf(cbLead.getValue().toString()));
 			}
 			if (cbContact.getValue() != null) {
-				saveAppointment.setContactId(Long.valueOf(cbContact.getValue().toString()));
+				appointment.setContactId(Long.valueOf(cbContact.getValue().toString()));
 			}
-			saveAppointment.setClientCaseId((Long) cbCase.getValue());
-			saveAppointment.setOppertunityid((Long) cbOppertunity.getValue());
+			appointment.setClientCaseId((Long) cbCase.getValue());
+			appointment.setOppertunityid((Long) cbOppertunity.getValue());
 			if (cbEmployee.getValue() != null) {
-				saveAppointment.setOwnerId((Long) cbEmployee.getValue());
+				appointment.setOwnerId((Long) cbEmployee.getValue());
 			}
-			saveAppointment.setScheduleDt(scheduleDt.getValue());
-			saveAppointment.setDueDate(dueDate.getValue());
-			if (saveAppointment.getPrevAppointmentId() != null) {
-				saveAppointment.setPrevAppointmentId((Long) cbPreviewAppoint.getValue());
+			appointment.setScheduleDt(scheduleDt.getValue());
+			appointment.setDueDate(dueDate.getValue());
+			if (appointment.getPrevAppointmentId() != null) {
+				appointment.setPrevAppointmentId((Long) cbPreviewAppoint.getValue());
 			}
 			if (cbMeetingType.getValue() != null) {
-				saveAppointment.setMeetingType((String) cbMeetingType.getValue());
+				appointment.setMeetingType((String) cbMeetingType.getValue());
 			}
-			saveAppointment.setLastUpdatedBy(userName);
-			saveAppointment.setLastUpdatedDt(DateUtils.getcurrentdate());
-			saveAppointment.setMeetingRemakrs(taMeetRemarks.getValue());
-			saveAppointment.setMeetingStatus((String) cbMeetingStatus.getValue());
+			appointment.setLastUpdatedBy(userName);
+			appointment.setLastUpdatedDt(DateUtils.getcurrentdate());
+			appointment.setMeetingRemakrs(taMeetRemarks.getValue());
+			appointment.setMeetingStatus((String) cbMeetingStatus.getValue());
 			if (typeLookUp != null) {
-				saveAppointment.setMeetingType(typeLookUp.getLookupname());
+				appointment.setMeetingType(typeLookUp.getLookupname());
 			}
-			saveAppointment.setObjective(taObjectives.getValue());
+			appointment.setObjective(taObjectives.getValue());
 			if (employee != null) {
-				saveAppointment.setOwnerId((Long) cbEmployee.getValue());
+				appointment.setOwnerId((Long) cbEmployee.getValue());
 			}
 			if (cbPriority.getValue() != null) {
-				saveAppointment.setPriority(cbPriority.getValue().toString());
+				appointment.setPriority(cbPriority.getValue().toString());
 			}
-			saveAppointment.setCompanyId(companyId);
-			saveAppointment.setPrevAppointmentId((Long) cbPreviewAppoint.getValue());
-			serviceAppointment.saveOrUpdateAppointmentdetails(saveAppointment);
+			appointment.setCompanyId(companyId);
+			appointment.setPrevAppointmentId((Long) cbPreviewAppoint.getValue());
+			serviceAppointment.saveOrUpdateAppointmentdetails(appointment);
 			resetFields();
 			loadSrchRslt();
 		}

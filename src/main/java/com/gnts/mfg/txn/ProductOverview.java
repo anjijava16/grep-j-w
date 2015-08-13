@@ -33,9 +33,7 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.mfg.domain.txn.QATestHdrDM;
 import com.gnts.mfg.domain.txn.QcTestHdrDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
-import com.gnts.mfg.service.txn.QATestDtlService;
 import com.gnts.mfg.service.txn.QATestHdrService;
-import com.gnts.mfg.service.txn.QCTestDtlService;
 import com.gnts.mfg.service.txn.QcTestHdrService;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
@@ -72,9 +70,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -103,8 +101,8 @@ public class ProductOverview implements ClickListener {
 	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper
 			.getBean("enquiryWorkflow");
 	private QcTestHdrService serviceQcTstHdr = (QcTestHdrService) SpringContextHelper.getBean("qcTestHdr");
-	private QCTestDtlService serviceQcTstDtl = (QCTestDtlService) SpringContextHelper.getBean("qcTestDtl");
-	private QATestDtlService serviceQATstDtl = (QATestDtlService) SpringContextHelper.getBean("qatestDetls");
+	//private QCTestDtlService serviceQcTstDtl = (QCTestDtlService) SpringContextHelper.getBean("qcTestDtl");
+	//private QATestDtlService serviceQATstDtl = (QATestDtlService) SpringContextHelper.getBean("qatestDetls");
 	private QATestHdrService serviceQATstHdr = (QATestHdrService) SpringContextHelper.getBean("qatesthdr");
 	// Header container which holds, screen name, notification and page master
 	// buttons
@@ -201,7 +199,6 @@ public class ProductOverview implements ClickListener {
 	private void buildView() {
 		// TODO Auto-generated method stub
 		tfSerialNumber.setWidth("200px");
-		tfSerialNumber.focus();
 		btnSearch.setClickShortcut(KeyCode.ENTER);
 		tblEnquirySpec.setPageLength(5);
 		tblEnquiryWorkflow.setPageLength(5);
@@ -271,12 +268,13 @@ public class ProductOverview implements ClickListener {
 		accordion.addTab(l2, "Design Information", null);
 		accordion.addTab(hlDieSection, "Die Information", null);
 		accordion.addTab(vlProdLayout, "Production Information", null);
-		accordion.addTab(vlTestLayout, "Testing Information", null);
+		accordion.addTab(new TextField(), "Testing Information", null);
 		accordion.addTab(vlTestLayout, "Signoff Information", null);
 		hlPageRootContainter.addComponent(accordion);
 		loadEnquirySpec(null, null);
 		getEnqWorkflowDetails(null);
 		getQATestHeaderDetails(null, null);
+		tfSerialNumber.focus();
 	}
 	
 	private Component buildBasicInformation() {
@@ -758,8 +756,8 @@ public class ProductOverview implements ClickListener {
 					RotoPlanDtlDM rotoPlanDtlDM = serviceRotoplandtl.getRotoPlanDtlList(null,
 							rotoCheckDtlDM.getRotoid(), null, rotoCheckDtlDM.getProductId(), null).get(0);
 					try {
-						WorkOrderHdrDM workOrderHdrDM = serviceWrkOrdHdr.getWorkOrderHDRList(rotoPlanDtlDM.getWoId(),
-								null, null, null, null, null, "F", null, null, null, null).get(0);
+						WorkOrderHdrDM workOrderHdrDM = serviceWrkOrdHdr.getWorkOrderHDRList(null,
+								null, null, null, null, null, "F", rotoPlanDtlDM.getWoId(), null, null, null).get(0);
 						loadEnquiryDetails(workOrderHdrDM.getEnquiryId(), rotoCheckDtlDM.getProductId());
 						getEnqWorkflowDetails(workOrderHdrDM.getEnquiryId());
 						getQATestHeaderDetails(workOrderHdrDM.getWorkOrdrId(), rotoCheckDtlDM.getProductId());
@@ -798,7 +796,7 @@ public class ProductOverview implements ClickListener {
 	}
 	
 	private void loadEnquiryDetails(Long enquiryId, Long productId) {
-		SmsEnqHdrDM enqHdrDM = serviceEnquiryHdr.getSmsEnqHdrList(enquiryId, null, null, null, null, "F", null, null)
+		SmsEnqHdrDM enqHdrDM = serviceEnquiryHdr.getSmsEnqHdrList(null, enquiryId, null, null, null, "F", null, null)
 				.get(0);
 		tfEnquiryNumber.setValue(enqHdrDM.getEnquiryNo());
 		tfBranchName.setValue(enqHdrDM.getBranchName());

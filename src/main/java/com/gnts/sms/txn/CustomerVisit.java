@@ -29,7 +29,10 @@ import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.stt.txn.Roto;
+import com.gnts.mms.domain.txn.IndentDtlDM;
+import com.gnts.mms.domain.txn.IndentIssueDtlDM;
 import com.gnts.sms.domain.txn.CustomerVisitHdrDM;
+import com.gnts.sms.domain.txn.CustomerVisitInfoDtlDM;
 import com.gnts.sms.domain.txn.CustomerVisitNoDtlDM;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.service.txn.CustomerVisitHdrService;
@@ -53,6 +56,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
@@ -83,9 +87,14 @@ public class CustomerVisit extends BaseTransUI {
 	// User Input Components for Work Order Details
 	private BeanItemContainer<CustomerVisitHdrDM> beanCustomerVisitHdrDM = null;
 	private BeanItemContainer<CustomerVisitNoDtlDM> beanCustomerVisitNoDtlDM = null;
+	private BeanItemContainer<CustomerVisitInfoDtlDM> beanCustomerVisitInfoDtlDM = null;
+
 	private BeanItemContainer<RotohdrDM> beanRotohdrDM = null;
 	private BeanItemContainer<RotoDtlDM> beanrotodtldm = null;
 	private BeanItemContainer<RotoShiftDM> beanRotoShiftDM = null;
+	private List<CustomerVisitNoDtlDM> customervisitnoDtlList = null;
+	private List<CustomerVisitInfoDtlDM> customerVisitInfoDtlList = null;
+
 	private Table tblCusVisHdr, tblPersonNo, tblInfoPass;
 	// Search Control Layout
 	private HorizontalLayout hlHdr = new HorizontalLayout();
@@ -98,7 +107,8 @@ public class CustomerVisit extends BaseTransUI {
 	private GERPTextField tfPjtName, tfClientName, tfPerName, tfPerPhone, tfClentCity;
 	private GERPNumberField tnNoPerson;
 	private GERPTextArea taPurposeRe;
-	private CheckBox checkBx1, checkBx2, checkBx3, checkBx4, checkBx5, checkBx6, checkBx7;
+	private CheckBox checkBxHODPro, checkBxPlan, checkBxProd, checkBxQC, checkBxMain, checkBxHR, checkBxDie,
+			checkBxDes, checkBxAcc;
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private ComboBox cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
@@ -109,7 +119,7 @@ public class CustomerVisit extends BaseTransUI {
 	private ComboBox cbSftStatus;
 	private FormLayout flshiftCol1, flshiftCol2, flshiftCol3, flshiftCol4;
 	private List<RotoShiftDM> listRotoShift = new ArrayList<RotoShiftDM>();
-	private ComboBox cbArmstatus;
+	private ComboBox cbPersonNoStatus;
 	private FormLayout flArmCol1, flArmCol2, flArmCol3;
 	private Button btnAddDtls = new GERPButton("Add", "add", this);
 	private Button btnAddPerson = new GERPButton("Add", "add", this);
@@ -149,7 +159,7 @@ public class CustomerVisit extends BaseTransUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (validateShiftDetails()) {
-					saveRotoShiftDetails();
+					saveInfoDetails();
 				}
 			}
 		});
@@ -160,7 +170,7 @@ public class CustomerVisit extends BaseTransUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (validateArmDetails()) {
-					save();
+					savePersonDetails();
 				}
 			}
 		});
@@ -288,6 +298,7 @@ public class CustomerVisit extends BaseTransUI {
 		loadEnquiryNo();
 		cbEnqNo.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
+			
 			public void valueChange(ValueChangeEvent event) {
 				Object itemId = event.getProperty().getValue();
 				BeanItem<?> item = (BeanItem<?>) cbEnqNo.getItem(itemId);
@@ -316,19 +327,21 @@ public class CustomerVisit extends BaseTransUI {
 		cbDtlStatus.setWidth("150px");
 		// Status ComboBox
 		cbSftStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		cbArmstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		cbPersonNoStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		cbArmstatus.setWidth("150px");
+		cbPersonNoStatus.setWidth("150px");
 		cbSftStatus.setWidth("100px");
 		cbHdrStatus.setWidth("150px");
 		// Check Box Department.
-		checkBx1 = new CheckBox("HOD-Prod.");
-		checkBx2 = new CheckBox("Planing");
-		checkBx3 = new CheckBox("Production");
-		checkBx4 = new CheckBox("QC");
-		checkBx5 = new CheckBox("Maintenance");
-		checkBx6 = new CheckBox("HR");
-		checkBx7 = new CheckBox("Die");
+		checkBxHODPro = new CheckBox("HOD-Prod.");
+		checkBxPlan = new CheckBox("Planing");
+		checkBxProd = new CheckBox("Production");
+		checkBxQC = new CheckBox("QC");
+		checkBxMain = new CheckBox("Maintenance");
+		checkBxHR = new CheckBox("HR");
+		checkBxDie = new CheckBox("Die");
+		checkBxDes = new CheckBox("Design");
+		checkBxAcc = new CheckBox("Accounts");
 		hlSearchLayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
@@ -395,7 +408,7 @@ public class CustomerVisit extends BaseTransUI {
 		flArmCol3 = new FormLayout();
 		flArmCol1.addComponent(tfPerName);
 		flArmCol1.addComponent(tfPerPhone);
-		flArmCol2.addComponent(cbArmstatus);
+		flArmCol2.addComponent(cbPersonNoStatus);
 		flArmCol3.addComponent(btnAddPerson);
 		flArmCol3.addComponent(btnDeletePerson);
 		hlArm = new HorizontalLayout();
@@ -411,13 +424,15 @@ public class CustomerVisit extends BaseTransUI {
 		flshiftCol3 = new FormLayout();
 		flshiftCol4 = new FormLayout();
 		// flshiftCol1.addComponent(tfshiftname);
-		flshiftCol1.addComponent(checkBx1);
-		flshiftCol1.addComponent(checkBx2);
-		flshiftCol1.addComponent(checkBx3);
-		flshiftCol2.addComponent(checkBx4);
-		flshiftCol2.addComponent(checkBx7);
-		flshiftCol2.addComponent(checkBx6);
-		flshiftCol3.addComponent(checkBx5);
+		flshiftCol1.addComponent(checkBxHODPro);
+		flshiftCol1.addComponent(checkBxPlan);
+		flshiftCol1.addComponent(checkBxProd);
+		flshiftCol2.addComponent(checkBxQC);
+		flshiftCol2.addComponent(checkBxDie);
+		flshiftCol2.addComponent(checkBxHR);
+		flshiftCol3.addComponent(checkBxDes);
+		flshiftCol3.addComponent(checkBxMain);
+		flshiftCol3.addComponent(checkBxAcc);
 		flshiftCol4.addComponent(cbSftStatus);
 		flshiftCol4.addComponent(btnAddInfo);
 		flshiftCol4.addComponent(btnDeleteInfo);
@@ -810,11 +825,153 @@ public class CustomerVisit extends BaseTransUI {
 					.getClientDetails(companyid, clientid, null, null, null, null, null, null, "Active", "F").get(0)
 					.getClientfullname().toString());
 			tfClentCity.setValue(serviceClients
-					.getClientDetails(companyid, clientid, null, null, null, null, null, null, "Active", "F").get(0).getCityName().toString());
+					.getClientDetails(companyid, clientid, null, null, null, null, null, null, "Active", "F").get(0)
+					.getCityName().toString());
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 			logger.info("load Clients Details " + e);
 		}
 	}
+	
+	/*
+	 * Save Meathods
+	 */
+	// Person Details Save
+	private void savePersonDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+		try {
+			CustomerVisitNoDtlDM customervisitnoDtlObj = new CustomerVisitNoDtlDM();
+			customervisitnoDtlObj.setPersonName(tfClientName.getValue());
+			customervisitnoDtlObj.setContactNo(tfPerPhone.getValue());
+			if (cbPersonNoStatus.getValue() != null) {
+				customervisitnoDtlObj.setCustNoDtlStatus((String) cbPersonNoStatus.getValue());
+			}
+			customervisitnoDtlObj.setLastUpdatedby(username);
+			customervisitnoDtlObj.setLastUpdateddt(DateUtils.getcurrentdate());
+			loadInfoDetails();
+			infoDetailsresetField();
+			btnAddPerson.setCaption("Add");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Information Pass Save
+	private void saveInfoDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+		try {
+			CustomerVisitInfoDtlDM customervisitinfoDtlObj = new CustomerVisitInfoDtlDM();
+			if (checkBxDes.getValue() != null) {
+				customervisitinfoDtlObj.setDesign("Active");
+			}
+			if (checkBxDie.getValue() != null) {
+				customervisitinfoDtlObj.setDie("Active");
+			}
+			if (checkBxHODPro.getValue() != null) {
+				customervisitinfoDtlObj.setHodPo("Active");
+			}
+			if (checkBxHR.getValue() != null) {
+				customervisitinfoDtlObj.setHr("Active");
+			}
+			if (checkBxMain.getValue() != null) {
+				customervisitinfoDtlObj.setMaintenance("Active");
+			}
+			if (checkBxPlan.getValue() != null) {
+				customervisitinfoDtlObj.setPlan("Active");
+			}
+			if (checkBxProd.getValue() != null) {
+				customervisitinfoDtlObj.setProd("Active");
+			}
+			if (checkBxQC.getValue() != null) {
+				customervisitinfoDtlObj.setQc("Active");
+			}
+			if (checkBxAcc.getValue() != null) {
+				customervisitinfoDtlObj.setAccounts("Active");
+			}
+			if (cbPersonNoStatus.getValue() != null) {
+				customervisitinfoDtlObj.setCustInfodTLStatus((String) cbPersonNoStatus.getValue());
+			}
+			customervisitinfoDtlObj.setLastUpdatedby(username);
+			customervisitinfoDtlObj.setLastUpdateddt(DateUtils.getcurrentdate());
+			loadPersonDetails();
+			persondetailsresetField();
+			btnAddInfo.setCaption("Add");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/*
+	 * Load Tables
+	 */
+	// Load Person Details Table.
+	private void loadPersonDetails() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			recordCnt = customervisitnoDtlList.size();
+			beanCustomerVisitNoDtlDM = new BeanItemContainer<CustomerVisitNoDtlDM>(CustomerVisitNoDtlDM.class);
+			beanCustomerVisitNoDtlDM.addAll(customervisitnoDtlList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the IndentIssueslap. result set");
+			tblPersonNo.setContainerDataSource(beanCustomerVisitNoDtlDM);
+			tblPersonNo.setVisibleColumns(new Object[] { "personName", "contactNo", "custNoDtlStatus", "lastUpdateddt",
+					"lastUpdatedby" });
+			tblPersonNo
+					.setColumnHeaders(new String[] { "Name", "Contact No.", "Status", "Updated Date", "Updated By" });
+			tblPersonNo.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
+			tblPersonNo.setPageLength(10);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	// Load Contact Information Table
+	private void loadInfoDetails() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			recordCnt = customervisitnoDtlList.size();
+			beanCustomerVisitInfoDtlDM = new BeanItemContainer<CustomerVisitInfoDtlDM>(CustomerVisitInfoDtlDM.class);
+			beanCustomerVisitInfoDtlDM.addAll(customerVisitInfoDtlList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the IndentIssueslap. result set");
+			tblInfoPass.setContainerDataSource(beanCustomerVisitInfoDtlDM);
+			tblInfoPass.setVisibleColumns(new Object[] { "hodPo", "plan","prod","qc", "die","hr","accounts", "design","maintenance", "custInfodTLStatus", "lastUpdateddt",
+					"lastUpdatedby" });
+			tblInfoPass
+					.setColumnHeaders(new String[] { "HOD Prod", "Plan","Prod", "QC","Die", "HR","Accounts", "Design","Maintenance","Status", "Updated Date", "Updated By" });
+			tblInfoPass.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
+			tblInfoPass.setPageLength(10);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/*
+	 * Reset Fields
+	 */
+	// Reset Person Details People.
+	private void persondetailsresetField() {
+		tfPerName.setValue(" ");
+		tfPerPhone.setValue(" ");
+		cbPersonNoStatus.setValue(null);
+	}
+	// Reset Information Details People.
+		private void infoDetailsresetField() {
+			checkBxHODPro.setValue(null);
+			checkBxPlan.setValue(null);
+			checkBxProd.setValue(null);
+			checkBxQC.setValue(null);
+			checkBxMain.setValue(null);
+			checkBxHR.setValue(null);
+			checkBxDie.setValue(null);
+			checkBxDes.setValue(null);
+			checkBxAcc.setValue(null);
+			cbPersonNoStatus.setValue(null);
+		}
+	
 }

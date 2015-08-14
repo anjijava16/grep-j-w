@@ -229,13 +229,19 @@ public class JobCandidate extends BaseUI {
 	}
 	
 	private void loadJobVaccancy() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading JobVaccancy Search...");
-		BeanContainer<Long, JobVaccancyDM> beanJobVaccancyDM = new BeanContainer<Long, JobVaccancyDM>(
-				JobVaccancyDM.class);
-		beanJobVaccancyDM.setBeanIdProperty("vaccancyId");
-		beanJobVaccancyDM.addAll(serviceJobVaccancy.getJobVaccancyList(null, null, null, null, null, null, null, "F"));
-		cbjobtitle.setContainerDataSource(beanJobVaccancyDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading JobVaccancy Search...");
+			BeanContainer<Long, JobVaccancyDM> beanJobVaccancyDM = new BeanContainer<Long, JobVaccancyDM>(
+					JobVaccancyDM.class);
+			beanJobVaccancyDM.setBeanIdProperty("vaccancyId");
+			beanJobVaccancyDM.addAll(serviceJobVaccancy.getJobVaccancyList(null, (String) cbjobtitle.getValue(), null,
+					null, null, null, null, null));
+			cbjobtitle.setContainerDataSource(beanJobVaccancyDM);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	protected void searchDetails() throws NoDataFoundException {

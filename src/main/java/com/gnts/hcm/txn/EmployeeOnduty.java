@@ -121,10 +121,15 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 			
 			public void blur(BlurEvent event) {
 				dtfrm = dfOndutyDatefrom.getValue();
-				if (dfOndutyDatefrom.getValue().after(new Date()) || dfOndutyDatefrom.getValue().equals(new Date())) {
-					dfOndutyDatefrom.setComponentError(new UserError(GERPErrorCodes.DATE_FROM));
-				} else {
-					dfOndutyDatefrom.setComponentError(null);
+				try {
+					if (dfOndutyDatefrom.getValue().equals(new Date())) {
+						dfOndutyDatefrom.setComponentError(new UserError(GERPErrorCodes.DATE_FROM));
+					} else {
+						dfOndutyDatefrom.setComponentError(null);
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		});
@@ -136,10 +141,15 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
-				if (dfOndutyDateto.getValue().before(dtfrm)) {
-					dfOndutyDateto.setComponentError(new UserError(GERPErrorCodes.DATE_TO));
-				} else {
-					dfOndutyDateto.setComponentError(null);
+				try {
+					if (dfOndutyDateto.getValue().before(dtfrm)) {
+						dfOndutyDateto.setComponentError(new UserError(GERPErrorCodes.DATE_TO));
+					} else {
+						dfOndutyDateto.setComponentError(null);
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		});

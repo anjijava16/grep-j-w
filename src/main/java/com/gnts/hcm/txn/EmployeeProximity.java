@@ -346,7 +346,9 @@ public class EmployeeProximity extends BaseUI {
 	
 	@Override
 	protected void saveDetails() {
+		
 		try {
+			validateDetails();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
 			EmployeeProximityDM employeeProximityobj = new EmployeeProximityDM();
 			if (tblMstScrSrchRslt.getValue() != null) {

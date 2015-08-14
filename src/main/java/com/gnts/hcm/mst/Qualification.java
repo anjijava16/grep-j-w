@@ -78,7 +78,7 @@ public class Qualification extends BaseUI {
 	// Build the UI components
 	private void buildview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting Qualification UI");
-		tblMstScrSrchRslt.setVisible(false);
+		tblMstScrSrchRslt.setVisible(true);
 		// Qualification Name text field
 		tfQualificationName = new GERPTextField("Qualification Name");
 		tfQualificationName.setMaxLength(25);

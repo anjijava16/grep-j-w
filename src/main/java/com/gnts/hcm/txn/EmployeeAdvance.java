@@ -96,7 +96,7 @@ public class EmployeeAdvance extends BaseUI {
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbStatus.setWidth("150px");
 		// Advance Reason Textfield
-		tfAdvanceReason = new GERPTextArea("Advance Reason");
+		tfAdvanceReason = new GERPTextArea("Reason");
 		tfAdvanceReason.setNullRepresentation("");
 		tfAdvanceReason.setHeight("50px");
 		// Approve Manager ComboBox
@@ -119,7 +119,7 @@ public class EmployeeAdvance extends BaseUI {
 		cbDeductionName.setItemCaptionPropertyId("deducnDesc");
 		loadDeductionList();
 		// Advance Amount Textfield
-		tfAdvncAmt = new GERPTextField("Advance Amount");
+		tfAdvncAmt = new GERPTextField("Amount");
 		tfAdvncAmt.setValue("0");
 		// Effective Date field
 		dfEffective = new GERPPopupDateField("Effective Date");

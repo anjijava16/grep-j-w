@@ -329,6 +329,8 @@ public class GERPErrorCodes {
 	public static String NULL_REQUESTED_NAME = "Please choose Requested Name.";
 	public static String NULL_APPROVED_STATUS = "Please choose Approved Status.";
 	public static String NULL_APPROVED_NAME = "Please choose Approved Nmae.";
+	public static String NULL_DESCRIPTION = "Please enter Description";
+	public static String NULL_EXPYEAR = "Please enter Experince Year";
 	public static String NULL_JOB_STATUS = "Please choose Job Status.";
 	public static String JOB_CLASSIFICATOIN = "Please choose job classification";
 	public static String NULL_DEDUCTION_CODE = "Please enter Deduction Code";

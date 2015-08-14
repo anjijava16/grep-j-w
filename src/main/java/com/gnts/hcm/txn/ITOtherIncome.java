@@ -28,6 +28,7 @@ import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPPanelGenerator;
+import com.gnts.erputil.components.GERPTextArea;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
@@ -45,6 +46,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table.Align;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
@@ -60,8 +62,9 @@ public class ITOtherIncome extends BaseUI {
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// User Input Components
-	private TextField tfFinYear, tfIncomeAmt, tfApprovedAmt, tfIncomeDesc;
+	private TextField tfFinYear, tfIncomeAmt, tfApprovedAmt;
 	private ComboBox cbEmpName, cbStatus;
+	private TextArea taIncomeDesc;
 	// Bean container
 	private BeanItemContainer<ITOtherIncomeDM> beanITOtherIncomeDM = null;
 	private Long companyId;
@@ -93,8 +96,8 @@ public class ITOtherIncome extends BaseUI {
 		tfFinYear.setWidth("200px");
 		tfIncomeAmt = new GERPTextField("Income Amount");
 		tfApprovedAmt = new GERPTextField("Approved Amount");
-		tfIncomeDesc = new GERPTextField("Income Desc.");
-		tfIncomeDesc.setHeight("43");
+		taIncomeDesc = new GERPTextArea("Income Desc.");
+		taIncomeDesc.setHeight("43");
 		// Combo Boxes
 		cbEmpName = new GERPComboBox("Employee Name");
 		cbEmpName.setWidth("200px");
@@ -152,7 +155,7 @@ public class ITOtherIncome extends BaseUI {
 		flColumn1.addComponent(tfFinYear);
 		flColumn2.addComponent(tfIncomeAmt);
 		flColumn2.addComponent(tfApprovedAmt);
-		flColumn3.addComponent(tfIncomeDesc);
+		flColumn3.addComponent(taIncomeDesc);
 		flColumn4.addComponent(cbStatus);
 		// add the form layouts into user input layout
 		hlUserInputLayout.addComponent(flColumn1);
@@ -253,7 +256,7 @@ public class ITOtherIncome extends BaseUI {
 				tfApprovedAmt.setValue(editItInComeObj.getAppAmt().toString());
 			}
 			if (editItInComeObj.getIncomeDesc() != null) {
-				tfIncomeDesc.setValue(editItInComeObj.getIncomeDesc());
+				taIncomeDesc.setValue(editItInComeObj.getIncomeDesc());
 			}
 			if (editItInComeObj.getStatus() != null) {
 				cbStatus.setValue(editItInComeObj.getStatus());
@@ -340,7 +343,7 @@ public class ITOtherIncome extends BaseUI {
 			itOtherIncomeObj.setFinYear(tfFinYear.getValue());
 			itOtherIncomeObj.setAppAmt(new BigDecimal(tfApprovedAmt.getValue()));
 			itOtherIncomeObj.setIncomeAmt(new BigDecimal(tfIncomeAmt.getValue()));
-			itOtherIncomeObj.setIncomeDesc(tfIncomeDesc.getValue());
+			itOtherIncomeObj.setIncomeDesc(taIncomeDesc.getValue());
 			if (cbStatus.getValue() != null) {
 				itOtherIncomeObj.setStatus((String) cbStatus.getValue());
 			}
@@ -370,7 +373,7 @@ public class ITOtherIncome extends BaseUI {
 		cbEmpName.setRequired(false);
 		tfApprovedAmt.setRequired(false);
 		tfIncomeAmt.setRequired(false);
-		tfIncomeDesc.setRequired(false);
+		taIncomeDesc.setRequired(false);
 		vlSrchRsltContainer.removeAllComponents();
 		vlSrchRsltContainer.addComponent(tblMstScrSrchRslt);
 		vlSrchRsltContainer.setExpandRatio(tblMstScrSrchRslt, 1);
@@ -383,11 +386,11 @@ public class ITOtherIncome extends BaseUI {
 		cbEmpName.setValue(null);
 		tfApprovedAmt.setValue(null);
 		tfIncomeAmt.setValue(null);
-		tfIncomeDesc.setValue(null);
+		taIncomeDesc.setValue(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		cbEmpName.setComponentError(null);
 		tfIncomeAmt.setComponentError(null);
-		tfIncomeDesc.setComponentError(null);
+		taIncomeDesc.setComponentError(null);
 		tfApprovedAmt.setComponentError(null);
 	}
 }

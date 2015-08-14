@@ -86,9 +86,9 @@ public class JobVaccancy extends BaseUI {
 	private ComboBox cbJbStatus, cbApStatus, cbHirgMgr, cbJobClsName, cbDesgntnName, cbBrnchName, cbReqstdName,
 			cbApvdName;
 	private PopupDateField dfApvdDate;
-	private TextArea taJobDetails;
+	private TextArea taJobDetails, tfWrkExpDesc;
 	private GERPComboBox cbWrkExp;
-	private GERPTextField tfWrkExpYr, tfWrkExpDesc;
+	private GERPTextField tfWrkExpYr;
 	// BeanItemContainer
 	private BeanItemContainer<JobVaccancyDM> beanJobVaccancyDM = null;
 	// local variables declaration
@@ -129,7 +129,7 @@ public class JobVaccancy extends BaseUI {
 		});
 		tfWrkExpYr = new GERPTextField("No. of Years");
 		tfWrkExpYr.setWidth("150");
-		tfWrkExpDesc = new GERPTextField("Description");
+		tfWrkExpDesc = new GERPTextArea("Description");
 		tfWrkExpDesc.setWidth("150");
 		tfWrkExpDesc.setHeight("50");
 		cbApStatus = new GERPComboBox("Approved Status", BASEConstants.T_HCM_JOB_VACCANCY, BASEConstants.JV_APRVDSTS);
@@ -140,7 +140,7 @@ public class JobVaccancy extends BaseUI {
 		taJobDetails.setHeight("30");
 		taJobDetails.setWidth("150");
 		// Job Title text field
-		tfJobtitle = new GERPTextField("Job Title");
+		tfJobtitle = new TextField("Job Title");
 		// Job ClassName combobox
 		cbJobClsName = new GERPComboBox("Job Classification");
 		cbJobClsName.setItemCaptionPropertyId("clasficatnName");
@@ -313,14 +313,19 @@ public class JobVaccancy extends BaseUI {
 	 * Work Experince must control flow.
 	 */
 	private void getWorkExper() {
-		if (cbWrkExp != null) {
-			if (cbWrkExp.getValue().toString().equals("Yes")) {
-				tfWrkExpYr.setRequired(true);
-				tfWrkExpDesc.setRequired(true);
-			} else {
-				tfWrkExpDesc.setRequired(false);
-				tfWrkExpYr.setRequired(false);
+		try {
+			if (cbWrkExp != null) {
+				if (cbWrkExp.getValue().toString().equals("Yes")) {
+					tfWrkExpYr.setRequired(true);
+					tfWrkExpDesc.setRequired(true);
+				} else {
+					tfWrkExpDesc.setRequired(false);
+					tfWrkExpYr.setRequired(false);
+				}
 			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -387,6 +392,8 @@ public class JobVaccancy extends BaseUI {
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
 		tfJobtitle.setValue("");
+		tfWrkExpYr.setValue("");
+		tfWrkExpDesc.setValue("");
 		cbJobClsName.setValue(null);
 		cbDesgntnName.setValue(null);
 		cbJbStatus.setValue(cbJbStatus.getItemIds().iterator().next());
@@ -422,6 +429,7 @@ public class JobVaccancy extends BaseUI {
 		cbApvdName.setComponentError(null);
 		cbApStatus.setComponentError(null);
 		cbJbStatus.setComponentError(null);
+		tfWrkExpDesc.setComponentError(null);
 		hlUserInputLayout.setSpacing(true);
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
@@ -462,13 +470,13 @@ public class JobVaccancy extends BaseUI {
 				cbJbStatus.setValue(jobVaccancyDM.getJobstatus());
 			}
 			if (jobVaccancyDM.getWorkExp() != null) {
-				tfWrkExpDesc.setValue(jobVaccancyDM.getWorkExp());
+				cbWrkExp.setValue(jobVaccancyDM.getWorkExp());
 			}
 			if (jobVaccancyDM.getExpYear() != null) {
 				tfWrkExpYr.setValue(jobVaccancyDM.getExpYear());
 			}
 			if (jobVaccancyDM.getExpDesc() != null) {
-				cbWrkExp.setValue(jobVaccancyDM.getExpDesc());
+				tfWrkExpDesc.setValue(jobVaccancyDM.getExpDesc());
 			}
 			if (jobVaccancyDM.getApplctnform() != null) {
 				byte[] certificate = jobVaccancyDM.getApplctnform();
@@ -497,6 +505,7 @@ public class JobVaccancy extends BaseUI {
 		cbApStatus.setRequired(true);
 		cbJbStatus.setRequired(true);
 		cbJbStatus.setComponentError(null);
+		tfWrkExpDesc.setComponentError(null);
 		cbApStatus.setComponentError(null);
 		assembleUserInputLayout();
 		resetFields();
@@ -577,7 +586,11 @@ public class JobVaccancy extends BaseUI {
 			jobVacancyobj.setRequestdby((Long) cbReqstdName.getValue());
 			jobVacancyobj.setApprovedby((Long) cbApvdName.getValue());
 			jobVacancyobj.setWorkExp(cbWrkExp.getValue().toString());
-			jobVacancyobj.setExpYear(tfWrkExpYr.getValue());
+			if (tfWrkExpYr.getValue() == "") {
+				jobVacancyobj.setExpYear(tfWrkExpYr.getValue());
+			} else {
+				jobVacancyobj.setExpYear("0");
+			}
 			jobVacancyobj.setExpDesc(tfWrkExpDesc.getValue());
 			if (cbJbStatus.getValue() != null) {
 				jobVacancyobj.setJobstatus((String) cbJbStatus.getValue());
@@ -638,6 +651,8 @@ public class JobVaccancy extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting search fields and reloading the result");
 		tfJobtitle.setValue("");
+		tfWrkExpYr.setValue("");
+		tfWrkExpDesc.setValue("");
 		tfJobtitle.setComponentError(null);
 		cbHirgMgr.setComponentError(null);
 		cbHirgMgr.setValue(null);
@@ -655,12 +670,13 @@ public class JobVaccancy extends BaseUI {
 		cbReqstdName.setValue(null);
 		cbApvdName.setComponentError(null);
 		cbApvdName.setValue(null);
+		cbWrkExp.setValue(null);
 		dfApvdDate.setComponentError(null);
 		dfApvdDate.setValue(null);
+		tfWrkExpDesc.setComponentError(null);
 		new UploadDocumentUI(vlappdoc);
 		cbApStatus.setValue(null);
-		tfWrkExpYr.setValue(null);
-		tfWrkExpDesc.setValue(null);
+		tfWrkExpDesc.setValue("");
 		cbJbStatus.setValue(cbJbStatus.getItemIds().iterator().next());
 	}
 }

@@ -610,6 +610,11 @@ public class MaterialEnquiry extends BaseTransUI {
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		Boolean errorFlag = false;
+		cbBranch.setComponentError(null);
+		lsVendorName.setComponentError(null);
+		dfDueDate.setComponentError(null);
+		cbUom.setComponentError(null);
+		lsmaterial.setComponentError(null);
 		if (cbBranch.getValue() == null) {
 			cbBranch.setComponentError(new UserError(GERPErrorCodes.NULL_BRACH_NAME));
 			errorFlag = true;
@@ -711,17 +716,18 @@ public class MaterialEnquiry extends BaseTransUI {
 			}
 			comments.resetfields();
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSlnogen
-						.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO")
+							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO");
 					}
 				}
+				catch (Exception e) {
+				}
 			}
 			tfEnqNo.setReadOnly(false);
 			tfEnqNo.setValue(matEnqobj.getEnquiryNo());
-//			tfEnqNo.setReadOnly(true);
 			comments.saveEnquiry(matEnqobj.getEnquiryId(), matEnqobj.getEnquiryStatus());
 			comments.resetfields();
 			enqDtlresetFields();

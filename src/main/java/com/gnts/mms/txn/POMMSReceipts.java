@@ -38,23 +38,23 @@ import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
-import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.domain.txn.MaterialLedgerDM;
 import com.gnts.mms.domain.txn.MaterialStockDM;
+import com.gnts.mms.domain.txn.MmsPoDtlDM;
+import com.gnts.mms.domain.txn.POHdrDM;
 import com.gnts.mms.domain.txn.PoReceiptDtlDM;
 import com.gnts.mms.domain.txn.PoReceiptHdrDM;
-import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.MaterialLedgerService;
 import com.gnts.mms.service.txn.MaterialStockService;
+import com.gnts.mms.service.txn.MmsPoDtlService;
+import com.gnts.mms.service.txn.POHdrService;
 import com.gnts.mms.service.txn.PoReceiptDtlService;
 import com.gnts.mms.service.txn.PoReceiptHdrService;
-import com.gnts.sms.domain.txn.PurchasePOHdrDM;
-import com.gnts.sms.service.txn.PurchasePOHdrService;
 import com.gnts.sms.txn.PurchaseEnquiry;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -81,7 +81,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class POMMSReceipts extends BaseUI {
+public class POMMSReceipts extends BaseTransUI {
 	// Bean Creation
 	private PoReceiptHdrService servicePoReceiptHdr = (PoReceiptHdrService) SpringContextHelper.getBean("poRecepitHdr");
 	private PoReceiptDtlService servicePoReceiptDtl = (PoReceiptDtlService) SpringContextHelper.getBean("poRecepitDtl");
@@ -91,9 +91,8 @@ public class POMMSReceipts extends BaseUI {
 	private MaterialStockService serviceMaterialStock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
 	private IndentHdrService serviceIndent = (IndentHdrService) SpringContextHelper.getBean("IndentHdr");
-	private PurchasePOHdrService servicepurchaePOHdr = (PurchasePOHdrService) SpringContextHelper
-			.getBean("PurchasePOhdr");
-	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
+	private POHdrService serviceMMSPOHdr = (POHdrService) SpringContextHelper.getBean("pohdr");
+	private MmsPoDtlService serviceMMSPODtls = (MmsPoDtlService) SpringContextHelper.getBean("mmspoDtl");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	// Parent layout for all the input controls
@@ -122,7 +121,7 @@ public class POMMSReceipts extends BaseUI {
 	private BeanItemContainer<PoReceiptDtlDM> beanPoReceiptDtlDM = null;
 	private Button btndelete = new GERPButton("Delete", "delete", this);
 	// local variables declaration
-	private Long companyid, enquiryId, receiptId, EmployeeId, moduleId, branchId;
+	private Long companyid, enquiryId, receiptId, employeeId, moduleId, branchId;
 	private int recordCnt = 0;
 	private String username, lotNo;
 	// Initialize logger
@@ -133,7 +132,7 @@ public class POMMSReceipts extends BaseUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -148,6 +147,21 @@ public class POMMSReceipts extends BaseUI {
 		// Initialization for Purchase Order Receipts Hdr Details user input components
 		cbPoNo = new GERPComboBox("PO No");
 		cbPoNo.setItemCaptionPropertyId("pono");
+		cbPoNo.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				try {
+					loadMaterial();
+					cbindentid.setValue(((POHdrDM) cbPoNo.getValue()).getIndentId());
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 		loadPoNo();
 		cbBranch = new GERPComboBox("Branch");
 		cbBranch.setItemCaptionPropertyId("branchName");
@@ -177,7 +191,7 @@ public class POMMSReceipts extends BaseUI {
 		chkBillRaised = new CheckBox("Bill Raised?");
 		// Receipt Detail
 		cbMaterial = new GERPComboBox("Material Name");
-		cbMaterial.setItemCaptionPropertyId("materialName");
+		cbMaterial.setItemCaptionPropertyId("materialname");
 		cbMaterial.setWidth("150");
 		cbMaterial.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -186,13 +200,14 @@ public class POMMSReceipts extends BaseUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				if (cbMaterial.getValue() != null) {
-					MaterialDM materialDM = (MaterialDM) cbMaterial.getValue();
-					System.out.println("materialDM.getMaterialUOM()-->" + materialDM.getMaterialUOM());
-					cbmaterialUOM.setValue(materialDM.getMaterialUOM());
+					MmsPoDtlDM materialDM = (MmsPoDtlDM) cbMaterial.getValue();
+					cbmaterialUOM.setValue(materialDM.getMaterialuom());
+					if (materialDM.getPoqty() != null) {
+						tfReceiptqty.setValue(materialDM.getPoqty().toString());
+					}
 				}
 			}
 		});
-		loadMaterial();
 		cbmaterialUOM = new ComboBox("UOM");
 		cbmaterialUOM.setItemCaptionPropertyId("lookupname");
 		cbmaterialUOM.setWidth("150");
@@ -377,7 +392,7 @@ public class POMMSReceipts extends BaseUI {
 				+ companyid + ", " + cbBranch.getValue() + ", " + cbPoNo.getValue());
 		Long poNo = null;
 		if (cbPoNo.getValue() != null) {
-			poNo = (((PurchasePOHdrDM) cbPoNo.getValue()).getPoId());
+			poNo = (((POHdrDM) cbPoNo.getValue()).getPoId());
 		}
 		receiptHdrList = servicePoReceiptHdr.getPoReceiptsHdrList(companyid, null, poNo, (Long) cbBranch.getValue(),
 				(String) tfLotNo.getValue(), (String) cbHdrStatus.getValue(), "F");
@@ -440,8 +455,8 @@ public class POMMSReceipts extends BaseUI {
 	
 	// Load Purchase order No
 	private void loadPoNo() {
-		BeanItemContainer<PurchasePOHdrDM> beanPurPoDM = new BeanItemContainer<PurchasePOHdrDM>(PurchasePOHdrDM.class);
-		beanPurPoDM.addAll(servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, null, null, null, null));
+		BeanItemContainer<POHdrDM> beanPurPoDM = new BeanItemContainer<POHdrDM>(POHdrDM.class);
+		beanPurPoDM.addAll(serviceMMSPOHdr.getPOHdrList(null, null, null, null, null, null, "P"));
 		cbPoNo.setContainerDataSource(beanPurPoDM);
 	}
 	
@@ -457,9 +472,8 @@ public class POMMSReceipts extends BaseUI {
 	
 	// Load Material List
 	private void loadMaterial() {
-		BeanItemContainer<MaterialDM> beanProduct = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanProduct.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
-				"Active", "F"));
+		BeanItemContainer<MmsPoDtlDM> beanProduct = new BeanItemContainer<MmsPoDtlDM>(MmsPoDtlDM.class);
+		beanProduct.addAll(serviceMMSPODtls.getpodtllist(((POHdrDM) cbPoNo.getValue()).getPoId(), null, null, "F"));
 		cbMaterial.setContainerDataSource(beanProduct);
 	}
 	
@@ -520,7 +534,7 @@ public class POMMSReceipts extends BaseUI {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbPoNo.getItem(itemId);
 				// Get the actual bean and use the data
-				PurchasePOHdrDM st = (PurchasePOHdrDM) item.getBean();
+				POHdrDM st = (POHdrDM) item.getBean();
 				if (poid != null && poid.equals(st.getPoId())) {
 					cbPoNo.setValue(itemId);
 				}
@@ -538,29 +552,29 @@ public class POMMSReceipts extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Receipt.Id -> "
 				+ enquiryId);
 		if (tblReceiptDtl.getValue() != null) {
-			PoReceiptDtlDM editReceiptDtllist = beanPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
-			Long matid = editReceiptDtllist.getMaterialid();
+			PoReceiptDtlDM receiptDtlDM = beanPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
+			Long matid = receiptDtlDM.getMaterialid();
 			Collection<?> matids = cbMaterial.getItemIds();
 			for (Iterator<?> iterator = matids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbMaterial.getItem(itemId);
 				// Get the actual bean and use the data
-				MaterialDM st = (MaterialDM) item.getBean();
-				if (matid != null && matid.equals(st.getMaterialId())) {
+				MmsPoDtlDM st = (MmsPoDtlDM) item.getBean();
+				if (matid != null && matid.equals(st.getMaterialid())) {
 					cbMaterial.setValue(itemId);
 				}
 			}
-			cbmaterialUOM.setValue(editReceiptDtllist.getMaterialUOM());
-			if (editReceiptDtllist.getReceiptqty() != null) {
-				tfReceiptqty.setValue(editReceiptDtllist.getReceiptqty().toString());
+			cbmaterialUOM.setValue(receiptDtlDM.getMaterialUOM());
+			if (receiptDtlDM.getReceiptqty() != null) {
+				tfReceiptqty.setValue(receiptDtlDM.getReceiptqty().toString());
 			}
-			if (editReceiptDtllist.getRejectqty() != null) {
-				tfRejectqty.setValue(editReceiptDtllist.getRejectqty().toString());
+			if (receiptDtlDM.getRejectqty() != null) {
+				tfRejectqty.setValue(receiptDtlDM.getRejectqty().toString());
 			}
-			if (editReceiptDtllist.getRejectreason() != null) {
-				taRejectReason.setValue(editReceiptDtllist.getRejectreason().toString());
+			if (receiptDtlDM.getRejectreason() != null) {
+				taRejectReason.setValue(receiptDtlDM.getRejectreason().toString());
 			}
-			cbDtlStatus.setValue(editReceiptDtllist.getReceiptstatus());
+			cbDtlStatus.setValue(receiptDtlDM.getReceiptstatus());
 		}
 	}
 	
@@ -731,7 +745,7 @@ public class POMMSReceipts extends BaseUI {
 			recepithdrObj.setLotNo(tfLotNo.getValue());
 			recepithdrObj.setCompanyId(companyid);
 			if (cbPoNo.getValue() != null) {
-				recepithdrObj.setPoId(((PurchasePOHdrDM) cbPoNo.getValue()).getPoId());
+				recepithdrObj.setPoId(((POHdrDM) cbPoNo.getValue()).getPoId());
 			}
 			recepithdrObj.setBranchId((Long) cbBranch.getValue());
 			if (cbDocType.getValue() != null) {
@@ -750,9 +764,9 @@ public class POMMSReceipts extends BaseUI {
 				recepithdrObj.setBillraisedYN("N");
 			}
 			recepithdrObj.setProjectStatus(cbHdrStatus.getValue().toString());
-			recepithdrObj.setPreparedBy(EmployeeId);
-			recepithdrObj.setReviewedBy(EmployeeId);
-			recepithdrObj.setActionedBy(EmployeeId);
+			recepithdrObj.setPreparedBy(employeeId);
+			recepithdrObj.setReviewedBy(employeeId);
+			recepithdrObj.setActionedBy(employeeId);
 			recepithdrObj.setLastUpdtDate(DateUtils.getcurrentdate());
 			recepithdrObj.setLastUpdatedBy(username);
 			servicePoReceiptHdr.saveorUpdatePoReceiptHdrDetails(recepithdrObj);
@@ -879,8 +893,8 @@ public class POMMSReceipts extends BaseUI {
 				receiptDtlObj = beanPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
 				receiptDtlList.remove(receiptDtlObj);
 			}
-			receiptDtlObj.setMaterialid(((MaterialDM) cbMaterial.getValue()).getMaterialId());
-			receiptDtlObj.setMaterialName(((MaterialDM) cbMaterial.getValue()).getMaterialName());
+			receiptDtlObj.setMaterialid(((MmsPoDtlDM) cbMaterial.getValue()).getMaterialid());
+			receiptDtlObj.setMaterialName(((MmsPoDtlDM) cbMaterial.getValue()).getMaterialname());
 			receiptDtlObj.setMaterialUOM(cbmaterialUOM.getValue().toString());
 			if (tfRejectqty.getValue() != null && tfRejectqty.getValue().trim().length() > 0) {
 				receiptDtlObj.setRejectqty(Long.valueOf(tfRejectqty.getValue()));
@@ -972,5 +986,11 @@ public class POMMSReceipts extends BaseUI {
 		cbMaterial.setComponentError(null);
 		cbmaterialUOM.setComponentError(null);
 		new UploadDocumentUI(hlevdDoc);
+	}
+
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="qutationReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b2110745-7f55-49d9-960b-5671724150b6">
 	<property name="ireport.zoom" value="1.3310000000000086"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="815"/>
 	<parameter name="QTID" class="java.lang.String"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["\\"]]></defaultValueExpression>
@@ -484,7 +484,7 @@ where qth.QUOTE_ID = qtd.QUOTE_ID
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="245" splitType="Stretch">
+		<band height="321" splitType="Stretch">
 			<staticText>
 				<reportElement uuid="953f9fe6-f2e2-4a07-839f-dbb584959232" x="422" y="125" width="18" height="15"/>
 				<textElement/>
@@ -792,41 +792,75 @@ where qth.QUOTE_ID = qtd.QUOTE_ID
 				</textElement>
 				<text><![CDATA[:]]></text>
 			</staticText>
+			<subreport>
+				<reportElement uuid="adca7803-8efe-4822-b0bc-95a13a4f1b71" x="2" y="304" width="553" height="16"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["quote_comm_terms.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement uuid="469fda0e-852f-4f27-a3b7-b5210459560c" x="1" y="285" width="213" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Commercial Terms & Conditions]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="469fda0e-852f-4f27-a3b7-b5210459560c" x="1" y="240" width="213" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Technical Terms & Conditions]]></text>
+			</staticText>
+			<subreport>
+				<reportElement uuid="cb6a7357-ebd1-4a50-9430-fac3a451581c" x="1" y="258" width="554" height="22"/>
+				<subreportParameter name="QTID"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["quote_tech_terms.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement uuid="b5aa9b84-f435-484d-9910-8167d14bf6f6" x="-1" y="283" width="556" height="1"/>
+			</line>
 		</band>
 	</columnFooter>
 	<pageFooter>
-		<band height="75" splitType="Stretch">
+		<band height="61" splitType="Stretch">
 			<line>
-				<reportElement uuid="3d23de41-2ae6-4124-a442-5f31e1b2212b" x="554" y="-388" width="1" height="380"/>
+				<reportElement uuid="3d23de41-2ae6-4124-a442-5f31e1b2212b" x="554" y="-411" width="1" height="327"/>
 			</line>
 			<staticText>
-				<reportElement uuid="30cbb6f2-d6be-4d20-b345-18db2cb014ad" x="352" y="1" width="181" height="14"/>
+				<reportElement uuid="30cbb6f2-d6be-4d20-b345-18db2cb014ad" x="0" y="24" width="181" height="14"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[For SAARC Tool Tech Pvt Ltd.,]]></text>
+				<text><![CDATA[Prepared by]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="0877797e-e3d4-4a8d-b6c4-bac8cbbec2a5" x="381" y="40" width="120" height="20"/>
+				<reportElement uuid="0877797e-e3d4-4a8d-b6c4-bac8cbbec2a5" x="192" y="24" width="149" height="14"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Authorised Signatory]]></text>
+				<text><![CDATA[Checked by]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="d9ad054a-9de0-4e12-b2b6-8a1c1b18437a" x="0" y="59" width="555" height="1"/>
+				<reportElement uuid="d9ad054a-9de0-4e12-b2b6-8a1c1b18437a" x="-1" y="59" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="3a06556d-08fe-40c3-b31c-fef006b6c88d" x="-1" y="-430" width="1" height="346"/>
 			</line>
 			<staticText>
-				<reportElement uuid="efe5000f-21e0-4ded-a7b9-b572fd21f8d0" x="8" y="62" width="547" height="12"/>
-				<textElement textAlignment="Center"/>
-				<text><![CDATA[Head Office :  31A, Abbigere Main Road,Kammagondanahalli,Banglore - 560 090.Phone : 080-23453962,Fax : 080-23253949]]></text>
+				<reportElement uuid="0877797e-e3d4-4a8d-b6c4-bac8cbbec2a5" x="404" y="24" width="149" height="14"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Approved by]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="3a06556d-08fe-40c3-b31c-fef006b6c88d" x="-1" y="-387" width="1" height="380"/>
+				<reportElement uuid="5c9a5040-1a5d-4e1e-9e3e-d3677ec0c3ae" x="-2" y="1" width="556" height="1"/>
 			</line>
+			<staticText>
+				<reportElement uuid="5cb38948-4417-4734-a9dd-32ed1598cbb8" x="-1" y="35" width="457" height="22"/>
+				<textElement verticalAlignment="Bottom"/>
+				<text><![CDATA[Encl :      Preminary Drawing                                  Complete Drawing]]></text>
+			</staticText>
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="14" splitType="Stretch"/>
+		<band height="115" splitType="Stretch"/>
 	</summary>
 </jasperReport>

@@ -104,7 +104,7 @@ public class IndentIssue extends BaseTransUI {
 	private ComboBox cbIssuedTo, cbMatName, cbIntNo;
 	private DateField dfIssueDt;
 	private TextField taRemarks;
-	private Table tblDtl;
+	private Table tblIndtIssueDtl;
 	private BeanItemContainer<IndentIssueHdrDM> beanIndentIssueHdrDM = null;
 	private BeanItemContainer<IndentIssueDtlDM> beanIndentIssueDtlDM = null;
 	private Button btndelete = new GERPButton("Delete", "delete", this);
@@ -149,15 +149,15 @@ public class IndentIssue extends BaseTransUI {
 			}
 		});
 		btndelete.setEnabled(false);
-		tblDtl = new GERPTable();
-		tblDtl.setPageLength(10);
-		tblDtl.addItemClickListener(new ItemClickListener() {
+		tblIndtIssueDtl = new GERPTable();
+		tblIndtIssueDtl.setPageLength(10);
+		tblIndtIssueDtl.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblDtl.isSelected(event.getItemId())) {
-					tblDtl.setImmediate(true);
+				if (tblIndtIssueDtl.isSelected(event.getItemId())) {
+					tblIndtIssueDtl.setImmediate(true);
 					btnAddDtl.setCaption("Add");
 					btnAddDtl.setStyleName("savebt");
 					btndelete.setEnabled(false);
@@ -330,7 +330,7 @@ public class IndentIssue extends BaseTransUI {
 		hlIndentslap.setMargin(true);
 		vlIndent = new VerticalLayout();
 		vlIndent.addComponent(hlIndentslap);
-		vlIndent.addComponent(tblDtl);
+		vlIndent.addComponent(tblIndtIssueDtl);
 		vlIndent.setSpacing(true);
 		vlIndentHdrAndDtl = new VerticalLayout();
 		vlIndentHdrAndDtl.addComponent(GERPPanelGenerator.createPanel(hlIndent));
@@ -376,12 +376,12 @@ public class IndentIssue extends BaseTransUI {
 			beanIndentIssueDtlDM.addAll(indentDtlList);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the IndentIssueslap. result set");
-			tblDtl.setContainerDataSource(beanIndentIssueDtlDM);
-			tblDtl.setVisibleColumns(new Object[] { "materialName", "issueQty", "status", "lastUpdatedDt",
+			tblIndtIssueDtl.setContainerDataSource(beanIndentIssueDtlDM);
+			tblIndtIssueDtl.setVisibleColumns(new Object[] { "materialName", "issueQty", "status", "lastUpdatedDt",
 					"lastUpdatedBy" });
-			tblDtl.setColumnHeaders(new String[] { "Material", "Issue Qty", "Status", "Updated Date", "Updated By" });
-			tblDtl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
-			tblDtl.setPageLength(10);
+			tblIndtIssueDtl.setColumnHeaders(new String[] { "Material", "Issue Qty", "Status", "Updated Date", "Updated By" });
+			tblIndtIssueDtl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+			tblIndtIssueDtl.setPageLength(10);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -407,7 +407,7 @@ public class IndentIssue extends BaseTransUI {
 		cbMatName.setContainerDataSource(null);
 		tfIssueQty.setComponentError(null);
 		indentDtlList = new ArrayList<IndentIssueDtlDM>();
-		tblDtl.removeAllItems();
+		tblIndtIssueDtl.removeAllItems();
 		tfStockQty.setReadOnly(false);
 		tfStockQty.setValue(null);
 		tfStockQty.setReadOnly(false);
@@ -437,11 +437,11 @@ public class IndentIssue extends BaseTransUI {
 	
 	private void editDtls() {
 		hlUserInputLayout.setVisible(true);
-		if (tblDtl.getValue() != null) {
-			IndentIssueDtlDM indentIssueDtlDM = beanIndentIssueDtlDM.getItem(tblDtl.getValue()).getBean();
+		if (tblIndtIssueDtl.getValue() != null) {
+			IndentIssueDtlDM indentIssueDtlDM = beanIndentIssueDtlDM.getItem(tblIndtIssueDtl.getValue()).getBean();
 			Long matId = indentIssueDtlDM.getMaterialId();
-			Collection<?> empColId = cbMatName.getItemIds();
-			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
+			Collection<?> matids = cbMatName.getItemIds();
+			for (Iterator<?> iteratorclient = matids.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
 				BeanItem<?> itemclient = (BeanItem<?>) cbMatName.getItem(itemIdClient);
 				// Get the actual bean and use the data
@@ -514,7 +514,7 @@ public class IndentIssue extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		btnAddDtl.setCaption("Add");
-		tblDtl.setVisible(true);
+		tblIndtIssueDtl.setVisible(true);
 	}
 	
 	// Method to get the audit history details
@@ -547,7 +547,7 @@ public class IndentIssue extends BaseTransUI {
 		tfIssueQty.setRequired(false);
 		IndentDtlresetField();
 		hlCmdBtnLayout.setVisible(true);
-		tblDtl.removeAllItems();
+		tblIndtIssueDtl.removeAllItems();
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
 		loadSrchRslt();
@@ -578,6 +578,7 @@ public class IndentIssue extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbMatName.setValue(null);
 		tfBalanceQty.setValue(null);
+		tfIssueQty.setReadOnly(false);
 		tfIssueQty.setValue(null);
 		tfStockQty.setReadOnly(false);
 		tfStockQty.setValue(null);
@@ -635,7 +636,7 @@ public class IndentIssue extends BaseTransUI {
 			cbIssuedTo.setComponentError(new UserError(GERPErrorCodes.NULL_Issue_To));
 			errorFlag = true;
 		}
-		if (tblDtl.size() == 0) {
+		if (tblIndtIssueDtl.size() == 0) {
 			cbMatName.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_NAME));
 			tfIssueQty.setComponentError(new UserError(GERPErrorCodes.QUNATITY_CHAR_VALIDATION));
 			errorFlag = true;
@@ -666,7 +667,7 @@ public class IndentIssue extends BaseTransUI {
 			indentObj.setLast_updated_by(username);
 			serviceIndentHdr.saveorUpdateIndentIssueHdrDetails(indentObj);
 			@SuppressWarnings("unchecked")
-			Collection<IndentIssueDtlDM> colPlanDtls = ((Collection<IndentIssueDtlDM>) tblDtl.getVisibleItemIds());
+			Collection<IndentIssueDtlDM> colPlanDtls = ((Collection<IndentIssueDtlDM>) tblIndtIssueDtl.getVisibleItemIds());
 			for (IndentIssueDtlDM saveDtl : (Collection<IndentIssueDtlDM>) colPlanDtls) {
 				saveDtl.setIssueId(indentObj.getIssueId());
 				saveDtl.setIndentId(indentObj.getIndentId());
@@ -792,8 +793,8 @@ public class IndentIssue extends BaseTransUI {
 			if (count == 0) {
 				if (((IndentDtlDM) cbMatName.getValue()).getBalenceQty() >= Long.valueOf(tfIssueQty.getValue())) {
 					IndentIssueDtlDM indentDtlObj = new IndentIssueDtlDM();
-					if (tblDtl.getValue() != null) {
-						indentDtlObj = beanIndentIssueDtlDM.getItem(tblDtl.getValue()).getBean();
+					if (tblIndtIssueDtl.getValue() != null) {
+						indentDtlObj = beanIndentIssueDtlDM.getItem(tblIndtIssueDtl.getValue()).getBean();
 						indentDtlList.remove(indentDtlObj);
 					}
 					if (cbMatName.getValue() != null) {
@@ -886,8 +887,8 @@ public class IndentIssue extends BaseTransUI {
 	
 	private void deleteDetails() {
 		IndentIssueDtlDM save = new IndentIssueDtlDM();
-		if (tblDtl.getValue() != null) {
-			save = beanIndentIssueDtlDM.getItem(tblDtl.getValue()).getBean();
+		if (tblIndtIssueDtl.getValue() != null) {
+			save = beanIndentIssueDtlDM.getItem(tblIndtIssueDtl.getValue()).getBean();
 			indentDtlList.remove(save);
 			IndentDtlresetField();
 			loadIndentDtl();

@@ -300,11 +300,11 @@ public class DashboardStoreView implements ClickListener {
 	
 	private void loadMaterialGatepass() {
 		tblGatepass.removeAllItems();
-		List<GatepassHdrDM> gatepass = new ArrayList<GatepassHdrDM>();
+		List<GatepassHdrDM> listGatepass = new ArrayList<GatepassHdrDM>();
 		BeanItemContainer<GatepassHdrDM> beanGatePassHdr = new BeanItemContainer<GatepassHdrDM>(GatepassHdrDM.class);
-		gatepass = serviceGatepass.getGatepassHdrList(companyId, null, "Returnable", null, null, null, "Pending", null,
+		listGatepass = serviceGatepass.getGatepassHdrList(companyId, null, "Returnable", null, null, null, "Pending", null,
 				"F");
-		beanGatePassHdr.addAll(gatepass);
+		beanGatePassHdr.addAll(listGatepass);
 		tblGatepass.setContainerDataSource(beanGatePassHdr);
 		tblGatepass.setVisibleColumns(new Object[] { "gatepassId", "gatepassDt", "gatepassType", "returnDate",
 				"gatepassStatus", "lastUpdatedDt", "lastUpdatedBy" });

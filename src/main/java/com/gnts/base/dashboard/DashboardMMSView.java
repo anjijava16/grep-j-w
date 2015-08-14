@@ -49,7 +49,7 @@ public class DashboardMMSView implements ClickListener {
 	private Button btnBillsCount = new Button("17 Nos.", this);
 	private Button btnReceiptsCount = new Button("16 Nos.", this);
 	private Button btnAddMaterial = new Button("+  Add Material", this);
-	private Button btnAddVendor=new Button("+ Add Vendor",this);
+	private Button btnAddVendor = new Button("+ Add Vendor", this);
 	private MaterialStockService servicematerialstock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
 	private MmsEnqHdrService serviceMmsEnqHdr = (MmsEnqHdrService) SpringContextHelper.getBean("MmsEnqHdr");
@@ -102,7 +102,6 @@ public class DashboardMMSView implements ClickListener {
 		custom.addComponent(tblPaymentPending, "paymenttable");
 		custom.addComponent(tblDeliveryPending, "deliverypending");
 		custom.addComponent(btnAddVendor, "addVendor");
-		
 		tblMstScrSrchRslt.setHeight("300px");
 		tblEnquiry.setHeight("250px");
 		tblPaymentPending.setHeight("450px");
@@ -124,9 +123,9 @@ public class DashboardMMSView implements ClickListener {
 			beanmaterialstock.addAll(servicematerialstock.getMaterialStockList(null, companyId, null, null, null, null,
 					"F"));
 			tblMstScrSrchRslt.setContainerDataSource(beanmaterialstock);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialName", "stockType",
-					"currentStock","parkedStock", "effectiveStock" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Material", "Stock Type","Curr. Stock","Parked",
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialName", "stockType", "currentStock",
+					"parkedStock", "effectiveStock" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Material", "Stock Type", "Curr. Stock", "Parked",
 					"Eff. Stock" });
 			tblMstScrSrchRslt.setColumnWidth("materialName", 150);
 			tblMstScrSrchRslt.setColumnWidth("currentStock", 75);
@@ -233,15 +232,17 @@ public class DashboardMMSView implements ClickListener {
 				@SuppressWarnings("unchecked")
 				BeanItem<POHdrDM> item = (BeanItem<POHdrDM>) source.getItem(itemId);
 				POHdrDM emp = (POHdrDM) item.getBean();
-				System.out.println("emp.getBalancePayAmount()--->" + emp.getBalancePayAmount());
-				DecimalFormat df = new DecimalFormat("#.00", new DecimalFormatSymbols());
-				if (emp.getBalancePayAmount().compareTo(new BigDecimal("5000")) > 0) {
-					return new Label("<p style='color:#EC9E20;font-size:14px;align=right'>"
-							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
-				} else {
-					return new Label("<p style='color:#E26666;font-size:14px;align=right'>"
-							+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
+				if (emp.getBalancePayAmount() != null) {
+					DecimalFormat df = new DecimalFormat("#.00", new DecimalFormatSymbols());
+					if (emp.getBalancePayAmount().compareTo(new BigDecimal("5000")) > 0) {
+						return new Label("<p style='color:#EC9E20;font-size:14px;align=right'>"
+								+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
+					} else {
+						return new Label("<p style='color:#E26666;font-size:14px;align=right'>"
+								+ df.format(emp.getBalancePayAmount().doubleValue()) + "</p>", ContentMode.HTML);
+					}
 				}
+				return new Label("<p style='color:#EC9E20;font-size:14px;align=right'>0.00</p>", ContentMode.HTML);
 			}
 		});
 	}

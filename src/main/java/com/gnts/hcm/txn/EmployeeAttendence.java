@@ -206,29 +206,49 @@ public class EmployeeAttendence extends BaseUI {
 		attendenceProcDM.setPayPeriodId(2L);
 		attendenceProcDM.setAllStDt(dfStartDt.getValue());
 		attendenceProcDM.setAllEndDt(dfEndDt.getValue());
-		attendenceProcDM.setBranchId(branchId);
+		attendenceProcDM.setBranchId(198L);
 		attendenceProcDM.setProcessedBy(username);
 		attendenceProcDM.setProcessedDt(new Date());
+		attendenceProcDM.setCompanyId(companyid);
 		attendenceProcDM.setStatus("Pending");
 		serviceAttendenceProce.saveAndUpdate(attendenceProcDM);
-		while (cal.getTime().before(dfEndDt.getValue())) {
-			cal.add(Calendar.DATE, 1);
-			EmpAttendenceDM empAttendenceDM = new EmpAttendenceDM();
-			empAttendenceDM.setEmpId((Long) cbEmpName.getValue());
-			empAttendenceDM.setAttProcId(attendenceProcDM.getAttProcId());
-			empAttendenceDM.setAttDt(cal.getTime());
-			empAttendenceDM.setPresentHr(workhours);
-			empAttendenceDM.setOtHrs("0");
-			empAttendenceDM.setLeaveHr("0");
-			empAttendenceDM.setOndutyHr("0");
-			empAttendenceDM.setAbsentHr("0");
-			empAttendenceDM.setPermissionHr("0");
-			empAttendenceDM.setLwpHr(0L);
-			empAttendenceDM.setStatus("Pending");
-			empAttendenceDM.setLastUpdatedBy(username);
-			empAttendenceDM.setLastUpdatedDt(new Date());
-			serviceEmpAtndnc.saveAndUpdate(empAttendenceDM);
-			System.out.println(cal.getTime());
+		System.out.println("--->inside" + cbEmpName.getValue());
+		List<EmployeeDM> employeelist = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+				198L, null, "P");
+		
+			
+			while (cal.getTime().before(dfEndDt.getValue())) {
+				cal.add(Calendar.DATE, 1);
+
+				for (EmployeeDM employeeDM : employeelist) {
+					EmpAttendenceDM empAttendenceDM = new EmpAttendenceDM();
+
+					
+				if ((Long) cbEmpName.getValue() == -1) {
+					empAttendenceDM.setEmpId((Long) employeeDM.getEmployeeid());
+
+				} else {
+					System.out.println("--->insideelse" + cbEmpName.getValue());
+					empAttendenceDM.setEmpId((Long) cbEmpName.getValue());
+				}
+				
+					empAttendenceDM.setAttProcId(attendenceProcDM.getAttProcId());
+					empAttendenceDM.setAttDt(cal.getTime());
+					empAttendenceDM.setPresentHr(workhours);
+					empAttendenceDM.setOtHrs("0");
+					empAttendenceDM.setLeaveHr("0");
+					empAttendenceDM.setOndutyHr("0");
+					empAttendenceDM.setAbsentHr("0");
+					empAttendenceDM.setPermissionHr("0");
+					empAttendenceDM.setLwpHr(0L);
+					empAttendenceDM.setStatus("Pending");
+					empAttendenceDM.setLastUpdatedBy(username);
+					empAttendenceDM.setLastUpdatedDt(new Date());
+					serviceEmpAtndnc.saveAndUpdate(empAttendenceDM);
+				}
+				
+				System.out.println(cal.getTime());
+			
 		}
 		staffAttendancePapulateAndConfig(true);
 	}
@@ -460,6 +480,7 @@ public class EmployeeAttendence extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Approver Search...");
 		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
 				null, null, "F");
+		empList.add(new EmployeeDM(-1L, "All"));
 		beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployeeDM.setBeanIdProperty("employeeid");
 		beanEmployeeDM.addAll(empList);

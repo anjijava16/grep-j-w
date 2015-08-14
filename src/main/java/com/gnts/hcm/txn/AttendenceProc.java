@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -47,8 +48,10 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.mst.PayPeriodDM;
 import com.gnts.hcm.domain.txn.AttendenceProcDM;
+import com.gnts.hcm.domain.txn.EmpAttendenceDM;
 import com.gnts.hcm.service.mst.PayPeriodService;
 import com.gnts.hcm.service.txn.AttendenceProcService;
+import com.gnts.hcm.service.txn.EmpAttendenceService;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -78,6 +81,7 @@ public class AttendenceProc extends BaseUI {
 	private PayPeriodService servicePayPeriod = (PayPeriodService) SpringContextHelper.getBean("PayPeriod");
 	private AttendenceProcService serviceAttendanceProcess = (AttendenceProcService) SpringContextHelper
 			.getBean("AttendenceProc");
+	private EmpAttendenceService serviceEmpAtndnc = (EmpAttendenceService) SpringContextHelper.getBean("EmpAttendence");
 	private Button btnsaveAttenProc = new GERPButton("Add", "add", this);
 	private BeanItemContainer<AttendenceProcDM> beanAttendenceProcDM = null;
 	private List<AttendenceProcDM> attendProcList = new ArrayList<AttendenceProcDM>();
@@ -407,25 +411,33 @@ public class AttendenceProc extends BaseUI {
 					System.out.println("payPeriodId=" + payPeriodId + "\n(Long) cbBranch.getValue()="
 							+ (Long) cbBranch.getValue() + "\nstartDate=" + startDate + "\nendDate=" + endDate
 							+ "\ncompanyId=" + companyId + "\nuserName=" + userName);
-					statement = connection
-							.prepareCall("{ ? = call pkg_hcm_core.fn_calc_staff_attend (?,?,?,?,?,?,?,?) }");
-					statement.registerOutParameter(1, Types.VARCHAR);
-					statement.setLong(2, payPeriodId);
-					statement.setLong(3, (Long) cbEmployeeName.getValue());
-					statement.setLong(4, (Long) cbBranch.getValue());
-					statement.setString(5, startDate);
-					statement.setString(6, endDate);
-					statement.setLong(7, companyId);
-					statement.setString(8, userName);
-					statement.registerOutParameter(9, Types.VARCHAR);
-					statement.execute();
-					funationStatus = statement.getString(1);
-					errorMsg = statement.getString(9);
-					System.out.println("funationStatus-->" + funationStatus);
-					System.out.println("errorMsg-->" + errorMsg);
+					List<EmployeeDM> employeelist = serviceEmployee.getEmployeeList(null, null, null, "Active",
+							companyId, null, null, 198L, null, "P");
+					for (EmployeeDM empAttendenceDM : employeelist) {
+						statement = connection
+								.prepareCall("{ ? = call pkg_hcm_core.fn_calc_staff_attend (?,?,?,?,?,?,?,?) }");
+						System.out.println("empAttendenceDM.getEmployeeid()"+empAttendenceDM.getEmployeeid());
+						statement.registerOutParameter(1, Types.VARCHAR);
+						statement.setLong(2, payPeriodId);
+						statement.setLong(3, empAttendenceDM.getEmployeeid());
+						statement.setLong(4, (Long) cbBranch.getValue());
+						statement.setString(5, "01-08-15");
+						statement.setString(6, "31-08-15");
+						statement.setLong(7, companyId);
+						statement.setString(8, userName);
+						statement.registerOutParameter(9, Types.VARCHAR);
+						statement.execute();
+						funationStatus = statement.getString(1);
+						errorMsg = statement.getString(9);
+						System.out.println("funationStatus-->" + funationStatus);
+						System.out.println("errorMsg-->" + errorMsg);
+					}
 					connection.close();
+
 				}
+				
 			});
+			
 			cbPayPeried.setComponentError(null);
 			cbBranch.setComponentError(null);
 		}
@@ -479,8 +491,8 @@ public class AttendenceProc extends BaseUI {
 				cbPayPeried.setValue(editClientlist.getPayPeriodId());
 			}
 			attProcId = editClientlist.getAttProcId();
-			String startsdt = DateUtils.datetostring(editClientlist.getAllStDt());
-			String enddst = DateUtils.datetostring(editClientlist.getAllEndDt());
+			String startsdt = DateUtils.datetostringsimple(editClientlist.getAllStDt());
+			String enddst = DateUtils.datetostringsimple(editClientlist.getAllEndDt());
 			tfProcessPeriod.setReadOnly(false);
 			tfProcessPeriod.setValue(startsdt + " to " + enddst);
 			tfProcessPeriod.setReadOnly(true);
@@ -500,7 +512,7 @@ public class AttendenceProc extends BaseUI {
 	
 	private void readonlytrue() {
 		cbBranch.setReadOnly(true);
-		cbEmployeeName.setReadOnly(true);
+		// cbEmployeeName.setReadOnly(true);
 		cbPayPeried.setReadOnly(true);
 		tfProcessPeriod.setReadOnly(true);
 	}

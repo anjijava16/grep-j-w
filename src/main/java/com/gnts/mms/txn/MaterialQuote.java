@@ -123,11 +123,10 @@ public class MaterialQuote extends BaseTransUI {
 	private FormLayout flDtlColumn1, flDtlColumn2, flDtlColumn3, flDtlColumn4;
 	// User Input Components for Sales Quote Details
 	private ComboBox cbBranch, cbStatus, cbEnqNo, cbVendorname;
-	private TextField tfQuoteNumber, tfQuoteRef, tfQuoteVersion, tfBasictotal, tfpackingPer, tfPaclingValue;
-	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer, tfvendorCode;
-	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
-	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal, tfDocumentCharges,
-			tfPDCCharges;
+	private TextField tfQuoteNumber, tfQuoteRef, tfQuoteVersion, tfBasictotal, tfPaclingValue;
+	private TextField tfSubTotal, tfVatValue, tfEDValue, tfvendorCode;
+	private TextField tfHEDValue, tfCessValue, tfCstValue, tfSubTaxTotal;
+	private TextField tfFreightValue, tfOtherValue, tfGrandtotal, tfDocumentCharges, tfPDCCharges;
 	private ComboBox cbpaymetTerms, cbFreightTerms, cbWarrentyTerms, cbDelTerms;
 	private GERPComboBox cbQuotationType = new GERPComboBox("Quote Type");
 	private PopupDateField dfQuoteDt, dfvalidDt;
@@ -215,33 +214,21 @@ public class MaterialQuote extends BaseTransUI {
 		tfBasictotal.setWidth("126");
 		tfSubTotal = new GERPNumberField("Sub Total");
 		tfSubTotal.setWidth("126");
-		tfpackingPer = new TextField();
-		tfpackingPer.setWidth("30");
 		tfPaclingValue = new GERPNumberField();
-		tfPaclingValue.setWidth("100");
+		tfPaclingValue.setWidth("150");
 		tfPaclingValue.setImmediate(true);
-		tfVatPer = new TextField();
-		tfVatPer.setWidth("30");
 		tfVatValue = new GERPNumberField();
-		tfVatValue.setWidth("100");
-		tfEDPer = new TextField();
-		tfEDPer.setWidth("30");
+		tfVatValue.setWidth("150");
 		tfEDValue = new GERPNumberField();
-		tfEDValue.setWidth("100");
-		tfHEDPer = new TextField();
-		tfHEDPer.setWidth("30");
+		tfEDValue.setWidth("150");
 		tfHEDValue = new GERPNumberField();
-		tfHEDValue.setWidth("100");
-		tfCessPer = new TextField();
-		tfCessPer.setWidth("30");
+		tfHEDValue.setWidth("150");
 		tfCessValue = new GERPNumberField();
-		tfCessValue.setWidth("100");
+		tfCessValue.setWidth("150");
 		tfSubTaxTotal = new GERPNumberField("Sub Tax Total");
 		tfCstValue = new GERPNumberField();
 		tfCstValue.setWidth("120");
-		tfSubTaxTotal.setWidth("125");
-		tfCstPer = new TextField();
-		tfCstPer.setWidth("30");
+		tfSubTaxTotal.setWidth("155");
 		tfCstValue.setImmediate(true);
 		tfGrandtotal = new GERPNumberField("Grand Total");
 		tfGrandtotal.setWidth("150");
@@ -267,31 +254,6 @@ public class MaterialQuote extends BaseTransUI {
 						tfvendorCode.setReadOnly(true);
 					}
 					catch (Exception e) {
-					}
-					if (vendorDM.getPackingPrnct() != null) {
-						tfpackingPer.setValue(vendorDM.getPackingPrnct().toString());
-					} else {
-						tfpackingPer.setValue("0");
-					}
-					if (vendorDM.getEdPrnct() != null) {
-						tfEDPer.setValue(vendorDM.getEdPrnct().toString());
-					} else {
-						tfEDPer.setValue("0");
-					}
-					if (vendorDM.getVatPrnct() != null) {
-						tfVatPer.setValue(vendorDM.getVatPrnct().toString());
-					} else {
-						tfVatPer.setValue("0");
-					}
-					if (vendorDM.getCstPrnct() != null) {
-						tfCstPer.setValue(vendorDM.getCstPrnct().toString());
-					} else {
-						tfCstPer.setValue("0");
-					}
-					if (vendorDM.getFreightPrnct() != null) {
-						tfFreightPer.setValue(vendorDM.getFreightPrnct().toString());
-					} else {
-						tfFreightPer.setValue("0");
 					}
 				}
 			}
@@ -321,24 +283,6 @@ public class MaterialQuote extends BaseTransUI {
 				getCalculatedValues();
 			}
 		});
-		tfCstPer.addBlurListener(new BlurListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void blur(BlurEvent event) {
-				// TODO Auto-generated method stub
-				getCalculatedValues();
-			}
-		});
-		tfpackingPer.addBlurListener(new BlurListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void blur(BlurEvent event) {
-				// TODO Auto-generated method stub
-				getCalculatedValues();
-			}
-		});
 		tfPDCCharges = new GERPNumberField("PDC Charges");
 		tfPDCCharges.setWidth("150");
 		tfPDCCharges.setImmediate(true);
@@ -351,14 +295,10 @@ public class MaterialQuote extends BaseTransUI {
 				getCalculatedValues();
 			}
 		});
-		tfFreightPer = new TextField();
-		tfFreightPer.setWidth("30");
 		tfFreightValue = new GERPNumberField();
-		tfFreightValue.setWidth("120");
-		tfOtherPer = new TextField();
-		tfOtherPer.setWidth("30");
+		tfFreightValue.setWidth("150");
 		tfOtherValue = new GERPNumberField();
-		tfOtherValue.setWidth("120");
+		tfOtherValue.setWidth("150");
 		cbpaymetTerms = new ComboBox("Payment Terms");
 		cbpaymetTerms.setItemCaptionPropertyId("lookupname");
 		cbpaymetTerms.setWidth("150");
@@ -670,44 +610,14 @@ public class MaterialQuote extends BaseTransUI {
 		dfQuoteDt.setWidth("110px");
 		flColumn2.addComponent(dfvalidDt);
 		flColumn2.addComponent(tfBasictotal);
-		HorizontalLayout pp = new HorizontalLayout();
-		pp.addComponent(tfpackingPer);
-		pp.addComponent(tfPaclingValue);
-		pp.setCaption("Packing(%)");
-		flColumn2.addComponent(pp);
-		flColumn2.setComponentAlignment(pp, Alignment.TOP_LEFT);
+		flColumn2.addComponent(tfPaclingValue);
 		flColumn2.addComponent(tfSubTotal);
-		HorizontalLayout ed = new HorizontalLayout();
-		ed.addComponent(tfEDPer);
-		ed.addComponent(tfEDValue);
-		ed.setCaption("ED");
-		flColumn2.addComponent(ed);
-		flColumn2.setComponentAlignment(ed, Alignment.TOP_LEFT);
+		flColumn2.addComponent(tfEDValue);
 		flColumn2.addComponent(tfSubTaxTotal);
-		HorizontalLayout vp = new HorizontalLayout();
-		vp.addComponent(tfVatPer);
-		vp.addComponent(tfVatValue);
-		vp.setCaption("VAT");
-		flColumn2.addComponent(vp);
-		flColumn2.setComponentAlignment(vp, Alignment.TOP_LEFT);
-		HorizontalLayout cst = new HorizontalLayout();
-		cst.addComponent(tfCstPer);
-		cst.addComponent(tfCstValue);
-		cst.setCaption("CST");
-		flColumn3.addComponent(cst);
-		flColumn3.setComponentAlignment(cst, Alignment.TOP_LEFT);
-		HorizontalLayout frght = new HorizontalLayout();
-		frght.addComponent(tfFreightPer);
-		frght.addComponent(tfFreightValue);
-		frght.setCaption("Freight");
-		flColumn3.addComponent(frght);
-		flColumn3.setComponentAlignment(frght, Alignment.TOP_LEFT);
-		HorizontalLayout other = new HorizontalLayout();
-		other.addComponent(tfOtherPer);
-		other.addComponent(tfOtherValue);
-		other.setCaption("Other(%)");
-		flColumn3.addComponent(other);
-		flColumn3.setComponentAlignment(other, Alignment.TOP_LEFT);
+		flColumn2.addComponent(tfVatValue);
+		flColumn3.addComponent(tfCstValue);
+		flColumn3.addComponent(tfFreightValue);
+		flColumn3.addComponent(tfOtherValue);
 		flColumn3.addComponent(tfDocumentCharges);
 		flColumn3.addComponent(tfPDCCharges);
 		flColumn3.addComponent(tfGrandtotal);
@@ -962,39 +872,31 @@ public class MaterialQuote extends BaseTransUI {
 			tfBasictotal.setReadOnly(false);
 			tfBasictotal.setValue(quoteHdrDM.getBasicTotal().toString());
 			tfBasictotal.setReadOnly(true);
-			tfpackingPer.setValue(quoteHdrDM.getPackingPrcnt().toString());
 			tfPaclingValue.setReadOnly(false);
 			tfPaclingValue.setValue(quoteHdrDM.getPackingValue().toString());
 			tfPaclingValue.setReadOnly(true);
 			tfSubTotal.setReadOnly(false);
 			tfSubTotal.setValue(quoteHdrDM.getSubTotal().toString());
 			tfSubTotal.setReadOnly(true);
-			tfVatPer.setValue(quoteHdrDM.getVatPrcnt().toString());
 			tfVatValue.setReadOnly(false);
 			tfVatValue.setValue(quoteHdrDM.getVatValue().toString());
 			tfVatValue.setReadOnly(true);
-			tfEDPer.setValue(quoteHdrDM.getEd_Prcnt().toString());
 			tfEDValue.setReadOnly(false);
 			tfEDValue.setValue(quoteHdrDM.getEdValue().toString());
 			tfEDValue.setReadOnly(true);
-			tfHEDPer.setValue(quoteHdrDM.getHedPrcnt().toString());
 			tfHEDValue.setReadOnly(false);
 			tfHEDValue.setValue(quoteHdrDM.getHedValue().toString());
 			tfHEDValue.setReadOnly(true);
-			tfCessPer.setValue(quoteHdrDM.getCessPrcnt().toString());
 			tfCessValue.setReadOnly(false);
 			tfCessValue.setValue(quoteHdrDM.getCessValue().toString());
 			tfCessValue.setReadOnly(true);
-			tfCstPer.setValue(quoteHdrDM.getCessPrcnt().toString());
 			tfCstValue.setReadOnly(false);
 			tfCstValue.setValue(quoteHdrDM.getCessValue().toString());
 			tfCstValue.setReadOnly(true);
 			tfSubTaxTotal.setReadOnly(false);
 			tfSubTaxTotal.setValue(quoteHdrDM.getSubTaxTotal().toString());
 			tfSubTaxTotal.setReadOnly(true);
-			tfFreightPer.setValue(quoteHdrDM.getFreightPrcnt().toString());
 			tfFreightValue.setValue(quoteHdrDM.getFreightValue().toString());
-			tfOtherPer.setValue((quoteHdrDM.getOthersPrcnt().toString()));
 			tfOtherValue.setValue((quoteHdrDM.getOthersValue().toString()));
 			tfGrandtotal.setReadOnly(false);
 			tfGrandtotal.setValue(quoteHdrDM.getGrandTotal().toString());
@@ -1133,16 +1035,9 @@ public class MaterialQuote extends BaseTransUI {
 	
 	// Calculated Values for Sales Quote Hdr validation
 	private void getCalculatedValues() {
-		tfVatPer.setValue("0");
-		if (chkDutyExe.getValue()) {
-			tfEDPer.setValue("0");
-			tfHEDPer.setValue("0");
-			tfCessPer.setValue("0");
-		}
+		
 		BigDecimal basictotal = new BigDecimal(tfBasictotal.getValue());
-		BigDecimal packingvalue = gerPercentageValue(new BigDecimal(tfpackingPer.getValue()), basictotal);
 		tfPaclingValue.setReadOnly(false);
-		tfPaclingValue.setValue(packingvalue.toString());
 		tfPaclingValue.setReadOnly(true);
 		BigDecimal pdcCharges = new BigDecimal("0");
 		try {
@@ -1150,56 +1045,22 @@ public class MaterialQuote extends BaseTransUI {
 		}
 		catch (Exception e) {
 		}
-		BigDecimal subtotal = packingvalue.add(basictotal).add(pdcCharges);
-		tfSubTotal.setReadOnly(false);
-		tfSubTotal.setValue(subtotal.toString());
-		tfSubTotal.setReadOnly(true);
-		BigDecimal edValue = gerPercentageValue(new BigDecimal(tfEDPer.getValue()), subtotal);
-		tfEDValue.setReadOnly(false);
-		tfEDValue.setValue(edValue.toString());
-		tfEDValue.setReadOnly(true);
-		BigDecimal subtaxTotal = subtotal.add(new BigDecimal(tfEDValue.getValue()));
-		tfSubTaxTotal.setReadOnly(false);
-		tfSubTaxTotal.setValue(subtaxTotal.toString());
-		tfSubTaxTotal.setReadOnly(true);
-		System.out.println("subtaxTotal" + subtaxTotal);
-		System.out.println("tfVatPer.getValue()" + tfVatPer.getValue());
-		BigDecimal vatvalue = gerPercentageValue(new BigDecimal(tfVatPer.getValue()), subtaxTotal);
+	
+	
+
+	
 		tfVatValue.setReadOnly(false);
-		tfVatValue.setValue(vatvalue.toString());
 		tfVatValue.setReadOnly(true);
-		BigDecimal cstval = gerPercentageValue(new BigDecimal(tfCstPer.getValue()), subtaxTotal);
 		tfCstValue.setReadOnly(false);
-		tfCstValue.setValue(cstval.toString());
 		tfCstValue.setReadOnly(true);
-		BigDecimal csttotal = vatvalue;
 		BigDecimal frgval = new BigDecimal(0);
 		BigDecimal otherval = new BigDecimal(0);
-		if (!tfFreightPer.getValue().equals("0")) {
-			frgval = gerPercentageValue(new BigDecimal(tfFreightPer.getValue()), subtaxTotal);
-			tfFreightValue.setValue(frgval.toString());
-		} else {
-			tfFreightValue.setValue("0");
-			frgval = new BigDecimal(tfFreightValue.getValue());
-		}
-		if (!tfOtherPer.getValue().equals("0")) {
-			otherval = gerPercentageValue(new BigDecimal(tfOtherPer.getValue()), subtaxTotal);
-			tfOtherValue.setValue(otherval.toString());
-		} else {
-			tfOtherValue.setValue("0");
-			otherval = new BigDecimal(tfOtherValue.getValue());
-		}
-		BigDecimal grand = frgval.add(otherval).add(cstval).add(csttotal);
 		BigDecimal documentCharges = new BigDecimal(tfDocumentCharges.getValue());
-		BigDecimal grandTotal = subtaxTotal.add(grand).add(documentCharges);
 		tfGrandtotal.setReadOnly(false);
-		tfGrandtotal.setValue(grandTotal.toString());
 		tfGrandtotal.setReadOnly(true);
 	}
 	
-	private BigDecimal gerPercentageValue(BigDecimal percent, BigDecimal value) {
-		return (percent.multiply(value).divide(new BigDecimal("100"))).setScale(2, RoundingMode.CEILING);
-	}
+	
 	
 	private void loadProductList(Boolean isFullList) {
 		try {
@@ -1391,33 +1252,18 @@ public class MaterialQuote extends BaseTransUI {
 			if (tfBasictotal.getValue() != null && tfBasictotal.getValue().trim().length() > 0) {
 				salesQuoteHdrobj.setBasicTotal(new BigDecimal(tfBasictotal.getValue()));
 			}
-			salesQuoteHdrobj.setPackingPrcnt((new BigDecimal(tfpackingPer.getValue())));
-			if (tfPaclingValue.getValue() != null && tfPaclingValue.getValue().trim().length() > 0) {
-				salesQuoteHdrobj.setPackingValue((new BigDecimal(tfPaclingValue.getValue())));
-			}
-			salesQuoteHdrobj.setSubTotal(new BigDecimal(tfSubTotal.getValue()));
-			salesQuoteHdrobj.setVatPrcnt(((new BigDecimal(tfVatPer.getValue()))));
-			if (tfVatValue.getValue() != null && tfVatValue.getValue().trim().length() > 0) {
-				salesQuoteHdrobj.setVatValue((new BigDecimal(tfVatValue.getValue())));
-			}
-			if (tfEDPer.getValue() != null && tfEDPer.getValue().trim().length() > 0) {
-				salesQuoteHdrobj.setEd_Prcnt((new BigDecimal(tfEDPer.getValue())));
-			}
+			
 			if (tfEDValue.getValue() != null && tfEDValue.getValue().trim().length() > 0) {
 				salesQuoteHdrobj.setEdValue(new BigDecimal(tfEDValue.getValue()));
 			}
 			salesQuoteHdrobj.setHedValue(new BigDecimal(tfHEDValue.getValue()));
-			salesQuoteHdrobj.setHedPrcnt((new BigDecimal(tfHEDPer.getValue())));
-			salesQuoteHdrobj.setCessPrcnt((new BigDecimal(tfCessPer.getValue())));
+		
 			salesQuoteHdrobj.setCessValue(new BigDecimal(tfCessValue.getValue()));
-			salesQuoteHdrobj.setCstPrcnt((new BigDecimal(tfCstPer.getValue())));
 			if (tfCstValue.getValue() != null && tfCstValue.getValue().trim().length() > 0) {
 				salesQuoteHdrobj.setCstValue((new BigDecimal(tfCstValue.getValue())));
 			}
 			salesQuoteHdrobj.setSubTaxTotal(new BigDecimal(tfSubTaxTotal.getValue()));
-			salesQuoteHdrobj.setFreightPrcnt(new BigDecimal(tfFreightPer.getValue()));
 			salesQuoteHdrobj.setFreightValue(new BigDecimal(tfFreightValue.getValue()));
-			salesQuoteHdrobj.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
 			salesQuoteHdrobj.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
 			salesQuoteHdrobj.setDocumentCharges(new BigDecimal(tfDocumentCharges.getValue()));
 			salesQuoteHdrobj.setPdcCharges(new BigDecimal(tfPDCCharges.getValue()));
@@ -1571,48 +1417,30 @@ public class MaterialQuote extends BaseTransUI {
 		tfBasictotal.setReadOnly(false);
 		tfBasictotal.setValue("0");
 		try {
-			tfCessPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "CESS", "Active", "F").get(0)
-					.getTaxprnct().toString());
+			
 		}
 		catch (Exception e) {
-			tfCessPer.setValue("0");
-		}
+	}
 		chkCformReq.setValue(false);
 		try {
-			tfCstPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "CST", "Active", "F").get(0)
-					.getTaxprnct().toString());
+		
 		}
 		catch (Exception e) {
-			tfCstPer.setValue("0");
 		}
 		cbEnqNo.setRequired(false);
 		tfCessValue.setReadOnly(false);
 		tfCessValue.setValue("0");
-		tfCstPer.setValue("10");
 		cbDelTerms.setValue(null);
 		tfCstValue.setReadOnly(false);
 		tfCstValue.setValue("0");
 		chkDutyExe.setValue(false);
-		try {
-			tfEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "ED", "Active", "F").get(0).getTaxprnct()
-					.toString());
-		}
-		catch (Exception e) {
-			tfEDPer.setValue("0");
-		}
+	
 		tfEDValue.setReadOnly(false);
 		tfEDValue.setValue("0");
 		cbWarrentyTerms.setValue(null);
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue("0");
-		try {
-			tfVatPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "VAT", "Active", "F").get(0)
-					.getTaxprnct().toString());
-		}
-		catch (Exception e) {
-			tfVatPer.setValue("0");
-		}
-		System.out.println("tfVatPer--->" + tfVatPer.getValue());
+	
 		tfSubTotal.setReadOnly(false);
 		tfSubTotal.setValue("0");
 		tfSubTaxTotal.setReadOnly(false);
@@ -1625,24 +1453,11 @@ public class MaterialQuote extends BaseTransUI {
 		cbpaymetTerms.setValue(null);
 		tfPaclingValue.setReadOnly(false);
 		tfPaclingValue.setValue("0");
-		tfpackingPer.setValue("10");
 		tfOtherValue.setValue("0");
-		try {
-			tfOtherPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "OTHER", "Active", "F").get(0)
-					.getTaxprnct().toString());
-		}
-		catch (Exception e) {
-			tfOtherPer.setValue("0");
-		}
+		
 		tfHEDValue.setReadOnly(false);
 		tfHEDValue.setValue("0");
-		try {
-			tfHEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "HED", "Active", "F").get(0)
-					.getTaxprnct().toString());
-		}
-		catch (Exception e) {
-			tfHEDPer.setValue("0");
-		}
+	
 		tfDocumentCharges.setValue("0");
 		tfPDCCharges.setReadOnly(false);
 		tfPDCCharges.setValue("0");
@@ -1650,13 +1465,7 @@ public class MaterialQuote extends BaseTransUI {
 		tfGrandtotal.setReadOnly(false);
 		tfGrandtotal.setValue("0");
 		tfFreightValue.setValue("0");
-		try {
-			tfFreightPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "FREIGHT", "Active", "F").get(0)
-					.getTaxprnct().toString());
-		}
-		catch (Exception e) {
-			tfFreightPer.setValue("0");
-		}
+	
 		cbFreightTerms.setValue(null);
 		cbStatus.setValue(null);
 		cbBranch.setValue(null);

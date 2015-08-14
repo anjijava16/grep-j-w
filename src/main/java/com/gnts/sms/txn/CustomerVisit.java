@@ -28,6 +28,8 @@ import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
+import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
+import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.mfg.stt.txn.Roto;
 import com.gnts.mms.domain.txn.IndentDtlDM;
 import com.gnts.mms.domain.txn.IndentIssueDtlDM;
@@ -73,28 +75,22 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table.Align;
 
 public class CustomerVisit extends BaseTransUI {
-	private RotoPlanDtlService serviceRotoplandtl = (RotoPlanDtlService) SpringContextHelper.getBean("rotoplandtl");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
-	private RotoPlanShiftService serviceRotoplanshift = (RotoPlanShiftService) SpringContextHelper
-			.getBean("rotoplanshift");
-	private CustomerVisitHdrService CustomerVisitHdr = (CustomerVisitHdrService) SpringContextHelper
-			.getBean("customervisithdr");
 	private CustomerVisitNoDtlService serviceCustomerVisitNoDtl = (CustomerVisitNoDtlService) SpringContextHelper
 			.getBean("customervisitnodtl");
 	private CustomerVisitInfoDtlService serviceCustomerVisitInfoDtl = (CustomerVisitInfoDtlService) SpringContextHelper
 			.getBean("customervisitinfodtl");
+	private CustomerVisitHdrService serviceCustomerVisitHdr = (CustomerVisitHdrService) SpringContextHelper
+			.getBean("customervisithdr");
+	private WorkOrderHdrService serviceWorkOrderHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private SmsEnqHdrService serviceEnquiryHdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	// User Input Components for Work Order Details
 	private BeanItemContainer<CustomerVisitHdrDM> beanCustomerVisitHdrDM = null;
 	private BeanItemContainer<CustomerVisitNoDtlDM> beanCustomerVisitNoDtlDM = null;
 	private BeanItemContainer<CustomerVisitInfoDtlDM> beanCustomerVisitInfoDtlDM = null;
-
-	private BeanItemContainer<RotohdrDM> beanRotohdrDM = null;
-	private BeanItemContainer<RotoDtlDM> beanrotodtldm = null;
-	private BeanItemContainer<RotoShiftDM> beanRotoShiftDM = null;
+	private List<CustomerVisitHdrDM> customervisitHdrList = null;
 	private List<CustomerVisitNoDtlDM> customervisitnoDtlList = null;
 	private List<CustomerVisitInfoDtlDM> customerVisitInfoDtlList = null;
-
 	private Table tblCusVisHdr, tblPersonNo, tblInfoPass;
 	// Search Control Layout
 	private HorizontalLayout hlHdr = new HorizontalLayout();
@@ -103,8 +99,8 @@ public class CustomerVisit extends BaseTransUI {
 	private VerticalLayout vlShift, vlArm, vlDtl, vlHdrshiftandDtlarm;
 	// Data Fields
 	private GERPPopupDateField dfVisitDt, dfFormDt;
-	private GERPComboBox cbWO, cbPurposeVisit, cbEnqNo;
-	private GERPTextField tfPjtName, tfClientName, tfPerName, tfPerPhone, tfClentCity;
+	private GERPComboBox cbWO, cbEnqNo;
+	private GERPTextField tfPjtName, tfClientName, tfPerName, tfPerPhone, tfClentCity, tfCusVisNo,tfPurposeVisit;
 	private GERPNumberField tnNoPerson;
 	private GERPTextArea taPurposeRe;
 	private CheckBox checkBxHODPro, checkBxPlan, checkBxProd, checkBxQC, checkBxMain, checkBxHR, checkBxDie,
@@ -118,7 +114,6 @@ public class CustomerVisit extends BaseTransUI {
 	private FormLayout flDtlCol1, flDtlCol2, flDtlCol3;
 	private ComboBox cbSftStatus;
 	private FormLayout flshiftCol1, flshiftCol2, flshiftCol3, flshiftCol4;
-	private List<RotoShiftDM> listRotoShift = new ArrayList<RotoShiftDM>();
 	private ComboBox cbPersonNoStatus;
 	private FormLayout flArmCol1, flArmCol2, flArmCol3;
 	private Button btnAddDtls = new GERPButton("Add", "add", this);
@@ -129,11 +124,11 @@ public class CustomerVisit extends BaseTransUI {
 	private Button btnDeleteInfo = new GERPButton("Delete", "delete", this);
 	private String username;
 	private Long companyid, branchID, moduleId;
+	private Long cusVisId;
 	private int recordCnt = 0;
 	private int recordShiftCnt = 0;
 	private int recordArmCnt = 0;
 	private Boolean errorFlag = false;
-	private Long rotoplanId;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Roto.class);
 	private static final long serialVersionUID = 1L;
@@ -158,9 +153,16 @@ public class CustomerVisit extends BaseTransUI {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (validateShiftDetails()) {
-					saveInfoDetails();
-				}
+				saveInfoDetails();
+			}
+		});
+		btnSave.addClickListener(new ClickListener() {
+			// Click Listener for Add and Update
+			private static final long serialVersionUID = 6551953728534136363L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				saveCustMainDetails();
 			}
 		});
 		btnAddPerson.addClickListener(new ClickListener() {
@@ -169,9 +171,7 @@ public class CustomerVisit extends BaseTransUI {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (validateArmDetails()) {
-					savePersonDetails();
-				}
+				savePersonDetails();
 			}
 		});
 		tblCusVisHdr = new Table();
@@ -187,12 +187,10 @@ public class CustomerVisit extends BaseTransUI {
 					tblCusVisHdr.setImmediate(true);
 					btnAddDtls.setCaption("Add");
 					btnAddDtls.setStyleName("savebt");
-					rotoDtlResetFields();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnAddDtls.setCaption("Update");
 					btnAddDtls.setStyleName("savebt");
-					editRotoDtls();
 				}
 			}
 		});
@@ -209,12 +207,10 @@ public class CustomerVisit extends BaseTransUI {
 					tblPersonNo.setImmediate(true);
 					btnAddInfo.setCaption("Add");
 					btnAddInfo.setStyleName("savebt");
-					resetRotoShiftDetails();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnAddInfo.setCaption("Update");
 					btnAddInfo.setStyleName("savebt");
-					editRotoShiftDetails();
 				}
 			}
 		});
@@ -230,12 +226,10 @@ public class CustomerVisit extends BaseTransUI {
 					tblInfoPass.setImmediate(true);
 					btnAddPerson.setCaption("Add");
 					btnAddPerson.setStyleName("savebt");
-					rotoArmResetFields();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnAddPerson.setCaption("Update");
 					btnAddPerson.setStyleName("savebt");
-					editArmDetails();
 				}
 			}
 		});
@@ -261,7 +255,7 @@ public class CustomerVisit extends BaseTransUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (btnDeleteInfo == event.getButton()) {
-					deleteShiftDetails();
+					// Delete person details
 				}
 				btnAddInfo.setCaption("Add");
 			}
@@ -290,8 +284,9 @@ public class CustomerVisit extends BaseTransUI {
 		dfFormDt.setWidth("130px");
 		cbWO = new GERPComboBox("Work Order");
 		cbWO.setWidth("150");
-		cbPurposeVisit = new GERPComboBox("Purpose");
-		cbWO.setWidth("150");
+		cbWO.setItemCaptionPropertyId("workOrdrNo");
+		tfPurposeVisit = new GERPTextField("Purpose");
+		tfPurposeVisit.setWidth("150");
 		cbEnqNo = new GERPComboBox("Enquiry No.");
 		cbEnqNo.setWidth("150");
 		cbEnqNo.setItemCaptionPropertyId("enquiryNo");
@@ -307,6 +302,8 @@ public class CustomerVisit extends BaseTransUI {
 				}
 			}
 		});
+		tfCusVisNo = new GERPTextField("Visit No");
+		tfCusVisNo.setWidth("150");
 		tfPjtName = new GERPTextField("Project Name");
 		tfPjtName.setWidth("150");
 		tfClientName = new GERPTextField("Cilent Name");
@@ -317,7 +314,7 @@ public class CustomerVisit extends BaseTransUI {
 		tfPerPhone.setWidth("150");
 		taPurposeRe = new GERPTextArea("Remarks");
 		taPurposeRe.setWidth("150");
-		taPurposeRe.setHeight("50");
+		taPurposeRe.setHeight("70");
 		tfClentCity = new GERPTextField("Client City");
 		tfClentCity.setWidth("150");
 		tnNoPerson = new GERPNumberField("No.of Person");
@@ -347,9 +344,7 @@ public class CustomerVisit extends BaseTransUI {
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		resetFields();
 		loadSrchRslt();
-		loadShiftRslt();
 		loadArmRslt();
-		loadPlanDtlRslt();
 		btnAddDtls.setStyleName("add");
 		btnAddInfo.setStyleName("add");
 		btnAddPerson.setStyleName("add");
@@ -385,6 +380,7 @@ public class CustomerVisit extends BaseTransUI {
 		flHdrCol1 = new FormLayout();
 		flHdrCol2 = new FormLayout();
 		flHdrCol3 = new FormLayout();
+		flHdrCol1.addComponent(tfCusVisNo);
 		flHdrCol1.addComponent(dfFormDt);
 		flHdrCol1.addComponent(tfPjtName);
 		flHdrCol1.addComponent(cbEnqNo);
@@ -392,7 +388,7 @@ public class CustomerVisit extends BaseTransUI {
 		flHdrCol1.addComponent(tfClientName);
 		flHdrCol1.addComponent(tfClentCity);
 		flHdrCol2.addComponent(dfVisitDt);
-		flHdrCol2.addComponent(cbPurposeVisit);
+		flHdrCol2.addComponent(tfPurposeVisit);
 		flHdrCol2.addComponent(taPurposeRe);
 		flHdrCol2.addComponent(tnNoPerson);
 		flHdrCol2.addComponent(cbHdrStatus);
@@ -503,64 +499,10 @@ public class CustomerVisit extends BaseTransUI {
 		tblMstScrSrchRslt.setContainerDataSource(beanCustomerVisitHdrDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "cusVisId", "enquiryNo", "visitDt", "custName", "custCity",
 				"custHdrStatus", "lastUpdateddt", "lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Visit.Id", "Enquiry No", "Visit Date", "Customer", "City",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Visit Id", "Enquiry No", "Visit Date", "Customer", "City",
 				"Status", "Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("cusVisId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
-	}
-	
-	private void loadPlanDtlRslt() {
-		List<RotoPlanDtlDM> rotoplandm = new ArrayList<RotoPlanDtlDM>();
-		rotoplandm = serviceRotoplandtl.getRotoPlanDtlList(null, rotoplanId, null, null, null);
-		List<RotoDtlDM> rotodtldm = new ArrayList<RotoDtlDM>();
-		for (RotoPlanDtlDM obj : rotoplandm) {
-			RotoDtlDM list = new RotoDtlDM();
-			list.setClientid(obj.getClientId());
-			list.setClientName(obj.getClientname());
-			list.setWoid(obj.getWoId());
-			list.setWoNo(obj.getWoNo());
-			list.setProdName(obj.getProductname());
-			list.setProductid(obj.getProductId());
-			list.setPlannedqty(obj.getPlannedqty());
-			list.setRtodtlstatus(obj.getRtoplndtlstatus());
-			list.setLastupdatedby(obj.getLastupdatedBy());
-			list.setLastupdateddt(obj.getLastupdatedDt());
-			rotodtldm.add(list);
-			beanrotodtldm = new BeanItemContainer<RotoDtlDM>(RotoDtlDM.class);
-			beanrotodtldm.addAll(rotodtldm);
-			tblCusVisHdr.setContainerDataSource(beanrotodtldm);
-			tblCusVisHdr
-					.setVisibleColumns(new Object[] { "clientName", "woNo", "prodName", "plannedqty", "prodtnqty" });
-			tblCusVisHdr.setColumnHeaders(new String[] { "Client Name", "WO No.", "Product Name", "Planned Qty.",
-					"Product Qty" });
-		}
-	}
-	
-	private void loadShiftRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<RotoPlanShiftDM> rotoplanshiftdm = new ArrayList<RotoPlanShiftDM>();
-		rotoplanshiftdm = serviceRotoplanshift.getRotoPlanShiftList(null, rotoplanId, null, null);
-		List<RotoShiftDM> rotoshiftdm = new ArrayList<RotoShiftDM>();
-		for (RotoPlanShiftDM obj : rotoplanshiftdm) {
-			RotoShiftDM list = new RotoShiftDM();
-			list.setShiftname(obj.getShiftname());
-			list.setEmployeeid(obj.getEmployeeid());
-			list.setEmpName(obj.getEmpName());
-			list.setTargetqty(obj.getTargetqty());
-			list.setShiftstatus(obj.getShftstatus());
-			list.setLastupdateddt(new Date());
-			rotoshiftdm.add(list);
-		}
-		recordShiftCnt = listRotoShift.size();
-		beanRotoShiftDM = new BeanItemContainer<RotoShiftDM>(RotoShiftDM.class);
-		beanRotoShiftDM.addAll(rotoshiftdm);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Rotoplan. result set");
-		tblPersonNo.setContainerDataSource(beanRotoShiftDM);
-		tblPersonNo.setVisibleColumns(new Object[] { "shiftname", "empName", "targetqty", "achivedqty" });
-		tblPersonNo.setColumnHeaders(new String[] { "Shift Name", "Employee Name", "Target Qty", "Achived Qty" });
-		tblPersonNo.setColumnAlignment("rotosftid", Align.RIGHT);
-		tblPersonNo.setColumnFooter("achivedqty", "No.of Records : " + recordShiftCnt);
-		tblPersonNo.setFooterVisible(true);
 	}
 	
 	private void loadArmRslt() {
@@ -629,10 +571,6 @@ public class CustomerVisit extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(false);
 		assembleInputUserLayout();
 		resetFields();
-		editRotoHdrDetails();
-		editRotoDtls();
-		editRotoShiftDetails();
-		editArmDetails();
 	}
 	
 	// Method to cancel and get back to the home page from edit mode
@@ -641,8 +579,6 @@ public class CustomerVisit extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		hlUserIPContainer.removeAllComponents();
 		assembleSearchLayout();
-		resetRotoDetails();
-		resetRotoShiftDetails();
 		hlCmdBtnLayout.setVisible(true);
 		// tblDtl.removeAllItems();
 		tblMstScrSrchRslt.setVisible(true);
@@ -658,122 +594,11 @@ public class CustomerVisit extends BaseTransUI {
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_MFG_WORKORDER_HDR);
 	}
 	
-	// Method to reset the fields
-	@Override
-	protected void resetFields() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		listRotoShift = new ArrayList<RotoShiftDM>();
-		tblCusVisHdr.removeAllItems();
-		tblPersonNo.removeAllItems();
-	}
-	
-	// Method to edit the values from table into fields to update process
-	private void editRotoHdrDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			RotohdrDM editRotohdr = beanRotohdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbHdrStatus.setValue(editRotohdr.getRotostatus());
-		}
-		loadPlanDtlRslt();
-		loadShiftRslt();
-		loadArmRslt();
-	}
-	
-	/*
-	 * loadEmployeeList()-->this function is used for load the employee name
-	 */
-	private void editRotoDtls() {
-		hlUserInputLayout.setVisible(true);
-	}
-	
-	private void editRotoShiftDetails() {
-		hlUserInputLayout.setVisible(true);
-		if (tblPersonNo.getValue() != null) {
-		}
-	}
-	
-	private void editArmDetails() {
-		hlUserInputLayout.setVisible(true);
-	}
-	
-	private void resetRotoDetails() {
-	}
-	
-	private void resetRotoShiftDetails() {
-	}
-	
-	private void rotoArmResetFields() {
-	}
-	
-	private void rotoDtlResetFields() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-	}
-	
-	// Method to implement about validations to the required input fields
-	@Override
-	protected void validateDetails() throws ValidationException {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-	}
-	
-	private boolean validateShiftDetails() {
-		return errorFlag;
-	}
-	
-	private boolean validateArmDetails() {
-		boolean isValid = true;
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		return isValid;
-	}
-	
 	// Method to implement about validations to the required input fields
 	@Override
 	protected void saveDetails() {
 	}
 	
-	private void saveRotoShiftDetails() {
-		try {
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			RotoShiftDM rotoShiftDM = new RotoShiftDM();
-			if (tblPersonNo.getValue() != null) {
-				rotoShiftDM = beanRotoShiftDM.getItem(tblPersonNo.getValue()).getBean();
-				listRotoShift.remove(rotoShiftDM);
-			}
-			rotoShiftDM.setLastupdateddt(DateUtils.getcurrentdate());
-			rotoShiftDM.setLastupdatedby(username);
-			listRotoShift.add(rotoShiftDM);
-			loadShiftRslt();
-			btnAddInfo.setCaption("Add");
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		resetRotoShiftDetails();
-	}
-	
-	private void save() {
-		saverotoArmListDetails();
-		@SuppressWarnings("unchecked")
-		Collection<RotoArmDM> colPlanDtls = ((Collection<RotoArmDM>) tblInfoPass.getVisibleItemIds());
-		for (RotoArmDM savecycle : (Collection<RotoArmDM>) colPlanDtls) {
-			if ((savecycle.getCycleno()).equals(1L) && ((tblInfoPass.size() == 1))) {
-				saveDetails();
-			}
-		}
-	}
-	
-	private void saverotoArmListDetails() {
-	}
-	
-	private void deleteShiftDetails() {
-		RotoShiftDM removeShift = new RotoShiftDM();
-		if (tblPersonNo.getValue() != null) {
-			removeShift = beanRotoShiftDM.getItem(tblPersonNo.getValue()).getBean();
-			listRotoShift.remove(removeShift);
-			resetRotoShiftDetails();
-			loadShiftRslt();
-		}
-	}
 	
 	@Override
 	protected void printDetails() {
@@ -817,6 +642,7 @@ public class CustomerVisit extends BaseTransUI {
 	
 	// Load Client Details
 	private void loadClientDetails() {
+		loadWorkOrderNo();
 		try {
 			Long clientid = serviceEnquiryHdr
 					.getSmsEnqHdrList(null, Long.valueOf(cbEnqNo.getValue().toString()), null, null, null, "F", null,
@@ -834,9 +660,58 @@ public class CustomerVisit extends BaseTransUI {
 		}
 	}
 	
+	// Load Work Order List
+	private void loadWorkOrderNo() {
+		/*Long tenquiryId = serviceEnquiryHdr
+				.getSmsEnqHdrList(null, Long.valueOf(cbEnqNo.getValue().toString()), null, null, null, "F", null, null)
+				.get(0).getEnquiryId();
+		System.out.println("===============+++================================>" + tenquiryId);*/
+		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
+		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
+				null, null, null, null));
+		cbWO.setContainerDataSource(beanWrkOrdHdr);
+	}
+	
 	/*
 	 * Save Meathods
 	 */
+	// Customer Visit Main Save
+	private void saveCustMainDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+		try {
+			CustomerVisitHdrDM customervisitHdrObj = new CustomerVisitHdrDM();
+			customervisitHdrObj.setCusVisNo(tfCusVisNo.getValue());
+			customervisitHdrObj.setFillDt(dfFormDt.getValue());
+			customervisitHdrObj.setVisitDt(dfVisitDt.getValue());
+			customervisitHdrObj.setProjectName(tfPjtName.getValue());
+			customervisitHdrObj.setEnquiryNo(cbEnqNo.getValue().toString());
+			customervisitHdrObj.setWorkorderNo(cbWO.getValue().toString());
+			customervisitHdrObj.setCustName(tfClientName.getValue());
+			customervisitHdrObj.setCustCity(tfClentCity.getValue());
+			customervisitHdrObj.setPurposeVisit(tfPurposeVisit.getValue().toString());
+			customervisitHdrObj.setRemarks(taPurposeRe.getValue());
+			customervisitHdrObj.setPersonNo(tnNoPerson.getValue().toString());
+			if (cbPersonNoStatus.getValue() != null) {
+				customervisitHdrObj.setCustHdrStatus((String) cbHdrStatus.getValue());
+			}
+			customervisitHdrObj.setLastUpdatedby(username);
+			customervisitHdrObj.setLastUpdateddt(DateUtils.getcurrentdate());
+			cusVisId = customervisitHdrObj.getCusVisId();
+			@SuppressWarnings("unchecked")
+			Collection<CustomerVisitHdrDM> customerDtls = ((Collection<CustomerVisitHdrDM>) tblCusVisHdr.getVisibleItemIds());
+			for (CustomerVisitHdrDM customervisitHdrdmDtl : (Collection<CustomerVisitHdrDM>) customerDtls) {
+				customervisitHdrdmDtl.setCusVisId(customervisitHdrObj.getCusVisId());
+				serviceCustomerVisitHdr.saveorUpdateCustomerVisitHdrDetails(customervisitHdrdmDtl);
+			}
+			
+			loadCusMainDetails();
+			cusMainDetailsresetField();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	// Person Details Save
 	private void savePersonDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
@@ -849,8 +724,8 @@ public class CustomerVisit extends BaseTransUI {
 			}
 			customervisitnoDtlObj.setLastUpdatedby(username);
 			customervisitnoDtlObj.setLastUpdateddt(DateUtils.getcurrentdate());
-			loadInfoDetails();
-			infoDetailsresetField();
+			loadPersonDetails();
+			persondetailsresetField();
 			btnAddPerson.setCaption("Add");
 		}
 		catch (Exception e) {
@@ -895,23 +770,50 @@ public class CustomerVisit extends BaseTransUI {
 			}
 			customervisitinfoDtlObj.setLastUpdatedby(username);
 			customervisitinfoDtlObj.setLastUpdateddt(DateUtils.getcurrentdate());
-			loadPersonDetails();
-			persondetailsresetField();
+			loadInfoDetails();
+			infoDetailsresetField();
 			btnAddInfo.setCaption("Add");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	/*
+	 *Edit Meathods 
+	 */
+	
+	//
 	
 	/*
 	 * Load Tables
 	 */
+	// Load Customer Main Table
+	private void loadCusMainDetails() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			recordCnt = customervisitHdrList.size();
+			beanCustomerVisitHdrDM = new BeanItemContainer<CustomerVisitHdrDM>(CustomerVisitHdrDM.class);
+			beanCustomerVisitHdrDM.addAll(customervisitHdrList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the IndentIssueslap. result set");
+			tblPersonNo.setContainerDataSource(beanCustomerVisitHdrDM);
+			tblPersonNo.setVisibleColumns(new Object[] { "cusVisId", "enquiryId", "visitDt", "projectName", "custName",
+					"custCity", "custHdrStatus", "lastUpdateddt", "lastUpdatedby" });
+			tblPersonNo.setColumnHeaders(new String[] { "Visit Id", "Enquiry No.", "Date", "Project", "Customer",
+					"City", "Status", "Updated Date", "Updated By" });
+			tblPersonNo.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
+			tblPersonNo.setPageLength(10);
+			cusMainDetailsresetField();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	// Load Person Details Table.
 	private void loadPersonDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			recordCnt = customervisitnoDtlList.size();
 			beanCustomerVisitNoDtlDM = new BeanItemContainer<CustomerVisitNoDtlDM>(CustomerVisitNoDtlDM.class);
 			beanCustomerVisitNoDtlDM.addAll(customervisitnoDtlList);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -923,11 +825,13 @@ public class CustomerVisit extends BaseTransUI {
 					.setColumnHeaders(new String[] { "Name", "Contact No.", "Status", "Updated Date", "Updated By" });
 			tblPersonNo.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 			tblPersonNo.setPageLength(10);
+			persondetailsresetField();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
 	// Load Contact Information Table
 	private void loadInfoDetails() {
 		try {
@@ -938,40 +842,69 @@ public class CustomerVisit extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the IndentIssueslap. result set");
 			tblInfoPass.setContainerDataSource(beanCustomerVisitInfoDtlDM);
-			tblInfoPass.setVisibleColumns(new Object[] { "hodPo", "plan","prod","qc", "die","hr","accounts", "design","maintenance", "custInfodTLStatus", "lastUpdateddt",
-					"lastUpdatedby" });
-			tblInfoPass
-					.setColumnHeaders(new String[] { "HOD Prod", "Plan","Prod", "QC","Die", "HR","Accounts", "Design","Maintenance","Status", "Updated Date", "Updated By" });
+			tblInfoPass.setVisibleColumns(new Object[] { "hodPo", "plan", "prod", "qc", "die", "hr", "accounts",
+					"design", "maintenance", "custInfodTLStatus", "lastUpdateddt", "lastUpdatedby" });
+			tblInfoPass.setColumnHeaders(new String[] { "HOD Prod", "Plan", "Prod", "QC", "Die", "HR", "Accounts",
+					"Design", "Maintenance", "Status", "Updated Date", "Updated By" });
 			tblInfoPass.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 			tblInfoPass.setPageLength(10);
+			infoDetailsresetField();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	
 	/*
 	 * Reset Fields
 	 */
+	// Customer Main Reset
+	private void cusMainDetailsresetField() {
+		tfCusVisNo.setValue(null);
+		dfFormDt.setValue(DateUtils.getcurrentdate());
+		dfVisitDt.setValue(null);
+		cbEnqNo.setValue(null);
+		cbWO.setValue(null);
+		tfClientName.setReadOnly(false);
+		tfClentCity.setReadOnly(false);
+		tfClientName.setValue(null);
+		tfClentCity.setValue(null);
+		tfClientName.setReadOnly(true);
+		tfClentCity.setReadOnly(true);
+		tfPurposeVisit.setValue(null);
+		taPurposeRe.setValue(null);
+		tnNoPerson.setValue(null);
+		cbHdrStatus.setValue(null);
+	}
+	
 	// Reset Person Details People.
 	private void persondetailsresetField() {
 		tfPerName.setValue(" ");
 		tfPerPhone.setValue(" ");
 		cbPersonNoStatus.setValue(null);
 	}
-	// Reset Information Details People.
-		private void infoDetailsresetField() {
-			checkBxHODPro.setValue(null);
-			checkBxPlan.setValue(null);
-			checkBxProd.setValue(null);
-			checkBxQC.setValue(null);
-			checkBxMain.setValue(null);
-			checkBxHR.setValue(null);
-			checkBxDie.setValue(null);
-			checkBxDes.setValue(null);
-			checkBxAcc.setValue(null);
-			cbPersonNoStatus.setValue(null);
-		}
 	
+	// Reset Information Details People.
+	private void infoDetailsresetField() {
+		checkBxHODPro.setValue(null);
+		checkBxPlan.setValue(null);
+		checkBxProd.setValue(null);
+		checkBxQC.setValue(null);
+		checkBxMain.setValue(null);
+		checkBxHR.setValue(null);
+		checkBxDie.setValue(null);
+		checkBxDes.setValue(null);
+		checkBxAcc.setValue(null);
+		cbPersonNoStatus.setValue(null);
+	}
+	
+	@Override
+	protected void validateDetails() throws ValidationException {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	protected void resetFields() {
+		// TODO Auto-generated method stub
+	}
 }

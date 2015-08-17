@@ -127,12 +127,12 @@ public class ProductStock extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<ProductStockDM> productstock = new ArrayList<ProductStockDM>();
-		productstock = serviceproductstock.getProductStockList((Long) cbproductid.getValue(),
+		List<ProductStockDM> listProductstock = new ArrayList<ProductStockDM>();
+		listProductstock = serviceproductstock.getProductStockList((Long) cbproductid.getValue(),
 				(String) cbstocktype.getValue(), productStockId, (Long) cbbranchid.getValue(), "F");
-		recordcnt = productstock.size();
+		recordcnt = listProductstock.size();
 		beanproductstock = new BeanItemContainer<ProductStockDM>(ProductStockDM.class);
-		beanproductstock.addAll(productstock);
+		beanproductstock.addAll(listProductstock);
 		tblMstScrSrchRslt.setContainerDataSource(beanproductstock);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "productStockId", "branchName", "prodname", "stockType",
 				"currentStock", "parkedStock", "effectiveStock", "uom", "lastUpdateddt", "lastUpdatedby" });

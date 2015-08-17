@@ -59,7 +59,7 @@ public class ProductParked extends BaseUI {
 	// User Input Components
 	private TextField tfParkedQty, tfUsedQty, tfBalQty, tfRefNo;
 	private ComboBox cbStockType;
-	private ComboBox cbProductse, cbBranchse, cbStockTypese;
+	private ComboBox cbProduct, cbBranch, cbStockTypese;
 	private PopupDateField dfParkedDate, dfRefDate;
 	private TextArea taRemarks;
 	// Bean Container
@@ -95,11 +95,11 @@ public class ProductParked extends BaseUI {
 		dfParkedDate = new GERPPopupDateField("Parked Date");
 		dfParkedDate.setInputPrompt("Select Date");
 		dfParkedDate.setReadOnly(false);
-		cbProductse = new GERPComboBox("Product Name");
-		cbProductse.setItemCaptionPropertyId("prodname");
+		cbProduct = new GERPComboBox("Product Name");
+		cbProduct.setItemCaptionPropertyId("prodname");
 		loadProdList();
-		cbBranchse = new GERPComboBox("Branch Name");
-		cbBranchse.setItemCaptionPropertyId("branchName");
+		cbBranch = new GERPComboBox("Branch Name");
+		cbBranch.setItemCaptionPropertyId("branchName");
 		loadbranchlist();
 		cbStockType = new GERPComboBox("Stock Type");
 		cbStockType.addItem("new");
@@ -133,8 +133,8 @@ public class ProductParked extends BaseUI {
 		flColumn1 = new GERPFormLayout();
 		flColumn2 = new GERPFormLayout();
 		flColumn3 = new GERPFormLayout();
-		flColumn1.addComponent(cbBranchse);
-		flColumn2.addComponent(cbProductse);
+		flColumn1.addComponent(cbBranch);
+		flColumn2.addComponent(cbProduct);
 		flColumn3.addComponent(cbStockType);
 		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn2);
@@ -155,8 +155,8 @@ public class ProductParked extends BaseUI {
 		flColumn3 = new GERPFormLayout();
 		flColumn4 = new GERPFormLayout();
 		flColumn1.addComponent(dfParkedDate);
-		flColumn1.addComponent(cbBranchse);
-		flColumn1.addComponent(cbProductse);
+		flColumn1.addComponent(cbBranch);
+		flColumn1.addComponent(cbProduct);
 		flColumn2.addComponent(cbStockTypese);
 		flColumn2.addComponent(tfParkedQty);
 		flColumn2.addComponent(tfUsedQty);
@@ -176,8 +176,8 @@ public class ProductParked extends BaseUI {
 			ProductParkedStockDM productParkedStockDM = beanProductParkedStockDM.getItem(tblMstScrSrchRslt.getValue())
 					.getBean();
 			setReadOnlyFalseFields();
-			cbProductse.setValue(productParkedStockDM.getProductId());
-			cbBranchse.setValue(productParkedStockDM.getBranchId());
+			cbProduct.setValue(productParkedStockDM.getProductId());
+			cbBranch.setValue(productParkedStockDM.getBranchId());
 			dfParkedDate.setValue(productParkedStockDM.getParkedDate());
 			cbStockTypese.setValue(productParkedStockDM.getStockType().toString());
 			tfParkedQty.setValue(productParkedStockDM.getParkedQty().toString());
@@ -191,8 +191,8 @@ public class ProductParked extends BaseUI {
 	}
 	
 	private void setReadOnlyFalseFields() {
-		cbProductse.setReadOnly(false);
-		cbBranchse.setReadOnly(false);
+		cbProduct.setReadOnly(false);
+		cbBranch.setReadOnly(false);
 		dfParkedDate.setReadOnly(false);
 		cbStockTypese.setReadOnly(false);
 		tfParkedQty.setReadOnly(false);
@@ -204,8 +204,8 @@ public class ProductParked extends BaseUI {
 	}
 	
 	private void setReadOnlyTrueFields() {
-		cbProductse.setReadOnly(true);
-		cbBranchse.setReadOnly(true);
+		cbProduct.setReadOnly(true);
+		cbBranch.setReadOnly(true);
 		dfParkedDate.setReadOnly(true);
 		cbStockTypese.setReadOnly(true);
 		tfParkedQty.setReadOnly(true);
@@ -221,8 +221,8 @@ public class ProductParked extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<ProductParkedStockDM> parkedList = new ArrayList<ProductParkedStockDM>();
 		// String productStock = (String) cbStockType.getValue();
-		parkedList = serviceProductParkedStock.getProductParkedStockList((Long) cbProductse.getValue(), null,
-				(Long) cbBranchse.getValue(), (String) cbStockType.getValue(), "F");
+		parkedList = serviceProductParkedStock.getProductParkedStockList((Long) cbProduct.getValue(), null,
+				(Long) cbBranch.getValue(), (String) cbStockType.getValue(), "F");
 		recordCnt = parkedList.size();
 		beanProductParkedStockDM = new BeanItemContainer<ProductParkedStockDM>(ProductParkedStockDM.class);
 		beanProductParkedStockDM.addAll(parkedList);
@@ -246,7 +246,7 @@ public class ProductParked extends BaseUI {
 			BeanContainer<Long, ProductDM> beanprod = new BeanContainer<Long, ProductDM>(ProductDM.class);
 			beanprod.setBeanIdProperty("prodid");
 			beanprod.addAll(list);
-			cbProductse.setContainerDataSource(beanprod);
+			cbProduct.setContainerDataSource(beanprod);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -258,7 +258,7 @@ public class ProductParked extends BaseUI {
 		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanbranch.setBeanIdProperty("branchId");
 		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, null, companyid, "P"));
-		cbBranchse.setContainerDataSource(beanbranch);
+		cbBranch.setContainerDataSource(beanbranch);
 	}
 	
 	@Override
@@ -287,8 +287,8 @@ public class ProductParked extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
-		cbBranchse.setValue(branchId);
-		cbProductse.setValue(0L);
+		cbBranch.setValue(branchId);
+		cbProduct.setValue(0L);
 		cbStockType.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
@@ -352,8 +352,8 @@ public class ProductParked extends BaseUI {
 		setReadOnlyFalseFields();
 		dfParkedDate.setValue(null);
 		dfRefDate.setValue(null);
-		cbBranchse.setValue(branchId);
-		cbProductse.setValue(0L);
+		cbBranch.setValue(branchId);
+		cbProduct.setValue(0L);
 		cbStockType.setValue(null);
 		tfBalQty.setValue("");
 		tfParkedQty.setValue("");

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="salarysheet" pageWidth="675" pageHeight="842" columnWidth="635" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b1b91010-e391-4e46-a454-64df028aea6a">
+	<property name="ireport.zoom" value="1.4641000000000028"/>
+	<property name="ireport.x" value="45"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ACCID" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select e.first_name || ' ' || e.last_name  first_name
+from t_hcm_employee_earning ear,t_hcm_employee_deduction de,m_base_employee e
+where ear.emp_earn_id = de.employee_id
+and e.employee_id = de.employee_id
+and ear.emp_earn_id = e.employee_id
+and ear.emp_earn_id = de.employee_id
+and e.employee_id = 1]]>
+	</queryString>
+	<field name="FIRST_NAME" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="51" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="8c197f09-be21-4165-a7a5-2a0e0684298a" x="0" y="23" width="635" height="24"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[STAFFS SALARY SHEET FOR MONTH OF]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="aec1f364-31f2-4421-9eee-20110353761c" x="0" y="49" width="635" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="38ca536e-0711-4ac2-ae1f-493bdf5780ed" x="1" y="3" width="634" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC TOOL TECH (P) LTD, COIMBATORE]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="35" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="4cc7fe4d-238e-4632-a17c-75b52a2a8f0f" x="1" y="2" width="28" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[S.No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5b810d1b-b472-4b59-a495-b6a38f3347ad" x="30" y="2" width="108" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="31e87fea-0bea-4b99-a841-f6e0f879b0a0" x="137" y="2" width="48" height="30"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[No of days present]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6eab48a2-0d2f-4446-8b58-248fc564a4df" x="186" y="1" width="44" height="30"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[No of days paid]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2381d535-ecd5-4e96-bfce-6c138dcdc597" x="230" y="2" width="69" height="29"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Salary Basic]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b5288ff9-de06-40b2-9828-210e0da74531" x="299" y="2" width="72" height="29"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Earnings Basic]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="392e8df1-b8c2-4416-b999-0715156933d2" x="372" y="2" width="73" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Deductions]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ced1a327-7928-4d28-aea0-657eb66d338e" x="509" y="1" width="63" height="30"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Net Pay (Rs.)]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="a310fdab-f388-4c48-be21-199d90980e46" x="0" y="32" width="635" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="ef7641ef-807f-403a-903a-1c52e79864bb" x="444" y="2" width="63" height="29"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Total Ded]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d186161e-1d33-4d92-bfbe-daccbdcfcba3" x="372" y="16" width="37" height="15"/>
+				<textElement/>
+				<text><![CDATA[ADV]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1f963f7a-dc2b-4dc3-826a-214eeb5bc8a9" x="409" y="16" width="36" height="15"/>
+				<textElement/>
+				<text><![CDATA[Others]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e3c24457-d126-422d-9615-f27843d5454b" x="573" y="2" width="62" height="30"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Signature]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="28" splitType="Stretch">
+			<textField>
+				<reportElement uuid="bfaa37b7-93a8-4f41-ac54-f1e858b9bba2" x="137" y="1" width="46" height="13"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yyyy">
+				<reportElement uuid="1c5b9f1e-29e7-4f0e-bf7b-3d0b06dbff46" x="299" y="0" width="73" height="28"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement uuid="305a208b-dc07-4c17-b187-af58ec1a2a24" x="372" y="0" width="37" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement uuid="b6cbecac-9cc6-45aa-a1d3-33a7139c6f1d" x="445" y="0" width="62" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement uuid="33bfb11e-1e41-44ba-aabc-86c4624ff405" x="509" y="2" width="64" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yyyy">
+				<reportElement uuid="5b9c0bbb-746f-4af4-a70a-9bb9038a8e5f" x="30" y="0" width="107" height="28"/>
+				<textElement verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="2261dc5a-965b-4163-8459-06a76faf6afc" x="230" y="2" width="69" height="26"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="280cdf6e-2797-491f-ad81-e5c322562b87" x="1" y="0" width="28" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="27e6c697-fc36-4bdd-bfdf-8b0c80bfb759" x="183" y="2" width="47" height="26"/>
+				<textElement verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

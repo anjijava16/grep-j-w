@@ -44,9 +44,9 @@ public class ProductLedger extends BaseUI {
 	// form layout for input controls
 	private FormLayout fl1, fl2, fl3, fl4;
 	// User Input Fields for Product Ledger
-	private ComboBox cbbranch, cbproduct, cbstocktype;
-	private TextField tfopenqty, tfinoutflag, tfinoutqty, tfcloseqty, tfrefno, tfislatest, tfrefremarks;
-	private PopupDateField dfprodledgdt, dfrefdate;
+	private ComboBox cbBranch, cbProduct, cbStockType;
+	private TextField tfopenqty, tfinoutflag, tfinoutqty, tfcloseqty, tfRefno, tfIslatest, tfRemarks;
+	private PopupDateField dfprodledgdt, dfRefdate;
 	private BeanItemContainer<ProductLedgerDM> beanprodledger = null;
 	// Search control layout
 	private GERPAddEditHLayout hlSearLayout;
@@ -73,20 +73,20 @@ public class ProductLedger extends BaseUI {
 	}
 	
 	private void buildview() {
-		cbbranch = new GERPComboBox("Branch Name");
-		cbbranch.setItemCaptionPropertyId("branchName");
-		cbbranch.setWidth("150");
-		cbbranch.setNullSelectionAllowed(false);
+		cbBranch = new GERPComboBox("Branch Name");
+		cbBranch.setItemCaptionPropertyId("branchName");
+		cbBranch.setWidth("150");
+		cbBranch.setNullSelectionAllowed(false);
 		loadbranchlist();
-		cbproduct = new GERPComboBox("Product Name");
-		cbproduct.setItemCaptionPropertyId("prodname");
-		cbproduct.setWidth("150");
+		cbProduct = new GERPComboBox("Product Name");
+		cbProduct.setItemCaptionPropertyId("prodname");
+		cbProduct.setWidth("150");
 		loadProduct();
-		cbstocktype = new GERPComboBox("Stock Type");
-		cbstocktype.addItem("new");
-		cbstocktype.addItem("scrap");
-		cbstocktype.addItem("Refurbish");
-		cbstocktype.setWidth("150");
+		cbStockType = new GERPComboBox("Stock Type");
+		cbStockType.addItem("new");
+		cbStockType.addItem("scrap");
+		cbStockType.addItem("Refurbish");
+		cbStockType.setWidth("150");
 		tfopenqty = new GERPTextField("Open Quantity");
 		tfopenqty.setWidth("150");
 		tfinoutflag = new GERPTextField("Inout Falg");
@@ -95,16 +95,16 @@ public class ProductLedger extends BaseUI {
 		tfinoutqty.setWidth("150");
 		tfcloseqty = new GERPTextField("Close Quantity");
 		tfcloseqty.setWidth("150");
-		tfrefno = new GERPTextField("Reference No");
-		tfrefno.setWidth("150");
+		tfRefno = new GERPTextField("Reference No");
+		tfRefno.setWidth("150");
 		dfprodledgdt = new GERPPopupDateField("Product Ledger Date");
 		dfprodledgdt.setWidth("130");
-		dfrefdate = new GERPPopupDateField("Reference Date");
-		dfrefdate.setWidth("130");
-		tfislatest = new GERPTextField("Latest");
-		tfislatest.setWidth("150");
-		tfrefremarks = new GERPTextField("Reference Remark");
-		tfrefremarks.setWidth("150");
+		dfRefdate = new GERPPopupDateField("Reference Date");
+		dfRefdate.setWidth("130");
+		tfIslatest = new GERPTextField("Latest");
+		tfIslatest.setWidth("150");
+		tfRemarks = new GERPTextField("Reference Remark");
+		tfRemarks.setWidth("150");
 		hlSearLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearLayout));
 		assembleSearchLayout();
@@ -124,11 +124,11 @@ public class ProductLedger extends BaseUI {
 		fl2 = new FormLayout();
 		fl3 = new FormLayout();
 		fl4 = new FormLayout();
-		fl1.addComponent(cbbranch);
-		fl2.addComponent(cbproduct);
+		fl1.addComponent(cbBranch);
+		fl2.addComponent(cbProduct);
 		fl3.addComponent(dfprodledgdt);
 		fl3.setMargin(true);
-		fl4.addComponent(cbstocktype);
+		fl4.addComponent(cbStockType);
 		hlSearLayout.addComponent(fl1);
 		hlSearLayout.addComponent(fl2);
 		hlSearLayout.addComponent(fl3);
@@ -150,18 +150,18 @@ public class ProductLedger extends BaseUI {
 		fl2 = new FormLayout();
 		fl3 = new FormLayout();
 		fl4 = new FormLayout();
-		fl1.addComponent(cbbranch);
-		fl1.addComponent(cbproduct);
-		fl1.addComponent(cbstocktype);
+		fl1.addComponent(cbBranch);
+		fl1.addComponent(cbProduct);
+		fl1.addComponent(cbStockType);
 		fl2.addComponent(dfprodledgdt);
 		fl2.addComponent(tfopenqty);
 		fl2.addComponent(tfinoutflag);
 		fl3.addComponent(tfinoutqty);
 		fl3.addComponent(tfcloseqty);
-		fl3.addComponent(tfrefno);
-		fl4.addComponent(dfrefdate);
-		fl4.addComponent(tfislatest);
-		fl4.addComponent(tfrefremarks);
+		fl3.addComponent(tfRefno);
+		fl4.addComponent(dfRefdate);
+		fl4.addComponent(tfIslatest);
+		fl4.addComponent(tfRemarks);
 		hlUserInputLayout.addComponent(fl1);
 		hlUserInputLayout.addComponent(fl2);
 		hlUserInputLayout.addComponent(fl3);
@@ -175,7 +175,7 @@ public class ProductLedger extends BaseUI {
 		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanbranch.setBeanIdProperty("branchId");
 		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, null, companyid, "P"));
-		cbbranch.setContainerDataSource(beanbranch);
+		cbBranch.setContainerDataSource(beanbranch);
 	}
 	
 	// Load Product List
@@ -187,7 +187,7 @@ public class ProductLedger extends BaseUI {
 			BeanContainer<Long, ProductDM> beanprod = new BeanContainer<Long, ProductDM>(ProductDM.class);
 			beanprod.setBeanIdProperty("prodid");
 			beanprod.addAll(list);
-			cbproduct.setContainerDataSource(beanprod);
+			cbProduct.setContainerDataSource(beanprod);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -197,12 +197,12 @@ public class ProductLedger extends BaseUI {
 	// Load Product Ledger
 	private void loadSrchRslt() {
 		tblMstScrSrchRslt.removeAllItems();
-		List<ProductLedgerDM> producatledg = new ArrayList<ProductLedgerDM>();
-		producatledg = serviceProductLedger.getProductLedgerList((Long) cbproduct.getValue(),
-				(String) cbstocktype.getValue(), productledgeId, (Long) cbbranch.getValue(), "F");
-		recordcnt = producatledg.size();
+		List<ProductLedgerDM> listProductLedger = new ArrayList<ProductLedgerDM>();
+		listProductLedger = serviceProductLedger.getProductLedgerList((Long) cbProduct.getValue(),
+				(String) cbStockType.getValue(), productledgeId, (Long) cbBranch.getValue(), "F");
+		recordcnt = listProductLedger.size();
 		beanprodledger = new BeanItemContainer<ProductLedgerDM>(ProductLedgerDM.class);
-		beanprodledger.addAll(producatledg);
+		beanprodledger.addAll(listProductLedger);
 		tblMstScrSrchRslt.setContainerDataSource(beanprodledger);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "productledgeId", "branchName", "prodname",
 				"productledgeDate", "stockType", "uom", "lastUpdateddt", "lastUpdatedby" });
@@ -233,10 +233,10 @@ public class ProductLedger extends BaseUI {
 	
 	@Override
 	protected void resetSearchDetails() {
-		cbbranch.setValue(branchId);
-		cbproduct.setValue(0L);
+		cbBranch.setValue(branchId);
+		cbProduct.setValue(0L);
 		dfprodledgdt.setValue(null);
-		cbstocktype.setValue(null);
+		cbStockType.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		loadSrchRslt();
@@ -260,18 +260,18 @@ public class ProductLedger extends BaseUI {
 	private void editproductledger() {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			ProductLedgerDM productLedgerDM = beanprodledger.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbbranch.setValue(productLedgerDM.getBranchId());
-			cbproduct.setValue(productLedgerDM.getProductId());
-			cbstocktype.setValue(productLedgerDM.getStockType());
+			cbBranch.setValue(productLedgerDM.getBranchId());
+			cbProduct.setValue(productLedgerDM.getProductId());
+			cbStockType.setValue(productLedgerDM.getStockType());
 			tfopenqty.setValue(productLedgerDM.getOpenQty().toString());
 			tfinoutflag.setValue(productLedgerDM.getInoutFlag());
 			tfinoutqty.setValue(productLedgerDM.getInoutFQty().toString());
 			tfcloseqty.setValue(productLedgerDM.getCloseQty().toString());
-			tfrefno.setValue(productLedgerDM.getReferenceNo());
+			tfRefno.setValue(productLedgerDM.getReferenceNo());
 			dfprodledgdt.setValue(productLedgerDM.getProductledgeDate());
-			dfrefdate.setValue(productLedgerDM.getReferenceDate());
-			tfislatest.setValue(productLedgerDM.getIsLatest());
-			tfrefremarks.setValue(productLedgerDM.getReferenceRemark());
+			dfRefdate.setValue(productLedgerDM.getReferenceDate());
+			tfIslatest.setValue(productLedgerDM.getIsLatest());
+			tfRemarks.setValue(productLedgerDM.getReferenceRemark());
 		}
 	}
 	
@@ -299,17 +299,17 @@ public class ProductLedger extends BaseUI {
 	
 	@Override
 	protected void resetFields() {
-		cbbranch.setValue(branchId);
-		cbproduct.setValue(0L);
-		cbstocktype.setValue(null);
+		cbBranch.setValue(branchId);
+		cbProduct.setValue(0L);
+		cbStockType.setValue(null);
 		tfopenqty.setValue("");
 		tfinoutflag.setValue("");
 		tfinoutqty.setValue("");
 		tfcloseqty.setValue("");
-		tfrefno.setValue("");
+		tfRefno.setValue("");
 		dfprodledgdt.setValue(null);
-		dfrefdate.setValue(null);
-		tfislatest.setValue("");
-		tfrefremarks.setValue("");
+		dfRefdate.setValue(null);
+		tfIslatest.setValue("");
+		tfRemarks.setValue("");
 	}
 }

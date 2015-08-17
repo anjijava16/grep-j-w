@@ -566,14 +566,14 @@ public class PurchasePoReceipt extends BaseUI {
 			} else {
 				ckBillRaised.setValue(false);
 			}
-			Long uom = receiptsHdrDM.getPoId();
-			Collection<?> uomid = cbPoNo.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long poid = receiptsHdrDM.getPoId();
+			Collection<?> poids = cbPoNo.getItemIds();
+			for (Iterator<?> iterator = poids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbPoNo.getItem(itemId);
 				// Get the actual bean and use the data
 				PurchasePOHdrDM st = (PurchasePOHdrDM) item.getBean();
-				if (uom != null && uom.equals(st.getPoId())) {
+				if (poid != null && poid.equals(st.getPoId())) {
 					cbPoNo.setValue(itemId);
 				}
 			}

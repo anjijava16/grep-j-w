@@ -154,7 +154,7 @@ and ass.dept_id like COALESCE($P{deptid},'%')]]>
 				<textFieldExpression><![CDATA[$F{NUMBER_OF_PRINTS_TAKEN}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="b03fc619-49fb-46a5-bfb6-b25de66bafe0" x="32" y="2" width="112" height="16"/>
+				<reportElement uuid="b03fc619-49fb-46a5-bfb6-b25de66bafe0" x="32" y="2" width="112" height="28"/>
 				<textElement verticalAlignment="Top"/>
 				<textFieldExpression><![CDATA[$F{ASSET_NAME}]]></textFieldExpression>
 			</textField>

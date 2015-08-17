@@ -4,11 +4,9 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
-import com.gnts.crm.domain.mst.ClientDM;
 import com.gnts.crm.service.mst.ClientService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
@@ -31,8 +29,6 @@ import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.mfg.stt.txn.Roto;
-import com.gnts.mms.domain.txn.IndentDtlDM;
-import com.gnts.mms.domain.txn.IndentIssueDtlDM;
 import com.gnts.sms.domain.txn.CustomerVisitHdrDM;
 import com.gnts.sms.domain.txn.CustomerVisitInfoDtlDM;
 import com.gnts.sms.domain.txn.CustomerVisitNoDtlDM;
@@ -41,16 +37,6 @@ import com.gnts.sms.service.txn.CustomerVisitHdrService;
 import com.gnts.sms.service.txn.CustomerVisitInfoDtlService;
 import com.gnts.sms.service.txn.CustomerVisitNoDtlService;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
-import com.gnts.stt.mfg.domain.txn.RotoArmDM;
-import com.gnts.stt.mfg.domain.txn.RotoDtlDM;
-import com.gnts.stt.mfg.domain.txn.RotoPlanDtlDM;
-import com.gnts.stt.mfg.domain.txn.RotoPlanShiftDM;
-import com.gnts.stt.mfg.domain.txn.RotoShiftDM;
-import com.gnts.stt.mfg.domain.txn.RotohdrDM;
-import com.gnts.stt.mfg.service.txn.RotoArmService;
-import com.gnts.stt.mfg.service.txn.RotoPlanDtlService;
-import com.gnts.stt.mfg.service.txn.RotoPlanShiftService;
-import com.vaadin.data.Container.Viewer;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -58,21 +44,20 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Table.Align;
 
 public class CustomerVisit extends BaseTransUI {
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
@@ -88,15 +73,14 @@ public class CustomerVisit extends BaseTransUI {
 	private BeanItemContainer<CustomerVisitHdrDM> beanCustomerVisitHdrDM = null;
 	private BeanItemContainer<CustomerVisitNoDtlDM> beanCustomerVisitNoDtlDM = null;
 	private BeanItemContainer<CustomerVisitInfoDtlDM> beanCustomerVisitInfoDtlDM = null;
-	private List<CustomerVisitHdrDM> customervisitHdrList = null;
-	private List<CustomerVisitNoDtlDM> customervisitnoDtlList = null;
-	private List<CustomerVisitInfoDtlDM> customerVisitInfoDtlList = null;
+	private List<CustomerVisitNoDtlDM> listCustVisitNo = new ArrayList<CustomerVisitNoDtlDM>();
+	private List<CustomerVisitInfoDtlDM> listCustVisitInfo = new ArrayList<CustomerVisitInfoDtlDM>();
 	private Table tblCusVisHdr, tblPersonNo, tblInfoPass;
 	// Search Control Layout
 	private HorizontalLayout hlHdr = new HorizontalLayout();
 	private HorizontalLayout hlSearchLayout, hlPerandInfo, hlHdrMain, hlPerson, hlInform, hlHdrslap;
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
-	private VerticalLayout vlInform, vlPerson, vlDtl, vlHdrandDetail;
+	private VerticalLayout vlInform, vlPerson, vlHdrandDetail;
 	// Data Fields
 	private GERPPopupDateField dfVisitDt, dfFormDt;
 	private GERPComboBox cbWO, cbEnqNo;
@@ -105,8 +89,6 @@ public class CustomerVisit extends BaseTransUI {
 	private GERPTextArea taPurposeRe;
 	private CheckBox checkBxHODPro, checkBxPlan, checkBxProd, checkBxQC, checkBxMain, checkBxHR, checkBxDie,
 			checkBxDes, checkBxAcc;
-	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
-			BASEConstants.M_GENERIC_COLUMN);
 	private ComboBox cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4;
@@ -115,7 +97,7 @@ public class CustomerVisit extends BaseTransUI {
 	private ComboBox cbSftStatus;
 	private FormLayout flInformCol1, flInformCol2, flInformCol3, flInformCol4;
 	private ComboBox cbPersonNoStatus;
-	private FormLayout flPersonCol1, flPersonCol2, flPersonCol3;
+	private FormLayout flPersonCol1, flPersonCol2;
 	private Button btnAddDtls = new GERPButton("Add", "add", this);
 	private Button btnAddPerson = new GERPButton("Add", "add", this);
 	private Button btnDeletePerson = new GERPButton("Delete", "delete", this);
@@ -123,12 +105,9 @@ public class CustomerVisit extends BaseTransUI {
 	private Button btnAddInfo = new GERPButton("Add", "add", this);
 	private Button btnDeleteInfo = new GERPButton("Delete", "delete", this);
 	private String username;
-	private Long companyid, branchID, moduleId;
-	private Long cusVisId;
+	private Long companyid;
 	private int recordCnt = 0;
-	private int recordShiftCnt = 0;
 	private int recordArmCnt = 0;
-	private Boolean errorFlag = false;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Roto.class);
 	private static final long serialVersionUID = 1L;
@@ -136,8 +115,6 @@ public class CustomerVisit extends BaseTransUI {
 	public CustomerVisit() {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
-		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside AssemblyPlan() constructor");
@@ -172,7 +149,7 @@ public class CustomerVisit extends BaseTransUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				savePersonDetails();
-				loadCustomerNo();
+				loadInfoPass(false);
 			}
 		});
 		tblCusVisHdr = new Table();
@@ -197,7 +174,6 @@ public class CustomerVisit extends BaseTransUI {
 		});
 		tblPersonNo = new Table();
 		tblPersonNo.setSelectable(true);
-		tblPersonNo.setWidth("912px");
 		tblPersonNo.setPageLength(7);
 		tblPersonNo.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -350,6 +326,8 @@ public class CustomerVisit extends BaseTransUI {
 		btnAddDtls.setStyleName("add");
 		btnAddInfo.setStyleName("add");
 		btnAddPerson.setStyleName("add");
+		loadCustVisitNo(false);
+		loadInfoDetails(false);
 	}
 	
 	private void assembleSearchLayout() {
@@ -405,17 +383,22 @@ public class CustomerVisit extends BaseTransUI {
 		// Adding Arm Components
 		flPersonCol1 = new FormLayout();
 		flPersonCol2 = new FormLayout();
-		flPersonCol3 = new FormLayout();
 		flPersonCol1.addComponent(tfPerName);
 		flPersonCol1.addComponent(tfPerPhone);
 		flPersonCol2.addComponent(cbPersonNoStatus);
-		flPersonCol3.addComponent(btnAddPerson);
-		flPersonCol3.addComponent(btnDeletePerson);
+		flPersonCol2.addComponent(new HorizontalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(btnAddPerson);
+				addComponent(btnDeletePerson);
+			}
+		});
 		hlPerson = new HorizontalLayout();
 		hlPerson.setSpacing(true);
+		hlPerson.setWidth("600");
 		hlPerson.addComponent(flPersonCol1);
 		hlPerson.addComponent(flPersonCol2);
-		hlPerson.addComponent(flPersonCol3);
 		hlPerson.setSpacing(true);
 		hlPerson.setMargin(true);
 		// Adding Shift Components
@@ -468,13 +451,10 @@ public class CustomerVisit extends BaseTransUI {
 		vlPerson = new VerticalLayout();
 		vlPerson.addComponent(hlPerson);
 		vlPerson.addComponent(tblPersonNo);
-		vlDtl = new VerticalLayout();
-		vlDtl.addComponent(tblCusVisHdr);
 		hlPerandInfo = new HorizontalLayout();
-		hlPerandInfo.addComponent(GERPPanelGenerator.createPanel(vlPerson));
+		hlPerandInfo.addComponent(vlPerson);
 		hlPerandInfo.addComponent(GERPPanelGenerator.createPanel(vlInform));
 		hlPerandInfo.setSpacing(true);
-		hlPerandInfo.setHeight("50%");
 		hlHdrMain = new HorizontalLayout();
 		hlHdrMain.addComponent(hlHdr);
 		vlHdrandDetail = new VerticalLayout();
@@ -494,6 +474,7 @@ public class CustomerVisit extends BaseTransUI {
 		tblMstScrSrchRslt.removeAllItems();
 		tblMstScrSrchRslt.setPageLength(14);
 		List<CustomerVisitHdrDM> customervisitHdrList = new ArrayList<CustomerVisitHdrDM>();
+		customervisitHdrList = serviceCustomerVisitHdr.getCustomerVisitHdrList(null, null, null, null, null, "F");
 		recordCnt = customervisitHdrList.size();
 		beanCustomerVisitHdrDM = new BeanItemContainer<CustomerVisitHdrDM>(CustomerVisitHdrDM.class);
 		beanCustomerVisitHdrDM.addAll(customervisitHdrList);
@@ -508,17 +489,20 @@ public class CustomerVisit extends BaseTransUI {
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 	}
 	
-	private void loadCustomerNo() {
+	private void loadInfoPass(Boolean fromdb) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<CustomerVisitNoDtlDM> customervisitnodtlList = new ArrayList<CustomerVisitNoDtlDM>();
+		List<CustomerVisitInfoDtlDM> customervisitnodtlList = new ArrayList<CustomerVisitInfoDtlDM>();
 		recordArmCnt = customervisitnodtlList.size();
-		customervisitnodtlList = serviceCustomerVisitNoDtl.getCustomerVisitNoDtlList(null, null, null, null);
-		beanCustomerVisitNoDtlDM = new BeanItemContainer<CustomerVisitNoDtlDM>(CustomerVisitNoDtlDM.class);
-		beanCustomerVisitNoDtlDM.addAll(customervisitnodtlList);
+		customervisitnodtlList = serviceCustomerVisitInfoDtl.getCustomerVisitInfoDtlList(null, null, null, null, null,
+				null, null, null, null, null, null, null, "F");
+		beanCustomerVisitInfoDtlDM = new BeanItemContainer<CustomerVisitInfoDtlDM>(CustomerVisitInfoDtlDM.class);
+		beanCustomerVisitInfoDtlDM.addAll(customervisitnodtlList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the No. of person List");
-		tblInfoPass.setContainerDataSource(beanCustomerVisitNoDtlDM);
-		tblInfoPass.setVisibleColumns(new Object[] { "personName", "contactNo" });
-		tblInfoPass.setColumnHeaders(new String[] { "Person Name", "Contact No." });
+		tblInfoPass.setContainerDataSource(beanCustomerVisitInfoDtlDM);
+		tblInfoPass.setVisibleColumns(new Object[] { "hodPo", "plan", "prod", "qc", "die", "hr", "design",
+				"maintenance", "accounts", "status" });
+		tblInfoPass.setColumnHeaders(new String[] { "HOD Prod", "Plan", "Prod", "QC", "Die", "HR", "Design",
+				"Maintenance", "Accounts", "Status" });
 		tblInfoPass.setColumnFooter("contactNo", "No.of Records : " + recordArmCnt);
 	}
 	
@@ -613,7 +597,6 @@ public class CustomerVisit extends BaseTransUI {
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/roto"); // pulverizer is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {
@@ -698,13 +681,27 @@ public class CustomerVisit extends BaseTransUI {
 			}
 			customervisitHdrObj.setLastUpdatedby(username);
 			customervisitHdrObj.setLastUpdateddt(DateUtils.getcurrentdate());
-			cusVisId = customervisitHdrObj.getCusVisId();
-			@SuppressWarnings("unchecked")
-			Collection<CustomerVisitHdrDM> customerDtls = ((Collection<CustomerVisitHdrDM>) tblCusVisHdr
-					.getVisibleItemIds());
-			for (CustomerVisitHdrDM customervisitHdrdmDtl : (Collection<CustomerVisitHdrDM>) customerDtls) {
-				customervisitHdrdmDtl.setCusVisId(customervisitHdrObj.getCusVisId());
-				serviceCustomerVisitHdr.saveorUpdateCustomerVisitHdrDetails(customervisitHdrdmDtl);
+			try {
+				@SuppressWarnings("unchecked")
+				Collection<CustomerVisitNoDtlDM> customerDtls = ((Collection<CustomerVisitNoDtlDM>) tblPersonNo
+						.getVisibleItemIds());
+				for (CustomerVisitNoDtlDM visitNoDtlDM : (Collection<CustomerVisitNoDtlDM>) customerDtls) {
+					visitNoDtlDM.setCusVisId(customervisitHdrObj.getCusVisId());
+					serviceCustomerVisitNoDtl.saveorUpdateCustomerVisitNoDtlDetails(visitNoDtlDM);
+				}
+			}
+			catch (Exception e) {
+			}
+			try {
+				@SuppressWarnings("unchecked")
+				Collection<CustomerVisitInfoDtlDM> itemids = ((Collection<CustomerVisitInfoDtlDM>) tblPersonNo
+						.getVisibleItemIds());
+				for (CustomerVisitInfoDtlDM visitInfoDtlDM : (Collection<CustomerVisitInfoDtlDM>) itemids) {
+					visitInfoDtlDM.setCusVisId(customervisitHdrObj.getCusVisId());
+					serviceCustomerVisitInfoDtl.saveorUpdateCustomerVisitInfoDtlDetails(visitInfoDtlDM);
+				}
+			}
+			catch (Exception e) {
 			}
 			cusMainDetailsresetField();
 		}
@@ -725,7 +722,8 @@ public class CustomerVisit extends BaseTransUI {
 			}
 			customervisitnoDtlObj.setLastUpdatedby(username);
 			customervisitnoDtlObj.setLastUpdateddt(DateUtils.getcurrentdate());
-			loadPersonDetails();
+			listCustVisitNo.add(customervisitnoDtlObj);
+			loadCustVisitNo(false);
 			persondetailsresetField();
 			btnAddPerson.setCaption("Add");
 		}
@@ -771,7 +769,8 @@ public class CustomerVisit extends BaseTransUI {
 			}
 			customervisitinfoDtlObj.setLastUpdatedby(username);
 			customervisitinfoDtlObj.setLastUpdateddt(DateUtils.getcurrentdate());
-			loadInfoDetails();
+			listCustVisitInfo.add(customervisitinfoDtlObj);
+			loadInfoDetails(false);
 			infoDetailsresetField();
 			btnAddInfo.setCaption("Add");
 		}
@@ -784,13 +783,17 @@ public class CustomerVisit extends BaseTransUI {
 	 * Load Tables
 	 */
 	// Load Person Details Table.
-	private void loadPersonDetails() {
+	private void loadCustVisitNo(Boolean fromdb) {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			beanCustomerVisitNoDtlDM = new BeanItemContainer<CustomerVisitNoDtlDM>(CustomerVisitNoDtlDM.class);
-			beanCustomerVisitNoDtlDM.addAll(customervisitnoDtlList);
+			beanCustomerVisitNoDtlDM.addAll(listCustVisitNo);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the IndentIssueslap. result set");
+			if (fromdb) {
+				listCustVisitNo = serviceCustomerVisitNoDtl.getCustomerVisitNoDtlList(null, null, null, "F");
+			}
+			beanCustomerVisitNoDtlDM.addAll(listCustVisitNo);
 			tblPersonNo.setContainerDataSource(beanCustomerVisitNoDtlDM);
 			tblPersonNo.setVisibleColumns(new Object[] { "personName", "contactNo", "custNoDtlStatus", "lastUpdateddt",
 					"lastUpdatedby" });
@@ -806,12 +809,16 @@ public class CustomerVisit extends BaseTransUI {
 	}
 	
 	// Load Contact Information Table
-	private void loadInfoDetails() {
+	private void loadInfoDetails(Boolean fromdb) {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			recordCnt = customervisitnoDtlList.size();
+			recordCnt = listCustVisitNo.size();
 			beanCustomerVisitInfoDtlDM = new BeanItemContainer<CustomerVisitInfoDtlDM>(CustomerVisitInfoDtlDM.class);
-			beanCustomerVisitInfoDtlDM.addAll(customerVisitInfoDtlList);
+			if (fromdb) {
+				listCustVisitInfo = serviceCustomerVisitInfoDtl.getCustomerVisitInfoDtlList(null, null, null, null,
+						null, null, null, null, null, null, null, null, "F");
+			}
+			beanCustomerVisitInfoDtlDM.addAll(listCustVisitInfo);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the IndentIssueslap. result set");
 			tblInfoPass.setContainerDataSource(beanCustomerVisitInfoDtlDM);

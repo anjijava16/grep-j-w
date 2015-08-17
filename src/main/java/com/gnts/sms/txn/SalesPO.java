@@ -1202,8 +1202,8 @@ public class SalesPO extends BaseTransUI {
 	private void editPODtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		if (tblSmsPODtl.getValue() != null) {
-			SmsPODtlDM editsmspoDtllist = beansmsPODtl.getItem(tblSmsPODtl.getValue()).getBean();
-			Long prodid = editsmspoDtllist.getProductid();
+			SmsPODtlDM poDtlDM = beansmsPODtl.getItem(tblSmsPODtl.getValue()).getBean();
+			Long prodid = poDtlDM.getProductid();
 			if (cbquoteNo.getValue() != null) {
 				Collection<?> prodids = cbproduct.getItemIds();
 				for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
@@ -1227,27 +1227,27 @@ public class SalesPO extends BaseTransUI {
 					}
 				}
 			}
-			tfUnitRate.setValue(editsmspoDtllist.getUnitrate().toString());
+			tfUnitRate.setValue(poDtlDM.getUnitrate().toString());
 			cbproduom.setReadOnly(false);
-			cbproduom.setValue(editsmspoDtllist.getProduom());
+			cbproduom.setValue(poDtlDM.getProduom());
 			cbproduom.setReadOnly(true);
-			cbPODtlStatus.setValue(editsmspoDtllist.getPodtlstatus());
+			cbPODtlStatus.setValue(poDtlDM.getPodtlstatus());
 			tfBasicValue.setReadOnly(false);
-			tfBasicValue.setValue(editsmspoDtllist.getBasicvalue().toString());
-			if (editsmspoDtllist.getCustprodcode() != null) {
-				tfcustprodcode.setValue(editsmspoDtllist.getCustprodcode());
+			tfBasicValue.setValue(poDtlDM.getBasicvalue().toString());
+			if (poDtlDM.getCustprodcode() != null) {
+				tfcustprodcode.setValue(poDtlDM.getCustprodcode());
 			}
-			if (editsmspoDtllist.getInvoicedqty() != null) {
-				tfOrderQty.setValue(editsmspoDtllist.getPoqty().toString());
+			if (poDtlDM.getInvoicedqty() != null) {
+				tfOrderQty.setValue(poDtlDM.getPoqty().toString());
 			}
-			if (editsmspoDtllist.getCustomField1() != null) {
-				tfCustomField1.setValue(editsmspoDtllist.getCustomField1());
+			if (poDtlDM.getCustomField1() != null) {
+				tfCustomField1.setValue(poDtlDM.getCustomField1());
 			}
-			if (editsmspoDtllist.getCustomField2() != null) {
-				tfCustomField2.setValue(editsmspoDtllist.getCustomField2());
+			if (poDtlDM.getCustomField2() != null) {
+				tfCustomField2.setValue(poDtlDM.getCustomField2());
 			}
-			if (editsmspoDtllist.getCustproddesc() != null) {
-				tacustproddesc.setValue(editsmspoDtllist.getCustproddesc());
+			if (poDtlDM.getCustproddesc() != null) {
+				tacustproddesc.setValue(poDtlDM.getCustproddesc());
 			}
 		}
 	}

@@ -143,7 +143,7 @@ public class DieRequest extends BaseTransUI {
 	// for Mold trail request
 	private GERPTextField tfMTRefNumber;
 	private GERPPopupDateField dfMTRefDate;
-	private GERPComboBox cbMTInput;
+	private GERPComboBox cbMTInput, cbMTStatus;
 	private GERPTextField tfMTDescription;
 	private GERPTable tblTrailRequest = new GERPTable();
 	private Button btnAddMoldTrial = new GERPButton("Add", "add");
@@ -268,6 +268,7 @@ public class DieRequest extends BaseTransUI {
 		cbMTInput = new GERPComboBox("Detail of Input");
 		loadInputTypes();
 		cbMTInput.setWidth("250");
+		cbMTStatus = new GERPComboBox("Status", BASEConstants.T_SMS_ENQUIRY_HDR, BASEConstants.PE_STATUS);
 		tfMTDescription = new GERPTextField("Decription");
 		tfMTDescription.setWidth("350");
 		tblTrailRequest.setPageLength(12);
@@ -466,6 +467,7 @@ public class DieRequest extends BaseTransUI {
 				setMargin(true);
 				addComponent(new FormLayout(tfMTRefNumber));
 				addComponent(new FormLayout(dfMTRefDate));
+				addComponent(new FormLayout(cbMTStatus));
 			}
 		}));
 		vlMoldTrialRequest.addComponent(GERPPanelGenerator.createPanel(new VerticalLayout() {
@@ -524,10 +526,10 @@ public class DieRequest extends BaseTransUI {
 		// for disable tabs
 		if (UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ") == null
 				|| (Boolean) UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ")) {
-			 vlDieSection.setEnabled(false);
-			 vlMoldTrialRequest.setEnabled(false);
-			 vlDieCompletion.setEnabled(false);
-			 hlDocumentLayout.setEnabled(false);
+			vlDieSection.setEnabled(false);
+			vlMoldTrialRequest.setEnabled(false);
+			vlDieCompletion.setEnabled(false);
+			hlDocumentLayout.setEnabled(false);
 		}
 	}
 	
@@ -866,6 +868,7 @@ public class DieRequest extends BaseTransUI {
 		moldTrailReqHdrDM.setTrialReqHdrId(moldRequestId);
 		moldTrailReqHdrDM.setRefNumber(tfMTRefNumber.getValue());
 		moldTrailReqHdrDM.setRefDate(dfMTRefDate.getValue());
+		moldTrailReqHdrDM.setStatus((String) cbMTStatus.getValue());
 		moldTrailReqHdrDM.setLastUpdatedBy(username);
 		moldTrailReqHdrDM.setLastUpdatedDate(DateUtils.getcurrentdate());
 		serviceMoldTrialHdr.saveOrUpdateDetails(moldTrailReqHdrDM);
@@ -880,8 +883,8 @@ public class DieRequest extends BaseTransUI {
 	
 	private void saveDieCompletionDtl() {
 		DieCompletionDtlDM dieCompletionDtlDM = new DieCompletionDtlDM();
-		if (tblTrailRequest.getValue() != null) {
-			dieCompletionDtlDM = beanDieCompletionDtl.getItem(tblTrailRequest.getValue()).getBean();
+		if (tblDieCompletion.getValue() != null) {
+			dieCompletionDtlDM = beanDieCompletionDtl.getItem(tblDieCompletion.getValue()).getBean();
 			listDieComplDetail.remove(dieCompletionDtlDM);
 		}
 		dieCompletionDtlDM.setDescType((String) cbDCDescription.getValue());

@@ -94,13 +94,13 @@ public class CustomerVisit extends BaseTransUI {
 	private Table tblCusVisHdr, tblPersonNo, tblInfoPass;
 	// Search Control Layout
 	private HorizontalLayout hlHdr = new HorizontalLayout();
-	private HorizontalLayout hlSearchLayout, hlDtlandArm, hlHdrAndShift, hlArm, hlShift, hlHdrslap;
+	private HorizontalLayout hlSearchLayout, hlPerandInfo, hlHdrMain, hlPerson, hlInform, hlHdrslap;
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
-	private VerticalLayout vlShift, vlArm, vlDtl, vlHdrshiftandDtlarm;
+	private VerticalLayout vlInform, vlPerson, vlDtl, vlHdrandDetail;
 	// Data Fields
 	private GERPPopupDateField dfVisitDt, dfFormDt;
 	private GERPComboBox cbWO, cbEnqNo;
-	private GERPTextField tfPjtName, tfClientName, tfPerName, tfPerPhone, tfClentCity, tfCusVisNo,tfPurposeVisit;
+	private GERPTextField tfPjtName, tfClientName, tfPerName, tfPerPhone, tfClentCity, tfCusVisNo, tfPurposeVisit;
 	private GERPNumberField tnNoPerson;
 	private GERPTextArea taPurposeRe;
 	private CheckBox checkBxHODPro, checkBxPlan, checkBxProd, checkBxQC, checkBxMain, checkBxHR, checkBxDie,
@@ -113,9 +113,9 @@ public class CustomerVisit extends BaseTransUI {
 	private ComboBox cbDtlStatus;
 	private FormLayout flDtlCol1, flDtlCol2, flDtlCol3;
 	private ComboBox cbSftStatus;
-	private FormLayout flshiftCol1, flshiftCol2, flshiftCol3, flshiftCol4;
+	private FormLayout flInformCol1, flInformCol2, flInformCol3, flInformCol4;
 	private ComboBox cbPersonNoStatus;
-	private FormLayout flArmCol1, flArmCol2, flArmCol3;
+	private FormLayout flPersonCol1, flPersonCol2, flPersonCol3;
 	private Button btnAddDtls = new GERPButton("Add", "add", this);
 	private Button btnAddPerson = new GERPButton("Add", "add", this);
 	private Button btnDeletePerson = new GERPButton("Delete", "delete", this);
@@ -172,6 +172,7 @@ public class CustomerVisit extends BaseTransUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				savePersonDetails();
+				loadCustomerNo();
 			}
 		});
 		tblCusVisHdr = new Table();
@@ -287,6 +288,7 @@ public class CustomerVisit extends BaseTransUI {
 		cbWO.setItemCaptionPropertyId("workOrdrNo");
 		tfPurposeVisit = new GERPTextField("Purpose");
 		tfPurposeVisit.setWidth("150");
+		tfPurposeVisit.setHeight("70");
 		cbEnqNo = new GERPComboBox("Enquiry No.");
 		cbEnqNo.setWidth("150");
 		cbEnqNo.setItemCaptionPropertyId("enquiryNo");
@@ -344,7 +346,7 @@ public class CustomerVisit extends BaseTransUI {
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		resetFields();
 		loadSrchRslt();
-		loadArmRslt();
+		// loadCustomerNo();
 		btnAddDtls.setStyleName("add");
 		btnAddInfo.setStyleName("add");
 		btnAddPerson.setStyleName("add");
@@ -380,69 +382,71 @@ public class CustomerVisit extends BaseTransUI {
 		flHdrCol1 = new FormLayout();
 		flHdrCol2 = new FormLayout();
 		flHdrCol3 = new FormLayout();
+		flHdrCol4 = new FormLayout();
 		flHdrCol1.addComponent(tfCusVisNo);
 		flHdrCol1.addComponent(dfFormDt);
 		flHdrCol1.addComponent(tfPjtName);
 		flHdrCol1.addComponent(cbEnqNo);
-		flHdrCol1.addComponent(cbWO);
-		flHdrCol1.addComponent(tfClientName);
-		flHdrCol1.addComponent(tfClentCity);
+		flHdrCol2.addComponent(cbWO);
 		flHdrCol2.addComponent(dfVisitDt);
-		flHdrCol2.addComponent(tfPurposeVisit);
-		flHdrCol2.addComponent(taPurposeRe);
-		flHdrCol2.addComponent(tnNoPerson);
-		flHdrCol2.addComponent(cbHdrStatus);
+		flHdrCol2.addComponent(tfClientName);
+		flHdrCol2.addComponent(tfClentCity);
+		flHdrCol3.addComponent(tnNoPerson);
+		flHdrCol3.addComponent(tfPurposeVisit);
+		flHdrCol4.addComponent(taPurposeRe);
+		flHdrCol4.addComponent(cbHdrStatus);
 		hlHdr = new HorizontalLayout();
 		hlHdr.addComponent(flHdrCol1);
 		hlHdr.addComponent(flHdrCol2);
 		hlHdr.addComponent(flHdrCol3);
+		hlHdr.addComponent(flHdrCol4);
 		hlHdr.setSpacing(true);
 		hlHdr.setMargin(true);
 		// Adding Arm Components
-		flArmCol1 = new FormLayout();
-		flArmCol2 = new FormLayout();
-		flArmCol3 = new FormLayout();
-		flArmCol1.addComponent(tfPerName);
-		flArmCol1.addComponent(tfPerPhone);
-		flArmCol2.addComponent(cbPersonNoStatus);
-		flArmCol3.addComponent(btnAddPerson);
-		flArmCol3.addComponent(btnDeletePerson);
-		hlArm = new HorizontalLayout();
-		hlArm.setSpacing(true);
-		hlArm.addComponent(flArmCol1);
-		hlArm.addComponent(flArmCol2);
-		hlArm.addComponent(flArmCol3);
-		hlArm.setSpacing(true);
-		hlArm.setMargin(true);
+		flPersonCol1 = new FormLayout();
+		flPersonCol2 = new FormLayout();
+		flPersonCol3 = new FormLayout();
+		flPersonCol1.addComponent(tfPerName);
+		flPersonCol1.addComponent(tfPerPhone);
+		flPersonCol2.addComponent(cbPersonNoStatus);
+		flPersonCol3.addComponent(btnAddPerson);
+		flPersonCol3.addComponent(btnDeletePerson);
+		hlPerson = new HorizontalLayout();
+		hlPerson.setSpacing(true);
+		hlPerson.addComponent(flPersonCol1);
+		hlPerson.addComponent(flPersonCol2);
+		hlPerson.addComponent(flPersonCol3);
+		hlPerson.setSpacing(true);
+		hlPerson.setMargin(true);
 		// Adding Shift Components
-		flshiftCol1 = new FormLayout();
-		flshiftCol2 = new FormLayout();
-		flshiftCol3 = new FormLayout();
-		flshiftCol4 = new FormLayout();
+		flInformCol1 = new FormLayout();
+		flInformCol2 = new FormLayout();
+		flInformCol3 = new FormLayout();
+		flInformCol4 = new FormLayout();
 		// flshiftCol1.addComponent(tfshiftname);
-		flshiftCol1.addComponent(checkBxHODPro);
-		flshiftCol1.addComponent(checkBxPlan);
-		flshiftCol1.addComponent(checkBxProd);
-		flshiftCol2.addComponent(checkBxQC);
-		flshiftCol2.addComponent(checkBxDie);
-		flshiftCol2.addComponent(checkBxHR);
-		flshiftCol3.addComponent(checkBxDes);
-		flshiftCol3.addComponent(checkBxMain);
-		flshiftCol3.addComponent(checkBxAcc);
-		flshiftCol4.addComponent(cbSftStatus);
-		flshiftCol4.addComponent(btnAddInfo);
-		flshiftCol4.addComponent(btnDeleteInfo);
-		flshiftCol4.setComponentAlignment(btnAddInfo, Alignment.BOTTOM_CENTER);
-		vlShift = new VerticalLayout();
-		vlShift.setSpacing(true);
-		hlShift = new HorizontalLayout();
-		hlShift.setSpacing(true);
-		hlShift.addComponent(flshiftCol1);
-		hlShift.addComponent(flshiftCol2);
-		hlShift.addComponent(flshiftCol3);
-		hlShift.addComponent(flshiftCol4);
-		vlShift.addComponent(hlShift);
-		vlShift.addComponent(tblPersonNo);
+		flInformCol1.addComponent(checkBxHODPro);
+		flInformCol1.addComponent(checkBxPlan);
+		flInformCol1.addComponent(checkBxProd);
+		flInformCol2.addComponent(checkBxQC);
+		flInformCol2.addComponent(checkBxDie);
+		flInformCol2.addComponent(checkBxHR);
+		flInformCol3.addComponent(checkBxDes);
+		flInformCol3.addComponent(checkBxMain);
+		flInformCol3.addComponent(checkBxAcc);
+		flInformCol4.addComponent(cbSftStatus);
+		flInformCol4.addComponent(btnAddInfo);
+		flInformCol4.addComponent(btnDeleteInfo);
+		flInformCol4.setComponentAlignment(btnAddInfo, Alignment.BOTTOM_CENTER);
+		vlInform = new VerticalLayout();
+		vlInform.setSpacing(true);
+		hlInform = new HorizontalLayout();
+		hlInform.setSpacing(true);
+		hlInform.addComponent(flInformCol1);
+		hlInform.addComponent(flInformCol2);
+		hlInform.addComponent(flInformCol3);
+		hlInform.addComponent(flInformCol4);
+		vlInform.addComponent(hlInform);
+		vlInform.addComponent(tblInfoPass);
 		// Adding Dtl Components
 		flDtlCol1 = new FormLayout();
 		flDtlCol2 = new FormLayout();
@@ -461,26 +465,25 @@ public class CustomerVisit extends BaseTransUI {
 		hlHdrslap.addComponent(flDtlCol3);
 		hlHdrslap.setSpacing(true);
 		hlHdrslap.setMargin(true);
-		vlArm = new VerticalLayout();
-		vlArm.addComponent(hlArm);
-		vlArm.addComponent(tblInfoPass);
+		vlPerson = new VerticalLayout();
+		vlPerson.addComponent(hlPerson);
+		vlPerson.addComponent(tblPersonNo);
 		vlDtl = new VerticalLayout();
 		vlDtl.addComponent(tblCusVisHdr);
-		hlDtlandArm = new HorizontalLayout();
-		hlDtlandArm.addComponent(GERPPanelGenerator.createPanel(vlArm));
-		hlDtlandArm.addComponent(GERPPanelGenerator.createPanel(vlShift));
-		hlDtlandArm.setSpacing(true);
-		hlDtlandArm.setHeight("100%");
-		hlHdrAndShift = new HorizontalLayout();
-		hlHdrAndShift.addComponent(hlHdr);
-		hlHdrAndShift.addComponent(GERPPanelGenerator.createPanel(vlDtl));
-		vlHdrshiftandDtlarm = new VerticalLayout();
-		vlHdrshiftandDtlarm.addComponent(GERPPanelGenerator.createPanel(hlHdrAndShift));
-		vlHdrshiftandDtlarm.addComponent(GERPPanelGenerator.createPanel(hlDtlandArm));
-		vlHdrshiftandDtlarm.setSpacing(true);
-		vlHdrshiftandDtlarm.setWidth("100%");
+		hlPerandInfo = new HorizontalLayout();
+		hlPerandInfo.addComponent(GERPPanelGenerator.createPanel(vlPerson));
+		hlPerandInfo.addComponent(GERPPanelGenerator.createPanel(vlInform));
+		hlPerandInfo.setSpacing(true);
+		hlPerandInfo.setHeight("50%");
+		hlHdrMain = new HorizontalLayout();
+		hlHdrMain.addComponent(hlHdr);
+		vlHdrandDetail = new VerticalLayout();
+		vlHdrandDetail.addComponent(GERPPanelGenerator.createPanel(hlHdrMain));
+		vlHdrandDetail.addComponent(GERPPanelGenerator.createPanel(hlPerandInfo));
+		vlHdrandDetail.setSpacing(true);
+		vlHdrandDetail.setWidth("100%");
 		hlUserInputLayout.setSizeUndefined();
-		hlUserInputLayout.addComponent(vlHdrshiftandDtlarm);
+		hlUserInputLayout.addComponent(vlHdrandDetail);
 		hlUserInputLayout.setWidth("100%");
 		hlUserInputLayout.setMargin(false);
 		hlUserInputLayout.setSpacing(true);
@@ -505,7 +508,7 @@ public class CustomerVisit extends BaseTransUI {
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 	}
 	
-	private void loadArmRslt() {
+	private void loadCustomerNo() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<CustomerVisitNoDtlDM> customervisitnodtlList = new ArrayList<CustomerVisitNoDtlDM>();
 		recordArmCnt = customervisitnodtlList.size();
@@ -559,7 +562,6 @@ public class CustomerVisit extends BaseTransUI {
 		btnAddPerson.setCaption("Add");
 		tblCusVisHdr.setVisible(true);
 		tblPersonNo.setVisible(true);
-		loadArmRslt();
 	}
 	
 	@Override
@@ -598,7 +600,6 @@ public class CustomerVisit extends BaseTransUI {
 	@Override
 	protected void saveDetails() {
 	}
-	
 	
 	@Override
 	protected void printDetails() {
@@ -662,10 +663,11 @@ public class CustomerVisit extends BaseTransUI {
 	
 	// Load Work Order List
 	private void loadWorkOrderNo() {
-		/*Long tenquiryId = serviceEnquiryHdr
-				.getSmsEnqHdrList(null, Long.valueOf(cbEnqNo.getValue().toString()), null, null, null, "F", null, null)
-				.get(0).getEnquiryId();
-		System.out.println("===============+++================================>" + tenquiryId);*/
+		/*
+		 * Long tenquiryId = serviceEnquiryHdr .getSmsEnqHdrList(null, Long.valueOf(cbEnqNo.getValue().toString()),
+		 * null, null, null, "F", null, null) .get(0).getEnquiryId();
+		 * System.out.println("===============+++================================>" + tenquiryId);
+		 */
 		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
 		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
 				null, null, null, null));
@@ -680,16 +682,16 @@ public class CustomerVisit extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			CustomerVisitHdrDM customervisitHdrObj = new CustomerVisitHdrDM();
-			customervisitHdrObj.setCusVisNo(tfCusVisNo.getValue());
+			customervisitHdrObj.setCusVisNo(tfCusVisNo.getValue().toString());
 			customervisitHdrObj.setFillDt(dfFormDt.getValue());
 			customervisitHdrObj.setVisitDt(dfVisitDt.getValue());
-			customervisitHdrObj.setProjectName(tfPjtName.getValue());
+			customervisitHdrObj.setProjectName(tfPjtName.getValue().toString());
 			customervisitHdrObj.setEnquiryNo(cbEnqNo.getValue().toString());
 			customervisitHdrObj.setWorkorderNo(cbWO.getValue().toString());
-			customervisitHdrObj.setCustName(tfClientName.getValue());
-			customervisitHdrObj.setCustCity(tfClentCity.getValue());
+			customervisitHdrObj.setCustName(tfClientName.getValue().toString());
+			customervisitHdrObj.setCustCity(tfClentCity.getValue().toString());
 			customervisitHdrObj.setPurposeVisit(tfPurposeVisit.getValue().toString());
-			customervisitHdrObj.setRemarks(taPurposeRe.getValue());
+			customervisitHdrObj.setRemarks(taPurposeRe.getValue().toString());
 			customervisitHdrObj.setPersonNo(tnNoPerson.getValue().toString());
 			if (cbPersonNoStatus.getValue() != null) {
 				customervisitHdrObj.setCustHdrStatus((String) cbHdrStatus.getValue());
@@ -698,13 +700,12 @@ public class CustomerVisit extends BaseTransUI {
 			customervisitHdrObj.setLastUpdateddt(DateUtils.getcurrentdate());
 			cusVisId = customervisitHdrObj.getCusVisId();
 			@SuppressWarnings("unchecked")
-			Collection<CustomerVisitHdrDM> customerDtls = ((Collection<CustomerVisitHdrDM>) tblCusVisHdr.getVisibleItemIds());
+			Collection<CustomerVisitHdrDM> customerDtls = ((Collection<CustomerVisitHdrDM>) tblCusVisHdr
+					.getVisibleItemIds());
 			for (CustomerVisitHdrDM customervisitHdrdmDtl : (Collection<CustomerVisitHdrDM>) customerDtls) {
 				customervisitHdrdmDtl.setCusVisId(customervisitHdrObj.getCusVisId());
 				serviceCustomerVisitHdr.saveorUpdateCustomerVisitHdrDetails(customervisitHdrdmDtl);
 			}
-			
-			loadCusMainDetails();
 			cusMainDetailsresetField();
 		}
 		catch (Exception e) {
@@ -778,38 +779,10 @@ public class CustomerVisit extends BaseTransUI {
 			e.printStackTrace();
 		}
 	}
-	/*
-	 *Edit Meathods 
-	 */
-	
-	//
 	
 	/*
 	 * Load Tables
 	 */
-	// Load Customer Main Table
-	private void loadCusMainDetails() {
-		try {
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			recordCnt = customervisitHdrList.size();
-			beanCustomerVisitHdrDM = new BeanItemContainer<CustomerVisitHdrDM>(CustomerVisitHdrDM.class);
-			beanCustomerVisitHdrDM.addAll(customervisitHdrList);
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Got the IndentIssueslap. result set");
-			tblPersonNo.setContainerDataSource(beanCustomerVisitHdrDM);
-			tblPersonNo.setVisibleColumns(new Object[] { "cusVisId", "enquiryId", "visitDt", "projectName", "custName",
-					"custCity", "custHdrStatus", "lastUpdateddt", "lastUpdatedby" });
-			tblPersonNo.setColumnHeaders(new String[] { "Visit Id", "Enquiry No.", "Date", "Project", "Customer",
-					"City", "Status", "Updated Date", "Updated By" });
-			tblPersonNo.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
-			tblPersonNo.setPageLength(10);
-			cusMainDetailsresetField();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
 	// Load Person Details Table.
 	private void loadPersonDetails() {
 		try {

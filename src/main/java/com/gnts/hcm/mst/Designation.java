@@ -101,7 +101,6 @@ public class Designation extends BaseUI {
 		// Job ClassName combobox
 		cbJobClsName = new GERPComboBox("Job Classification Name");
 		cbJobClsName.setItemCaptionPropertyId("clasficatnName");
-		cbJobClsName.setVisible(false);
 		loadJobClassification();
 		// build search layout
 		hlSearchLayout = new GERPAddEditHLayout();
@@ -266,7 +265,6 @@ public class Designation extends BaseUI {
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		tfDescName.setRequired(true);
 		cbGRDDesc.setRequired(true);
-		cbJobClsName.setRequired(true);
 	}
 	
 	@Override
@@ -283,7 +281,6 @@ public class Designation extends BaseUI {
 		assembleSearchLayout();
 		tfDescName.setRequired(false);
 		cbGRDDesc.setRequired(false);
-		cbJobClsName.setRequired(false);
 		tblMstScrSrchRslt.setValue(null);
 		resetFields();
 		loadSrchRslt();
@@ -295,7 +292,6 @@ public class Designation extends BaseUI {
 		resetFields();
 		tfDescName.setRequired(true);
 		cbGRDDesc.setRequired(true);
-		cbJobClsName.setRequired(true);
 		hlUserInputLayout.removeAllComponents();
 		assembleUserInputLayout();
 		hlUserIPContainer.removeAllComponents();
@@ -322,12 +318,7 @@ public class Designation extends BaseUI {
 					+ "Throwing ValidationException. User data is > " + cbGRDDesc.getValue());
 			errorFlag = true;
 		}
-		if (cbJobClsName.getValue() == null) {
-			cbJobClsName.setComponentError(new UserError(GERPErrorCodes.NULL_JOBCLASSIFICATION));
-			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + cbJobClsName.getValue());
-			errorFlag = true;
-		}
+	
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}

@@ -138,7 +138,7 @@ public class EmployeeAttendence extends BaseUI {
 		tfPermisnHr = new GERPTimeField("Permission Hour");
 		// LWP Hour TimeField
 		tfLWPHrs = new GERPTextField("LWP Hour");
-		hlCmdBtnLayout.setVisible(false);
+		hlCmdBtnLayout.setVisible(true);
 		// build search layout
 		hlSearchLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
@@ -212,25 +212,12 @@ public class EmployeeAttendence extends BaseUI {
 		attendenceProcDM.setCompanyId(companyid);
 		attendenceProcDM.setStatus("Pending");
 		serviceAttendenceProce.saveAndUpdate(attendenceProcDM);
-		System.out.println("--->inside" + cbEmpName.getValue());
-		List<EmployeeDM> employeelist = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				198L, null, "P");
-		
-			
-			while (cal.getTime().before(dfEndDt.getValue())) {
-				cal.add(Calendar.DATE, 1);
 
-				for (EmployeeDM employeeDM : employeelist) {
-					EmpAttendenceDM empAttendenceDM = new EmpAttendenceDM();
+		EmpAttendenceDM empAttendenceDM = new EmpAttendenceDM();
 
-					
-				if ((Long) cbEmpName.getValue() == -1) {
-					empAttendenceDM.setEmpId((Long) employeeDM.getEmployeeid());
-
-				} else {
 					System.out.println("--->insideelse" + cbEmpName.getValue());
 					empAttendenceDM.setEmpId((Long) cbEmpName.getValue());
-				}
+				
 				
 					empAttendenceDM.setAttProcId(attendenceProcDM.getAttProcId());
 					empAttendenceDM.setAttDt(cal.getTime());
@@ -245,11 +232,9 @@ public class EmployeeAttendence extends BaseUI {
 					empAttendenceDM.setLastUpdatedBy(username);
 					empAttendenceDM.setLastUpdatedDt(new Date());
 					serviceEmpAtndnc.saveAndUpdate(empAttendenceDM);
-				}
-				
-				System.out.println(cal.getTime());
+					System.out.println(cal.getTime());
 			
-		}
+			
 		staffAttendancePapulateAndConfig(true);
 	}
 	

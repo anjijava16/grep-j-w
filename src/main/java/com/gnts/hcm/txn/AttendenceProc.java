@@ -24,6 +24,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,6 +53,7 @@ import com.gnts.hcm.domain.txn.EmpAttendenceDM;
 import com.gnts.hcm.service.mst.PayPeriodService;
 import com.gnts.hcm.service.txn.AttendenceProcService;
 import com.gnts.hcm.service.txn.EmpAttendenceService;
+import com.google.gwt.core.ext.typeinfo.ParseException;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -411,18 +413,30 @@ public class AttendenceProc extends BaseUI {
 					System.out.println("payPeriodId=" + payPeriodId + "\n(Long) cbBranch.getValue()="
 							+ (Long) cbBranch.getValue() + "\nstartDate=" + startDate + "\nendDate=" + endDate
 							+ "\ncompanyId=" + companyId + "\nuserName=" + userName);
-					List<EmployeeDM> employeelist = serviceEmployee.getEmployeeList(null, null, null, "Active",
-							companyId, null, null, 198L, null, "P");
-					for (EmployeeDM empAttendenceDM : employeelist) {
+					System.out.println("(Long)cbEmployeeName.getValue()"+(Long)cbEmployeeName.getValue());
+  SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yy");
+					    SimpleDateFormat format2 = new SimpleDateFormat("dd-MMM-yyyy");
+					    Date date = null;
+					    Date enddt=null;
+						try {
+							date = format2.parse(startDate);
+							enddt = format2.parse(endDate);
+						}
+						catch (java.text.ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						System.out.println("sadvf"+format1.format(date));
+
+						System.out.println("sadvf"+format1.format(enddt));
 						statement = connection
 								.prepareCall("{ ? = call pkg_hcm_core.fn_calc_staff_attend (?,?,?,?,?,?,?,?) }");
-						System.out.println("empAttendenceDM.getEmployeeid()"+empAttendenceDM.getEmployeeid());
 						statement.registerOutParameter(1, Types.VARCHAR);
 						statement.setLong(2, payPeriodId);
-						statement.setLong(3, empAttendenceDM.getEmployeeid());
+						statement.setLong(3, (Long)cbEmployeeName.getValue());
 						statement.setLong(4, (Long) cbBranch.getValue());
-						statement.setString(5, "01-08-15");
-						statement.setString(6, "31-08-15");
+						statement.setString(5,format1.format(date));
+						statement.setString(6, format1.format(enddt));
 						statement.setLong(7, companyId);
 						statement.setString(8, userName);
 						statement.registerOutParameter(9, Types.VARCHAR);
@@ -431,7 +445,6 @@ public class AttendenceProc extends BaseUI {
 						errorMsg = statement.getString(9);
 						System.out.println("funationStatus-->" + funationStatus);
 						System.out.println("errorMsg-->" + errorMsg);
-					}
 					connection.close();
 
 				}

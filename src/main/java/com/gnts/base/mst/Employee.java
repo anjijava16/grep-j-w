@@ -4008,6 +4008,8 @@ public class Employee extends BaseUI {
 			BigDecimal earnPercent = pojo.getEarnPercent();
 			minVal = pojo.getMinVal();
 			String onBasicGross = pojo.getOnBasicGros();
+			System.out.println("isFlat--->" + isFlat + "\nonBasicGrossaa--->" + onBasicGross);
+
 			List<EarningsDM> earnlist = serviceEarnings.getEarningByEarnID(earnid);
 			EarningsDM earnPojo = null;
 			for (EarningsDM ernpojo : earnlist) {
@@ -4015,7 +4017,6 @@ public class Employee extends BaseUI {
 				if (ernpojo.getEarnCode().equalsIgnoreCase("ALLOW")) {
 				}
 			}
-			System.out.println("isFlat--->" + isFlat + "\nonBasicGross--->" + onBasicGross);
 			EmployeeEarningDM staffearnPojo = new EmployeeEarningDM();
 			if (isFlat.equals("Percent") && onBasicGross.equalsIgnoreCase("GROSS")) {
 				earningAmount = new BigDecimal(calculateEarnAmount(earnPercent, minValueByBasic));

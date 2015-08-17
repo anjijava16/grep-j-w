@@ -207,12 +207,11 @@ public class EmployeeAppraisal extends BaseUI {
 		cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbstatus.setWidth("110");
 		// Appraisee Name ComboBox
-		cbapprsename = new ComboBox("Level");
-		cbapprsename.setItemCaptionPropertyId("appraisallevel");
+		cbapprsename = new ComboBox("Appraisal Name");
+		cbapprsename.setItemCaptionPropertyId("firstlastname");
 		cbapprsename.setWidth("110");
 		cbapprsename.setRequired(true);
-		 loadAppraiseeNameList();
-		//loadApprlevelNameList();
+		loadAppraiseeNameList();
 		// KPI Name ComboBox
 		cbkpiname = new GERPComboBox("KPI Name");
 		cbkpiname.setWidth("110");
@@ -220,12 +219,11 @@ public class EmployeeAppraisal extends BaseUI {
 		cbkpiname.setItemCaptionPropertyId("kpiName");
 		loadKpiNameList();
 		// Apprlevel Name ComboBox
-		cvapprlevelname = new ComboBox("Appraisal Name");
+		cvapprlevelname = new ComboBox("Level");
 		cvapprlevelname.setWidth("110");
 		cvapprlevelname.setRequired(true);
 		cvapprlevelname.setItemCaptionPropertyId("levelname");
-		 loadApprlevelNameList();
-		//loadAppraiseeNameList();
+		loadApprlevelNameList();
 		// KPI Rating text field
 		tfkpiRating = new TextField("KPI Rating");
 		tfkpiRating.setValue("0");
@@ -295,9 +293,9 @@ public class EmployeeAppraisal extends BaseUI {
 		fcolDtl2 = new FormLayout();
 		fcolDtl3 = new FormLayout();
 		fcolDtl4 = new FormLayout();
-		fcolDtl1.addComponent(cvapprlevelname);
+		fcolDtl1.addComponent(cbapprsename);
 		fcolDtl1.addComponent(cbkpiname);
-		fcolDtl2.addComponent(cbapprsename);
+		fcolDtl2.addComponent(cvapprlevelname);
 		fcolDtl2.addComponent(tfkpiRating);
 		fcolDtl3.addComponent(comments);
 		fcolDtl4.addComponent(btnAddEmpAprisalDtl);
@@ -440,8 +438,8 @@ public class EmployeeAppraisal extends BaseUI {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbapprsename.getItem(itemId);
 				// Get the actual bean and use the data
-				AppraisalLevelsDM st = (AppraisalLevelsDM) item.getBean();
-				if (uom != null && uom.equals(st.getApprlevelid())) {
+				EmployeeDM st = (EmployeeDM) item.getBean();
+				if (uom != null && uom.equals(st.getEmployeeid())) {
 					cbapprsename.setValue(itemId);
 				}
 			}
@@ -733,7 +731,7 @@ public class EmployeeAppraisal extends BaseUI {
 		try {
 			int count = 0;
 			for (EmpAppraisalDtlDM empAppraisalDtlDM : empAppraisalDtlList) {
-				if (empAppraisalDtlDM.getAppraiseeid() == ((AppraisalLevelsDM) cbapprsename.getValue()).getApprlevelid()) {
+				if (empAppraisalDtlDM.getAppraiseeid() == ((EmployeeDM) cbapprsename.getValue()).getEmployeeid()) {
 					count++;
 					break;
 				}
@@ -745,8 +743,8 @@ public class EmployeeAppraisal extends BaseUI {
 					empAppDtlObj = beanEmpAppraisalDtlDM.getItem(tblEmpAprisalDtl.getValue()).getBean();
 					empAppraisalDtlList.remove(empAppDtlObj);
 				}
-				empAppDtlObj.setAppraiseeid(((AppraisalLevelsDM) cbapprsename.getValue()).getApprlevelid());
-				empAppDtlObj.setFirstlastname(((AppraisalLevelsDM) cbapprsename.getValue()).getAppraisallevel());
+				empAppDtlObj.setAppraiseeid(((EmployeeDM) cbapprsename.getValue()).getEmployeeid());
+				empAppDtlObj.setFirstlastname(((EmployeeDM) cbapprsename.getValue()).getFirstlastname());
 				empAppDtlObj.setKpiid(((KpiDM) cbkpiname.getValue()).getKpiId());
 				empAppDtlObj.setKpiName(((KpiDM) cbkpiname.getValue()).getKpiName());
 				empAppDtlObj.setApprlevelid(((AppraisalLevelsDM) cvapprlevelname.getValue()).getApprlevelid());
@@ -808,15 +806,13 @@ public class EmployeeAppraisal extends BaseUI {
 	 */
 	private void loadAppraiseeNameList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading AppraiseeNameList");
-		BeanItemContainer<AppraisalLevelsDM> beanappraiseename = new BeanItemContainer<AppraisalLevelsDM>(
-				AppraisalLevelsDM.class);
-		beanappraiseename.addAll(serviceappraisallevel.getAppraisalLevelsList(null, null,
-				(String) cbapprsename.getValue(), "Active", "F"));
+		BeanItemContainer<EmployeeDM> beanappraiseename = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+		beanappraiseename.addAll(serviceemployee.getEmployeeList(null, null, null, "Active", companyid, employeeid,
+				null, null, null, "P"));
 		cbapprsename.setContainerDataSource(beanappraiseename);
 	}
 	
 	/*
-	 * getEmployeeList(null, null, null, "Active", companyid, employeeid, null, null, null, "P"));
 	 * loadKpiNameList()-->this function is used for load the kpi name list
 	 */
 	private void loadKpiNameList() {
@@ -830,18 +826,11 @@ public class EmployeeAppraisal extends BaseUI {
 	 * loadApprlevelNameList()-->this function is used for load the apprlevel name list
 	 */
 	private void loadApprlevelNameList() {
-		try {
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "loading ApprlevelNameList");
-			BeanItemContainer<AppraisalLevelsDM> beanlevels = new BeanItemContainer<AppraisalLevelsDM>(
-					AppraisalLevelsDM.class);
-			beanlevels.addAll(serviceappraisallevel.getAppraisalLevelsList(null, (String) cvapprlevelname.getValue(),
-					null, "Active", "F"));
-			cvapprlevelname.setContainerDataSource(beanlevels);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading ApprlevelNameList");
+		BeanItemContainer<AppraisalLevelsDM> beanlevels = new BeanItemContainer<AppraisalLevelsDM>(
+				AppraisalLevelsDM.class);
+		beanlevels.addAll(serviceappraisallevel.getAppraisalLevelsList(null, null, null, "Active", "F"));
+		cvapprlevelname.setContainerDataSource(beanlevels);
 	}
 	
 	private void deleteDtls() {

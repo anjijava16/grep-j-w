@@ -384,9 +384,9 @@ public class ITOtherIncome extends BaseUI {
 	@Override
 	protected void resetFields() {
 		cbEmpName.setValue(null);
-		tfApprovedAmt.setValue(null);
-		tfIncomeAmt.setValue(null);
-		taIncomeDesc.setValue(null);
+		tfApprovedAmt.setValue("0");
+		tfIncomeAmt.setValue("0");
+		taIncomeDesc.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		cbEmpName.setComponentError(null);
 		tfIncomeAmt.setComponentError(null);

@@ -36,6 +36,8 @@ import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.EmployeeOndutyDM;
 import com.gnts.hcm.service.txn.EmployeeOndutyService;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
@@ -97,6 +99,7 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 	private Long ondutyid;
 	private Long employeeid;
 	Date dtfrm;
+	private Double check;
 	public HorizontalLayout hlHeader = new HorizontalLayout();
 	
 	// Build View
@@ -151,6 +154,21 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 				catch (Exception e) {
 					e.printStackTrace();
 				}
+			}
+		});
+		dfOndutyDateto.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				diffdays();
+				/*if (Double.valueOf(check.toString()) == 1.0) {
+					cbhalfday.setEnabled(true);
+				} else {
+					cbhalfday.setValue(false);
+					cbhalfday.setEnabled(false);
+				}*/
 			}
 		});
 		// Initialization for tfOndutyNoOfDays
@@ -313,7 +331,9 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 			EmployeeOndutyDM Onduty = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			dfOndutyDatefrom.setValue(Onduty.getDatefrm1());
 			dfOndutyDateto.setValue(Onduty.getDatetoo());
+			tfOndutyNoOfDays.setReadOnly(false);
 			tfOndutyNoOfDays.setValue((Onduty.getNoofdays()).toString());
+			tfOndutyNoOfDays.setReadOnly(true);
 			tfOndutyTothrs.setValue((Onduty.getTothrs()).toString());
 			cbOndutyApprmgr.setValue(Onduty.getApprmgr());
 			taOndutyrks.setValue(Onduty.getOndutyrks());
@@ -413,7 +433,9 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Reseting Fields.....");
 		dfOndutyDatefrom.setValue(null);
 		dfOndutyDateto.setValue(null);
+		tfOndutyNoOfDays.setReadOnly(false);
 		tfOndutyNoOfDays.setValue("0");
+		tfOndutyNoOfDays.setReadOnly(true);
 		tfOndutyTothrs.setValue("0");
 		cbOndutyApprmgr.setValue(null);
 		taOndutyrks.setValue("");
@@ -423,6 +445,23 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 		tfOndutyTothrs.setComponentError(null);
 		cbOndutyApprmgr.setComponentError(null);
 		cbOndutyStatus.setValue(cbOndutyStatus.getItemIds().iterator().next());
+	}
+	
+	private void diffdays() {
+		try {
+			Date startDate2 = (Date) dfOndutyDatefrom.getValue();
+			Date endDate2 = (Date) dfOndutyDateto.getValue();
+			long diff = endDate2.getTime() - startDate2.getTime();
+			int diffDays = (int) (diff / (24 * 1000 * 60 * 60));
+			check = 0d;
+			check = (double) (diffDays + 1);
+			tfOndutyNoOfDays.setReadOnly(false);
+			tfOndutyNoOfDays.setValue(check.toString());
+			tfOndutyNoOfDays.setReadOnly(true);
+			dfOndutyDatefrom.setComponentError(null);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	@Override

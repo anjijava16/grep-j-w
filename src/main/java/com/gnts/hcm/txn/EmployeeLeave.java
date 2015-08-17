@@ -89,7 +89,7 @@ public class EmployeeLeave extends BaseUI {
 	private HorizontalLayout hlcol1, hlcol2;
 	// Search Control Layout
 	private VerticalLayout vlayout;
-	private ComboBox cbEmployeeName, cbDepartmentName;
+	private ComboBox cbEmployeeName, cbDepartmentName; 
 	private Table tblMstScrSrchRslt = new GERPTable();
 	// Vertical Control Layout
 	private PopupDateField dfdatefrom, dfdateto;

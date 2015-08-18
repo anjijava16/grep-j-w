@@ -109,6 +109,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 public class SmsEnquiry extends BaseTransUI {
+	
 	private static final long serialVersionUID = 1L;
 	// Bean Creation
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");

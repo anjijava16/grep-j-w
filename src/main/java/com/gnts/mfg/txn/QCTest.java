@@ -64,6 +64,8 @@ import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.txn.PoReceiptHdrDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.PoReceiptHdrService;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -244,7 +246,25 @@ public class QCTest extends BaseTransUI {
 		cbQcHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbQcHdrStatus.setValue(cbQcHdrStatus.getItemIds().iterator().next());
 		chVisl = new CheckBox("Visual OK");
+		chVisl.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				loadQCResult();
+			}
+		});
 		chFitmnt = new CheckBox("Fitment OK");
+		chFitmnt.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				loadQCResult();
+			}
+		});
 		taQcRemarks = new GERPTextArea("Remarks");
 		taQcRemarks.setHeight("50");
 		taObserv = new GERPTextArea("Observation");
@@ -436,6 +456,23 @@ public class QCTest extends BaseTransUI {
 				"Last Updated By" });
 		tblQcDtlTbl.setColumnAlignment("qcTestDtlId", Align.RIGHT);
 		tblQcDtlTbl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+	}
+	
+	// Update QC Result
+	private void loadQCResult() {
+		try {
+			if (chFitmnt.getValue() != false && chVisl.getValue() != false) {
+				tfQcReslt.setReadOnly(false);
+				tfQcReslt.setValue("Pass");
+				tfQcReslt.setReadOnly(true);
+			} else {
+				tfQcReslt.setReadOnly(false);
+				tfQcReslt.setValue("Fail");
+				tfQcReslt.setReadOnly(true);
+			}
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadBranchList() {

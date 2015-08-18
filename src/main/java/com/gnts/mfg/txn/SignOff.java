@@ -141,7 +141,7 @@ public class SignOff extends BaseTransUI {
 		cbBranch.setItemCaptionPropertyId("branchName");
 		loadBranchList();
 		cbClient = new GERPComboBox("Client Name");
-		cbClient.setItemCaptionPropertyId("clientName");
+		cbClient.setItemCaptionPropertyId("clientCode");
 		cbWorkOrderNo = new GERPComboBox("Work Order No.");
 		loadClientList();
 		cbWorkOrderNo.setItemCaptionPropertyId("workOrdrNo");

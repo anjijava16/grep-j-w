@@ -1357,7 +1357,7 @@ public class Roto extends BaseTransUI {
 		Long clientId = (((ClientDM) cbClient.getValue()).getClientId());
 		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
 		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null, "F",
-				null, null,null,null));
+				null, null,null,null,null));
 		cbWorkorder.setContainerDataSource(beanWrkOrdHdr);
 	}
 	

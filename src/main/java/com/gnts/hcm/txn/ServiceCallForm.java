@@ -1,0 +1,872 @@
+/**
+ * File Name 	 :   ServiceCallForm.java 
+ * Description 	 :   This Screen Purpose for Modify the ServiceCallForm Details.Add the ServiceCallForm details and Specification process should be directly added in DB.
+ * Author 		 :   Arun Jeyaraj R
+ * Date 		 :   18-Aug-2015
+ * 
+ * Copyright (C) 2014 GNTS Technologies pvt. ltd. * All rights reserved.
+ * 
+ * This software is the confidential and proprietary information of GNTS Technologies pvt. ltd.
+ * 
+ * Version  Date           Modified By        Remarks
+ * 0.1      18-Aug-2015   Arun Jeyaraj R    Initial Version
+ */
+package com.gnts.hcm.txn;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import org.apache.log4j.Logger;
+import com.gnts.base.domain.mst.BranchDM;
+import com.gnts.base.domain.mst.CompanyLookupDM;
+import com.gnts.base.domain.mst.ProductDM;
+import com.gnts.base.domain.mst.SlnoGenDM;
+import com.gnts.base.service.mst.BranchService;
+import com.gnts.base.service.mst.CityService;
+import com.gnts.base.service.mst.CompanyLookupService;
+import com.gnts.base.service.mst.ProductService;
+import com.gnts.base.service.mst.SlnoGenService;
+import com.gnts.crm.domain.mst.ClientDM;
+import com.gnts.crm.domain.txn.DocumentsDM;
+import com.gnts.crm.service.mst.ClientService;
+import com.gnts.crm.service.txn.DocumentsService;
+import com.gnts.erputil.BASEConstants;
+import com.gnts.erputil.components.GERPAddEditHLayout;
+import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPPanelGenerator;
+import com.gnts.erputil.components.GERPPopupDateField;
+import com.gnts.erputil.components.GERPTextArea;
+import com.gnts.erputil.components.GERPTextField;
+import com.gnts.erputil.constants.GERPErrorCodes;
+import com.gnts.erputil.exceptions.ERPException;
+import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
+import com.gnts.erputil.exceptions.ERPException.SaveException;
+import com.gnts.erputil.exceptions.ERPException.ValidationException;
+import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.erputil.ui.BaseTransUI;
+import com.gnts.erputil.ui.Database;
+import com.gnts.erputil.ui.Report;
+import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
+import com.gnts.mfg.service.txn.WorkOrderHdrService;
+import com.gnts.mfg.stt.txn.EnquiryWorkflow;
+import com.gnts.saarc.util.SerialNumberGenerator;
+import com.gnts.sms.domain.txn.ServiceCallFormDM;
+import com.gnts.sms.domain.txn.SmsEnqHdrDM;
+import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
+import com.gnts.sms.domain.txn.SmsEnquirySpecDM;
+import com.gnts.sms.domain.txn.SmsPOHdrDM;
+import com.gnts.sms.service.txn.ServiceCallFormService;
+import com.gnts.sms.service.txn.SmsEnqHdrService;
+import com.gnts.sms.service.txn.SmsEnquiryDtlService;
+import com.gnts.sms.service.txn.SmsEnquirySpecService;
+import com.gnts.sms.service.txn.SmsPOHdrService;
+import com.gnts.sms.txn.SmsComments;
+import com.gnts.sms.txn.SmsEnquiry;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.server.UserError;
+import com.vaadin.server.VaadinService;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Table.Align;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+
+public class ServiceCallForm extends BaseTransUI {
+	private static final long serialVersionUID = 1L;
+	// Bean Creation
+	private ServiceCallFormService serviveserviceCallFormService = (ServiceCallFormService) SpringContextHelper
+			.getBean("sercallForm");
+	private WorkOrderHdrService serviceWorkOrderHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
+	private SmsPOHdrService servicePurchaseOrdHdr = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
+	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
+	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
+	private SmsEnqHdrService serviceenqhdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
+	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	// Initialize the logger
+	private Logger logger = Logger.getLogger(SmsEnquiry.class);
+	// User Input Fields for Sales Enquiry Header
+	private TextField tfslno, tfclientname, tfClientCity, tfAlloDays, tfpersonsAllo, tftravelmode, tfExpanses,
+			tfnoofdaysWrkd;
+	GERPTextArea tfserdesc;
+	private TextArea taCustomerDetails, taserviceProblmRep;
+	private PopupDateField dfdate, dfenddate, dfstartdt;
+	private ComboBox cbBranch, cbtype, cbClient, cbWorkOrderNo, cbEnquiryNumber, cbPONumber, cbinfnRecBy;
+	private BeanItemContainer<ServiceCallFormDM> beanhdr = null;
+	private GERPTextField tfClntName = new GERPTextField("Client Name");
+	private GERPTextField tfClientCode = new GERPTextField("Client Code");
+	// User Input Fields for Sales Enquiry Specification
+	private TextArea taMatReq;
+	private BeanItemContainer<SmsEnquirySpecDM> beanpec = null;
+	// User Input Components for Sales Enquire Details
+	// User Input Components for Sales Enquire Specification
+	// form layout for input controls Sales Enquiry Header
+	private FormLayout flcol1, flcol2, flcol3, flcol4, flcol5;
+	// form layout for input controls Sales Enquiry Deatil
+	private FormLayout fldtl1, fldtl2, fldtl3, fldtl4, fldtl5;
+	// form layout for input controls Sales Enquiry Specification
+	private FormLayout flspec1, flspec2, flspec3, flspec4, flspec5;
+	private FormLayout fldoc1, fldoc2, fldoc3, fldoc4;
+	private FormLayout flqccont;
+	// Search Control Layout
+	private HorizontalLayout hlsearchlayout;
+	// Parent layout for all the input controls Sales Enquiry Header
+	private HorizontalLayout hllayout = new HorizontalLayout();
+	private HorizontalLayout hllayout1 = new HorizontalLayout();
+	// Parent layout for all the input controls Sales Enquiry Detail
+	private HorizontalLayout hldtllayout = new HorizontalLayout();
+	private HorizontalLayout hlQcdtl = new HorizontalLayout();
+	private VerticalLayout vldtl = new VerticalLayout();
+	private VerticalLayout vlQcdetl = new VerticalLayout();
+	// Parent layout for all the input controls Sales Enquiry Specification
+	private HorizontalLayout hlspecadd = new HorizontalLayout();
+	private HorizontalLayout hlspecadd1 = new HorizontalLayout();
+	private HorizontalLayout hlEnquiryWorkflow = new HorizontalLayout();
+	private HorizontalLayout hlspec = new HorizontalLayout();
+	private HorizontalLayout hldoc = new HorizontalLayout();
+	private VerticalLayout vlspec = new VerticalLayout();
+	private VerticalLayout vldoc = new VerticalLayout();
+	// Parent layout for all the input controls Sms Comments
+	// Document Layout
+	private VerticalLayout hlDocumentLayout = new VerticalLayout();
+	private BeanItemContainer<DocumentsDM> beanDocuments = null;
+	// local variables declaration
+	private Long enquiryId;
+	private String username;
+	private Long companyid, moduleId;
+	private int recordCnt = 0;
+	private SmsComments comments;
+	private String status;
+	private Long branchId, employeeId;
+	private TabSheet dtlTab;
+	
+	// Constructor received the parameters from Login UI class
+	public ServiceCallForm() {
+		// Get the logged in user name and company id from the session
+		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
+		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Inside SmsEnquiry() constructor");
+		buildview();
+	}
+	
+	private void buildview() {
+		logger.info("CompanyId" + companyid + "username" + username + "painting Sales Enquiry UI");
+		// Sales Enquiry Header Components Definition
+		tfClntName.setRequired(true);
+		tfClientCode.setRequired(true);
+		// tfEmail.setRequired(true);
+		cbBranch = new GERPComboBox("Branch Name");
+		cbBranch.setItemCaptionPropertyId("branchName");
+		cbBranch.setImmediate(true);
+		cbBranch.setNullSelectionAllowed(false);
+		cbBranch.setWidth("130");
+		loadBranchList();
+		tfslno = new GERPTextField("Serial No");
+		tfslno.setWidth("130");
+		tfslno.setReadOnly(false);
+		cbClient = new GERPComboBox();
+		cbClient.setItemCaptionPropertyId("clientCode");
+		cbClient.setImmediate(true);
+		cbClient.setNullSelectionAllowed(false);
+		cbClient.setWidth("150");
+		cbinfnRecBy = new GERPComboBox("Type");
+		cbinfnRecBy.setItemCaptionPropertyId("lookupname");
+		cbinfnRecBy.setImmediate(true);
+		cbinfnRecBy.setNullSelectionAllowed(false);
+		cbinfnRecBy.setWidth("120");
+		loadInfrnRecBy();
+		cbPONumber = new GERPComboBox("Purchase Order No.");
+		cbPONumber.setWidth("140");
+		cbPONumber.setItemCaptionPropertyId("pono");
+		cbPONumber.addValueChangeListener(new Property.ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			public void valueChange(ValueChangeEvent event) {
+				Object itemid = event.getProperty().getValue();
+				if (itemid != null) {
+					loadWorkOrderNo();
+				}
+			}
+		});
+		cbEnquiryNumber = new ComboBox("Enquiry No.");
+		cbEnquiryNumber = new ComboBox("Enquiry No");
+		cbEnquiryNumber.setItemCaptionPropertyId("enquiryNo");
+		cbEnquiryNumber.setWidth("150");
+		cbEnquiryNumber.setRequired(true);
+		loadEnquiryNo();
+		cbEnquiryNumber.setImmediate(true);
+		cbEnquiryNumber.setImmediate(true);
+		cbEnquiryNumber.addValueChangeListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			public void valueChange(ValueChangeEvent event) {
+				Object itemId = event.getProperty().getValue();
+				BeanItem<?> item = (BeanItem<?>) cbEnquiryNumber.getItem(itemId);
+				if (item != null) {
+					loadClientList();
+					loadPurchaseOrdNo();
+				}
+			}
+		});
+		cbWorkOrderNo = new GERPComboBox("WO.No");
+		cbWorkOrderNo.setItemCaptionPropertyId("workOrdrNo");
+		cbWorkOrderNo.setWidth("140");
+		tfclientname = new GERPTextField("Client Name");
+		tfclientname.setReadOnly(true);
+		tfClientCity = new GERPTextField("Client City");
+		tfClientCity.setReadOnly(true);
+		tfAlloDays = new GERPTextField("Alloted Days for Rework");
+		tfpersonsAllo = new GERPTextField("Name of Persons alloted for Rework");
+		tftravelmode = new GERPTextField("Travelling Mode/Days");
+		tfExpanses = new GERPTextField("Service Expenses");
+		tfnoofdaysWrkd = new GERPTextField("Number of Days Worked");
+		tfserdesc = new GERPTextArea("Note");
+		cbClient.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (cbClient.getValue() != null) {
+					tfclientname.setReadOnly(false);
+					tfClientCity.setReadOnly(false);
+					try {
+						tfclientname.setValue(serviceClients
+								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
+										null, null, null, null, "Active", "P").get(0).getClientName());
+						tfClientCity.setValue(serviceClients
+								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
+										null, null, null, null, "Active", "P").get(0).getCityName());
+						System.out.println("=============================================>" + tfClientCity);
+					}
+					catch (Exception e) {
+					}
+					tfclientname.setReadOnly(true);
+					tfClientCity.setReadOnly(true);
+				}
+			}
+		});
+		tfclientname.setImmediate(true);
+		tfclientname.setWidth("150");
+		tfClientCity.setImmediate(true);
+		tfClientCity.setWidth("150");
+		loadClientList();
+		cbtype = new GERPComboBox("Type");
+		cbtype.setItemCaptionPropertyId("lookupname");
+		cbtype.setImmediate(true);
+		cbtype.setNullSelectionAllowed(false);
+		cbtype.setWidth("120");
+		loadtype();
+		dfdate = new GERPPopupDateField("Enquiry Date");
+		dfdate.setDateFormat("dd-MMM-yyyy");
+		dfdate.setInputPrompt("Select Date");
+		dfdate.setWidth("100px");
+		dfstartdt = new GERPPopupDateField("Start Date");
+		dfstartdt.setDateFormat("dd-MMM-yyyy");
+		dfstartdt.setInputPrompt("Select Date");
+		dfstartdt.setWidth("100px");
+		dfenddate = new GERPPopupDateField("End Date");
+		dfenddate.setDateFormat("dd-MMM-yyyy");
+		dfenddate.setInputPrompt("Select Date");
+		dfenddate.setWidth("100px");
+		taCustomerDetails = new GERPTextArea("Customer Details");
+		taCustomerDetails.setWidth("130");
+		taCustomerDetails.setHeight("50");
+		taserviceProblmRep = new GERPTextArea("Service Problem Reported");
+		taserviceProblmRep.setWidth("130");
+		taserviceProblmRep.setHeight("50");
+		taMatReq = new GERPTextArea("Material Requirement");
+		taMatReq.setWidth("130");
+		taMatReq.setHeight("50");
+		// Sales Enquiry Detail Components Definition
+		hlsearchlayout = new GERPAddEditHLayout();
+		assembleSearchLayout();
+		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
+		resetFields();
+		loadSrchRslt();
+		try {
+			btnAdd.setVisible(true);
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+				btnAdd.setVisible(false);
+			}
+		}
+		catch (Exception e) {
+		}
+		// Document Components
+		hlDocumentLayout.addLayoutClickListener(new LayoutClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+				try {
+					tfslno.setReadOnly(false);
+					if (tfslno.getValue() != null) {
+					}
+					tfslno.setReadOnly(true);
+				}
+				catch (Exception e) {
+				}
+			}
+		});
+	}
+	
+	private void assembleSearchLayout() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
+		hlsearchlayout.removeAllComponents();
+		// Remove all components in search layout
+		flcol1 = new FormLayout();
+		flcol2 = new FormLayout();
+		flcol3 = new FormLayout();
+		flcol1.addComponent(cbBranch);
+		flcol2.addComponent(cbEnquiryNumber);
+		flcol3.addComponent(cbtype);
+		hlsearchlayout.addComponent(flcol1);
+		hlsearchlayout.addComponent(flcol2);
+		hlsearchlayout.addComponent(flcol3);
+		hlsearchlayout.setMargin(true);
+		hlsearchlayout.setSizeUndefined();
+	}
+	
+	private void assembleinputLayout() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
+		// Remove all components in search layout
+		flcol1 = new FormLayout();
+		flcol2 = new FormLayout();
+		flcol3 = new FormLayout();
+		flcol4 = new FormLayout();
+		flcol5 = new FormLayout();
+		flcol1.addComponent(tfslno);
+		tfslno.setReadOnly(true);
+		flcol1.addComponent(cbBranch);
+		final HorizontalLayout test = new HorizontalLayout();
+		test.setCaption("Client Code");
+		flcol2.addComponent(tfclientname);
+		flcol2.addComponent(tfClientCity);
+		flcol3.addComponent(cbtype);
+		flcol3.addComponent(dfdate);
+		flcol4.addComponent(cbtype);
+		flcol5.addComponent(cbPONumber);
+		flcol4.addComponent(cbWorkOrderNo);
+		hllayout.setMargin(true);
+		hllayout.addComponent(flcol1);
+		hllayout.addComponent(flcol1);
+		hllayout.addComponent(flcol2);
+		hllayout.addComponent(flcol2);
+		hllayout.addComponent(flcol3);
+		hllayout.addComponent(flcol3);
+		hllayout.addComponent(flcol4);
+		hllayout.addComponent(flcol4);
+		hllayout.addComponent(flcol5);
+		hllayout.setMargin(true);
+		hllayout.setSpacing(true);
+		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hllayout));
+		// Adding Sales Enquiry Detail components
+		// Add components for User Input Layout
+		fldtl1 = new FormLayout();
+		fldtl1.addComponent(taCustomerDetails);
+		fldtl1.addComponent(taserviceProblmRep);
+		fldtl1.addComponent(cbinfnRecBy);
+		hldtllayout.setMargin(true);
+		hldtllayout.setSpacing(true);
+		hldtllayout.addComponent(fldtl1);
+		vldtl.addComponent(GERPPanelGenerator.createPanel(hldtllayout));
+		// tbldtl.setStyleName(Runo.TABLE_SMALL);
+		vldtl.setWidth("100%");
+		
+		tblMstScrSrchRslt.setVisible(false);
+		hlCmdBtnLayout.setVisible(false);
+		// Adding Sales Enquiry Specification components
+		// Add components for User Input Layout
+		flspec1 = new FormLayout();
+		flspec2 = new FormLayout();
+		flspec3 = new FormLayout();
+		flspec4 = new FormLayout();
+		flspec5 = new FormLayout();
+		flspec1.addComponent(taMatReq);
+		flspec1.addComponent(tfAlloDays);
+		flspec1.addComponent(tfpersonsAllo);
+		flspec1.addComponent(tftravelmode);
+		flspec1.addComponent(tfExpanses);
+		hlspec.setMargin(true);
+		hlspec.addComponent(flspec1);
+		hlspec.setMargin(true);
+		hlspec.setSpacing(true);
+		vlspec.addComponent(GERPPanelGenerator.createPanel(hlspec));
+		// Document Specification
+		fldoc1 = new FormLayout();
+		fldoc2 = new FormLayout();
+		fldoc3 = new FormLayout();
+		fldoc4 = new FormLayout();
+		fldoc1.addComponent(dfstartdt);
+		fldoc2.addComponent(dfenddate);
+		fldoc1.addComponent(tfnoofdaysWrkd);
+		fldoc1.addComponent(tfserdesc);
+		hldoc.setMargin(true);
+		hldoc.addComponent(fldoc1);
+		hldoc.addComponent(fldoc2);
+		hldoc.setMargin(true);
+		hldoc.setSpacing(true);
+		vldoc.addComponent(GERPPanelGenerator.createPanel(hldoc));
+		// tblspec.setStyleName(Runo.TABLE_BORDERLESS);
+		// vlspec.setWidth("200%");
+		hlspecadd = new HorizontalLayout();
+		hlspecadd.addComponent(vldtl);
+		hlspecadd.addComponent(GERPPanelGenerator.createPanel(vldtl));
+		hlspecadd1.addComponent(vlspec);
+		hlspecadd1.setSpacing(true);
+		hlDocumentLayout.addComponent(vldoc);
+		hlDocumentLayout.setSpacing(true);
+	/*
+		flqccont = new FormLayout();
+		flqccont.addComponent(taCustomerDetails);
+		flqccont.addComponent(taserviceProblmRep);
+		flqccont.addComponent(cbinfnRecBy);
+		hlQcdtl.setMargin(true);
+		hlQcdtl.setSpacing(true);
+		hlQcdtl.addComponent(fldtl1);
+		vlQcdetl.addComponent(GERPPanelGenerator.createPanel(hlQcdtl));
+		// tbldtl.setStyleName(Runo.TABLE_SMALL);
+		vlQcdetl.setWidth("100%");
+		
+		hlEnquiryWorkflow = new HorizontalLayout();
+		hlEnquiryWorkflow.addComponent(vlQcdetl);
+		hlEnquiryWorkflow.addComponent(GERPPanelGenerator.createPanel(vlQcdetl));
+		*/
+		
+	
+		dtlTab = new TabSheet();
+		dtlTab.addTab(hlspecadd, "Marketing");
+		dtlTab.addTab(hlspecadd1, "Production");
+		dtlTab.addTab(hlDocumentLayout, "Customer Ack for Service");
+		dtlTab.addTab(hlEnquiryWorkflow, "Quality Control");
+
+		// new EnquiryWorkflow(hlEnquiryWorkflow, enquiryId, username);
+		// dtlTab.setWidth("100%");
+		vlSrchRsltContainer.addComponent(GERPPanelGenerator.createPanel(dtlTab));
+	}
+	
+	// Load Sales Enquiry Header
+	private void loadSrchRslt() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+		tblMstScrSrchRslt.removeAllItems();
+		List<ServiceCallFormDM> hdrlist = new ArrayList<ServiceCallFormDM>();
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+				+ companyid + ", " + cbBranch.getValue() + "," + tfslno.getValue() + ", "
+				+ (String) cbEnquiryNumber.getValue());
+		hdrlist = serviveserviceCallFormService.getServicecallFormList(null, enquiryId, null, dfdate.getValue(),
+				(String) cbtype.getValue(), null, null, "F");
+		recordCnt = hdrlist.size();
+		beanhdr = new BeanItemContainer<ServiceCallFormDM>(ServiceCallFormDM.class);
+		beanhdr.addAll(hdrlist);
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Got the SMSENQUIRY. result set");
+		tblMstScrSrchRslt.setContainerDataSource(beanhdr);
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "serCallFormId", "branchName", "enquiryNo", "clientName",
+				"type" });
+		tblMstScrSrchRslt
+				.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Enquiry No", "Client Name", "Type" });
+		tblMstScrSrchRslt.setColumnAlignment("enquiryId", Align.RIGHT);
+		tblMstScrSrchRslt.setColumnFooter("", "No.of Records : " + recordCnt);
+	}
+	
+	// Load Branch List
+	private void loadBranchList() {
+		try {
+			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanbranch.setBeanIdProperty("branchId");
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
+			cbBranch.setContainerDataSource(beanbranch);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Load Client List
+	private void loadClientList() {
+		try {
+			Long clientid = serviceenqhdr
+					.getSmsEnqHdrList(null, Long.valueOf(cbEnquiryNumber.getValue().toString()), null, null, null, "F",
+							null, null).get(0).getClientId();
+			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			beanClient.setBeanIdProperty("clientId");
+			beanClient.addAll(serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null, null,
+					"Active", "P"));
+			cbClient.setContainerDataSource(beanClient);
+			cbClient.setValue(clientid);
+		}
+		catch (Exception e) {
+		}
+	}
+	
+	// Load Mod_of_Enquiry List
+	private void loadtype() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup
+					.getCompanyLookUpByLookUp(companyid, null, "Active", "SM_TYPE"));
+			cbtype.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void loadInfrnRecBy() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"SM_INF_REC_BY"));
+			cbtype.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Method to edit the values from table into fields to update process for Sales Enquiry Header
+	private void editSmsEnquiry() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
+		hllayout.setVisible(true);
+		if (tblMstScrSrchRslt.getValue() != null) {
+			ServiceCallFormDM callformobj = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			enquiryId = callformobj.getEnquiryId();
+			cbBranch.setValue(callformobj.getBranchId());
+			tfslno.setReadOnly(false);
+			tfslno.setValue(callformobj.getSlNo().toString());
+			tfslno.setReadOnly(true);
+			cbClient.setValue(callformobj.getClientId());
+			dfdate.setValue(callformobj.getRefDate());
+			cbEnquiryNumber.setValue(callformobj.getEnquiryId());
+			cbPONumber.setValue(callformobj.getPoId());
+			cbWorkOrderNo.setValue(callformobj.getWoId());
+			cbtype.setValue(callformobj.getType());
+		}
+	}
+	
+	// Method to edit the values from table into fields to update process for Sales Enquiry Detail
+	@Override
+	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+		// try {
+		ServiceCallFormDM serviceCallFormDM = new ServiceCallFormDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			serviceCallFormDM = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			serviceCallFormDM.setSlNo(Long.valueOf(tfslno.getValue()));
+		} else {
+			serviceCallFormDM.setEnquiryNo(SerialNumberGenerator.generateEnquiryNumber(companyid, branchId, moduleId,
+					"SM_ENQRYNO", (Long) cbClient.getValue()));
+		}
+		serviceCallFormDM.setCompanyId(companyid);
+		serviceCallFormDM.setRefDate(dfdate.getValue());
+		if (cbtype.getValue() != null) {
+			serviceCallFormDM.setType(cbtype.getValue().toString());
+		}
+		serviceCallFormDM.setBranchId((Long) cbBranch.getValue());
+		serviceCallFormDM.setClientId((Long) cbClient.getValue());
+		serviveserviceCallFormService.saveorupdateServCallForm(serviceCallFormDM);
+		if (tblMstScrSrchRslt.getValue() == null) {
+			System.out.println("inside1" + moduleId);
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_CALLFORM").get(0);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_CALLFORM");
+			}
+		}
+		tfslno.setReadOnly(false);
+		tfslno.setValue(serviceCallFormDM.getEnquiryNo());
+		tfslno.setReadOnly(true);
+		loadSrchRslt();
+	}
+	
+	@Override
+	protected void resetSearchDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Resetting search fields and reloading the result");
+		// reset the field valued to default
+		cbBranch.setValue(branchId);
+		cbtype.setValue(null);
+		tfslno.setValue("");
+		tfslno.setReadOnly(false);
+		lblNotification.setIcon(null);
+		lblNotification.setCaption("");
+		// cbclient.setRequired(true);
+		// reload the search using the defaults
+		loadSrchRslt();
+	}
+	
+	@Override
+	protected void addDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
+		// cbclient.setRequired(true);
+		tfslno.setReadOnly(true);
+		System.out.println("branchId--->" + branchId);
+		cbBranch.setValue(branchId);
+		hllayout.removeAllComponents();
+		hldtllayout.removeAllComponents();
+		hlspec.removeAllComponents();
+		vlSrchRsltContainer.setVisible(true);
+		assembleinputLayout();
+		cbBranch.setRequired(true);
+		resetFields();
+		cbBranch.setValue(branchId);
+		tfslno.setReadOnly(true);
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, moduleId, "SM_CALLFORM").get(0);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfslno.setReadOnly(true);
+			} else {
+				tfslno.setReadOnly(false);
+			}
+		}
+		catch (Exception e) {
+		}
+	}
+	
+	@Override
+	protected void editDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
+		// cbclient.setRequired(true);
+		cbBranch.setValue(branchId);
+		hllayout.removeAllComponents();
+		hldtllayout.removeAllComponents();
+		hlspec.removeAllComponents();
+		vlSrchRsltContainer.setVisible(true);
+		if (tfslno.getValue() == null || tfslno.getValue().trim().length() == 0) {
+			tfslno.setReadOnly(false);
+		}
+		assembleinputLayout();
+		tblMstScrSrchRslt.setVisible(false);
+		hlCmdBtnLayout.setVisible(false);
+		resetFields();
+		editSmsEnquiry();
+		cbBranch.setRequired(true);
+		// To Select Enquire workflow tab
+		/*try {
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+				dtlTab.setSelectedTab(hlEnquiryWorkflow);
+				hlUserIPContainer.setEnabled(false);
+				hlspecadd.setEnabled(false);
+				hlspecadd1.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+		}*/
+	}
+	
+	@Override
+	protected void validateDetails() throws ValidationException {
+		cbBranch.setComponentError(null);
+		cbClient.setComponentError(null);
+		Boolean errorFlag = false;
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
+		if (cbBranch.getValue() == null) {
+			cbBranch.setComponentError(new UserError(GERPErrorCodes.BRANCH_NAME));
+			errorFlag = true;
+		}
+		if (cbClient.getValue() == null) {
+			cbClient.setComponentError(new UserError(GERPErrorCodes.NULL_CLIENT_NAME));
+			errorFlag = true;
+		}
+		if ((dfdate.getValue() != null) || (dfenddate.getValue() != null)) {
+			if (dfdate.getValue().after(dfenddate.getValue())) {
+				dfenddate.setComponentError(new UserError(GERPErrorCodes.SMS_DATE_OUTOFRANGE));
+				logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
+						+ "Throwing ValidationException. User data is > " + dfdate.getValue());
+				errorFlag = true;
+			}
+		}
+		if ((tfslno.getValue() == null) || tfslno.getValue().trim().length() == 0) {
+			try {
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_CALLFORM").get(
+						0);
+				if (slnoObj.getAutoGenYN().equals("N")) {
+					tfslno.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_CODE));
+					errorFlag = true;
+				}
+			}
+			catch (Exception e) {
+			}
+		} else {
+			tfslno.setComponentError(null);
+			errorFlag = false;
+		}
+		logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Throwing ValidationException. User data is > " + cbBranch.getValue() + "," + cbClient.getValue()
+				+ "," + "," + cbtype.getValue() + "," + dfdate.getValue() + "," + dfenddate.getValue());
+		if (errorFlag) {
+			throw new ERPException.ValidationException();
+		}
+	}
+	
+	@Override
+	protected void showAuditDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Getting audit record for enquiryId " + enquiryId);
+		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_SMS_ENQUIRY_HDR);
+		UI.getCurrent().getSession().setAttribute("audittablepk", String.valueOf(enquiryId));
+	}
+	
+	@Override
+	protected void cancelDetails() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
+		hllayout1.removeAllComponents();
+		tblMstScrSrchRslt.setValue(null);
+		cbtype.setRequired(false);
+		assembleSearchLayout();
+		hlCmdBtnLayout.setVisible(true);
+		tblMstScrSrchRslt.setVisible(true);
+		resetFields();
+		loadSrchRslt();
+		cbBranch.setRequired(false);
+		tfslno.setReadOnly(false);
+	}
+	
+	@Override
+	protected void resetFields() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
+		tfslno.setReadOnly(false);
+		tfslno.setValue("");
+		tfclientname.setReadOnly(false);
+		tfclientname.setValue("");
+		tfclientname.setReadOnly(true);
+		tfClientCity.setReadOnly(false);
+		tfClientCity.setValue("");
+		tfClientCity.setReadOnly(true);
+		tfslno.setComponentError(null);
+		cbBranch.setValue(null);
+		cbBranch.setComponentError(null);
+		cbClient.setComponentError(null);
+		cbClient.setValue(null);
+		dfdate.setValue(null);
+		dfenddate.setValue(null);
+		cbtype.setValue(null);
+		taCustomerDetails.setValue("");
+		cbtype.setValue(null);
+		dfdate.setValue(new Date());
+		dfenddate.setValue(addDays(new Date(), 7));
+	}
+	
+	private Date addDays(Date d, int days) {
+		DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		String strDate = sdf.format(d);
+		Date parsedDate = null;
+		try {
+			parsedDate = sdf.parse(strDate);
+		}
+		catch (ParseException e) {
+			logger.warn("calculate days" + e);
+		}
+		Calendar now = Calendar.getInstance();
+		now.setTime(parsedDate);
+		now.add(Calendar.DAY_OF_MONTH, days);
+		return now.getTime();
+	}
+	
+	@Override
+	protected void searchDetails() throws NoDataFoundException {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + " Invoking search");
+		loadSrchRslt();
+		if (recordCnt == 0) {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "No data for the search. throwing ERPException.NoDataFoundException");
+			throw new ERPException.NoDataFoundException();
+		} else {
+			lblNotification.setIcon(null);
+			lblNotification.setCaption("");
+			assembleSearchLayout();
+			tfslno.setReadOnly(false);
+		}
+	}
+	
+	@Override
+	protected void printDetails() {
+		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
+			parameterMap.put("ENQID", enquiryId);
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "/WEB-INF/reports/enquiryRpt"); // productlist is the name of my jasper
+			// file.
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	// Load EnquiryNo
+	private void loadEnquiryNo() {
+		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+		beansmsenqHdr.setBeanIdProperty("enquiryId");
+		beansmsenqHdr.addAll(serviceenqhdr.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
+		cbEnquiryNumber.setContainerDataSource(beansmsenqHdr);
+	}
+	
+	private void loadPurchaseOrdNo() {
+		BeanContainer<Long, SmsPOHdrDM> beanPurchaseOrdHdr = new BeanContainer<Long, SmsPOHdrDM>(SmsPOHdrDM.class);
+		beanPurchaseOrdHdr.setBeanIdProperty("poid");
+		beanPurchaseOrdHdr.addAll(servicePurchaseOrdHdr.getSmspohdrList(null, null, companyid, null, null, null, null,
+				"F", (Long) cbEnquiryNumber.getValue()));
+		cbPONumber.setContainerDataSource(beanPurchaseOrdHdr);
+	}
+	
+	private void loadWorkOrderNo() {
+		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
+		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
+				null, null, null, null, (Long) cbPONumber.getValue()));
+		cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
+	}
+}

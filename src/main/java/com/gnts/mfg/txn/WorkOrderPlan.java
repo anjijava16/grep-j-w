@@ -565,7 +565,7 @@ public class WorkOrderPlan extends BaseTransUI {
 	private void loadWorkOrderNo() {
 		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
 		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
-				null, null,null,null));
+				null, null,null,null,null));
 		cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
 	}
 	

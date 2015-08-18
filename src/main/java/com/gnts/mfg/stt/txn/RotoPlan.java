@@ -1332,7 +1332,7 @@ public class RotoPlan extends BaseTransUI {
 		Long clientId = (((ClientDM) cbClientId.getValue()).getClientId());
 		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
 		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null, "F",
-				null, null,null,null));
+				null, null,null,null,null));
 		cbWO.setContainerDataSource(beanWrkOrdHdr);
 	}
 	
@@ -1342,7 +1342,7 @@ public class RotoPlan extends BaseTransUI {
 	private void loadarmWorkOrderNo() {
 		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
 		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
-				null, null,null,null));
+				null, null,null,null,null));
 		cbarmwono.setContainerDataSource(beanWrkOrdHdr);
 	}
 	

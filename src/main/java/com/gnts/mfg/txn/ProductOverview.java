@@ -757,7 +757,7 @@ public class ProductOverview implements ClickListener {
 							rotoCheckDtlDM.getRotoid(), null, rotoCheckDtlDM.getProductId(), null).get(0);
 					try {
 						WorkOrderHdrDM workOrderHdrDM = serviceWrkOrdHdr.getWorkOrderHDRList(null,
-								null, null, null, null, null, "F", rotoPlanDtlDM.getWoId(), null, null, null).get(0);
+								null, null, null, null, null, "F", rotoPlanDtlDM.getWoId(), null, null, null,null).get(0);
 						loadEnquiryDetails(workOrderHdrDM.getEnquiryId(), rotoCheckDtlDM.getProductId());
 						getEnqWorkflowDetails(workOrderHdrDM.getEnquiryId());
 						getQATestHeaderDetails(workOrderHdrDM.getWorkOrdrId(), rotoCheckDtlDM.getProductId());

@@ -610,11 +610,11 @@ public class WorkOrder extends BaseTransUI {
 		if (name.equals("Reviewer")) {
 			wrkOdrHdrList = serviceWrkOrdHdr.getWorkOrderHDRList(companyid, branch, client,
 					(String) tfPlanRefNo.getValue(), (String) cbwrkOdrType.getValue(),
-					(String) cbWorkderStatus.getValue(), "F", null, null,null,null);
+					(String) cbWorkderStatus.getValue(), "F", null, null,null,null,null);
 		} else {
 			wrkOdrHdrList = serviceWrkOrdHdr.getWorkOrderHDRList(companyid, branch, client,
 					(String) tfPlanRefNo.getValue(), (String) cbwrkOdrType.getValue(),
-					(String) cbWorkderStatus.getValue(), "F", null, null,null,null);
+					(String) cbWorkderStatus.getValue(), "F", null, null,null,null,null);
 		}
 		recordCnt = wrkOdrHdrList.size();
 		beanWrkOdrHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);

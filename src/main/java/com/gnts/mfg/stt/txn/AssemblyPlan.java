@@ -1071,7 +1071,7 @@ public class AssemblyPlan extends BaseTransUI {
 		Long clientId = (((ClientDM) cbClientId.getValue()).getClientId());
 		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
 		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null, "F",
-				null, null,null,null));
+				null, null,null,null,null));
 		cbWorkOrder.setContainerDataSource(beanWrkOrdHdr);
 	}
 	

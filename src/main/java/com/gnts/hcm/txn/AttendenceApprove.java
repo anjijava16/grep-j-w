@@ -1,21 +1,3 @@
-/**
- * File Name	:	AttendenceProc.java
- * Description	:	This Screen Purpose for Modify the Attendence Process Details.Add the Attendence process should be directly added in DB.
- * Author		:	Mahaboob Subahan J
- * Date			:	Oct 09, 2014
- * Modification :   
- * Modified By  :   
- * Description 	:
- *
- * Copyright (C) 2012 GNTS Technologies. * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of GNTS Technologies.
- * 
- * Version      Date           	Modified By      		Remarks
- * 0.1          Oct 09, 2014   	Mahaboob Subahan J		Initial Version		
- * 
- */
 package com.gnts.hcm.txn;
 
 import java.io.FileNotFoundException;
@@ -63,19 +45,19 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Table.Align;
 
-public class AttendenceProc extends BaseUI {
+public class AttendenceApprove extends BaseUI {
 	private static final long serialVersionUID = 1118829691766246544L;
-	private Logger logger = Logger.getLogger(AttendenceProc.class);
+	private Logger logger = Logger.getLogger(AttendenceApprove.class);
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private PayPeriodService servicePayPeriod = (PayPeriodService) SpringContextHelper.getBean("PayPeriod");
@@ -103,7 +85,7 @@ public class AttendenceProc extends BaseUI {
 	private int recordCnt = 0;
 	
 	// Constructor received the parameters from Login UI class
-	public AttendenceProc() {
+	public AttendenceApprove() {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
@@ -115,7 +97,6 @@ public class AttendenceProc extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Painting Attendance Process UI");
 		// Material Components Definition
-		btnsaveAttenProc.setVisible(false);
 		cbPayPeried = new GERPComboBox("Pay Period");
 		cbPayPeried.setImmediate(true);
 		cbPayPeried.setNullSelectionAllowed(false);
@@ -194,7 +175,7 @@ public class AttendenceProc extends BaseUI {
 		cbEmployeeName.setNullSelectionAllowed(false);
 		loadEmployeeList();
 		btnSearchStaff = new GERPButton("Search Employee", "searchbt", this);
-		btnAttendanceProc = new GERPButton("Run Attendance Process", "savebt", this);
+		/*btnAttendanceProc = new GERPButton("Run Attendance Process", "savebt", this);
 		btnAttendanceProc.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -202,9 +183,8 @@ public class AttendenceProc extends BaseUI {
 			public void buttonClick(ClickEvent event) {
 				// TODO Auto-generated method stub
 				loadAttendenceProcess();
-				//new AttendenceApprove();
 			}
-		});
+		});*/
 		btnSearch.setVisible(false);
 		hlSearchLayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
@@ -244,13 +224,13 @@ public class AttendenceProc extends BaseUI {
 		hlAttendanceProc1.addComponent(btnSearchStaff);
 		hlAttendanceProc1.setComponentAlignment(btnSearchStaff, Alignment.MIDDLE_RIGHT);
 		hlAttendanceProc1.setSpacing(true);
-		HorizontalLayout hlAttendanceProc2 = new HorizontalLayout();
-		hlAttendanceProc2.addComponent(btnAttendanceProc);
-		hlAttendanceProc2.setSizeFull();
-		hlAttendanceProc2.setComponentAlignment(btnAttendanceProc, Alignment.MIDDLE_RIGHT);
+	//	HorizontalLayout hlAttendanceProc2 = new HorizontalLayout();
+	//	hlAttendanceProc2.addComponent(btnAttendanceProc);
+	//	hlAttendanceProc2.setSizeFull();
+	//	hlAttendanceProc2.setComponentAlignment(btnAttendanceProc, Alignment.MIDDLE_RIGHT);
 		VerticalLayout vlAttendanceProc1 = new VerticalLayout();
 		vlAttendanceProc1.addComponent(hlAttendanceProc1);
-		vlAttendanceProc1.addComponent(hlAttendanceProc2);
+	//	vlAttendanceProc1.addComponent(hlAttendanceProc2);
 		hlSearchLayout.addComponent(vlAttendanceProc1);
 		hlSearchLayout.setSpacing(true);
 		hlSearchLayout.setMargin(true);
@@ -413,44 +393,40 @@ public class AttendenceProc extends BaseUI {
 					System.out.println("payPeriodId=" + payPeriodId + "\n(Long) cbBranch.getValue()="
 							+ (Long) cbBranch.getValue() + "\nstartDate=" + startDate + "\nendDate=" + endDate
 							+ "\ncompanyId=" + companyId + "\nuserName=" + userName);
-					System.out.println("(Long)cbEmployeeName.getValue()"+(Long)cbEmployeeName.getValue());
-  SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yy");
-					    SimpleDateFormat format2 = new SimpleDateFormat("dd-MMM-yyyy");
-					    Date date = null;
-					    Date enddt=null;
-						try {
-							date = format2.parse(startDate);
-							enddt = format2.parse(endDate);
-						}
-						catch (java.text.ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						System.out.println("sadvf"+format1.format(date));
-
-						System.out.println("sadvf"+format1.format(enddt));
-						statement = connection
-								.prepareCall("{ ? = call pkg_hcm_core.fn_calc_staff_attend (?,?,?,?,?,?,?,?) }");
-						statement.registerOutParameter(1, Types.VARCHAR);
-						statement.setLong(2, payPeriodId);
-						statement.setLong(3, (Long)cbEmployeeName.getValue());
-						statement.setLong(4, (Long) cbBranch.getValue());
-						statement.setString(5,format1.format(date));
-						statement.setString(6, format1.format(enddt));
-						statement.setLong(7, companyId);
-						statement.setString(8, userName);
-						statement.registerOutParameter(9, Types.VARCHAR);
-						statement.execute();
-						funationStatus = statement.getString(1);
-						errorMsg = statement.getString(9);
-						System.out.println("funationStatus-->" + funationStatus);
-						System.out.println("errorMsg-->" + errorMsg);
+					System.out.println("(Long)cbEmployeeName.getValue()" + (Long) cbEmployeeName.getValue());
+					SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yy");
+					SimpleDateFormat format2 = new SimpleDateFormat("dd-MMM-yyyy");
+					Date date = null;
+					Date enddt = null;
+					try {
+						date = format2.parse(startDate);
+						enddt = format2.parse(endDate);
+					}
+					catch (java.text.ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					System.out.println("sadvf" + format1.format(date));
+					System.out.println("sadvf" + format1.format(enddt));
+					statement = connection
+							.prepareCall("{ ? = call pkg_hcm_core.fn_calc_staff_attend (?,?,?,?,?,?,?,?) }");
+					statement.registerOutParameter(1, Types.VARCHAR);
+					statement.setLong(2, payPeriodId);
+					statement.setLong(3, (Long) cbEmployeeName.getValue());
+					statement.setLong(4, (Long) cbBranch.getValue());
+					statement.setString(5, format1.format(date));
+					statement.setString(6, format1.format(enddt));
+					statement.setLong(7, companyId);
+					statement.setString(8, userName);
+					statement.registerOutParameter(9, Types.VARCHAR);
+					statement.execute();
+					funationStatus = statement.getString(1);
+					errorMsg = statement.getString(9);
+					System.out.println("funationStatus-->" + funationStatus);
+					System.out.println("errorMsg-->" + errorMsg);
 					connection.close();
-
 				}
-				
 			});
-			
 			cbPayPeried.setComponentError(null);
 			cbBranch.setComponentError(null);
 		}
@@ -504,8 +480,8 @@ public class AttendenceProc extends BaseUI {
 				cbPayPeried.setValue(editClientlist.getPayPeriodId());
 			}
 			attProcId = editClientlist.getAttProcId();
-			String startsdt = DateUtils.datetostringsimple(editClientlist.getAllStDt());
-			String enddst = DateUtils.datetostringsimple(editClientlist.getAllEndDt());
+			String startsdt = DateUtils.datetostring(editClientlist.getAllStDt());
+			String enddst = DateUtils.datetostring(editClientlist.getAllEndDt());
 			tfProcessPeriod.setReadOnly(false);
 			tfProcessPeriod.setValue(startsdt + " to " + enddst);
 			tfProcessPeriod.setReadOnly(true);
@@ -519,7 +495,11 @@ public class AttendenceProc extends BaseUI {
 	protected void saveattapprove() {
 		serviceAttendanceProcess.updateapproveAtt_proc(attProcId, "Approved", null, userName, "ATT_PROC");
 		serviceAttendanceProcess.updateapproveAtt_proc(attProcId, "Approved", null, userName, "ATT_ATTEN");
+		try{
 		serviceAttendanceProcess.procAttendenceApprove(companyId, (String) attProcId.toString(), userName);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		loadSrchRslt();
 	}
 	

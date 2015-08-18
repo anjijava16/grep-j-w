@@ -102,16 +102,16 @@ public class PurchasePO extends BaseUI {
 	// form layout for input controls for PO Details
 	private FormLayout flDtlColumn1, flDtlColumn2, flDtlColumn3, flDtlColumn4, flDtlColumn5;
 	// // User Input Components for PO Details
-	private ComboBox cbBranch, cbStatus, cbpoType, cbquoteNo;
+	private ComboBox cbBranch, cbStatus, cbpoType, cbQuoteNo;
 	private TextField tfpaymetTerms, tfFreightTerms, tfWarrentyTerms, tfDelTerms;
 	private TextField tfversionNo, tfBasictotal, tfpackingPer, tfPaclingValue, tfPONo, tfvendor;
 	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
 	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
 	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal;
 	private TextArea taRemark, taInvoiceOrd, taShpnAddr;
-	private CheckBox ckdutyexm, ckPdcRqu, ckCformRqu, ckcasePO;
+	private CheckBox ckDutyexm, ckPdcRqu, ckCformRqu, ckIsCasePO;
 	private PopupDateField dfPODt;
-	private Button btnsavepurQuote = new GERPButton("Add", "addbt", this);
+	private Button btnSavepurQuote = new GERPButton("Add", "addbt", this);
 	private VerticalLayout hlPODoc = new VerticalLayout();
 	// PODtl components
 	private ComboBox cbProduct, cbUom, cbPODtlStatus;
@@ -165,15 +165,15 @@ public class PurchasePO extends BaseUI {
 	private void buildView() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting Tax UI");
 		// Initialization for PurchasePO Details user input components
-		cbquoteNo = new ComboBox("Quote No");
-		cbquoteNo.setItemCaptionPropertyId("quoteRef");
-		cbquoteNo.setWidth("150");
-		cbquoteNo.setRequired(true);
+		cbQuoteNo = new ComboBox("Quote No");
+		cbQuoteNo.setItemCaptionPropertyId("quoteRef");
+		cbQuoteNo.setWidth("150");
+		cbQuoteNo.setRequired(true);
 		loadQuoteNoList();
 		tfvendor = new TextField("Vendor Name");
 		tfvendor.setWidth("150");
-		cbquoteNo.setImmediate(true);
-		cbquoteNo.addValueChangeListener(new Property.ValueChangeListener() {
+		cbQuoteNo.setImmediate(true);
+		cbQuoteNo.addValueChangeListener(new Property.ValueChangeListener() {
 			/**
 		 * 
 		 */
@@ -182,15 +182,15 @@ public class PurchasePO extends BaseUI {
 			public void valueChange(ValueChangeEvent event) {
 				// Get the selected item
 				Object itemId = event.getProperty().getValue();
-				BeanItem<?> item = (BeanItem<?>) cbquoteNo.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbQuoteNo.getItem(itemId);
 				if (item != null) {
 					tfvendor.setReadOnly(false);
-					tfvendor.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getVendorName());
+					tfvendor.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getVendorName());
 					tfvendor.setReadOnly(true);
 				}
 			}
 		});
-		cbquoteNo.addValueChangeListener(new Property.ValueChangeListener() {
+		cbQuoteNo.addValueChangeListener(new Property.ValueChangeListener() {
 			/**
 		 * 
 		 */
@@ -199,14 +199,14 @@ public class PurchasePO extends BaseUI {
 			public void valueChange(ValueChangeEvent event) {
 				// Get the selected item
 				Object itemId = event.getProperty().getValue();
-				BeanItem<?> item = (BeanItem<?>) cbquoteNo.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbQuoteNo.getItem(itemId);
 				if (item != null) {
 					loadProduct();
 					loadQuoteDetails();
 				}
 			}
 		});
-		cbquoteNo.addValueChangeListener(new Property.ValueChangeListener() {
+		cbQuoteNo.addValueChangeListener(new Property.ValueChangeListener() {
 			/**
 		 * 
 		 */
@@ -215,7 +215,7 @@ public class PurchasePO extends BaseUI {
 			public void valueChange(ValueChangeEvent event) {
 				// Get the selected item
 				Object itemId = event.getProperty().getValue();
-				BeanItem<?> item = (BeanItem<?>) cbquoteNo.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbQuoteNo.getItem(itemId);
 				if (item != null) {
 				}
 			}
@@ -280,10 +280,10 @@ public class PurchasePO extends BaseUI {
 		tfFreightTerms = new TextField("Freight Terms");
 		tfWarrentyTerms = new TextField("Warrenty Terms");
 		tfDelTerms = new TextField("Delivery Terms");
-		ckdutyexm = new CheckBox("Duty Exempted");
+		ckDutyexm = new CheckBox("Duty Exempted");
 		ckCformRqu = new CheckBox("Cfrom Req");
 		ckPdcRqu = new CheckBox("PDC Req");
-		ckcasePO = new CheckBox("Cash PO");
+		ckIsCasePO = new CheckBox("Cash PO");
 		cbBranch = new ComboBox("Branch Name");
 		cbBranch.setWidth("150");
 		cbBranch.setItemCaptionPropertyId("branchName");
@@ -346,7 +346,7 @@ public class PurchasePO extends BaseUI {
 		taPODtlRemark.setHeight("50");
 		cbPODtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbPODtlStatus.setWidth("130");
-		btnsavepurQuote.addClickListener(new ClickListener() {
+		btnSavepurQuote.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
 			
@@ -366,13 +366,13 @@ public class PurchasePO extends BaseUI {
 			public void itemClick(ItemClickEvent event) {
 				if (tblPurDetails.isSelected(event.getItemId())) {
 					tblPurDetails.setImmediate(true);
-					btnsavepurQuote.setCaption("Add");
-					btnsavepurQuote.setStyleName("savebt");
+					btnSavepurQuote.setCaption("Add");
+					btnSavepurQuote.setStyleName("savebt");
 					poDtlresetFields();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
-					btnsavepurQuote.setCaption("Update");
-					btnsavepurQuote.setStyleName("savebt");
+					btnSavepurQuote.setCaption("Update");
+					btnSavepurQuote.setStyleName("savebt");
 					editPODtl();
 				}
 			}
@@ -383,7 +383,7 @@ public class PurchasePO extends BaseUI {
 		resetFields();
 		loadSrchRslt();
 		loadPurDtl();
-		btnsavepurQuote.setStyleName("add");
+		btnSavepurQuote.setStyleName("add");
 	}
 	
 	private void assembleSearchLayout() {
@@ -427,10 +427,10 @@ public class PurchasePO extends BaseUI {
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		flColumn1.addComponent(cbBranch);
-		flColumn1.addComponent(cbquoteNo);
+		flColumn1.addComponent(cbQuoteNo);
 		flColumn1.addComponent(tfvendor);
 		flColumn1.addComponent(cbpoType);
-		flColumn1.addComponent(ckcasePO);
+		flColumn1.addComponent(ckIsCasePO);
 		flColumn1.addComponent(tfPONo);
 		flColumn1.addComponent(dfPODt);
 		flColumn1.addComponent(tfversionNo);
@@ -495,7 +495,7 @@ public class PurchasePO extends BaseUI {
 		flColumn3.addComponent(tfWarrentyTerms);
 		flColumn4.addComponent(tfDelTerms);
 		flColumn4.addComponent(cbStatus);
-		flColumn4.addComponent(ckdutyexm);
+		flColumn4.addComponent(ckDutyexm);
 		flColumn4.addComponent(ckCformRqu);
 		flColumn4.addComponent(ckPdcRqu);
 		flColumn4.addComponent(hlPODoc);
@@ -527,7 +527,7 @@ public class PurchasePO extends BaseUI {
 		flDtlColumn3.addComponent(tfBasicValue);
 		flDtlColumn3.addComponent(cbPODtlStatus);
 		flDtlColumn4.addComponent(taPODtlRemark);
-		flDtlColumn5.addComponent(btnsavepurQuote);
+		flDtlColumn5.addComponent(btnSavepurQuote);
 		HorizontalLayout hlSmsQuotDtl = new HorizontalLayout();
 		hlSmsQuotDtl.addComponent(flDtlColumn1);
 		hlSmsQuotDtl.addComponent(flDtlColumn2);
@@ -555,67 +555,67 @@ public class PurchasePO extends BaseUI {
 		hlUserInputLayout.setWidth("100%");
 		hlUserInputLayout.setMargin(true);
 		hlUserInputLayout.setSpacing(true);
-		btnsavepurQuote.setStyleName("add");
+		btnSavepurQuote.setStyleName("add");
 	}
 	
 	private void loadQuoteDetails() {
 		// TODO Auto-generated method stub
 		tfBasictotal.setReadOnly(false);
-		tfBasictotal.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getBasicTotal().toString());
+		tfBasictotal.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getBasicTotal().toString());
 		tfBasictotal.setReadOnly(true);
 		tfversionNo.setReadOnly(false);
-		tfversionNo.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getQuoteVersion().toString());
+		tfversionNo.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getQuoteVersion().toString());
 		tfversionNo.setReadOnly(true);
-		taRemark.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getRemarks().toString());
-		tfpackingPer.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getPackingPrcnt().toString());
+		taRemark.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getRemarks().toString());
+		tfpackingPer.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getPackingPrcnt().toString());
 		tfPaclingValue.setReadOnly(false);
-		tfPaclingValue.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getPackinValue().toString());
+		tfPaclingValue.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getPackinValue().toString());
 		tfPaclingValue.setReadOnly(true);
 		tfSubTotal.setReadOnly(false);
-		tfSubTotal.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getSubTotal().toString());
+		tfSubTotal.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getSubTotal().toString());
 		tfSubTotal.setReadOnly(true);
-		tfVatPer.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getVatPrcnt().toString());
+		tfVatPer.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getVatPrcnt().toString());
 		tfVatValue.setReadOnly(false);
-		tfVatValue.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getVatValue().toString());
+		tfVatValue.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getVatValue().toString());
 		tfVatValue.setReadOnly(true);
-		tfEDPer.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getEdPrcnt().toString());
+		tfEDPer.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getEdPrcnt().toString());
 		tfEDValue.setReadOnly(false);
-		tfEDValue.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getEdValue().toString());
+		tfEDValue.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getEdValue().toString());
 		tfEDValue.setReadOnly(true);
-		tfHEDPer.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getHeadPrcnt().toString());
+		tfHEDPer.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getHeadPrcnt().toString());
 		tfHEDValue.setReadOnly(false);
-		tfHEDValue.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getHedValue().toString());
+		tfHEDValue.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getHedValue().toString());
 		tfHEDValue.setReadOnly(true);
-		tfCessPer.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getCessPrcnt().toString());
+		tfCessPer.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getCessPrcnt().toString());
 		tfCessValue.setReadOnly(false);
-		tfCessValue.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getCessValue().toString());
+		tfCessValue.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getCessValue().toString());
 		tfCessValue.setReadOnly(true);
-		tfCstPer.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getCstPrcnt().toString());
+		tfCstPer.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getCstPrcnt().toString());
 		tfCstValue.setReadOnly(false);
-		tfCstValue.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getCstValue().toString());
+		tfCstValue.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getCstValue().toString());
 		tfCstValue.setReadOnly(true);
 		tfSubTaxTotal.setReadOnly(false);
-		tfSubTaxTotal.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getSubTaxTotal().toString());
+		tfSubTaxTotal.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getSubTaxTotal().toString());
 		tfSubTaxTotal.setReadOnly(true);
-		tfFreightPer.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getFreightPrcnt().toString());
+		tfFreightPer.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getFreightPrcnt().toString());
 		tfFreightValue.setReadOnly(false);
-		tfFreightValue.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getFreightValue().toString());
+		tfFreightValue.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getFreightValue().toString());
 		tfFreightValue.setReadOnly(true);
-		tfOtherPer.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getOtherPrcnt().toString());
+		tfOtherPer.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getOtherPrcnt().toString());
 		tfOtherValue.setReadOnly(false);
-		tfOtherValue.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getOtherValue().toString());
+		tfOtherValue.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getOtherValue().toString());
 		tfOtherValue.setReadOnly(true);
 		tfGrandtotal.setReadOnly(false);
-		tfGrandtotal.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getGrandTotal().toString());
+		tfGrandtotal.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getGrandTotal().toString());
 		tfGrandtotal.setReadOnly(true);
-		tfpaymetTerms.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getPaymentTerms().toString());
-		tfFreightTerms.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getFreightTerms().toString());
-		tfWarrentyTerms.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getWarrentyTerms().toString());
-		tfDelTerms.setValue(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getDeliveryTerms().toString());
+		tfpaymetTerms.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getPaymentTerms().toString());
+		tfFreightTerms.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getFreightTerms().toString());
+		tfWarrentyTerms.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getWarrentyTerms().toString());
+		tfDelTerms.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getDeliveryTerms().toString());
 		// load quote details
 		listPODetails = new ArrayList<PurchasePODtlDM>();
 		for (PurchaseQuotDtlDM purchaseQuotDtlDM : servicePurchaseQuoteDtl.getPurchaseQuotDtlList(null,
-				((PurchaseQuotHdrDM) cbquoteNo.getValue()).getQuoteId(), null)) {
+				((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getQuoteId(), null)) {
 			PurchasePODtlDM purchasePODtlDM = new PurchasePODtlDM();
 			purchasePODtlDM.setProductId(purchaseQuotDtlDM.getProductId());
 			purchasePODtlDM.setProductName(purchaseQuotDtlDM.getProductName());
@@ -717,7 +717,7 @@ public class PurchasePO extends BaseUI {
 			BeanItemContainer<PurchaseQuotDtlDM> beanPlnDtl = new BeanItemContainer<PurchaseQuotDtlDM>(
 					PurchaseQuotDtlDM.class);
 			beanPlnDtl.addAll(servicePurchaseQuoteDtl.getPurchaseQuotDtlList(null,
-					((PurchaseQuotHdrDM) cbquoteNo.getValue()).getQuoteId(), null));
+					((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getQuoteId(), null));
 			cbProduct.setContainerDataSource(beanPlnDtl);
 		}
 		catch (Exception e) {
@@ -746,7 +746,7 @@ public class PurchasePO extends BaseUI {
 					PurchaseQuotHdrDM.class);
 			beanQuote.addAll(servicepurchaeQuoteHdr.getPurchaseQuotHdrList(null, companyid, null, null, "Progress",
 					null, null, null, "P"));
-			cbquoteNo.setContainerDataSource(beanQuote);
+			cbQuoteNo.setContainerDataSource(beanQuote);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -837,21 +837,21 @@ public class PurchasePO extends BaseUI {
 				tfvendor.setValue(purchasePOHdrDM.getVendorName());
 				tfvendor.setReadOnly(true);
 			}
-			Long uom = purchasePOHdrDM.getQuoteId();
-			Collection<?> uomid = cbquoteNo.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long quoteid = purchasePOHdrDM.getQuoteId();
+			Collection<?> quoteids = cbQuoteNo.getItemIds();
+			for (Iterator<?> iterator = quoteids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbquoteNo.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbQuoteNo.getItem(itemId);
 				// Get the actual bean and use the data
 				PurchaseQuotHdrDM st = (PurchaseQuotHdrDM) item.getBean();
-				if (uom != null && uom.equals(st.getQuoteId())) {
-					cbquoteNo.setValue(itemId);
+				if (quoteid != null && quoteid.equals(st.getQuoteId())) {
+					cbQuoteNo.setValue(itemId);
 				}
 			}
 			if (purchasePOHdrDM.getDutyExempt().equals("Y")) {
-				ckdutyexm.setValue(true);
+				ckDutyexm.setValue(true);
 			} else {
-				ckdutyexm.setValue(false);
+				ckDutyexm.setValue(false);
 			}
 			if (purchasePOHdrDM.getCformReqd().equals("Y")) {
 				ckCformRqu.setValue(true);
@@ -864,9 +864,9 @@ public class PurchasePO extends BaseUI {
 				ckPdcRqu.setValue(false);
 			}
 			if (purchasePOHdrDM.getCasePoYn().equals("Y")) {
-				ckcasePO.setValue(true);
+				ckIsCasePO.setValue(true);
 			} else {
-				ckcasePO.setValue(false);
+				ckIsCasePO.setValue(false);
 			}
 			cbStatus.setValue(purchasePOHdrDM.getpOStatus());
 			listPODetails = servicePurchasePODtl.getPurchaseOrdDtlList(null, poId, null, null);
@@ -983,7 +983,7 @@ public class PurchasePO extends BaseUI {
 		catch (Exception e) {
 		}
 		resetFields();
-		btnsavepurQuote.setCaption("Add");
+		btnSavepurQuote.setCaption("Add");
 		tblPurDetails.setVisible(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
 				null);
@@ -1016,7 +1016,7 @@ public class PurchasePO extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		cbBranch.setComponentError(null);
 		cbpoType.setComponentError(null);
-		cbquoteNo.setComponentError(null);
+		cbQuoteNo.setComponentError(null);
 		Boolean errorFlag = false;
 		if ((cbBranch.getValue() == null)) {
 			cbBranch.setComponentError(new UserError(GERPErrorCodes.BRANCH_NAME));
@@ -1026,8 +1026,8 @@ public class PurchasePO extends BaseUI {
 			cbpoType.setComponentError(new UserError(GERPErrorCodes.ORDER_TYPE));
 			errorFlag = true;
 		}
-		if ((cbquoteNo.getValue() == null)) {
-			cbquoteNo.setComponentError(new UserError(GERPErrorCodes.QUOTE_NO));
+		if ((cbQuoteNo.getValue() == null)) {
+			cbQuoteNo.setComponentError(new UserError(GERPErrorCodes.QUOTE_NO));
 			errorFlag = true;
 		}
 		if (errorFlag) {
@@ -1094,9 +1094,9 @@ public class PurchasePO extends BaseUI {
 			if (tfDelTerms.getValue() != null) {
 				purchaseHdrobj.setDlvryTerms(tfDelTerms.getValue().toString());
 			}
-			if (ckdutyexm.getValue().equals(true)) {
+			if (ckDutyexm.getValue().equals(true)) {
 				purchaseHdrobj.setDutyExempt("Y");
-			} else if (ckdutyexm.getValue().equals(false)) {
+			} else if (ckDutyexm.getValue().equals(false)) {
 				purchaseHdrobj.setDutyExempt("N");
 			}
 			if (ckCformRqu.getValue().equals(true)) {
@@ -1109,13 +1109,13 @@ public class PurchasePO extends BaseUI {
 			} else if (ckPdcRqu.getValue().equals(false)) {
 				purchaseHdrobj.setpDCReqd("N");
 			}
-			if (ckcasePO.getValue().equals(true)) {
+			if (ckIsCasePO.getValue().equals(true)) {
 				purchaseHdrobj.setCasePoYn("Y");
-			} else if (ckcasePO.getValue().equals(false)) {
+			} else if (ckIsCasePO.getValue().equals(false)) {
 				purchaseHdrobj.setCasePoYn("N");
 			}
-			if (cbquoteNo.getValue() != null) {
-				purchaseHdrobj.setQuoteId(((PurchaseQuotHdrDM) cbquoteNo.getValue()).getQuoteId());
+			if (cbQuoteNo.getValue() != null) {
+				purchaseHdrobj.setQuoteId(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getQuoteId());
 			}
 			purchaseHdrobj.setShippingAddr(taShpnAddr.getValue());
 			purchaseHdrobj.setInvoiceAddress(taInvoiceOrd.getValue());
@@ -1238,7 +1238,7 @@ public class PurchasePO extends BaseUI {
 		tfDelTerms.setValue("");
 		tfCstValue.setReadOnly(false);
 		tfCstValue.setValue("0");
-		ckdutyexm.setValue(false);
+		ckDutyexm.setValue(false);
 		tfEDValue.setReadOnly(false);
 		tfEDValue.setValue("0");
 		tfWarrentyTerms.setValue("");
@@ -1250,7 +1250,7 @@ public class PurchasePO extends BaseUI {
 		tfSubTaxTotal.setValue("0");
 		tfversionNo.setReadOnly(false);
 		tfversionNo.setValue("0");
-		cbquoteNo.setValue(null);
+		cbQuoteNo.setValue(null);
 		tfpaymetTerms.setValue("");
 		tfPaclingValue.setReadOnly(false);
 		tfPaclingValue.setValue("0");
@@ -1279,9 +1279,9 @@ public class PurchasePO extends BaseUI {
 		tfvendor.setReadOnly(true);
 		taInvoiceOrd.setValue("");
 		taShpnAddr.setValue("");
-		ckcasePO.setValue(false);
+		ckIsCasePO.setValue(false);
 		cbpoType.setComponentError(null);
-		cbquoteNo.setComponentError(null);
+		cbQuoteNo.setComponentError(null);
 		cbProduct.setContainerDataSource(null);
 	}
 	
@@ -1302,7 +1302,7 @@ public class PurchasePO extends BaseUI {
 		tfBasicValue.setReadOnly(true);
 		taPODtlRemark.setValue("");
 		cbPODtlStatus.setValue(cbPODtlStatus.getItemIds().iterator().next());
-		btnsavepurQuote.setCaption("Add");
+		btnSavepurQuote.setCaption("Add");
 	}
 	
 	private void getCalculatedValues() {

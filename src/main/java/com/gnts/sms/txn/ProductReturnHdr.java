@@ -105,8 +105,8 @@ public class ProductReturnHdr extends BaseUI {
 	private ComboBox cbprdrtnstatus = new GERPComboBox("Status", BASEConstants.T_SMS_PRODUCT_RETURN_HDR,
 			BASEConstants.INV_STATUS);
 	private Button btnaddreturndtl = new GERPButton("Add", "addbt", this);
-	private Table tblrepdtls = new GERPTable();
-	private List<ProductReturnDtlDM> prodreturnlist = new ArrayList<ProductReturnDtlDM>();
+	private Table tblProdRetDetails = new GERPTable();
+	private List<ProductReturnDtlDM> listProdReturn = new ArrayList<ProductReturnDtlDM>();
 	private BeanItemContainer<ProductReturnHdrDM> beanproductreturn = null;
 	// Search control layout
 	private GERPAddEditHLayout hlSearchLayout;
@@ -204,13 +204,13 @@ public class ProductReturnHdr extends BaseUI {
 		});
 		btndelete.setEnabled(false);
 		// ClickListener for Product Return dtls
-		tblrepdtls.addItemClickListener(new ItemClickListener() {
+		tblProdRetDetails.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblrepdtls.isSelected(event.getItemId())) {
-					tblrepdtls.setImmediate(true);
+				if (tblProdRetDetails.isSelected(event.getItemId())) {
+					tblProdRetDetails.setImmediate(true);
 					btnaddreturndtl.setCaption("Add");
 					btnaddreturndtl.setStyleName("savebt");
 					btndelete.setEnabled(false);
@@ -307,7 +307,7 @@ public class ProductReturnHdr extends BaseUI {
 		hl2.addComponent(fl14);
 		VerticalLayout hltable = new VerticalLayout();
 		hltable.addComponent(hl2);
-		hltable.addComponent(tblrepdtls);
+		hltable.addComponent(tblProdRetDetails);
 		hltable.setWidth("100%");
 		hltable.setSizeFull();
 		// Vertical layout
@@ -378,22 +378,22 @@ public class ProductReturnHdr extends BaseUI {
 	
 	// Load prodcut Return dtl
 	private void loadreturndtls(boolean fromdb) {
-		tblrepdtls.removeAllItems();
-		tblrepdtls.setPageLength(6);
+		tblProdRetDetails.removeAllItems();
+		tblProdRetDetails.setPageLength(6);
 		if (fromdb) {
-			prodreturnlist = new ArrayList<ProductReturnDtlDM>();
-			prodreturnlist = serviceprodcutreturndtl.getprodReturndtls(null, prodreturnid, null, null, "F");
+			listProdReturn = new ArrayList<ProductReturnDtlDM>();
+			listProdReturn = serviceprodcutreturndtl.getprodReturndtls(null, prodreturnid, null, null, "F");
 		}
-		recordcntdtls = prodreturnlist.size();
+		recordcntdtls = listProdReturn.size();
 		beanprodctretdtls = new BeanItemContainer<ProductReturnDtlDM>(ProductReturnDtlDM.class);
-		beanprodctretdtls.addAll(prodreturnlist);
-		tblrepdtls.setContainerDataSource(beanprodctretdtls);
-		tblrepdtls.setVisibleColumns(new Object[] { "prodrtndtlsid", "prodname", "stocktype", "returnoty",
+		beanprodctretdtls.addAll(listProdReturn);
+		tblProdRetDetails.setContainerDataSource(beanprodctretdtls);
+		tblProdRetDetails.setVisibleColumns(new Object[] { "prodrtndtlsid", "prodname", "stocktype", "returnoty",
 				"returnremarks", "prdrtnstatus", "lastupdateddt", "lastuupdatedby" });
-		tblrepdtls.setColumnHeaders(new String[] { "Ref.Id", "Product Name", "Stock Type", "Return Quantity",
+		tblProdRetDetails.setColumnHeaders(new String[] { "Ref.Id", "Product Name", "Stock Type", "Return Quantity",
 				"Return Remarks", "Status", "Last Updated Date", "Last Updated By" });
-		tblrepdtls.setColumnAlignment("productreturnId", Align.RIGHT);
-		tblrepdtls.setColumnFooter("lastuupdatedby", "No.of Records :" + recordcntdtls);
+		tblProdRetDetails.setColumnAlignment("productreturnId", Align.RIGHT);
+		tblProdRetDetails.setColumnFooter("lastuupdatedby", "No.of Records :" + recordcntdtls);
 	}
 	
 	protected void saveprodretdtls() {
@@ -401,9 +401,9 @@ public class ProductReturnHdr extends BaseUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "save prodloadPurDtluct Return dtsl");
 			ProductReturnDtlDM returnDtlDM = new ProductReturnDtlDM();
-			if (tblrepdtls.getValue() != null) {
-				returnDtlDM = beanprodctretdtls.getItem(tblrepdtls.getValue()).getBean();
-				prodreturnlist.remove(returnDtlDM);
+			if (tblProdRetDetails.getValue() != null) {
+				returnDtlDM = beanprodctretdtls.getItem(tblProdRetDetails.getValue()).getBean();
+				listProdReturn.remove(returnDtlDM);
 			}
 			returnDtlDM.setProdid(((ProductDM) cbdtlprodid.getValue()).getProdid());
 			returnDtlDM.setProdname(((ProductDM) cbdtlprodid.getValue()).getProdname());
@@ -423,7 +423,7 @@ public class ProductReturnHdr extends BaseUI {
 			fio.close();
 			returnDtlDM.setLastupdateddt(DateUtils.getcurrentdate());
 			returnDtlDM.setLastuupdatedby(username);
-			prodreturnlist.add(returnDtlDM);
+			listProdReturn.add(returnDtlDM);
 			prodretdtlsResetfields();
 			loadreturndtls(false);
 		}
@@ -466,7 +466,7 @@ public class ProductReturnHdr extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		hlUserInputLayout.removeAllComponents();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		tblrepdtls.setVisible(true);
+		tblProdRetDetails.setVisible(true);
 		hlUserInputLayout.setSpacing(true);
 		hlCmdBtnLayout.setVisible(false);
 		tblMstScrSrchRslt.setVisible(false);
@@ -481,7 +481,7 @@ public class ProductReturnHdr extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		hlUserInputLayout.removeAllComponents();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		tblrepdtls.setVisible(true);
+		tblProdRetDetails.setVisible(true);
 		hlUserInputLayout.setSpacing(true);
 		hlCmdBtnLayout.setVisible(false);
 		tblMstScrSrchRslt.setVisible(false);
@@ -504,7 +504,7 @@ public class ProductReturnHdr extends BaseUI {
 				dfretdocdate.setValue(productReturnHdrDM.getReturnDate());
 				tfreturnremark.setValue(productReturnHdrDM.getReturnRemarks());
 				cbprdstatus.setValue(productReturnHdrDM.getPrdrtnStatus());
-				prodreturnlist = serviceprodcutreturndtl.getprodReturndtls(null, productreturnId, null, null, null);
+				listProdReturn = serviceprodcutreturndtl.getprodReturndtls(null, productreturnId, null, null, null);
 				System.out.println("prodreturnid->" + prodreturnid);
 			}
 		}
@@ -515,8 +515,8 @@ public class ProductReturnHdr extends BaseUI {
 	
 	private void editproductreturndtl() {
 		try {
-			if (tblrepdtls.getValue() != null) {
-				ProductReturnDtlDM productReturnDtlDM = beanprodctretdtls.getItem(tblrepdtls.getValue()).getBean();
+			if (tblProdRetDetails.getValue() != null) {
+				ProductReturnDtlDM productReturnDtlDM = beanprodctretdtls.getItem(tblProdRetDetails.getValue()).getBean();
 				Long prodid = productReturnDtlDM.getProdid();
 				Collection<?> prodids = cbdtlprodid.getItemIds();
 				for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
@@ -606,7 +606,7 @@ public class ProductReturnHdr extends BaseUI {
 			rethdrobj.setLastUpdatedby(username);
 			serviceProductReturnHdr.saveorupdateproreturnhdr(rethdrobj);
 			@SuppressWarnings("unchecked")
-			Collection<ProductReturnDtlDM> returndtls = (Collection<ProductReturnDtlDM>) tblrepdtls.getVisibleItemIds();
+			Collection<ProductReturnDtlDM> returndtls = (Collection<ProductReturnDtlDM>) tblProdRetDetails.getVisibleItemIds();
 			for (ProductReturnDtlDM saveprodretdtls : (Collection<ProductReturnDtlDM>) returndtls) {
 				saveprodretdtls.setProdreturnid(Long.valueOf(rethdrobj.getProductreturnId()));
 				serviceprodcutreturndtl.saveorupdateProdRetdtls(saveprodretdtls);
@@ -654,15 +654,15 @@ public class ProductReturnHdr extends BaseUI {
 		cbbranch.setComponentError(null);
 		cbInvoiceid.setComponentError(null);
 		new UploadUI(hlimage);
-		prodreturnlist = new ArrayList<ProductReturnDtlDM>();
-		tblrepdtls.removeAllItems();
+		listProdReturn = new ArrayList<ProductReturnDtlDM>();
+		tblProdRetDetails.removeAllItems();
 	}
 	
 	private void deleteDetails() {
 		ProductReturnDtlDM save = new ProductReturnDtlDM();
-		if (tblrepdtls.getValue() != null) {
-			save = beanprodctretdtls.getItem(tblrepdtls.getValue()).getBean();
-			prodreturnlist.remove(save);
+		if (tblProdRetDetails.getValue() != null) {
+			save = beanprodctretdtls.getItem(tblProdRetDetails.getValue()).getBean();
+			listProdReturn.remove(save);
 			prodretdtlsResetfields();
 			loadreturndtls(false);
 			btndelete.setEnabled(false);

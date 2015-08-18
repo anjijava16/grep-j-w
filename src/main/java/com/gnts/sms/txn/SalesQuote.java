@@ -136,7 +136,7 @@ public class SalesQuote extends BaseTransUI {
 	private GERPButton btnsavepurQuote = new GERPButton("Add", "addbt", this);
 	private VerticalLayout hlquoteDoc = new VerticalLayout();
 	// Sales QuoteDtl components
-	private ComboBox cbproduct, cbUom, cbdtlstatus;
+	private ComboBox cbProduct, cbUom, cbdtlstatus;
 	private TextField tfQuoteQunt, tfUnitRate, tfBasicValue, tfcustprodcode;
 	private TextArea tacustproddesc;
 	private GERPTextField tfCustomField1 = new GERPTextField("Part Number");
@@ -399,39 +399,39 @@ public class SalesQuote extends BaseTransUI {
 		}
 		cbStatus.setWidth("150");
 		// Sales QuoteDtl Comp
-		cbproduct = new GERPComboBox("Product Name");
-		cbproduct.setItemCaptionPropertyId("prodname");
-		cbproduct.setWidth("130");
-		cbproduct.addValueChangeListener(new ValueChangeListener() {
+		cbProduct = new GERPComboBox("Product Name");
+		cbProduct.setItemCaptionPropertyId("prodname");
+		cbProduct.setWidth("130");
+		cbProduct.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (cbproduct.getValue() != null) {
+				if (cbProduct.getValue() != null) {
 					tfQuoteQunt.setReadOnly(false);
-					if (((SmsEnquiryDtlDM) cbproduct.getValue()).getEnquiryqty() != null) {
-						tfQuoteQunt.setValue(((SmsEnquiryDtlDM) cbproduct.getValue()).getEnquiryqty() + "");
+					if (((SmsEnquiryDtlDM) cbProduct.getValue()).getEnquiryqty() != null) {
+						tfQuoteQunt.setValue(((SmsEnquiryDtlDM) cbProduct.getValue()).getEnquiryqty() + "");
 					} else {
 						tfQuoteQunt.setValue("0");
 					}
-					tfQuoteQunt.setCaption("Quote Qty(" + ((SmsEnquiryDtlDM) cbproduct.getValue()).getUom() + ")");
-					if (((SmsEnquiryDtlDM) cbproduct.getValue()).getCustprodcode() != null) {
-						tfcustprodcode.setValue(((SmsEnquiryDtlDM) cbproduct.getValue()).getCustprodcode());
+					tfQuoteQunt.setCaption("Quote Qty(" + ((SmsEnquiryDtlDM) cbProduct.getValue()).getUom() + ")");
+					if (((SmsEnquiryDtlDM) cbProduct.getValue()).getCustprodcode() != null) {
+						tfcustprodcode.setValue(((SmsEnquiryDtlDM) cbProduct.getValue()).getCustprodcode());
 					} else {
 						tfcustprodcode.setValue("");
 					}
-					if (((SmsEnquiryDtlDM) cbproduct.getValue()).getCustproddesc() != null) {
-						tacustproddesc.setValue(((SmsEnquiryDtlDM) cbproduct.getValue()).getCustproddesc());
+					if (((SmsEnquiryDtlDM) cbProduct.getValue()).getCustproddesc() != null) {
+						tacustproddesc.setValue(((SmsEnquiryDtlDM) cbProduct.getValue()).getCustproddesc());
 					} else {
 						tfcustprodcode.setValue("");
 					}
-					if (((SmsEnquiryDtlDM) cbproduct.getValue()).getCustomField1() != null) {
-						tfCustomField1.setValue(((SmsEnquiryDtlDM) cbproduct.getValue()).getCustomField1());
+					if (((SmsEnquiryDtlDM) cbProduct.getValue()).getCustomField1() != null) {
+						tfCustomField1.setValue(((SmsEnquiryDtlDM) cbProduct.getValue()).getCustomField1());
 					} else {
 						tfCustomField1.setValue("");
 					}
-					if (((SmsEnquiryDtlDM) cbproduct.getValue()).getCustomField2() != null) {
-						tfCustomField2.setValue(((SmsEnquiryDtlDM) cbproduct.getValue()).getCustomField2());
+					if (((SmsEnquiryDtlDM) cbProduct.getValue()).getCustomField2() != null) {
+						tfCustomField2.setValue(((SmsEnquiryDtlDM) cbProduct.getValue()).getCustomField2());
 					} else {
 						tfCustomField2.setValue("");
 					}
@@ -549,7 +549,7 @@ public class SalesQuote extends BaseTransUI {
 				if (cbQuotationType.getValue() != null && cbQuotationType.getValue() != "Enquiry") {
 					loadProductList(true);
 				} else {
-					cbproduct.setContainerDataSource(null);
+					cbProduct.setContainerDataSource(null);
 				}
 			}
 		});
@@ -745,7 +745,7 @@ public class SalesQuote extends BaseTransUI {
 		flDtlColumn2 = new FormLayout();
 		flDtlColumn3 = new FormLayout();
 		flDtlColumn4 = new FormLayout();
-		flDtlColumn1.addComponent(cbproduct);
+		flDtlColumn1.addComponent(cbProduct);
 		flDtlColumn1.addComponent(tfQuoteQunt);
 		flDtlColumn1.addComponent(tfUnitRate);
 		flDtlColumn2.addComponent(tfBasicValue);
@@ -1137,14 +1137,14 @@ public class SalesQuote extends BaseTransUI {
 		if (tblsmsQuoteDtl.getValue() != null) {
 			SmsQuoteDtlDM quoteDtlDM = beansmsQuoteDtl.getItem(tblsmsQuoteDtl.getValue()).getBean();
 			Long prodid = quoteDtlDM.getProductid();
-			Collection<?> prodids = cbproduct.getItemIds();
+			Collection<?> prodids = cbProduct.getItemIds();
 			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbproduct.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
 				// Get the actual bean and use the data
 				SmsEnquiryDtlDM st = (SmsEnquiryDtlDM) item.getBean();
 				if (prodid != null && prodid.equals(st.getProductid())) {
-					cbproduct.setValue(itemId);
+					cbProduct.setValue(itemId);
 				}
 			}
 			if (quoteDtlDM.getQuoteqty() != null) {
@@ -1183,8 +1183,8 @@ public class SalesQuote extends BaseTransUI {
 	
 	protected void quoteDtlresetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		cbproduct.setValue(null);
-		cbproduct.setComponentError(null);
+		cbProduct.setValue(null);
+		cbProduct.setComponentError(null);
 		cbUom.setValue(null);
 		cbUom.setComponentError(null);
 		tfBasicValue.setComponentError(null);
@@ -1319,7 +1319,7 @@ public class SalesQuote extends BaseTransUI {
 			BeanItemContainer<SmsEnquiryDtlDM> beanPlnDtl = new BeanItemContainer<SmsEnquiryDtlDM>(
 					SmsEnquiryDtlDM.class);
 			beanPlnDtl.addAll(serviceEnqDetail.getsmsenquirydtllist(null, enquid, null, null, null, null));
-			cbproduct.setContainerDataSource(beanPlnDtl);
+			cbProduct.setContainerDataSource(beanPlnDtl);
 		}
 		catch (Exception e) {
 		}
@@ -1358,7 +1358,7 @@ public class SalesQuote extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		hlCmdBtnLayout.setVisible(false);
 		cbdtlstatus.setValue(cbdtlstatus.getItemIds().iterator().next());
-		cbproduct.setRequired(true);
+		cbProduct.setRequired(true);
 		cbUom.setRequired(true);
 		hlUserInputLayout.removeAllComponents();
 		// remove the components in the search layout and input controls in the same container
@@ -1426,7 +1426,7 @@ public class SalesQuote extends BaseTransUI {
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
 		tfQuoteNumber.setReadOnly(false);
-		cbproduct.setRequired(true);
+		cbProduct.setRequired(true);
 		cbUom.setRequired(true);
 		lblNotification.setValue("");
 		assembleInputUserLayout();
@@ -1452,7 +1452,7 @@ public class SalesQuote extends BaseTransUI {
 			errorFlag = true;
 		}
 		if (tblsmsQuoteDtl.size() == 0) {
-			cbproduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
+			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
 			errorFlag = true;
 		}
 		logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -1465,11 +1465,11 @@ public class SalesQuote extends BaseTransUI {
 	// Validation for Sales Quote Details
 	private boolean dtlValidation() {
 		boolean isValid = true;
-		if (cbproduct.getValue() == null) {
-			cbproduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
+		if (cbProduct.getValue() == null) {
+			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
 			isValid = false;
 		} else {
-			cbproduct.setComponentError(null);
+			cbProduct.setComponentError(null);
 		}
 		if (tfUnitRate.getValue() == "0") {
 			tfUnitRate.setComponentError(new UserError(GERPErrorCodes.UNIT_RATE));
@@ -1646,8 +1646,8 @@ public class SalesQuote extends BaseTransUI {
 				smsQuotDtlobj = beansmsQuoteDtl.getItem(tblsmsQuoteDtl.getValue()).getBean();
 				smsQuoteDtlList.remove(smsQuotDtlobj);
 			}
-			smsQuotDtlobj.setProductid(((SmsEnquiryDtlDM) cbproduct.getValue()).getProductid());
-			smsQuotDtlobj.setProdname(((SmsEnquiryDtlDM) cbproduct.getValue()).getProdname());
+			smsQuotDtlobj.setProductid(((SmsEnquiryDtlDM) cbProduct.getValue()).getProductid());
+			smsQuotDtlobj.setProdname(((SmsEnquiryDtlDM) cbProduct.getValue()).getProdname());
 			if (tfQuoteQunt.getValue() != null && tfQuoteQunt.getValue().trim().length() > 0) {
 				tfQuoteQunt.setReadOnly(false);
 				smsQuotDtlobj.setQuoteqty(Long.valueOf(tfQuoteQunt.getValue()));
@@ -1690,7 +1690,7 @@ public class SalesQuote extends BaseTransUI {
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		hlUserIPContainer.removeAllComponents();
-		cbproduct.setRequired(false);
+		cbProduct.setRequired(false);
 		cbBranch.setValue(null);
 		cbEnqNo.setRequired(false);
 		tfQuoteQunt.setRequired(false);

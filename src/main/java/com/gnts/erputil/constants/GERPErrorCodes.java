@@ -551,4 +551,7 @@ public class GERPErrorCodes {
 	public static String NULL_BADDR = "Please Enter Branch Address";
 	public static String NULL_PAR_PRDT = "Please Select Parent Product";
 	public static String NULL_PRICE = "Please Enter Branch Address";
+	
+	//Required
+	public static String REQUIRED ="Required";
 }

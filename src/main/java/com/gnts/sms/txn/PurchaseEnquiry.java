@@ -127,7 +127,7 @@ public class PurchaseEnquiry extends BaseUI {
 	private Logger logger = Logger.getLogger(PurchaseEnquiry.class);
 	private static final long serialVersionUID = 1L;
 	private Long branchId;
-	private Long EmployeeId;
+	private Long employeeId;
 	private Long moduleId;
 	private Long roleId, appScreenId;
 	private SmsComments comments;
@@ -140,7 +140,7 @@ public class PurchaseEnquiry extends BaseUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
@@ -723,7 +723,7 @@ public class PurchaseEnquiry extends BaseUI {
 			purEnqobj.setDueDate((Date) dfDueDate.getValue());
 			purEnqobj.setEnquiryDate((Date) dfEnqDate.getValue());
 			purEnqobj.setEnquiryStatus(((String) cbEnqStatus.getValue()));
-			purEnqobj.setPreparedBy(EmployeeId);
+			purEnqobj.setPreparedBy(employeeId);
 			purEnqobj.setReviewedBy(null);
 			purEnqobj.setActionedBy(null);
 			purEnqobj.setLastUpdateddt(DateUtils.getcurrentdate());

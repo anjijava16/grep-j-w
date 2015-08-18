@@ -105,14 +105,14 @@ public class PurchasePoReceipt extends BaseUI {
 	// User Input Components for Purchase Enquire Details
 	private Button btnadd = new GERPButton("Add", "addbt", this);
 	// User Input Fields for Po Receipt Header
-	private ComboBox cbBranch, cbHdrStatus, cbPoNo;
+	private ComboBox cbBranch, cbHdrStatus, cbPONo;
 	private TextField tfLotNo, tfVenorDcNo, tfvenInvNo, tfDocType;
 	private TextArea taReceiptRemark;
 	private PopupDateField dfReceiptDt, dfDocDt, dfInvDt;
 	private CheckBox ckBillRaised;
 	// User Input Fields for Po Receipt Detail
 	private ComboBox cbProduct, cbUom, cbDtlStatus;
-	private TextField tfrecpQty, tfrejQty;
+	private TextField tfReceiptQty, tfRejQty;
 	private TextArea taRejectReason;
 	private Table tblReceiptDtl = new GERPTable();
 	// Bean Container
@@ -154,10 +154,10 @@ public class PurchasePoReceipt extends BaseUI {
 	private void buildView() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting PurchaseEnquiry UI");
 		// Initialization for Purchase Order Receipts Details user input components
-		cbPoNo = new GERPComboBox("PO No.");
-		cbPoNo.setItemCaptionPropertyId("pono");
+		cbPONo = new GERPComboBox("PO No.");
+		cbPONo.setItemCaptionPropertyId("pono");
 		loadPoNo();
-		cbPoNo.addValueChangeListener(new Property.ValueChangeListener() {
+		cbPONo.addValueChangeListener(new Property.ValueChangeListener() {
 			/**
 		 * 
 		 */
@@ -166,7 +166,7 @@ public class PurchasePoReceipt extends BaseUI {
 			public void valueChange(ValueChangeEvent event) {
 				// Get the selected item
 				Object itemId = event.getProperty().getValue();
-				BeanItem<?> item = (BeanItem<?>) cbPoNo.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbPONo.getItem(itemId);
 				if (item != null) {
 					loadProduct();
 					savePODetails();
@@ -203,9 +203,9 @@ public class PurchasePoReceipt extends BaseUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				if (cbProduct.getValue() != null) {
-					tfrecpQty.setReadOnly(false);
-					tfrecpQty.setValue(((PurchasePODtlDM) cbProduct.getValue()).getPoQty() + "");
-					tfrecpQty.setReadOnly(true);
+					tfReceiptQty.setReadOnly(false);
+					tfReceiptQty.setValue(((PurchasePODtlDM) cbProduct.getValue()).getPoQty() + "");
+					tfReceiptQty.setReadOnly(true);
 					cbUom.setReadOnly(false);
 					cbUom.setValue(((PurchasePODtlDM) cbProduct.getValue()).getMaterialUom() + "");
 					cbUom.setReadOnly(true);
@@ -217,14 +217,14 @@ public class PurchasePoReceipt extends BaseUI {
 		cbUom.setWidth("77");
 		cbUom.setHeight("23");
 		loadUomList();
-		tfrecpQty = new TextField();
-		tfrecpQty.setValue("0");
-		tfrecpQty.setValue("0");
-		tfrecpQty.setWidth("78");
-		tfrejQty = new TextField();
-		tfrejQty.setValue("0");
-		tfrejQty.setValue("0");
-		tfrejQty.setWidth("90");
+		tfReceiptQty = new TextField();
+		tfReceiptQty.setValue("0");
+		tfReceiptQty.setValue("0");
+		tfReceiptQty.setWidth("78");
+		tfRejQty = new TextField();
+		tfRejQty.setValue("0");
+		tfRejQty.setValue("0");
+		tfRejQty.setWidth("90");
 		cbDtlStatus = new GERPComboBox("Status", BASEConstants.T_SMS_P_PO_RECEIPTS_DTL, BASEConstants.RP_STATUS);
 		cbDtlStatus.setWidth("150");
 		cbDtlStatus.addValueChangeListener(new Property.ValueChangeListener() {
@@ -336,7 +336,7 @@ public class PurchasePoReceipt extends BaseUI {
 		flHdr3 = new FormLayout();
 		flHdr4 = new FormLayout();
 		flHdr1.addComponent(cbBranch);
-		flHdr1.addComponent(cbPoNo);
+		flHdr1.addComponent(cbPONo);
 		flHdr1.addComponent(dfReceiptDt);
 		flHdr1.addComponent(tfDocType);
 		flHdr2.addComponent(tfLotNo);
@@ -365,13 +365,13 @@ public class PurchasePoReceipt extends BaseUI {
 		flDtl6 = new FormLayout();
 		flDtl1.addComponent(cbProduct);
 		HorizontalLayout hlRecQtyUom = new HorizontalLayout();
-		hlRecQtyUom.addComponent(tfrecpQty);
+		hlRecQtyUom.addComponent(tfReceiptQty);
 		hlRecQtyUom.addComponent(cbUom);
 		hlRecQtyUom.setCaption("Recepit Qty");
 		flDtl1.addComponent(hlRecQtyUom);
 		flDtl1.setComponentAlignment(hlRecQtyUom, Alignment.TOP_LEFT);
 		HorizontalLayout hlRejQtyUom = new HorizontalLayout();
-		hlRejQtyUom.addComponent(tfrejQty);
+		hlRejQtyUom.addComponent(tfRejQty);
 		hlRejQtyUom.setCaption("Reject Qty");
 		flDtl2.addComponent(hlRejQtyUom);
 		flDtl2.setComponentAlignment(hlRejQtyUom, Alignment.TOP_LEFT);
@@ -417,10 +417,10 @@ public class PurchasePoReceipt extends BaseUI {
 		tblMstScrSrchRslt.removeAllItems();
 		List<PurPoReceiptsHdrDM> receiptHdrList = new ArrayList<PurPoReceiptsHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + cbBranch.getValue() + ", " + cbPoNo.getValue());
+				+ companyid + ", " + cbBranch.getValue() + ", " + cbPONo.getValue());
 		Long poNo = null;
-		if (cbPoNo.getValue() != null) {
-			poNo = (((PurchasePOHdrDM) cbPoNo.getValue()).getPoId());
+		if (cbPONo.getValue() != null) {
+			poNo = (((PurchasePOHdrDM) cbPONo.getValue()).getPoId());
 		}
 		receiptHdrList = servicePurPoReceiptHdr.getPurPoReceiptsHdrList(companyid, null, poNo,
 				(Long) cbBranch.getValue(), (String) cbHdrStatus.getValue(), tfLotNo.getValue(), "f");
@@ -496,7 +496,7 @@ public class PurchasePoReceipt extends BaseUI {
 			BeanItemContainer<PurchasePODtlDM> beanPlnDtl = new BeanItemContainer<PurchasePODtlDM>(
 					PurchasePODtlDM.class);
 			beanPlnDtl.addAll(servicePurchasePODtl.getPurchaseOrdDtlList(null,
-					((PurchasePOHdrDM) cbPoNo.getValue()).getPoId(), null, null));
+					((PurchasePOHdrDM) cbPONo.getValue()).getPoId(), null, null));
 			cbProduct.setContainerDataSource(beanPlnDtl);
 		}
 		catch (Exception e) {
@@ -507,7 +507,7 @@ public class PurchasePoReceipt extends BaseUI {
 	private void savePODetails() {
 		receiptDtlList = new ArrayList<PurPoReceiptDtlDM>();
 		for (PurchasePODtlDM purchasePOrecDtlDM : servicePurchasePODtl.getPurchaseOrdDtlList(null,
-				((PurchasePOHdrDM) cbPoNo.getValue()).getPoId(), null, null)) {
+				((PurchasePOHdrDM) cbPONo.getValue()).getPoId(), null, null)) {
 			PurPoReceiptDtlDM purchasePODtlDM = new PurPoReceiptDtlDM();
 			purchasePODtlDM.setProductId(purchasePOrecDtlDM.getProductId());
 			purchasePODtlDM.setProductName(purchasePOrecDtlDM.getProductName());
@@ -524,7 +524,7 @@ public class PurchasePoReceipt extends BaseUI {
 	private void loadPoNo() {
 		BeanItemContainer<PurchasePOHdrDM> beanPurPoDM = new BeanItemContainer<PurchasePOHdrDM>(PurchasePOHdrDM.class);
 		beanPurPoDM.addAll(servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, branchId, null, null, null));
-		cbPoNo.setContainerDataSource(beanPurPoDM);
+		cbPONo.setContainerDataSource(beanPurPoDM);
 	}
 	
 	// Method to edit the values from table into fields to update process
@@ -539,7 +539,7 @@ public class PurchasePoReceipt extends BaseUI {
 			tfLotNo.setReadOnly(false);
 			tfLotNo.setValue(receiptsHdrDM.getLotNo());
 			tfLotNo.setReadOnly(true);
-			cbPoNo.setValue(receiptsHdrDM.getPoId());
+			cbPONo.setValue(receiptsHdrDM.getPoId());
 			if (receiptsHdrDM.getReceiptDate() != null) {
 				dfReceiptDt.setValue(receiptsHdrDM.getReceiptDate());
 			}
@@ -567,14 +567,14 @@ public class PurchasePoReceipt extends BaseUI {
 				ckBillRaised.setValue(false);
 			}
 			Long poid = receiptsHdrDM.getPoId();
-			Collection<?> poids = cbPoNo.getItemIds();
+			Collection<?> poids = cbPONo.getItemIds();
 			for (Iterator<?> iterator = poids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbPoNo.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbPONo.getItem(itemId);
 				// Get the actual bean and use the data
 				PurchasePOHdrDM st = (PurchasePOHdrDM) item.getBean();
 				if (poid != null && poid.equals(st.getPoId())) {
-					cbPoNo.setValue(itemId);
+					cbPONo.setValue(itemId);
 				}
 			}
 			cbHdrStatus.setValue(receiptsHdrDM.getProjectStatus());
@@ -611,10 +611,10 @@ public class PurchasePoReceipt extends BaseUI {
 			}
 			cbUom.setValue(purPoReceiptDtlDM.getProductUom());
 			if (purPoReceiptDtlDM.getReceiptQty() != null) {
-				tfrecpQty.setValue(purPoReceiptDtlDM.getReceiptQty().toString());
+				tfReceiptQty.setValue(purPoReceiptDtlDM.getReceiptQty().toString());
 			}
 			if (purPoReceiptDtlDM.getRejectQty() != null) {
-				tfrejQty.setValue(purPoReceiptDtlDM.getRejectQty().toString());
+				tfRejQty.setValue(purPoReceiptDtlDM.getRejectQty().toString());
 			}
 			if (purPoReceiptDtlDM.getReceiptEvd() != null) {
 				byte[] certificate = purPoReceiptDtlDM.getReceiptEvd();
@@ -650,7 +650,7 @@ public class PurchasePoReceipt extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbHdrStatus.setValue(cbHdrStatus.getItemIds().iterator().next());
 		tfLotNo.setValue("");
-		cbPoNo.setValue(null);
+		cbPONo.setValue(null);
 		cbBranch.setValue(null);
 		loadSrchRslt();
 	}
@@ -671,7 +671,7 @@ public class PurchasePoReceipt extends BaseUI {
 		tblReceiptDtl.setVisible(true);
 		cbBranch.setRequired(true);
 		cbProduct.setRequired(true);
-		cbPoNo.setRequired(true);
+		cbPONo.setRequired(true);
 		// tfrejQty.setRequired(true);
 		loadReceiptDtl();
 		resetFields();
@@ -701,7 +701,7 @@ public class PurchasePoReceipt extends BaseUI {
 		tblReceiptDtl.setVisible(true);
 		cbBranch.setRequired(true);
 		cbProduct.setRequired(true);
-		cbPoNo.setRequired(true);
+		cbPONo.setRequired(true);
 		editReceiptDetail();
 		editReceiptHdr();
 	}
@@ -709,14 +709,14 @@ public class PurchasePoReceipt extends BaseUI {
 	@Override
 	protected void validateDetails() throws ValidationException {
 		cbBranch.setComponentError(null);
-		cbPoNo.setComponentError(null);
+		cbPONo.setComponentError(null);
 		Boolean errorFlag = false;
 		if ((cbBranch.getValue() == null)) {
 			cbBranch.setComponentError(new UserError(GERPErrorCodes.BRANCH_NAME));
 			errorFlag = true;
 		}
-		if (cbPoNo.getValue() == null) {
-			cbPoNo.setComponentError(new UserError(GERPErrorCodes.PURCAHSE_ORD_NO));
+		if (cbPONo.getValue() == null) {
+			cbPONo.setComponentError(new UserError(GERPErrorCodes.PURCAHSE_ORD_NO));
 			errorFlag = true;
 		}
 		if (taRejectReason.getValue() == null) {
@@ -736,17 +736,17 @@ public class PurchasePoReceipt extends BaseUI {
 		} else {
 			cbProduct.setComponentError(null);
 		}
-		if (Long.valueOf(tfrecpQty.getValue()) < 0) {
-			tfrecpQty.setComponentError(new UserError(GERPErrorCodes.RECEIPT_QTY));
+		if (Long.valueOf(tfReceiptQty.getValue()) < 0) {
+			tfReceiptQty.setComponentError(new UserError(GERPErrorCodes.RECEIPT_QTY));
 			isValid = false;
 		} else {
-			tfrecpQty.setComponentError(null);
+			tfReceiptQty.setComponentError(null);
 		}
-		if (Long.valueOf(tfrejQty.getValue()) < 0) {
-			tfrejQty.setComponentError(new UserError(GERPErrorCodes.REGECT_QTY));
+		if (Long.valueOf(tfRejQty.getValue()) < 0) {
+			tfRejQty.setComponentError(new UserError(GERPErrorCodes.REGECT_QTY));
 			isValid = false;
 		} else {
-			tfrejQty.setComponentError(null);
+			tfRejQty.setComponentError(null);
 		}
 		if (taRejectReason.getValue() == null) {
 			taRejectReason.setComponentError(new UserError(GERPErrorCodes.REGECT_REASON));
@@ -777,8 +777,8 @@ public class PurchasePoReceipt extends BaseUI {
 				}
 			}
 			receiptobj.setCompanyId(companyid);
-			if (cbPoNo.getValue() != null) {
-				receiptobj.setPoId(((PurchasePOHdrDM) cbPoNo.getValue()).getPoId());
+			if (cbPONo.getValue() != null) {
+				receiptobj.setPoId(((PurchasePOHdrDM) cbPONo.getValue()).getPoId());
 			}
 			receiptobj.setBranchId((Long) cbBranch.getValue());
 			receiptobj.setReceiptDate((Date) dfReceiptDt.getValue());
@@ -846,12 +846,12 @@ public class PurchasePoReceipt extends BaseUI {
 			receiptDtlDM.setProductId(((PurchasePODtlDM) cbProduct.getValue()).getProductId());
 			receiptDtlDM.setProductName(((PurchasePODtlDM) cbProduct.getValue()).getProductName());
 			receiptDtlDM.setProductUom(cbUom.getValue().toString());
-			if (tfrejQty.getValue() != null && tfrejQty.getValue().trim().length() > 0) {
-				receiptDtlDM.setRejectQty(Long.valueOf(tfrejQty.getValue()));
+			if (tfRejQty.getValue() != null && tfRejQty.getValue().trim().length() > 0) {
+				receiptDtlDM.setRejectQty(Long.valueOf(tfRejQty.getValue()));
 			}
 			receiptDtlDM.setRejectReason(taRejectReason.getValue().toString());
-			if (tfrecpQty.getValue() != null && tfrecpQty.getValue().trim().length() > 0) {
-				receiptDtlDM.setReceiptQty(Long.valueOf(tfrecpQty.getValue()));
+			if (tfReceiptQty.getValue() != null && tfReceiptQty.getValue().trim().length() > 0) {
+				receiptDtlDM.setReceiptQty(Long.valueOf(tfReceiptQty.getValue()));
 			}
 			if (cbDtlStatus.getValue() != null) {
 				receiptDtlDM.setRecpDtlStatus((cbDtlStatus.getValue().toString()));
@@ -906,8 +906,8 @@ public class PurchasePoReceipt extends BaseUI {
 		cbBranch.setComponentError(null);
 		tfDocType.setValue("");
 		cbHdrStatus.setValue(cbHdrStatus.getItemIds().iterator().next());
-		cbPoNo.setValue(null);
-		cbPoNo.setComponentError(null);
+		cbPONo.setValue(null);
+		cbPONo.setComponentError(null);
 		tfLotNo.setValue("");
 		tfvenInvNo.setValue("");
 		tfVenorDcNo.setValue("");
@@ -935,12 +935,12 @@ public class PurchasePoReceipt extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbProduct.setValue(null);
 		taRejectReason.setValue("");
-		tfrecpQty.setReadOnly(false);
-		tfrecpQty.setValue("0");
-		tfrecpQty.setReadOnly(true);
-		tfrecpQty.setComponentError(null);
-		tfrejQty.setValue("0");
-		tfrejQty.setComponentError(null);
+		tfReceiptQty.setReadOnly(false);
+		tfReceiptQty.setValue("0");
+		tfReceiptQty.setReadOnly(true);
+		tfReceiptQty.setComponentError(null);
+		tfRejQty.setValue("0");
+		tfRejQty.setComponentError(null);
 		cbDtlStatus.setValue(null);
 		cbUom.setReadOnly(false);
 		cbUom.setValue(null);

@@ -36,6 +36,8 @@ import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.SparklineChart;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
+import com.gnts.sms.domain.txn.CustomerVisitHdrDM;
+import com.gnts.sms.service.txn.CustomerVisitHdrService;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Responsive;
@@ -52,17 +54,19 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class Dashboard {
-	private Table tblHoliday, tblBirthday, tblNews;
+	private Table tblHoliday, tblBirthday, tblNews,tblClientVisit;
 	private HolidayService serviceHoliday = (HolidayService) SpringContextHelper.getBean("holidays");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private OrgNewsService serviceNews = (OrgNewsService) SpringContextHelper.getBean("news");
+	private CustomerVisitHdrService serviceCustomerVisitHdr = (CustomerVisitHdrService) SpringContextHelper
+			.getBean("customervisithdr");
 	private Logger log = Logger.getLogger(Dashboard.class);
 	private BeanItemContainer<HolidaysDM> beans = null;
 	private VerticalLayout vltable;
 	private HorizontalLayout vlMainLayout;
-	private VerticalLayout vlnew, vlEval;
+	private VerticalLayout vlnew, vlEval, vlCustVisit;
 	private Long companyId, branchId;
-	private Accordion accordionHoli, accordionNews, accordionEval;
+	private Accordion accordionHoli, accordionNews, accordionEval, accordionCustVisit;
 	private Label lblFormTittle;
 	
 	public Dashboard() {
@@ -85,6 +89,10 @@ public class Dashboard {
 		tblNews = new Table();
 		tblNews.setPageLength(7);
 		tblNews.setSizeFull();
+		tblClientVisit=new Table();
+		tblClientVisit.setPageLength(7);
+		tblClientVisit.setSizeFull();
+		
 		lblFormTittle = new Label();
 		lblFormTittle.setContentMode(ContentMode.HTML);
 		lblFormTittle.setValue("&nbsp;&nbsp;<b>" + "Dashboard");
@@ -98,15 +106,20 @@ public class Dashboard {
 		vlEval.addComponent(tblBirthday);
 		vltable = new VerticalLayout();
 		vltable.addComponent(tblHoliday);
+		vlCustVisit=new VerticalLayout();
+		vlCustVisit.addComponent(tblClientVisit);
 		accordionHoli = new Accordion();
 		accordionNews = new Accordion();
 		accordionEval = new Accordion();
+		accordionCustVisit = new Accordion();
 		accordionHoli.setHeight("360px");
-		accordionHoli.setWidth("350px");
+		accordionHoli.setWidth("280px");
+		accordionCustVisit.setWidth("300px");
 		accordionEval.addTab(vlEval, "Birthday Wishes");
 		accordionHoli.addTab(vltable, "Holidays");
 		accordionNews.addTab(vlnew, "News");
 		accordionHoli.setSelectedTab(vltable);
+		accordionCustVisit.addTab(vlCustVisit, "Client Visit");
 		VerticalLayout vlchart = new VerticalLayout();
 		new PayrollChart(vlchart, null);
 		vlMainLayout = new HorizontalLayout();
@@ -120,6 +133,7 @@ public class Dashboard {
 				addComponent(accordionHoli);
 				addComponent(accordionNews);
 				addComponent(accordionEval);
+				addComponent(accordionCustVisit);
 				setSpacing(true);
 			}
 		});
@@ -131,6 +145,7 @@ public class Dashboard {
 		populateAndConfigureTableNew();
 		loadBirthDayDetails();
 		loadNewsDetails();
+		loadClientVistDetails();
 	}
 	
 	// Method for show the details in grid table
@@ -146,6 +161,7 @@ public class Dashboard {
 		tblHoliday.setVisibleColumns(new Object[] { "holidayDate", "holidayName" });
 		tblHoliday.setColumnHeaders(new String[] { " Date", "Holiday " });
 		tblHoliday.setColumnWidth("holidayDate", 100);
+		tblHoliday.setColumnWidth("holidayName", 150);
 	}
 	
 	private void loadBirthDayDetails() {
@@ -156,7 +172,8 @@ public class Dashboard {
 			BeanItemContainer<EmployeeDM> beansNews = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
 			for (EmployeeDM employeeDM : list) {
 				try {
-					if (DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(DateUtils.getMonthAndYear(new Date()))) {
+					if (DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
+							DateUtils.getMonthAndYear(new Date()))) {
 						beansNews.addBean(employeeDM);
 					}
 				}
@@ -187,6 +204,30 @@ public class Dashboard {
 					@SuppressWarnings("unchecked")
 					BeanItem<OrgNewsDM> item = (BeanItem<OrgNewsDM>) source.getItem(itemId);
 					return new Label((String) item.getItemProperty("newsDesc").getValue(), ContentMode.HTML);
+				}
+			});
+		}
+	}
+	
+	private void loadClientVistDetails() {
+		List<CustomerVisitHdrDM> newsList = serviceCustomerVisitHdr.getCustomerVisitHdrList(null, null, null, null,
+				null, "F");
+		if (newsList != null) {
+			tblClientVisit.removeAllItems();
+			BeanItemContainer<CustomerVisitHdrDM> beansNews = new BeanItemContainer<CustomerVisitHdrDM>(
+					CustomerVisitHdrDM.class);
+			beansNews.addAll(newsList);
+			tblClientVisit.setContainerDataSource(beansNews);
+			tblClientVisit.setVisibleColumns(new Object[] { "visitDt", "custName" });
+			tblClientVisit.setColumnHeaders(new String[] { " Date", "Client Name" });
+			tblClientVisit.addGeneratedColumn("custName", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<CustomerVisitHdrDM> item = (BeanItem<CustomerVisitHdrDM>) source.getItem(itemId);
+					return new Label((String) item.getItemProperty("custName").getValue(), ContentMode.HTML);
 				}
 			});
 		}

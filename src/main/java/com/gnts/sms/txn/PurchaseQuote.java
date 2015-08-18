@@ -110,10 +110,10 @@ public class PurchaseQuote extends BaseUI {
 	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
 	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
 	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal;
-	private TextField tfpaymetTerms, tfFreightTerms, tfWarrentyTerms, tfDelTerms;
+	private TextField tfPaymetTerms, tfFreightTerms, tfWarrentyTerms, tfDelTerms;
 	private TextArea taRemark, tavendorAdd;
 	private PopupDateField dfQuoteDt, dfvalidDt;
-	private CheckBox ckdutyexm, ckPdcRqu, ckCformRqu;
+	private CheckBox ckDutyexm, ckPdcRqu, ckCformRqu;
 	private Button btnsavepurQuote = new GERPButton("Add", "addbt", this);
 	private VerticalLayout hlquoteDoc = new VerticalLayout();
 	// QuoteDtl components
@@ -253,15 +253,15 @@ public class PurchaseQuote extends BaseUI {
 		tfOtherPer.setWidth("30");
 		tfOtherValue = new TextField();
 		tfOtherValue.setWidth("125");
-		tfpaymetTerms = new TextField("Payment Terms");
-		tfpaymetTerms.setWidth("150");
+		tfPaymetTerms = new TextField("Payment Terms");
+		tfPaymetTerms.setWidth("150");
 		tfFreightTerms = new TextField("Freight Terms");
 		tfFreightTerms.setWidth("150");
 		tfWarrentyTerms = new TextField("Warrenty Terms");
 		tfWarrentyTerms.setWidth("150");
 		tfDelTerms = new TextField("Delivery Terms");
 		tfDelTerms.setWidth("150");
-		ckdutyexm = new CheckBox("Duty Exempted");
+		ckDutyexm = new CheckBox("Duty Exempted");
 		ckCformRqu = new CheckBox("Cfrom Req");
 		ckPdcRqu = new CheckBox("PDC Req");
 		cbBranch = new ComboBox("Branch Name");
@@ -523,7 +523,7 @@ public class PurchaseQuote extends BaseUI {
 		flColumn3.addComponent(other);
 		flColumn3.setComponentAlignment(other, Alignment.TOP_LEFT);
 		flColumn3.addComponent(tfGrandtotal);
-		flColumn3.addComponent(tfpaymetTerms);
+		flColumn3.addComponent(tfPaymetTerms);
 		flColumn3.addComponent(tfFreightTerms);
 		flColumn3.addComponent(tfWarrentyTerms);
 		flColumn3.addComponent(tfDelTerms);
@@ -531,7 +531,7 @@ public class PurchaseQuote extends BaseUI {
 		flColumn3.addComponent(tavendorAdd);
 		flColumn3.addComponent(tfcityName);
 		flColumn4.addComponent(cbStatus);
-		flColumn4.addComponent(ckdutyexm);
+		flColumn4.addComponent(ckDutyexm);
 		flColumn4.addComponent(ckCformRqu);
 		flColumn4.addComponent(ckPdcRqu);
 		flColumn4.addComponent(hlquoteDoc);
@@ -778,7 +778,7 @@ public class PurchaseQuote extends BaseUI {
 			tfGrandtotal.setValue(quotHdrDM.getGrandTotal().toString());
 			tfGrandtotal.setReadOnly(true);
 			if (quotHdrDM.getPaymentTerms() != null) {
-				tfpaymetTerms.setValue(quotHdrDM.getPaymentTerms().toString());
+				tfPaymetTerms.setValue(quotHdrDM.getPaymentTerms().toString());
 			}
 			if (quotHdrDM.getFreightTerms() != null) {
 				tfFreightTerms.setValue(quotHdrDM.getFreightTerms());
@@ -804,9 +804,9 @@ public class PurchaseQuote extends BaseUI {
 				cbStatus.setValue(quotHdrDM.getStatus().toString());
 			}
 			if (quotHdrDM.getDutyExempted().equals("Y")) {
-				ckdutyexm.setValue(true);
+				ckDutyexm.setValue(true);
 			} else {
-				ckdutyexm.setValue(false);
+				ckDutyexm.setValue(false);
 			}
 			if (quotHdrDM.getCformReqd().equals("Y")) {
 				ckCformRqu.setValue(true);
@@ -1077,8 +1077,8 @@ public class PurchaseQuote extends BaseUI {
 			purchaseQuotHdrDM.setOtherPrcnt(new BigDecimal(tfOtherPer.getValue()));
 			purchaseQuotHdrDM.setOtherValue(new BigDecimal(tfOtherValue.getValue()));
 			purchaseQuotHdrDM.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
-			if (tfpaymetTerms.getValue() != null) {
-				purchaseQuotHdrDM.setPaymentTerms((tfpaymetTerms.getValue().toString()));
+			if (tfPaymetTerms.getValue() != null) {
+				purchaseQuotHdrDM.setPaymentTerms((tfPaymetTerms.getValue().toString()));
 			}
 			if (tfFreightTerms.getValue() != null) {
 				purchaseQuotHdrDM.setFreightTerms(tfFreightTerms.getValue().toString());
@@ -1094,9 +1094,9 @@ public class PurchaseQuote extends BaseUI {
 			purchaseQuotHdrDM.setVendorName(tfvendorName.getValue());
 			tfvendorName.setReadOnly(true);
 			purchaseQuotHdrDM.setCityName(tfcityName.getValue());
-			if (ckdutyexm.getValue().equals(true)) {
+			if (ckDutyexm.getValue().equals(true)) {
 				purchaseQuotHdrDM.setDutyExempted("Y");
-			} else if (ckdutyexm.getValue().equals(false)) {
+			} else if (ckDutyexm.getValue().equals(false)) {
 				purchaseQuotHdrDM.setDutyExempted("N");
 			}
 			if (ckCformRqu.getValue().equals(true)) {
@@ -1239,7 +1239,7 @@ public class PurchaseQuote extends BaseUI {
 		tfDelTerms.setValue("");
 		tfCstValue.setReadOnly(false);
 		tfCstValue.setValue("0");
-		ckdutyexm.setValue(false);
+		ckDutyexm.setValue(false);
 		try {
 			tfEDPer.setValue(serviceTaxesSms.getTaxesSmsList(companyid, null, "ED", "Active", "F").get(0).getTaxprnct()
 					.toString());
@@ -1268,7 +1268,7 @@ public class PurchaseQuote extends BaseUI {
 		tfQuoteVersion.setReadOnly(true);
 		tfQuoteRef.setValue("");
 		ckPdcRqu.setValue(false);
-		tfpaymetTerms.setValue("");
+		tfPaymetTerms.setValue("");
 		tfPaclingValue.setReadOnly(false);
 		tfPaclingValue.setValue("0");
 		tfpackingPer.setValue("10");

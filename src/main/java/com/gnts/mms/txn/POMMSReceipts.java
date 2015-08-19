@@ -103,14 +103,14 @@ public class POMMSReceipts extends BaseTransUI {
 	// User Input Components for Purchase Enquire Details
 	private Button btnadd = new GERPButton("Add", "addbt", this);
 	// POHdr Recepits Components
-	private GERPComboBox cbBranch, cbDocType, cbHdrStatus, cbindentid, cbPoNo;
+	private GERPComboBox cbBranch, cbDocType, cbHdrStatus, cbIndentNo, cbPoNo;
 	private GERPTextField tfLotNo, tfVendorDcNo, tfVenInvNo;
 	private TextArea taRecepitRemark;
 	private PopupDateField dfReceiptDate, dfvendorDt, dfvendorInvDt;
 	private CheckBox chkBillRaised;
 	private FormLayout flHdr1, flHdr2, flHdr3, flHdr4;
 	// PODtl Recepits Components
-	private ComboBox cbMaterial, cbmaterialUOM, cbDtlStatus;
+	private ComboBox cbMaterial, cbMaterialUOM, cbDtlStatus;
 	private TextField tfReceiptqty, tfRejectqty;
 	private TextArea taRejectReason;
 	private Table tblReceiptDtl = new GERPTable();
@@ -143,7 +143,7 @@ public class POMMSReceipts extends BaseTransUI {
 	
 	// Build View
 	private void buildView() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting PurchaseEnquiry UI");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting POMMSReceipts UI");
 		// Initialization for Purchase Order Receipts Hdr Details user input components
 		cbPoNo = new GERPComboBox("PO No");
 		cbPoNo.setItemCaptionPropertyId("pono");
@@ -155,7 +155,7 @@ public class POMMSReceipts extends BaseTransUI {
 				// TODO Auto-generated method stub
 				try {
 					loadMaterial();
-					cbindentid.setValue(((POHdrDM) cbPoNo.getValue()).getIndentId());
+					cbIndentNo.setValue(((POHdrDM) cbPoNo.getValue()).getIndentId());
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -178,9 +178,9 @@ public class POMMSReceipts extends BaseTransUI {
 		dfvendorDt = new GERPPopupDateField("Vendor Document Date");
 		dfvendorDt.setInputPrompt("Select Date");
 		dfvendorDt.setDateFormat("dd-MMM-yyyy");
-		cbindentid = new GERPComboBox("Indent No");
-		cbindentid.setItemCaptionPropertyId("indentNo");
-		cbindentid.setWidth("150");
+		cbIndentNo = new GERPComboBox("Indent No");
+		cbIndentNo.setItemCaptionPropertyId("indentNo");
+		cbIndentNo.setWidth("150");
 		loadindent();
 		tfVenInvNo = new GERPTextField("Vendor Invoice No.");
 		dfvendorInvDt = new GERPPopupDateField("Vendor Invoice Date");
@@ -201,16 +201,16 @@ public class POMMSReceipts extends BaseTransUI {
 				// TODO Auto-generated method stub
 				if (cbMaterial.getValue() != null) {
 					MmsPoDtlDM materialDM = (MmsPoDtlDM) cbMaterial.getValue();
-					cbmaterialUOM.setValue(materialDM.getMaterialuom());
+					cbMaterialUOM.setValue(materialDM.getMaterialuom());
 					if (materialDM.getPoqty() != null) {
 						tfReceiptqty.setValue(materialDM.getPoqty().toString());
 					}
 				}
 			}
 		});
-		cbmaterialUOM = new ComboBox("UOM");
-		cbmaterialUOM.setItemCaptionPropertyId("lookupname");
-		cbmaterialUOM.setWidth("150");
+		cbMaterialUOM = new ComboBox("UOM");
+		cbMaterialUOM.setItemCaptionPropertyId("lookupname");
+		cbMaterialUOM.setWidth("150");
 		loadUomList();
 		tfReceiptqty = new GERPTextField("Receipt Qty");
 		tfReceiptqty.setValue("0");
@@ -324,7 +324,7 @@ public class POMMSReceipts extends BaseTransUI {
 		flHdr1.addComponent(tfLotNo);
 		flHdr2.addComponent(dfvendorDt);
 		flHdr2.addComponent(tfVendorDcNo);
-		flHdr2.addComponent(cbindentid);
+		flHdr2.addComponent(cbIndentNo);
 		flHdr2.addComponent(dfvendorInvDt);
 		flHdr2.addComponent(tfVenInvNo);
 		flHdr3.addComponent(taRecepitRemark);
@@ -350,7 +350,7 @@ public class POMMSReceipts extends BaseTransUI {
 		flDtl1.addComponent(cbMaterial);
 		flDtl1.addComponent(tfReceiptqty);
 		flDtl2.addComponent(tfRejectqty);
-		flDtl2.addComponent(cbmaterialUOM);
+		flDtl2.addComponent(cbMaterialUOM);
 		taRejectReason.setHeight("50");
 		flDtl3.addComponent(taRejectReason);
 		flDtl4.addComponent(cbDtlStatus);
@@ -387,18 +387,18 @@ public class POMMSReceipts extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<PoReceiptHdrDM> receiptHdrList = new ArrayList<PoReceiptHdrDM>();
+		List<PoReceiptHdrDM> listReceiptHdr = new ArrayList<PoReceiptHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbBranch.getValue() + ", " + cbPoNo.getValue());
 		Long poNo = null;
 		if (cbPoNo.getValue() != null) {
 			poNo = (((POHdrDM) cbPoNo.getValue()).getPoId());
 		}
-		receiptHdrList = servicePoReceiptHdr.getPoReceiptsHdrList(companyid, null, poNo, (Long) cbBranch.getValue(),
+		listReceiptHdr = servicePoReceiptHdr.getPoReceiptsHdrList(companyid, null, poNo, (Long) cbBranch.getValue(),
 				(String) tfLotNo.getValue(), (String) cbHdrStatus.getValue(), "F");
-		recordCnt = receiptHdrList.size();
+		recordCnt = listReceiptHdr.size();
 		beanPoReceiptHdrDM = new BeanItemContainer<PoReceiptHdrDM>(PoReceiptHdrDM.class);
-		beanPoReceiptHdrDM.addAll(receiptHdrList);
+		beanPoReceiptHdrDM.addAll(listReceiptHdr);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the PO Recepit. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanPoReceiptHdrDM);
@@ -450,7 +450,7 @@ public class POMMSReceipts extends BaseTransUI {
 		BeanContainer<Long, IndentHdrDM> beanIndent = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
 		beanIndent.setBeanIdProperty("indentId");
 		beanIndent.addAll(serviceIndent.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null, "F"));
-		cbindentid.setContainerDataSource(beanIndent);
+		cbIndentNo.setContainerDataSource(beanIndent);
 	}
 	
 	// Load Purchase order No
@@ -467,7 +467,7 @@ public class POMMSReceipts extends BaseTransUI {
 				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
 		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "SM_UOM"));
-		cbmaterialUOM.setContainerDataSource(beanCompanyLookUp);
+		cbMaterialUOM.setContainerDataSource(beanCompanyLookUp);
 	}
 	
 	// Load Material List
@@ -512,7 +512,7 @@ public class POMMSReceipts extends BaseTransUI {
 				cbDocType.setValue(poReceiptHdrDM.getReceiptdocType());
 			}
 			if (poReceiptHdrDM.getIndentId() != null) {
-				cbindentid.setValue(poReceiptHdrDM.getIndentId());
+				cbIndentNo.setValue(poReceiptHdrDM.getIndentId());
 			}
 			if (poReceiptHdrDM.getVendorinvoiceNo() != null) {
 				tfVenInvNo.setValue(poReceiptHdrDM.getVendorinvoiceNo());
@@ -564,7 +564,7 @@ public class POMMSReceipts extends BaseTransUI {
 					cbMaterial.setValue(itemId);
 				}
 			}
-			cbmaterialUOM.setValue(receiptDtlDM.getMaterialUOM());
+			cbMaterialUOM.setValue(receiptDtlDM.getMaterialUOM());
 			if (receiptDtlDM.getReceiptqty() != null) {
 				tfReceiptqty.setValue(receiptDtlDM.getReceiptqty().toString());
 			}
@@ -623,7 +623,7 @@ public class POMMSReceipts extends BaseTransUI {
 		tblReceiptDtl.setVisible(true);
 		cbBranch.setRequired(true);
 		cbMaterial.setRequired(true);
-		cbmaterialUOM.setRequired(true);
+		cbMaterialUOM.setRequired(true);
 		cbPoNo.setRequired(true);
 		dfReceiptDate.setRequired(true);
 		dfvendorDt.setRequired(true);
@@ -658,7 +658,7 @@ public class POMMSReceipts extends BaseTransUI {
 		}
 		cbBranch.setRequired(true);
 		cbMaterial.setRequired(true);
-		cbmaterialUOM.setRequired(true);
+		cbMaterialUOM.setRequired(true);
 		cbPoNo.setRequired(true);
 		cbHdrStatus.setRequired(true);
 		dfReceiptDate.setRequired(true);
@@ -718,11 +718,11 @@ public class POMMSReceipts extends BaseTransUI {
 		} else {
 			cbMaterial.setComponentError(null);
 		}
-		if (cbmaterialUOM.getValue() == null) {
-			cbmaterialUOM.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
+		if (cbMaterialUOM.getValue() == null) {
+			cbMaterialUOM.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
 			isValid = false;
 		} else {
-			cbmaterialUOM.setComponentError(null);
+			cbMaterialUOM.setComponentError(null);
 		}
 		if (taRejectReason.getValue() == null) {
 			taRejectReason.setComponentError(new UserError(GERPErrorCodes.REGECT_REASON));
@@ -754,7 +754,7 @@ public class POMMSReceipts extends BaseTransUI {
 			recepithdrObj.setReceiptDate((Date) dfReceiptDate.getValue());
 			recepithdrObj.setVendorDate((Date) dfvendorDt.getValue());
 			recepithdrObj.setVendordcNo(tfVendorDcNo.getValue());
-			recepithdrObj.setIndentId((Long) cbindentid.getValue());
+			recepithdrObj.setIndentId((Long) cbIndentNo.getValue());
 			recepithdrObj.setVendorinvoiceNo(tfVenInvNo.getValue().toString());
 			recepithdrObj.setVendorinvoiceDate((Date) dfvendorInvDt.getValue());
 			recepithdrObj.setReceiptRemark((taRecepitRemark.getValue()));
@@ -895,7 +895,7 @@ public class POMMSReceipts extends BaseTransUI {
 			}
 			receiptDtlObj.setMaterialid(((MmsPoDtlDM) cbMaterial.getValue()).getMaterialid());
 			receiptDtlObj.setMaterialName(((MmsPoDtlDM) cbMaterial.getValue()).getMaterialname());
-			receiptDtlObj.setMaterialUOM(cbmaterialUOM.getValue().toString());
+			receiptDtlObj.setMaterialUOM(cbMaterialUOM.getValue().toString());
 			if (tfRejectqty.getValue() != null && tfRejectqty.getValue().trim().length() > 0) {
 				receiptDtlObj.setRejectqty(Long.valueOf(tfRejectqty.getValue()));
 			}
@@ -958,7 +958,7 @@ public class POMMSReceipts extends BaseTransUI {
 		tfLotNo.setValue("");
 		tfVenInvNo.setValue("");
 		tfVendorDcNo.setValue("");
-		cbindentid.setValue(null);
+		cbIndentNo.setValue(null);
 		taRecepitRemark.setValue("");
 		dfvendorDt.setValue(null);
 		dfReceiptDate.setValue(null);
@@ -982,9 +982,9 @@ public class POMMSReceipts extends BaseTransUI {
 		tfRejectqty.setComponentError(null);
 		tfRejectqty.setValue("0");
 		cbDtlStatus.setValue(null);
-		cbmaterialUOM.setValue(null);
+		cbMaterialUOM.setValue(null);
 		cbMaterial.setComponentError(null);
-		cbmaterialUOM.setComponentError(null);
+		cbMaterialUOM.setComponentError(null);
 		new UploadDocumentUI(hlevdDoc);
 	}
 

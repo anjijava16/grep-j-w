@@ -727,7 +727,7 @@ public class ClientCases extends BaseTransUI {
 				WorkOrderHdrDM.class);
 		beansmsenqHdr.setBeanIdProperty("workOrdrId");
 		beansmsenqHdr.addAll(serviceWrkOrdHdr.getWorkOrderHDRList(companyId, null, null, null, null, null, "F", null,
-				(Long) cbEnquiryNo.getValue(), null, null));
+				(Long) cbEnquiryNo.getValue(), null, null,null));
 		cbwoNo.setContainerDataSource(beansmsenqHdr);
 	}
 	

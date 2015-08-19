@@ -24,6 +24,7 @@ import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.erputil.tool.EmailTrigger;
 import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
@@ -77,7 +78,7 @@ public class CustomerVisit extends BaseTransUI {
 	private BeanItemContainer<CustomerVisitInfoDtlDM> beanCustomerVisitInfoDtlDM = null;
 	private List<CustomerVisitNoDtlDM> listCustVisitNo = new ArrayList<CustomerVisitNoDtlDM>();
 	private List<CustomerVisitInfoDtlDM> listCustVisitInfo = new ArrayList<CustomerVisitInfoDtlDM>();
-	private Table tblCusVisHdr, tblPersonNo, tblInfoPass;
+	private Table tblPersonNo, tblInfoPass;
 	// Search Control Layout
 	private HorizontalLayout hlHdr = new HorizontalLayout();
 	private HorizontalLayout hlSearchLayout, hlPerandInfo, hlHdrMain, hlPerson, hlInform, hlHdrslap;
@@ -144,26 +145,6 @@ public class CustomerVisit extends BaseTransUI {
 				loadCustVisitNo(false);
 			}
 		});
-		tblCusVisHdr = new Table();
-		tblCusVisHdr.setSelectable(true);
-		tblCusVisHdr.setWidth("588px");
-		tblCusVisHdr.setPageLength(5);
-		tblCusVisHdr.addItemClickListener(new ItemClickListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (tblCusVisHdr.isSelected(event.getItemId())) {
-					tblCusVisHdr.setImmediate(true);
-					btnAddDtls.setCaption("Add");
-					btnAddDtls.setStyleName("savebt");
-				} else {
-					((AbstractSelect) event.getSource()).select(event.getItemId());
-					btnAddDtls.setCaption("Update");
-					btnAddDtls.setStyleName("savebt");
-				}
-			}
-		});
 		tblPersonNo = new Table();
 		tblPersonNo.setSelectable(true);
 		tblPersonNo.setPageLength(6);
@@ -180,6 +161,7 @@ public class CustomerVisit extends BaseTransUI {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnAddInfo.setCaption("Update");
 					btnAddInfo.setStyleName("savebt");
+					editPersonDetails();
 				}
 			}
 		});
@@ -199,22 +181,8 @@ public class CustomerVisit extends BaseTransUI {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnAddPerson.setCaption("Update");
 					btnAddPerson.setStyleName("savebt");
+					editVisitInfoDetails();
 				}
-			}
-		});
-		tblMstScrSrchRslt.addItemClickListener(new ItemClickListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (tblMstScrSrchRslt.isSelected(event.getItemId())) {
-					btnEdit.setEnabled(false);
-					btnAdd.setEnabled(true);
-				} else {
-					btnEdit.setEnabled(true);
-					btnAdd.setEnabled(false);
-				}
-				resetFields();
 			}
 		});
 		btnDeleteInfo.addClickListener(new ClickListener() {
@@ -306,7 +274,6 @@ public class CustomerVisit extends BaseTransUI {
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		resetFields();
 		loadSrchRslt();
-		// loadCustomerNo();
 		btnAddDtls.setStyleName("add");
 		btnAddInfo.setStyleName("add");
 		btnAddPerson.setStyleName("add");
@@ -484,6 +451,62 @@ public class CustomerVisit extends BaseTransUI {
 		loadInfoDetails(true);
 	}
 	
+	private void editPersonDetails() {
+		CustomerVisitNoDtlDM visitNoDtlDM = beanCustomerVisitNoDtlDM.getItem(tblPersonNo.getValue()).getBean();
+		tfPerName.setValue(visitNoDtlDM.getPersonName());
+		tfPerPhone.setValue(visitNoDtlDM.getContactNo());
+		cbPersonNoStatus.setValue(visitNoDtlDM.getCustNoDtlStatus());
+	}
+	
+	private void editVisitInfoDetails() {
+		CustomerVisitInfoDtlDM visitInfoDtlDM = beanCustomerVisitInfoDtlDM.getItem(tblInfoPass.getValue()).getBean();
+		if (visitInfoDtlDM.getDesign() != null && visitInfoDtlDM.getDesign().equalsIgnoreCase("Active")) {
+			checkBxDes.setValue(true);
+		} else {
+			checkBxDes.setValue(false);
+		}
+		if (visitInfoDtlDM.getDie() != null && visitInfoDtlDM.getDie().equalsIgnoreCase("Active")) {
+			checkBxDie.setValue(true);
+		} else {
+			checkBxDie.setValue(false);
+		}
+		if (visitInfoDtlDM.getHodPo() != null && visitInfoDtlDM.getHodPo().equalsIgnoreCase("Active")) {
+			checkBxHODPro.setValue(true);
+		} else {
+			checkBxHODPro.setValue(false);
+		}
+		if (visitInfoDtlDM.getHr() != null && visitInfoDtlDM.getHr().equalsIgnoreCase("Active")) {
+			checkBxHR.setValue(true);
+		} else {
+			checkBxHR.setValue(false);
+		}
+		if (visitInfoDtlDM.getMaintenance() != null && visitInfoDtlDM.getMaintenance().equalsIgnoreCase("Active")) {
+			checkBxMain.setValue(true);
+		} else {
+			checkBxMain.setValue(false);
+		}
+		if (visitInfoDtlDM.getPlan() != null && visitInfoDtlDM.getPlan().equalsIgnoreCase("Active")) {
+			checkBxPlan.setValue(true);
+		} else {
+			checkBxPlan.setValue(false);
+		}
+		if (visitInfoDtlDM.getProd() != null && visitInfoDtlDM.getProd().equalsIgnoreCase("Active")) {
+			checkBxProd.setValue(true);
+		} else {
+			checkBxProd.setValue(false);
+		}
+		if (visitInfoDtlDM.getQc() != null && visitInfoDtlDM.getQc().equalsIgnoreCase("Active")) {
+			checkBxQC.setValue(true);
+		} else {
+			checkBxQC.setValue(false);
+		}
+		if (visitInfoDtlDM.getAccounts() != null && visitInfoDtlDM.getAccounts().equalsIgnoreCase("Active")) {
+			checkBxAcc.setValue(true);
+		} else {
+			checkBxAcc.setValue(false);
+		}
+	}
+	
 	// BaseUI searchDetails() implementation
 	@Override
 	protected void searchDetails() throws NoDataFoundException {
@@ -522,7 +545,6 @@ public class CustomerVisit extends BaseTransUI {
 		btnAddDtls.setCaption("Add");
 		btnAddInfo.setCaption("Add");
 		btnAddPerson.setCaption("Add");
-		tblCusVisHdr.setVisible(true);
 		tblPersonNo.setVisible(true);
 	}
 	
@@ -628,7 +650,7 @@ public class CustomerVisit extends BaseTransUI {
 				WorkOrderHdrDM.class);
 		beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
 		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "P",
-				null, null, null, null,null));
+				null, null, null, null, null));
 		cbWorkorder.setContainerDataSource(beanWrkOrdHdr);
 	}
 	
@@ -683,6 +705,39 @@ public class CustomerVisit extends BaseTransUI {
 				for (CustomerVisitInfoDtlDM visitInfoDtlDM : (Collection<CustomerVisitInfoDtlDM>) itemids) {
 					visitInfoDtlDM.setCusVisId(customerVisitHdrDM.getCusVisId());
 					serviceCustomerVisitInfoDtl.saveorUpdateCustomerVisitInfoDtlDetails(visitInfoDtlDM);
+					String messageBody = "Hi sir/Madam,\nTitle : Client visit\n Date : "
+							+ customerVisitHdrDM.getVisitDt() + "\n Client Name : " + customerVisitHdrDM.getCustName()
+							+ "\n Purpose : " + customerVisitHdrDM.getPurposeVisit();
+					String messageHdr = "Reg : Client Visit on " + customerVisitHdrDM.getVisitDt();
+					// To Do : Lookup the mail id s from Lookup table or properties file.
+					if (visitInfoDtlDM.getDie() != null && visitInfoDtlDM.getDie().equalsIgnoreCase("Active")) {
+						try {
+							new EmailTrigger("die@saarccases.com", messageBody, messageHdr);
+						}
+						catch (Exception e) {
+						}
+					}
+					if (visitInfoDtlDM.getHodPo() != null && visitInfoDtlDM.getHodPo().equalsIgnoreCase("Active")) {
+						try {
+							new EmailTrigger("jagan@saarccases.com", messageBody, messageHdr);
+						}
+						catch (Exception e) {
+						}
+					}
+					if (visitInfoDtlDM.getHr() != null && visitInfoDtlDM.getHr().equalsIgnoreCase("Active")) {
+						try {
+							new EmailTrigger("hr@saarccases.com", messageBody, messageHdr);
+						}
+						catch (Exception e) {
+						}
+					}
+					if (visitInfoDtlDM.getDesign() != null && visitInfoDtlDM.getDesign().equalsIgnoreCase("Active")) {
+						try {
+							new EmailTrigger("design@saarccases.com", messageBody, messageHdr);
+						}
+						catch (Exception e) {
+						}
+					}
 				}
 			}
 			catch (Exception e) {
@@ -700,7 +755,11 @@ public class CustomerVisit extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			CustomerVisitNoDtlDM visitNoDtlDM = new CustomerVisitNoDtlDM();
-			visitNoDtlDM.setPersonName(tfClientName.getValue());
+			if (tblPersonNo.getValue() != null) {
+				visitNoDtlDM = beanCustomerVisitNoDtlDM.getItem(tblPersonNo.getValue()).getBean();
+				listCustVisitNo.remove(visitNoDtlDM);
+			}
+			visitNoDtlDM.setPersonName(tfPerName.getValue());
 			visitNoDtlDM.setContactNo(tfPerPhone.getValue());
 			if (cbPersonNoStatus.getValue() != null) {
 				visitNoDtlDM.setCustNoDtlStatus((String) cbPersonNoStatus.getValue());
@@ -709,7 +768,7 @@ public class CustomerVisit extends BaseTransUI {
 			visitNoDtlDM.setLastUpdateddt(DateUtils.getcurrentdate());
 			listCustVisitNo.add(visitNoDtlDM);
 			loadCustVisitNo(false);
-			persondetailsresetField();
+			resetPersonDetails();
 			btnAddPerson.setCaption("Add");
 		}
 		catch (Exception e) {
@@ -722,6 +781,10 @@ public class CustomerVisit extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			CustomerVisitInfoDtlDM visitInfoDtlDM = new CustomerVisitInfoDtlDM();
+			if (tblInfoPass.getValue() != null) {
+				visitInfoDtlDM = beanCustomerVisitInfoDtlDM.getItem(tblInfoPass.getValue()).getBean();
+				listCustVisitInfo.remove(visitInfoDtlDM);
+			}
 			if (checkBxDes.getValue() != null) {
 				visitInfoDtlDM.setDesign("Active");
 			}
@@ -785,7 +848,7 @@ public class CustomerVisit extends BaseTransUI {
 					.setColumnHeaders(new String[] { "Name", "Contact No.", "Status", "Updated Date", "Updated By" });
 			tblPersonNo.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 			tblPersonNo.setPageLength(10);
-			persondetailsresetField();
+			resetPersonDetails();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -818,7 +881,7 @@ public class CustomerVisit extends BaseTransUI {
 	}
 	
 	// Reset Person Details People.
-	private void persondetailsresetField() {
+	private void resetPersonDetails() {
 		tfPerName.setValue("");
 		tfPerPhone.setValue("");
 		cbPersonNoStatus.setValue(null);

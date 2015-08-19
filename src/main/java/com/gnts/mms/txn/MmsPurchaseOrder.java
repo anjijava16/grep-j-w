@@ -117,7 +117,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	// // User Input Components for PO Details
 	private ComboBox cbBranch, cbStatus, cbVendor, cbpoType;
 	private GERPComboBox cbQuoteRef;
-	private TextField tfversionNo, tfBasictotal, tfpackingPer, tfPaclingValue, tfPONo, tfpaymetTerms, tfFreightTerms,
+	private TextField tfversionNo, tfBasictotal, tfpackingPer, tfPaclingValue, tfPONo, tfPaymentTerms, tfFreightTerms,
 			tfWarrentyTerms, tfDelTerms;
 	private TextField tfSubTotal, tfVatPer, tfVatValue;
 	private TextField tfquoteNum;
@@ -140,7 +140,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	private String username;
 	private Long companyid;
 	private int recordCnt;
-	private Long EmployeeId;
+	private Long employeeId;
 	private File file;
 	private Long roleId;
 	private Long branchId;
@@ -165,7 +165,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		// StateId = Long.valueOf(UI.getCurrent().getSession().getAttribute("stateId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
@@ -248,8 +248,8 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfOtherPer.setWidth("50");
 		tfGrandtotal = new GERPNumberField("Grand Total");
 		tfGrandtotal.setWidth("150");
-		tfpaymetTerms = new TextField("Payment Terms");
-		tfpaymetTerms.setWidth("150");
+		tfPaymentTerms = new TextField("Payment Terms");
+		tfPaymentTerms.setWidth("150");
 		tfFreightTerms = new TextField("Freight Terms");
 		tfFreightTerms.setWidth("150");
 		tfWarrentyTerms = new TextField("Warrenty Terms");
@@ -463,7 +463,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		flColumn3.addComponent(other);
 		flColumn3.setComponentAlignment(other, Alignment.TOP_LEFT);
 		flColumn3.addComponent(tfGrandtotal);
-		flColumn3.addComponent(tfpaymetTerms);
+		flColumn3.addComponent(tfPaymentTerms);
 		flColumn3.addComponent(tfFreightTerms);
 		flColumn3.addComponent(tfWarrentyTerms);
 		flColumn4.addComponent(tfDelTerms);
@@ -568,7 +568,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfGrandtotal.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getGrandTotal().toString());
 		tfGrandtotal.setReadOnly(true);
 		try {
-			tfpaymetTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getPaymentTerms().toString());
+			tfPaymentTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getPaymentTerms().toString());
 		}
 		catch (Exception e) {
 		}
@@ -777,7 +777,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			tfGrandtotal.setValue(poHdrDM.getGrandTotal().toString());
 			tfGrandtotal.setReadOnly(true);
 			if (poHdrDM.getPaymentTerms() != null) {
-				tfpaymetTerms.setValue(poHdrDM.getPaymentTerms().toString());
+				tfPaymentTerms.setValue(poHdrDM.getPaymentTerms().toString());
 			}
 			if (poHdrDM.getFrnghtTerms() != null) {
 				tfFreightTerms.setValue(poHdrDM.getFrnghtTerms());
@@ -1036,100 +1036,102 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			POHdrDM purchaseHdrobj = new POHdrDM();
+			POHdrDM poHdrDM = new POHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				purchaseHdrobj = beanpohdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				poHdrDM = beanpohdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			purchaseHdrobj.setPono(tfPONo.getValue());
-			purchaseHdrobj.setBranchId((Long) cbBranch.getValue());
-			purchaseHdrobj.setCompanyId(companyid);
-			purchaseHdrobj.setPurchaseDate(dfPODt.getValue());
-			purchaseHdrobj.setExpDate(dfExpDt.getValue());
-			purchaseHdrobj.setPoRemark(taRemark.getValue());
-			purchaseHdrobj.setpOType((String) cbpoType.getValue());
-			purchaseHdrobj.setVendorId((Long) cbVendor.getValue());
-			purchaseHdrobj.setVersionNo((Long.valueOf(tfversionNo.getValue())));
-			purchaseHdrobj.setBasicTotal(new BigDecimal(tfBasictotal.getValue()));
-			purchaseHdrobj.setPackingPrcnt((Long.valueOf(tfpackingPer.getValue())));
-			purchaseHdrobj.setPackingVL(new BigDecimal(tfPaclingValue.getValue()));
-			purchaseHdrobj.setSubTotal(new BigDecimal(tfSubTotal.getValue()));
-			purchaseHdrobj.setVatPrcnt(new BigDecimal(tfVatPer.getValue()));
-			purchaseHdrobj.setVatValue(new BigDecimal(tfVatValue.getValue()));
-			purchaseHdrobj.setCstPrcnt((new BigDecimal(tfCstPer.getValue())));
-			purchaseHdrobj.setCstValue(new BigDecimal(tfCstValue.getValue()));
-			purchaseHdrobj.setSubTaxTotal(new BigDecimal(tfSubTaxTotal.getValue()));
-			purchaseHdrobj.setFrgtValue(new BigDecimal(tfFreightPer.getValue()));
-			purchaseHdrobj.setFrgtPrcnt(new BigDecimal(tfFreightPer.getValue()));
-			purchaseHdrobj.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
-			purchaseHdrobj.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
-			purchaseHdrobj.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
-			if (tfpaymetTerms.getValue() != null) {
-				purchaseHdrobj.setPaymentTerms((tfpaymetTerms.getValue().toString()));
+			poHdrDM.setPono(tfPONo.getValue());
+			poHdrDM.setBranchId((Long) cbBranch.getValue());
+			poHdrDM.setCompanyId(companyid);
+			poHdrDM.setPurchaseDate(dfPODt.getValue());
+			poHdrDM.setExpDate(dfExpDt.getValue());
+			poHdrDM.setPoRemark(taRemark.getValue());
+			poHdrDM.setpOType((String) cbpoType.getValue());
+			poHdrDM.setVendorId((Long) cbVendor.getValue());
+			poHdrDM.setVersionNo((Long.valueOf(tfversionNo.getValue())));
+			poHdrDM.setBasicTotal(new BigDecimal(tfBasictotal.getValue()));
+			poHdrDM.setPackingPrcnt((Long.valueOf(tfpackingPer.getValue())));
+			poHdrDM.setPackingVL(new BigDecimal(tfPaclingValue.getValue()));
+			poHdrDM.setSubTotal(new BigDecimal(tfSubTotal.getValue()));
+			poHdrDM.setVatPrcnt(new BigDecimal(tfVatPer.getValue()));
+			poHdrDM.setVatValue(new BigDecimal(tfVatValue.getValue()));
+			poHdrDM.setCstPrcnt((new BigDecimal(tfCstPer.getValue())));
+			poHdrDM.setCstValue(new BigDecimal(tfCstValue.getValue()));
+			poHdrDM.setSubTaxTotal(new BigDecimal(tfSubTaxTotal.getValue()));
+			poHdrDM.setFrgtValue(new BigDecimal(tfFreightPer.getValue()));
+			poHdrDM.setFrgtPrcnt(new BigDecimal(tfFreightPer.getValue()));
+			poHdrDM.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
+			poHdrDM.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
+			poHdrDM.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
+			if (tfPaymentTerms.getValue() != null) {
+				poHdrDM.setPaymentTerms((tfPaymentTerms.getValue().toString()));
 			}
 			if (tfFreightTerms.getValue() != null) {
-				purchaseHdrobj.setFrnghtTerms(tfFreightTerms.getValue().toString());
+				poHdrDM.setFrnghtTerms(tfFreightTerms.getValue().toString());
 			}
 			if (tfWarrentyTerms.getValue() != null) {
-				purchaseHdrobj.setWrntyTerms((tfWarrentyTerms.getValue().toString()));
+				poHdrDM.setWrntyTerms((tfWarrentyTerms.getValue().toString()));
 			}
 			if (tfDelTerms.getValue() != null) {
-				purchaseHdrobj.setDlvryTerms(tfDelTerms.getValue().toString());
+				poHdrDM.setDlvryTerms(tfDelTerms.getValue().toString());
 			}
 			if (ckdutyexm.getValue().equals(true)) {
-				purchaseHdrobj.setDutyExempt("Y");
+				poHdrDM.setDutyExempt("Y");
 			} else if (ckdutyexm.getValue().equals(false)) {
-				purchaseHdrobj.setDutyExempt("N");
+				poHdrDM.setDutyExempt("N");
 			}
 			if (ckCformRqu.getValue().equals(true)) {
-				purchaseHdrobj.setCformReqd("Y");
+				poHdrDM.setCformReqd("Y");
 			} else if (ckCformRqu.getValue().equals(false)) {
-				purchaseHdrobj.setCformReqd("N");
+				poHdrDM.setCformReqd("N");
 			}
 			if (ckPdcRqu.getValue().equals(true)) {
-				purchaseHdrobj.setpDCReqd("Y");
+				poHdrDM.setpDCReqd("Y");
 			} else if (ckPdcRqu.getValue().equals(false)) {
-				purchaseHdrobj.setpDCReqd("N");
+				poHdrDM.setpDCReqd("N");
 			}
 			if (ckcasePO.getValue().equals(true)) {
-				purchaseHdrobj.setCasePoYn("Y");
+				poHdrDM.setCasePoYn("Y");
 			} else if (ckcasePO.getValue().equals(false)) {
-				purchaseHdrobj.setCasePoYn("N");
+				poHdrDM.setCasePoYn("N");
 			}
 			if (tfquoteNum.getValue() != null) {
-				purchaseHdrobj.setQuoteId(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getQuoteId());
+				poHdrDM.setQuoteId(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getQuoteId());
 			}
-			purchaseHdrobj.setShippingAddr(taShpnAddr.getValue());
-			purchaseHdrobj.setInvoiceAddress(taInvoiceOrd.getValue());
+			poHdrDM.setShippingAddr(taShpnAddr.getValue());
+			poHdrDM.setInvoiceAddress(taInvoiceOrd.getValue());
 			if (cbStatus.getValue() != null) {
-				purchaseHdrobj.setpOStatus(cbStatus.getValue().toString());
+				poHdrDM.setpOStatus(cbStatus.getValue().toString());
 			}
-			purchaseHdrobj.setPreparedBy(EmployeeId);
-			purchaseHdrobj.setReviewedBy(null);
-			purchaseHdrobj.setActionedBY(null);
-			purchaseHdrobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			purchaseHdrobj.setLastUpdatedBy(username);
+			poHdrDM.setPreparedBy(employeeId);
+			poHdrDM.setReviewedBy(null);
+			poHdrDM.setActionedBY(null);
+			poHdrDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+			poHdrDM.setLastUpdatedBy(username);
 			file = new File(GERPConstants.DOCUMENT_PATH);
 			FileInputStream fio = new FileInputStream(file);
 			byte fileContents[] = new byte[(int) file.length()];
 			fio.read(fileContents);
 			fio.close();
-			purchaseHdrobj.setPoDoc(fileContents);
-			servicepohdr.saveorUpdatePOHdrDetails(purchaseHdrobj);
-			poId = purchaseHdrobj.getPoId();
+			poHdrDM.setPoDoc(fileContents);
+			servicepohdr.saveorUpdatePOHdrDetails(poHdrDM);
+			poId = poHdrDM.getPoId();
 			@SuppressWarnings("unchecked")
 			Collection<MmsPoDtlDM> itemIds = (Collection<MmsPoDtlDM>) tblPODetails.getVisibleItemIds();
 			for (MmsPoDtlDM save : (Collection<MmsPoDtlDM>) itemIds) {
-				save.setPoid(Long.valueOf(purchaseHdrobj.getPoId().toString()));
+				save.setPoid(Long.valueOf(poHdrDM.getPoId().toString()));
 				servicepodtl.saveorupdatepodtl(save);
 			}
-			comments.savePurchaseOrder(purchaseHdrobj.getPoId(), purchaseHdrobj.getpOStatus());
+			comments.savePurchaseOrder(poHdrDM.getPoId(), poHdrDM.getpOStatus());
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_NPONO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_NPONO")
+							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_NPONO");
-						System.out.println("Serial no=>" + companyid + "," + moduleId + "," + branchId);
 					}
+				}
+				catch (Exception e) {
 				}
 			}
 			resetDetailsFields();
@@ -1142,7 +1144,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		}
 	}
 	
-	protected void savePurchaseQuoteDetails() {
+	private void savePurchaseQuoteDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			int count = 0;
@@ -1229,7 +1231,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfversionNo.setReadOnly(false);
 		tfversionNo.setValue("0");
 		tfquoteNum.setValue("");
-		tfpaymetTerms.setValue("");
+		tfPaymentTerms.setValue("");
 		tfPaclingValue.setReadOnly(false);
 		tfPaclingValue.setValue("0");
 		tfOtherValue.setReadOnly(false);
@@ -1332,7 +1334,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			parameterMap.put("ENQID", poId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/mmspo"); // productlist is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

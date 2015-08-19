@@ -132,7 +132,7 @@ public class MaterialEnquiry extends BaseTransUI {
 	private Logger logger = Logger.getLogger(MaterialEnquiry.class);
 	private static final long serialVersionUID = 1L;
 	private Long branchId;
-	private Long EmployeeId;
+	private Long employeeId;
 	private Long moduleId;
 	private Long roleId, appScreenId;
 	private MmsComments comments;
@@ -145,7 +145,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
@@ -516,14 +516,14 @@ public class MaterialEnquiry extends BaseTransUI {
 		if (tblMmsEnqDtl.getValue() != null) {
 			MmsEnqDtlDM enqDtlDM = beanMmsEnqDtlDM.getItem(tblMmsEnqDtl.getValue()).getBean();
 			lsmaterial.setValue(null);
-			Long uom = enqDtlDM.getMaterialid();
-			Collection<?> uomid = lsmaterial.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+			Long matid = enqDtlDM.getMaterialid();
+			Collection<?> matids = lsmaterial.getItemIds();
+			for (Iterator<?> iterator = matids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) lsmaterial.getItem(itemId);
 				// Get the actual bean and use the data
 				MaterialDM st = (MaterialDM) item.getBean();
-				if (uom != null && uom.equals(st.getMaterialId())) {
+				if (matid != null && matid.equals(st.getMaterialId())) {
 					lsmaterial.select(itemId);
 				}
 			}
@@ -694,7 +694,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			matEnqobj.setEnquiryDate((Date) dfEnqDate.getValue());
 			matEnqobj.setIndentId((Long) cbindentno.getValue());
 			matEnqobj.setEnquiryStatus(((String) cbEnqStatus.getValue()));
-			matEnqobj.setPreparedBy(EmployeeId);
+			matEnqobj.setPreparedBy(employeeId);
 			matEnqobj.setLastUpdateddt(DateUtils.getcurrentdate());
 			matEnqobj.setLastUpdatedby(username);
 			serviceMmsEnqHdr.saveorUpdateMmsEnqHdrDetails(matEnqobj);
@@ -866,7 +866,6 @@ public class MaterialEnquiry extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			System.out.println("Enquiry Id-->" + enquiryId);
 			parameterMap.put("ENQID", enquiryId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/mmsenquiry"); // productlist is the name of my jasper

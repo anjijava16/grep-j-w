@@ -771,11 +771,9 @@ public class LetterofIntent extends BaseTransUI {
 	
 	private void loadMaterialList() {
 		try {
-			List<MmsQuoteDtlDM> getQuoteDtl = new ArrayList<MmsQuoteDtlDM>();
-			getQuoteDtl.addAll(serviceMmsQuoteDtlService.getmmsquotedtllist(null,
-					((MmsQuoteHdrDM) cbQuotation.getValue()).getQuoteId(), null, null, null));
 			BeanItemContainer<MmsQuoteDtlDM> beanpodtl = new BeanItemContainer<MmsQuoteDtlDM>(MmsQuoteDtlDM.class);
-			beanpodtl.addAll(getQuoteDtl);
+			beanpodtl.addAll(serviceMmsQuoteDtlService.getmmsquotedtllist(null,
+					((MmsQuoteHdrDM) cbQuotation.getValue()).getQuoteId(), null, null, null));
 			cbMatName.setContainerDataSource(beanpodtl);
 		}
 		catch (Exception e) {
@@ -784,10 +782,8 @@ public class LetterofIntent extends BaseTransUI {
 	}
 	
 	private void loadQuoteNoList() {
-		List<MmsQuoteHdrDM> getQuoteNo = new ArrayList<MmsQuoteHdrDM>();
-		getQuoteNo.addAll(serviceMmsQuoteHdr.getMmsQuoteHdrList(companyid, null, null, null, null, null, null, "F"));
 		BeanItemContainer<MmsQuoteHdrDM> beanQuote = new BeanItemContainer<MmsQuoteHdrDM>(MmsQuoteHdrDM.class);
-		beanQuote.addAll(getQuoteNo);
+		beanQuote.addAll(serviceMmsQuoteHdr.getMmsQuoteHdrList(companyid, null, null, null, null, null, null, "F"));
 		cbQuotation.setContainerDataSource(beanQuote);
 	}
 	
@@ -813,7 +809,6 @@ public class LetterofIntent extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			System.out.println("indentHdrId-->" + loiHdrId);
 			parameterMap.put("LOIID", loiHdrId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/loi"); // productlist is the name of my jasper

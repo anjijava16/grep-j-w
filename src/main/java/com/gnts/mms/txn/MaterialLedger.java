@@ -306,25 +306,25 @@ public class MaterialLedger extends BaseUI {
 		tblMstScrSrchRslt.setPageLength(14);
 		assembleInputUserLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		editmaterialLedger();
+		editMaterialLedger();
 	}
 	
-	private void editmaterialLedger() {
+	private void editMaterialLedger() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			MaterialLedgerDM editledgerlist = beanmatrlledger.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			MaterialLedgerDM ledgerDM = beanmatrlledger.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			setReadOnlyFalseFields();
-			cbBranch.setValue(editledgerlist.getBranchId());
-			cbMaterial.setValue(editledgerlist.getMaterialId());
-			cbstocktype.setValue(editledgerlist.getStockType());
-			tfopenqty.setValue(editledgerlist.getOpenQty().toString());
-			tfInoutflag.setValue(editledgerlist.getInoutFlag());
-			tfinoutqty.setValue(editledgerlist.getInoutFQty().toString());
-			tfcloseqty.setValue(editledgerlist.getCloseQty().toString());
-			tfrefNo.setValue(editledgerlist.getReferenceNo());
-			dfLedgerDate.setValue(editledgerlist.getStockledgeDate1());
-			dfRefdate.setValue(editledgerlist.getReferenceDate());
-			tfIslatest.setValue(editledgerlist.getIsLatest());
-			tfRemarks.setValue(editledgerlist.getReferenceRemark());
+			cbBranch.setValue(ledgerDM.getBranchId());
+			cbMaterial.setValue(ledgerDM.getMaterialId());
+			cbstocktype.setValue(ledgerDM.getStockType());
+			tfopenqty.setValue(ledgerDM.getOpenQty().toString());
+			tfInoutflag.setValue(ledgerDM.getInoutFlag());
+			tfinoutqty.setValue(ledgerDM.getInoutFQty().toString());
+			tfcloseqty.setValue(ledgerDM.getCloseQty().toString());
+			tfrefNo.setValue(ledgerDM.getReferenceNo());
+			dfLedgerDate.setValue(ledgerDM.getStockledgeDate1());
+			dfRefdate.setValue(ledgerDM.getReferenceDate());
+			tfIslatest.setValue(ledgerDM.getIsLatest());
+			tfRemarks.setValue(ledgerDM.getReferenceRemark());
 			setReadOnlyTrueFields();
 		}
 	}

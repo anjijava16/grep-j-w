@@ -63,8 +63,8 @@ public class MaterialVendorGroup extends BaseUI {
 	private HorizontalLayout hlsearchlayout = new HorizontalLayout();
 	private HorizontalLayout hluserInputlayout = new HorizontalLayout();
 	private BeanItemContainer<MaterialVendorGrpDM> beanMaterialVendorGrpDM = null;
-	private ComboBox cbmatname, cbvengrpstatus;
-	private ListSelect cbvenname;
+	private ComboBox cbMaterial, cbStatus;
+	private ListSelect cbVendor;
 	private Long materialVendorGrpId;
 	private String username;
 	private Boolean errorFlag = false;
@@ -90,20 +90,20 @@ public class MaterialVendorGroup extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Painting MaterialVendorGroup UI");
 		// Material Name ComboBox
-		cbmatname = new GERPComboBox("Material Name");
-		cbmatname.setItemCaptionPropertyId("materialName");
+		cbMaterial = new GERPComboBox("Material Name");
+		cbMaterial.setItemCaptionPropertyId("materialName");
 		loadMaterialNameList();
 		// Vendor Name ComboBox
-		cbvenname = new ListSelect("Vendor Name");
-		cbvenname.setItemCaptionPropertyId("vendorName");
-		cbvenname.setNullSelectionAllowed(false);
-		cbvenname.setMultiSelect(true);
-		cbvenname.setImmediate(true);
-		cbvenname.setWidth("150px");
-		cbvenname.setHeight("110px");
+		cbVendor = new ListSelect("Vendor Name");
+		cbVendor.setItemCaptionPropertyId("vendorName");
+		cbVendor.setNullSelectionAllowed(false);
+		cbVendor.setMultiSelect(true);
+		cbVendor.setImmediate(true);
+		cbVendor.setWidth("150px");
+		cbVendor.setHeight("110px");
 		loadVendorNameList();
 		// Status ComboBox
-		cbvengrpstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// build search layout
 		hlsearchlayout = new GERPAddEditHLayout();
 		assemblesearchlayout();
@@ -122,8 +122,8 @@ public class MaterialVendorGroup extends BaseUI {
 		form1 = new GERPFormLayout();
 		form2 = new GERPFormLayout();
 		form3 = new GERPFormLayout();
-		form1.addComponent(cbmatname);
-		form3.addComponent(cbvengrpstatus);
+		form1.addComponent(cbMaterial);
+		form3.addComponent(cbStatus);
 		hlsearchlayout.addComponent(form1);
 		hlsearchlayout.addComponent(form3);
 		hlsearchlayout.setSizeUndefined();
@@ -137,11 +137,11 @@ public class MaterialVendorGroup extends BaseUI {
 		form1 = new GERPFormLayout();
 		form2 = new GERPFormLayout();
 		form3 = new GERPFormLayout();
-		form1.addComponent(cbmatname);
-		cbmatname.setRequired(true);
-		form2.addComponent(cbvenname);
-		cbvenname.setRequired(true);
-		form3.addComponent(cbvengrpstatus);
+		form1.addComponent(cbMaterial);
+		cbMaterial.setRequired(true);
+		form2.addComponent(cbVendor);
+		cbVendor.setRequired(true);
+		form3.addComponent(cbStatus);
 		hluserInputlayout.addComponent(form1);
 		hluserInputlayout.addComponent(form2);
 		hluserInputlayout.addComponent(form3);
@@ -156,8 +156,8 @@ public class MaterialVendorGroup extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<MaterialVendorGrpDM> vendorGrpList = new ArrayList<MaterialVendorGrpDM>();
-		vendorGrpList = servicegrpmaterialvendor.getMaterialVendorGrpList(null, (Long) cbmatname.getValue(), null,
-				(String) cbvengrpstatus.getValue(), "F");
+		vendorGrpList = servicegrpmaterialvendor.getMaterialVendorGrpList(null, (Long) cbMaterial.getValue(), null,
+				(String) cbStatus.getValue(), "F");
 		recordCnt = vendorGrpList.size();
 		beanMaterialVendorGrpDM = new BeanItemContainer<MaterialVendorGrpDM>(MaterialVendorGrpDM.class);
 		beanMaterialVendorGrpDM.addAll(vendorGrpList);
@@ -176,12 +176,12 @@ public class MaterialVendorGroup extends BaseUI {
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		cbmatname.setReadOnly(false);
-		cbmatname.setValue(null);
-		cbvenname.setValue(null);
-		cbmatname.setComponentError(null);
-		cbvenname.setComponentError(null);
-		cbvengrpstatus.setValue(cbvengrpstatus.getItemIds().iterator().next());
+		cbMaterial.setReadOnly(false);
+		cbMaterial.setValue(null);
+		cbVendor.setValue(null);
+		cbMaterial.setComponentError(null);
+		cbVendor.setComponentError(null);
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	
 	private void loadMaterialNameList() {
@@ -189,7 +189,7 @@ public class MaterialVendorGroup extends BaseUI {
 		beanCtgry.setBeanIdProperty("materialId");
 		beanCtgry.addAll(servicematerial.getMaterialList(null, companyid, null, null, null, null, null, null, "Active",
 				"P"));
-		cbmatname.setContainerDataSource(beanCtgry);
+		cbMaterial.setContainerDataSource(beanCtgry);
 	}
 	
 	/*
@@ -201,7 +201,7 @@ public class MaterialVendorGroup extends BaseUI {
 		beanVendor.setBeanIdProperty("vendorId");
 		beanVendor.addAll(servicevendor.getVendorList(null, null, companyid, null, null, null, null, null, "Active",
 				null, "P"));
-		cbvenname.setContainerDataSource(beanVendor);
+		cbVendor.setContainerDataSource(beanVendor);
 	}
 	
 	// Based on the selected record, the data would be populated into user input
@@ -215,21 +215,21 @@ public class MaterialVendorGroup extends BaseUI {
 				MaterialVendorGrpDM materialVendorGrpDM = beanMaterialVendorGrpDM.getItem(
 						tblMstScrSrchRslt.getValue()).getBean();
 				materialVendorGrpId = materialVendorGrpDM.getMaterialVendorGrpId();
-				cbmatname.setValue(materialVendorGrpDM.getMaterialId());
-				cbvenname.setValue(null);
-				Long matId = Long.valueOf(materialVendorGrpDM.getVendorId());
-				Collection<?> empColId = cbvenname.getItemIds();
-				for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
+				cbMaterial.setValue(materialVendorGrpDM.getMaterialId());
+				cbVendor.setValue(null);
+				Long vendorId = Long.valueOf(materialVendorGrpDM.getVendorId());
+				Collection<?> vendorIds = cbVendor.getItemIds();
+				for (Iterator<?> iteratorclient = vendorIds.iterator(); iteratorclient.hasNext();) {
 					Object itemIdClient = (Object) iteratorclient.next();
-					BeanItem<?> itemclient = (BeanItem<?>) cbvenname.getItem(itemIdClient);
+					BeanItem<?> itemclient = (BeanItem<?>) cbVendor.getItem(itemIdClient);
 					// Get the actual bean and use the data
 					VendorDM matObj = (VendorDM) itemclient.getBean();
-					if (matId != null && matId.equals(Long.valueOf(matObj.getVendorId()))) {
-						cbvenname.select(itemIdClient);
+					if (vendorId != null && vendorId.equals(Long.valueOf(matObj.getVendorId()))) {
+						cbVendor.select(itemIdClient);
 					}
 				}
 				if (materialVendorGrpDM.getVendorGrpStatus() != null) {
-					cbvengrpstatus.setValue(materialVendorGrpDM.getVendorGrpStatus());
+					cbStatus.setValue(materialVendorGrpDM.getVendorGrpStatus());
 				}
 			}
 		}
@@ -247,8 +247,8 @@ public class MaterialVendorGroup extends BaseUI {
 			hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hluserInputlayout));
 			resetFields();
 			assembleUserInputLayout();
-			cbmatname.setRequired(true);
-			cbvenname.setRequired(true);
+			cbMaterial.setRequired(true);
+			cbVendor.setRequired(true);
 			editMaterialVendorGrpDetails();
 		}
 		catch (Exception e) {
@@ -277,9 +277,9 @@ public class MaterialVendorGroup extends BaseUI {
 	@Override
 	protected void resetSearchDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		cbmatname.setValue(null);
-		cbvenname.setValue(null);
-		cbvengrpstatus.setValue(cbvengrpstatus.getItemIds().iterator().next());
+		cbMaterial.setValue(null);
+		cbVendor.setValue(null);
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		loadSrchRslt();
@@ -307,19 +307,19 @@ public class MaterialVendorGroup extends BaseUI {
 	@Override
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		cbmatname.setComponentError(null);
-		cbvenname.setComponentError(null);
+		cbMaterial.setComponentError(null);
+		cbVendor.setComponentError(null);
 		errorFlag = false;
-		if (cbmatname.getValue() == null) {
-			cbmatname.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_NAME));
+		if (cbMaterial.getValue() == null) {
+			cbMaterial.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_NAME));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + cbmatname.getValue());
+					+ "Throwing ValidationException. User data is > " + cbMaterial.getValue());
 			errorFlag = true;
 		}
-		if (cbvenname.getValue() == null || cbvenname.getValue().toString() == "[]") {
-			cbvenname.setComponentError(new UserError(GERPErrorCodes.NULL_VENDOR_NAME));
+		if (cbVendor.getValue() == null || cbVendor.getValue().toString() == "[]") {
+			cbVendor.setComponentError(new UserError(GERPErrorCodes.NULL_VENDOR_NAME));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + cbvenname.getValue());
+					+ "Throwing ValidationException. User data is > " + cbVendor.getValue());
 			errorFlag = true;
 		}
 		if (errorFlag) {
@@ -332,22 +332,22 @@ public class MaterialVendorGroup extends BaseUI {
 	protected void saveDetails() throws SaveException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
-			String[] split = cbvenname.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+			String[] split = cbVendor.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
 			for (String obj : split) {
 				if (obj.trim().length() > 0) {
 					MaterialVendorGrpDM materialvendorgrpObj = new MaterialVendorGrpDM();
 					if (tblMstScrSrchRslt.getValue() != null) {
 						materialvendorgrpObj = beanMaterialVendorGrpDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 					}
-					materialvendorgrpObj.setMaterialId((Long) cbmatname.getValue());
-					if (cbvenname.getValue() != null) {
+					materialvendorgrpObj.setMaterialId((Long) cbMaterial.getValue());
+					if (cbVendor.getValue() != null) {
 						materialvendorgrpObj.setVendorId(Long.valueOf(obj.trim()));
 						materialvendorgrpObj.setVendorName(servicevendor
 								.getVendorList(null, Long.valueOf(obj.trim()), null, null, null, null, null, null,
 										null, null, "P").get(0).getVendorName());
 					}
-					if (cbvengrpstatus.getValue() != null) {
-						materialvendorgrpObj.setVendorGrpStatus((String) cbvengrpstatus.getValue());
+					if (cbStatus.getValue() != null) {
+						materialvendorgrpObj.setVendorGrpStatus((String) cbStatus.getValue());
 					}
 					materialvendorgrpObj.setLastUpdtDate(DateUtils.getcurrentdate());
 					materialvendorgrpObj.setLastUpdatedBy(username);
@@ -367,8 +367,8 @@ public class MaterialVendorGroup extends BaseUI {
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assemblesearchlayout();
-		cbmatname.setRequired(false);
-		cbvenname.setRequired(false);
+		cbMaterial.setRequired(false);
+		cbVendor.setRequired(false);
 		resetFields();
 		loadSrchRslt();
 	}

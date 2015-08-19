@@ -152,7 +152,7 @@ public class AssetComplaintRegister extends Window {
 				+ " || Attented By : " + cbEmployee.getValue() + " ";
 		serviceAssetMaintDetails.saveOrUpdateAssetMaintDetail(assetMaintDetailDM);
 		try {
-			new EmailTrigger("maintenance@saarccases..com", maintenanceMail, (String) cbMaintType.getValue());
+			new EmailTrigger("maintenance@saarccases.com", maintenanceMail, (String) cbMaintType.getValue());
 		}
 		catch (Exception e) {
 		}

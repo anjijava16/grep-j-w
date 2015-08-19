@@ -54,7 +54,7 @@ public class MaterialStock extends BaseUI {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private TextField tflotno, tfCurrentStock, tfParkedStock, tfEffectiveStock;
+	private TextField tfLotno, tfCurrentStock, tfParkedStock, tfEffectiveStock;
 	private ComboBox cbBranch, cbMaterial, cbStockType;
 	private FormLayout f1column, f2column, f3column, f4column;
 	private HorizontalLayout hlsearchlayout;
@@ -63,8 +63,8 @@ public class MaterialStock extends BaseUI {
 	private int recordCnt = 0;
 	private MaterialStockService serviceMaterialStock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
-	private BranchService servicebranch = (BranchService) SpringContextHelper.getBean("mbranch");
-	private MaterialService servicematerial = (MaterialService) SpringContextHelper.getBean("material");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private BeanItemContainer<MaterialStockDM> beanMaterialStock;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
@@ -82,16 +82,16 @@ public class MaterialStock extends BaseUI {
 	
 	private void buildview() {
 		hlCmdBtnLayout.removeComponent(btnSave);
-		tflotno = new GERPTextField("Lot No");
+		tfLotno = new GERPTextField("Lot No");
 		tfCurrentStock = new GERPTextField("Current Stock");
 		tfParkedStock = new GERPTextField("Parked Stock");
 		tfEffectiveStock = new GERPTextField("Effective Stock");
 		cbBranch = new GERPComboBox("Branch");
 		cbBranch.setItemCaptionPropertyId("branchName");
-		loadbranchdetails();
+		loadBranchdetails();
 		cbMaterial = new GERPComboBox("Material");
 		cbMaterial.setItemCaptionPropertyId("materialName");
-		loadmaterialdetails();
+		loadMaterialdetails();
 		cbStockType = new GERPComboBox("StockType", BASEConstants.T_MMS_MATERIAL_STOCK, BASEConstants.STOCKTYPE);
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
@@ -114,7 +114,7 @@ public class MaterialStock extends BaseUI {
 		f4column = new FormLayout();
 		f1column.addComponent(cbBranch);
 		f2column.addComponent(cbMaterial);
-		f3column.addComponent(tflotno);
+		f3column.addComponent(tfLotno);
 		f4column.addComponent(cbStockType);
 		hlsearchlayout.addComponent(f1column);
 		hlsearchlayout.addComponent(f2column);
@@ -132,7 +132,7 @@ public class MaterialStock extends BaseUI {
 		f4column = new FormLayout();
 		f1column.addComponent(cbBranch);
 		f1column.addComponent(cbMaterial);
-		f2column.addComponent(tflotno);
+		f2column.addComponent(tfLotno);
 		f2column.addComponent(tfCurrentStock);
 		f3column.addComponent(tfParkedStock);
 		f3column.addComponent(tfEffectiveStock);
@@ -149,12 +149,12 @@ public class MaterialStock extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<MaterialStockDM> materiallist = new ArrayList<MaterialStockDM>();
-			materiallist = serviceMaterialStock.getMaterialStockList((Long) cbMaterial.getValue(), companyId, null,
-					(Long) cbBranch.getValue(), tflotno.getValue(), (String) cbStockType.getValue(), "F");
-			recordCnt = materiallist.size();
+			List<MaterialStockDM> listMatStock = new ArrayList<MaterialStockDM>();
+			listMatStock = serviceMaterialStock.getMaterialStockList((Long) cbMaterial.getValue(), companyId, null,
+					(Long) cbBranch.getValue(), tfLotno.getValue(), (String) cbStockType.getValue(), "F");
+			recordCnt = listMatStock.size();
 			beanMaterialStock = new BeanItemContainer<MaterialStockDM>(MaterialStockDM.class);
-			beanMaterialStock.addAll(materiallist);
+			beanMaterialStock.addAll(listMatStock);
 			tblMstScrSrchRslt.setContainerDataSource(beanMaterialStock);
 			tblMstScrSrchRslt.setSelectable(true);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "stockid", "branchName", "materialName", "lotNo",
@@ -177,7 +177,7 @@ public class MaterialStock extends BaseUI {
 			cbBranch.setValue(materialStockDM.getBranchId());
 			cbMaterial.setValue(materialStockDM.getMaterialId());
 			cbStockType.setValue(materialStockDM.getStockType());
-			tflotno.setValue(materialStockDM.getLotNo());
+			tfLotno.setValue(materialStockDM.getLotNo());
 			if (materialStockDM.getCurrentStock() != null) {
 				tfCurrentStock.setValue(materialStockDM.getCurrentStock().toString());
 			}
@@ -191,19 +191,19 @@ public class MaterialStock extends BaseUI {
 		readonlytrue();
 	}
 	
-	private void loadbranchdetails() {
+	private void loadBranchdetails() {
 		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(servicebranch.getBranchList(null, null, null, "Active", companyId, "P"));
+		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyId, "P"));
 		cbBranch.setContainerDataSource(beanbranch);
 	}
 	
 	// Loading Material List
-	private void loadmaterialdetails() {
+	private void loadMaterialdetails() {
 		try {
 			List<MaterialDM> list = new ArrayList<MaterialDM>();
 			list.add(new MaterialDM(0L, "All Materials"));
-			list.addAll(servicematerial.getMaterialList(null, companyId, null, null, null, null, null, null, "Active",
+			list.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null, "Active",
 					"P"));
 			BeanContainer<Long, MaterialDM> beanmaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 			beanmaterial.setBeanIdProperty("materialId");
@@ -250,7 +250,7 @@ public class MaterialStock extends BaseUI {
 		cbStockType.setReadOnly(true);
 		tfCurrentStock.setReadOnly(true);
 		tfEffectiveStock.setReadOnly(true);
-		tflotno.setReadOnly(true);
+		tfLotno.setReadOnly(true);
 		tfParkedStock.setReadOnly(true);
 	}
 	
@@ -260,7 +260,7 @@ public class MaterialStock extends BaseUI {
 		cbStockType.setReadOnly(false);
 		tfCurrentStock.setReadOnly(false);
 		tfEffectiveStock.setReadOnly(false);
-		tflotno.setReadOnly(false);
+		tfLotno.setReadOnly(false);
 		tfParkedStock.setReadOnly(false);
 	}
 	
@@ -284,12 +284,11 @@ public class MaterialStock extends BaseUI {
 			cbStockType.setComponentError(new UserError(GERPErrorCodes.NULL_STOCK_TYPE));
 			errorflag = true;
 		}
-		if (tflotno.getValue() == "" || tflotno.getValue().trim().length() < 0) {
-			tflotno.setComponentError(new UserError("Given Integer values"));
+		if (tfLotno.getValue() == "" || tfLotno.getValue().trim().length() < 0) {
+			tfLotno.setComponentError(new UserError("Given Integer values"));
 			errorflag = true;
 		} else {
-			tflotno.setComponentError(null);
-			// errorflag=false;
+			tfLotno.setComponentError(null);
 		}
 		if (errorflag) {
 			logger.warn("Company ID : " + companyId + " | User Name : " + userName + " > "
@@ -309,7 +308,7 @@ public class MaterialStock extends BaseUI {
 			materialStockDM.setCompanyId(companyId);
 			materialStockDM.setBranchId((Long) cbBranch.getValue());
 			materialStockDM.setMaterialId((Long) cbMaterial.getValue());
-			materialStockDM.setLotNo(tflotno.getValue());
+			materialStockDM.setLotNo(tfLotno.getValue());
 			if (tfCurrentStock.getValue().trim().length() > 0) {
 				materialStockDM.setCurrentStock(Long.valueOf(tfCurrentStock.getValue()));
 			}
@@ -353,7 +352,7 @@ public class MaterialStock extends BaseUI {
 		tfCurrentStock.setValue("");
 		tfParkedStock.setValue("");
 		tfEffectiveStock.setValue("");
-		tflotno.setValue("");
+		tfLotno.setValue("");
 		cbStockType.setValue(null);
 	}
 }

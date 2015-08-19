@@ -58,8 +58,8 @@ public class MaterialParkedStock extends BaseUI {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private PopupDateField dtparkdate, dfrefDate;
-	private ComboBox cbMaterial, cbBranch, cbstocktype;
+	private PopupDateField dtparkdate, dfRefDate;
+	private ComboBox cbMaterial, cbBranch, cbStocktype;
 	private TextField tfparkedQty, tfusedQty, tfbalanceQty, tfLotNO, tfrefNo;
 	private TextArea taRefRemarks;
 	private HorizontalLayout hlsearch;
@@ -92,8 +92,8 @@ public class MaterialParkedStock extends BaseUI {
 		cbMaterial.setItemCaptionPropertyId("materialName");
 		cbMaterial.setWidth("150");
 		loadmateriallist();
-		cbstocktype = new GERPComboBox("Stock Type", BASEConstants.T_MMS_MATERIAL_STOCK, BASEConstants.STOCKTYPE);
-		cbstocktype.setWidth("150");
+		cbStocktype = new GERPComboBox("Stock Type", BASEConstants.T_MMS_MATERIAL_STOCK, BASEConstants.STOCKTYPE);
+		cbStocktype.setWidth("150");
 		cbBranch = new GERPComboBox("Branch");
 		cbBranch.setItemCaptionPropertyId("branchName");
 		cbBranch.setWidth("150");
@@ -108,8 +108,8 @@ public class MaterialParkedStock extends BaseUI {
 		tfLotNO.setWidth("150");
 		tfrefNo = new TextField("Reference No");
 		tfrefNo.setWidth("150");
-		dfrefDate = new GERPPopupDateField("Reference Date");
-		dfrefDate.setWidth("150");
+		dfRefDate = new GERPPopupDateField("Reference Date");
+		dfRefDate.setWidth("150");
 		taRefRemarks = new TextArea("Refernce Remarks");
 		taRefRemarks.setWidth("150");
 		taRefRemarks.setHeight("70");
@@ -136,7 +136,7 @@ public class MaterialParkedStock extends BaseUI {
 		flcolumn2.addComponent(cbMaterial);
 		flcolumn3.addComponent(dtparkdate);
 		flcolumn3.setMargin(true);
-		flcolumn4.addComponent(cbstocktype);
+		flcolumn4.addComponent(cbStocktype);
 		hlsearch.addComponent(flcolumn1);
 		hlsearch.addComponent(flcolumn2);
 		hlsearch.addComponent(flcolumn3);
@@ -157,7 +157,7 @@ public class MaterialParkedStock extends BaseUI {
 		flcolumn4 = new FormLayout();
 		flcolumn1.addComponent(cbBranch);
 		flcolumn1.addComponent(cbMaterial);
-		flcolumn1.addComponent(cbstocktype);
+		flcolumn1.addComponent(cbStocktype);
 		flcolumn2.addComponent(dtparkdate);
 		flcolumn2.addComponent(tfparkedQty);
 		flcolumn2.addComponent(tfusedQty);
@@ -176,28 +176,28 @@ public class MaterialParkedStock extends BaseUI {
 	private void readonlytrue() {
 		dtparkdate.setReadOnly(true);
 		cbMaterial.setReadOnly(true);
-		cbstocktype.setReadOnly(true);
+		cbStocktype.setReadOnly(true);
 		cbBranch.setReadOnly(true);
 		tfparkedQty.setReadOnly(true);
 		tfusedQty.setReadOnly(true);
 		tfbalanceQty.setReadOnly(true);
 		tfLotNO.setReadOnly(true);
 		tfrefNo.setReadOnly(true);
-		dfrefDate.setReadOnly(true);
+		dfRefDate.setReadOnly(true);
 		taRefRemarks.setReadOnly(true);
 	}
 	
 	private void readonlyfalse() {
 		dtparkdate.setReadOnly(false);
 		cbMaterial.setReadOnly(false);
-		cbstocktype.setReadOnly(false);
+		cbStocktype.setReadOnly(false);
 		cbBranch.setReadOnly(false);
 		tfparkedQty.setReadOnly(false);
 		tfusedQty.setReadOnly(false);
 		tfbalanceQty.setReadOnly(false);
 		tfLotNO.setReadOnly(false);
 		tfrefNo.setReadOnly(false);
-		dfrefDate.setReadOnly(false);
+		dfRefDate.setReadOnly(false);
 		taRefRemarks.setReadOnly(false);
 	}
 	
@@ -208,13 +208,13 @@ public class MaterialParkedStock extends BaseUI {
 			cbMaterial.setValue(parkedStockDM.getMaterialId());
 			cbBranch.setValue(parkedStockDM.getBranchId());
 			dtparkdate.setValue(parkedStockDM.getParkedDate());
-			cbstocktype.setValue(parkedStockDM.getStockType().toString());
+			cbStocktype.setValue(parkedStockDM.getStockType().toString());
 			tfparkedQty.setValue(parkedStockDM.getParkedQty().toString());
 			tfusedQty.setValue(parkedStockDM.getUsedQty().toString());
 			tfbalanceQty.setValue(parkedStockDM.getBalanceQty().toString());
 			tfLotNO.setValue(parkedStockDM.getLotNo());
 			tfrefNo.setValue(parkedStockDM.getReferenceNo());
-			dfrefDate.setValue(parkedStockDM.getReferenceDate());
+			dfRefDate.setValue(parkedStockDM.getReferenceDate());
 			taRefRemarks.setValue(parkedStockDM.getReferenceRemark());
 			readonlytrue();
 		}
@@ -226,7 +226,7 @@ public class MaterialParkedStock extends BaseUI {
 			tblMstScrSrchRslt.removeAllItems();
 			parkedDate = dtparkdate.getValue();
 			List<MaterialParkedStockDM> materiallist = serviceparked.getMaterialParkedStockList(
-					(Long) cbMaterial.getValue(), null, (String) cbstocktype.getValue(), parkedDate,
+					(Long) cbMaterial.getValue(), null, (String) cbStocktype.getValue(), parkedDate,
 					(Long) cbBranch.getValue(), "F");
 			recordCnt = materiallist.size();
 			beanmaterialparkedstock = new BeanItemContainer<MaterialParkedStockDM>(MaterialParkedStockDM.class);
@@ -295,7 +295,7 @@ public class MaterialParkedStock extends BaseUI {
 		// reset the field valued to default
 		cbMaterial.setValue(0L);
 		cbBranch.setValue(branchId);
-		cbstocktype.setValue(null);
+		cbStocktype.setValue(null);
 		dtparkdate.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
@@ -358,14 +358,14 @@ public class MaterialParkedStock extends BaseUI {
 		readonlyfalse();
 		cbMaterial.setValue(0L);
 		cbBranch.setValue(branchId);
-		cbstocktype.setValue(null);
+		cbStocktype.setValue(null);
 		dtparkdate.setValue(null);
 		tfparkedQty.setValue("");
 		tfusedQty.setValue("");
 		tfbalanceQty.setValue("");
 		tfLotNO.setValue("");
 		tfrefNo.setValue("");
-		dfrefDate.setValue(null);
+		dfRefDate.setValue(null);
 		taRefRemarks.setValue("");
 	}
 }

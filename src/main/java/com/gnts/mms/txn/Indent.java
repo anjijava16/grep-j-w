@@ -109,7 +109,7 @@ public class Indent extends BaseTransUI {
 	private ComboBox cbIndStatus = new GERPComboBox("Status", BASEConstants.T_SMS_INVOICE_HDR,
 			BASEConstants.INVOICE_STATUS);
 	private TextField tfIndNo, tfIndQty;
-	private ComboBox cbIndType, cbBranchId, cbuom, cbDepartment;
+	private ComboBox cbIndType, cbBranchId, cbUom, cbDepartment;
 	private ListSelect cbMatName;
 	private PopupDateField dfIndDate, dfExpDt;
 	private TextArea taRemarks;
@@ -200,12 +200,12 @@ public class Indent extends BaseTransUI {
 		tfIndQty = new TextField();
 		tfIndQty.setValue("0");
 		tfIndQty.setWidth("90");
-		cbuom = new ComboBox();
-		cbuom.setItemCaptionPropertyId("lookupname");
+		cbUom = new ComboBox();
+		cbUom.setItemCaptionPropertyId("lookupname");
 		loadMaterialUOMList();
-		cbuom.setWidth("77");
-		cbuom.setHeight("18");
-		cbuom.setReadOnly(true);
+		cbUom.setWidth("77");
+		cbUom.setHeight("18");
+		cbUom.setReadOnly(true);
 		// Indent Type GERPComboBox
 		cbIndType = new GERPComboBox("Indent Type");
 		cbIndType.addItem("Local Purchase");
@@ -252,11 +252,11 @@ public class Indent extends BaseTransUI {
 							.split(",");
 					for (String obj : split) {
 						if (obj.trim().length() > 0) {
-							cbuom.setReadOnly(false);
-							cbuom.setValue(serviceMaterial
+							cbUom.setReadOnly(false);
+							cbUom.setValue(serviceMaterial
 									.getMaterialList(Long.valueOf(obj.trim()), companyid, null, null, null, null, null,
 											null, null, "F").get(0).getMaterialUOM());
-							cbuom.setReadOnly(true);
+							cbUom.setReadOnly(true);
 						}
 					}
 				}
@@ -328,9 +328,9 @@ public class Indent extends BaseTransUI {
 		flIndentDtlCol1.addComponent(cbMatName);
 		HorizontalLayout hlQtyUom = new HorizontalLayout();
 		hlQtyUom.addComponent(tfIndQty);
-		hlQtyUom.addComponent(cbuom);
+		hlQtyUom.addComponent(cbUom);
 		hlQtyUom.setCaption("Indent Qty");
-		cbuom.setWidth("60");
+		cbUom.setWidth("60");
 		flIndentDtlCol2.addComponent(hlQtyUom);
 		flIndentDtlCol2.setComponentAlignment(hlQtyUom, Alignment.TOP_LEFT);
 		flIndentDtlCol2.addComponent(cbDtlStatus);
@@ -420,7 +420,7 @@ public class Indent extends BaseTransUI {
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
 		beanCompanyLookUp
 				.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active", "MM_UOM"));
-		cbuom.setContainerDataSource(beanCompanyLookUp);
+		cbUom.setContainerDataSource(beanCompanyLookUp);
 	}
 	
 	// Method to reset the fields
@@ -494,9 +494,9 @@ public class Indent extends BaseTransUI {
 				tfIndQty.setValue(indentDtlDM.getIndentQty().toString());
 			}
 			if (indentDtlDM.getMaterialUOM() != null) {
-				cbuom.setReadOnly(false);
-				cbuom.setValue(indentDtlDM.getMaterialUOM());
-				cbuom.setReadOnly(true);
+				cbUom.setReadOnly(false);
+				cbUom.setValue(indentDtlDM.getMaterialUOM());
+				cbUom.setReadOnly(true);
 			}
 			if (indentDtlDM.getStatus() != null) {
 				cbDtlStatus.setValue(indentDtlDM.getStatus());
@@ -626,10 +626,10 @@ public class Indent extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbMatName.setValue(null);
 		tfIndQty.setValue("0");
-		cbuom.setReadOnly(false);
-		cbuom.setValue(null);
-		cbuom.setReadOnly(true);
-		cbuom.setComponentError(null);
+		cbUom.setReadOnly(false);
+		cbUom.setValue(null);
+		cbUom.setReadOnly(true);
+		cbUom.setComponentError(null);
 		cbDtlStatus.setValue(cbDtlStatus.getItemIds().iterator().next());
 		btnAddDtl.setCaption("Add");
 	}
@@ -644,29 +644,29 @@ public class Indent extends BaseTransUI {
 		} else {
 			cbMatName.setComponentError(null);
 		}
-		if (cbuom.getValue() == null) {
-			cbuom.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
+		if (cbUom.getValue() == null) {
+			cbUom.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
 			isValid = false;
 		} else {
-			cbuom.setComponentError(null);
+			cbUom.setComponentError(null);
 		}
 		Long achievedQty;
 		try {
 			achievedQty = Long.valueOf(tfIndQty.getValue());
 			if (achievedQty < 0) {
-				cbuom.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
+				cbUom.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				isValid = false;
 			}
 		}
 		catch (Exception e) {
-			cbuom.setComponentError(new UserError(GERPErrorCodes.QUNATITY_CHAR_VALIDATION));
+			cbUom.setComponentError(new UserError(GERPErrorCodes.QUNATITY_CHAR_VALIDATION));
 			isValid = false;
 		}
 		if (tfIndQty.getValue().equals("0")) {
-			cbuom.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRY_QTY));
+			cbUom.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRY_QTY));
 			isValid = false;
 		} else {
-			cbuom.setComponentError(null);
+			cbUom.setComponentError(null);
 			isValid = true;
 		}
 		return isValid;
@@ -696,7 +696,7 @@ public class Indent extends BaseTransUI {
 		}
 		if (tblIndentDtl.size() == 0) {
 			cbMatName.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_NAME));
-			cbuom.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
+			cbUom.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
 			tfIndQty.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 			errorFlag = true;
 		}
@@ -797,9 +797,9 @@ public class Indent extends BaseTransUI {
 							indentDtlObj.setIndentQty(Long.valueOf(tfIndQty.getValue()));
 							indentDtlObj.setBalenceQty(Long.valueOf(tfIndQty.getValue()));
 						}
-						cbuom.setReadOnly(false);
-						indentDtlObj.setMaterialUOM(cbuom.getValue().toString());
-						cbuom.setReadOnly(true);
+						cbUom.setReadOnly(false);
+						indentDtlObj.setMaterialUOM(cbUom.getValue().toString());
+						cbUom.setReadOnly(true);
 						if (cbDtlStatus.getValue() != null) {
 							indentDtlObj.setStatus((String) cbDtlStatus.getValue());
 						}

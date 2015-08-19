@@ -112,7 +112,7 @@ public class MaterialGatepass extends BaseTransUI {
 	private Table tblGatepassDetails = new Table();
 	private Long gatePassId;
 	private Button btnAddDtl;
-	private List<GatepassDtlDM> gatepassdtllist = null;
+	private List<GatepassDtlDM> listGatePassDtls = null;
 	private String userName;
 	private Long companyId, moduleId, branchID, vendorId;
 	private MmsComments comments;
@@ -173,7 +173,7 @@ public class MaterialGatepass extends BaseTransUI {
 		loadUomList();
 		cbMaterial = new GERPComboBox("Material");
 		cbMaterial.setItemCaptionPropertyId("materialName");
-		loadmateriallist();
+		loadMateriallist();
 		cbMaterial.setImmediate(true);
 		cbMaterial.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -189,7 +189,7 @@ public class MaterialGatepass extends BaseTransUI {
 		});
 		cbProduct = new GERPComboBox("Product Name");
 		cbProduct.setItemCaptionPropertyId("prodname");
-		loadproductlist();
+		loadProductlist();
 		cbProduct.setImmediate(true);
 		cbProduct.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -244,7 +244,8 @@ public class MaterialGatepass extends BaseTransUI {
 							&& (vendordm.getStateId().toString() != null) && (vendordm.getCityId().toString() != null)) {
 						tavendoraddres.setValue((vendordm.getVendorAddress().toString()) + "\n"
 								+ (vendordm.getCityName().toString()) + "\n" + (vendordm.getStateName()).toString()
-								+ "\n" + (vendordm.getCountryName().toString())+ "-" + (vendordm.getVendorPostcode().toString()));
+								+ "\n" + (vendordm.getCountryName().toString()) + "-"
+								+ (vendordm.getVendorPostcode().toString()));
 						tfVendorname.setValue(vendordm.getContactName());
 					}
 				}
@@ -294,7 +295,7 @@ public class MaterialGatepass extends BaseTransUI {
 			public void buttonClick(ClickEvent event) {
 				// if (btnAddDtl == event.getButton()) {
 				if (validategatepassdtl()) {
-					savedtlDetails();
+					saveGatepassDetails();
 				}
 			}
 		});
@@ -464,9 +465,9 @@ public class MaterialGatepass extends BaseTransUI {
 			logger.info("Company ID : " + companyId + " | saveindentDtlListDetails User Name : " + userName + " > "
 					+ "Search Parameters are " + companyId + ", " + tfpersonname.getValue() + ", "
 					+ tfVendorname.getValue() + (String) cbdtlstatus.getValue());
-			recordCnt = gatepassdtllist.size();
+			recordCnt = listGatePassDtls.size();
 			beanGatePassDtl = new BeanItemContainer<GatepassDtlDM>(GatepassDtlDM.class);
-			beanGatePassDtl.addAll(gatepassdtllist);
+			beanGatePassDtl.addAll(listGatePassDtls);
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 					+ "Got the Taxslap. result set");
 			tblGatepassDetails.setContainerDataSource(beanGatePassDtl);
@@ -518,14 +519,14 @@ public class MaterialGatepass extends BaseTransUI {
 		}
 	}
 	
-	private void loadmateriallist() {
+	private void loadMateriallist() {
 		BeanItemContainer<MaterialDM> beanmaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
 		beanmaterial.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null, null,
 				"P"));
 		cbMaterial.setContainerDataSource(beanmaterial);
 	}
 	
-	private void loadproductlist() {
+	private void loadProductlist() {
 		BeanItemContainer<ProductDM> beanproduct = new BeanItemContainer<ProductDM>(ProductDM.class);
 		beanproduct.addAll(serviceProduct.getProductList(companyId, null, null, null, "Active", null, null, "P"));
 		cbProduct.setContainerDataSource(beanproduct);
@@ -591,6 +592,7 @@ public class MaterialGatepass extends BaseTransUI {
 		btnAddDtl.setCaption("Add");
 		tblGatepassDetails.setVisible(true);
 	}
+	
 	@Override
 	protected void editDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Adding new record...");
@@ -644,7 +646,7 @@ public class MaterialGatepass extends BaseTransUI {
 			cbgatestatus.setValue(editHdrIndent.getGatepassStatus());
 			editHdrIndent.setLastUpdatedDt(DateUtils.getcurrentdate());
 			editHdrIndent.setLastUpdatedBy(userName);
-			gatepassdtllist.addAll(servicegatepassdtl.getGatepassDtlList(null, gatePassId, null, null, null, "Active",
+			listGatePassDtls.addAll(servicegatepassdtl.getGatepassDtlList(null, gatePassId, null, null, null, "Active",
 					"F"));
 		}
 		loadDtlList();
@@ -802,11 +804,14 @@ public class MaterialGatepass extends BaseTransUI {
 				servicegatepassdtl.saveorupdateDtlDetails(saveDtl);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyId, branchID, moduleId, "MM_GPNO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyId, branchID, moduleId, "MM_GPNO").get(
+							0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyId, branchID, moduleId, "MM_GPNO");
 					}
+				}
+				catch (Exception e) {
 				}
 			}
 			comments.savegatepass(gatepasshdr.getGatepassId(), gatepasshdr.getGatepassStatus());
@@ -821,7 +826,7 @@ public class MaterialGatepass extends BaseTransUI {
 		}
 	}
 	
-	public void savedtlDetails() {
+	private void saveGatepassDetails() {
 		validategatepassdtl();
 		GatepassDtlDM dtlpass = new GatepassDtlDM();
 		if (tblGatepassDetails.getValue() != null) {
@@ -852,7 +857,7 @@ public class MaterialGatepass extends BaseTransUI {
 		dtlpass.setStatus((String) cbdtlstatus.getValue());
 		dtlpass.setLastupdatedt(DateUtils.getcurrentdate());
 		dtlpass.setLastupdatedBy(userName);
-		gatepassdtllist.add(dtlpass);
+		listGatePassDtls.add(dtlpass);
 		gatepassDtlResetFields();
 		loadDtlList();
 	}
@@ -897,7 +902,7 @@ public class MaterialGatepass extends BaseTransUI {
 		taHdrremarks.setValue("");
 		cbGatepasstype.setComponentError(null);
 		cbgatestatus.setValue(cbgatestatus.getItemIds().iterator().next());
-		gatepassdtllist = new ArrayList<GatepassDtlDM>();
+		listGatePassDtls = new ArrayList<GatepassDtlDM>();
 		tblGatepassDetails.removeAllItems();
 	}
 	
@@ -905,7 +910,7 @@ public class MaterialGatepass extends BaseTransUI {
 		GatepassDtlDM save = new GatepassDtlDM();
 		if (tblGatepassDetails.getValue() != null) {
 			save = beanGatePassDtl.getItem(tblGatepassDetails.getValue()).getBean();
-			gatepassdtllist.remove(save);
+			listGatePassDtls.remove(save);
 			gatepassDtlResetFields();
 			loadDtlList();
 			btndelete.setEnabled(false);

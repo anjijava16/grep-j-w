@@ -814,14 +814,6 @@ public class DC extends BaseTransUI {
 		// remove the components in the search layout and input controls in the same container
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		hlCmdBtnLayout.setVisible(false);
-		// reset the input controls to default value
-		List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MM_DCNO");
-		tfDcNo.setReadOnly(false);
-		for (SlnoGenDM slnoObj : slnoList) {
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfDcNo.setReadOnly(true);
-			}
-		}
 		tblMstScrSrchRslt.setVisible(false);
 		if (tfDcNo.getValue() == null || tfDcNo.getValue().trim().length() == 0) {
 			tfDcNo.setReadOnly(false);
@@ -1056,11 +1048,9 @@ public class DC extends BaseTransUI {
 	 * loadMaterialList()-->this function is used for load the Material name
 	 */
 	private void loadMaterialList() {
-		List<MaterialDM> getMatList = new ArrayList<MaterialDM>();
-		getMatList.addAll(serviceMaterial
-				.getMaterialList(null, null, null, null, null, null, null, null, "Active", "F"));
 		BeanItemContainer<MaterialDM> beanMaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanMaterial.addAll(getMatList);
+		beanMaterial.addAll(serviceMaterial.getMaterialList(null, null, null, null, null, null, null, null, "Active",
+				"F"));
 		cbMaterialId.setContainerDataSource(beanMaterial);
 	}
 	
@@ -1109,12 +1099,11 @@ public class DC extends BaseTransUI {
 	 */
 	private void loadModeOfTransList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"MM_TRNSPRT");
 		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
 				CompanyLookupDM.class);
 		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
+		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+				"MM_TRNSPRT"));
 		cbModeOfTrans.setContainerDataSource(beanCompanyLookUp);
 	}
 	
@@ -1187,8 +1176,9 @@ public class DC extends BaseTransUI {
 	
 	private void loadClientContacts() {
 		try {
-			Long clientId = serviceEnqHeader.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "F", null, null)
-					.get(0).getClientId();
+			Long clientId = serviceEnqHeader
+					.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "F", null, null).get(0)
+					.getClientId();
 			BeanContainer<Long, ClientsContactsDM> beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(
 					ClientsContactsDM.class);
 			beanclientcontact.setBeanIdProperty("contactName");

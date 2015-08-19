@@ -71,7 +71,7 @@ public class DashboardStoreView implements ClickListener {
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private GatepassHdrService serviceGatepass = (GatepassHdrService) SpringContextHelper.getBean("gatepasshdr");
 	private Logger logger = Logger.getLogger(DashboardStoreView.class);
-	private Table tblMstScrSrchRslt = new Table();
+	private Table tblMaterialStock = new Table();
 	private Table tblMaterialInward = new Table();
 	private Table tblMaterialOutward = new Table();
 	private Table tblIndent = new Table();
@@ -117,7 +117,7 @@ public class DashboardStoreView implements ClickListener {
 		custom.addComponent(btnIntentReturnCount, "purchaseorder");
 		custom.addComponent(btnStockCount, "stock");
 		custom.addComponent(btnLedgerCount, "ledger");
-		custom.addComponent(tblMstScrSrchRslt, "stockDetails");
+		custom.addComponent(tblMaterialStock, "stockDetails");
 		custom.addComponent(tblIndent, "enquirytable");
 		custom.addComponent(btnAddMaterial, "addmaterial");
 		custom.addComponent(tblMaterialInward, "paymenttable");
@@ -146,7 +146,7 @@ public class DashboardStoreView implements ClickListener {
 				});
 			}
 		}, "ledgerreports");
-		tblMstScrSrchRslt.setHeight("300px");
+		tblMaterialStock.setPageLength(7);
 		tblIndent.setHeight("250px");
 		tblMaterialInward.setHeight("450px");
 		tblMaterialInward.setWidth("510px");
@@ -164,23 +164,22 @@ public class DashboardStoreView implements ClickListener {
 	private void loadStockDetails() {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
-			tblMstScrSrchRslt.removeAllItems();
+			tblMaterialStock.removeAllItems();
 			BeanItemContainer<MaterialStockDM> beanmaterialstock = new BeanItemContainer<MaterialStockDM>(
 					MaterialStockDM.class);
 			beanmaterialstock.addAll(servicematerialstock.getMaterialStockList(null, companyId, null, null, null, null,
 					"F"));
-			tblMstScrSrchRslt.setContainerDataSource(beanmaterialstock);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialName", "stockType",
+			tblMaterialStock.setContainerDataSource(beanmaterialstock);
+			tblMaterialStock.setVisibleColumns(new Object[] { "materialName", "stockType",
 					"currentStock","parkedStock", "effectiveStock" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Material", "Stock Type","Curr. Stock","Parked",
+			tblMaterialStock.setColumnHeaders(new String[] { "Material", "Stock Type","Curr. Stock","Parked",
 					"Eff. Stock" });
-			tblMstScrSrchRslt.setColumnWidth("materialName", 150);
-			tblMstScrSrchRslt.setColumnWidth("currentStock", 75);
-			tblMstScrSrchRslt.setColumnWidth("effectiveStock", 70);
-			tblMstScrSrchRslt.setColumnWidth("parkedStock", 70);
-			tblMstScrSrchRslt.setColumnWidth("stockType", 70);
-			tblMstScrSrchRslt.setHeightUndefined();
-			tblMstScrSrchRslt.addGeneratedColumn("materialName", new ColumnGenerator() {
+			tblMaterialStock.setColumnWidth("materialName", 150);
+			tblMaterialStock.setColumnWidth("currentStock", 75);
+			tblMaterialStock.setColumnWidth("effectiveStock", 70);
+			tblMaterialStock.setColumnWidth("parkedStock", 70);
+			tblMaterialStock.setColumnWidth("stockType", 70);
+			tblMaterialStock.addGeneratedColumn("materialName", new ColumnGenerator() {
 				private static final long serialVersionUID = 1L;
 				
 				@Override

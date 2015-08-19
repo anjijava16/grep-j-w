@@ -109,7 +109,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 public class SmsEnquiry extends BaseTransUI {
-	
 	private static final long serialVersionUID = 1L;
 	// Bean Creation
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
@@ -265,21 +264,21 @@ public class SmsEnquiry extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				if (cbClient.getValue() != null) {
-					tfclientname.setReadOnly(false);
-					tfClientCity.setReadOnly(false);
 					try {
+						tfclientname.setReadOnly(false);
 						tfclientname.setValue(serviceClients
 								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
 										null, null, null, null, "Active", "P").get(0).getClientName());
+						tfclientname.setReadOnly(true);
+						tfClientCity.setReadOnly(false);
 						tfClientCity.setValue(serviceClients
 								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
-										null, null, null, null, "Active", "P").get(0).getCityName());
-						System.out.println("=============================================>" + tfClientCity);
+										null, null, null, null, "Active", "").get(0).getCityName());
+						tfClientCity.setReadOnly(true);
 					}
 					catch (Exception e) {
+						e.printStackTrace();
 					}
-					tfclientname.setReadOnly(true);
-					tfClientCity.setReadOnly(true);
 				}
 			}
 		});
@@ -707,6 +706,8 @@ public class SmsEnquiry extends BaseTransUI {
 			tfClientCode.setValue("");
 			tfEmail.setValue("");
 			tfPhoneNumber.setValue("");
+			tfclientname.setValue("");
+			tfClientCity.setValue("");
 			cbCountry.setValue(null);
 			cbState.setValue(null);
 			cbCity.setValue(null);
@@ -1078,7 +1079,7 @@ public class SmsEnquiry extends BaseTransUI {
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		// try {
-		validationForEnqDetails();
+		// validationForEnqDetails();
 		SmsEnqHdrDM smsEnqHdrDM = new SmsEnqHdrDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
 			smsEnqHdrDM = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();

@@ -57,7 +57,7 @@ public class EBReading extends BaseTransUI {
 	// User Input Fields for EC Request
 	private TextField tfMainKwHr, tfC1, tfC2, tfC3, tfC4, tfC5, tfKvaHr, tfR1, tfR2, tfR3, tfR4, tfR5, tfRkvaHrCag,
 			tfLead, tfPfc, tfPerDayUnit, tfPf, tfUnitCharge, tfAdjstCharge, tfHalfUnitCharge, tfCHours, tfKvaMdr,
-			tfOffPeakHrs, oneUnitChrO, oneUnitChrP;
+			tfOffPeakHrs, oneUnitChrO, oneUnitChrP, tfTotalCost, tfPerdayCost, tfPeakCost, tfOffCost;
 	private PopupDateField dfRefDate;
 	private TextArea taMachineRunDetails, taRemarks;
 	private GERPComboBox cbEmploye;
@@ -178,6 +178,10 @@ public class EBReading extends BaseTransUI {
 		tfR3.setWidth("70");
 		tfR4.setWidth("70");
 		tfR5.setWidth("70");
+		tfTotalCost.setWidth("150");
+		tfPerdayCost.setWidth("150");
+		tfPeakCost.setWidth("150");
+		tfOffCost.setWidth("150");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
@@ -237,6 +241,10 @@ public class EBReading extends BaseTransUI {
 		flcol5.addComponent(tfAdjstCharge);
 		flcol5.addComponent(tfHalfUnitCharge);
 		flcol5.addComponent(tfOffPeakHrs);
+		flcol5.addComponent(tfTotalCost);
+		flcol5.addComponent(tfPerdayCost);
+		flcol5.addComponent(tfPeakCost);
+		flcol5.addComponent(tfOffCost);
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
 		hllayout.addComponent(flcol2);
@@ -640,9 +648,11 @@ public class EBReading extends BaseTransUI {
 		}
 		try {
 			tfHalfUnitCharge.setReadOnly(false);
-			tfHalfUnitCharge.setValue((new BigDecimal(tfC1.getValue()).subtract(ebReadingDM.getC1()).add(
-					(new BigDecimal(tfC2.getValue()).subtract(ebReadingDM.getC2()))).multiply(new BigDecimal(
-					oneUnitChrP.getValue()))) + "");
+			tfHalfUnitCharge
+					.setValue(((new BigDecimal(tfC1.getValue()).subtract(ebReadingDM.getC1()).multiply(new BigDecimal(
+							"400"))).add((new BigDecimal(tfC2.getValue()).subtract(ebReadingDM.getC2()))
+							.multiply(new BigDecimal("400")))).multiply(new BigDecimal(oneUnitChrP.getValue()))
+							+ "");
 			tfHalfUnitCharge.setReadOnly(true);
 		}
 		catch (Exception e) {

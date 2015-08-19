@@ -11,12 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.asm.domain.txn.AssetDetailsDM;
+import com.gnts.asm.domain.txn.EbReadingDM;
 import com.gnts.asm.domain.txn.GeneratorDM;
 import com.gnts.asm.service.txn.AssetDetailsService;
 import com.gnts.asm.service.txn.GeneratorService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
+import com.gnts.erputil.components.GERPNumberField;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPTextField;
@@ -94,12 +96,20 @@ public class Generator extends BaseTransUI {
 	private void buildview() {
 		logger.info("CompanyId" + companyid + "username" + username + "painting Generator UI");
 		// EC Request Components Definition
-		getunitvalues();
 		tfDiselOpenBal = new GERPTextField("Disel Open Balance");
 		tfGenTotalTime = new GERPTextField("Generator Total time");
-		tfGenTotalTime.setValue("0");
+		loadGenTotalTime();
 		tfDiselConsBal = new TextField("Disel Consuption Balance");
 		tfDiselConsBal.setReadOnly(false);
+		tfDiselConsBal.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getLiterHour();
+			}
+		});
 		tfVolts = new GERPTextField("Volts");
 		tfAmps = new GERPTextField("Amps");
 		tfRpmHz = new GERPTextField("RPM HZ");
@@ -110,29 +120,11 @@ public class Generator extends BaseTransUI {
 			@Override
 			public void blur(BlurEvent event) {
 				// TODO Auto-generated method stub
-				getDiselConsBal();
+				getDiselCloseBal();
 			}
 		});
 		tfDiselPurLtrs = new GERPTextField("Disel Purchase(Ltrs)");
-		tfDiselPurLtrs.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				// TODO Auto-generated method stub
-				getDiselPurBal();
-			}
-		});
 		tfOtherUseLtrs = new GERPTextField("Other Use(Ltrs)");
-		tfOtherUseLtrs.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				// TODO Auto-generated method stub
-				getOtherUseLiter();
-			}
-		});
 		tfLtrPerHours = new GERPTextField("Liter per Hour");
 		tfMachineServRemain = new GERPTextField("Service Remainder");
 		tfOneLtrCost = new GERPTextField("One Liter Cost");
@@ -145,21 +137,19 @@ public class Generator extends BaseTransUI {
 				getTotLtrCost();
 			}
 		});
-		tfTotalTime = new GERPTextField("Session Run Time");
+		tfTotalTime = new GERPTextField("Session Time");
 		tfTotalTime.addBlurListener(new BlurListener() {
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void blur(BlurEvent event) {
 				// TODO Auto-generated method stub
 				getunitvalues();
 			}
 		});
-			
-		
 		tfTotalCost = new GERPTextField("Total Cost");
 		tfGenStartTime = new GERPTimeField("Start Time");
 		tfGenStartTime.addValueChangeListener(new ValueChangeListener() {
@@ -179,7 +169,6 @@ public class Generator extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				getTotalHours();
-				getTotalTime();
 			}
 		});
 		taRunningMachineDtl = new TextArea("Running Machine Details");
@@ -224,21 +213,19 @@ public class Generator extends BaseTransUI {
 		btnPrint.setVisible(true);
 	}
 	
-	private void getTotalTime() {
-		// TODO Auto-generated method stub
-		if (tfTotalTime.getValue() != null) {
-			if (timeCnt == 0) {
-				tfGenTotalTime.setValue((new BigDecimal(tfGenTotalTime.getValue())).add(
-						new BigDecimal(tfTotalTime.getValue())).toString());
-				timeCnt++;
-			} else {
-				tfGenTotalTime.setValue("0.0");
-				tfGenTotalTime.setValue((new BigDecimal(tfGenTotalTime.getValue())).add(
-						new BigDecimal(tfTotalTime.getValue())).toString());
-				timeCnt++;
-			}
-		} else {
-			tfGenTotalTime.setValue("0.0");
+	private void loadGenTotalTime() {
+		GeneratorDM generatorDM = null;
+		try {
+			generatorDM = serviceGenerator.getGeneratorDetailList(null, null, null, null, "Y", null).get(0);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			tfGenTotalTime.setValue(generatorDM.getGenTotalTime().toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -254,17 +241,6 @@ public class Generator extends BaseTransUI {
 		}
 	}
 	
-	private void getOtherUseLiter() {
-		// TODO Auto-generated method stub
-		if (tfDiselOpenBal.getValue() != null && tfOtherUseLtrs.getValue() != null) {
-			tfDiselOpenBal.setReadOnly(false);
-			tfDiselOpenBal.setValue((new BigDecimal(tfDiselOpenBal.getValue())).subtract(
-					new BigDecimal(tfOtherUseLtrs.getValue())).toString());
-		} else {
-			tfDiselPurLtrs.setValue("0");
-		}
-	}
-	
 	private void getTotLtrCost() {
 		// TODO Auto-generated method stub
 		if (tfOneLtrCost.getValue() != null && tfDiselConsBal.getValue() != null) {
@@ -277,29 +253,28 @@ public class Generator extends BaseTransUI {
 		}
 	}
 	
-	private void getDiselConsBal() {
+	private void getDiselCloseBal() {
 		// TODO Auto-generated method stub
-		if (tfDiselOpenBal.getValue() != null && tfDiselCloseBal.getValue() != null) {
-			tfLtrPerHours.setReadOnly(false);
-			tfDiselConsBal.setReadOnly(false);
-			tfDiselConsBal.setValue((new BigDecimal(tfDiselOpenBal.getValue())).subtract(
-					new BigDecimal(tfDiselCloseBal.getValue())).toString());
-			// tfLtrPerHours.setValue((new BigDecimal(tfDiselConsBal.getValue())).divide(new
-			// BigDecimal(tfTotalTime.getValue().trim().length())).toString());
+		if (tfDiselOpenBal.getValue() != null && tfDiselConsBal.getValue() != null) {
+			tfDiselCloseBal.setReadOnly(false);
+			tfDiselCloseBal.setValue((new BigDecimal(tfDiselOpenBal.getValue()))
+					.add(new BigDecimal(tfDiselPurLtrs.getValue())).subtract(new BigDecimal(tfDiselConsBal.getValue()))
+					.subtract(new BigDecimal(tfOtherUseLtrs.getValue())).toString());
+			tfDiselCloseBal.setReadOnly(true);
 		} else {
 			tfDiselConsBal.setValue("0");
-			tfLtrPerHours.setValue("0");
 		}
 	}
 	
-	private void getDiselPurBal() {
+	private void getLiterHour() {
 		// TODO Auto-generated method stub
-		if (tfDiselOpenBal.getValue() != null && tfDiselPurLtrs.getValue() != null) {
-			tfDiselOpenBal.setReadOnly(false);
-			tfDiselOpenBal.setValue((new BigDecimal(tfDiselOpenBal.getValue())).add(
-					new BigDecimal(tfDiselPurLtrs.getValue())).toString());
+		if (tfTotalTime.getValue() != null && tfDiselConsBal.getValue() != null) {
+			tfLtrPerHours.setReadOnly(false);
+			tfLtrPerHours.setValue((new BigDecimal(tfDiselConsBal.getValue())).divide(
+					new BigDecimal(tfTotalTime.getValue())).toString());
+			tfLtrPerHours.setReadOnly(true);
 		} else {
-			tfDiselPurLtrs.setValue("0");
+			tfLtrPerHours.setValue("0");
 		}
 	}
 	
@@ -332,15 +307,15 @@ public class Generator extends BaseTransUI {
 		flcol1.addComponent(tfGenStartTime);
 		flcol1.addComponent(tfGenStopTime);
 		flcol2.addComponent(tfTotalTime);
-		flcol2.addComponent(tfDiselOpenBal);
 		flcol2.addComponent(tfGenTotalTime);
-		flcol2.addComponent(tfDiselConsBal);
 		flcol2.addComponent(tfVolts);
-		flcol3.addComponent(tfAmps);
-		flcol3.addComponent(tfRpmHz);
-		flcol3.addComponent(tfDiselCloseBal);
+		flcol2.addComponent(tfAmps);
+		flcol2.addComponent(tfRpmHz);
+		flcol3.addComponent(tfDiselOpenBal);
+		flcol3.addComponent(tfDiselConsBal);
 		flcol3.addComponent(tfDiselPurLtrs);
 		flcol3.addComponent(tfOtherUseLtrs);
+		flcol3.addComponent(tfDiselCloseBal);
 		flcol4.addComponent(tfLtrPerHours);
 		flcol4.addComponent(tfMachineServRemain);
 		flcol4.addComponent(tfOneLtrCost);
@@ -586,7 +561,8 @@ public class Generator extends BaseTransUI {
 		tfTotalTime.setValue("0");
 		tfDiselOpenBal.setValue("0");
 		tfGenTotalTime.setValue("0");
-		tfDiselConsBal.setValue("0");
+		tfDiselConsBal.setReadOnly(false);
+		// tfDiselConsBal.setValue("0");
 		tfDiselConsBal.setWidth("150");
 		tfVolts.setValue("0");
 		tfAmps.setValue("0");
@@ -596,7 +572,7 @@ public class Generator extends BaseTransUI {
 		tfOtherUseLtrs.setValue("0");
 		tfLtrPerHours.setValue("0");
 		tfMachineServRemain.setValue("");
-		tfOneLtrCost.setValue("0");
+		// tfOneLtrCost.setValue("0");
 		tfTotalCost.setValue("0");
 		taRunningMachineDtl.setValue("");
 		taRemarks.setValue("");
@@ -657,21 +633,15 @@ public class Generator extends BaseTransUI {
 			}
 		}
 	}
+	
 	// Load Last Unit Values.
 	private void getunitvalues() {
-		GeneratorDM generatorDM = null;
 		try {
-			generatorDM = serviceGenerator.getGeneratorDetailList(null, null,dfRefDate.getValue(), null, "Y",null).get(0);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			tfGenTotalTime.setValue(new BigDecimal(tfGenTotalTime.getValue()).add(generatorDM.getGenTotalTime()).toString());
+			tfGenTotalTime.setValue(new BigDecimal(tfGenTotalTime.getValue()).add(
+					new BigDecimal(tfGenTotalTime.getValue())).toString());
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 }
-

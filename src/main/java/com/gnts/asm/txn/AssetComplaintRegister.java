@@ -147,9 +147,12 @@ public class AssetComplaintRegister extends Window {
 		assetMaintDetailDM.setPreparedBy((Long) cbEmployee.getValue());
 		assetMaintDetailDM.setLastUpdatedBy(username);
 		assetMaintDetailDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+		String maintenanceMail = "Asset Name :" + cbAssetName.getValue() + " || Service Type : "
+				+ cbMaintType.getValue() + " || Complaint : " + taComplaint.getValue() + " || Status : Pending"
+				+ " || Attented By : " + cbEmployee.getValue() + " ";
 		serviceAssetMaintDetails.saveOrUpdateAssetMaintDetail(assetMaintDetailDM);
 		try {
-			new EmailTrigger("maintenance@saarccases.com", taComplaint.getValue(), (String) cbMaintType.getValue());
+			new EmailTrigger("maintenance@saarccases..com", maintenanceMail, (String) cbMaintType.getValue());
 		}
 		catch (Exception e) {
 		}

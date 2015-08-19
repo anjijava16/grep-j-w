@@ -176,7 +176,7 @@ public class AssetMaintDetail extends BaseTransUI {
 		// PopUpDateField for CompleteDate
 		dfcompleteDate = new GERPPopupDateField("Complete Date");
 		dfcompleteDate.setDateFormat("dd-MMM-yyyy");
-		dfcompleteDate.setWidth("140");
+		dfcompleteDate.setWidth("110");
 		// PopUpDateField for ServiceDate
 		dfservicedate = new GERPPopupDateField("Service Date");
 		dfservicedate.setDateFormat("dd-MMM-yyyy");

@@ -561,6 +561,7 @@ public class QCTest extends BaseTransUI {
 		tfPrdSlNo.setComponentError(null);
 		tfPrdSlNo.setValue("");
 		tfQcReslt.setComponentError(null);
+		tfQcReslt.setReadOnly(false);
 		tfQcReslt.setValue("");
 		tfQtyFailed.setComponentError(null);
 		tfQtyFailed.setValue("");

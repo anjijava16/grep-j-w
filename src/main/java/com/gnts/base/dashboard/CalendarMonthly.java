@@ -186,7 +186,7 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 			}
 		} else if (type.equalsIgnoreCase("WO_SCHEDULE")) {
 			for (WorkOrderHdrDM workOrderHdrDM : serviceWrkOrdHdr.getWorkOrderHDRList(null, null, null, null, null,
-					null, "F", null, null, fromStartDate, toEndDate,null)) {
+					null, "F", null, null, fromStartDate, toEndDate, null)) {
 				calendar.setTime(workOrderHdrDM.getWorkOrdrDtF());
 				calendar.add(GregorianCalendar.DATE, 2);
 				CalendarTestEvent event = getNewEvent("Ref. Number : " + workOrderHdrDM.getWorkOrdrNo()
@@ -238,6 +238,7 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 				catch (Exception e1) {
 				}
 			}
+		} else if (type.equalsIgnoreCase("TEST_QC_SCHEDULE")) {
 		}
 		return e;
 	}

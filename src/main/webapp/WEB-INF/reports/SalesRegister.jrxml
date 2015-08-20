@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SalesRegister" pageWidth="1270" pageHeight="802" columnWidth="1198" leftMargin="36" rightMargin="36" topMargin="36" bottomMargin="36" uuid="b1b91010-e391-4e46-a454-64df028aea6a">
 	<property name="ireport.zoom" value="1.2100000000000024"/>
-	<property name="ireport.x" value="620"/>
+	<property name="ireport.x" value="30"/>
 	<property name="ireport.y" value="0"/>
 	<queryString>
 		<![CDATA[select dch.dc_no,dch.dc_date,cl.client_name,prod.product_name,dcd.dc_qty,invh.ed_prcnt,invh.ed_value,invh.cess_prcnt,

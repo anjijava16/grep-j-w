@@ -65,9 +65,9 @@ public class AppraisalEmpIncident extends BaseUI {
 	// Bean container
 	private BeanItemContainer<AppraisalEmpIncidentDM> beanAppraisalEmpIncidentDM = null;
 	// User Input Components
-	private ComboBox cbempname, cbincidenttype, cbkpigrpname, cbincidentstatus, cbindsrty;
-	private TextField tfncidenttitle, tfbuinessvalue, tfempresponse, tfempagreed;
-	private TextArea taincidentdesc, tarevcomts;
+	private ComboBox cbEmployee, cbincidenttype, cbKPIGroup, cbincidentstatus, cbSeverity;
+	private TextField tfTitle, tfBusinessValue, tfResponse, tfempagreed;
+	private TextArea taDescription, taComments;
 	private String loginUserName;
 	private Long companyId;
 	private int recordCnt = 0;
@@ -89,58 +89,58 @@ public class AppraisalEmpIncident extends BaseUI {
 	private void buildview() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Painting AppraisalEmpIncident UI");
-		tfbuinessvalue = new GERPTextField("Business Value");
-		tfbuinessvalue.addBlurListener(new BlurListener() {
+		tfBusinessValue = new GERPTextField("Business Value");
+		tfBusinessValue.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
-				tfbuinessvalue.setComponentError(null);
-				if (tfbuinessvalue.getValue() != null) {
-					if (!tfbuinessvalue.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) {
-						tfbuinessvalue.setComponentError(new UserError(GERPErrorCodes.NULL_BUSINESSVALUE));
+				tfBusinessValue.setComponentError(null);
+				if (tfBusinessValue.getValue() != null) {
+					if (!tfBusinessValue.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) {
+						tfBusinessValue.setComponentError(new UserError(GERPErrorCodes.NULL_BUSINESSVALUE));
 					} else {
-						tfbuinessvalue.setComponentError(null);
+						tfBusinessValue.setComponentError(null);
 					}
 				}
 			}
 		});
 		// Combo Boxes
-		cbempname = new GERPComboBox("Employee Name");
-		cbempname.setWidth("200px");
-		cbempname.setItemCaptionPropertyId("fullname");
+		cbEmployee = new GERPComboBox("Employee Name");
+		cbEmployee.setWidth("200px");
+		cbEmployee.setItemCaptionPropertyId("fullname");
 		loadEmployee();
-		cbkpigrpname = new GERPComboBox("KPI Group Name");
-		cbkpigrpname.setWidth("200px");
-		cbkpigrpname.setItemCaptionPropertyId("kpigroupname");
+		cbKPIGroup = new GERPComboBox("KPI Group Name");
+		cbKPIGroup.setWidth("200px");
+		cbKPIGroup.setItemCaptionPropertyId("kpigroupname");
 		loadKpiGroupNameList();
 		cbincidentstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbincidenttype = new GERPComboBox("Incident Type", BASEConstants.T_HCM_APPRAISAL_EMP_INCIDENT,
 				BASEConstants.APP_EMPINCIDENT);
 		cbincidenttype.setWidth("200px");
-		cbindsrty = new GERPComboBox("Incident Severity");
-		cbindsrty.setWidth("200px");
-		cbindsrty.setItemCaptionPropertyId("lookupname");
+		cbSeverity = new GERPComboBox("Incident Severity");
+		cbSeverity.setWidth("200px");
+		cbSeverity.setItemCaptionPropertyId("lookupname");
 		loadincidentseverity();
 		// TextFields
-		tfncidenttitle = new GERPTextField("Incident Title");
-		tfncidenttitle.setWidth("200");
-		tfncidenttitle.setMaxLength(10);
-		tfbuinessvalue = new GERPTextField("Business Value");
-		tfbuinessvalue.setWidth("200");
-		tfbuinessvalue.setMaxLength(10);
-		tfempresponse = new GERPTextField("Employee Response");
-		tfempresponse.setWidth("200");
-		tfempresponse.setMaxLength(10);
+		tfTitle = new GERPTextField("Incident Title");
+		tfTitle.setWidth("200");
+		tfTitle.setMaxLength(10);
+		tfBusinessValue = new GERPTextField("Business Value");
+		tfBusinessValue.setWidth("200");
+		tfBusinessValue.setMaxLength(10);
+		tfResponse = new GERPTextField("Employee Response");
+		tfResponse.setWidth("200");
+		tfResponse.setMaxLength(10);
 		tfempagreed = new GERPTextField("Employee Agreed");
 		tfempagreed.setWidth("200");
 		tfempagreed.setMaxLength(10);
 		// TextAreas
-		taincidentdesc = new GERPTextArea("Incident Desc");
-		taincidentdesc.setWidth("150");
-		taincidentdesc.setHeight("50");
-		tarevcomts = new GERPTextArea("Reviewer Comments");
-		tarevcomts.setWidth("150");
-		tarevcomts.setHeight("50");
+		taDescription = new GERPTextArea("Incident Desc");
+		taDescription.setWidth("150");
+		taDescription.setHeight("50");
+		taComments = new GERPTextArea("Reviewer Comments");
+		taComments.setWidth("150");
+		taComments.setHeight("50");
 		// Create form layouts to hold the input items
 		hlSearchLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
@@ -153,9 +153,9 @@ public class AppraisalEmpIncident extends BaseUI {
 	private void loadEmployee() {
 		BeanContainer<Long, EmployeeDM> bean = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		bean.setBeanIdProperty("employeeid");
-		bean.addAll(servicebeanEmployee.getEmployeeList((String) cbempname.getValue(), null, null, null, null, null,
+		bean.addAll(servicebeanEmployee.getEmployeeList((String) cbEmployee.getValue(), null, null, null, null, null,
 				null, null, null, "P"));
-		cbempname.setContainerDataSource(bean);
+		cbEmployee.setContainerDataSource(bean);
 	}
 	
 	// Load Load Kpigroup Name List
@@ -163,7 +163,7 @@ public class AppraisalEmpIncident extends BaseUI {
 		BeanContainer<Long, KpiGroupDM> beanEmployee = new BeanContainer<Long, KpiGroupDM>(KpiGroupDM.class);
 		beanEmployee.setBeanIdProperty("kpigrpid");
 		beanEmployee.addAll(serviceKpiGroup.getkpigrouplist(null, null, companyId, null, "Active", "F"));
-		cbkpigrpname.setContainerDataSource(beanEmployee);
+		cbKPIGroup.setContainerDataSource(beanEmployee);
 	}
 	
 	// Load Incident Severity List
@@ -176,7 +176,7 @@ public class AppraisalEmpIncident extends BaseUI {
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
 			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, null, "Active",
 					"HC_INCISEV"));
-			cbindsrty.setContainerDataSource(beanCompanyLookUp);
+			cbSeverity.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -194,7 +194,7 @@ public class AppraisalEmpIncident extends BaseUI {
 		// add the user input items into appropriate form layout
 		flcol1 = new FormLayout();
 		flcol2 = new FormLayout();
-		flcol1.addComponent(cbempname);
+		flcol1.addComponent(cbEmployee);
 		flcol2.addComponent(cbincidentstatus);
 		// add the form layouts into user input layout
 		hlSearchLayout.setSpacing(true);
@@ -218,16 +218,16 @@ public class AppraisalEmpIncident extends BaseUI {
 		flcol2 = new FormLayout();
 		flcol3 = new FormLayout();
 		flcol4 = new FormLayout();
-		flcol1.addComponent(cbempname);
-		flcol1.addComponent(cbkpigrpname);
-		flcol1.addComponent(cbindsrty);
+		flcol1.addComponent(cbEmployee);
+		flcol1.addComponent(cbKPIGroup);
+		flcol1.addComponent(cbSeverity);
 		flcol1.addComponent(tfempagreed);
-		flcol2.addComponent(tfncidenttitle);
+		flcol2.addComponent(tfTitle);
 		flcol2.addComponent(cbincidenttype);
-		flcol2.addComponent(tfbuinessvalue);
-		flcol2.addComponent(tfempresponse);
-		flcol3.addComponent(taincidentdesc);
-		flcol3.addComponent(tarevcomts);
+		flcol2.addComponent(tfBusinessValue);
+		flcol2.addComponent(tfResponse);
+		flcol3.addComponent(taDescription);
+		flcol3.addComponent(taComments);
 		flcol4.addComponent(cbincidentstatus);
 		// add the form layouts into user input layout
 		hlUserInputLayout.addComponent(flcol1);
@@ -246,8 +246,8 @@ public class AppraisalEmpIncident extends BaseUI {
 		tblMstScrSrchRslt.setPageLength(15);
 		List<AppraisalEmpIncidentDM> appempincidentList = new ArrayList<AppraisalEmpIncidentDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbempname.getValue() + ", " + (String) cbincidentstatus.getValue());
-		appempincidentList = serviceappempincident.getAppEmpIncidentList(null, (Long) cbempname.getValue(), null, null,
+				+ companyId + ", " + (Long) cbEmployee.getValue() + ", " + (String) cbincidentstatus.getValue());
+		appempincidentList = serviceappempincident.getAppEmpIncidentList(null, (Long) cbEmployee.getValue(), null, null,
 				null, null, null, (String) cbincidentstatus.getValue(), "F");
 		recordCnt = appempincidentList.size();
 		beanAppraisalEmpIncidentDM = new BeanItemContainer<AppraisalEmpIncidentDM>(AppraisalEmpIncidentDM.class);
@@ -279,7 +279,7 @@ public class AppraisalEmpIncident extends BaseUI {
 	@Override
 	protected void resetSearchDetails() {
 		// cbincidentstatus.setValue(cbincidentstatus.getItemIds().iterator().next());
-		cbempname.setValue(null);
+		cbEmployee.setValue(null);
 		// reload the search using the defaults
 		resetFields();
 		loadSrchRslt();
@@ -288,8 +288,8 @@ public class AppraisalEmpIncident extends BaseUI {
 	@Override
 	protected void addDetails() {
 		logger.info("Company ID :" + companyId + " | User Name : " + loginUserName + " > " + "Adding new record...");
-		cbempname.setRequired(true);
-		cbkpigrpname.setRequired(true);
+		cbEmployee.setRequired(true);
+		cbKPIGroup.setRequired(true);
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		// reset the input controls to default value
@@ -299,8 +299,8 @@ public class AppraisalEmpIncident extends BaseUI {
 	@Override
 	protected void editDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Invoking Edit record ");
-		cbempname.setRequired(true);
-		cbkpigrpname.setRequired(true);
+		cbEmployee.setRequired(true);
+		cbKPIGroup.setRequired(true);
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		editappempincident();
@@ -313,79 +313,79 @@ public class AppraisalEmpIncident extends BaseUI {
 			AppraisalEmpIncidentDM editappempinObj = beanAppraisalEmpIncidentDM.getItem(tblMstScrSrchRslt.getValue())
 					.getBean();
 			if (editappempinObj.getEmpid() != null) {
-				cbempname.setValue(editappempinObj.getEmpid());
+				cbEmployee.setValue(editappempinObj.getEmpid());
 			}
 			if (editappempinObj.getKpiGrpId() != null) {
-				cbkpigrpname.setValue(editappempinObj.getKpiGrpId());
+				cbKPIGroup.setValue(editappempinObj.getKpiGrpId());
 			}
 			if (editappempinObj.getStatus() != null) {
 				cbincidentstatus.setValue(editappempinObj.getStatus());
 			}
 			if (editappempinObj.getIncidentSeverity() != null) {
-				cbindsrty.setValue(editappempinObj.getIncidentSeverity());
+				cbSeverity.setValue(editappempinObj.getIncidentSeverity());
 			}
 			if (editappempinObj.getIncidentType() != null) {
 				cbincidenttype.setValue(editappempinObj.getIncidentType());
 			}
 			if (editappempinObj.getBusValue() != null) {
-				tfbuinessvalue.setValue(editappempinObj.getBusValue().toString());
+				tfBusinessValue.setValue(editappempinObj.getBusValue().toString());
 			}
 			if (editappempinObj.getEmpAgreed() != null) {
 				tfempagreed.setValue(editappempinObj.getEmpAgreed().toString());
 			}
 			if (editappempinObj.getEmpResponse() != null) {
-				tfempresponse.setValue(editappempinObj.getEmpResponse());
+				tfResponse.setValue(editappempinObj.getEmpResponse());
 			}
 			if (editappempinObj.getIncidentTitle() != null) {
-				tfncidenttitle.setValue(editappempinObj.getIncidentTitle());
+				tfTitle.setValue(editappempinObj.getIncidentTitle());
 			}
 			if (editappempinObj.getIncidentDes() != null) {
-				taincidentdesc.setValue(editappempinObj.getIncidentDes().toString());
+				taDescription.setValue(editappempinObj.getIncidentDes().toString());
 			}
 			if (editappempinObj.getRevCmnts() != null) {
-				tarevcomts.setValue(editappempinObj.getRevCmnts().toString());
+				taComments.setValue(editappempinObj.getRevCmnts().toString());
 			}
 		}
 	}
 	
 	@Override
 	protected void validateDetails() throws ValidationException {
-		cbempname.setComponentError(null);
+		cbEmployee.setComponentError(null);
 		cbincidentstatus.setComponentError(null);
 		cbincidenttype.setComponentError(null);
-		cbindsrty.setComponentError(null);
-		cbkpigrpname.setComponentError(null);
-		tfbuinessvalue.setComponentError(null);
+		cbSeverity.setComponentError(null);
+		cbKPIGroup.setComponentError(null);
+		tfBusinessValue.setComponentError(null);
 		tfempagreed.setComponentError(null);
-		tfempresponse.setComponentError(null);
-		tfncidenttitle.setComponentError(null);
+		tfResponse.setComponentError(null);
+		tfTitle.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Validating Data ");
-		if (cbempname.getValue() == null) {
-			cbempname.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_NAME));
+		if (cbEmployee.getValue() == null) {
+			cbEmployee.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_NAME));
 			errorFlag = true;
 		}
-		if (cbkpigrpname.getValue() == null) {
-			cbkpigrpname.setComponentError(new UserError(GERPErrorCodes.NULL_KPIGROUPNAME));
+		if (cbKPIGroup.getValue() == null) {
+			cbKPIGroup.setComponentError(new UserError(GERPErrorCodes.NULL_KPIGROUPNAME));
 			errorFlag = true;
 		}
 		Long achievedQty;
 		try {
-			achievedQty = Long.valueOf(tfbuinessvalue.getValue());
+			achievedQty = Long.valueOf(tfBusinessValue.getValue());
 			if (achievedQty < 0) {
-				tfbuinessvalue.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
+				tfBusinessValue.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				errorFlag = true;
 			}
 		}
 		catch (Exception e) {
-			tfbuinessvalue.setComponentError(new UserError(GERPErrorCodes.QUNATITY_CHAR_VALIDATIONHCM));
+			tfBusinessValue.setComponentError(new UserError(GERPErrorCodes.QUNATITY_CHAR_VALIDATIONHCM));
 			errorFlag = false;
 		}
 		logger.warn("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Throwing ValidationException. User data is > " + tfbuinessvalue.getValue() + ","
-				+ tfempagreed.getValue() + "," + cbincidenttype.getValue() + "," + cbempname.getValue() + ","
-				+ cbkpigrpname.getValue() + "," + cbincidentstatus.getValue() + "," + cbindsrty.getValue() + ","
-				+ tfempresponse.getValue() + "," + tfncidenttitle.getValue());
+				+ "Throwing ValidationException. User data is > " + tfBusinessValue.getValue() + ","
+				+ tfempagreed.getValue() + "," + cbincidenttype.getValue() + "," + cbEmployee.getValue() + ","
+				+ cbKPIGroup.getValue() + "," + cbincidentstatus.getValue() + "," + cbSeverity.getValue() + ","
+				+ tfResponse.getValue() + "," + tfTitle.getValue());
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
@@ -398,25 +398,25 @@ public class AppraisalEmpIncident extends BaseUI {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			appempincidentobj = beanAppraisalEmpIncidentDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		appempincidentobj.setEmpid((Long) cbempname.getValue());
+		appempincidentobj.setEmpid((Long) cbEmployee.getValue());
 		appempincidentobj.setRecBy(null);
 		appempincidentobj.setReviewedBy(null);
-		appempincidentobj.setKpiGrpId((Long) cbkpigrpname.getValue());
+		appempincidentobj.setKpiGrpId((Long) cbKPIGroup.getValue());
 		if (cbincidentstatus.getValue() != null) {
 			appempincidentobj.setStatus((String) cbincidentstatus.getValue());
 		}
 		if (cbincidenttype.getValue() != null) {
 			appempincidentobj.setIncidentType((String) cbincidenttype.getValue());
 		}
-		if (cbindsrty.getValue() != null) {
-			appempincidentobj.setIncidentSeverity((String) cbindsrty.getValue());
+		if (cbSeverity.getValue() != null) {
+			appempincidentobj.setIncidentSeverity((String) cbSeverity.getValue());
 		}
-		appempincidentobj.setBusValue(Long.valueOf(tfbuinessvalue.getValue()));
+		appempincidentobj.setBusValue(Long.valueOf(tfBusinessValue.getValue()));
 		appempincidentobj.setEmpAgreed(tfempagreed.getValue().toString());
-		appempincidentobj.setEmpResponse(tfempresponse.getValue().toString());
-		appempincidentobj.setIncidentTitle(tfncidenttitle.getValue().toString());
-		appempincidentobj.setIncidentDes(taincidentdesc.getValue().toString());
-		appempincidentobj.setRevCmnts(tarevcomts.getValue().toString());
+		appempincidentobj.setEmpResponse(tfResponse.getValue().toString());
+		appempincidentobj.setIncidentTitle(tfTitle.getValue().toString());
+		appempincidentobj.setIncidentDes(taDescription.getValue().toString());
+		appempincidentobj.setRevCmnts(taComments.getValue().toString());
 		appempincidentobj.setLastUpdatedDt(DateUtils.getcurrentdate());
 		appempincidentobj.setLastUpdatedBy(loginUserName);
 		serviceappempincident.saveAndUpdate(appempincidentobj);
@@ -435,7 +435,7 @@ public class AppraisalEmpIncident extends BaseUI {
 	@Override
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Canceling action ");
-		cbempname.setRequired(false);
+		cbEmployee.setRequired(false);
 		assembleSearchLayout();
 		vlSrchRsltContainer.removeAllComponents();
 		vlSrchRsltContainer.addComponent(tblMstScrSrchRslt);
@@ -446,21 +446,21 @@ public class AppraisalEmpIncident extends BaseUI {
 	
 	@Override
 	protected void resetFields() {
-		cbempname.setValue(null);
-		cbempname.setComponentError(null);
+		cbEmployee.setValue(null);
+		cbEmployee.setComponentError(null);
 		cbincidenttype.setValue(cbincidenttype.getItemIds().iterator().next());
 		cbincidenttype.setValue(null);
 		cbincidenttype.setComponentError(null);
 		cbincidentstatus.setValue(cbincidentstatus.getItemIds().iterator().next());
-		cbkpigrpname.setValue(null);
-		cbkpigrpname.setComponentError(null);
-		cbindsrty.setValue(null);
-		cbindsrty.setComponentError(null);
-		tfbuinessvalue.setValue("");
+		cbKPIGroup.setValue(null);
+		cbKPIGroup.setComponentError(null);
+		cbSeverity.setValue(null);
+		cbSeverity.setComponentError(null);
+		tfBusinessValue.setValue("");
 		tfempagreed.setValue("");
-		tfempresponse.setValue("");
-		tfncidenttitle.setValue("");
-		taincidentdesc.setValue("");
-		tarevcomts.setValue("");
+		tfResponse.setValue("");
+		tfTitle.setValue("");
+		taDescription.setValue("");
+		taComments.setValue("");
 	}
 }

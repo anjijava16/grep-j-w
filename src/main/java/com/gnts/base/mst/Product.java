@@ -532,67 +532,77 @@ public class Product extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editProduct() {
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			ProductDM productDM = beanProductDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			prodId = productDM.getProdid();
-			if ((productDM.getProdname() != null)) {
-				tfProdName.setValue(productDM.getProdname().toString());
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				ProductDM productDM = beanProductDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				prodId = productDM.getProdid();
+				if ((productDM.getProdname() != null)) {
+					tfProdName.setValue(productDM.getProdname().toString());
+				}
+				if ((productDM.getProductcode() != null)) {
+					tfprodcode.setValue(productDM.getProductcode().toString());
+				}
+				if ((productDM.getProddesc() != null)) {
+					taprodDesc.setValue(productDM.getProddesc());
+				}
+				if ((productDM.getPrice() != null)) {
+					tfprice.setValue(productDM.getPrice().toString());
+				}
+				if ((productDM.getShortdesc() != null)) {
+					tasrtDesc.setValue(productDM.getShortdesc().toString());
+				}
+				if ((productDM.getUom() != null)) {
+					cbuom.setValue(productDM.getUom().toString());
+				}
+				if ((productDM.getCcyid() != null)) {
+					cbcurrency.setValue(productDM.getCcyid());
+				}
+				if (productDM.getProdstatus() != null) {
+					cbstatus.setValue(productDM.getProdstatus());
+				}
+				if ((productDM.getProddesc() != null)) {
+					taprodDesc.setValue(productDM.getProddesc());
+				}
+				try {
+					if (productDM.getView360yn().equals("Y")) {
+						cbView.setValue(true);
+					} else {
+						cbView.setValue(false);
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+				if (productDM.getVisualizeryn().equals("Y")) {
+					cbVisualizer.setValue(true);
+				} else {
+					cbVisualizer.setValue(false);
+				}
+				if (productDM.getProdimg() != null) {
+					hlProdCtgryImg.removeAllComponents();
+					byte[] myimage = (byte[]) productDM.getProdimg();
+					UploadUI uploadObject = new UploadUI(hlProdCtgryImg);
+					uploadObject.dispayImage(myimage, productDM.getProdname());
+				} else {
+					new UploadUI(hlProdCtgryImg);
+				}
+				if (productDM.getProddoc() != null) {
+					byte[] certificate = (byte[]) productDM.getProddoc();
+					UploadDocumentUI test = new UploadDocumentUI(hlprodDoc);
+					test.displaycertificate(certificate);
+				} else {
+					new UploadDocumentUI(hlprodDoc);
+				}
+				productcolorGlry.loadSrchClrRslt(true, prodId);
+				productcolorGlry.loadSrchGlryRslt(true, prodId);
+				specList.addAll(ServiceProdSpec.getSpecList(prodId, null, "Active"));
 			}
-			if ((productDM.getProductcode() != null)) {
-				tfprodcode.setValue(productDM.getProductcode().toString());
-			}
-			if ((productDM.getProddesc() != null)) {
-				taprodDesc.setValue(productDM.getProddesc());
-			}
-			if ((productDM.getPrice() != null)) {
-				tfprice.setValue(productDM.getPrice().toString());
-			}
-			if ((productDM.getShortdesc() != null)) {
-				tasrtDesc.setValue(productDM.getShortdesc().toString());
-			}
-			if ((productDM.getUom() != null)) {
-				cbuom.setValue(productDM.getUom().toString());
-			}
-			if ((productDM.getCcyid() != null)) {
-				cbcurrency.setValue(productDM.getCcyid());
-			}
-			if (productDM.getProdstatus() != null) {
-				cbstatus.setValue(productDM.getProdstatus());
-			}
-			if ((productDM.getProddesc() != null)) {
-				taprodDesc.setValue(productDM.getProddesc());
-			}
-			if (productDM.getView360yn().equals("Y")) {
-				cbView.setValue(true);
-			} else {
-				cbView.setValue(false);
-			}
-			if (productDM.getVisualizeryn().equals("Y")) {
-				cbVisualizer.setValue(true);
-			} else {
-				cbVisualizer.setValue(false);
-			}
-			if (productDM.getProdimg() != null) {
-				hlProdCtgryImg.removeAllComponents();
-				byte[] myimage = (byte[]) productDM.getProdimg();
-				UploadUI uploadObject = new UploadUI(hlProdCtgryImg);
-				uploadObject.dispayImage(myimage, productDM.getProdname());
-			} else {
-				new UploadUI(hlProdCtgryImg);
-			}
-			if (productDM.getProddoc() != null) {
-				byte[] certificate = (byte[]) productDM.getProddoc();
-				UploadDocumentUI test = new UploadDocumentUI(hlprodDoc);
-				test.displaycertificate(certificate);
-			} else {
-				new UploadDocumentUI(hlprodDoc);
-			}
-			productcolorGlry.loadSrchClrRslt(true, prodId);
-			productcolorGlry.loadSrchGlryRslt(true, prodId);
-			specList.addAll(ServiceProdSpec.getSpecList(prodId, null, "Active"));
+			loadSrchspecRslt();
 		}
-		loadSrchspecRslt();
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void editProductspec() {

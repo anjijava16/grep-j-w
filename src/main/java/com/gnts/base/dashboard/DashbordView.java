@@ -9,6 +9,7 @@ import com.gnts.crm.service.mst.ClientService;
 import com.gnts.die.txn.DieRequest;
 import com.gnts.dsn.stt.txn.DesignDocuments;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.hcm.txn.ServiceCallForm;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.mfg.txn.WorkOrder;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
@@ -172,8 +173,7 @@ public class DashbordView implements ClickListener {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Sales Enquiry");
-			UI.getCurrent().getSession().setAttribute("IS_ENQ_WF", false);
-			UI.getCurrent().getSession().setAttribute("moduleId", 13L);
+						UI.getCurrent().getSession().setAttribute("moduleId", 13L);
 			new SmsEnquiry();
 		}
 		if (event.getButton() == btnQuotationCount) {
@@ -213,8 +213,10 @@ public class DashbordView implements ClickListener {
 		if (event.getButton() == btnClientCount) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
-			UI.getCurrent().getSession().setAttribute("screenName", "Client");
-			new Client();
+			UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", true);
+
+			UI.getCurrent().getSession().setAttribute("screenName", "Service Call Form");
+			new ServiceCallForm();
 		}
 		if (event.getButton() == btnEnquiryDocs) {
 			clMainLayout.removeAllComponents();

@@ -1,6 +1,7 @@
 package com.gnts.base.dashboard;
 
 import com.gnts.die.txn.DieRequest;
+import com.gnts.hcm.txn.ServiceCallForm;
 import com.gnts.mfg.txn.ProductOverview;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -24,7 +25,8 @@ public class DashboardProduction implements ClickListener {
 	private Button btnMoldTrialReq = new Button("13 Nos.", this);
 	private Button btnDieCompletion = new Button("17 Nos.", this);
 	private Button btnBOM = new Button("16 Nos.", this);
-	
+	private Button btnservicecall = new Button("16 Nos.", this);
+
 	public DashboardProduction() {
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
 		hlHeader = (HorizontalLayout) UI.getCurrent().getSession().getAttribute("hlLayout");
@@ -46,11 +48,15 @@ public class DashboardProduction implements ClickListener {
 		btnMoldTrialReq.setStyleName(Runo.BUTTON_LINK);
 		btnDieCompletion.setStyleName(Runo.BUTTON_LINK);
 		btnBOM.setStyleName(Runo.BUTTON_LINK);
+		btnservicecall.setStyleName(Runo.BUTTON_LINK);
+
 		custom.addComponent(btnProductOverview, "enquiry");
 		custom.addComponent(btnDieSection, "quotation");
 		custom.addComponent(btnMoldTrialReq, "purchaseorder");
 		custom.addComponent(btnBOM, "receipts");
 		custom.addComponent(btnDieCompletion, "vendorbills");
+		custom.addComponent(btnservicecall, "serviceform");
+
 		custom.addComponent(new CalendarMonthly("DIE_SCHEDULE"), "maintaincedtls");
 	}
 	
@@ -90,6 +96,15 @@ public class DashboardProduction implements ClickListener {
 			UI.getCurrent().getSession().setAttribute("screenName", "Bill of Material");
 			UI.getCurrent().getSession().setAttribute("moduleId", 17L);
 			new DieRequest();
+		}
+		if (event.getButton() == btnservicecall) {
+			clMainLayout.removeAllComponents();
+			hlHeader.removeAllComponents();
+			UI.getCurrent().getSession().setAttribute("IS_PROD_FRM", true);
+
+			UI.getCurrent().getSession().setAttribute("screenName", "Service Call Form");
+			UI.getCurrent().getSession().setAttribute("moduleId", 13L);
+			new ServiceCallForm();
 		}
 	}
 }

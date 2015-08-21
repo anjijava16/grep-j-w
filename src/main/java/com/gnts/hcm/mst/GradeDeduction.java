@@ -463,7 +463,7 @@ public class GradeDeduction extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 		BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
 		beanGradeDM.setBeanIdProperty("gradeId");
-		beanGradeDM.addAll(serviceGrade.getGradeList(null, null, null, companyid, null, "P"));
+		beanGradeDM.addAll(serviceGrade.getGradeList(null, null, null, companyid, "Active", "P"));
 		cbGradeDesc.setContainerDataSource(beanGradeDM);
 	}
 	
@@ -472,7 +472,7 @@ public class GradeDeduction extends BaseUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
 			BeanContainer<Long, DeductionDM> beanDeducDM = new BeanContainer<Long, DeductionDM>(DeductionDM.class);
 			beanDeducDM.setBeanIdProperty("deductionId");
-			beanDeducDM.addAll(serviceDeduction.getDuctionList(null, null, companyid, null, null, "P"));
+			beanDeducDM.addAll(serviceDeduction.getDuctionList(null, null, companyid, null, "Active", "P"));
 			cbDednDesc.setContainerDataSource(beanDeducDM);
 		}
 		catch (Exception e) {

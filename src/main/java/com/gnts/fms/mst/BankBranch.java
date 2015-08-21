@@ -240,7 +240,7 @@ public class BankBranch extends BaseUI {
 					+ companyid + ", " + tfIFSCCode.getValue() + ", " + tfMICRCode.getValue() + ","
 					+ (String) cbStatus.getValue());
 			bankBranchList = serviceBankBranch.getBankBranchlist(null, tfIFSCCode.getValue(), tfMICRCode.getValue(),
-					companyid, (String) cbStatus.getValue(), "F");
+					companyid, (String) cbStatus.getValue(),null, "F");
 			recordCnt = bankBranchList.size();
 			beans = new BeanItemContainer<BankBranchDM>(BankBranchDM.class);
 			beans.addAll(bankBranchList);

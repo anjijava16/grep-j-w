@@ -372,8 +372,9 @@ public class Material extends BaseUI {
 				null, tfMaterialName.getValue(), (String) cbMaterialStatus.getValue(), "F");
 		recordCnt = materialList.size();
 		beanMaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanMaterial.addAll(serviceMaterial.getMaterialList(null, companyId, (Long) cbBranch.getValue(), null, null,
-				null, null, tfMaterialName.getValue(), (String) cbMaterialStatus.getValue(), "F"));
+		beanMaterial.addAll(serviceMaterial.getMaterialList(null, companyId, (Long) cbBranch.getValue(), null,
+				tfMaterialCode.getValue(), null, null, tfMaterialName.getValue(), (String) cbMaterialStatus.getValue(),
+				"F"));
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Got the Material result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanMaterial);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialId", "branchName", "materialName", "materialCode",
@@ -806,6 +807,7 @@ public class Material extends BaseUI {
 		tfMaterialCode.setValue("");
 		// tfMaterialCode.setReadOnly(false);
 		tfMaterialName.setValue("");
+		tfMaterialCode.setValue("");
 		cbBranch.setValue(branchId);
 		cbMaterialStatus.setValue(cbMaterialStatus.getItemIds().iterator().next());
 		loadSrchRslt();
@@ -862,6 +864,9 @@ public class Material extends BaseUI {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			MaterialDM editMaterialList = beanMaterial.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			materialId = editMaterialList.getMaterialId();
+			if ((editMaterialList.getMaterialCode() != null)) {
+				tfMaterialCode.setValue(editMaterialList.getMaterialCode());
+			}
 			if ((editMaterialList.getMaterialName() != null)) {
 				tfMaterialName.setValue(editMaterialList.getMaterialName());
 			}
@@ -915,12 +920,16 @@ public class Material extends BaseUI {
 		cbDepartment.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Validating Data ");
+		if ((tfMaterialCode.getValue() == "") || tfMaterialCode.getValue().trim().length() == 0) {
+			tfMaterialCode.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_CODE));
+			errorFlag = true;
+		}
 		if ((tfMaterialName.getValue() == "") || tfMaterialName.getValue().trim().length() == 0) {
 			tfMaterialName.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_NAME));
 			errorFlag = true;
 		}
 		if (cbMaterialGroup.getValue() == null) {
-			cbMaterialGroup.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_NAME));
+			cbMaterialGroup.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_GROUP));
 			errorFlag = true;
 		}
 		if (cbMaterialType.getValue() == null) {
@@ -1326,6 +1335,7 @@ public class Material extends BaseUI {
 		cbDepartment.setComponentError(null);
 		cbDepartment.setValue(null);
 		tfMaterialName.setValue("");
+		tfMaterialCode.setValue("");
 		cbMaterialUOM.setValue(null);
 		cbMaterialGroup.setValue(null);
 		tfPartCode.setValue("");
@@ -1334,7 +1344,7 @@ public class Material extends BaseUI {
 		taVisualSpec.setValue("");
 		tfReorderLevel.setValue("0");
 		taRemark.setValue("");
-		cbMaterialStatus.setValue(null);
+		cbMaterialStatus.setValue(cbMaterialStatus.getItemIds().iterator().next());
 		cbMaterialGroup.setComponentError(null);
 		cbMaterialType.setComponentError(null);
 		taRemark.setComponentError(null);

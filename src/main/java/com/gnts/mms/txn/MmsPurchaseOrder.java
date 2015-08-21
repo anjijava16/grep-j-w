@@ -587,14 +587,14 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			poType = cbpoType.getValue().toString();
 		}
 		pohdrlist = servicepohdr.getPOHdrList(companyid, null, (Long) cbBranch.getValue(), null,
-				(String) cbStatus.getValue(), poType, "F");
+				(String) cbStatus.getValue(), (String) cbpoType.getValue(), tfPONo.getValue(), "F");
 		recordcnt = pohdrlist.size();
 		beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
 		beanpohdr.addAll(pohdrlist);
 		tblMstScrSrchRslt.setContainerDataSource(beanpohdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "poId", "branchName", "pOType", "paymentTerms", "pOStatus",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "poId", "branchName", "pono", "pOType", "pOStatus",
 				"lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch", "Po Type", "Payment Terms", "Status",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch", "PO.No", "PO Type", "Status",
 				"Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("poId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordcnt);
@@ -1187,14 +1187,18 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		tfPONo.setReadOnly(false);
 		tfPONo.setValue("");
+		cbQuoteRef.setReadOnly(false);
+		cbQuoteRef.setValue(null);
 		tfBasictotal.setReadOnly(false);
 		tfBasictotal.setValue("0");
 		ckCformRqu.setValue(false);
 		tfDelTerms.setValue("");
+		// tfCstPer.setValue("0");
 		tfCstValue.setReadOnly(false);
 		tfCstValue.setValue("0");
 		ckdutyexm.setValue(false);
 		tfWarrentyTerms.setValue("");
+		// tfVatPer.setValue("0");
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue("0");
 		tfSubTotal.setReadOnly(false);
@@ -1211,9 +1215,12 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfOtherValue.setValue("0");
 		tfGrandtotal.setReadOnly(false);
 		tfGrandtotal.setValue("");
+		// tfFreightPer.setValue("0");
 		tfFreightValue.setReadOnly(false);
 		tfFreightValue.setValue("0");
 		tfFreightTerms.setValue("");
+		// tfOtherPer.setValue("0");
+		// tfpackingPer.setValue("0");
 		cbMaterial.setValue(null);
 		cbStatus.setValue(null);
 		dfPODt.setValue(new Date());

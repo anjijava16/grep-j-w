@@ -61,7 +61,9 @@ import com.gnts.fms.service.txn.AccountOwnersService;
 import com.gnts.fms.service.txn.AccountsService;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
@@ -127,7 +129,7 @@ public class Accounts extends BaseTransUI {
 	// BeanItemContainer
 	private BeanItemContainer<AccountsDM> beanAccountsDM = null;
 	// Local variables declaration
-	private Long companyId;
+	private Long companyId,bankid;
 	private int recordCnt = 0;
 	private String username, accountId;
 	// Initialize logger
@@ -170,10 +172,30 @@ public class Accounts extends BaseTransUI {
 		loadCurrencyList();
 		cbBankName.setItemCaptionPropertyId("bankname");
 		loadBankList();
+		cbBankName.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				Object itemId = event.getProperty().getValue();
+				BeanItem<?> item = (BeanItem<?>) cbBankName.getItem(itemId);
+				System.out.println("sddscds");
+				if (cbBankName.getValue() == null) {
+					System.out.println("inininini");
+					loadBankBranchList();
+				}
+				if (item != null) {
+					loadBankBranchList();
+					if (cbBankName.getValue() == null) {
+						loadBankBranchList();
+					}
+				}
+			}
+		});
 		cbVendorName.setItemCaptionPropertyId("vendorName");
 		loadVendorList();
-		cbBankBranch.setItemCaptionPropertyId("ifsccode");
-		loadBankBranchList();
+		cbBankBranch.setItemCaptionPropertyId("address1");
 		cbClientName.setItemCaptionPropertyId("clientName");
 		loadClientList();
 		lsAccountOwners.setItemCaptionPropertyId("fullname");
@@ -314,7 +336,7 @@ public class Accounts extends BaseTransUI {
 	private void loadBankBranchList() {
 		BeanContainer<Long, BankBranchDM> bean = new BeanContainer<Long, BankBranchDM>(BankBranchDM.class);
 		bean.setBeanIdProperty("bankbrnchid");
-		bean.addAll(serviceBankBranch.getBankBranchlist(null, null, null, companyId, "Active", "T"));
+		bean.addAll(serviceBankBranch.getBankBranchlist(bankid, null, null, companyId, "Active", null, "F"));
 		cbBankBranch.setContainerDataSource(bean);
 	}
 	

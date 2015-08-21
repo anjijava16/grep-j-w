@@ -69,7 +69,7 @@ public class AccountOwners extends BaseUI {
 	// Bean container
 	private BeanItemContainer<AccountOwnersDM> beanAccountOwnerDM = null;
 	// local variables declaration
-	private String AccountOwnerid;
+	private String accountOwnerid;
 	private Long companyid;
 	private int recordCnt = 0;
 	private String username;
@@ -327,9 +327,9 @@ public class AccountOwners extends BaseUI {
 	@Override
 	protected void showAuditDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Getting audit record for Producat. ID " + AccountOwnerid);
+				+ "Getting audit record for Producat. ID " + accountOwnerid);
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.M_BASE_PRODUCT_CATEGORY);
-		UI.getCurrent().getSession().setAttribute("audittablepk", AccountOwnerid);
+		UI.getCurrent().getSession().setAttribute("audittablepk", accountOwnerid);
 	}
 	
 	@Override

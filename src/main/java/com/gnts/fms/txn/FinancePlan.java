@@ -75,7 +75,7 @@ public class FinancePlan extends BaseUI {
 	 */
 	private FinancePlanService serviceFinancePlan = (FinancePlanService) SpringContextHelper.getBean("finance");
 	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private ProjectService serviceprojects = (ProjectService) SpringContextHelper.getBean("MProjects");
+	private ProjectService serviceProjects = (ProjectService) SpringContextHelper.getBean("MProjects");
 	private CurrencyService serviceCurrency = (CurrencyService) SpringContextHelper.getBean("currency");
 	private BranchService serviceBankBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
@@ -284,7 +284,7 @@ public class FinancePlan extends BaseUI {
 	private void loadProjectList() {
 		BeanContainer<Long, ProjectDM> bean = new BeanContainer<Long, ProjectDM>(ProjectDM.class);
 		bean.setBeanIdProperty("projectId");
-		bean.addAll(serviceprojects.getProjectList(null, null, companyId, null, (String) cbStatus.getValue()));
+		bean.addAll(serviceProjects.getProjectList(null, null, companyId, null, (String) cbStatus.getValue()));
 		cbProjectName.setContainerDataSource(bean);
 	}
 	

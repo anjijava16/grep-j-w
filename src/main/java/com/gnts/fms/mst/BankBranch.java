@@ -58,9 +58,9 @@ public class BankBranch extends BaseUI {
 	// Bean creation
 	private BankBranchService serviceBankBranch = (BankBranchService) SpringContextHelper.getBean("bankbranch");
 	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
-	private CityService citybean = (CityService) SpringContextHelper.getBean("city");
+	private CityService serviceCity = (CityService) SpringContextHelper.getBean("city");
 	private StateService serviceState = (StateService) SpringContextHelper.getBean("mstate");
-	private BankService bankbean = (BankService) SpringContextHelper.getBean("fmsbank");
+	private BankService serviceBank = (BankService) SpringContextHelper.getBean("fmsbank");
 	// Form layout for input controls
 	private FormLayout formlayout1, formlayout2, formlayout4, formlayout3;
 	// Parent layout for all the input controls
@@ -474,7 +474,7 @@ public class BankBranch extends BaseUI {
 		try {
 			BeanContainer<Long, BankDM> bean = new BeanContainer<Long, BankDM>(BankDM.class);
 			bean.setBeanIdProperty("bankid");
-			bean.addAll(bankbean.getBanklist(null, null, null, "Active", "P"));
+			bean.addAll(serviceBank.getBanklist(null, null, null, "Active", "P"));
 			cbBankName.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
@@ -500,7 +500,7 @@ public class BankBranch extends BaseUI {
 	private void loadCityList() {
 		BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
 		beanCity.setBeanIdProperty("cityid");
-		beanCity.addAll(citybean.getCityList(null, null, null, "Active", companyid, "P"));
+		beanCity.addAll(serviceCity.getCityList(null, null, null, "Active", companyid, "P"));
 		cbCity.setContainerDataSource(beanCity);
 	}
 }

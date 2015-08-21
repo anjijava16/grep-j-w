@@ -170,14 +170,14 @@ public class FundRequest extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<FundRequestDM> actpayablesList = new ArrayList<FundRequestDM>();
+		List<FundRequestDM> listFundReqest = new ArrayList<FundRequestDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
 				+ companyId + ", " + (Long) cbBranchName.getValue() + " , " + (String) cbStatus.getValue());
-		actpayablesList = serviceFundRequest.getFundRequestList(companyId, (Long) cbBranchName.getValue(),
+		listFundReqest = serviceFundRequest.getFundRequestList(companyId, (Long) cbBranchName.getValue(),
 				(String) cbStatus.getValue());
-		recordCnt = actpayablesList.size();
+		recordCnt = listFundReqest.size();
 		beansFundRequestDM = new BeanItemContainer<FundRequestDM>(FundRequestDM.class);
-		beansFundRequestDM.addAll(actpayablesList);
+		beansFundRequestDM.addAll(listFundReqest);
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Got the Account Payables List result set");
 		tblMstScrSrchRslt.setContainerDataSource(beansFundRequestDM);

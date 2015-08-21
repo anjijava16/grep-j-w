@@ -710,27 +710,26 @@ public class QATest extends BaseTransUI {
 	
 	private void editQAHdrDetails() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			QATestHdrDM editQaTestHdr = beanQATstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			qaTestHdrId = editQaTestHdr.getQatestHdrid();
+			QATestHdrDM qaTestHdrDM = beanQATstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			qaTestHdrId = qaTestHdrDM.getQatestHdrid();
 			tfInspectionNo.setReadOnly(false);
-			tfInspectionNo.setValue(editQaTestHdr.getInspectionno());
+			tfInspectionNo.setValue(qaTestHdrDM.getInspectionno());
 			tfInspectionNo.setReadOnly(true);
-			tfPrdSlNo.setValue(editQaTestHdr.getProdslno());
-			tfTstReslt.setValue(editQaTestHdr.getTestresult());
-			cbClient.setValue(editQaTestHdr.getClientid());
-			cbProduct.setValue(editQaTestHdr.getProductid());
-			cbWorkOrderNo.setValue(editQaTestHdr.getWoid().toString());
-			cbProdDrg.setValue(editQaTestHdr.getProddwgid().toString());
-			cbTesType.setValue(editQaTestHdr.getQattesttypeid().toString());
-			cbTestGrp.setValue(editQaTestHdr.getQatestgroupid());
-			cbTesType.setValue(Long.valueOf(editQaTestHdr.getQattesttypeid()));
-			cbTestCondition.setValue(editQaTestHdr.getQatestcondid());
-			cbQThdrStatus.setValue(editQaTestHdr.getTeststatus());
-			pdInspectionDt.setValue(editQaTestHdr.getInspectiondateDt());
-			if (editQaTestHdr.getObservation() != null) {
-				taTstObservation.setValue(editQaTestHdr.getObservation());
+			tfPrdSlNo.setValue(qaTestHdrDM.getProdslno());
+			tfTstReslt.setValue(qaTestHdrDM.getTestresult());
+			cbClient.setValue(qaTestHdrDM.getClientid());
+			cbProduct.setValue(qaTestHdrDM.getProductid());
+			cbWorkOrderNo.setValue(qaTestHdrDM.getWoid().toString());
+			cbProdDrg.setValue(qaTestHdrDM.getProddwgid().toString());
+			cbTestGrp.setValue((Long)qaTestHdrDM.getQatestgroupid());
+			cbTesType.setValue((Long)qaTestHdrDM.getQattesttypeid());
+			cbTestCondition.setValue(qaTestHdrDM.getQatestcondid());
+			cbQThdrStatus.setValue(qaTestHdrDM.getTeststatus());
+			pdInspectionDt.setValue(qaTestHdrDM.getInspectiondateDt());
+			if (qaTestHdrDM.getObservation() != null) {
+				taTstObservation.setValue(qaTestHdrDM.getObservation());
 			}
-			cbWorkOrderNo.setValue(editQaTestHdr.getWoid());
+			cbWorkOrderNo.setValue(qaTestHdrDM.getWoid());
 			listQATestDtl = serviceQATstDtl.getQATestDtlDetails(null, qaTestHdrId, null, null, "Active");
 			listQATestCndtnReslt = serviceQATestCndRslt.getQATestCndtnResltDetails(null, qaTestHdrId, "Active");
 			comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);

@@ -408,14 +408,14 @@ public class WorkOrderPlan extends BaseTransUI {
 	
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<WorkOrderPlanHdrDM> wrkOrdHdrList = new ArrayList<WorkOrderPlanHdrDM>();
+		List<WorkOrderPlanHdrDM> listWOPlan = new ArrayList<WorkOrderPlanHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", ");
-		wrkOrdHdrList = serviceWorkOrderPlanHdr.getWorkOrderPlanHdr(null, (Long) cbBranchName.getValue(),
+		listWOPlan = serviceWorkOrderPlanHdr.getWorkOrderPlanHdr(null, (Long) cbBranchName.getValue(),
 				tfPlanNo.getValue(), (String) cbPlanStatus.getValue());
-		recordCnt = wrkOrdHdrList.size();
+		recordCnt = listWOPlan.size();
 		beanWrkOdrPlnHdr = new BeanItemContainer<WorkOrderPlanHdrDM>(WorkOrderPlanHdrDM.class);
-		beanWrkOdrPlnHdr.addAll(wrkOrdHdrList);
+		beanWrkOdrPlnHdr.addAll(listWOPlan);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the WorkOrderPlanHdrDM. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanWrkOdrPlnHdr);
@@ -519,8 +519,8 @@ public class WorkOrderPlan extends BaseTransUI {
 			tfPlanNo.setValue(workOrderPlanHdr.getWrkPlanNo());
 			tfPlanNo.setReadOnly(true);
 			Long workordNo = workOrderPlanHdr.getWrkOrderNoID();
-			Collection<?> branchID = cbWorkOrderNo.getItemIds();
-			for (Iterator<?> iterator = branchID.iterator(); iterator.hasNext();) {
+			Collection<?> woids = cbWorkOrderNo.getItemIds();
+			for (Iterator<?> iterator = woids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
 				BeanItem<?> item = (BeanItem<?>) cbWorkOrderNo.getItem(itemId);
 				// Get the actual bean and use the data
@@ -656,7 +656,6 @@ public class WorkOrderPlan extends BaseTransUI {
 				if (workOrdNo == null || workOrdNo == "") {
 					tfPlanNo.setComponentError(new UserError(GERPErrorCodes.NULL_WO_PLN_NO));
 				} else {
-					System.out.println("Work Order Plan Number Sequence : " + workOrdNo);
 					int count = serviceWorkOrderPlanHdr.getWorkOrderPlanHdr(companyid, null, workOrdNo,
 							(String) cbPlanStatus.getValue()).size();
 					if (count == 0) {

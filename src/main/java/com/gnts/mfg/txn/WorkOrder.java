@@ -124,10 +124,10 @@ public class WorkOrder extends BaseTransUI {
 	private BeanItemContainer<WorkOrderHdrDM> beanWrkOdrHdr = null;
 	private BeanItemContainer<WorkOrderDtlDM> beanWrkOdrDtl = new BeanItemContainer<WorkOrderDtlDM>(
 			WorkOrderDtlDM.class);
-	private List<WorkOrderDtlDM> workOdrDtlList;
+	private List<WorkOrderDtlDM> listWODetails;
 	// local variables declaration
 	private String username;
-	private Long companyid, EmployeeId, moduleId, branchID, appScreenId, roleId;
+	private Long companyid, employeeId, moduleId, branchID, appScreenId, roleId;
 	private int recordCnt, recordDtlCount;
 	private Long wrkOdrHdrId;
 	private OptionGroup ogPriority = new OptionGroup("Priority");
@@ -152,7 +152,7 @@ public class WorkOrder extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = 13L;
 		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
@@ -602,23 +602,23 @@ public class WorkOrder extends BaseTransUI {
 	
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<WorkOrderHdrDM> wrkOdrHdrList = new ArrayList<WorkOrderHdrDM>();
+		List<WorkOrderHdrDM> listWOHeader = new ArrayList<WorkOrderHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid);
 		Long client = (Long) cbClientName.getValue();
 		Long branch = (Long) cbBranchName.getValue();
 		if (name.equals("Reviewer")) {
-			wrkOdrHdrList = serviceWrkOrdHdr.getWorkOrderHDRList(companyid, branch, client,
+			listWOHeader = serviceWrkOrdHdr.getWorkOrderHDRList(companyid, branch, client,
 					(String) tfPlanRefNo.getValue(), (String) cbwrkOdrType.getValue(),
-					(String) cbWorkderStatus.getValue(), "F", null, null,null,null,null);
+					(String) cbWorkderStatus.getValue(), "F", null, null, null, null, null);
 		} else {
-			wrkOdrHdrList = serviceWrkOrdHdr.getWorkOrderHDRList(companyid, branch, client,
+			listWOHeader = serviceWrkOrdHdr.getWorkOrderHDRList(companyid, branch, client,
 					(String) tfPlanRefNo.getValue(), (String) cbwrkOdrType.getValue(),
-					(String) cbWorkderStatus.getValue(), "F", null, null,null,null,null);
+					(String) cbWorkderStatus.getValue(), "F", null, null, null, null, null);
 		}
-		recordCnt = wrkOdrHdrList.size();
+		recordCnt = listWOHeader.size();
 		beanWrkOdrHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
-		beanWrkOdrHdr.addAll(wrkOdrHdrList);
+		beanWrkOdrHdr.addAll(listWOHeader);
 		tblMstScrSrchRslt.setContainerDataSource(beanWrkOdrHdr);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "workOrdrId", "workOrdrNo", "pono", "workOrdrTyp",
 				"branchName", "clientName", "workOrdrDt", "workOrdrSts", "lastUpdatedDt", "lastUpdatedBy" });
@@ -631,9 +631,9 @@ public class WorkOrder extends BaseTransUI {
 	private void loadSrchWrkOdrDtlRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblWrkOdrDtl.setFooterVisible(true);
-		recordDtlCount = workOdrDtlList.size();
+		recordDtlCount = listWODetails.size();
 		beanWrkOdrDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
-		beanWrkOdrDtl.addAll(workOdrDtlList);
+		beanWrkOdrDtl.addAll(listWODetails);
 		tblWrkOdrDtl.setContainerDataSource(beanWrkOdrDtl);
 		tblWrkOdrDtl.setVisibleColumns(new Object[] { "prodName", "workOrdQty", "customField1", "customField2",
 				"planQty", "balQty", "lastUpdatedDt", "lastUpdatedBy" });
@@ -720,7 +720,7 @@ public class WorkOrder extends BaseTransUI {
 		ogMaterialUsage.setValue("Exempted");
 		cbClientName.setContainerDataSource(null);
 		cbPONumber.setContainerDataSource(null);
-		workOdrDtlList = new ArrayList<WorkOrderDtlDM>();
+		listWODetails = new ArrayList<WorkOrderDtlDM>();
 		tblWrkOdrDtl.removeAllItems();
 		cbEnquiryNumber.setReadOnly(false);
 		cbEnquiryNumber.setValue(null);
@@ -767,7 +767,7 @@ public class WorkOrder extends BaseTransUI {
 				cbWorkderStatus.setReadOnly(false);
 				cbWorkderStatus.setValue(workOrderHdrDM.getWorkOrdrSts());
 			}
-			workOdrDtlList = serviceWrkOrdDtl.getWorkOrderDtlList(null, Long.valueOf(wrkOdrHdrId), null, "F");
+			listWODetails = serviceWrkOrdDtl.getWorkOrderDtlList(null, Long.valueOf(wrkOdrHdrId), null, "F");
 		}
 		comment = new Comments(vlCommendForm, companyid, null, null, null, null, commentby);
 		comment.loadsrch(true, null, null, wrkOdrHdrId, null, null, null);
@@ -1013,7 +1013,7 @@ public class WorkOrder extends BaseTransUI {
 			wrkOdHdr.setClientId((Long) cbClientName.getValue());
 			wrkOdHdr.setPoId((Long) (cbPONumber.getValue()));
 			wrkOdHdr.setWorkOrdrRmrks(taWrkOdrHdrRemarks.getValue());
-			wrkOdHdr.setPreprdBy(EmployeeId);
+			wrkOdHdr.setPreprdBy(employeeId);
 			wrkOdHdr.setReviewBy(null);
 			wrkOdHdr.setActionedBy(null);
 			wrkOdHdr.setPriority((String) ogPriority.getValue());
@@ -1043,24 +1043,28 @@ public class WorkOrder extends BaseTransUI {
 				serviceWrkOrdDtl.saveOrUpdateWrkOdrDtlDetails(save);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
-				if (cbwrkOdrType.getValue().equals("Job Work Order")) {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MF_PWONO")
-							.get(0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "MF_PWONO");
+				try {
+					if (cbwrkOdrType.getValue().equals("Job Work Order")) {
+						SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MF_PWONO")
+								.get(0);
+						if (slnoObj.getAutoGenYN().equals("Y")) {
+							serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "MF_PWONO");
+						}
+					} else if (cbwrkOdrType.getValue().equals("Sample Work Order")) {
+						SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MF_SWONO")
+								.get(0);
+						if (slnoObj.getAutoGenYN().equals("Y")) {
+							serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "MF_SWONO");
+						}
+					} else if (cbwrkOdrType.getValue().equals("Mold Manufacturing")) {
+						SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MF_IWONO")
+								.get(0);
+						if (slnoObj.getAutoGenYN().equals("Y")) {
+							serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "MF_IWONO");
+						}
 					}
-				} else if (cbwrkOdrType.getValue().equals("Sample Work Order")) {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MF_SWONO")
-							.get(0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "MF_SWONO");
-					}
-				} else if (cbwrkOdrType.getValue().equals("Mold Manufacturing")) {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MF_IWONO")
-							.get(0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "MF_IWONO");
-					}
+				}
+				catch (Exception e) {
 				}
 			}
 			resetWorkOrdDtl();
@@ -1111,10 +1115,9 @@ public class WorkOrder extends BaseTransUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			WorkOrderDtlDM workOrderDtlDM = new WorkOrderDtlDM();
-			System.out.println("tblWrkOdrDtl.getValue()" + tblWrkOdrDtl.getValue());
 			if (tblWrkOdrDtl.getValue() != null) {
 				workOrderDtlDM = beanWrkOdrDtl.getItem(tblWrkOdrDtl.getValue()).getBean();
-				workOdrDtlList.remove(workOrderDtlDM);
+				listWODetails.remove(workOrderDtlDM);
 			}
 			workOrderDtlDM.setProdId(((SmsPODtlDM) cbPrdName.getValue()).getProductid());
 			workOrderDtlDM.setProdName(((SmsPODtlDM) cbPrdName.getValue()).getProdname());
@@ -1131,7 +1134,7 @@ public class WorkOrder extends BaseTransUI {
 			workOrderDtlDM.setLastUpdatedBy(username);
 			workOrderDtlDM.setCustomField1(tfCustomField1.getValue());
 			workOrderDtlDM.setCustomField2(tfCustomField2.getValue());
-			workOdrDtlList.add(workOrderDtlDM);
+			listWODetails.add(workOrderDtlDM);
 			resetWorkOrdDtl();
 			loadSrchWrkOdrDtlRslt();
 			btnsaveWrkOdrDtl.setCaption("Add");
@@ -1145,7 +1148,7 @@ public class WorkOrder extends BaseTransUI {
 		WorkOrderDtlDM workOrderDtlDM = new WorkOrderDtlDM();
 		if (tblWrkOdrDtl.getValue() != null) {
 			workOrderDtlDM = beanWrkOdrDtl.getItem(tblWrkOdrDtl.getValue()).getBean();
-			workOdrDtlList.remove(workOrderDtlDM);
+			listWODetails.remove(workOrderDtlDM);
 			resetWorkOrdDtl();
 			tblWrkOdrDtl.setValue("");
 			loadSrchWrkOdrDtlRslt();
@@ -1166,7 +1169,6 @@ public class WorkOrder extends BaseTransUI {
 			parameterMap.put("WOID", wrkOdrHdrId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/workorder"); // workorder is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

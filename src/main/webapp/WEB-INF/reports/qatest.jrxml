@@ -9,13 +9,16 @@
 	<queryString>
 		<![CDATA[select qah.inspection_no,qah.inspection_dt,cl.client_code , cl.client_name client_name,
 prod.product_code ||' & '|| prod.product_name product_name,qah.prod_slno,qah.test_observation,qah.test_result,ts.test_spec,
-qad.test_spcreslt,qad.qa_remarks
-from T_MFG_QA_TEST_HDR qah,t_mfg_qa_test_dtl qad,m_crm_clients cl,m_base_product prod,m_mfg_qa_test_spec ts
+qad.test_spcreslt,qad.qa_remarks,qat.test_type,qag.test_group
+from T_MFG_QA_TEST_HDR qah,t_mfg_qa_test_dtl qad,m_crm_clients cl,m_base_product prod,m_mfg_qa_test_spec ts,m_mfg_qa_test_type qat,
+m_mfg_qa_test_group qag
 where
 qah.qa_testid = qad.qa_testid
 and qah.client_id = cl.client_id
 and qah.product_id = prod.product_id
 and ts.qatest_specid = qad.qatest_specid
+and qat.qatest_type_id = qah.qatest_type_id
+and qag.qatest_group_id = qah.qatest_group_id
 and qah.qa_testid =$P{qaid}]]>
 	</queryString>
 	<field name="INSPECTION_NO" class="java.lang.String"/>
@@ -29,6 +32,8 @@ and qah.qa_testid =$P{qaid}]]>
 	<field name="TEST_SPEC" class="java.lang.String"/>
 	<field name="TEST_SPCRESLT" class="java.lang.String"/>
 	<field name="QA_REMARKS" class="java.lang.String"/>
+	<field name="TEST_TYPE" class="java.lang.String"/>
+	<field name="TEST_GROUP" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -56,26 +61,26 @@ and qah.qa_testid =$P{qaid}]]>
 				<text><![CDATA[Malumichampatti, Coimbatore - 641 050]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="216" y="89" width="97" height="14"/>
+				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="270" y="89" width="97" height="14"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Client Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="312" y="89" width="16" height="14"/>
+				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="366" y="89" width="16" height="14"/>
 				<textElement/>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="216" y="71" width="96" height="14"/>
+				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="270" y="71" width="96" height="14"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Client Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="312" y="71" width="16" height="14"/>
+				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="366" y="71" width="16" height="14"/>
 				<textElement/>
 				<text><![CDATA[:]]></text>
 			</staticText>
@@ -138,12 +143,12 @@ and qah.qa_testid =$P{qaid}]]>
 				<text><![CDATA[Inspection Date]]></text>
 			</staticText>
 			<textField pattern="dd-MMM-yyyy" isBlankWhenNull="true">
-				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="115" y="88" width="92" height="15"/>
+				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="115" y="88" width="139" height="15"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{INSPECTION_DT}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd-MMM-yyyy" isBlankWhenNull="true">
-				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="114" y="70" width="93" height="15"/>
+				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="114" y="70" width="140" height="15"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{INSPECTION_NO}]]></textFieldExpression>
 			</textField>
@@ -155,7 +160,7 @@ and qah.qa_testid =$P{qaid}]]>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Drawing No]]></text>
+				<text><![CDATA[Test Type]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="99" y="107" width="16" height="14"/>
@@ -163,14 +168,14 @@ and qah.qa_testid =$P{qaid}]]>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="216" y="107" width="97" height="14"/>
+				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="270" y="107" width="97" height="14"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[DC/In No.& Date]]></text>
+				<text><![CDATA[Test Group]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="313" y="107" width="16" height="14"/>
+				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="367" y="107" width="16" height="14"/>
 				<textElement/>
 				<text><![CDATA[:]]></text>
 			</staticText>
@@ -281,36 +286,46 @@ and qah.qa_testid =$P{qaid}]]>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<textField pattern="dd-MMM-yyyy" isBlankWhenNull="true">
-				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="115" y="124" width="92" height="15"/>
+				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="115" y="124" width="139" height="15"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{PROD_SLNO}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd-MMM-yyyy" isBlankWhenNull="true">
-				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="329" y="124" width="224" height="14"/>
+				<reportElement uuid="41cd874a-caef-499c-8326-d4fe95d6531b" x="383" y="124" width="172" height="14"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{PRODUCT_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="216" y="124" width="97" height="14"/>
+				<reportElement uuid="b9452226-3021-46ae-a679-651428b017f4" x="270" y="124" width="97" height="14"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Product Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="313" y="124" width="16" height="14"/>
+				<reportElement uuid="d680e832-30e0-42dc-8290-bd4c828eb122" x="367" y="124" width="16" height="14"/>
 				<textElement/>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="812c5a19-3e04-4077-b1fd-e0bfd303e2eb" x="329" y="89" width="221" height="14"/>
+				<reportElement uuid="812c5a19-3e04-4077-b1fd-e0bfd303e2eb" x="383" y="89" width="173" height="14"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{CLIENT_CODE}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="c3c2653d-57ae-412b-997c-ca13247394d6" x="328" y="71" width="222" height="14"/>
+				<reportElement uuid="c3c2653d-57ae-412b-997c-ca13247394d6" x="382" y="71" width="174" height="14"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{CLIENT_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="66ddd6aa-2010-4843-8e35-962f21f9755c" x="115" y="107" width="138" height="14"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TEST_TYPE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="09f4fddd-b647-497b-93f1-04d97d0845dd" x="383" y="107" width="173" height="14"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TEST_GROUP}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>

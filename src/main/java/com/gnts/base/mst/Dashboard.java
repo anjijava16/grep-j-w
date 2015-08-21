@@ -54,7 +54,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class Dashboard {
-	private Table tblHoliday, tblBirthday, tblNews,tblClientVisit;
+	private Table tblHoliday, tblBirthday, tblNews, tblClientVisit;
 	private HolidayService serviceHoliday = (HolidayService) SpringContextHelper.getBean("holidays");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private OrgNewsService serviceNews = (OrgNewsService) SpringContextHelper.getBean("news");
@@ -89,10 +89,9 @@ public class Dashboard {
 		tblNews = new Table();
 		tblNews.setPageLength(7);
 		tblNews.setSizeFull();
-		tblClientVisit=new Table();
+		tblClientVisit = new Table();
 		tblClientVisit.setPageLength(7);
 		tblClientVisit.setSizeFull();
-		
 		lblFormTittle = new Label();
 		lblFormTittle.setContentMode(ContentMode.HTML);
 		lblFormTittle.setValue("&nbsp;&nbsp;<b>" + "Dashboard");
@@ -106,7 +105,7 @@ public class Dashboard {
 		vlEval.addComponent(tblBirthday);
 		vltable = new VerticalLayout();
 		vltable.addComponent(tblHoliday);
-		vlCustVisit=new VerticalLayout();
+		vlCustVisit = new VerticalLayout();
 		vlCustVisit.addComponent(tblClientVisit);
 		accordionHoli = new Accordion();
 		accordionNews = new Accordion();
@@ -173,7 +172,13 @@ public class Dashboard {
 			for (EmployeeDM employeeDM : list) {
 				try {
 					if (DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
-							DateUtils.getMonthAndYear(new Date()))) {
+							DateUtils.getMonthAndYear(new Date()))
+							|| DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
+									DateUtils.getMonthAndYear(addDays(new Date(), 1)))
+							|| DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
+									DateUtils.getMonthAndYear(addDays(new Date(), 2)))
+							|| DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
+									DateUtils.getMonthAndYear(addDays(new Date(), 3)))) {
 						beansNews.addBean(employeeDM);
 					}
 				}

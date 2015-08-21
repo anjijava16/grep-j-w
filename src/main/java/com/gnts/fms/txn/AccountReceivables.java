@@ -18,9 +18,12 @@ package com.gnts.fms.txn;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -40,15 +43,25 @@ import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.ui.Database;
+import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.fms.domain.txn.AccountReceivablesDM;
 import com.gnts.fms.domain.txn.AccountsDM;
 import com.gnts.fms.service.txn.AccountReceivablesService;
 import com.gnts.fms.service.txn.AccountsService;
+import com.gnts.sms.domain.txn.SmsInvoiceHdrDM;
+import com.gnts.sms.service.txn.SmsInvoiceHdrService;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
+import com.vaadin.server.VaadinService;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -57,6 +70,7 @@ import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.themes.Runo;
 
 public class AccountReceivables extends BaseUI {
 	private static final long serialVersionUID = 1L;
@@ -67,6 +81,8 @@ public class AccountReceivables extends BaseUI {
 			.getBean("accountReceivables");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private AccountsService serviceAccounttype = (AccountsService) SpringContextHelper.getBean("accounts");
+	private SmsInvoiceHdrService serviceInvoiceHdr = (SmsInvoiceHdrService) SpringContextHelper
+			.getBean("smsInvoiceheader");
 	// Input Fields
 	private ComboBox cbBranchName = new GERPComboBox("Branch Name");
 	private PopupDateField dfEntryDate = new GERPPopupDateField("Entry Date");
@@ -79,6 +95,8 @@ public class AccountReceivables extends BaseUI {
 	private TextArea tfRemarks = new GERPTextArea("Remarks");
 	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.T_FMS_ACCOUNT_PAYABLES,
 			BASEConstants.PAY_STATUS);
+	private ComboBox cbInvoice = new GERPComboBox();
+	private Button btnViewInvoice = new Button("View");
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
@@ -110,6 +128,34 @@ public class AccountReceivables extends BaseUI {
 		cbAccountReference.setItemCaptionPropertyId("accountname");
 		loadAccountTypeList();
 		cbStatus.setWidth("120");
+		cbInvoice.setWidth("130");
+		cbInvoice.setItemCaptionPropertyId("invoiceNo");
+		cbInvoice.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (cbInvoice.getValue() != null) {
+					tfInvoiceNo.setValue(((SmsInvoiceHdrDM) cbInvoice.getValue()).getInvoiceNo());
+					dfInvoiceDate.setValue(((SmsInvoiceHdrDM) cbInvoice.getValue()).getInvoiceDate());
+				} else {
+					tfInvoiceNo.setValue("");
+					dfInvoiceDate.setValue(null);
+				}
+			}
+		});
+		loadInvoiceNumber();
+		btnViewInvoice.setStyleName(Runo.BUTTON_LINK);
+		btnViewInvoice.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				printDetails();
+			}
+		});
 		hlSearchLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		vlSrchRsltContainer.addComponent(tblMstScrSrchRslt);
@@ -153,7 +199,15 @@ public class AccountReceivables extends BaseUI {
 		flFormLayout1.addComponent(cbAccountReference);
 		flFormLayout2 = new FormLayout();
 		flFormLayout2.setSpacing(true);
-		flFormLayout2.addComponent(tfInvoiceNo);
+		flFormLayout2.addComponent(new HorizontalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setCaption("Invoice Number");
+				setSpacing(true);
+				addComponent(cbInvoice);
+				addComponent(btnViewInvoice);
+			}
+		});
 		flFormLayout2.addComponent(dfInvoiceDate);
 		flFormLayout2.addComponent(tfInvoiceAmt);
 		flFormLayout3 = new FormLayout();
@@ -417,7 +471,43 @@ public class AccountReceivables extends BaseUI {
 		tfPaidAmt.setValue("0");
 		tfBalanceAmt.setValue("0");
 		tfRemarks.setValue("");
+		cbInvoice.setValue(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		cbStatus.setValue(null);
+	}
+	
+	private void loadInvoiceNumber() {
+		BeanItemContainer<SmsInvoiceHdrDM> beansmsenqHdr = new BeanItemContainer<SmsInvoiceHdrDM>(SmsInvoiceHdrDM.class);
+		beansmsenqHdr.addAll(serviceInvoiceHdr.getSmsInvoiceHeaderList(null, null, null, null, null, null, null, "P"));
+		cbInvoice.setContainerDataSource(beansmsenqHdr);
+	}
+	
+	private void printDetails() {
+		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
+			parameterMap.put("INVHDR", ((SmsInvoiceHdrDM) cbInvoice.getValue()).getInvoiceId());
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "/WEB-INF/reports/invoice_Report1"); // productlist is the name of my
+																				// jasper
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

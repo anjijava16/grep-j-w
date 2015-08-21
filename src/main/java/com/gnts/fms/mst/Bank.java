@@ -159,13 +159,13 @@ public class Bank extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			BankDM editBank = beanBankDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			pkbankId = editBank.getBankid().toString();
-			tfBankname.setValue(editBank.getBankname());
-			if (editBank.getShortname() != null) {
-				tfShortName.setValue(editBank.getShortname());
+			BankDM bankDM = beanBankDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			pkbankId = bankDM.getBankid().toString();
+			tfBankname.setValue(bankDM.getBankname());
+			if (bankDM.getShortname() != null) {
+				tfShortName.setValue(bankDM.getShortname());
 			}
-			cbBankStatus.setValue(editBank.getBankStatus());
+			cbBankStatus.setValue(bankDM.getBankStatus());
 		}
 	}
 	

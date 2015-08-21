@@ -122,15 +122,15 @@ public class AccountType extends BaseUI {
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Search Parameters are " + ":" + tfAccountType.getValue() + "," + (String) cbstatus.getValue() + ", "
 				+ companyId + ",F" + "Loading Search...");
-		List<AccountTypeDM> accountypeList = new ArrayList<AccountTypeDM>();
+		List<AccountTypeDM> listAccountype = new ArrayList<AccountTypeDM>();
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Search Parameters are " + ":" + tfAccountType.getValue() + "," + (String) cbstatus.getValue() + ", "
 				+ companyId + ",F");
-		accountypeList = serviceAccountType.getAccountTypeList(companyId, tfAccountType.getValue(),
+		listAccountype = serviceAccountType.getAccountTypeList(companyId, tfAccountType.getValue(),
 				(String) cbstatus.getValue());
-		recordCnt = accountypeList.size();
+		recordCnt = listAccountype.size();
 		beanAcountTypeDM = new BeanItemContainer<AccountTypeDM>(AccountTypeDM.class);
-		beanAcountTypeDM.addAll(accountypeList);
+		beanAcountTypeDM.addAll(listAccountype);
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Search Parameters are " + ":" + tfAccountType.getValue() + ",  Active ," + companyId + ",F"
 				+ "Got the AccountType result set");

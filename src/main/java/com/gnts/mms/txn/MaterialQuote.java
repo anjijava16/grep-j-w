@@ -870,16 +870,6 @@ public class MaterialQuote extends BaseTransUI {
 		loadMatDtl();
 		assembleInputUserLayout();
 		new UploadDocumentUI(hlquoteDoc);
-		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_QN ").get(0);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfQuoteRef.setReadOnly(true);
-			} else {
-				tfQuoteRef.setReadOnly(false);
-			}
-		}
-		catch (Exception e) {
-		}
 		btnsavepurQuote.setCaption("Add");
 		tblMatQuDtl.setVisible(true);
 		lblNotification.setValue("");
@@ -979,21 +969,7 @@ public class MaterialQuote extends BaseTransUI {
 			dtlValidation();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			MmsQuoteHdrDM quoteHdrDM = new MmsQuoteHdrDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				quoteHdrDM = beanQuoteHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				if (tfQuoteRef.getValue() != null) {
-					quoteHdrDM.setQuoteRef(tfQuoteRef.getValue());
-				}
-			} else {
-				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_QN").get(0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						quoteHdrDM.setQuoteRef(slnoObj.getKeyDesc());
-					}
-				}
-				catch (Exception e) {
-				}
-			}
+			quoteHdrDM.setQuoteRef(tfQuoteRef.getValue());
 			quoteHdrDM.setVendorid((Long) cbVendor.getValue());
 			quoteHdrDM.setBranchId((Long) cbBranch.getValue());
 			quoteHdrDM.setCompanyId(companyid);
@@ -1115,10 +1091,10 @@ public class MaterialQuote extends BaseTransUI {
 				quoteDtlDM.setMaterialid(((MmsEnqDtlDM) cbMaterial.getValue()).getMaterialid());
 				quoteDtlDM.setMaterialname(((MmsEnqDtlDM) cbMaterial.getValue()).getMaterialName());
 				if (tfQuoteQunt.getValue() != null && tfQuoteQunt.getValue().trim().length() > 0) {
-					quoteDtlDM.setQuoteqty(Long.valueOf(tfQuoteQunt.getValue()));
+					quoteDtlDM.setQuoteqty(new BigDecimal(tfQuoteQunt.getValue()));
 				}
 				if (tfUnitRate.getValue() != null && tfUnitRate.getValue().trim().length() > 0) {
-					quoteDtlDM.setUnitrate((Long.valueOf(tfUnitRate.getValue())));
+					quoteDtlDM.setUnitrate((new BigDecimal(tfUnitRate.getValue())));
 				}
 				quoteDtlDM.setMatuom(cbUom.getValue().toString());
 				if (tfBasicValue.getValue() != null && tfBasicValue.getValue().trim().length() > 0) {

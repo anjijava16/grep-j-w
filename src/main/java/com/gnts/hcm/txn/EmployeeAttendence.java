@@ -39,11 +39,8 @@ import com.gnts.hcm.domain.txn.AttendenceProcDM;
 import com.gnts.hcm.domain.txn.EmpAttendenceDM;
 import com.gnts.hcm.service.txn.AttendenceProcService;
 import com.gnts.hcm.service.txn.EmpAttendenceService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -81,7 +78,7 @@ public class EmployeeAttendence extends BaseUI {
 	private BeanContainer<Long, EmployeeDM> beanEmployeeDM = null;
 	// local variables declaration
 	private Long companyid, attnceProcId;
-	private Long processId, branchId;
+	private Long processId;
 	private String alwncId, pkEmpAdvncId;
 	private int recordCnt = 0;
 	private String username;
@@ -95,7 +92,6 @@ public class EmployeeAttendence extends BaseUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside EmployeeAttendence() constructor");
 		// Loading the UI
@@ -212,33 +208,29 @@ public class EmployeeAttendence extends BaseUI {
 		attendenceProcDM.setCompanyId(companyid);
 		attendenceProcDM.setStatus("Pending");
 		serviceAttendenceProce.saveAndUpdate(attendenceProcDM);
-
-		EmpAttendenceDM empAttendenceDM = new EmpAttendenceDM();
-
-					System.out.println("--->insideelse" + cbEmpName.getValue());
-					empAttendenceDM.setEmpId((Long) cbEmpName.getValue());
-				
-				
-					empAttendenceDM.setAttProcId(attendenceProcDM.getAttProcId());
-					empAttendenceDM.setAttDt(cal.getTime());
-					empAttendenceDM.setPresentHr(workhours);
-					empAttendenceDM.setOtHrs("0");
-					empAttendenceDM.setLeaveHr("0");
-					empAttendenceDM.setOndutyHr("0");
-					empAttendenceDM.setAbsentHr("0");
-					empAttendenceDM.setPermissionHr("0");
-					empAttendenceDM.setLwpHr(0L);
-					empAttendenceDM.setStatus("Pending");
-					empAttendenceDM.setLastUpdatedBy(username);
-					empAttendenceDM.setLastUpdatedDt(new Date());
-					serviceEmpAtndnc.saveAndUpdate(empAttendenceDM);
-					System.out.println(cal.getTime());
-			
-			
+		try {
+			EmpAttendenceDM empAttendenceDM = new EmpAttendenceDM();
+			empAttendenceDM.setEmpId((Long) cbEmpName.getValue());
+			empAttendenceDM.setAttProcId(attendenceProcDM.getAttProcId());
+			empAttendenceDM.setAttDt(cal.getTime());
+			empAttendenceDM.setPresentHr(workhours);
+			empAttendenceDM.setOtHrs("0");
+			empAttendenceDM.setLeaveHr("0");
+			empAttendenceDM.setOndutyHr("0");
+			empAttendenceDM.setAbsentHr("0");
+			empAttendenceDM.setPermissionHr("0");
+			empAttendenceDM.setLwpHr(0L);
+			empAttendenceDM.setStatus("Pending");
+			empAttendenceDM.setLastUpdatedBy(username);
+			empAttendenceDM.setLastUpdatedDt(new Date());
+			serviceEmpAtndnc.saveAndUpdate(empAttendenceDM);
+		}
+		catch (Exception e) {
+		}
 		staffAttendancePapulateAndConfig(true);
 	}
 	
-	void staffAttendancePapulateAndConfig(boolean search) {
+	private void staffAttendancePapulateAndConfig(boolean search) {
 		tblMstScrSrchRslt.removeAllItems();
 		tblMstScrSrchRslt.setSelectable(true);
 		List<EmpAttendenceDM> list = null;
@@ -251,10 +243,6 @@ public class EmployeeAttendence extends BaseUI {
 			list = serviceAttendenceProce.loadStaffAttendanceList(processId);
 		}
 		recordCnt = list.size();
-		/*
-		 * attenLabel.setValue("<font size=\"2\" color=black>No.of Records: </font> <font size=\"2\" color=\"#1E90FF\"> "
-		 * + attenTotal + "</font>");
-		 */
 		beanEmpAtndncDM = new BeanItemContainer<EmpAttendenceDM>(EmpAttendenceDM.class);
 		beanEmpAtndncDM.addAll(list);
 		tblMstScrSrchRslt.setContainerDataSource(beanEmpAtndncDM);
@@ -263,19 +251,6 @@ public class EmployeeAttendence extends BaseUI {
 		tblMstScrSrchRslt
 				.setColumnHeaders(new String[] { "Atten. Date", "Present(Hrs)", "OT(Hrs)", "Late(Hrs)", "Absent(Hrs)",
 						"Leave(Hrs)", "OnDuty(Hrs)", "Permission(Hrs)", "Status", "Updated Date", "Updated By" });
-		tblMstScrSrchRslt.addItemClickListener(new ItemClickListener() {
-			private static final long serialVersionUID = 1L;
-			
-			public void itemClick(ItemClickEvent event) {
-				// TODO Auto-generated method stub
-				if (tblMstScrSrchRslt.isSelected(event.getItemId())) {
-					// editLwpBt.setEnabled(false);
-				} else {
-					// editLwpBt.setEnabled(true);
-				}
-				// resetStaffAttenFields();
-			}
-		});
 	}
 	
 	// Reset the field values to default values
@@ -299,26 +274,25 @@ public class EmployeeAttendence extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editEmpAtndnc() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			EmpAttendenceDM editEmpAtndnc = beanEmpAtndncDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			pkEmpAdvncId = editEmpAtndnc.getAttendenceId().toString();
-			cbEmpName.setValue(editEmpAtndnc.getEmpId());
-			dfAtndence.setValue((Date) itselect.getItemProperty("attDt").getValue());
-			tfPresentHr.setTime(editEmpAtndnc.getPresentHr());
-			tfOTHrs.setTime(editEmpAtndnc.getOtHrs());
-			tflateHrs.setTime(editEmpAtndnc.getLateHr());
-			tfAbsentHr.setTime(editEmpAtndnc.getAbsentHr());
-			tfLeaveHr.setTime(editEmpAtndnc.getLeaveHr());
-			tfOnDutyHr.setTime(editEmpAtndnc.getOndutyHr());
-			tfPermisnHr.setTime(editEmpAtndnc.getPermissionHr());
-			if (editEmpAtndnc.getLwpHr() != null) {
-				tfLWPHrs.setValue(itselect.getItemProperty("lwpHr").getValue().toString());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			EmpAttendenceDM empAttendence = beanEmpAtndncDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			pkEmpAdvncId = empAttendence.getAttendenceId().toString();
+			cbEmpName.setValue(empAttendence.getEmpId());
+			dfAtndence.setValue(empAttendence.getAttDt1());
+			tfPresentHr.setTime(empAttendence.getPresentHr());
+			tfOTHrs.setTime(empAttendence.getOtHrs());
+			tflateHrs.setTime(empAttendence.getLateHr());
+			tfAbsentHr.setTime(empAttendence.getAbsentHr());
+			tfLeaveHr.setTime(empAttendence.getLeaveHr());
+			tfOnDutyHr.setTime(empAttendence.getOndutyHr());
+			tfPermisnHr.setTime(empAttendence.getPermissionHr());
+			if (empAttendence.getLwpHr() != null) {
+				tfLWPHrs.setValue(empAttendence.getLwpHr().toString());
 			}
-			if (editEmpAtndnc.getReturnCount() != null) {
-				tfReturnCount.setValue(itselect.getItemProperty("returnCount").getValue().toString());
+			if (empAttendence.getReturnCount() != null) {
+				tfReturnCount.setValue(empAttendence.getReturnCount().toString());
 			}
-			cbStatus.setValue(itselect.getItemProperty("status").getValue());
+			cbStatus.setValue(empAttendence.getStatus());
 		}
 	}
 	
@@ -461,10 +435,10 @@ public class EmployeeAttendence extends BaseUI {
 		staffAttendancePapulateAndConfig(true);
 	}
 	
-	public void loadEmpAprvrList() {
+	private void loadEmpAprvrList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Approver Search...");
 		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "F");
+				null, null, "P");
 		empList.add(new EmployeeDM(-1L, "All"));
 		beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployeeDM.setBeanIdProperty("employeeid");

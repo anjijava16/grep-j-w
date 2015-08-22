@@ -119,7 +119,7 @@ public class PFbalance extends BaseUI {
 		hlSearchLayout.setComponentAlignment(hlUserInputLayout, Alignment.MIDDLE_LEFT);
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<PFbalanceDM> listPFBalance = new ArrayList<PFbalanceDM>();

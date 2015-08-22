@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.apache.log4j.Logger;
-import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
@@ -55,8 +54,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
-@SuppressWarnings("serial")
 public class EmployeeLate extends VerticalLayout implements ClickListener {
+	private static final long serialVersionUID = 1L;
 	// Declaration for add and edit panel components
 	private ComboBox cbLatestatus;
 	private PopupDateField dfLatedate;
@@ -64,12 +63,10 @@ public class EmployeeLate extends VerticalLayout implements ClickListener {
 	private TextField tfLatehrs;
 	private TextArea taLateRemarks;
 	// for Search
-	Button btnSearch, btnReset;
+	private Button btnSearch, btnReset;
 	// Declaration for add and edit panel
-	VerticalLayout vlAddEditPanel = new VerticalLayout();
-	VerticalLayout vlTablePanel = new VerticalLayout();
-	HorizontalLayout hlsavecancel = new HorizontalLayout();
-	HorizontalLayout hlFileDownloadLayout;
+	private VerticalLayout vlTablePanel = new VerticalLayout();
+	private HorizontalLayout hlsavecancel = new HorizontalLayout();
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3;
 	// Table Declaration
@@ -78,19 +75,17 @@ public class EmployeeLate extends VerticalLayout implements ClickListener {
 	public Button btnadd;
 	public Button btnSave = new Button("Save", this);
 	public Button btnCancel = new Button("Cancel", this);
-	List<EmployeeLateDetailDM> usertable = new ArrayList<EmployeeLateDetailDM>();
+	private List<EmployeeLateDetailDM> listEmpLate = new ArrayList<EmployeeLateDetailDM>();
 	private BeanItemContainer<EmployeeLateDetailDM> beans = null;
 	private VerticalLayout vltable, vlTableForm, vlTableLayout;
-	HorizontalLayout hlTableTitleandCaptionLayout;
+	private HorizontalLayout hlTableTitleandCaptionLayout;
 	private String username;
 	private Long companyid;
 	private Long employeeid;
-	EmployeeLateDetailService serviceLate = (EmployeeLateDetailService) SpringContextHelper
+	private EmployeeLateDetailService serviceLate = (EmployeeLateDetailService) SpringContextHelper
 			.getBean("EmployeeLateDetail");
-	EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private static Logger logger = Logger.getLogger(EmployeeLateDetailDM.class);
+	private Logger logger = Logger.getLogger(EmployeeLateDetailDM.class);
 	private int total = 0;
-	public HorizontalLayout hlHeader = new HorizontalLayout();
 	
 	public EmployeeLate(Long empid) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -222,12 +217,12 @@ public class EmployeeLate extends VerticalLayout implements ClickListener {
 				+ "loading SearchResult Details...");
 		total = 0;
 		if (employeeid != null) {
-			usertable = serviceLate.getemplatelist(null, employeeid, null, "Active", "F");
-			total = usertable.size();
+			listEmpLate = serviceLate.getemplatelist(null, employeeid, null, "Active", "F");
+			total = listEmpLate.size();
 		}
 		tblMstScrSrchRslt.setPageLength(10);
 		beans = new BeanItemContainer<EmployeeLateDetailDM>(EmployeeLateDetailDM.class);
-		beans.addAll(usertable);
+		beans.addAll(listEmpLate);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Employee Late. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beans);
@@ -259,7 +254,7 @@ public class EmployeeLate extends VerticalLayout implements ClickListener {
 			EmployeeLateDetailDM saveLate = new EmployeeLateDetailDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				saveLate = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				usertable.remove(saveLate);
+				listEmpLate.remove(saveLate);
 			}
 			if (dfLatedate.getValue() != null) {
 				saveLate.setLatedate(dfLatedate.getValue());
@@ -302,7 +297,7 @@ public class EmployeeLate extends VerticalLayout implements ClickListener {
 		tblMstScrSrchRslt.removeAllItems();
 	}
 	
-	public boolean validateDetails() {
+	private boolean validateDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Validating EmployeeLate Details.....");
 		boolean errorFlag = true;
@@ -336,7 +331,7 @@ public class EmployeeLate extends VerticalLayout implements ClickListener {
 		dfLatedate.setComponentError(null);
 		tfLatehrs.setComponentError(null);
 		tfLateintime.setComponentError(null);
-		total = usertable.size();
+		total = listEmpLate.size();
 		total = 0;
 	}
 	

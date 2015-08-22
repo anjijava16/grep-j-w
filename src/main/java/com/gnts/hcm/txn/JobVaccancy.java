@@ -73,7 +73,6 @@ public class JobVaccancy extends BaseUI {
 	private DesignationService serviceDesinatn = (DesignationService) SpringContextHelper.getBean("Designation");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4, flColumn5;
 	// Parent layout for all the input controls
@@ -234,7 +233,7 @@ public class JobVaccancy extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		tblMstScrSrchRslt.setPageLength(13);
@@ -298,11 +297,11 @@ public class JobVaccancy extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Loading Relationship Search...");
-			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"HC_WRKEXP");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(lookUpList);
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"HC_WRKEXP"));
 			cbWrkExp.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {

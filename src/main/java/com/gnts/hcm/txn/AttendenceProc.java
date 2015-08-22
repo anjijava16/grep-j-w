@@ -51,7 +51,6 @@ import com.gnts.hcm.domain.mst.PayPeriodDM;
 import com.gnts.hcm.domain.txn.AttendenceProcDM;
 import com.gnts.hcm.service.mst.PayPeriodService;
 import com.gnts.hcm.service.txn.AttendenceProcService;
-import com.gnts.hcm.service.txn.EmpAttendenceService;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -81,10 +80,9 @@ public class AttendenceProc extends BaseUI {
 	private PayPeriodService servicePayPeriod = (PayPeriodService) SpringContextHelper.getBean("PayPeriod");
 	private AttendenceProcService serviceAttendanceProcess = (AttendenceProcService) SpringContextHelper
 			.getBean("AttendenceProc");
-	private EmpAttendenceService serviceEmpAtndnc = (EmpAttendenceService) SpringContextHelper.getBean("EmpAttendence");
 	private Button btnsaveAttenProc = new GERPButton("Add", "add", this);
 	private BeanItemContainer<AttendenceProcDM> beanAttendenceProcDM = null;
-	private List<AttendenceProcDM> attendProcList = new ArrayList<AttendenceProcDM>();
+	private List<AttendenceProcDM> listAttendProc = new ArrayList<AttendenceProcDM>();
 	private Long attProcId;
 	// Attendance Process Component Declaration
 	private ComboBox cbPayPeried, cbBranch, cbEmployeeName;
@@ -132,8 +130,6 @@ public class AttendenceProc extends BaseUI {
 					payPeriodList = (PayPeriodDM) item.getBean();
 					payPeriodId = payPeriodList.getPayPeriodId();
 					loadStartandEndDates();
-					// loadEmployeeList();
-					// loadPayPeriod();
 				}
 			}
 		});
@@ -151,7 +147,7 @@ public class AttendenceProc extends BaseUI {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnsaveAttenProc.setStyleName("savebt");
 					readonlyfalse();
-					editClient();
+					editAttenProc();
 					readonlytrue();
 				}
 			}
@@ -202,7 +198,7 @@ public class AttendenceProc extends BaseUI {
 			public void buttonClick(ClickEvent event) {
 				// TODO Auto-generated method stub
 				loadAttendenceProcess();
-				//new AttendenceApprove();
+				// new AttendenceApprove();
 			}
 		});
 		btnSearch.setVisible(false);
@@ -304,7 +300,7 @@ public class AttendenceProc extends BaseUI {
 	/*
 	 * loadStartandEndDates()-->this function is used for load the start and end date
 	 */
-	void loadStartandEndDates() {
+	private void loadStartandEndDates() {
 		try {
 			SessionFactory sf = serviceAttendanceProcess.getConnection();
 			Session session = sf.openSession();
@@ -410,52 +406,41 @@ public class AttendenceProc extends BaseUI {
 				@Override
 				public void execute(Connection connection) throws SQLException {
 					// TODO Auto-generated method stub
-					System.out.println("payPeriodId=" + payPeriodId + "\n(Long) cbBranch.getValue()="
-							+ (Long) cbBranch.getValue() + "\nstartDate=" + startDate + "\nendDate=" + endDate
-							+ "\ncompanyId=" + companyId + "\nuserName=" + userName);
-					System.out.println("(Long)cbEmployeeName.getValue()"+(Long)cbEmployeeName.getValue());
-  SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yy");
-					    SimpleDateFormat format2 = new SimpleDateFormat("dd-MMM-yyyy");
-					    Date date = null;
-					    Date enddt=null;
-						try {
-							date = format2.parse(startDate);
-							enddt = format2.parse(endDate);
-						}
-						catch (java.text.ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						System.out.println("sadvf"+format1.format(date));
-
-						System.out.println("sadvf"+format1.format(enddt));
-						statement = connection
-								.prepareCall("{ ? = call pkg_hcm_core.fn_calc_staff_attend (?,?,?,?,?,?,?,?) }");
-						statement.registerOutParameter(1, Types.VARCHAR);
-						statement.setLong(2, payPeriodId);
-						statement.setLong(3, (Long)cbEmployeeName.getValue());
-						statement.setLong(4, (Long) cbBranch.getValue());
-						statement.setString(5,format1.format(date));
-						statement.setString(6, format1.format(enddt));
-						statement.setLong(7, companyId);
-						statement.setString(8, userName);
-						statement.registerOutParameter(9, Types.VARCHAR);
-						statement.execute();
-						funationStatus = statement.getString(1);
-						errorMsg = statement.getString(9);
-						System.out.println("funationStatus-->" + funationStatus);
-						System.out.println("errorMsg-->" + errorMsg);
+					SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yy");
+					SimpleDateFormat format2 = new SimpleDateFormat("dd-MMM-yyyy");
+					Date date = null;
+					Date enddt = null;
+					try {
+						date = format2.parse(startDate);
+						enddt = format2.parse(endDate);
+					}
+					catch (java.text.ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					statement = connection
+							.prepareCall("{ ? = call pkg_hcm_core.fn_calc_staff_attend (?,?,?,?,?,?,?,?) }");
+					statement.registerOutParameter(1, Types.VARCHAR);
+					statement.setLong(2, payPeriodId);
+					statement.setLong(3, (Long) cbEmployeeName.getValue());
+					statement.setLong(4, (Long) cbBranch.getValue());
+					statement.setString(5, format1.format(date));
+					statement.setString(6, format1.format(enddt));
+					statement.setLong(7, companyId);
+					statement.setString(8, userName);
+					statement.registerOutParameter(9, Types.VARCHAR);
+					statement.execute();
+					funationStatus = statement.getString(1);
+					errorMsg = statement.getString(9);
+					System.out.println("funationStatus-->" + funationStatus);
+					System.out.println("errorMsg-->" + errorMsg);
 					connection.close();
-
 				}
-				
 			});
-			
 			cbPayPeried.setComponentError(null);
 			cbBranch.setComponentError(null);
 		}
 		catch (Exception e) {
-			System.out.println(e);
 			if (payPeriodId == null) {
 				cbPayPeried.setComponentError(new UserError("Please Select Pay Period"));
 			}
@@ -475,14 +460,13 @@ public class AttendenceProc extends BaseUI {
 		}
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		try {
 			tblMstScrSrchRslt.removeAllItems();
-			attendProcList = serviceAttendanceProcess.getAttendenceProc(null, null, null, null, "Pending", "F");
-			recordCnt = attendProcList.size();
-			System.out.println("LISYYYYY" + recordCnt);
+			listAttendProc = serviceAttendanceProcess.getAttendenceProc(null, null, null, null, "Pending", "F");
+			recordCnt = listAttendProc.size();
 			beanAttendenceProcDM = new BeanItemContainer<AttendenceProcDM>(AttendenceProcDM.class);
-			beanAttendenceProcDM.addAll(attendProcList);
+			beanAttendenceProcDM.addAll(listAttendProc);
 			tblMstScrSrchRslt.setContainerDataSource(beanAttendenceProcDM);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "attProcId", "payperiodName", "allStDt", "allEndDt",
 					"status" });
@@ -496,27 +480,27 @@ public class AttendenceProc extends BaseUI {
 		}
 	}
 	
-	private void editClient() {
+	private void editAttenProc() {
 		hlCmdBtnLayout.setVisible(false);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			AttendenceProcDM editClientlist = beanAttendenceProcDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (editClientlist.getPayPeriodId() != null) {
-				cbPayPeried.setValue(editClientlist.getPayPeriodId());
+			AttendenceProcDM attendenceProcDM = beanAttendenceProcDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			if (attendenceProcDM.getPayPeriodId() != null) {
+				cbPayPeried.setValue(attendenceProcDM.getPayPeriodId());
 			}
-			attProcId = editClientlist.getAttProcId();
-			String startsdt = DateUtils.datetostringsimple(editClientlist.getAllStDt());
-			String enddst = DateUtils.datetostringsimple(editClientlist.getAllEndDt());
+			attProcId = attendenceProcDM.getAttProcId();
+			String startsdt = DateUtils.datetostringsimple(attendenceProcDM.getAllStDt());
+			String enddst = DateUtils.datetostringsimple(attendenceProcDM.getAllEndDt());
 			tfProcessPeriod.setReadOnly(false);
 			tfProcessPeriod.setValue(startsdt + " to " + enddst);
 			tfProcessPeriod.setReadOnly(true);
-			if (editClientlist.getBranchId() != null) {
-				cbBranch.setValue(editClientlist.getBranchId());
+			if (attendenceProcDM.getBranchId() != null) {
+				cbBranch.setValue(attendenceProcDM.getBranchId());
 			}
-			cbEmployeeName.setValue(editClientlist.getEmpid());
+			cbEmployeeName.setValue(attendenceProcDM.getEmpid());
 		}
 	}
 	
-	protected void saveattapprove() {
+	private void saveattapprove() {
 		serviceAttendanceProcess.updateapproveAtt_proc(attProcId, "Approved", null, userName, "ATT_PROC");
 		serviceAttendanceProcess.updateapproveAtt_proc(attProcId, "Approved", null, userName, "ATT_ATTEN");
 		serviceAttendanceProcess.procAttendenceApprove(companyId, (String) attProcId.toString(), userName);
@@ -525,7 +509,6 @@ public class AttendenceProc extends BaseUI {
 	
 	private void readonlytrue() {
 		cbBranch.setReadOnly(true);
-		// cbEmployeeName.setReadOnly(true);
 		cbPayPeried.setReadOnly(true);
 		tfProcessPeriod.setReadOnly(true);
 	}

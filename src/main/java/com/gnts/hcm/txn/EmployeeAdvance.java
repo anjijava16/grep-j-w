@@ -99,20 +99,19 @@ public class EmployeeAdvance extends BaseUI {
 		tfAdvanceReason = new GERPTextArea("Reason");
 		tfAdvanceReason.setNullRepresentation("");
 		tfAdvanceReason.setHeight("50px");
-		// Approve Manager ComboBox
-		cbAprveMngr = new GERPComboBox("Approve Manager");
-		cbAprveMngr.setWidth("150px");
-		cbAprveMngr.setItemCaptionPropertyId("firstname");
-		loadEmpAprvrList();
-		// No Of Repayment text field
-		tfNoOfRepay = new GERPTextField("No of Repayment");
-		// EMIAmt text field
-		tfEMIAmt = new GERPTextField("EMI Amount");
 		// Employee Name Combo Box
 		cbEmpName = new GERPComboBox("Employee Name");
 		cbEmpName.setWidth("140px");
 		cbEmpName.setItemCaptionPropertyId("fullname");
+		// Approve Manager ComboBox
+		cbAprveMngr = new GERPComboBox("Approve Manager");
+		cbAprveMngr.setWidth("150px");
+		cbAprveMngr.setItemCaptionPropertyId("firstname");
 		loadEmpList();
+		// No Of Repayment text field
+		tfNoOfRepay = new GERPTextField("No of Repayment");
+		// EMIAmt text field
+		tfEMIAmt = new GERPTextField("EMI Amount");
 		// Deduction Name ComboBox
 		cbDeductionName = new GERPComboBox("Deduction Name");
 		cbDeductionName.setWidth("140px");
@@ -440,20 +439,16 @@ public class EmployeeAdvance extends BaseUI {
 	
 	private void loadEmpList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
+		List<EmployeeDM> listEmp = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+				null, null, "P");
 		BeanContainer<Long, EmployeeDM> beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmpDM.setBeanIdProperty("employeeid");
-		beanEmpDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null, null,
-				"P"));
+		beanEmpDM.addAll(listEmp);
 		cbEmpName.setContainerDataSource(beanEmpDM);
-	}
-	
-	private void loadEmpAprvrList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Approver Search...");
-		BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.setBeanIdProperty("employeeid");
-		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
-				null, "P"));
-		cbAprveMngr.setContainerDataSource(beanEmployeeDM);
+		beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+		beanEmpDM.setBeanIdProperty("employeeid");
+		beanEmpDM.addAll(listEmp);
+		cbAprveMngr.setContainerDataSource(beanEmpDM);
 	}
 	
 	private void loadDeductionList() {

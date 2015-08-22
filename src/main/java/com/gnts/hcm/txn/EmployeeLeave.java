@@ -89,7 +89,7 @@ public class EmployeeLeave extends BaseUI {
 	private HorizontalLayout hlcol1, hlcol2;
 	// Search Control Layout
 	private VerticalLayout vlayout;
-	private ComboBox cbEmployeeName, cbDepartmentName; 
+	private ComboBox cbEmployeeName, cbDepartmentName;
 	private Table tblMstScrSrchRslt = new GERPTable();
 	// Vertical Control Layout
 	private PopupDateField dfdatefrom, dfdateto;
@@ -102,7 +102,7 @@ public class EmployeeLeave extends BaseUI {
 	private Button btnSubmit = new GERPButton("Save", "savebt");
 	private Button btnCancel = new GERPButton("Cancel", "cancelbt");
 	private Button btnadd;
-	HorizontalLayout hlsavecancel = new HorizontalLayout();
+	private HorizontalLayout hlsavecancel = new HorizontalLayout();
 	// To add Bean Item Container
 	private List<EmployeeLeaveDM> usertable = new ArrayList<EmployeeLeaveDM>();
 	private List<EmployeeLeaveBalanceDM> empLeaveBal = new ArrayList<EmployeeLeaveBalanceDM>();
@@ -166,7 +166,6 @@ public class EmployeeLeave extends BaseUI {
 					usertable = serviceleave.getempleaveList(leaveid, (Long) cbEmployeeName.getValue(), leavetypeid,
 							(String) cbempstatus.getValue(), null, null, "F");
 					loadSrchRslt();
-					loadAppmgr();
 					loadLeaveBalance();
 				}
 			}
@@ -306,7 +305,6 @@ public class EmployeeLeave extends BaseUI {
 		cbappmanager = new GERPComboBox("Approve Manager");
 		cbappmanager.setItemCaptionPropertyId("firstname");
 		cbappmanager.setRequired(true);
-		loadAppmgr();
 		// Initialization for cbleavetype
 		cbleavetype = new GERPComboBox("Leave Type");
 		cbleavetype.setItemCaptionPropertyId("leaveTypeName");
@@ -452,7 +450,7 @@ public class EmployeeLeave extends BaseUI {
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
-	public void loadDepartmentList() {
+	private void loadDepartmentList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading DepartmentList");
 		List<DepartmentDM> departmentlist = servicedepartment.getDepartmentList(companyid, null, "Active", "F");
 		departmentlist.add(new DepartmentDM(0L, "All Departments"));
@@ -465,22 +463,19 @@ public class EmployeeLeave extends BaseUI {
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
+		List<EmployeeDM> listEmpl = serviceemployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(),
+				"Active", companyid, null, null, null, null, "P");
 		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(serviceemployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(), "Active",
-				companyid, null, null, null, null, "P"));
+		beanEmployee.addAll(listEmpl);
 		cbEmployeeName.setContainerDataSource(beanEmployee);
-	}
-	
-	// Based on the selected record, the data would be populated into user input fields in the input form
-	private void loadAppmgr() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
-		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+		beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(serviceemployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(), "Active",
-				companyid, null, null, null, null, "P"));
+		beanEmployee.addAll(listEmpl);
 		cbappmanager.setContainerDataSource(beanEmployee);
 	}
+	
+	
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void loadleavetype() {

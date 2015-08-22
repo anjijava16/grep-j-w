@@ -17,28 +17,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
-import com.gnts.base.domain.mst.ProductDM;
 import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.service.mst.BranchService;
-import com.gnts.base.service.mst.CityService;
 import com.gnts.base.service.mst.CompanyLookupService;
-import com.gnts.base.service.mst.ProductService;
 import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.crm.domain.mst.ClientDM;
-import com.gnts.crm.domain.txn.DocumentsDM;
 import com.gnts.crm.service.mst.ClientService;
-import com.gnts.crm.service.txn.DocumentsService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
@@ -57,19 +48,14 @@ import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
-import com.gnts.mfg.stt.txn.EnquiryWorkflow;
-import com.gnts.saarc.util.SerialNumberGenerator;
 import com.gnts.sms.domain.txn.ServiceCallFormDM;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
-import com.gnts.sms.domain.txn.SmsEnquirySpecDM;
 import com.gnts.sms.domain.txn.SmsPOHdrDM;
 import com.gnts.sms.service.txn.ServiceCallFormService;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsEnquiryDtlService;
-import com.gnts.sms.service.txn.SmsEnquirySpecService;
 import com.gnts.sms.service.txn.SmsPOHdrService;
-import com.gnts.sms.txn.SmsComments;
 import com.gnts.sms.txn.SmsEnquiry;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -91,19 +77,18 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 public class ServiceCallForm extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	// Bean Creation
-	private ServiceCallFormService serviveserviceCallFormService = (ServiceCallFormService) SpringContextHelper
+	private ServiceCallFormService serviveCallFormService = (ServiceCallFormService) SpringContextHelper
 			.getBean("sercallForm");
 	private WorkOrderHdrService serviceWorkOrderHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private SmsPOHdrService servicePurchaseOrdHdr = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
-	private SmsEnquiryDtlService serviceenqdtl = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
+	private SmsEnquiryDtlService serviceEnqDtls = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
-	private SmsEnqHdrService serviceenqhdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
+	private SmsEnqHdrService serviceEnqHdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
@@ -112,25 +97,22 @@ public class ServiceCallForm extends BaseTransUI {
 	// User Input Fields for Sales Enquiry Header
 	private TextField tfslno, tfclientname, tfClientCity, tfAlloDays, tfpersonsAllo, tftravelmode, tfExpanses,
 			tfnoofdaysWrkd;
-	GERPTextArea tfserdesc;
+	private GERPTextArea tfserdesc;
 	private TextArea taCustomerDetails, taserviceProblmRep, tarootcauseanl, tacorrectiveaction, taprevaction;
 	private PopupDateField dfdate, dfenddate, dfstartdt;
 	private ComboBox cbBranch, cbtype, cbClient, cbWorkOrderNo, cbEnquiryNumber, cbPONumber, cbinfnRecBy, cbDragNo;
-	private BeanItemContainer<ServiceCallFormDM> beanhdr = null;
+	private BeanItemContainer<ServiceCallFormDM> beanServiceCallForm = null;
 	private GERPTextField tfClntName = new GERPTextField("Client Name");
 	private GERPTextField tfClientCode = new GERPTextField("Client Code");
 	// User Input Fields for Sales Enquiry Specification
 	private TextArea taMatReq;
-	private BeanItemContainer<SmsEnquirySpecDM> beanpec = null;
-	// User Input Components for Sales Enquire Details
-	// User Input Components for Sales Enquire Specification
 	// form layout for input controls Sales Enquiry Header
 	private FormLayout flcol1, flcol2, flcol3, flcol4, flcol5;
 	// form layout for input controls Sales Enquiry Deatil
-	private FormLayout fldtl1, fldtl2, fldtl3, fldtl4, fldtl5;
+	private FormLayout fldtl1;
 	// form layout for input controls Sales Enquiry Specification
-	private FormLayout flspec1, flspec2, flspec3, flspec4, flspec5;
-	private FormLayout fldoc1, fldoc2, fldoc3, fldoc4;
+	private FormLayout flspec1;
+	private FormLayout fldoc1, fldoc2;
 	private FormLayout flqccont;
 	// Search Control Layout
 	private HorizontalLayout hlsearchlayout;
@@ -153,15 +135,12 @@ public class ServiceCallForm extends BaseTransUI {
 	// Parent layout for all the input controls Sms Comments
 	// Document Layout
 	private VerticalLayout hlDocumentLayout = new VerticalLayout();
-	private BeanItemContainer<DocumentsDM> beanDocuments = null;
 	// local variables declaration
 	private Long enquiryId;
 	private String username;
 	private Long companyid, moduleId;
 	private int recordCnt = 0;
-	private SmsComments comments;
-	private String status;
-	private Long branchId, employeeId;
+	private Long branchId;
 	private TabSheet dtlTab;
 	
 	// Constructor received the parameters from Login UI class
@@ -170,7 +149,6 @@ public class ServiceCallForm extends BaseTransUI {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
-		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside SmsEnquiry() constructor");
@@ -274,7 +252,6 @@ public class ServiceCallForm extends BaseTransUI {
 						tfClientCity.setValue(serviceClients
 								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
 										null, null, null, null, "Active", "F").get(0).getCityName());
-						System.out.println("=============================================>" + tfClientCity);
 					}
 					catch (Exception e) {
 					}
@@ -329,9 +306,6 @@ public class ServiceCallForm extends BaseTransUI {
 		loadSrchRslt();
 		// Document Components
 		hlDocumentLayout.addLayoutClickListener(new LayoutClickListener() {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 			
 			@Override
@@ -413,10 +387,6 @@ public class ServiceCallForm extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(false);
 		// Add components for User Input Layout
 		flspec1 = new FormLayout();
-		flspec2 = new FormLayout();
-		flspec3 = new FormLayout();
-		flspec4 = new FormLayout();
-		flspec5 = new FormLayout();
 		flspec1.addComponent(taMatReq);
 		flspec1.addComponent(tfAlloDays);
 		flspec1.addComponent(tfpersonsAllo);
@@ -432,8 +402,6 @@ public class ServiceCallForm extends BaseTransUI {
 		// Document Specification
 		fldoc1 = new FormLayout();
 		fldoc2 = new FormLayout();
-		fldoc3 = new FormLayout();
-		fldoc4 = new FormLayout();
 		fldoc1.addComponent(dfstartdt);
 		fldoc2.addComponent(dfenddate);
 		fldoc1.addComponent(tfnoofdaysWrkd);
@@ -444,8 +412,6 @@ public class ServiceCallForm extends BaseTransUI {
 		hldoc.setMargin(true);
 		hldoc.setSpacing(true);
 		vldoc.addComponent(GERPPanelGenerator.createPanel(hldoc));
-		// tblspec.setStyleName(Runo.TABLE_BORDERLESS);
-		// vlspec.setWidth("200%");
 		hlDocumentLayout.addComponent(vldoc);
 		hlDocumentLayout.setSpacing(true);
 		flqccont = new FormLayout();
@@ -462,8 +428,6 @@ public class ServiceCallForm extends BaseTransUI {
 		dtlTab.addTab(hlspecadd1, "Production");
 		dtlTab.addTab(hlDocumentLayout, "Customer Ack for Service");
 		dtlTab.addTab(hlqccontrol, "Quality Control");
-		// new EnquiryWorkflow(hlEnquiryWorkflow, enquiryId, username);
-		// dtlTab.setWidth("100%");
 		vlSrchRsltContainer.addComponent(GERPPanelGenerator.createPanel(dtlTab));
 	}
 	
@@ -475,14 +439,14 @@ public class ServiceCallForm extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbBranch.getValue() + "," + tfslno.getValue() + ", "
 				+ (Long) cbEnquiryNumber.getValue());
-		hdrlist = serviveserviceCallFormService.getServicecallFormList(null, (Long) cbEnquiryNumber.getValue(), null,
+		hdrlist = serviveCallFormService.getServicecallFormList(null, (Long) cbEnquiryNumber.getValue(), null,
 				dfdate.getValue(), (String) cbtype.getValue(), null, null, "F");
 		recordCnt = hdrlist.size();
-		beanhdr = new BeanItemContainer<ServiceCallFormDM>(ServiceCallFormDM.class);
-		beanhdr.addAll(hdrlist);
+		beanServiceCallForm = new BeanItemContainer<ServiceCallFormDM>(ServiceCallFormDM.class);
+		beanServiceCallForm.addAll(hdrlist);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the SMSENQUIRY. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanhdr);
+		tblMstScrSrchRslt.setContainerDataSource(beanServiceCallForm);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "serCallFormId", "refDate", "enquiryNo", "clientName",
 				"type" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Ref.Date", "Enquiry No", "Client Name", "Type" });
@@ -506,7 +470,7 @@ public class ServiceCallForm extends BaseTransUI {
 	// Load Client List
 	private void loadClientList() {
 		try {
-			Long clientid = serviceenqhdr
+			Long clientid = serviceEnqHdr
 					.getSmsEnqHdrList(null, Long.valueOf(cbEnquiryNumber.getValue().toString()), null, null, null, "F",
 							null, null).get(0).getClientId();
 			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
@@ -556,109 +520,115 @@ public class ServiceCallForm extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			ServiceCallFormDM callformobj = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			enquiryId = callformobj.getEnquiryId();
-			cbEnquiryNumber.setValue(callformobj.getEnquiryId());
-			cbBranch.setValue(callformobj.getBranchId());
+			ServiceCallFormDM serviceCallForm = beanServiceCallForm.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			enquiryId = serviceCallForm.getEnquiryId();
+			cbEnquiryNumber.setValue(serviceCallForm.getEnquiryId());
+			cbBranch.setValue(serviceCallForm.getBranchId());
 			tfslno.setReadOnly(false);
-			tfslno.setValue(callformobj.getSlNo().toString());
+			tfslno.setValue(serviceCallForm.getSlNo().toString());
 			tfslno.setReadOnly(true);
-			cbClient.setValue(callformobj.getClientId());
-			dfdate.setValue(callformobj.getRefDate());
-			cbEnquiryNumber.setValue(callformobj.getEnquiryId());
-			cbPONumber.setValue(callformobj.getPoId());
-			cbWorkOrderNo.setValue(callformobj.getWoId());
-			cbtype.setValue(callformobj.getType());
-			taCustomerDetails.setValue(callformobj.getCustomerDetails());
-			taserviceProblmRep.setValue(callformobj.getProblemDesc());
-			cbinfnRecBy.setValue(callformobj.getComnMode());
-			taMatReq.setValue(callformobj.getMatRequirement());
-			tfAlloDays.setValue(callformobj.getAllotDays());
-			tfpersonsAllo.setValue(callformobj.getPersonsAllot());
-			tftravelmode.setValue(callformobj.getTravelMode());
-			if(callformobj.getServiceExpenses()!=null && callformobj.getServiceExpenses().equals(""))
-			tfExpanses.setValue(Long.valueOf(callformobj.getServiceExpenses()).toString());
-			dfstartdt.setValue(callformobj.getSerStartDt());
-			dfenddate.setValue(callformobj.getSerEndDt());
-			if(callformobj.getNoDaysWorked()!=null && callformobj.getNoDaysWorked().equals("")){
-			tfnoofdaysWrkd.setValue(Long.valueOf(callformobj.getNoDaysWorked()).toString());}
-			tfserdesc.setValue(callformobj.getServDesc());
-			tarootcauseanl.setValue(callformobj.getRootCauseAnal());
-			tacorrectiveaction.setValue(callformobj.getCorrectAction());
-			taprevaction.setValue(callformobj.getPrevAction());
-			cbDragNo.setValue(callformobj.getProduct_id());
+			cbClient.setValue(serviceCallForm.getClientId());
+			dfdate.setValue(serviceCallForm.getRefDate());
+			cbEnquiryNumber.setValue(serviceCallForm.getEnquiryId());
+			cbPONumber.setValue(serviceCallForm.getPoId());
+			cbWorkOrderNo.setValue(serviceCallForm.getWoId());
+			cbtype.setValue(serviceCallForm.getType());
+			taCustomerDetails.setValue(serviceCallForm.getCustomerDetails());
+			taserviceProblmRep.setValue(serviceCallForm.getProblemDesc());
+			cbinfnRecBy.setValue(serviceCallForm.getComnMode());
+			taMatReq.setValue(serviceCallForm.getMatRequirement());
+			tfAlloDays.setValue(serviceCallForm.getAllotDays());
+			tfpersonsAllo.setValue(serviceCallForm.getPersonsAllot());
+			tftravelmode.setValue(serviceCallForm.getTravelMode());
+			if (serviceCallForm.getServiceExpenses() != null && serviceCallForm.getServiceExpenses().equals("")) tfExpanses
+					.setValue(Long.valueOf(serviceCallForm.getServiceExpenses()).toString());
+			dfstartdt.setValue(serviceCallForm.getSerStartDt());
+			dfenddate.setValue(serviceCallForm.getSerEndDt());
+			if (serviceCallForm.getNoDaysWorked() != null && serviceCallForm.getNoDaysWorked().equals("")) {
+				tfnoofdaysWrkd.setValue(Long.valueOf(serviceCallForm.getNoDaysWorked()).toString());
+			}
+			tfserdesc.setValue(serviceCallForm.getServDesc());
+			tarootcauseanl.setValue(serviceCallForm.getRootCauseAnal());
+			tacorrectiveaction.setValue(serviceCallForm.getCorrectAction());
+			taprevaction.setValue(serviceCallForm.getPrevAction());
+			cbDragNo.setValue(serviceCallForm.getProduct_id());
 		}
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Detail
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
-		try{
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		ServiceCallFormDM serviceCallFormDM = new ServiceCallFormDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			serviceCallFormDM = beanhdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			serviceCallFormDM.setSlNo(Long.valueOf(tfslno.getValue()));
-		} else {
-			serviceCallFormDM.setSlNo(Long.valueOf(tfslno.getValue()));
-		}
-		serviceCallFormDM.setCompanyId(companyid);
-		serviceCallFormDM.setRefDate(dfdate.getValue());
-		if (cbtype.getValue() != null) {
-			serviceCallFormDM.setType(cbtype.getValue().toString());
-		}
-		serviceCallFormDM.setEnquiryId((Long) cbEnquiryNumber.getValue());
-		serviceCallFormDM.setProduct_id((Long) cbDragNo.getValue());
-		serviceCallFormDM.setBranchId((Long) cbBranch.getValue());
-		serviceCallFormDM.setClientId((Long) cbClient.getValue());
-		serviceCallFormDM.setPoId((Long) cbPONumber.getValue());
-		serviceCallFormDM.setWoId((Long) cbWorkOrderNo.getValue());
-
-		if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")!=null &&(Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")) {
-
-			serviceCallFormDM.setCustomerDetails(taCustomerDetails.getValue());
-			serviceCallFormDM.setProblemDesc(taserviceProblmRep.getValue());
-			serviceCallFormDM.setComnMode((String) cbinfnRecBy.getValue());
-		}
-		if (UI.getCurrent().getSession().getAttribute("IS_PROD_FRM")!=null&&(Boolean) UI.getCurrent().getSession().getAttribute("IS_PROD_FRM")) {
-
-			serviceCallFormDM.setMatRequirement(taMatReq.getValue());
-			serviceCallFormDM.setAllotDays(tfAlloDays.getValue());
-			serviceCallFormDM.setTravelMode(tftravelmode.getValue());
-			if(tfExpanses.getValue()!=""){
-
-			serviceCallFormDM.setServiceExpenses(Long.valueOf(tfExpanses.getValue()));}
-			if(tfpersonsAllo.getValue()!=""){
-			serviceCallFormDM.setPersonsAllot(tfpersonsAllo.getValue());}
-
-		}
-		if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")!=null && (Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")) {
-
-			serviceCallFormDM.setSerEndDt(dfenddate.getValue());
-			serviceCallFormDM.setSerStartDt(dfstartdt.getValue());
-			serviceCallFormDM.setServDesc(tfserdesc.getValue());
-			if(tfnoofdaysWrkd.getValue()!=""){
-			serviceCallFormDM.setNoDaysWorked(Long.valueOf(tfnoofdaysWrkd.getValue()));}
-
-		}
-		if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM")!=null && (Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM")) {
-
-		serviceCallFormDM.setRootCauseAnal(tarootcauseanl.getValue());
-		serviceCallFormDM.setCorrectAction(tacorrectiveaction.getValue());
-		serviceCallFormDM.setPrevAction(taprevaction.getValue());}
-		serviveserviceCallFormService.saveorupdateServCallForm(serviceCallFormDM);
-		if (tblMstScrSrchRslt.getValue() == null) {
-			System.out.println("inside1" + moduleId);
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_CALLFORM").get(0);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_CALLFORM");
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+			ServiceCallFormDM serviceCallFormDM = new ServiceCallFormDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				serviceCallFormDM = beanServiceCallForm.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				serviceCallFormDM.setSlNo(Long.valueOf(tfslno.getValue()));
+			} else {
+				serviceCallFormDM.setSlNo(Long.valueOf(tfslno.getValue()));
 			}
+			serviceCallFormDM.setCompanyId(companyid);
+			serviceCallFormDM.setRefDate(dfdate.getValue());
+			if (cbtype.getValue() != null) {
+				serviceCallFormDM.setType(cbtype.getValue().toString());
+			}
+			serviceCallFormDM.setEnquiryId((Long) cbEnquiryNumber.getValue());
+			serviceCallFormDM.setProduct_id((Long) cbDragNo.getValue());
+			serviceCallFormDM.setBranchId((Long) cbBranch.getValue());
+			serviceCallFormDM.setClientId((Long) cbClient.getValue());
+			serviceCallFormDM.setPoId((Long) cbPONumber.getValue());
+			serviceCallFormDM.setWoId((Long) cbWorkOrderNo.getValue());
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")) {
+				serviceCallFormDM.setCustomerDetails(taCustomerDetails.getValue());
+				serviceCallFormDM.setProblemDesc(taserviceProblmRep.getValue());
+				serviceCallFormDM.setComnMode((String) cbinfnRecBy.getValue());
+			}
+			if (UI.getCurrent().getSession().getAttribute("IS_PROD_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_PROD_FRM")) {
+				serviceCallFormDM.setMatRequirement(taMatReq.getValue());
+				serviceCallFormDM.setAllotDays(tfAlloDays.getValue());
+				serviceCallFormDM.setTravelMode(tftravelmode.getValue());
+				if (tfExpanses.getValue() != "") {
+					serviceCallFormDM.setServiceExpenses(Long.valueOf(tfExpanses.getValue()));
+				}
+				if (tfpersonsAllo.getValue() != "") {
+					serviceCallFormDM.setPersonsAllot(tfpersonsAllo.getValue());
+				}
+			}
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")) {
+				serviceCallFormDM.setSerEndDt(dfenddate.getValue());
+				serviceCallFormDM.setSerStartDt(dfstartdt.getValue());
+				serviceCallFormDM.setServDesc(tfserdesc.getValue());
+				if (tfnoofdaysWrkd.getValue() != "") {
+					serviceCallFormDM.setNoDaysWorked(Long.valueOf(tfnoofdaysWrkd.getValue()));
+				}
+			}
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM")) {
+				serviceCallFormDM.setRootCauseAnal(tarootcauseanl.getValue());
+				serviceCallFormDM.setCorrectAction(tacorrectiveaction.getValue());
+				serviceCallFormDM.setPrevAction(taprevaction.getValue());
+			}
+			serviveCallFormService.saveorupdateServCallForm(serviceCallFormDM);
+			if (tblMstScrSrchRslt.getValue() == null) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_CALLFORM")
+							.get(0);
+					if (slnoObj.getAutoGenYN().equals("Y")) {
+						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_CALLFORM");
+					}
+				}
+				catch (Exception e) {
+				}
+			}
+			tfslno.setReadOnly(false);
+			tfslno.setValue(serviceCallFormDM.getSlNo().toString());
+			tfslno.setReadOnly(true);
+			loadSrchRslt();
 		}
-		tfslno.setReadOnly(false);
-		tfslno.setValue(serviceCallFormDM.getSlNo().toString());
-		tfslno.setReadOnly(true);
-		loadSrchRslt();
-		}catch(Exception e){
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -686,7 +656,6 @@ public class ServiceCallForm extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		// cbclient.setRequired(true);
 		tfslno.setReadOnly(true);
-		System.out.println("branchId--->" + branchId);
 		cbBranch.setValue(branchId);
 		hllayout.removeAllComponents();
 		hldtllayout.removeAllComponents();
@@ -713,7 +682,8 @@ public class ServiceCallForm extends BaseTransUI {
 		}
 		try {
 			btnAdd.setVisible(true);
-			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")!=null &&(Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")) {
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")) {
 				dtlTab.setSelectedTab(hlspecadd);
 				hlDocumentLayout.setEnabled(false);
 				hlspecadd1.setEnabled(false);
@@ -724,7 +694,8 @@ public class ServiceCallForm extends BaseTransUI {
 		}
 		try {
 			btnAdd.setVisible(true);
-			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM")!=null &&(Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM")) {
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM")) {
 				dtlTab.setSelectedTab(hlDocumentLayout);
 				hlspecadd.setEnabled(false);
 				hlspecadd1.setEnabled(false);
@@ -735,7 +706,8 @@ public class ServiceCallForm extends BaseTransUI {
 		}
 		try {
 			btnAdd.setVisible(true);
-			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")!=null &&(Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")) {
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")) {
 				dtlTab.setSelectedTab(hlqccontrol);
 				hlDocumentLayout.setEnabled(false);
 				hlspecadd1.setEnabled(false);
@@ -746,7 +718,8 @@ public class ServiceCallForm extends BaseTransUI {
 		}
 		try {
 			btnAdd.setVisible(true);
-			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_PROD_FRM")!=null &&(Boolean) UI.getCurrent().getSession().getAttribute("IS_PROD_FRM")) {
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_PROD_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_PROD_FRM")) {
 				dtlTab.setSelectedTab(hlspecadd1);
 				hlspecadd.setEnabled(false);
 				hlDocumentLayout.setEnabled(false);
@@ -760,7 +733,6 @@ public class ServiceCallForm extends BaseTransUI {
 	@Override
 	protected void editDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
-		// cbclient.setRequired(true);
 		cbBranch.setValue(branchId);
 		hllayout.removeAllComponents();
 		hldtllayout.removeAllComponents();
@@ -775,12 +747,6 @@ public class ServiceCallForm extends BaseTransUI {
 		resetFields();
 		editSmsEnquiry();
 		cbBranch.setRequired(true);
-		// To Select Enquire workflow tab
-		/*
-		 * try { if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
-		 * dtlTab.setSelectedTab(hlEnquiryWorkflow); hlUserIPContainer.setEnabled(false); hlspecadd.setEnabled(false);
-		 * hlspecadd1.setEnabled(false); } } catch (Exception e) { }
-		 */
 	}
 	
 	@Override
@@ -817,7 +783,8 @@ public class ServiceCallForm extends BaseTransUI {
 				tfslno.setComponentError(null);
 				errorFlag = false;
 			}
-			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")!=null &&(Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")) {
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")) {
 				if (taserviceProblmRep.getValue() == "" && taserviceProblmRep.getValue() == null) {
 					taserviceProblmRep.setComponentError(new UserError("Please Enter Service Problem Description"));
 					errorFlag = true;
@@ -827,7 +794,8 @@ public class ServiceCallForm extends BaseTransUI {
 					errorFlag = true;
 				}
 			}
-			if (UI.getCurrent().getSession().getAttribute("IS_PROD_FRM")!=null&&(Boolean) UI.getCurrent().getSession().getAttribute("IS_PROD_FRM")) {
+			if (UI.getCurrent().getSession().getAttribute("IS_PROD_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_PROD_FRM")) {
 				if (taMatReq.getValue() == "" || taMatReq.getValue() == null) {
 					taMatReq.setComponentError(new UserError("Please Enter Material Requirement"));
 					errorFlag = true;
@@ -841,7 +809,8 @@ public class ServiceCallForm extends BaseTransUI {
 					errorFlag = true;
 				}
 			}
-			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")!=null && (Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")) {
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")) {
 				if (tarootcauseanl.getValue() == "" || tarootcauseanl.getValue() == null) {
 					tarootcauseanl.setComponentError(new UserError("Please Enter Root Cause Analysis"));
 					errorFlag = true;
@@ -926,9 +895,8 @@ public class ServiceCallForm extends BaseTransUI {
 		cbDragNo.setValue(null);
 		cbPONumber.setValue(null);
 		cbWorkOrderNo.setValue(null);
-cbEnquiryNumber.setComponentError(null);
+		cbEnquiryNumber.setComponentError(null);
 	}
-	
 	
 	@Override
 	protected void searchDetails() throws NoDataFoundException {
@@ -959,7 +927,6 @@ cbEnquiryNumber.setComponentError(null);
 			parameterMap.put("ENQID", enquiryId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/enquiryRpt"); // productlist is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {
@@ -980,7 +947,7 @@ cbEnquiryNumber.setComponentError(null);
 	private void loadEnquiryNo() {
 		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
 		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(serviceenqhdr.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
+		beansmsenqHdr.addAll(serviceEnqHdr.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
 		cbEnquiryNumber.setContainerDataSource(beansmsenqHdr);
 	}
 	
@@ -1004,7 +971,7 @@ cbEnquiryNumber.setComponentError(null);
 	private void loaddrawingNo() {
 		BeanContainer<Long, SmsEnquiryDtlDM> beandrgNo = new BeanContainer<Long, SmsEnquiryDtlDM>(SmsEnquiryDtlDM.class);
 		beandrgNo.setBeanIdProperty("productid");
-		beandrgNo.addAll(serviceenqdtl.getsmsenquirydtllist(null, (Long) cbEnquiryNumber.getValue(), null, null, null,
+		beandrgNo.addAll(serviceEnqDtls.getsmsenquirydtllist(null, (Long) cbEnquiryNumber.getValue(), null, null, null,
 				null));
 		cbDragNo.setContainerDataSource(beandrgNo);
 	}

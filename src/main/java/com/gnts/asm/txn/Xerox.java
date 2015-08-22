@@ -436,7 +436,6 @@ public class Xerox extends BaseTransUI {
 			}
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/xerox"); // xerox is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

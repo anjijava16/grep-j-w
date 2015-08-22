@@ -52,7 +52,7 @@ import com.vaadin.ui.UI;
 public class AppraisalEmpIncident extends BaseUI {
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private AppraisalEmpIncidentService serviceappempincident = (AppraisalEmpIncidentService) SpringContextHelper
+	private AppraisalEmpIncidentService serviceEmpIncident = (AppraisalEmpIncidentService) SpringContextHelper
 			.getBean("AppraisalEmpIncident");
 	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private KpiGroupService serviceKpiGroup = (KpiGroupService) SpringContextHelper.getBean("KpiGroup");
@@ -65,7 +65,7 @@ public class AppraisalEmpIncident extends BaseUI {
 	// Bean container
 	private BeanItemContainer<AppraisalEmpIncidentDM> beanAppraisalEmpIncidentDM = null;
 	// User Input Components
-	private ComboBox cbEmployee, cbincidenttype, cbKPIGroup, cbincidentstatus, cbSeverity;
+	private ComboBox cbEmployee, cbIncidenttype, cbKPIGroup, cbIncidentstatus, cbSeverity;
 	private TextField tfTitle, tfBusinessValue, tfResponse, tfempagreed;
 	private TextArea taDescription, taComments;
 	private String loginUserName;
@@ -113,10 +113,10 @@ public class AppraisalEmpIncident extends BaseUI {
 		cbKPIGroup.setWidth("200px");
 		cbKPIGroup.setItemCaptionPropertyId("kpigroupname");
 		loadKpiGroupNameList();
-		cbincidentstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		cbincidenttype = new GERPComboBox("Incident Type", BASEConstants.T_HCM_APPRAISAL_EMP_INCIDENT,
+		cbIncidentstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		cbIncidenttype = new GERPComboBox("Incident Type", BASEConstants.T_HCM_APPRAISAL_EMP_INCIDENT,
 				BASEConstants.APP_EMPINCIDENT);
-		cbincidenttype.setWidth("200px");
+		cbIncidenttype.setWidth("200px");
 		cbSeverity = new GERPComboBox("Incident Severity");
 		cbSeverity.setWidth("200px");
 		cbSeverity.setItemCaptionPropertyId("lookupname");
@@ -195,7 +195,7 @@ public class AppraisalEmpIncident extends BaseUI {
 		flcol1 = new FormLayout();
 		flcol2 = new FormLayout();
 		flcol1.addComponent(cbEmployee);
-		flcol2.addComponent(cbincidentstatus);
+		flcol2.addComponent(cbIncidentstatus);
 		// add the form layouts into user input layout
 		hlSearchLayout.setSpacing(true);
 		hlSearchLayout.addComponent(flcol1);
@@ -223,12 +223,12 @@ public class AppraisalEmpIncident extends BaseUI {
 		flcol1.addComponent(cbSeverity);
 		flcol1.addComponent(tfempagreed);
 		flcol2.addComponent(tfTitle);
-		flcol2.addComponent(cbincidenttype);
+		flcol2.addComponent(cbIncidenttype);
 		flcol2.addComponent(tfBusinessValue);
 		flcol2.addComponent(tfResponse);
 		flcol3.addComponent(taDescription);
 		flcol3.addComponent(taComments);
-		flcol4.addComponent(cbincidentstatus);
+		flcol4.addComponent(cbIncidentstatus);
 		// add the form layouts into user input layout
 		hlUserInputLayout.addComponent(flcol1);
 		hlUserInputLayout.addComponent(flcol2);
@@ -240,18 +240,18 @@ public class AppraisalEmpIncident extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		tblMstScrSrchRslt.setPageLength(15);
-		List<AppraisalEmpIncidentDM> appempincidentList = new ArrayList<AppraisalEmpIncidentDM>();
+		List<AppraisalEmpIncidentDM> listEmpIncident = new ArrayList<AppraisalEmpIncidentDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbEmployee.getValue() + ", " + (String) cbincidentstatus.getValue());
-		appempincidentList = serviceappempincident.getAppEmpIncidentList(null, (Long) cbEmployee.getValue(), null, null,
-				null, null, null, (String) cbincidentstatus.getValue(), "F");
-		recordCnt = appempincidentList.size();
+				+ companyId + ", " + (Long) cbEmployee.getValue() + ", " + (String) cbIncidentstatus.getValue());
+		listEmpIncident = serviceEmpIncident.getAppEmpIncidentList(null, (Long) cbEmployee.getValue(), null, null,
+				null, null, null, (String) cbIncidentstatus.getValue(), "F");
+		recordCnt = listEmpIncident.size();
 		beanAppraisalEmpIncidentDM = new BeanItemContainer<AppraisalEmpIncidentDM>(AppraisalEmpIncidentDM.class);
-		beanAppraisalEmpIncidentDM.addAll(appempincidentList);
+		beanAppraisalEmpIncidentDM.addAll(listEmpIncident);
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Got the IT Other Income List result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanAppraisalEmpIncidentDM);
@@ -319,13 +319,13 @@ public class AppraisalEmpIncident extends BaseUI {
 				cbKPIGroup.setValue(editappempinObj.getKpiGrpId());
 			}
 			if (editappempinObj.getStatus() != null) {
-				cbincidentstatus.setValue(editappempinObj.getStatus());
+				cbIncidentstatus.setValue(editappempinObj.getStatus());
 			}
 			if (editappempinObj.getIncidentSeverity() != null) {
 				cbSeverity.setValue(editappempinObj.getIncidentSeverity());
 			}
 			if (editappempinObj.getIncidentType() != null) {
-				cbincidenttype.setValue(editappempinObj.getIncidentType());
+				cbIncidenttype.setValue(editappempinObj.getIncidentType());
 			}
 			if (editappempinObj.getBusValue() != null) {
 				tfBusinessValue.setValue(editappempinObj.getBusValue().toString());
@@ -351,8 +351,8 @@ public class AppraisalEmpIncident extends BaseUI {
 	@Override
 	protected void validateDetails() throws ValidationException {
 		cbEmployee.setComponentError(null);
-		cbincidentstatus.setComponentError(null);
-		cbincidenttype.setComponentError(null);
+		cbIncidentstatus.setComponentError(null);
+		cbIncidenttype.setComponentError(null);
 		cbSeverity.setComponentError(null);
 		cbKPIGroup.setComponentError(null);
 		tfBusinessValue.setComponentError(null);
@@ -383,8 +383,8 @@ public class AppraisalEmpIncident extends BaseUI {
 		}
 		logger.warn("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Throwing ValidationException. User data is > " + tfBusinessValue.getValue() + ","
-				+ tfempagreed.getValue() + "," + cbincidenttype.getValue() + "," + cbEmployee.getValue() + ","
-				+ cbKPIGroup.getValue() + "," + cbincidentstatus.getValue() + "," + cbSeverity.getValue() + ","
+				+ tfempagreed.getValue() + "," + cbIncidenttype.getValue() + "," + cbEmployee.getValue() + ","
+				+ cbKPIGroup.getValue() + "," + cbIncidentstatus.getValue() + "," + cbSeverity.getValue() + ","
 				+ tfResponse.getValue() + "," + tfTitle.getValue());
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
@@ -402,11 +402,11 @@ public class AppraisalEmpIncident extends BaseUI {
 		appempincidentobj.setRecBy(null);
 		appempincidentobj.setReviewedBy(null);
 		appempincidentobj.setKpiGrpId((Long) cbKPIGroup.getValue());
-		if (cbincidentstatus.getValue() != null) {
-			appempincidentobj.setStatus((String) cbincidentstatus.getValue());
+		if (cbIncidentstatus.getValue() != null) {
+			appempincidentobj.setStatus((String) cbIncidentstatus.getValue());
 		}
-		if (cbincidenttype.getValue() != null) {
-			appempincidentobj.setIncidentType((String) cbincidenttype.getValue());
+		if (cbIncidenttype.getValue() != null) {
+			appempincidentobj.setIncidentType((String) cbIncidenttype.getValue());
 		}
 		if (cbSeverity.getValue() != null) {
 			appempincidentobj.setIncidentSeverity((String) cbSeverity.getValue());
@@ -419,7 +419,7 @@ public class AppraisalEmpIncident extends BaseUI {
 		appempincidentobj.setRevCmnts(taComments.getValue().toString());
 		appempincidentobj.setLastUpdatedDt(DateUtils.getcurrentdate());
 		appempincidentobj.setLastUpdatedBy(loginUserName);
-		serviceappempincident.saveAndUpdate(appempincidentobj);
+		serviceEmpIncident.saveAndUpdate(appempincidentobj);
 		resetFields();
 		loadSrchRslt();
 	}
@@ -448,10 +448,10 @@ public class AppraisalEmpIncident extends BaseUI {
 	protected void resetFields() {
 		cbEmployee.setValue(null);
 		cbEmployee.setComponentError(null);
-		cbincidenttype.setValue(cbincidenttype.getItemIds().iterator().next());
-		cbincidenttype.setValue(null);
-		cbincidenttype.setComponentError(null);
-		cbincidentstatus.setValue(cbincidentstatus.getItemIds().iterator().next());
+		cbIncidenttype.setValue(cbIncidenttype.getItemIds().iterator().next());
+		cbIncidenttype.setValue(null);
+		cbIncidenttype.setComponentError(null);
+		cbIncidentstatus.setValue(cbIncidentstatus.getItemIds().iterator().next());
 		cbKPIGroup.setValue(null);
 		cbKPIGroup.setComponentError(null);
 		cbSeverity.setValue(null);

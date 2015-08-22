@@ -81,10 +81,10 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Table Declaration
-	public Table tblMstScrSrchRslt;
-	public Button btnadd;
-	public Button btnSave;
-	public Button btnCancel;
+	private Table tblMstScrSrchRslt;
+	private Button btnadd;
+	private Button btnSave;
+	private Button btnCancel;
 	private List<EmployeeOvertimeDM> usertable = new ArrayList<EmployeeOvertimeDM>();
 	private BeanItemContainer<EmployeeOvertimeDM> beans = null;
 	private VerticalLayout vltable, vlTableForm, vlTableLayout;
@@ -234,17 +234,17 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 		flColumn3.addComponent(taOvertimeremarks);
 		flColumn4.addComponent(cbOvertimeapprovemgr);
 		flColumn4.addComponent(cbOvertimestatus);
-		HorizontalLayout Input = new HorizontalLayout();
-		Input.addComponent(flColumn1);
-		Input.addComponent(flColumn2);
-		Input.addComponent(flColumn3);
-		Input.addComponent(flColumn4);
-		Input.setSpacing(true);
-		Input.setMargin(true);
-		Input.setWidth("100%");
-		Input.addComponent(btnadd);
-		Input.setComponentAlignment(btnadd, Alignment.BOTTOM_LEFT);
-		vlTableForm.addComponent(Input);
+		HorizontalLayout hlInput = new HorizontalLayout();
+		hlInput.addComponent(flColumn1);
+		hlInput.addComponent(flColumn2);
+		hlInput.addComponent(flColumn3);
+		hlInput.addComponent(flColumn4);
+		hlInput.setSpacing(true);
+		hlInput.setMargin(true);
+		hlInput.setWidth("100%");
+		hlInput.addComponent(btnadd);
+		hlInput.setComponentAlignment(btnadd, Alignment.BOTTOM_LEFT);
+		vlTableForm.addComponent(hlInput);
 		vlTableForm.addComponent(tblMstScrSrchRslt);
 		vlTableLayout = new VerticalLayout();
 		vlTableLayout.addComponent(vlTableForm);
@@ -280,11 +280,10 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 	private void loadAppMgrList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "loading Approve Manager List...");
-		List<EmployeeDM> employeelist = serviceemployee.getEmployeeList(null, null, null,/* department */
-				"Active", companyid, null, null, null, null, "F");
 		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(employeelist);
+		beanEmployee.addAll(serviceemployee.getEmployeeList(null, null, null,/* department */
+				"Active", companyid, null, null, null, null, "P"));
 		cbOvertimeapprovemgr.setContainerDataSource(beanEmployee);
 	}
 	
@@ -382,7 +381,7 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 		tblMstScrSrchRslt.removeAllItems();
 	}
 	
-	public boolean validateDetails() {
+	private boolean validateDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Validating EmployeeOvertime Details.....");
 		boolean errorFlag = true;

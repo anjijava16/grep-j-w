@@ -51,17 +51,17 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class EmployeeEntry extends BaseUI {
-	EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	DepartmentService servicedepartment = (DepartmentService) SpringContextHelper.getBean("department");
+	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private DepartmentService servicedepartment = (DepartmentService) SpringContextHelper.getBean("department");
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// Add Input fields
-	private  ComboBox cbDepartmentName, cbEmployeeName;
+	private ComboBox cbDepartmentName, cbEmployeeName;
 	private TabSheet tabSheet;
-	private  Button btnSubmit = new GERPButton("Save", "savebt");
-	private  Button btnCancel = new GERPButton("Cancel", "cancelbt");
+	private Button btnSubmit = new GERPButton("Save", "savebt");
+	private Button btnCancel = new GERPButton("Cancel", "cancelbt");
 	private String username;
 	// To add Bean Item Container
 	private Long companyid, employeeId;
@@ -211,22 +211,21 @@ public class EmployeeEntry extends BaseUI {
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void loadEmployeeList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
-		List<EmployeeDM> employeelist = serviceemployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(),
-				"Active", companyid, employeeId, null, null, null, "F");
 		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(employeelist);
+		beanEmployee.addAll(serviceemployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(), "Active",
+				companyid, employeeId, null, null, null, "P"));
 		cbEmployeeName.setContainerDataSource(beanEmployee);
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
-	public void loadDepartmentList() {
+	private void loadDepartmentList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading DepartmentList");
-		List<DepartmentDM> departmentlist = servicedepartment.getDepartmentList(companyid, null, "Active", "F");
-		departmentlist.add(new DepartmentDM(0L, "All Departments"));
+		List<DepartmentDM> listDepartment = servicedepartment.getDepartmentList(companyid, null, "Active", "F");
+		listDepartment.add(new DepartmentDM(0L, "All Departments"));
 		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
+		beanDepartment.addAll(listDepartment);
 		cbDepartmentName.setContainerDataSource(beanDepartment);
 	}
 	
@@ -247,11 +246,6 @@ public class EmployeeEntry extends BaseUI {
 	@Override
 	protected void saveDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data.....");
-		/*onduty.ondutysave((Long) cbEmployeeName.getValue());
-		permission.permissionsave((Long) cbEmployeeName.getValue());
-		overtime.overtimesave((Long) cbEmployeeName.getValue());
-		absent.Absentsave((Long) cbEmployeeName.getValue());
-		late.latesave((Long) cbEmployeeName.getValue());*/
 		hlSrchContainer.setVisible(true);
 	}
 	

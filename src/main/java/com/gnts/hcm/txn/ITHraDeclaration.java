@@ -73,7 +73,7 @@ public class ITHraDeclaration extends BaseUI {
 	private Long companyId, EmployeeId;
 	private String loginUserName;
 	private int recordCnt = 0;
-	String primaryid;
+	private String primaryid;
 	private Long hraamt = 0L;
 	private Long approvedamount = 0L;
 	private Boolean errorFlag = false;

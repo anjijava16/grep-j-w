@@ -83,14 +83,14 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 	private Button btnadd;
 	private Button btnSave = new Button("Save", this);
 	private Button btnCancel = new Button("Cancel", this);
-	private List<EmployeeAbsentDM> usertable = new ArrayList<EmployeeAbsentDM>();
+	private List<EmployeeAbsentDM> listEmpAbsent = new ArrayList<EmployeeAbsentDM>();
 	private BeanItemContainer<EmployeeAbsentDM> beans = null;
 	private VerticalLayout vltable, vlTableForm, vlTableLayout;
 	private HorizontalLayout hlTableTitleandCaptionLayout;
 	private String username;
 	private Long companyid;
 	private Long employeeid;
-	private EmployeeAbsentService serviceabsent = (EmployeeAbsentService) SpringContextHelper.getBean("EmployeeAbsent");
+	private EmployeeAbsentService serviceEmpAbsent = (EmployeeAbsentService) SpringContextHelper.getBean("EmployeeAbsent");
 	private Logger logger = Logger.getLogger(EmployeeAbsentDM.class);
 	private int total = 0;
 	
@@ -220,17 +220,17 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 		flColumn3.addComponent(taAbsentremarks);
 		flColumn4.addComponent(cbAbsentlwpmark);
 		flColumn4.addComponent(cbabsentstatus);
-		HorizontalLayout Input = new HorizontalLayout();
-		Input.setSpacing(true);
-		Input.setMargin(true);
-		Input.setWidth("100%");
-		Input.addComponent(flColumn1);
-		Input.addComponent(flColumn2);
-		Input.addComponent(flColumn3);
-		Input.addComponent(flColumn4);
-		Input.addComponent(btnadd);
-		Input.setComponentAlignment(btnadd, Alignment.BOTTOM_LEFT);
-		vlTableForm.addComponent(Input);
+		HorizontalLayout hlInput = new HorizontalLayout();
+		hlInput.setSpacing(true);
+		hlInput.setMargin(true);
+		hlInput.setWidth("100%");
+		hlInput.addComponent(flColumn1);
+		hlInput.addComponent(flColumn2);
+		hlInput.addComponent(flColumn3);
+		hlInput.addComponent(flColumn4);
+		hlInput.addComponent(btnadd);
+		hlInput.setComponentAlignment(btnadd, Alignment.BOTTOM_LEFT);
+		vlTableForm.addComponent(hlInput);
 		vlTableForm.addComponent(tblMstScrSrchRslt);
 		vlTableLayout = new VerticalLayout();
 		vlTableLayout.addComponent(vlTableForm);
@@ -257,10 +257,8 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 		diffhr = tioutdiff - timindiff;
 		String numhr = diffhr < 10 ? "0" + diffhr : "" + diffhr;
 		String nummin = diffmin < 10 ? "0" + diffmin : "" + diffmin;
-		// txtTotWrkHrs.setReadOnly(false);
 		DecimalFormat df = new DecimalFormat("#.##");
 		return (df.format(Double.valueOf(nummin)));
-		// txtTotWrkHrs.setReadOnly(true);
 	}
 	
 	private void loadSrchRslt() {
@@ -268,12 +266,12 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 				+ "loading SearchResult Details...");
 		total = 0;
 		if (employeeid != null) {
-			usertable = serviceabsent.getempabslist(null, employeeid, "Active", "F");
-			total = usertable.size();
+			listEmpAbsent = serviceEmpAbsent.getempabslist(null, employeeid, "Active", "F");
+			total = listEmpAbsent.size();
 		}
 		tblMstScrSrchRslt.setPageLength(10);
 		beans = new BeanItemContainer<EmployeeAbsentDM>(EmployeeAbsentDM.class);
-		beans.addAll(usertable);
+		beans.addAll(listEmpAbsent);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Employee Absent. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beans);
@@ -310,7 +308,7 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 			EmployeeAbsentDM saveAbsent = new EmployeeAbsentDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				saveAbsent = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				usertable.remove(saveAbsent);
+				listEmpAbsent.remove(saveAbsent);
 			}
 			if (dfAbsentdate.getValue() != null) {
 				saveAbsent.setAbsentdate(dfAbsentdate.getValue());
@@ -338,7 +336,7 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 			saveAbsent.setEmployeeid(employeeid);
 			saveAbsent.setLastupdatedby(username);
 			saveAbsent.setLastupdatedtd(DateUtils.getcurrentdate());
-			serviceabsent.saveORUpdate(saveAbsent);
+			serviceEmpAbsent.saveORUpdate(saveAbsent);
 			resetFields();
 			loadSrchRslt();
 		}
@@ -354,7 +352,7 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 		Collection<EmployeeAbsentDM> itemIds = (Collection<EmployeeAbsentDM>) tblMstScrSrchRslt.getVisibleItemIds();
 		for (EmployeeAbsentDM saveAbsent : (Collection<EmployeeAbsentDM>) itemIds) {
 			saveAbsent.setEmployeeid(employeeid);
-			serviceabsent.saveORUpdate(saveAbsent);
+			serviceEmpAbsent.saveORUpdate(saveAbsent);
 		}
 		loadSrchRslt();
 		tblMstScrSrchRslt.removeAllItems();

@@ -11,14 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.asm.domain.txn.AssetDetailsDM;
-import com.gnts.asm.domain.txn.EbReadingDM;
 import com.gnts.asm.domain.txn.GeneratorDM;
 import com.gnts.asm.service.txn.AssetDetailsService;
 import com.gnts.asm.service.txn.GeneratorService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPComboBox;
-import com.gnts.erputil.components.GERPNumberField;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPTextField;
@@ -81,7 +79,6 @@ public class Generator extends BaseTransUI {
 	private String username;
 	private Long companyid;
 	private int recordCnt = 0;
-	private int timeCnt = 0;
 	
 	// Constructor received the parameters from Login UI class
 	public Generator() {
@@ -377,7 +374,6 @@ public class Generator extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header
 	private void editECRequest() {
-		timeCnt = 0;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hllayout.setVisible(true);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
@@ -433,7 +429,6 @@ public class Generator extends BaseTransUI {
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
-		timeCnt = 0;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... "); //
 		GeneratorDM generatorDM = new GeneratorDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
@@ -485,7 +480,6 @@ public class Generator extends BaseTransUI {
 	
 	@Override
 	protected void addDetails() {
-		timeCnt = 0;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		// cbclient.setRequired(true);
 		hllayout.removeAllComponents();
@@ -497,7 +491,6 @@ public class Generator extends BaseTransUI {
 	
 	@Override
 	protected void editDetails() {
-		timeCnt = 0;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		hllayout.removeAllComponents();
 		vlSrchRsltContainer.setVisible(true);
@@ -562,7 +555,6 @@ public class Generator extends BaseTransUI {
 		tfDiselOpenBal.setValue("0");
 		tfGenTotalTime.setValue("0");
 		tfDiselConsBal.setReadOnly(false);
-		// tfDiselConsBal.setValue("0");
 		tfDiselConsBal.setWidth("150");
 		tfVolts.setValue("0");
 		tfAmps.setValue("0");
@@ -572,7 +564,6 @@ public class Generator extends BaseTransUI {
 		tfOtherUseLtrs.setValue("0");
 		tfLtrPerHours.setValue("0");
 		tfMachineServRemain.setValue("");
-		// tfOneLtrCost.setValue("0");
 		tfTotalCost.setValue("0");
 		taRunningMachineDtl.setValue("");
 		taRemarks.setValue("");
@@ -617,7 +608,6 @@ public class Generator extends BaseTransUI {
 			}
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/generatormonth"); // generatormonth is the name of my jasper
-			// file.
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

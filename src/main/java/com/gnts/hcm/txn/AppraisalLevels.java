@@ -53,16 +53,16 @@ public class AppraisalLevels extends BaseUI {
 	private static final long serialVersionUID = 1L;
 	// Initialize Logger
 	private Logger logger = Logger.getLogger(AppraisalLevels.class);
-	private AppraisalLevelsService appraisallevelservice = (AppraisalLevelsService) SpringContextHelper
+	private AppraisalLevelsService serviceAppraisalLevel = (AppraisalLevelsService) SpringContextHelper
 			.getBean("AppraisalLevels");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	// Bean container
 	private BeanItemContainer<AppraisalLevelsDM> beanAppraisalLevelsDM = null;
-	private TextField txlevelname;
-	private PopupDateField pfstrtdate;
-	private PopupDateField pfenddate;
-	private ComboBox cblvlstatus, cbapprasallvl, cbapprsalyr;
+	private TextField tfLevelName;
+	private PopupDateField dfStartDate;
+	private PopupDateField dfEndDate;
+	private ComboBox cbStatus, cbapprasallvl, cbapprsalyr;
 	private GERPTextArea taapprdetl;
 	private FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4;
 	private HorizontalLayout hlsearchlayout;
@@ -83,18 +83,18 @@ public class AppraisalLevels extends BaseUI {
 	
 	private void buidview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "building appraisallevel UI");
-		txlevelname = new GERPTextField("Level Name");
+		tfLevelName = new GERPTextField("Level Name");
 		cbapprasallvl = new GERPComboBox("Appraisal Level");
 		cbapprasallvl.setItemCaptionPropertyId("lookupname");
 		loadappraisallvl();
 		cbapprsalyr = new GERPComboBox("Appraisal Year");
 		cbapprsalyr.setInputPrompt("Select Year");
 		loadapprlist();
-		pfstrtdate = new GERPPopupDateField("Start Date");
-		pfstrtdate.setInputPrompt("Select Date");
-		pfenddate = new GERPPopupDateField("End Date");
-		pfenddate.setInputPrompt("Select Date");
-		cblvlstatus = new GERPComboBox("Level Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		dfStartDate = new GERPPopupDateField("Start Date");
+		dfStartDate.setInputPrompt("Select Date");
+		dfEndDate = new GERPPopupDateField("End Date");
+		dfEndDate.setInputPrompt("Select Date");
+		cbStatus = new GERPComboBox("Level Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		taapprdetl = new GERPTextArea("Comment");
 		taapprdetl.setHeight("50");
 		hlsearchlayout = new GERPAddEditHLayout();
@@ -111,9 +111,9 @@ public class AppraisalLevels extends BaseUI {
 		flcolumn2 = new GERPFormLayout();
 		flcolumn3 = new GERPFormLayout();
 		flcolumn4 = new GERPFormLayout();
-		flcolumn1.addComponent(txlevelname);
+		flcolumn1.addComponent(tfLevelName);
 		flcolumn2.addComponent(cbapprasallvl);
-		flcolumn3.addComponent(cblvlstatus);
+		flcolumn3.addComponent(cbStatus);
 		hlsearchlayout.addComponent(flcolumn1);
 		hlsearchlayout.addComponent(flcolumn2);
 		hlsearchlayout.addComponent(flcolumn3);
@@ -129,16 +129,16 @@ public class AppraisalLevels extends BaseUI {
 		flcolumn2 = new GERPFormLayout();
 		flcolumn3 = new GERPFormLayout();
 		flcolumn4 = new GERPFormLayout();
-		flcolumn1.addComponent(txlevelname);
-		txlevelname.setRequired(true);
+		flcolumn1.addComponent(tfLevelName);
+		tfLevelName.setRequired(true);
 		flcolumn1.addComponent(cbapprasallvl);
 		cbapprasallvl.setRequired(true);
 		flcolumn2.addComponent(cbapprsalyr);
-		flcolumn2.addComponent(pfstrtdate);
-		pfstrtdate.setWidth("130");
-		flcolumn3.addComponent(pfenddate);
-		pfenddate.setWidth("90");
-		flcolumn3.addComponent(cblvlstatus);
+		flcolumn2.addComponent(dfStartDate);
+		dfStartDate.setWidth("130");
+		flcolumn3.addComponent(dfEndDate);
+		dfEndDate.setWidth("90");
+		flcolumn3.addComponent(cbStatus);
 		flcolumn4.addComponent(taapprdetl);
 		taapprdetl.setValue("");
 		hluserInputlayout.addComponent(flcolumn1);
@@ -154,9 +154,9 @@ public class AppraisalLevels extends BaseUI {
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.removeAllItems();
 		List<AppraisalLevelsDM> listAppraisalLvl = new ArrayList<AppraisalLevelsDM>();
-		String levelname = txlevelname.getValue().toString();
-		listAppraisalLvl = appraisallevelservice.getAppraisalLevelsList(null, (String) cbapprasallvl.getValue(),
-				levelname, (String) cblvlstatus.getValue(), "F");
+		String levelname = tfLevelName.getValue().toString();
+		listAppraisalLvl = serviceAppraisalLevel.getAppraisalLevelsList(null, (String) cbapprasallvl.getValue(),
+				levelname, (String) cbStatus.getValue(), "F");
 		recordCnt = listAppraisalLvl.size();
 		beanAppraisalLevelsDM = new BeanItemContainer<AppraisalLevelsDM>(AppraisalLevelsDM.class);
 		beanAppraisalLevelsDM.addAll(listAppraisalLvl);
@@ -185,9 +185,9 @@ public class AppraisalLevels extends BaseUI {
 	
 	@Override
 	protected void resetSearchDetails() {
-		txlevelname.setValue("");
+		tfLevelName.setValue("");
 		cbapprasallvl.setValue(null);
-		cblvlstatus.setValue(cblvlstatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		loadSrchRslt();
 	}
 	
@@ -218,19 +218,19 @@ public class AppraisalLevels extends BaseUI {
 		hlCmdBtnLayout.setVisible(true);
 		hluserInputlayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			AppraisalLevelsDM editapprlvllist = beanAppraisalLevelsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cblvlstatus.setValue(editapprlvllist.getLevelstatus());
-			txlevelname.setValue(editapprlvllist.getLevelname());
-			cbapprasallvl.setValue(editapprlvllist.getAppraisallevel());
-			cbapprsalyr.setValue(editapprlvllist.getAppraisalyear());
-			if (editapprlvllist.getStartdate() != null) {
-				pfstrtdate.setValue(editapprlvllist.getStartdate());
+			AppraisalLevelsDM appraisalLevel = beanAppraisalLevelsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			cbStatus.setValue(appraisalLevel.getLevelstatus());
+			tfLevelName.setValue(appraisalLevel.getLevelname());
+			cbapprasallvl.setValue(appraisalLevel.getAppraisallevel());
+			cbapprsalyr.setValue(appraisalLevel.getAppraisalyear());
+			if (appraisalLevel.getStartdate() != null) {
+				dfStartDate.setValue(appraisalLevel.getStartdate());
 			}
-			if (editapprlvllist.getEnddate() != null) {
-				pfenddate.setValue(editapprlvllist.getEnddate());
+			if (appraisalLevel.getEnddate() != null) {
+				dfEndDate.setValue(appraisalLevel.getEnddate());
 			}
-			if (editapprlvllist.getAppraisaldetails() != null) {
-				taapprdetl.setValue(editapprlvllist.getAppraisaldetails());
+			if (appraisalLevel.getAppraisaldetails() != null) {
+				taapprdetl.setValue(appraisalLevel.getAppraisaldetails());
 			}
 		}
 	}
@@ -238,22 +238,22 @@ public class AppraisalLevels extends BaseUI {
 	@Override
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		txlevelname.setComponentError(null);
+		tfLevelName.setComponentError(null);
 		cbapprasallvl.setComponentError(null);
 		boolean errorflag = false;
-		if ((txlevelname.getValue() == null) || txlevelname.getValue().trim().length() == 0) {
-			txlevelname.setComponentError(new UserError(GERPErrorCodes.NULL_LEVEL_NAME));
+		if ((tfLevelName.getValue() == null) || tfLevelName.getValue().trim().length() == 0) {
+			tfLevelName.setComponentError(new UserError(GERPErrorCodes.NULL_LEVEL_NAME));
 			errorflag = true;
 		}
 		if ((cbapprasallvl.getValue() == null)) {
 			cbapprasallvl.setComponentError(new UserError(GERPErrorCodes.NULL_APPRAISAL_LEVEL));
 			errorflag = true;
 		}
-		if ((pfstrtdate.getValue() != null) || (pfenddate.getValue() != null)) {
-			if (pfstrtdate.getValue().after(pfenddate.getValue())) {
-				pfenddate.setComponentError(new UserError(GERPErrorCodes.DATE_OUTOFRANGE));
+		if ((dfStartDate.getValue() != null) || (dfEndDate.getValue() != null)) {
+			if (dfStartDate.getValue().after(dfEndDate.getValue())) {
+				dfEndDate.setComponentError(new UserError(GERPErrorCodes.DATE_OUTOFRANGE));
 				logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-						+ "Throwing ValidationException. User data is > " + txlevelname.getValue() + ","
+						+ "Throwing ValidationException. User data is > " + tfLevelName.getValue() + ","
 						+ cbapprsalyr.getValue());
 				errorflag = true;
 			}
@@ -272,22 +272,22 @@ public class AppraisalLevels extends BaseUI {
 				apprlvlsobj = beanAppraisalLevelsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			apprlvlsobj.setCompanyid(companyid);
-			apprlvlsobj.setLevelname(txlevelname.getValue());
+			apprlvlsobj.setLevelname(tfLevelName.getValue());
 			if (cbapprsalyr.getValue() != null) {
 				apprlvlsobj.setAppraisalyear(cbapprsalyr.getValue().toString());
 			}
 			if (cbapprasallvl.getValue() != null) {
 				apprlvlsobj.setAppraisallevel(cbapprasallvl.getValue().toString());
 			}
-			if (cblvlstatus.getValue() != null) {
-				apprlvlsobj.setLevelstatus(cblvlstatus.getValue().toString());
+			if (cbStatus.getValue() != null) {
+				apprlvlsobj.setLevelstatus(cbStatus.getValue().toString());
 			}
-			apprlvlsobj.setStartdate(pfstrtdate.getValue());
-			apprlvlsobj.setEnddate(pfenddate.getValue());
+			apprlvlsobj.setStartdate(dfStartDate.getValue());
+			apprlvlsobj.setEnddate(dfEndDate.getValue());
 			apprlvlsobj.setLastupdateddt(DateUtils.getcurrentdate());
 			apprlvlsobj.setLastupdatedby(username);
 			apprlvlsobj.setAppraisaldetails(taapprdetl.getValue());
-			appraisallevelservice.saveOrUpdateAppraisalLevels(apprlvlsobj);
+			serviceAppraisalLevel.saveOrUpdateAppraisalLevels(apprlvlsobj);
 			resetFields();
 			loadSrchRslt();
 		}
@@ -304,7 +304,7 @@ public class AppraisalLevels extends BaseUI {
 	@Override
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
-		txlevelname.setRequired(false);
+		tfLevelName.setRequired(false);
 		cbapprasallvl.setRequired(false);
 		assemblsearch();
 		hlCmdBtnLayout.setVisible(true);
@@ -315,18 +315,18 @@ public class AppraisalLevels extends BaseUI {
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "resetfields...");
-		txlevelname.setValue("");
-		txlevelname.setComponentError(null);
+		tfLevelName.setValue("");
+		tfLevelName.setComponentError(null);
 		cbapprasallvl.setValue(null);
 		cbapprasallvl.setComponentError(null);
 		cbapprsalyr.setValue(null);
 		cbapprsalyr.setComponentError(null);
-		pfstrtdate.setValue(null);
-		pfstrtdate.setComponentError(null);
-		pfenddate.setValue(null);
-		pfenddate.setComponentError(null);
+		dfStartDate.setValue(null);
+		dfStartDate.setComponentError(null);
+		dfEndDate.setValue(null);
+		dfEndDate.setComponentError(null);
 		taapprdetl.setValue("");
-		cblvlstatus.setValue(cblvlstatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	
 	private void loadapprlist() {

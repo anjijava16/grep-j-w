@@ -54,15 +54,12 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 	private static final long serialVersionUID = 1L;
 	// Initialize Logger
 	private Logger logger = Logger.getLogger(EmployeeLTAClaimDtl.class);
-	private EmpltaclaimdtlsService EmployeeLTAClaimDtlervice = (EmpltaclaimdtlsService) SpringContextHelper
+	private EmpltaclaimdtlsService serviceEmpClaimDtls = (EmpltaclaimdtlsService) SpringContextHelper
 			.getBean("Empltaclaimdtls");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private AllowanceService serviceAllowance = (AllowanceService) SpringContextHelper.getBean("Allowance");
 	// Bean container
 	private BeanItemContainer<EmpltaclaimdtlsDM> beanEmpltaclaimdtlsDM = null;
-	private BeanContainer<Long, EmployeeDM> beanEmpDM = null;
-	private BeanContainer<Long, AllowanceDM> beanAlwncDM = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployeeDM = null;
 	private TextField tfAlwncAmt, tfClaimAmt, tfAprvAmt, tfCurntBlkPeriod, tfClaimBlkPeriod, tfPaidPayroll;
 	private PopupDateField dfClaimDt, dfPaidDt, dfAprvDt;
 	private ComboBox cbEmpName, cbAllowanceName, cbApprovedBy, cbstatus, cbModeOfTravel;
@@ -82,13 +79,12 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 		buidview();
 	}
 	
-	public void buidview() {
+	private void buidview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "building EmployeeLTAClaimDtl UI");
 		// Employee Name combobox
 		cbEmpName = new GERPComboBox("Employee Name");
 		cbEmpName.setItemCaptionPropertyId("fullname");
-		loadEmpList();
 		// Allowance Name combobox
 		cbAllowanceName = new GERPComboBox("Allowance Name");
 		cbAllowanceName.setItemCaptionPropertyId("alowncDesc");
@@ -116,7 +112,7 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 		// Approved by combobox
 		cbApprovedBy = new GERPComboBox("Approved By");
 		cbApprovedBy.setItemCaptionPropertyId("firstname");
-		loadApprovedByList();
+		loadEmpList();
 		// Approve Date field
 		dfAprvDt = new GERPPopupDateField("Approved Date");
 		// Approve amount Textfield
@@ -190,7 +186,7 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 		if (cbAllowanceName.getValue() != null) {
 			alwncId = ((Long.valueOf(cbAllowanceName.getValue().toString())));
 		}
-		claimDtlList = EmployeeLTAClaimDtlervice.getempltaclaimdtlsList(null, empId, alwncId, null, null, null,
+		claimDtlList = serviceEmpClaimDtls.getempltaclaimdtlsList(null, empId, alwncId, null, null, null,
 				(String) cbstatus.getValue(), "F");
 		recordCnt = claimDtlList.size();
 		beanEmpltaclaimdtlsDM = new BeanItemContainer<EmpltaclaimdtlsDM>(EmpltaclaimdtlsDM.class);
@@ -343,11 +339,9 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 		}
 		catch (Exception e) {
 			if (Long.valueOf(tfAlwncAmt.getValue()).equals("0")) {
-				// tfAlwncAmt.setComponentError(new UserError(GERPErrorCodes.NULL_ALLOW_AMT));
 				tfAlwncAmt.setComponentError(new UserError("Please Enter Allowance Claim Amount"));
 				errorflag = true;
 			} else {
-				// tfAlwncAmt.setComponentError(new UserError(GERPErrorCodes.Amount_CHAR_VALIDATION));
 				tfAlwncAmt.setComponentError(new UserError("Please Enter Allowance Claim Amount"));
 				errorflag = true;
 			}
@@ -365,7 +359,6 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 				tfAprvAmt.setComponentError(new UserError(GERPErrorCodes.NULL_CLAIM_AMT));
 				errorflag = true;
 			} else {
-				// tfAprvAmt.setComponentError(new UserError(GERPErrorCodes.Amount_CHAR_VALIDATION));
 				tfAprvAmt.setComponentError(new UserError(GERPErrorCodes.NULL_CLAIM_AMT));
 				errorflag = true;
 			}
@@ -376,7 +369,6 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 		}
 		if ((dfPaidDt.getValue() != null) || (dfAprvDt.getValue() != null)) {
 			if (dfPaidDt.getValue().after(dfAprvDt.getValue())) {
-				// dfAprvDt.setComponentError(new UserError(GERPErrorCodes.LTA_DATE_OUTOFRANGE));
 				dfAprvDt.setComponentError(new UserError("Approved Date Should be Lesser than Paid Date"));
 				errorflag = true;
 			} else {
@@ -442,7 +434,7 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 			}
 			empClaimDtlObj.setLastupdtdate(DateUtils.getcurrentdate());
 			empClaimDtlObj.setLastupdtby(username);
-			EmployeeLTAClaimDtlervice.saveAndUpdate(empClaimDtlObj);
+			serviceEmpClaimDtls.saveAndUpdate(empClaimDtlObj);
 			resetFields();
 			loadSrchRslt();
 		}
@@ -508,35 +500,28 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 		cbApprovedBy.setComponentError(null);
 	}
 	
-	public void loadEmpList() {
+	private void loadEmpList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading employee name list...");
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, "Active",
+		List<EmployeeDM> listEmp = serviceEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, "Active",
 				null, null, null, null, null, "P");
+		BeanContainer<Long, EmployeeDM> beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+		beanEmpDM.setBeanIdProperty("employeeid");
+		beanEmpDM.addAll(listEmp);
+		cbEmpName.setContainerDataSource(beanEmpDM);
 		beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmpDM.setBeanIdProperty("employeeid");
-		beanEmpDM.addAll(empList);
-		cbEmpName.setContainerDataSource(beanEmpDM);
+		beanEmpDM.addAll(listEmp);
+		cbApprovedBy.setContainerDataSource(beanEmpDM);
 	}
 	
-	public void loadApprovedByList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading approved by list...");
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, "Active",
-				null, null, null, null, null, "F");
-		beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.setBeanIdProperty("employeeid");
-		beanEmployeeDM.addAll(empList);
-		cbApprovedBy.setContainerDataSource(beanEmployeeDM);
-	}
-	
-	public void loadAllowanceList() {
+	private void loadAllowanceList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading allowance name list...");
-		List<AllowanceDM> alwncList = serviceAllowance.getalowanceList(null, null, null,
-				(String) cbAllowanceName.getValue(), "Active", "P");
-		beanAlwncDM = new BeanContainer<Long, AllowanceDM>(AllowanceDM.class);
+		BeanContainer<Long, AllowanceDM> beanAlwncDM = new BeanContainer<Long, AllowanceDM>(AllowanceDM.class);
 		beanAlwncDM.setBeanIdProperty("alowncId");
-		beanAlwncDM.addAll(alwncList);
+		beanAlwncDM.addAll(serviceAllowance.getalowanceList(null, null, null, (String) cbAllowanceName.getValue(),
+				"Active", "P"));
 		cbAllowanceName.setContainerDataSource(beanAlwncDM);
 	}
 }

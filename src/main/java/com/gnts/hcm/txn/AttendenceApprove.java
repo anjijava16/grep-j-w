@@ -33,7 +33,6 @@ import com.gnts.hcm.domain.mst.PayPeriodDM;
 import com.gnts.hcm.domain.txn.AttendenceProcDM;
 import com.gnts.hcm.service.mst.PayPeriodService;
 import com.gnts.hcm.service.txn.AttendenceProcService;
-import com.gnts.hcm.service.txn.EmpAttendenceService;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -45,15 +44,15 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Table.Align;
 
 public class AttendenceApprove extends BaseUI {
 	private static final long serialVersionUID = 1118829691766246544L;
@@ -63,7 +62,6 @@ public class AttendenceApprove extends BaseUI {
 	private PayPeriodService servicePayPeriod = (PayPeriodService) SpringContextHelper.getBean("PayPeriod");
 	private AttendenceProcService serviceAttendanceProcess = (AttendenceProcService) SpringContextHelper
 			.getBean("AttendenceProc");
-	private EmpAttendenceService serviceEmpAtndnc = (EmpAttendenceService) SpringContextHelper.getBean("EmpAttendence");
 	private Button btnsaveAttenProc = new GERPButton("Add", "add", this);
 	private BeanItemContainer<AttendenceProcDM> beanAttendenceProcDM = null;
 	private List<AttendenceProcDM> attendProcList = new ArrayList<AttendenceProcDM>();
@@ -71,7 +69,7 @@ public class AttendenceApprove extends BaseUI {
 	// Attendance Process Component Declaration
 	private ComboBox cbPayPeried, cbBranch, cbEmployeeName;
 	private TextField tfProcessPeriod;
-	private Button btnSearchStaff, btnAttendanceProc;
+	private Button btnSearchStaff;
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	private PayPeriodDM payPeriodList;
@@ -175,16 +173,6 @@ public class AttendenceApprove extends BaseUI {
 		cbEmployeeName.setNullSelectionAllowed(false);
 		loadEmployeeList();
 		btnSearchStaff = new GERPButton("Search Employee", "searchbt", this);
-		/*btnAttendanceProc = new GERPButton("Run Attendance Process", "savebt", this);
-		btnAttendanceProc.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void buttonClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				loadAttendenceProcess();
-			}
-		});*/
 		btnSearch.setVisible(false);
 		hlSearchLayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
@@ -224,13 +212,8 @@ public class AttendenceApprove extends BaseUI {
 		hlAttendanceProc1.addComponent(btnSearchStaff);
 		hlAttendanceProc1.setComponentAlignment(btnSearchStaff, Alignment.MIDDLE_RIGHT);
 		hlAttendanceProc1.setSpacing(true);
-	//	HorizontalLayout hlAttendanceProc2 = new HorizontalLayout();
-	//	hlAttendanceProc2.addComponent(btnAttendanceProc);
-	//	hlAttendanceProc2.setSizeFull();
-	//	hlAttendanceProc2.setComponentAlignment(btnAttendanceProc, Alignment.MIDDLE_RIGHT);
 		VerticalLayout vlAttendanceProc1 = new VerticalLayout();
 		vlAttendanceProc1.addComponent(hlAttendanceProc1);
-	//	vlAttendanceProc1.addComponent(hlAttendanceProc2);
 		hlSearchLayout.addComponent(vlAttendanceProc1);
 		hlSearchLayout.setSpacing(true);
 		hlSearchLayout.setMargin(true);
@@ -284,7 +267,7 @@ public class AttendenceApprove extends BaseUI {
 	/*
 	 * loadStartandEndDates()-->this function is used for load the start and end date
 	 */
-	void loadStartandEndDates() {
+	private void loadStartandEndDates() {
 		try {
 			SessionFactory sf = serviceAttendanceProcess.getConnection();
 			Session session = sf.openSession();
@@ -381,6 +364,7 @@ public class AttendenceApprove extends BaseUI {
 		tfProcessPeriod.setReadOnly(true);
 	}
 	
+	@SuppressWarnings("unused")
 	private void loadAttendenceProcess() {
 		try {
 			SessionFactory sf = serviceAttendanceProcess.getConnection();
@@ -451,12 +435,11 @@ public class AttendenceApprove extends BaseUI {
 		}
 	}
 	
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		try {
 			tblMstScrSrchRslt.removeAllItems();
 			attendProcList = serviceAttendanceProcess.getAttendenceProc(null, null, null, null, "Pending", "F");
 			recordCnt = attendProcList.size();
-			System.out.println("LISYYYYY" + recordCnt);
 			beanAttendenceProcDM = new BeanItemContainer<AttendenceProcDM>(AttendenceProcDM.class);
 			beanAttendenceProcDM.addAll(attendProcList);
 			tblMstScrSrchRslt.setContainerDataSource(beanAttendenceProcDM);
@@ -492,12 +475,13 @@ public class AttendenceApprove extends BaseUI {
 		}
 	}
 	
-	protected void saveattapprove() {
+	private void saveattapprove() {
 		serviceAttendanceProcess.updateapproveAtt_proc(attProcId, "Approved", null, userName, "ATT_PROC");
 		serviceAttendanceProcess.updateapproveAtt_proc(attProcId, "Approved", null, userName, "ATT_ATTEN");
-		try{
-		serviceAttendanceProcess.procAttendenceApprove(companyId, (String) attProcId.toString(), userName);
-		}catch(Exception e){
+		try {
+			serviceAttendanceProcess.procAttendenceApprove(companyId, (String) attProcId.toString(), userName);
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		loadSrchRslt();
@@ -505,7 +489,6 @@ public class AttendenceApprove extends BaseUI {
 	
 	private void readonlytrue() {
 		cbBranch.setReadOnly(true);
-		// cbEmployeeName.setReadOnly(true);
 		cbPayPeried.setReadOnly(true);
 		tfProcessPeriod.setReadOnly(true);
 	}

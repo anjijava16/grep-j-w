@@ -76,11 +76,11 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Table Declaration
-	public Table tblMstScrSrchRslt;
-	public Button btnadd;
-	public Button btnSave;
-	public Button btnCancel;
-	private List<EmployeePermissionDM> usertable = new ArrayList<EmployeePermissionDM>();
+	private Table tblMstScrSrchRslt;
+	private Button btnadd;
+	private Button btnSave;
+	private Button btnCancel;
+	private List<EmployeePermissionDM> listEmpPer = new ArrayList<EmployeePermissionDM>();
 	private BeanItemContainer<EmployeePermissionDM> beans = null;
 	private VerticalLayout vltable, vlTableForm, vlTableLayout;
 	private HorizontalLayout hlTableTitleandCaptionLayout;
@@ -207,17 +207,17 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 		flColumn2.addComponent(cbPermissionApprmgr);
 		flColumn3.addComponent(taPermissionremarks);
 		flColumn4.addComponent(cbPermissionStatus);
-		HorizontalLayout Input = new HorizontalLayout();
-		Input.addComponent(flColumn1);
-		Input.addComponent(flColumn2);
-		Input.addComponent(flColumn3);
-		Input.addComponent(flColumn4);
-		Input.addComponent(btnadd);
-		Input.setComponentAlignment(btnadd, Alignment.BOTTOM_LEFT);
-		Input.setSpacing(true);
-		Input.setMargin(true);
-		Input.setWidth("100%");
-		vlTableForm.addComponent(Input);
+		HorizontalLayout hlInput = new HorizontalLayout();
+		hlInput.addComponent(flColumn1);
+		hlInput.addComponent(flColumn2);
+		hlInput.addComponent(flColumn3);
+		hlInput.addComponent(flColumn4);
+		hlInput.addComponent(btnadd);
+		hlInput.setComponentAlignment(btnadd, Alignment.BOTTOM_LEFT);
+		hlInput.setSpacing(true);
+		hlInput.setMargin(true);
+		hlInput.setWidth("100%");
+		vlTableForm.addComponent(hlInput);
 		vlTableForm.addComponent(tblMstScrSrchRslt);
 		vlTableLayout = new VerticalLayout();
 		vlTableLayout.addComponent(vlTableForm);
@@ -242,12 +242,12 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 				+ "loading SearchResult Details...");
 		tblMstScrSrchRslt.removeAllItems();
 		if (employeeid != null) {
-			usertable = servicepermission.getemppermissionList(null, employeeid, "Active", "F");
+			listEmpPer = servicepermission.getemppermissionList(null, employeeid, "Active", "F");
 		}
-		recordCnt = usertable.size();
+		recordCnt = listEmpPer.size();
 		tblMstScrSrchRslt.setPageLength(10);
 		beans = new BeanItemContainer<EmployeePermissionDM>(EmployeePermissionDM.class);
-		beans.addAll(usertable);
+		beans.addAll(listEmpPer);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Employee Permission. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beans);
@@ -280,7 +280,7 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 			EmployeePermissionDM savePermission = new EmployeePermissionDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				savePermission = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				usertable.remove(savePermission);
+				listEmpPer.remove(savePermission);
 			}
 			if (dfPermissiondate.getValue() != null) {
 				savePermission.setPermissiondt(dfPermissiondate.getValue());
@@ -327,7 +327,7 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 		tblMstScrSrchRslt.removeAllItems();
 	}
 	
-	public boolean validateDetails() {
+	private boolean validateDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Validating EmployeePermission Details.....");
 		boolean errorFlag = true;

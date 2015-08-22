@@ -107,9 +107,6 @@ public class EmployeeShift extends BaseUI {
 		dfShiftStart.setVisible(true);
 		dfShiftStart.setRequired(true);
 		dfShiftStart.addValueChangeListener(new Property.ValueChangeListener() {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 			
 			public void valueChange(ValueChangeEvent event) {

@@ -35,14 +35,13 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.EmployeeOndutyDM;
 import com.gnts.hcm.service.txn.EmployeeOndutyService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractSelect;
@@ -62,8 +61,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
-@SuppressWarnings("serial")
 public class EmployeeOnduty extends VerticalLayout implements ClickListener {
+	private static final long serialVersionUID = 1L;
 	// Declaration for add and edit panel components
 	private ComboBox cbOndutyApprmgr;
 	private PopupDateField dfOndutyDatefrom, dfOndutyDateto;
@@ -71,36 +70,33 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 	private TextArea taOndutyrks;
 	private ComboBox cbOndutyStatus;
 	// for Search
-	Button btnSearch, btnReset;
+	private Button btnSearch, btnReset;
 	// Declaration for add and edit panel
-	VerticalLayout vlAddEditPanel = new VerticalLayout();
-	VerticalLayout vlTablePanel = new VerticalLayout();
-	HorizontalLayout hlsavecancel = new HorizontalLayout();
-	HorizontalLayout hlFileDownloadLayout;
+	private VerticalLayout vlTablePanel = new VerticalLayout();
+	private HorizontalLayout hlsavecancel = new HorizontalLayout();
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Table Declaration
-	public Table tblMstScrSrchRslt;
+	private Table tblMstScrSrchRslt;
 	// private Button btnAdd, btnSave, btnCancel,;
-	public Button btnadd;
-	public Button btnSave;
-	public Button btnCancel;
-	List<EmployeeOndutyDM> usertable = new ArrayList<EmployeeOndutyDM>();
+	private Button btnadd;
+	private Button btnSave;
+	private Button btnCancel;
+	private List<EmployeeOndutyDM> usertable = new ArrayList<EmployeeOndutyDM>();
 	// Declaration for Label
 	private BeanItemContainer<EmployeeOndutyDM> beans = null;
 	private VerticalLayout vltable, vlTableForm, vlTableLayout;
-	HorizontalLayout hlTableTitleandCaptionLayout;
+	private HorizontalLayout hlTableTitleandCaptionLayout;
 	private String username;
 	private Long companyid;
-	EmployeeOndutyService serviceOnduty = (EmployeeOndutyService) SpringContextHelper.getBean("EmployeeOnduty");
-	EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private static Logger logger = Logger.getLogger(EmployeeOnduty.class);
+	private EmployeeOndutyService serviceOnduty = (EmployeeOndutyService) SpringContextHelper.getBean("EmployeeOnduty");
+	private EmployeeService servicEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private Logger logger = Logger.getLogger(EmployeeOnduty.class);
 	private int total = 0;
 	private Long ondutyid;
 	private Long employeeid;
-	Date dtfrm;
+	private Date dtfrm;
 	private Double check;
-	public HorizontalLayout hlHeader = new HorizontalLayout();
 	
 	// Build View
 	public EmployeeOnduty(Long empid) {
@@ -112,7 +108,6 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 		buildView();
 	}
 	
-	@SuppressWarnings("unused")
 	private void buildView() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting EmployeeOnduty UI");
 		// Initialization for dfOndutyDatefrom
@@ -163,12 +158,6 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				diffdays();
-				/*if (Double.valueOf(check.toString()) == 1.0) {
-					cbhalfday.setEnabled(true);
-				} else {
-					cbhalfday.setValue(false);
-					cbhalfday.setEnabled(false);
-				}*/
 			}
 		});
 		// Initialization for tfOndutyNoOfDays
@@ -220,7 +209,6 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 				}
 			}
 		});
-		HorizontalLayout hlTableCaptionLayout = new HorizontalLayout();
 		hlTableTitleandCaptionLayout = new HorizontalLayout();
 		// Initialization for table panel components
 		tblMstScrSrchRslt = new Table();
@@ -269,17 +257,17 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 		flColumn3.addComponent(taOndutyrks);
 		flColumn4.addComponent(cbOndutyApprmgr);
 		flColumn4.addComponent(cbOndutyStatus);
-		HorizontalLayout Input = new HorizontalLayout();
-		Input.addComponent(flColumn1);
-		Input.addComponent(flColumn2);
-		Input.addComponent(flColumn3);
-		Input.addComponent(flColumn4);
-		Input.addComponent(btnadd);
-		Input.setComponentAlignment(btnadd, Alignment.BOTTOM_LEFT);
-		Input.setSpacing(true);
-		Input.setMargin(true);
-		Input.setWidth("100%");
-		vlTableForm.addComponent(Input);
+		HorizontalLayout hlInput = new HorizontalLayout();
+		hlInput.addComponent(flColumn1);
+		hlInput.addComponent(flColumn2);
+		hlInput.addComponent(flColumn3);
+		hlInput.addComponent(flColumn4);
+		hlInput.addComponent(btnadd);
+		hlInput.setComponentAlignment(btnadd, Alignment.BOTTOM_LEFT);
+		hlInput.setSpacing(true);
+		hlInput.setMargin(true);
+		hlInput.setWidth("100%");
+		vlTableForm.addComponent(hlInput);
 		vlTableForm.addComponent(tblMstScrSrchRslt);
 		vlTableLayout = new VerticalLayout();
 		vlTableLayout.addComponent(vlTableForm);
@@ -292,11 +280,10 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 	private void loadAppMgrList() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "loading Approve Manager List...");
-		List<EmployeeDM> employeelist = serviceemployee.getEmployeeList(null, null, null, "Active", companyid, null,
-				null, null, null, "F");
 		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(employeelist);
+		beanEmployee.addAll(servicEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+				null, "P"));
 		cbOndutyApprmgr.setContainerDataSource(beanEmployee);
 	}
 	
@@ -326,18 +313,17 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 	// Method used to display selected row's values in desired text box and combo box for edit the values
 	private void editOnduty() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Onduty.......");
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			EmployeeOndutyDM Onduty = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfOndutyDatefrom.setValue(Onduty.getDatefrm1());
-			dfOndutyDateto.setValue(Onduty.getDatetoo());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			EmployeeOndutyDM empOnduty = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			dfOndutyDatefrom.setValue(empOnduty.getDatefrm1());
+			dfOndutyDateto.setValue(empOnduty.getDatetoo());
 			tfOndutyNoOfDays.setReadOnly(false);
-			tfOndutyNoOfDays.setValue((Onduty.getNoofdays()).toString());
+			tfOndutyNoOfDays.setValue((empOnduty.getNoofdays()).toString());
 			tfOndutyNoOfDays.setReadOnly(true);
-			tfOndutyTothrs.setValue((Onduty.getTothrs()).toString());
-			cbOndutyApprmgr.setValue(Onduty.getApprmgr());
-			taOndutyrks.setValue(Onduty.getOndutyrks());
-			cbOndutyStatus.setValue(itselect.getItemProperty("odstatus").getValue());
+			tfOndutyTothrs.setValue((empOnduty.getTothrs()).toString());
+			cbOndutyApprmgr.setValue(empOnduty.getApprmgr());
+			taOndutyrks.setValue(empOnduty.getOndutyrks());
+			cbOndutyStatus.setValue(empOnduty.getOdstatus());
 		}
 	}
 	
@@ -397,7 +383,7 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 		tblMstScrSrchRslt.removeAllItems();
 	}
 	
-	public boolean validateDetails() {
+	private boolean validateDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Validating EmployeeOnduty Details.....");
 		boolean errorFlag = true;

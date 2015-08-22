@@ -213,17 +213,17 @@ public class TaxLimit extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editTaxLimit() {
-		TaxLimitDM editTaxLimit = beanTaxLimitDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		pkTaxLimitId = editTaxLimit.getTaxLimitId().toString();
-		if (editTaxLimit.getExemptLimit() != null && !"null".equals(editTaxLimit.getExemptLimit())) {
-			tfExemptLimit.setValue(editTaxLimit.getExemptLimit().toString());
+		TaxLimitDM taxLimitDM = beanTaxLimitDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		pkTaxLimitId = taxLimitDM.getTaxLimitId().toString();
+		if (taxLimitDM.getExemptLimit() != null && !"null".equals(taxLimitDM.getExemptLimit())) {
+			tfExemptLimit.setValue(taxLimitDM.getExemptLimit().toString());
 		}
 		cbTaxId.setReadOnly(false);
-		cbTaxId.setValue(Long.valueOf(editTaxLimit.getTaxId()));
+		cbTaxId.setValue(Long.valueOf(taxLimitDM.getTaxId()));
 		cbTaxId.setReadOnly(true);
-		cbStatus.setValue(editTaxLimit.getStatus());
+		cbStatus.setValue(taxLimitDM.getStatus());
 		cbSectnCode.setReadOnly(false);
-		cbSectnCode.setValue(editTaxLimit.getSctnCode());
+		cbSectnCode.setValue(taxLimitDM.getSctnCode());
 		cbSectnCode.setReadOnly(true);
 	}
 	

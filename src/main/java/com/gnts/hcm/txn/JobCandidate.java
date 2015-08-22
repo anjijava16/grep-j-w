@@ -204,7 +204,7 @@ public class JobCandidate extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<JobCandidateDM> jobcandidatelist = new ArrayList<JobCandidateDM>();
@@ -316,7 +316,7 @@ public class JobCandidate extends BaseUI {
 		tfemailid.setRequired(true);
 	}
 	
-	public void editCandidate() {
+	private void editCandidate() {
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
 			JobCandidateDM jobCandidateDM = beanJobCandidateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();

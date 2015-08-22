@@ -45,7 +45,6 @@ import com.gnts.hcm.service.mst.DeductionService;
 import com.gnts.hcm.service.mst.EmployeeDtlsService;
 import com.gnts.hcm.service.mst.GradeDeductionService;
 import com.gnts.hcm.service.txn.EmployeeDeductionService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -120,14 +119,15 @@ public class EmployeeDeduction extends BaseUI {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				try {
-					EmployeeDtlsDM employeeDtlsDM=serviceEmpdetails.getEmployeeDtls(null, ((Long)cbEmpName.getValue()), null, null, null, null, "F", null).get(0);
-					GradeDeductionDM gradeDeductionDM = serviceGradeDeduction.getGradeEarnList(null, employeeDtlsDM.getGradeid(), (Long)cbDedcnCode.getValue(), "Active", "F").get(0);
-					
+					EmployeeDtlsDM employeeDtlsDM = serviceEmpdetails.getEmployeeDtls(null,
+							((Long) cbEmpName.getValue()), null, null, null, null, "F", null).get(0);
+					GradeDeductionDM gradeDeductionDM = serviceGradeDeduction.getGradeEarnList(null,
+							employeeDtlsDM.getGradeid(), (Long) cbDedcnCode.getValue(), "Active", "F").get(0);
 					cbFlatPercnt.setValue(gradeDeductionDM.getIsFlatPer());
 					if (gradeDeductionDM.getIsFlatPer().equals("Flat")) {
 						tfDecnAmt.setValue(gradeDeductionDM.getMinVal() + "");
@@ -143,7 +143,8 @@ public class EmployeeDeduction extends BaseUI {
 			}
 		});
 		loadDedcnList();
-		cbFlatPercnt = new GERPComboBox("Flat/Percent", BASEConstants.T_HCM_EMPLOYEE_DEDUCTION, BASEConstants.FLAT_PERCENT);
+		cbFlatPercnt = new GERPComboBox("Flat/Percent", BASEConstants.T_HCM_EMPLOYEE_DEDUCTION,
+				BASEConstants.FLAT_PERCENT);
 		cbFlatPercnt.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -208,8 +209,7 @@ public class EmployeeDeduction extends BaseUI {
 		try {
 			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, companyId, null, null,
-					null, "P"));
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, companyId, null, null, null, "P"));
 			cbEmpName.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
@@ -221,8 +221,7 @@ public class EmployeeDeduction extends BaseUI {
 		try {
 			BeanContainer<Long, DeductionDM> beanDeduction = new BeanContainer<Long, DeductionDM>(DeductionDM.class);
 			beanDeduction.setBeanIdProperty("deductionId");
-			beanDeduction.addAll(serviceDeduction.getDuctionList(null, null, companyId, null, null,
-					"F"));
+			beanDeduction.addAll(serviceDeduction.getDuctionList(null, null, companyId, null, null, "F"));
 			cbDedcnCode.setContainerDataSource(beanDeduction);
 		}
 		catch (Exception ex) {
@@ -360,40 +359,39 @@ public class EmployeeDeduction extends BaseUI {
 	}
 	
 	private void editEmpDeduction() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			EmployeeDeductionDM empDedctn = beanEmployeeDecn.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbEmpName.setValue(empDedctn.getEmployeeid());
-			cbDedcnCode.setValue(empDedctn.getDednid());
-			cbFlatPercnt.setValue(empDedctn.getIsflatpt());
-			if (empDedctn.getDednpt() != null) {
-				tfDecnPerct.setValue(itselect.getItemProperty("dednpt").getValue().toString());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			EmployeeDeductionDM empDeduction = beanEmployeeDecn.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			cbEmpName.setValue(empDeduction.getEmployeeid());
+			cbDedcnCode.setValue(empDeduction.getDednid());
+			cbFlatPercnt.setValue(empDeduction.getIsflatpt());
+			if (empDeduction.getDednpt() != null) {
+				tfDecnPerct.setValue(empDeduction.getDednpt().toString());
 			}
 			prevspt = (new BigDecimal(tfDecnPerct.getValue()));
-			if (empDedctn.getDednamt() != null) {
-				tfDecnAmt.setValue(itselect.getItemProperty("dednamt").getValue().toString());
+			if (empDeduction.getDednamt() != null) {
+				tfDecnAmt.setValue(empDeduction.getDednamt().toString());
 				prevsamt = (new BigDecimal(tfDecnAmt.getValue()));
-				if (empDedctn.getEffdt() != null) {
-					dfEffDt.setValue(empDedctn.getEffdt());
+				if (empDeduction.getEffdt() != null) {
+					dfEffDt.setValue(empDeduction.getEffdt());
 				}
-				if (empDedctn.getPreamt() != null) {
-					tfPreAmt.setValue(itselect.getItemProperty("preamt").getValue().toString());
+				if (empDeduction.getPreamt() != null) {
+					tfPreAmt.setValue(empDeduction.getPreamt().toString());
 				}
-				if (empDedctn.getPrevpt() != null) {
-					tfPrePercnt.setValue(itselect.getItemProperty("prevpt").getValue().toString());
+				if (empDeduction.getPrevpt() != null) {
+					tfPrePercnt.setValue(empDeduction.getPrevpt().toString());
 				}
-				if (empDedctn.getLastpaiddt() != null) {
-					dfLastPaidDt.setValue(empDedctn.getLastpaiddt());
+				if (empDeduction.getLastpaiddt() != null) {
+					dfLastPaidDt.setValue(empDeduction.getLastpaiddt());
 				}
-				if (empDedctn.getNxtpymtdt() != null) {
-					dfNextPayDt.setValue(empDedctn.getNxtpymtdt());
+				if (empDeduction.getNxtpymtdt() != null) {
+					dfNextPayDt.setValue(empDeduction.getNxtpymtdt());
 				}
-				if (empDedctn.getArrearflag().equals("Y")) {
+				if (empDeduction.getArrearflag().equals("Y")) {
 					ckFlag.setValue(true);
 				} else {
 					ckFlag.setValue(false);
 				}
-				cbStatus.setValue(itselect.getItemProperty("empdednstatus").getValue());
+				cbStatus.setValue(empDeduction.getEmpdednstatus());
 			}
 		}
 	}

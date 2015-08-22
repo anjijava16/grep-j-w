@@ -289,6 +289,14 @@ public class Extruder extends BaseTransUI {
 		loadOPMaterialList();
 		tfExtRefNo = new GERPTextField("Extruder Ref.No");
 		dfExtDt = new GERPPopupDateField("Extruder Date");
+		dfExtDt.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				dfProdDt.setValue(dfExtDt.getValue());
+			}
+		});
 		tfGradeNo = new GERPTextField("Grade No.");
 		tfGradeNo.setWidth("140");
 		tfLotNo = new GERPTextField("Lot No.");
@@ -466,7 +474,7 @@ public class Extruder extends BaseTransUI {
 		// Adding Dtl Components
 		flExtDtlCol1 = new FormLayout();
 		flExtDtlCol2 = new FormLayout();
-		flExtDtlCol1.addComponent(dfProdDt);
+		//flExtDtlCol1.addComponent(dfProdDt);
 		flExtDtlCol1.addComponent(tfOpQty);
 		flExtDtlCol1.addComponent(tiChrgStTm);
 		flExtDtlCol1.addComponent(tiChargEdTm);
@@ -632,7 +640,6 @@ public class Extruder extends BaseTransUI {
 		tfGradeNo.setValue("");
 		tfLotNo.setReadOnly(false);
 		tfLotNo.setValue("");
-		tfLotNo.setReadOnly(true);
 		tiHeatngTime.setValue(null);
 		taInstruct.setValue(null);
 		cbMaterial.setValue(null);
@@ -835,19 +842,7 @@ public class Extruder extends BaseTransUI {
 		}
 		catch (Exception e) {
 		}
-		try {
-			tfLotNo.setReadOnly(false);
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STT_MF_EXTLOTNO").get(
-					0);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfLotNo.setValue(slnoObj.getKeyDesc());
-				tfLotNo.setReadOnly(true);
-			} else {
-				tfLotNo.setReadOnly(false);
-			}
-		}
-		catch (Exception e) {
-		}
+
 		tblDtl.setVisible(true);
 		tblMtrl.setVisible(true);
 		tblTemp.setVisible(true);
@@ -1264,7 +1259,8 @@ public class Extruder extends BaseTransUI {
 		BeanContainer<Long, AssetDetailsDM> beanAssetdetail = new BeanContainer<Long, AssetDetailsDM>(
 				AssetDetailsDM.class);
 		beanAssetdetail.setBeanIdProperty("assetId");
-		beanAssetdetail.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null,null, "Active"));
+		beanAssetdetail.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, (long) 1305, (long) 201,
+				"7050", "Active"));
 		cbMachineName.setContainerDataSource(beanAssetdetail);
 	}
 	

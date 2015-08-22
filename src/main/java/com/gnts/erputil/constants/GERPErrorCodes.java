@@ -484,6 +484,7 @@ public class GERPErrorCodes {
 	public static String SMS_QTY = "Please Enter Quantity";
 	public static String ORDER_TYPE = "Please Select Order";
 	public static String QUOTE_NO = "Please Select Order";
+	public static String QUOTE_REF_NO = "Please Select Quote Ref No";
 	public static String BASIC_VALUE = "Please Enter Basic Values";
 	public static String PURCAHSE_ORD_NO = "Please Select PO No.";
 	public static String EXP_DAL_DATE = "Please Select Expected Delivery Date";

@@ -379,7 +379,8 @@ public class IndentIssue extends BaseTransUI {
 			tblIndtIssueDtl.setContainerDataSource(beanIndentIssueDtlDM);
 			tblIndtIssueDtl.setVisibleColumns(new Object[] { "materialName", "issueQty", "status", "lastUpdatedDt",
 					"lastUpdatedBy" });
-			tblIndtIssueDtl.setColumnHeaders(new String[] { "Material", "Issue Qty", "Status", "Updated Date", "Updated By" });
+			tblIndtIssueDtl.setColumnHeaders(new String[] { "Material", "Issue Qty", "Status", "Updated Date",
+					"Updated By" });
 			tblIndtIssueDtl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 			tblIndtIssueDtl.setPageLength(10);
 		}
@@ -667,7 +668,8 @@ public class IndentIssue extends BaseTransUI {
 			indentObj.setLast_updated_by(username);
 			serviceIndentHdr.saveorUpdateIndentIssueHdrDetails(indentObj);
 			@SuppressWarnings("unchecked")
-			Collection<IndentIssueDtlDM> colPlanDtls = ((Collection<IndentIssueDtlDM>) tblIndtIssueDtl.getVisibleItemIds());
+			Collection<IndentIssueDtlDM> colPlanDtls = ((Collection<IndentIssueDtlDM>) tblIndtIssueDtl
+					.getVisibleItemIds());
 			for (IndentIssueDtlDM saveDtl : (Collection<IndentIssueDtlDM>) colPlanDtls) {
 				saveDtl.setIssueId(indentObj.getIssueId());
 				saveDtl.setIndentId(indentObj.getIndentId());
@@ -805,7 +807,7 @@ public class IndentIssue extends BaseTransUI {
 					if (cbDtlStatus.getValue() != null) {
 						indentDtlObj.setStatus((String) cbDtlStatus.getValue());
 					}
-					tfIssueQty.setReadOnly(false);		
+					tfIssueQty.setReadOnly(false);
 					if (tfIssueQty.getValue() != null) {
 						indentDtlObj.setStockQty(Long.parseLong(tfStockQty.getValue()));
 					}
@@ -877,12 +879,18 @@ public class IndentIssue extends BaseTransUI {
 	}
 	
 	private void loadCalc() {
-		tfStockQty.setReadOnly(false);
-		if (cbMatName != null && tfIssueQty != null) {
-			Long ltotalOty = new BigDecimal(tfStockQty.getValue()).subtract(new BigDecimal(tfIssueQty.getValue())).longValue();
-			tfStockQty.setValue(ltotalOty.toString());
+		try {
+			tfStockQty.setReadOnly(false);
+			if (cbMatName != null && tfIssueQty != null) {
+				Long ltotalOty = new BigDecimal(tfStockQty.getValue()).subtract(new BigDecimal(tfIssueQty.getValue()))
+						.longValue();
+				tfStockQty.setValue(ltotalOty.toString());
+			}
+			tfStockQty.setReadOnly(true);
 		}
-		tfStockQty.setReadOnly(true);
+		catch (Exception e) {
+			e.printStackTrace();  
+		}
 	}
 	
 	private void deleteDetails() {

@@ -456,7 +456,7 @@ public class POMMSReceipts extends BaseTransUI {
 	// Load Purchase order No
 	private void loadPoNo() {
 		BeanItemContainer<POHdrDM> beanPurPoDM = new BeanItemContainer<POHdrDM>(POHdrDM.class);
-		beanPurPoDM.addAll(serviceMMSPOHdr.getPOHdrList(null, null, null, null, null, null, "P"));
+		beanPurPoDM.addAll(serviceMMSPOHdr.getPOHdrList(null, null, null, null, null, null, null, "P"));
 		cbPoNo.setContainerDataSource(beanPurPoDM);
 	}
 	
@@ -472,9 +472,14 @@ public class POMMSReceipts extends BaseTransUI {
 	
 	// Load Material List
 	private void loadMaterial() {
-		BeanItemContainer<MmsPoDtlDM> beanProduct = new BeanItemContainer<MmsPoDtlDM>(MmsPoDtlDM.class);
-		beanProduct.addAll(serviceMMSPODtls.getpodtllist(((POHdrDM) cbPoNo.getValue()).getPoId(), null, null, "F"));
-		cbMaterial.setContainerDataSource(beanProduct);
+		try {
+			BeanItemContainer<MmsPoDtlDM> beanProduct = new BeanItemContainer<MmsPoDtlDM>(MmsPoDtlDM.class);
+			beanProduct.addAll(serviceMMSPODtls.getpodtllist(((POHdrDM) cbPoNo.getValue()).getPoId(), null, null, "F"));
+			cbMaterial.setContainerDataSource(beanProduct);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	// Load Branch List
@@ -987,10 +992,9 @@ public class POMMSReceipts extends BaseTransUI {
 		cbMaterialUOM.setComponentError(null);
 		new UploadDocumentUI(hlevdDoc);
 	}
-
+	
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
-		
 	}
 }

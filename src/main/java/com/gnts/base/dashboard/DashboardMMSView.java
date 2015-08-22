@@ -217,7 +217,7 @@ public class DashboardMMSView implements ClickListener {
 	private void loadPaymentPendingDetails() {
 		tblPaymentPending.removeAllItems();
 		BeanItemContainer<POHdrDM> beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
-		beanpohdr.addAll(servicepohdr.getPOHdrList(companyId, null, null, null, null, null, "P"));
+		beanpohdr.addAll(servicepohdr.getPOHdrList(companyId, null, null, null, null, null, null, "P"));
 		tblPaymentPending.setContainerDataSource(beanpohdr);
 		tblPaymentPending.setVisibleColumns(new Object[] { "pono", "vendorName", "balancePayAmount" });
 		tblPaymentPending.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Balance Amount(Rs.)" });
@@ -250,7 +250,7 @@ public class DashboardMMSView implements ClickListener {
 	private void loadDeliveryDetails() {
 		tblDeliveryPending.removeAllItems();
 		BeanItemContainer<POHdrDM> beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
-		beanpohdr.addAll(servicepohdr.getPOHdrList(companyId, null, null, null, null, null, "P"));
+		beanpohdr.addAll(servicepohdr.getPOHdrList(companyId, null, null, null, null, null, null, "P"));
 		tblDeliveryPending.setContainerDataSource(beanpohdr);
 		tblDeliveryPending.setVisibleColumns(new Object[] { "pono", "vendorName", "expDate" });
 		tblDeliveryPending.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Delivery Date" });

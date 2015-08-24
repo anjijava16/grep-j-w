@@ -140,6 +140,7 @@ public class MaterialGatepass extends BaseTransUI {
 		tfGatePassQty.setValue("0");
 		tfGatePassQty.setWidth("90");
 		tfReturnQty = new GERPTextField("Return Quantity.");
+		tfReturnQty.setValue("0");
 		cbGoods = new GERPComboBox("Goods");
 		cbGoods.setItemCaptionPropertyId("gatepassDt");
 		loadgatepasslist();
@@ -229,6 +230,7 @@ public class MaterialGatepass extends BaseTransUI {
 		});
 		cbVendor = new GERPComboBox("Vendor");
 		cbVendor.setItemCaptionPropertyId("vendorName");
+		cbVendor.setRequired(true);
 		loadvendordetails();
 		cbVendor.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -484,15 +486,16 @@ public class MaterialGatepass extends BaseTransUI {
 	
 	private void loadvendordetails() {
 		BeanItemContainer<VendorDM> beanvendor = new BeanItemContainer<VendorDM>(VendorDM.class);
-		beanvendor.addAll(serviceVendor.getVendorList(null, null, companyId, null, null, null, null, null, null, null,
-				"P"));
+		beanvendor.addAll(serviceVendor.getVendorList(null, null, companyId, null, null, null, null, null, "Active",
+				null, "P"));
 		cbVendor.setContainerDataSource(beanvendor);
 	}
 	
 	private void loaddcdetails() {
 		BeanContainer<String, DcHdrDM> beanHdrDC = new BeanContainer<String, DcHdrDM>(DcHdrDM.class);
 		beanHdrDC.setBeanIdProperty("dcNo");
-		beanHdrDC.addAll(serviceDCHdr.getMmsDcHdrList(null, null, companyId, null, null, null, null, null, null, "F"));
+		beanHdrDC.addAll(serviceDCHdr.getMmsDcHdrList(null, null, companyId, null, null, null, null, null, "Active",
+				"F"));
 		cbVendorDCNo.setContainerDataSource(beanHdrDC);
 	}
 	
@@ -521,8 +524,8 @@ public class MaterialGatepass extends BaseTransUI {
 	
 	private void loadMateriallist() {
 		BeanItemContainer<MaterialDM> beanmaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanmaterial.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null, null,
-				"P"));
+		beanmaterial.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null,
+				"Active", "P"));
 		cbMaterial.setContainerDataSource(beanmaterial);
 	}
 	
@@ -542,7 +545,7 @@ public class MaterialGatepass extends BaseTransUI {
 	private void loadDCList() {
 		BeanContainer<Long, DcHdrDM> beanDC = new BeanContainer<Long, DcHdrDM>(DcHdrDM.class);
 		beanDC.setBeanIdProperty("dcId");
-		beanDC.addAll(servicedc.getMmsDcHdrList(null, null, companyId, null, null, null, null, null, null, "F"));
+		beanDC.addAll(servicedc.getMmsDcHdrList(null, null, companyId, null, null, null, null, null, "Active", "F"));
 		cbDC.setContainerDataSource(beanDC);
 	}
 	
@@ -720,6 +723,16 @@ public class MaterialGatepass extends BaseTransUI {
 		} else {
 			cbVendor.setComponentError(null);
 		}
+		/*
+		 * if (tfGatePassQty.getValue().equals("0")) { tfGatePassQty.setComponentError(new
+		 * UserError(GERPErrorCodes.NULL_GATEPASSQTY)); }
+		 */
+		/*
+		 * Long achievedQty; try { achievedQty = Long.valueOf(tfGatePassQty.getValue()); if (achievedQty > 0) {
+		 * tfGatePassQty.setComponentError(new UserError(GERPErrorCodes.NULL_GATEPASSQTY)); errorflag = true; } } catch
+		 * (Exception e) { tfGatePassQty.setComponentError(new UserError(GERPErrorCodes.UNITRATE_NUMBER_VALIDATIONS));
+		 * errorflag = true; }
+		 */
 		if (tblGatepassDetails.size() == 0) {
 			cbGoodsType.setComponentError(new UserError(GERPErrorCodes.NULL_POMATERIAL_UOM));
 			cbGoodsUom.setComponentError(new UserError(GERPErrorCodes.NULL_POMATERIAL_UOM));
@@ -757,7 +770,8 @@ public class MaterialGatepass extends BaseTransUI {
 		cbMaterial.setComponentError(null);
 		cbProduct.setComponentError(null);
 		cbGoodsUom.setComponentError(null);
-		tfGatePassQty.setValue("");
+		tfGatePassQty.setComponentError(null);
+		tfGatePassQty.setValue("0");
 		cbGoodsUom.setReadOnly(false);
 		cbGoodsUom.setValue(null);
 		cbGoodsUom.setReadOnly(true);
@@ -766,7 +780,7 @@ public class MaterialGatepass extends BaseTransUI {
 		tagoodsdesc.setValue("");
 		cbdtlstatus.setValue(cbdtlstatus.getItemIds().iterator().next());
 		taRemarks.setValue("");
-		tfReturnQty.setValue("");
+		tfReturnQty.setValue("0");
 		btnAddDtl.setComponentError(null);
 	}
 	
@@ -879,6 +893,7 @@ public class MaterialGatepass extends BaseTransUI {
 		tblGatepassDetails.removeAllItems();
 		tblMstScrSrchRslt.setVisible(true);
 		cbGatepasstype.setRequired(false);
+		cbVendor.setRequired(false);
 		resetFields();
 		loadSrchRslt();
 	}

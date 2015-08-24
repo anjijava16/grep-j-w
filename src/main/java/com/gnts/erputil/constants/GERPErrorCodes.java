@@ -14,8 +14,6 @@
  *
  */
 package com.gnts.erputil.constants;
-
-
 public class GERPErrorCodes {
 	// Common
 	public static String DATE_OUTOFRANGE = "End Date should be greater than Start Date";
@@ -33,7 +31,6 @@ public class GERPErrorCodes {
 	public static String END_DATE = "Give End Date";
 	public static String CB_VALUES = "This field should not be null";
 	public static String SELECT_DATE = "Please select date";
-	
 	// Org.News
 	public static String NULL_ORG_NEWS = "please enter News";
 	public static String DATE_VLIDTN = "Start date should be greater than end Date";
@@ -64,7 +61,6 @@ public class GERPErrorCodes {
 	// Client
 	public static String NULL_CLNT_NAME = "Please enter Client  Name";
 	public static String NULL_CLNT_CODE = "Please enter Client  Code";
-
 	// Client
 	public static String NULL_CASE_TITLE = "Please enter ClientCase Title";
 	public static String NULL_CASE_Category = "select casecategory ";
@@ -338,7 +334,6 @@ public class GERPErrorCodes {
 	// Test Group
 	public static String NULL_TEST_GROUP_NAME = "Please enter test group";
 	public static String EXIST_TEST_GROUP_NAME = "The test group name is already exist, pls enter new group";
-
 	// QATest Type
 	public static String NULL_TEST_TYPE = "Please enter test type";
 	public static String NULL_TEST_GROUP = "Please select test group";
@@ -378,7 +373,6 @@ public class GERPErrorCodes {
 	public static String NULL_QC_FAILED = "Enter failed quantity in number only";
 	public static String QC_INCORT_FALDQTY = "Failed quanity should not greater than Sample Tested";
 	public static String EXCEED_QTY = "Test quantity should not more than Batch Qty";
-
 	//
 	// Work Order Header
 	public static String NULL_WORK_ORDER_HDR_WO_ODR_NO = "Work Order number already exist";
@@ -469,6 +463,7 @@ public class GERPErrorCodes {
 	public static String NULL_BALANCE_QTY = "Please enter Balance Qty.";
 	public static String NULL_Issue_To = "Please choose Issue To";
 	public static String NULL_RETURN_REASON = "Please choose Return Reason";
+	public static String NULL_GATEPASSQTY = "Please Enter Gatepass Quantity";
 	// BOM Setup
 	public static String NULL_PRODUCT_BOM_HEADER_NAME = "Please Select Product";
 	public static String NULL_PRODUCT_BOM_BRANCH = "Please Select Branch";
@@ -488,7 +483,6 @@ public class GERPErrorCodes {
 	public static String BASIC_VALUE = "Please Enter Basic Values";
 	public static String PURCAHSE_ORD_NO = "Please Select PO No.";
 	public static String EXP_DAL_DATE = "Please Select Expected Delivery Date";
-
 	public static String REGECT_REASON = "Please Enter Reject Reason";
 	public static String REGECT_QTY = "Reject Qty should be greater than zero";
 	public static String RECEIPT_QTY = "Receipt Qty value should be greater than zero";
@@ -530,6 +524,8 @@ public class GERPErrorCodes {
 	public static String QUNATITY_CHAR_VALIDATIONHCM = "Please Enter Business Value in Number Only";
 	public static String UNITRATE_CHAR_VALIDATION = "Please Enter Unit Rate in Number Only";
 	public static String UNITRATE_NUMBER_VALIDATION = "Please Enter Unit Rate in Should Be Greater Then Zero";
+	public static String UNITRATE_NUMBER_VALIDATIONS = "Please Enter Quatity and  Should Be Greater Then Zero";
+
 	public static String NULL_HEATING_TIME = "Please select the heating time";
 	public static String NULL_CHARGE_TIME = "Please select the charge start time";
 	public static String NULL_CHARGE_END_TIME = "Please select the charge end time";
@@ -552,7 +548,6 @@ public class GERPErrorCodes {
 	public static String NULL_BADDR = "Please Enter Branch Address";
 	public static String NULL_PAR_PRDT = "Please Select Parent Product";
 	public static String NULL_PRICE = "Please Enter Branch Address";
-	
-	//Required
-	public static String REQUIRED ="Required";
+	// Required
+	public static String REQUIRED = "Required";
 }

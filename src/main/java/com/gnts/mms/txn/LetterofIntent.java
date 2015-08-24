@@ -307,9 +307,9 @@ public class LetterofIntent extends BaseTransUI {
 		flIndentDtlCol4 = new FormLayout();
 		flIndentDtlCol1.addComponent(cbMatName);
 		HorizontalLayout hlQtyUom = new HorizontalLayout();
+		hlQtyUom.setCaption("Qty123");
 		hlQtyUom.addComponent(tfIntQty);
 		hlQtyUom.addComponent(cbUom);
-		hlQtyUom.setCaption("Qty");
 		cbUom.setWidth("60");
 		flIndentDtlCol1.addComponent(hlQtyUom);
 		flIndentDtlCol1.setComponentAlignment(hlQtyUom, Alignment.TOP_LEFT);
@@ -710,6 +710,7 @@ public class LetterofIntent extends BaseTransUI {
 			}
 			loadSrchRslt();
 			loadLOIDetails();
+			 resetFields();
 		}
 		catch (Exception e) {
 			e.printStackTrace();

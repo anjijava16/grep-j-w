@@ -512,9 +512,9 @@ public class MaterialVendorBill extends BaseTransUI {
 		flDtlColumn5 = new FormLayout();
 		flDtlColumn1.addComponent(cbMaterial);
 		flDtlColumn1.addComponent(cbMatUom);
-		flDtlColumn1.addComponent(tfBasicValue);
+		flDtlColumn1.addComponent(tfreceiptQnty);
 		flDtlColumn2.addComponent(tfUnitRate);
-		flDtlColumn2.addComponent(tfreceiptQnty);
+		flDtlColumn2.addComponent(tfBasicValue);
 		flDtlColumn2.addComponent(tfrejectQty);
 		flDtlColumn3.addComponent(cbDtlStatus);
 		flDtlColumn3.addComponent(tarejectReason);
@@ -655,7 +655,7 @@ public class MaterialVendorBill extends BaseTransUI {
 	
 	private void loadPoNo() {
 		BeanItemContainer<POHdrDM> beanPurPoDM = new BeanItemContainer<POHdrDM>(POHdrDM.class);
-		beanPurPoDM.addAll(servicepoHdr.getPOHdrList(companyid, null, null, null, null, null, "F"));
+		beanPurPoDM.addAll(servicepoHdr.getPOHdrList(companyid, null, null, null, null, null, null, "F"));
 		cbpoNo.setContainerDataSource(beanPurPoDM);
 	}
 	
@@ -1048,10 +1048,18 @@ public class MaterialVendorBill extends BaseTransUI {
 			VendorBillHdrobj.setOtherValue(new BigDecimal(tfOtherValue.getValue()));
 			VendorBillHdrobj.setGrantTotal(new BigDecimal(tfGrandtotal.getValue()));
 			VendorBillHdrobj.setBillNo(tfbillNo.getValue());
-			VendorBillHdrobj.setPaymentTerms((tfpaymetTerms.getValue().toString()));
-			VendorBillHdrobj.setFrightTerms(tfFreightTerms.getValue().toString());
-			VendorBillHdrobj.setWarrantyTerms((tfWarrentyTerms.getValue().toString()));
-			VendorBillHdrobj.setDeliveryTerms(tfDelTerms.getValue().toString());
+			if (tfpaymetTerms.getValue().toString() != null) {
+				VendorBillHdrobj.setPaymentTerms(tfpaymetTerms.getValue());
+			}
+			if (tfFreightTerms.getValue().toString() != null) {
+				VendorBillHdrobj.setFrightTerms(tfFreightTerms.getValue());
+			}
+			if (tfWarrentyTerms.getValue().toString() != null) {
+				VendorBillHdrobj.setWarrantyTerms(tfWarrentyTerms.getValue());
+			}
+			if (tfDelTerms.getValue().toString() != null) {
+				VendorBillHdrobj.setDeliveryTerms(tfDelTerms.getValue());
+			}
 			if (ckDutyexm.getValue().equals(true)) {
 				VendorBillHdrobj.setDutyExempted("Y");
 			} else if (ckDutyexm.getValue().equals(false)) {
@@ -1094,6 +1102,7 @@ public class MaterialVendorBill extends BaseTransUI {
 				servicemmsvendorBillDtl.saveOrUpdatemmsvendrdtlDetails(save);
 			}
 			loadSrchRslt();
+			resetFields();
 		}
 		catch (Exception e) {
 			e.printStackTrace();

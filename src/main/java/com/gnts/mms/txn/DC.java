@@ -601,6 +601,7 @@ public class DC extends BaseTransUI {
 		taClientAddres.setValue("");
 		cbwindcommPerson.setContainerDataSource(null);
 		cbwindTechPers.setContainerDataSource(null);
+		cbEnquiry.setComponentError(null);
 		cbEnquiry.setValue(null);
 		cbEnquiry.setRequired(true);
 		DCDtlList = new ArrayList<DCDtlDM>();
@@ -837,6 +838,9 @@ public class DC extends BaseTransUI {
 		rfGoodsuom.setValue("");
 		rfGoodsuom.setReadOnly(true);
 		cbProduct.setComponentError(null);
+		cbMaterialId.setComponentError(null);
+		cbGoodsType.setComponentError(null);
+		tfDCQty.setComponentError(null);
 		cbGoodsStatus.setValue(cbGoodsStatus.getItemIds().iterator().next());
 	}
 	
@@ -844,6 +848,7 @@ public class DC extends BaseTransUI {
 		boolean errorflag = true;
 		cbProduct.setComponentError(null);
 		cbMaterialId.setComponentError(null);
+		cbGoodsType.setComponentError(null);
 		tfDCQty.setComponentError(null);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		if (cbGoodsType.getValue() == null) {
@@ -1008,6 +1013,7 @@ public class DC extends BaseTransUI {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		resetFields();
 	}
 	
 	private void saveDCDtlListDetails() {

@@ -136,7 +136,7 @@ public class ServiceCallForm extends BaseTransUI {
 	// Document Layout
 	private VerticalLayout hlDocumentLayout = new VerticalLayout();
 	// local variables declaration
-	private Long enquiryId;
+	private Long serCallFormId;
 	private String username;
 	private Long companyid, moduleId;
 	private int recordCnt = 0;
@@ -181,7 +181,7 @@ public class ServiceCallForm extends BaseTransUI {
 		cbinfnRecBy.setWidth("120");
 		loadInfrnRecBy();
 		cbDragNo = new GERPComboBox("Drawing No");
-		cbDragNo.setItemCaptionPropertyId("customField1");
+		cbDragNo.setItemCaptionPropertyId("customField2");
 		cbDragNo.setImmediate(true);
 		cbDragNo.setNullSelectionAllowed(false);
 		cbDragNo.setWidth("120");
@@ -450,7 +450,7 @@ public class ServiceCallForm extends BaseTransUI {
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "serCallFormId", "refDate", "enquiryNo", "clientName",
 				"type" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Ref.Date", "Enquiry No", "Client Name", "Type" });
-		tblMstScrSrchRslt.setColumnAlignment("enquiryId", Align.RIGHT);
+		tblMstScrSrchRslt.setColumnAlignment("serCallFormId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("", "No.of Records : " + recordCnt);
 	}
 	
@@ -521,7 +521,7 @@ public class ServiceCallForm extends BaseTransUI {
 		hllayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
 			ServiceCallFormDM serviceCallForm = beanServiceCallForm.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			enquiryId = serviceCallForm.getEnquiryId();
+			serCallFormId = serviceCallForm.getSerCallFormId();
 			cbEnquiryNumber.setValue(serviceCallForm.getEnquiryId());
 			cbBranch.setValue(serviceCallForm.getBranchId());
 			tfslno.setReadOnly(false);
@@ -839,9 +839,9 @@ public class ServiceCallForm extends BaseTransUI {
 	@Override
 	protected void showAuditDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Getting audit record for enquiryId " + enquiryId);
+				+ "Getting audit record for enquiryId " + serCallFormId);
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_SMS_ENQUIRY_HDR);
-		UI.getCurrent().getSession().setAttribute("audittablepk", String.valueOf(enquiryId));
+		UI.getCurrent().getSession().setAttribute("audittablepk", String.valueOf(serCallFormId));
 	}
 	
 	@Override
@@ -886,6 +886,7 @@ public class ServiceCallForm extends BaseTransUI {
 		cbClient.setRequired(true);
 		cbinfnRecBy.setRequired(true);
 		taMatReq.setRequired(true);
+		taMatReq.setValue("");
 		tfAlloDays.setRequired(true);
 		tftravelmode.setRequired(true);
 		tarootcauseanl.setRequired(true);
@@ -924,9 +925,9 @@ public class ServiceCallForm extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			parameterMap.put("ENQID", enquiryId);
+			parameterMap.put("SER_CALL_FORM_ID", serCallFormId);
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "/WEB-INF/reports/enquiryRpt"); // productlist is the name of my jasper
+			rpt.setReportName(basepath + "//WEB-INF//reports//servicecallform"); // productlist is the name of my jasper
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

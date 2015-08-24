@@ -1544,7 +1544,7 @@ public class SmsEnquiry extends BaseTransUI {
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
 			parameterMap.put("ENQID", enquiryId);
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "/WEB-INF/reports/enquiryRpt"); // productlist is the name of my jasper
+			rpt.setReportName(basepath + "//WEB-INF//reports//enquiryRpt"); // productlist is the name of my jasper
 			// file.
 			rpt.callReport(basepath, "Preview");
 		}

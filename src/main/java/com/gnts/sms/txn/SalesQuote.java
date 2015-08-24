@@ -1818,8 +1818,9 @@ public class SalesQuote extends BaseTransUI {
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
 			parameterMap.put("QTID", quoteId);
+			System.out.println("quote id"+quoteId);
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "/WEB-INF/reports/qutationReport"); // productlist is the name of my jasper
+			rpt.setReportName(basepath + "//WEB-INF//reports//qutationReport"); // productlist is the name of my jasper
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

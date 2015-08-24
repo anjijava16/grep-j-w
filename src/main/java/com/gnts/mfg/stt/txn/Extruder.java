@@ -13,7 +13,9 @@ import org.apache.log4j.Logger;
 import com.gnts.asm.domain.txn.AssetDetailsDM;
 import com.gnts.asm.service.txn.AssetDetailsService;
 import com.gnts.base.domain.mst.ApprovalSchemaDM;
+import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.SlnoGenDM;
+import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
@@ -87,6 +89,7 @@ public class Extruder extends BaseTransUI {
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private MaterialStockService serviceMaterialStock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
+	private CompanyLookupService servicecompany = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
 	private List<ExtrudersDtlDM> extrudersDtlList = new ArrayList<ExtrudersDtlDM>();
 	private List<ExtrudersMtrlDM> extrudersMtrlList = null;
 	private List<ExtrudersTempDM> extrudersTempList = null;
@@ -108,9 +111,8 @@ public class Extruder extends BaseTransUI {
 	private Button btnAddMtrl = new GERPButton("Add", "addbt", this);
 	private Button btnAddTemp = new GERPButton("Add", "addbt", this);
 	private ComboBox cbMtrlStatus, cbDtlStatus, cbTempStatus, cbMaterial, cbLotno;
-	private ComboBox cbMachineName, cbMatName, cbStockType;
-	private TextField tfExtRefNo, tfGradeNo, tfLotNo, tfExTPlnRef, tfOpQty, tfOeePerc, tfMtrlQty, tfZoneName,
-			tfTempValue;
+	private ComboBox cbMachineName, cbMatName, cbStockType, cbZoneName;
+	private TextField tfExtRefNo, tfGradeNo, tfLotNo, tfExTPlnRef, tfOpQty, tfOeePerc, tfMtrlQty, tfIsoNo, tfTempValue;
 	private PopupDateField dfExtDt, dfProdDt;
 	private GERPTimeField tiHeatngTime, tiChrgStTm, tiChargEdTm;
 	private TextArea taInstruct, taRemark;
@@ -167,7 +169,6 @@ public class Extruder extends BaseTransUI {
 			}
 		});
 		tfExTPlnRef = new TextField("Extruder Ref.No.");
-		btnAddMtrl.setEnabled(false);
 		btnAddMtrl.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
@@ -179,7 +180,6 @@ public class Extruder extends BaseTransUI {
 				}
 			}
 		});
-		btnAddTemp.setEnabled(false);
 		btnAddTemp.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
@@ -204,18 +204,12 @@ public class Extruder extends BaseTransUI {
 					btnAddDtls.setCaption("Add");
 					btnAddDtls.setStyleName("savebt");
 					asmblDtlResetFields();
-					btnAddMtrl.setEnabled(false);
-					btnAddTemp.setEnabled(false);
-					btnDeletedtl.setEnabled(false);
 					SetRequiredfalse();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnAddDtls.setCaption("Update");
 					btnAddDtls.setStyleName("savebt");
 					editDtls();
-					btnAddMtrl.setEnabled(true);
-					btnAddTemp.setEnabled(true);
-					btnDeletedtl.setEnabled(true);
 					SetRequiredtrue();
 				}
 			}
@@ -232,13 +226,11 @@ public class Extruder extends BaseTransUI {
 					btnAddMtrl.setCaption("Add");
 					btnAddMtrl.setStyleName("savebt");
 					extMtrlResetFields();
-					btnDeleteMtrl.setEnabled(false);
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnAddMtrl.setCaption("Update");
 					btnAddMtrl.setStyleName("savebt");
 					editMtrl();
-					btnDeleteMtrl.setEnabled(true);
 				}
 			}
 		});
@@ -254,13 +246,11 @@ public class Extruder extends BaseTransUI {
 					btnAddTemp.setCaption("Add");
 					btnAddTemp.setStyleName("savebt");
 					asmblTempResetFields();
-					btnDeleteZone.setEnabled(false);
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnAddTemp.setCaption("Update");
 					btnAddTemp.setStyleName("savebt");
 					editTemp();
-					btnDeleteZone.setEnabled(true);
 				}
 			}
 		});
@@ -269,13 +259,6 @@ public class Extruder extends BaseTransUI {
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblMstScrSrchRslt.isSelected(event.getItemId())) {
-					btnEdit.setEnabled(false);
-					btnAdd.setEnabled(true);
-				} else {
-					btnEdit.setEnabled(true);
-					btnAdd.setEnabled(false);
-				}
 				resetFields();
 			}
 		});
@@ -287,6 +270,9 @@ public class Extruder extends BaseTransUI {
 		cbMaterial.setItemCaptionPropertyId("materialName");
 		cbMaterial.setWidth("140");
 		loadOPMaterialList();
+		tfIsoNo = new GERPTextField("ISO DocNo.");
+		tfIsoNo.setValue("Test ISO No");
+		tfIsoNo.setReadOnly(true);
 		tfExtRefNo = new GERPTextField("Extruder Ref.No");
 		dfExtDt = new GERPPopupDateField("Extruder Date");
 		dfExtDt.addValueChangeListener(new ValueChangeListener() {
@@ -350,8 +336,9 @@ public class Extruder extends BaseTransUI {
 		tfMtrlQty.setWidth("140");
 		cbMtrlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// Initializing Temperature Details
-		tfZoneName = new GERPTextField("Zone Name");
-		tfZoneName.setWidth("150");
+		cbZoneName = new ComboBox("Zone Name");
+		cbZoneName.setWidth("150");
+		loadlookuplist();
 		tfTempValue = new GERPTextField("Temprature Value");
 		tfTempValue.setWidth("150");
 		cbTempStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
@@ -370,7 +357,6 @@ public class Extruder extends BaseTransUI {
 		}
 		catch (Exception e) {
 		}
-		btnDeletedtl.setEnabled(false);
 		btnDeletedtl.addClickListener(new ClickListener() {
 			/**
 			 * 
@@ -382,7 +368,6 @@ public class Extruder extends BaseTransUI {
 				deleteDtlDetails();
 			}
 		});
-		btnDeleteMtrl.setEnabled(false);
 		btnDeleteMtrl.addClickListener(new ClickListener() {
 			/**
 			 * 
@@ -394,7 +379,6 @@ public class Extruder extends BaseTransUI {
 				deleteMtrlDetails();
 			}
 		});
-		btnDeleteZone.setEnabled(false);
 		btnDeleteZone.addClickListener(new ClickListener() {
 			/**
 			 * 
@@ -456,7 +440,8 @@ public class Extruder extends BaseTransUI {
 		flHdrCol4 = new FormLayout();
 		new FormLayout();
 		flHdrCol1.addComponent(cbMachineName);
-		flHdrCol1.addComponent(tfExtRefNo);
+		// flHdrCol1.addComponent(tfExtRefNo);
+		flHdrCol1.addComponent(tfIsoNo);
 		flHdrCol1.addComponent(dfExtDt);
 		flHdrCol2.addComponent(tfGradeNo);
 		flHdrCol2.addComponent(tfLotNo);
@@ -474,7 +459,7 @@ public class Extruder extends BaseTransUI {
 		// Adding Dtl Components
 		flExtDtlCol1 = new FormLayout();
 		flExtDtlCol2 = new FormLayout();
-		//flExtDtlCol1.addComponent(dfProdDt);
+		// flExtDtlCol1.addComponent(dfProdDt);
 		flExtDtlCol1.addComponent(tfOpQty);
 		flExtDtlCol1.addComponent(tiChrgStTm);
 		flExtDtlCol1.addComponent(tiChargEdTm);
@@ -524,7 +509,7 @@ public class Extruder extends BaseTransUI {
 		vlMtrl.addComponent(tblMtrl);
 		// Adding Temp Components
 		flTempCol1 = new FormLayout();
-		flTempCol1.addComponent(tfZoneName);
+		flTempCol1.addComponent(cbZoneName);
 		flTempCol1.addComponent(tfTempValue);
 		HorizontalLayout hlTemp = new HorizontalLayout();
 		hlTemp.addComponent(btnAddTemp);
@@ -659,7 +644,7 @@ public class Extruder extends BaseTransUI {
 		tfMtrlQty.setValue("");
 		cbMtrlStatus.setValue(cbMtrlStatus.getItemIds().iterator().next());
 		// Extruders Temperature Resetfields
-		tfZoneName.setValue(null);
+		cbZoneName.setValue(null);
 		tfTempValue.setValue(null);
 		cbMachineName.setComponentError(null);
 		dfExtDt.setComponentError(null);
@@ -768,7 +753,7 @@ public class Extruder extends BaseTransUI {
 			ExtrudersTempDM extrudersTempDM = new ExtrudersTempDM();
 			extrudersTempDM = beanExtrudersTempDM.getItem(tblTemp.getValue()).getBean();
 			extrudersTempDM.getExtTmprId();
-			tfZoneName.setValue(extrudersTempDM.getZoneName());
+			cbZoneName.setValue(extrudersTempDM.getZoneName());
 			tfTempValue.setValue(extrudersTempDM.getTemprValue());
 			if (extrudersTempDM.getStatus() != null) {
 				cbTempStatus.setValue(extrudersTempDM.getStatus());
@@ -842,12 +827,9 @@ public class Extruder extends BaseTransUI {
 		}
 		catch (Exception e) {
 		}
-
 		tblDtl.setVisible(true);
 		tblMtrl.setVisible(true);
 		tblTemp.setVisible(true);
-		btnAddMtrl.setEnabled(false);
-		btnAddTemp.setEnabled(false);
 		loadAsmbDtlList();
 		loadMtrlRslt();
 		loadTempRslt();
@@ -931,6 +913,15 @@ public class Extruder extends BaseTransUI {
 		cbDtlStatus.setValue(cbHdrStatus.getItemIds().iterator().next());
 	}
 	
+	// this method use to Load lookup Name list inside of ComboBox
+	private void loadlookuplist() {
+		BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
+				CompanyLookupDM.class);
+		beanlook.setBeanIdProperty("lookupname");
+		beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyid, moduleId, "Active", "MP_ZONNAME"));
+		cbZoneName.setContainerDataSource(beanlook);
+	}
+	
 	private void extMtrlResetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbMatName.setValue(null);
@@ -942,7 +933,7 @@ public class Extruder extends BaseTransUI {
 	
 	private void asmblTempResetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		tfZoneName.setValue(null);
+		cbZoneName.setValue(null);
 		tfTempValue.setValue(null);
 		cbTempStatus.setValue(cbTempStatus.getItemIds().iterator().next());
 	}
@@ -1072,13 +1063,13 @@ public class Extruder extends BaseTransUI {
 	
 	private boolean validateTempDetails() {
 		boolean isValid = true;
-		if (tfZoneName.getValue() == null && tfZoneName.getValue().trim().length() == 0) {
-			tfZoneName.setComponentError(new UserError(GERPErrorCodes.NULL_ZONE_NAME));
+		if (cbZoneName.getValue() == null) {
+			cbZoneName.setComponentError(new UserError(GERPErrorCodes.NULL_ZONE_NAME));
 			isValid = false;
 		} else {
-			tfZoneName.setComponentError(null);
+			cbZoneName.setComponentError(null);
 		}
-		if (tfTempValue.getValue() == null && tfZoneName.getValue().trim().length() == 0) {
+		if (tfTempValue.getValue() == null && ((String) cbZoneName.getValue()).trim().length() == 0) {
 			tfTempValue.setComponentError(new UserError(GERPErrorCodes.NULL_TEMP));
 			isValid = false;
 		} else {
@@ -1239,7 +1230,7 @@ public class Extruder extends BaseTransUI {
 				extruderTempObj = beanExtrudersTempDM.getItem(tblTemp.getValue()).getBean();
 			}
 			extruderTempObj.setExtDtlId(extrudersDtlDM.getExtDtlId());
-			extruderTempObj.setZoneName(tfZoneName.getValue());
+			extruderTempObj.setZoneName((String) cbZoneName.getValue());
 			extruderTempObj.setTemprValue(tfTempValue.getValue());
 			extruderTempObj.setStatus("Active");
 			extruderTempObj.setLastUpdatedDt(DateUtils.getcurrentdate());
@@ -1259,14 +1250,15 @@ public class Extruder extends BaseTransUI {
 		BeanContainer<Long, AssetDetailsDM> beanAssetdetail = new BeanContainer<Long, AssetDetailsDM>(
 				AssetDetailsDM.class);
 		beanAssetdetail.setBeanIdProperty("assetId");
-		beanAssetdetail.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, (long) 1305, (long) 201,
-				"7050", "Active"));
+		beanAssetdetail.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null, "7050",
+				"Active"));
 		cbMachineName.setContainerDataSource(beanAssetdetail);
 	}
 	
 	private void loadMaterialList() {
+		Long materialId = new Long("229");
 		BeanItemContainer<MaterialDM> beanMaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanMaterial.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
+		beanMaterial.addAll(serviceMaterial.getMaterialList(materialId, companyid, null, null, null, null, null, null,
 				"Active", "P"));
 		cbMatName.setContainerDataSource(beanMaterial);
 	}
@@ -1298,7 +1290,6 @@ public class Extruder extends BaseTransUI {
 			extrudersDtlList.remove(extrudersDtlDM);
 			asmblDtlResetFields();
 			loadAsmbDtlList();
-			btnDeletedtl.setEnabled(false);
 		}
 	}
 	
@@ -1314,7 +1305,6 @@ public class Extruder extends BaseTransUI {
 			}
 			extMtrlResetFields();
 			loadMtrlRslt();
-			btnDeleteMtrl.setEnabled(false);
 		}
 	}
 	
@@ -1331,7 +1321,6 @@ public class Extruder extends BaseTransUI {
 			}
 			asmblTempResetFields();
 			loadTempRslt();
-			btnDeletedtl.setEnabled(false);
 		}
 	}
 	
@@ -1339,7 +1328,7 @@ public class Extruder extends BaseTransUI {
 		cbMatName.setRequired(true);
 		// cbLotno.setRequired(true);
 		tfMtrlQty.setRequired(true);
-		tfZoneName.setRequired(true);
+		cbZoneName.setRequired(true);
 		tfTempValue.setRequired(true);
 	}
 	
@@ -1347,7 +1336,7 @@ public class Extruder extends BaseTransUI {
 		cbMatName.setRequired(false);
 		cbLotno.setRequired(false);
 		tfMtrlQty.setRequired(false);
-		tfZoneName.setRequired(false);
+		cbZoneName.setRequired(false);
 		tfTempValue.setRequired(false);
 	}
 	

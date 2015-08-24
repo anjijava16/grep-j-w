@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
+import com.gnts.erputil.constants.GERPConstants;
 import com.vaadin.data.Property;
 import com.vaadin.shared.ui.datefield.Resolution;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.DateField;
@@ -23,9 +25,9 @@ public class GERPTimeField extends CustomField<Date> {
 	private static final long serialVersionUID = -676425827861766118L;
 	private boolean use24HourClock = true;
 	private Locale givenLocale = null;
-	private final NativeSelect hourSelect;
-	private final NativeSelect minuteSelect;
-	private final NativeSelect secondSelect;
+	private final ComboBox hourSelect;
+	private final ComboBox minuteSelect;
+	private final ComboBox secondSelect;
 	private Resolution resolution = Resolution.MINUTE;
 	private int intervalMinutes = 1;
 	private int minHours = 0;
@@ -41,8 +43,10 @@ public class GERPTimeField extends CustomField<Date> {
 	
 	public GERPTimeField() {
 		hourSelect = getSelect();
+		hourSelect.setInputPrompt("HH");
 		hourSelect.setWidth("60px");
 		minuteSelect = getSelect();
+		minuteSelect.setInputPrompt("MM");
 		minuteSelect.setWidth("60px");
 		secondSelect = getSelect();
 		secondSelect.setWidth("60px");
@@ -161,8 +165,8 @@ public class GERPTimeField extends CustomField<Date> {
 		}
 	}
 	
-	private NativeSelect getSelect() {
-		NativeSelect select = new NativeSelect();
+	private ComboBox getSelect() {
+		ComboBox select = new ComboBox();
 		select.setImmediate(true);
 		select.setNullSelectionAllowed(false);
 		select.addValueChangeListener(new Property.ValueChangeListener() {

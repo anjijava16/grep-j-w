@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="servicecallform" pageWidth="595" pageHeight="1200" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2b31763f-f900-4eec-ad1c-176b6a1f149c">
+	<property name="ireport.zoom" value="1.2100000000000055"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SER_CALL_FORM_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT a.SL_NO,b.ENQUIRY_NO,c.CLIENT_CODE,a.REF_DATE,a.TYPE,d.PO_NO,d.PO_DATE,e.WO_NO,a.CUSTOMER_DETAILS,a.SERV_DESC,a.COMN_MODE,
+a.MAT_REQUIREMENT,a.ALLOT_DAYS,a.PERSONS_ALLOT,a.TRAVEL_MODE,a.SERVICE_EXPENSES,a.SER_START_DT,a.SER_END_DT,a.NO_DAYS_WORKED,a.PROBLEM_DESC,a.ROOT_CAUSE_ANAL
+,a.CORRECT_ACTION,a.PREV_ACTION,F.CUST_FLD1
+FROM T_SMS_SER_CALL_FORM a,
+T_SMS_ENQUIRY_HDR b,M_CRM_CLIENTS c ,T_SMS_PO_HDR d,T_MFG_WORKORDER_HDR e,T_SMS_ENQUIRY_DTL F where a.ENQUIRY_ID=b.ENQUIRY_ID and
+a.CLIENT_ID=c.CLIENT_ID and a.WO_ID=e.WO_ID(+) and a.PO_ID=d.PO_ID(+) AND b.ENQUIRY_ID=F.ENQUIRY_ID and a.SER_CALL_FORM_ID=$P{SER_CALL_FORM_ID}]]>
+	</queryString>
+	<field name="SL_NO" class="java.math.BigDecimal"/>
+	<field name="ENQUIRY_NO" class="java.lang.String"/>
+	<field name="CLIENT_CODE" class="java.lang.String"/>
+	<field name="REF_DATE" class="java.sql.Timestamp"/>
+	<field name="TYPE" class="java.lang.String"/>
+	<field name="PO_NO" class="java.lang.String"/>
+	<field name="PO_DATE" class="java.sql.Timestamp"/>
+	<field name="WO_NO" class="java.lang.String"/>
+	<field name="CUSTOMER_DETAILS" class="java.lang.String"/>
+	<field name="SERV_DESC" class="java.lang.String"/>
+	<field name="COMN_MODE" class="java.lang.String"/>
+	<field name="MAT_REQUIREMENT" class="java.lang.String"/>
+	<field name="ALLOT_DAYS" class="java.lang.String"/>
+	<field name="PERSONS_ALLOT" class="java.lang.String"/>
+	<field name="TRAVEL_MODE" class="java.lang.String"/>
+	<field name="SERVICE_EXPENSES" class="java.math.BigDecimal"/>
+	<field name="SER_START_DT" class="java.sql.Timestamp"/>
+	<field name="SER_END_DT" class="java.sql.Timestamp"/>
+	<field name="NO_DAYS_WORKED" class="java.math.BigDecimal"/>
+	<field name="PROBLEM_DESC" class="java.lang.String"/>
+	<field name="ROOT_CAUSE_ANAL" class="java.lang.String"/>
+	<field name="CORRECT_ACTION" class="java.lang.String"/>
+	<field name="PREV_ACTION" class="java.lang.String"/>
+	<field name="CUST_FLD1" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="260" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="100" width="555" height="160" uuid="53e73e49-5547-49d7-9f01-aa8f53792b5e"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="26" width="555" height="74" uuid="a294eeff-84ce-435b-8dd0-4c38b18011ae"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="126" width="140" height="20" uuid="705a1da9-3738-4725-b347-a068683a47d8"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Customer Details ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="160" width="141" height="20" uuid="3fbcf132-66a5-44bf-b6c0-0067a631e3ea"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Service Problem Requied *]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="202" width="140" height="20" uuid="3f348f85-d8c6-413e-b22e-74131c08f1e0"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Information Received By *]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="172" y="100" width="230" height="21" uuid="3dc7b02d-512b-4ddf-9450-42ee3b1c4801"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Marketing]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="36" width="71" height="13" uuid="f577498c-ff83-4bba-9fb5-2d84d57cc4b6"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[S. No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="53" width="70" height="15" uuid="6bd5f190-e746-4c9e-942b-70ff847262ba"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Enquiry No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="177" y="36" width="69" height="15" uuid="2db4ec89-87e9-440c-a8b3-7a081575ae2f"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cust. Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="71" width="69" height="17" uuid="efa8af28-e726-412f-862b-89f2356bfa37"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Drg. No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="177" y="53" width="69" height="15" uuid="ba696de8-fee1-4ec3-93b6-c71ea253fb26"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="354" y="36" width="48" height="17" uuid="aa48d6b8-1dcc-4c01-9a0f-972b4655d580"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="355" y="71" width="48" height="14" uuid="cd680f8f-1e8b-4fb7-b15b-5176b3287dc6"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PWO No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="354" y="53" width="49" height="18" uuid="2929d0eb-f9f7-47ee-9b0b-bf9cfd385e6f"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PO No&Dt]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="0" width="555" height="26" uuid="1c69a2e4-a75b-4c7e-8ace-f5f29329daf1"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="26" forecolor="#000000" uuid="057989b0-e4e3-4066-a606-de473cc5e781"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true" isItalic="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Service Call Form]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="450" y="240" width="81" height="20" uuid="c788c88f-735d-4759-aabb-0fbaea9c96b0"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[HOD - Marketing]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="74" y="36" width="100" height="13" uuid="cea408c8-9616-45f5-a2a2-b9d3b718551d"/>
+				<textFieldExpression><![CDATA[$F{SL_NO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="74" y="53" width="100" height="15" uuid="bc14f7a4-158e-4be9-988c-4c4a6b17c6ed"/>
+				<textFieldExpression><![CDATA[$F{ENQUIRY_NO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="246" y="36" width="102" height="13" uuid="38e07e59-ff91-40e3-ba0f-87f7811a7ecd"/>
+				<textFieldExpression><![CDATA[$F{CLIENT_CODE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="74" y="71" width="99" height="17" uuid="168d7532-1904-47a4-a936-3325619006e7"/>
+				<textFieldExpression><![CDATA[$F{CUST_FLD1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="246" y="53" width="102" height="13" uuid="45aebbcf-4fab-4e41-8a97-9ce05c1fd4de"/>
+				<textFieldExpression><![CDATA[$F{REF_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="402" y="36" width="148" height="17" uuid="93201885-dcd0-4909-b673-b631ef37efba"/>
+				<textFieldExpression><![CDATA[$F{TYPE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="402" y="53" width="87" height="18" uuid="15ef3bd8-80f3-4963-9810-4640295146b4"/>
+				<textFieldExpression><![CDATA[$F{PO_NO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="489" y="53" width="62" height="18" uuid="c2f0af59-f81e-46a7-b224-7372cd70de59"/>
+				<textFieldExpression><![CDATA[$F{PO_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="403" y="71" width="147" height="14" uuid="883ea247-3481-48c9-b0a2-35c2cedd1c39"/>
+				<textFieldExpression><![CDATA[$F{WO_NO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="149" y="126" width="398" height="34" uuid="0ec1820c-fd2a-4cae-91c4-b6af0f0afd95"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{CUSTOMER_DETAILS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="149" y="160" width="398" height="42" uuid="5945d88b-7545-4ae0-ad34-1050d8db3c82"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{PROBLEM_DESC}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="149" y="202" width="181" height="20" uuid="63d77254-d7f6-4b78-bae9-7830ab01806d"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{COMN_MODE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnFooter>
+		<band height="900">
+			<rectangle>
+				<reportElement x="0" y="280" width="555" height="175" uuid="1ee35138-ff9e-498d-9202-0699889044f5"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="0" width="555" height="280" uuid="1388f3be-215a-4ba1-9daa-d106680a119b"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="455" width="555" height="396" uuid="f87f0121-cd87-4001-be77-9e41880d7679"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="1" y="37" width="140" height="20" uuid="57d2cf36-8e88-47dc-8e42-0785b97016e5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Material Requirement *]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="164" y="0" width="230" height="26" uuid="c8ef7fef-ecaf-4d58-8f01-09f08341336e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Production]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="186" y="280" width="283" height="20" uuid="5dbc41d9-4ead-4d91-b045-6380a12f0b42"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Customer Acknowledgement for Service]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="308" width="131" height="20" uuid="a1d32e96-67e8-4cc4-814a-d20af52779fb"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Start Date /Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="289" y="308" width="100" height="20" uuid="4dce90b5-bd8f-4c78-bdd5-45978a4ae6b1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[End Date /Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="345" width="131" height="20" uuid="3871b592-8b7a-46c2-939a-82ec4783bdec"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Number of Days Worked]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="131" y="461" width="283" height="20" uuid="383c53a1-7e8e-4cf9-8f69-668c1792266e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Quality Control]]></text>
+			</staticText>
+			<line>
+				<reportElement x="3" y="579" width="547" height="1" uuid="f00c4069-c843-4f30-b37a-b4c9b91e78b3"/>
+			</line>
+			<line>
+				<reportElement x="3" y="680" width="548" height="1" uuid="f30addfb-29ff-4c3c-90cc-95a2fb7f5955"/>
+			</line>
+			<staticText>
+				<reportElement x="4" y="493" width="233" height="19" uuid="e262209e-ac7a-46ba-bbc4-1bc5954cfd7e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[* Root Cause Analysis :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="581" width="245" height="19" uuid="b748a1bb-9943-4461-aae2-ebb02a3063a1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[* Corrective Action :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="680" width="245" height="18" uuid="82535c6a-9b37-423a-8154-c2fe217f9c16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[* Preventive Action :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="90" width="140" height="20" uuid="14ced67c-0651-4994-8990-2b760b8c8378"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Alloted Days for Rework *]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="123" width="140" height="28" uuid="d47591a2-a9d4-4a9f-84ef-7277995e267f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name of Persons alloted for Rework]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="160" width="140" height="20" uuid="ea047d7a-af07-41ac-8c6a-8abccbbccd17"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Travelling Mode/Days *]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="191" width="140" height="20" uuid="5f5ff830-eda9-4424-9001-d0117758d811"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Service Expenses]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="427" y="241" width="104" height="20" uuid="2113223a-fcde-49bb-bcf9-3b9edc03aab0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HOD - Production]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="435" width="159" height="20" uuid="f115e9cc-847a-4c56-b7ff-2a5126530887"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Service Technician Signature]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="384" width="131" height="20" uuid="a94f6ae2-a60f-4ad2-822b-96bd30217446"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Remarks]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="374" y="435" width="157" height="20" uuid="ad903fc1-6f27-42e2-9fda-c3394df1ae8a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Customer Signature with seal *]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="16" y="831" width="115" height="20" uuid="a7685a7e-9793-450f-ad5b-697e1c36e98a"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Report Generated on:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="402" y="831" width="100" height="20" uuid="76e63a19-d68f-4853-8429-903e470c63de"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[HOD - Quality Control]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="851" width="115" height="20" uuid="e0cb3e7a-2984-4c63-ad11-10f15aab50b1"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[* Fields are mandatory.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="871" width="260" height="20" uuid="7e21e0a1-ff38-4962-b737-981be2ce4439"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[* Seperate sheet to be attached wherever required.]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="149" y="37" width="398" height="53" uuid="e1bcfee9-6f69-4255-8b70-af0dc6d903cb"/>
+				<textFieldExpression><![CDATA[$F{MAT_REQUIREMENT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="149" y="90" width="278" height="20" uuid="ae78401f-881b-4c6f-9352-e263170cd5b6"/>
+				<textFieldExpression><![CDATA[$F{ALLOT_DAYS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="149" y="123" width="278" height="28" uuid="884954f7-af4b-490e-a9ea-d41e3d013764"/>
+				<textFieldExpression><![CDATA[$F{PERSONS_ALLOT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="149" y="160" width="278" height="20" uuid="3a22d695-f717-425a-bcce-4fd3e561b4d5"/>
+				<textFieldExpression><![CDATA[$F{TRAVEL_MODE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="149" y="191" width="140" height="20" uuid="e7478708-094d-49a6-94b7-fe0c5bafeea2"/>
+				<textFieldExpression><![CDATA[$F{SERVICE_EXPENSES}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="137" y="308" width="100" height="20" uuid="b4fd2beb-8d6d-4e31-9adb-7e4fa0fc2d04"/>
+				<textFieldExpression><![CDATA[$F{SER_START_DT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="402" y="308" width="100" height="20" uuid="2ee7511b-1b50-42fa-8556-b57e12e48778"/>
+				<textFieldExpression><![CDATA[$F{SER_END_DT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="137" y="345" width="100" height="20" uuid="206e475a-eae9-464f-969a-c83e2a80ca52"/>
+				<textFieldExpression><![CDATA[$F{NO_DAYS_WORKED}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="137" y="384" width="237" height="51" uuid="364f80ff-910b-4a0b-86e8-55152c18752c"/>
+				<textFieldExpression><![CDATA[$F{SERV_DESC}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="41" y="515" width="490" height="64" uuid="1ad6f8ba-a02d-4b3a-a751-4bc93700f852"/>
+				<textFieldExpression><![CDATA[$F{ROOT_CAUSE_ANAL}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="41" y="604" width="490" height="76" uuid="ae110536-8790-40b3-9640-cf6c44b27ae4"/>
+				<textFieldExpression><![CDATA[$F{CORRECT_ACTION}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="41" y="702" width="490" height="73" uuid="5f1f9d6a-7614-466d-b726-af9b9df0a22b"/>
+				<textFieldExpression><![CDATA[$F{PREV_ACTION}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMMM yyyy">
+				<reportElement x="137" y="831" width="112" height="20" uuid="55a78bfa-71af-4db1-903f-e1d6b6eeaa9b"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+</jasperReport>

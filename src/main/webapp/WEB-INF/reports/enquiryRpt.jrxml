@@ -15,7 +15,7 @@ and  enqhdr.CLIENT_ID=cust.CLIENT_ID
 and enqhdr.CLIENT_ID=cust.CLIENT_ID
 and city.CITY_ID=cust.CITY_ID
 and p.PRODUCT_ID=enqdtl.PRODUCT_ID
-and enqdtl.PRODUCT_ID=enqs.PRODUCT_ID
+and enqdtl.PRODUCT_ID=enqs.PRODUCT_ID(+)
 and  enqhdr.ENQUIRY_ID=$P{ENQID}]]>
 	</queryString>
 	<field name="ENQUIRY_DATE" class="java.sql.Timestamp"/>

@@ -109,17 +109,16 @@ public class Qualification extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<QualificationDM> QualList = new ArrayList<QualificationDM>();
+		List<QualificationDM> listQualification = new ArrayList<QualificationDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfQualificationName.getValue() + ", " + cbStatus.getValue());
-		QualList = serviceQualification.getQualificationList(null, null, null, null, "F");
-		// .getQualificationList(null, tfQualificationName.getValue(), companyid,(String)cbStatus.getValue(), "F");
-		recordCnt = QualList.size();
+		listQualification = serviceQualification.getQualificationList(null, null, null, null, "F");
+		recordCnt = listQualification.size();
 		beanQualificationDM = new BeanItemContainer<QualificationDM>(QualificationDM.class);
-		beanQualificationDM.addAll(QualList);
+		beanQualificationDM.addAll(listQualification);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Qualification. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanQualificationDM);
@@ -211,7 +210,6 @@ public class Qualification extends BaseUI {
 		resetFields();
 		loadSrchRslt();
 		tblMstScrSrchRslt.setVisible(true);
-
 	}
 	
 	@Override

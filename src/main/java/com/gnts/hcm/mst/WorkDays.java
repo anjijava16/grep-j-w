@@ -76,7 +76,7 @@ public class WorkDays extends BaseUI {
 	private String strLoginUserName;
 	private Long companyId, branchId;
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(WorkDays.class);
+	private Logger logger = Logger.getLogger(WorkDays.class);
 	private static final long serialVersionUID = 1L;
 	
 	// Constructor
@@ -160,10 +160,14 @@ public class WorkDays extends BaseUI {
 	
 	// load the lookup details for search
 	private void loadsearchworkDaysList() {
-		BeanContainer<String, BranchDM> auditConfigbean = new BeanContainer<String, BranchDM>(BranchDM.class);
-		auditConfigbean.setBeanIdProperty("branchId");
-		auditConfigbean.addAll(serviceBranch.getBranchList(null, null, null, null, companyId, "P"));
-		cbBranch.setContainerDataSource(auditConfigbean);
+		try {
+			BeanContainer<String, BranchDM> auditConfigbean = new BeanContainer<String, BranchDM>(BranchDM.class);
+			auditConfigbean.setBeanIdProperty("branchId");
+			auditConfigbean.addAll(serviceBranch.getBranchList(null, null, null, null, companyId, "P"));
+			cbBranch.setContainerDataSource(auditConfigbean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadSrchRslt() {
@@ -174,10 +178,10 @@ public class WorkDays extends BaseUI {
 			tblMstScrSrchRslt.removeAllItems();
 			tblMstScrSrchRslt.setPageLength(10);
 			tblMstScrSrchRslt.setFooterVisible(false);
-			List<WorkDaysDM> workDaysList = new ArrayList<WorkDaysDM>();
+			List<WorkDaysDM> listWorkDays = new ArrayList<WorkDaysDM>();
 			List<StatusDM> auditConfigList = new ArrayList<StatusDM>();
 			List<StatusDM> auditConfigList2 = new ArrayList<StatusDM>();
-			workDaysList = serviceWorkDays.getWorkList(null, null, null, (Long) cbBranch.getValue(), companyId, "F");
+			listWorkDays = serviceWorkDays.getWorkList(null, null, null, (Long) cbBranch.getValue(), companyId, "F");
 			@SuppressWarnings("unused")
 			Long branchId = null;
 			if (cbBranch.getValue() != null) {
@@ -188,8 +192,8 @@ public class WorkDays extends BaseUI {
 			for (StatusDM obj : auditConfigList) {
 				StatusDM obj2 = new StatusDM();
 				obj2.setDesc(obj.getDesc());
-				if (workDaysList.size() != 0) {
-					for (WorkDaysDM test : workDaysList) {
+				if (listWorkDays.size() != 0) {
+					for (WorkDaysDM test : listWorkDays) {
 						obj2.setCode("false");
 						if (test.getWorkDay() == Long.valueOf(obj.getCode().toString()) && test.getWorkYN().equals("Y")) {
 							obj2.setCode("true");

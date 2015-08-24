@@ -43,7 +43,8 @@ import com.vaadin.ui.Table.Align;
 
 public class EmploymentType extends BaseUI {
 	// Bean Creation
-	private EmploymentTypeService serviceEmpType = (EmploymentTypeService) SpringContextHelper.getBean("EmploymentType");
+	private EmploymentTypeService serviceEmpType = (EmploymentTypeService) SpringContextHelper
+			.getBean("EmploymentType");
 	// form layout for input controls
 	private FormLayout flEmpName, flEmpStatus;
 	// Parent layout for all the input controls
@@ -107,17 +108,17 @@ public class EmploymentType extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<EmploymentTypeDM> empTypeList = new ArrayList<EmploymentTypeDM>();
+		List<EmploymentTypeDM> listEmpType = new ArrayList<EmploymentTypeDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfEmpName.getValue() + ", " + cbStatus.getValue());
-		empTypeList = serviceEmpType.getEmpTypeList(null, tfEmpName.getValue(), companyid,
+		listEmpType = serviceEmpType.getEmpTypeList(null, tfEmpName.getValue(), companyid,
 				(String) cbStatus.getValue(), "F");
-		recordCnt = empTypeList.size();
+		recordCnt = listEmpType.size();
 		beanEmploymentTypeDM = new BeanItemContainer<EmploymentTypeDM>(EmploymentTypeDM.class);
-		beanEmploymentTypeDM.addAll(empTypeList);
+		beanEmploymentTypeDM.addAll(listEmpType);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the EmploymentType. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanEmploymentTypeDM);

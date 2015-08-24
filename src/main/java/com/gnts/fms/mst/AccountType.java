@@ -59,7 +59,7 @@ public class AccountType extends BaseUI {
 	private HorizontalLayout hlSearchLayout;
 	// Add Input fields
 	private TextField tfAccountType;
-	private ComboBox cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
+	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	// To add Bean Item Container
 	private BeanItemContainer<AccountTypeDM> beanAcountTypeDM = null;
@@ -92,7 +92,7 @@ public class AccountType extends BaseUI {
 		formLayout2 = new FormLayout();
 		// add the user input items into appropriate form layout
 		formLayout1.addComponent(tfAccountType);
-		formLayout2.addComponent(cbstatus);
+		formLayout2.addComponent(cbStatus);
 		// add the form layouts into user input layout
 		hlUserInputLayout.setSpacing(true);
 		hlUserInputLayout.addComponent(formLayout1);
@@ -120,14 +120,14 @@ public class AccountType extends BaseUI {
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfAccountType.getValue() + "," + (String) cbstatus.getValue() + ", "
+				+ "Search Parameters are " + ":" + tfAccountType.getValue() + "," + (String) cbStatus.getValue() + ", "
 				+ companyId + ",F" + "Loading Search...");
 		List<AccountTypeDM> listAccountype = new ArrayList<AccountTypeDM>();
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfAccountType.getValue() + "," + (String) cbstatus.getValue() + ", "
+				+ "Search Parameters are " + ":" + tfAccountType.getValue() + "," + (String) cbStatus.getValue() + ", "
 				+ companyId + ",F");
 		listAccountype = serviceAccountType.getAccountTypeList(companyId, tfAccountType.getValue(),
-				(String) cbstatus.getValue());
+				(String) cbStatus.getValue());
 		recordCnt = listAccountype.size();
 		beanAcountTypeDM = new BeanItemContainer<AccountTypeDM>(AccountTypeDM.class);
 		beanAcountTypeDM.addAll(listAccountype);
@@ -156,7 +156,7 @@ public class AccountType extends BaseUI {
 					+ "Search Parameters are " + ":" + tfAccountType.getValue() + ",  Active ," + companyId + ",F"
 					+ "Selected Account Type Id -> " + accttypeid);
 			tfAccountType.setValue(sltedRcd.getItemProperty("accttype").getValue().toString());
-			cbstatus.setValue(sltedRcd.getItemProperty("accttypestatus").getValue().toString());
+			cbStatus.setValue(sltedRcd.getItemProperty("accttypestatus").getValue().toString());
 		}
 	}
 	
@@ -183,7 +183,7 @@ public class AccountType extends BaseUI {
 				+ "Search Parameters are " + ":" + tfAccountType.getValue() + ",  Active ," + companyId + ",F"
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
-		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		tfAccountType.setValue("");
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
@@ -233,18 +233,18 @@ public class AccountType extends BaseUI {
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Search Parameters are " + ":" + tfAccountType.getValue() + ",  Active ," + companyId + ",F"
 				+ "Saving Data... ");
-		AccountTypeDM acctypobj = new AccountTypeDM();
+		AccountTypeDM accType = new AccountTypeDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			acctypobj = beanAcountTypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			accType = beanAcountTypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		acctypobj.setCompanyid(companyId);
-		acctypobj.setAccttype(tfAccountType.getValue().toString());
-		if (cbstatus.getValue() != null) {
-			acctypobj.setAccttypestatus((String) cbstatus.getValue());
+		accType.setCompanyid(companyId);
+		accType.setAccttype(tfAccountType.getValue().toString());
+		if (cbStatus.getValue() != null) {
+			accType.setAccttypestatus((String) cbStatus.getValue());
 		}
-		acctypobj.setLastupdateddt(DateUtils.getcurrentdate());
-		acctypobj.setLastupdatedby(strLoginUserName);
-		serviceAccountType.saveDetails(acctypobj);
+		accType.setLastupdateddt(DateUtils.getcurrentdate());
+		accType.setLastupdatedby(strLoginUserName);
+		serviceAccountType.saveDetails(accType);
 		resetFields();
 		loadSrchRslt();
 	}
@@ -276,6 +276,6 @@ public class AccountType extends BaseUI {
 				+ "Resetting the UI controls");
 		tfAccountType.setValue("");
 		tfAccountType.setComponentError(null);
-		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 }

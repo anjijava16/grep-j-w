@@ -414,43 +414,43 @@ public class GradeDeduction extends BaseUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			GradeDeductionDM gradeEarningObj = new GradeDeductionDM();
+			GradeDeductionDM gradeDeduction = new GradeDeductionDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				gradeEarningObj = beanGradeEarningDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				gradeDeduction = beanGradeEarningDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			if (tfMinValue.getValue() != null && tfMinValue.getValue().trim().length() > 0) {
-				gradeEarningObj.setMinVal(new BigDecimal(tfMinValue.getValue()));
+				gradeDeduction.setMinVal(new BigDecimal(tfMinValue.getValue()));
 			} else {
-				gradeEarningObj.setMinVal(new BigDecimal("0"));
+				gradeDeduction.setMinVal(new BigDecimal("0"));
 			}
 			if (tfMaxValue.getValue() != null && tfMaxValue.getValue().trim().length() > 0) {
-				gradeEarningObj.setMaxVal(new BigDecimal(tfMaxValue.getValue()));
+				gradeDeduction.setMaxVal(new BigDecimal(tfMaxValue.getValue()));
 			} else {
-				gradeEarningObj.setMaxVal(new BigDecimal("0"));
+				gradeDeduction.setMaxVal(new BigDecimal("0"));
 			}
 			if (tfDeduPercent.getValue() != null && tfDeduPercent.getValue().trim().length() > 0) {
-				gradeEarningObj.setDednPercent(new BigDecimal(tfDeduPercent.getValue()));
+				gradeDeduction.setDednPercent(new BigDecimal(tfDeduPercent.getValue()));
 			} else {
-				gradeEarningObj.setDednPercent(new BigDecimal("0"));
+				gradeDeduction.setDednPercent(new BigDecimal("0"));
 			}
 			if (cbStatus.getValue() != null) {
-				gradeEarningObj.setStatus((String) cbStatus.getValue());
+				gradeDeduction.setStatus((String) cbStatus.getValue());
 			}
 			if (cbFlatOrPercent.getValue() != null) {
-				gradeEarningObj.setIsFlatPer((String) cbFlatOrPercent.getValue());
+				gradeDeduction.setIsFlatPer((String) cbFlatOrPercent.getValue());
 			}
 			if (cbOnBasicGros.getValue() != null) {
-				gradeEarningObj.setOnBasicGros((String) cbOnBasicGros.getValue());
+				gradeDeduction.setOnBasicGros((String) cbOnBasicGros.getValue());
 			}
 			if (cbGradeDesc.getValue() != null) {
-				gradeEarningObj.setGradeId((Long.valueOf(cbGradeDesc.getValue().toString())));
+				gradeDeduction.setGradeId((Long.valueOf(cbGradeDesc.getValue().toString())));
 			}
 			if (cbDednDesc.getValue() != null) {
-				gradeEarningObj.setDednId((Long.valueOf(cbDednDesc.getValue().toString())));
+				gradeDeduction.setDednId((Long.valueOf(cbDednDesc.getValue().toString())));
 			}
-			gradeEarningObj.setLastUpdatedDate(DateUtils.getcurrentdate());
-			gradeEarningObj.setLastUpdatedBy(username);
-			serviceGradeDeduction.saveAndUpdate(gradeEarningObj);
+			gradeDeduction.setLastUpdatedDate(DateUtils.getcurrentdate());
+			gradeDeduction.setLastUpdatedBy(username);
+			serviceGradeDeduction.saveAndUpdate(gradeDeduction);
 			resetFields();
 			loadSrchRslt();
 		}
@@ -460,11 +460,15 @@ public class GradeDeduction extends BaseUI {
 	}
 	
 	private void loadGradeList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
-		beanGradeDM.setBeanIdProperty("gradeId");
-		beanGradeDM.addAll(serviceGrade.getGradeList(null, null, null, companyid, "Active", "P"));
-		cbGradeDesc.setContainerDataSource(beanGradeDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
+			beanGradeDM.setBeanIdProperty("gradeId");
+			beanGradeDM.addAll(serviceGrade.getGradeList(null, null, null, companyid, "Active", "P"));
+			cbGradeDesc.setContainerDataSource(beanGradeDM);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadDeductionList() {

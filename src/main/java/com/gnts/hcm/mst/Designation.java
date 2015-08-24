@@ -153,10 +153,10 @@ public class Designation extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<DesignationDM> loadDesigList = new ArrayList<DesignationDM>();
+		List<DesignationDM> listDesignation = new ArrayList<DesignationDM>();
 		Long clsfcnId = null;
 		if (cbJobClsName.getValue() != null) {
 			clsfcnId = (Long.valueOf(cbJobClsName.getValue().toString()));
@@ -168,11 +168,11 @@ public class Designation extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfDescName.getValue() + ", " + tfDescName.getValue()
 				+ (String) cbStatus.getValue() + ", " + clsfcnId);
-		loadDesigList = serviceDesignation.getDesignationList(null, gradeId, tfDescName.getValue(), clsfcnId,
+		listDesignation = serviceDesignation.getDesignationList(null, gradeId, tfDescName.getValue(), clsfcnId,
 				companyid, (String) cbStatus.getValue(), "F");
-		recordCnt = loadDesigList.size();
+		recordCnt = listDesignation.size();
 		beanDesignationDM = new BeanItemContainer<DesignationDM>(DesignationDM.class);
-		beanDesignationDM.addAll(loadDesigList);
+		beanDesignationDM.addAll(listDesignation);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Grade. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanDesignationDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "designationId", "designationName", "gradeDesc",
@@ -318,7 +318,6 @@ public class Designation extends BaseUI {
 					+ "Throwing ValidationException. User data is > " + cbGRDDesc.getValue());
 			errorFlag = true;
 		}
-	
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
@@ -366,20 +365,28 @@ public class Designation extends BaseUI {
 		}
 	}
 	
-	public void loadGRDLvl() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
-		beanGradeDM.setBeanIdProperty("gradeId");
-		beanGradeDM.addAll(serviceGrade.getGradeList(null, null, null, companyid, "Active", "P"));
-		cbGRDDesc.setContainerDataSource(beanGradeDM);
+	private void loadGRDLvl() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
+			beanGradeDM.setBeanIdProperty("gradeId");
+			beanGradeDM.addAll(serviceGrade.getGradeList(null, null, null, companyid, "Active", "P"));
+			cbGRDDesc.setContainerDataSource(beanGradeDM);
+		}
+		catch (Exception e) {
+		}
 	}
 	
-	public void loadJobClassification() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanContainer<Long, JobClassificationDM> beanClsFcnDM = new BeanContainer<Long, JobClassificationDM>(
-				JobClassificationDM.class);
-		beanClsFcnDM.setBeanIdProperty("jobClasfnId");
-		beanClsFcnDM.addAll(serviceJobclsFcn.getJobClassificationList(null, null, companyid, "Active", "P"));
-		cbJobClsName.setContainerDataSource(beanClsFcnDM);
+	private void loadJobClassification() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanContainer<Long, JobClassificationDM> beanClsFcnDM = new BeanContainer<Long, JobClassificationDM>(
+					JobClassificationDM.class);
+			beanClsFcnDM.setBeanIdProperty("jobClasfnId");
+			beanClsFcnDM.addAll(serviceJobclsFcn.getJobClassificationList(null, null, companyid, "Active", "P"));
+			cbJobClsName.setContainerDataSource(beanClsFcnDM);
+		}
+		catch (Exception e) {
+		}
 	}
 }

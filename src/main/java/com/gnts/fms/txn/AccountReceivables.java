@@ -234,15 +234,15 @@ public class AccountReceivables extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<AccountReceivablesDM> actReceivablesList = new ArrayList<AccountReceivablesDM>();
+		List<AccountReceivablesDM> listACReceivable = new ArrayList<AccountReceivablesDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
 				+ companyId + ", " + (Long) cbBranchName.getValue() + " , " + tfInvoiceNo.getValue() + ", "
 				+ (String) cbStatus.getValue());
-		actReceivablesList = serviceAccountReceivables.getAccountsReceivablesList(companyId, tfInvoiceNo.getValue(),
+		listACReceivable = serviceAccountReceivables.getAccountsReceivablesList(companyId, tfInvoiceNo.getValue(),
 				(String) cbStatus.getValue(), (Long) cbBranchName.getValue(), null);
-		recordCnt = actReceivablesList.size();
+		recordCnt = listACReceivable.size();
 		beansAccountReceivablesDM = new BeanItemContainer<AccountReceivablesDM>(AccountReceivablesDM.class);
-		beansAccountReceivablesDM.addAll(actReceivablesList);
+		beansAccountReceivablesDM.addAll(listACReceivable);
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Got the Account Payables List result set");
 		tblMstScrSrchRslt.setContainerDataSource(beansAccountReceivablesDM);
@@ -256,17 +256,25 @@ public class AccountReceivables extends BaseUI {
 	
 	// For Load Active Branch Details based on Company
 	private void loadBranchList() {
-		BeanContainer<Long, BranchDM> bean = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		bean.setBeanIdProperty("branchId");
-		bean.addAll(serviceBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId, "F"));
-		cbBranchName.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, BranchDM> bean = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			bean.setBeanIdProperty("branchId");
+			bean.addAll(serviceBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId, "F"));
+			cbBranchName.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// For Load Active Account Type Details based on Company
 	private void loadAccountTypeList() {
-		BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
-		bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
-		cbAccountReference.setContainerDataSource(bean);
+		try {
+			BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
+			bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
+			cbAccountReference.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void editActReceivables() {
@@ -477,9 +485,15 @@ public class AccountReceivables extends BaseUI {
 	}
 	
 	private void loadInvoiceNumber() {
-		BeanItemContainer<SmsInvoiceHdrDM> beansmsenqHdr = new BeanItemContainer<SmsInvoiceHdrDM>(SmsInvoiceHdrDM.class);
-		beansmsenqHdr.addAll(serviceInvoiceHdr.getSmsInvoiceHeaderList(null, null, null, null, null, null, null, "P"));
-		cbInvoice.setContainerDataSource(beansmsenqHdr);
+		try {
+			BeanItemContainer<SmsInvoiceHdrDM> beansmsenqHdr = new BeanItemContainer<SmsInvoiceHdrDM>(
+					SmsInvoiceHdrDM.class);
+			beansmsenqHdr.addAll(serviceInvoiceHdr.getSmsInvoiceHeaderList(null, null, null, null, null, null, null,
+					"P"));
+			cbInvoice.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void printDetails() {

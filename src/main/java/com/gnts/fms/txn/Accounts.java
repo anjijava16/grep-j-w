@@ -129,7 +129,7 @@ public class Accounts extends BaseTransUI {
 	// BeanItemContainer
 	private BeanItemContainer<AccountsDM> beanAccountsDM = null;
 	// Local variables declaration
-	private Long companyId,bankid;
+	private Long companyId, bankid;
 	private int recordCnt = 0;
 	private String username, accountId;
 	// Initialize logger
@@ -294,92 +294,125 @@ public class Accounts extends BaseTransUI {
 	 * For Load Active Employee Details based on Company
 	 */
 	private void loadEmployeeList() {
-		List<EmployeeDM> list = servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null,
-				null, null, "P");
-		BeanContainer<Long, EmployeeDM> employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		employeebeans.setBeanIdProperty("employeeid");
-		employeebeans.addAll(list);
-		cbOwnerName.setContainerDataSource(employeebeans);
-		BeanContainer<Long, EmployeeDM> employeebeans1 = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		employeebeans1.setBeanIdProperty("employeeid");
-		employeebeans1.addAll(list);
-		cbApproveManager.setContainerDataSource(employeebeans1);
-		BeanContainer<Long, EmployeeDM> employeebeans2 = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		employeebeans2.setBeanIdProperty("employeeid");
-		employeebeans2.addAll(list);
-		lsAccountOwners.setContainerDataSource(employeebeans2);
+		try {
+			List<EmployeeDM> list = servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyId, null,
+					null, null, null, "P");
+			BeanContainer<Long, EmployeeDM> employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			employeebeans.setBeanIdProperty("employeeid");
+			employeebeans.addAll(list);
+			cbOwnerName.setContainerDataSource(employeebeans);
+			BeanContainer<Long, EmployeeDM> employeebeans1 = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			employeebeans1.setBeanIdProperty("employeeid");
+			employeebeans1.addAll(list);
+			cbApproveManager.setContainerDataSource(employeebeans1);
+			BeanContainer<Long, EmployeeDM> employeebeans2 = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			employeebeans2.setBeanIdProperty("employeeid");
+			employeebeans2.addAll(list);
+			lsAccountOwners.setContainerDataSource(employeebeans2);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * For Load Active Account Type Details based on Company
 	 */
 	private void loadAccountTypeList() {
-		BeanContainer<Long, AccountTypeDM> bean = new BeanContainer<Long, AccountTypeDM>(AccountTypeDM.class);
-		bean.setBeanIdProperty("accttypeid");
-		bean.addAll(serviceAccounttype.getAccountTypeList(companyId, null, "Active"));
-		cbAccountType.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, AccountTypeDM> bean = new BeanContainer<Long, AccountTypeDM>(AccountTypeDM.class);
+			bean.setBeanIdProperty("accttypeid");
+			bean.addAll(serviceAccounttype.getAccountTypeList(companyId, null, "Active"));
+			cbAccountType.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * For Load Active Account Type Details based on Company
 	 */
 	private void loadCurrencyList() {
-		BeanContainer<Long, CurrencyDM> bean = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
-		bean.setBeanIdProperty("ccyid");
-		bean.addAll(serviceCurrency.getCurrencyList(null, null, null, "Active", "T"));
-		cbCurrency.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, CurrencyDM> bean = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
+			bean.setBeanIdProperty("ccyid");
+			bean.addAll(serviceCurrency.getCurrencyList(null, null, null, "Active", "T"));
+			cbCurrency.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * For Load Active Bank Branch Details based on Company
 	 */
 	private void loadBankBranchList() {
-		BeanContainer<Long, BankBranchDM> bean = new BeanContainer<Long, BankBranchDM>(BankBranchDM.class);
-		bean.setBeanIdProperty("bankbrnchid");
-		bean.addAll(serviceBankBranch.getBankBranchlist(bankid, null, null, companyId, "Active", null, "F"));
-		cbBankBranch.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, BankBranchDM> bean = new BeanContainer<Long, BankBranchDM>(BankBranchDM.class);
+			bean.setBeanIdProperty("bankbrnchid");
+			bean.addAll(serviceBankBranch.getBankBranchlist(bankid, null, null, companyId, "Active", null, "F"));
+			cbBankBranch.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * For Load Active Bank Details based on Company
 	 */
 	private void loadBankList() {
-		BeanContainer<Long, BankDM> beanBank = new BeanContainer<Long, BankDM>(BankDM.class);
-		beanBank.setBeanIdProperty("bankid");
-		beanBank.addAll(serviceBank.getBanklist(null, null, companyId, "Active", "T"));
-		cbBankName.setContainerDataSource(beanBank);
+		try {
+			BeanContainer<Long, BankDM> beanBank = new BeanContainer<Long, BankDM>(BankDM.class);
+			beanBank.setBeanIdProperty("bankid");
+			beanBank.addAll(serviceBank.getBanklist(null, null, companyId, "Active", "T"));
+			cbBankName.setContainerDataSource(beanBank);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * For Load Active Vendor Details based on Company
 	 */
 	private void loadVendorList() {
-		BeanContainer<Long, VendorDM> beanBank = new BeanContainer<Long, VendorDM>(VendorDM.class);
-		beanBank.setBeanIdProperty("vendorId");
-		beanBank.addAll(serviceVendor.getVendorList(null, null, companyId, null, null, null, null, null, "Active",
-				null, "P"));
-		cbVendorName.setContainerDataSource(beanBank);
+		try {
+			BeanContainer<Long, VendorDM> beanBank = new BeanContainer<Long, VendorDM>(VendorDM.class);
+			beanBank.setBeanIdProperty("vendorId");
+			beanBank.addAll(serviceVendor.getVendorList(null, null, companyId, null, null, null, null, null, "Active",
+					null, "P"));
+			cbVendorName.setContainerDataSource(beanBank);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * For Load Active Client Details based on Company
 	 */
 	private void loadClientList() {
-		BeanContainer<Long, ClientDM> bean = new BeanContainer<Long, ClientDM>(ClientDM.class);
-		bean.setBeanIdProperty("clientId");
-		bean.addAll(serviceClient.getClientDetails(companyId, null, null, null, null, null, null, null, "Active", "T"));
-		cbClientName.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, ClientDM> bean = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			bean.setBeanIdProperty("clientId");
+			bean.addAll(serviceClient.getClientDetails(companyId, null, null, null, null, null, null, null, "Active",
+					"T"));
+			cbClientName.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * For Load Active Parent Account Details based on Company
 	 */
 	private void loadParentAccountList() {
-		BeanContainer<Long, AccountsDM> bean = new BeanContainer<Long, AccountsDM>(AccountsDM.class);
-		bean.setBeanIdProperty("accountId");
-		bean.addAll(serviceAccounts.getAccountsList(companyId, accId, null, "Active", null, null, cbAccountGrp
-				.getValue().toString()));
-		cbParentAccId.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, AccountsDM> bean = new BeanContainer<Long, AccountsDM>(AccountsDM.class);
+			bean.setBeanIdProperty("accountId");
+			bean.addAll(serviceAccounts.getAccountsList(companyId, accId, null, "Active", null, null, cbAccountGrp
+					.getValue().toString()));
+			cbParentAccId.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// get the search result from DB based on the search parameters

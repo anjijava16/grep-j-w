@@ -156,14 +156,14 @@ public class TaxRebate extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<TaxRebateDM> taxrebateList = new ArrayList<TaxRebateDM>();
+		List<TaxRebateDM> listTaxRebate = new ArrayList<TaxRebateDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbSectionCode.getValue() + ", " + cbTaxRebateStatus.getValue());
-		taxrebateList = serviceTaxRebate.getTaxRebateList(null, (String) cbSectionCode.getValue(), companyid,
+		listTaxRebate = serviceTaxRebate.getTaxRebateList(null, (String) cbSectionCode.getValue(), companyid,
 				(String) cbTaxRebateStatus.getValue(), "F");
-		recordCnt = taxrebateList.size();
+		recordCnt = listTaxRebate.size();
 		beanTaxRebateDM = new BeanItemContainer<TaxRebateDM>(TaxRebateDM.class);
-		beanTaxRebateDM.addAll(taxrebateList);
+		beanTaxRebateDM.addAll(listTaxRebate);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Tax Rebate. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanTaxRebateDM);
@@ -196,25 +196,25 @@ public class TaxRebate extends BaseUI {
 	private void editTaxRebate() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		TaxRebateDM editTaxRebateDM = beanTaxRebateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		taxrebateid = editTaxRebateDM.getTaxrebateid().toString();
+		TaxRebateDM taxRebateDM = beanTaxRebateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		taxrebateid = taxRebateDM.getTaxrebateid().toString();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Tax Rebate. Id -> "
 				+ taxrebateid);
-		if (editTaxRebateDM != null) {
+		if (taxRebateDM != null) {
 			// Object editTaxRebate;
-			if (editTaxRebateDM.getSectioncode() != null) {
-				cbSectionCode.setValue(editTaxRebateDM.getSectioncode());
+			if (taxRebateDM.getSectioncode() != null) {
+				cbSectionCode.setValue(taxRebateDM.getSectioncode());
 			}
-			if (editTaxRebateDM.getFinyear() != null) {
+			if (taxRebateDM.getFinyear() != null) {
 				tfFinalYr.setReadOnly(false);
-				tfFinalYr.setValue(editTaxRebateDM.getFinyear());
+				tfFinalYr.setValue(taxRebateDM.getFinyear());
 				tfFinalYr.setReadOnly(true);
 			}
-			cbTaxRebateStatus.setValue(editTaxRebateDM.getRebatestatus());
-			cbGender.setValue(editTaxRebateDM.getGender());
-			tfRebateAmt.setValue(editTaxRebateDM.getRebateamount().toString());
-			tfEarnAmtFrom.setValue(editTaxRebateDM.getEarnamtfrom().toString());
-			tfEarnAmtTo.setValue(editTaxRebateDM.getEarnamtto().toString());
+			cbTaxRebateStatus.setValue(taxRebateDM.getRebatestatus());
+			cbGender.setValue(taxRebateDM.getGender());
+			tfRebateAmt.setValue(taxRebateDM.getRebateamount().toString());
+			tfEarnAmtFrom.setValue(taxRebateDM.getEarnamtfrom().toString());
+			tfEarnAmtTo.setValue(taxRebateDM.getEarnamtto().toString());
 		}
 	}
 	
@@ -316,37 +316,37 @@ public class TaxRebate extends BaseUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			TaxRebateDM taxRebateObj = new TaxRebateDM();
+			TaxRebateDM taxRebateDM = new TaxRebateDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				taxRebateObj = beanTaxRebateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				taxRebateDM = beanTaxRebateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			taxRebateObj.setCompanyid(companyid);
-			taxRebateObj.setFinyear(tfFinalYr.getValue().toString());
+			taxRebateDM.setCompanyid(companyid);
+			taxRebateDM.setFinyear(tfFinalYr.getValue().toString());
 			if (cbGender.getValue() != null) {
-				taxRebateObj.setGender((String) cbGender.getValue());
+				taxRebateDM.setGender((String) cbGender.getValue());
 			}
 			if (cbSectionCode.getValue() != null) {
-				taxRebateObj.setSectioncode((String) cbSectionCode.getValue());
+				taxRebateDM.setSectioncode((String) cbSectionCode.getValue());
 			}
 			if (tfRebateAmt.getValue() != null) {
-				taxRebateObj.setRebateamount(Long.valueOf(tfRebateAmt.getValue()));
+				taxRebateDM.setRebateamount(Long.valueOf(tfRebateAmt.getValue()));
 			}
 			if (tfEarnAmtFrom.getValue() != null) {
-				taxRebateObj.setEarnamtfrom(Long.valueOf(tfEarnAmtFrom.getValue()));
+				taxRebateDM.setEarnamtfrom(Long.valueOf(tfEarnAmtFrom.getValue()));
 			} else {
-				taxRebateObj.setEarnamtfrom(new Long("0"));
+				taxRebateDM.setEarnamtfrom(new Long("0"));
 			}
 			if (tfEarnAmtTo.getValue() != null) {
-				taxRebateObj.setEarnamtto(Long.valueOf(tfEarnAmtTo.getValue()));
+				taxRebateDM.setEarnamtto(Long.valueOf(tfEarnAmtTo.getValue()));
 			} else {
-				taxRebateObj.setEarnamtto(new Long("0"));
+				taxRebateDM.setEarnamtto(new Long("0"));
 			}
 			if (cbTaxRebateStatus.getValue() != null) {
-				taxRebateObj.setRebatestatus((String) (cbTaxRebateStatus.getValue()));
+				taxRebateDM.setRebatestatus((String) (cbTaxRebateStatus.getValue()));
 			}
-			taxRebateObj.setLastupdateddt(DateUtils.getcurrentdate());
-			taxRebateObj.setLastupdatedby(username);
-			serviceTaxRebate.saveTaxRebateDetails(taxRebateObj);
+			taxRebateDM.setLastupdateddt(DateUtils.getcurrentdate());
+			taxRebateDM.setLastupdatedby(username);
+			serviceTaxRebate.saveTaxRebateDetails(taxRebateDM);
 			resetFields();
 			loadSrchRslt();
 		}
@@ -356,23 +356,32 @@ public class TaxRebate extends BaseUI {
 	}
 	
 	private void loadGRDLvl() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_TXSECCD"));
-		cbSectionCode.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"HC_TXSECCD"));
+			cbSectionCode.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * loadGenderType()-->this function is used for load the gender type
 	 */
 	private void loadGenderType() {
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("cmplookupid");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "BS_GENDER"));
-		cbGender.setContainerDataSource(beanCompanyLookUp);
+		try {
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("cmplookupid");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"BS_GENDER"));
+			cbGender.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 }

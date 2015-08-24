@@ -95,8 +95,8 @@ public class EmployeeDetail implements ClickListener {
 	// buttons
 	private HorizontalLayout hlPageHdrContainter = (HorizontalLayout) UI.getCurrent().getSession()
 			.getAttribute("hlLayout");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private BranchService servicebeanBranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
 	private GradeService serviceGrade = (GradeService) SpringContextHelper.getBean("Grade");
 	private DesignationService serviceDesignation = (DesignationService) SpringContextHelper.getBean("Designation");
@@ -105,14 +105,14 @@ public class EmployeeDetail implements ClickListener {
 			.getBean("EmploymentType");
 	private EmployeeDtlsService servempdtls = (EmployeeDtlsService) SpringContextHelper.getBean("Employeedtls");
 	private EmployeeOndutyService serviceOnduty = (EmployeeOndutyService) SpringContextHelper.getBean("EmployeeOnduty");
-	private EmployeePermissionService servicepermission = (EmployeePermissionService) SpringContextHelper
+	private EmployeePermissionService servicePermission = (EmployeePermissionService) SpringContextHelper
 			.getBean("EmployeePermission");
-	private EmployeeAbsentService serviceabsent = (EmployeeAbsentService) SpringContextHelper.getBean("EmployeeAbsent");
+	private EmployeeAbsentService serviceAbsent = (EmployeeAbsentService) SpringContextHelper.getBean("EmployeeAbsent");
 	private EmployeeLateDetailService serviceLate = (EmployeeLateDetailService) SpringContextHelper
 			.getBean("EmployeeLateDetail");
-	private EmployeeAddressService servempaddr = (EmployeeAddressService) SpringContextHelper
+	private EmployeeAddressService serviceAddress = (EmployeeAddressService) SpringContextHelper
 			.getBean("EmployeeAddress");
-	private EmployeeEducationService serviceempedu = (EmployeeEducationService) SpringContextHelper
+	private EmployeeEducationService serviceLeave = (EmployeeEducationService) SpringContextHelper
 			.getBean("EmployeeEducation");
 	private EmployeeLeaveService serviceleave = (EmployeeLeaveService) SpringContextHelper.getBean("EmployeeLeave");
 	private String screenName = "", username = "";
@@ -540,7 +540,7 @@ public class EmployeeDetail implements ClickListener {
 				+ "loading SearchResult Details...");
 		List<EmployeePermissionDM> list = new ArrayList<EmployeePermissionDM>();
 		tblPermission.removeAllItems();
-		list = servicepermission.getemppermissionList(null, ((EmployeeDM) cbEmployee.getValue()).getEmployeeid(),
+		list = servicePermission.getemppermissionList(null, ((EmployeeDM) cbEmployee.getValue()).getEmployeeid(),
 				"Active", "F");
 		BeanItemContainer<EmployeePermissionDM> beans = new BeanItemContainer<EmployeePermissionDM>(
 				EmployeePermissionDM.class);
@@ -557,7 +557,7 @@ public class EmployeeDetail implements ClickListener {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "loading SearchResult Details...");
 		List<EmployeeAbsentDM> list = new ArrayList<EmployeeAbsentDM>();
-		list = serviceabsent.getempabslist(null, ((EmployeeDM) cbEmployee.getValue()).getEmployeeid(), "Active", "F");
+		list = serviceAbsent.getempabslist(null, ((EmployeeDM) cbEmployee.getValue()).getEmployeeid(), "Active", "F");
 		BeanItemContainer<EmployeeAbsentDM> beans = new BeanItemContainer<EmployeeAbsentDM>(EmployeeAbsentDM.class);
 		beans.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -589,7 +589,7 @@ public class EmployeeDetail implements ClickListener {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading Search Result....");
 		tblLeave.removeAllItems();
 		List<EmployeeLeaveDM> list = serviceleave.getempleaveList(null,
-				((EmployeeDM) cbEmployee.getValue()).getEmployeeid(), null, null,null,null, "F");
+				((EmployeeDM) cbEmployee.getValue()).getEmployeeid(), null, null, null, null, "F");
 		BeanItemContainer<EmployeeLeaveDM> beanLeave = new BeanItemContainer<EmployeeLeaveDM>(EmployeeLeaveDM.class);
 		beanLeave.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -608,7 +608,7 @@ public class EmployeeDetail implements ClickListener {
 				+ "Loading employee Address Search...");
 		List<EmployeeAddressDM> list = new ArrayList<EmployeeAddressDM>();
 		tblAddress.removeAllItems();
-		list.addAll(servempaddr.getempaddresslist(null, ((EmployeeDM) cbEmployee.getValue()).getEmployeeid(), null,
+		list.addAll(serviceAddress.getempaddresslist(null, ((EmployeeDM) cbEmployee.getValue()).getEmployeeid(), null,
 				"Active", "F"));
 		BeanItemContainer<EmployeeAddressDM> beanEmployeeAddress = new BeanItemContainer<EmployeeAddressDM>(
 				EmployeeAddressDM.class);
@@ -631,7 +631,7 @@ public class EmployeeDetail implements ClickListener {
 				+ "Loading Employee Education Search...");
 		tblEducation.removeAllItems();
 		List<EmployeeEducationDM> list = new ArrayList<EmployeeEducationDM>();
-		list.addAll(serviceempedu.getempeducationList(null, ((EmployeeDM) cbEmployee.getValue()).getEmployeeid(), null,
+		list.addAll(serviceLeave.getempeducationList(null, ((EmployeeDM) cbEmployee.getValue()).getEmployeeid(), null,
 				null, null, "Active", "F"));
 		BeanItemContainer<EmployeeEducationDM> beanemployeeeducation = new BeanItemContainer<EmployeeEducationDM>(
 				EmployeeEducationDM.class);
@@ -649,80 +649,113 @@ public class EmployeeDetail implements ClickListener {
 	 * loadEmployeeList()-->this function is used for load the employee list
 	 */
 	private void loadEmployeeList() {
-		logger.info("Company ID : " + companyid + " | User Name :  > " + "Loading  Employee Search...");
-		BeanItemContainer<EmployeeDM> beanLoadEmployee = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanLoadEmployee.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "F"));
-		cbEmployee.setContainerDataSource(beanLoadEmployee);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name :  > " + "Loading  Employee Search...");
+			BeanItemContainer<EmployeeDM> beanLoadEmployee = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+			beanLoadEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null,
+					null, null, null, "F"));
+			cbEmployee.setContainerDataSource(beanLoadEmployee);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * loadBranchList()-->this function is used for load the Branch list
 	 */
 	private void loadBranchList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(servicebeanBranch.getBranchList(((EmployeeDM) cbEmployee.getValue()).getBranchid(), null,
-				null, "Active", companyid, "P"));
-		cbBranch.setContainerDataSource(beanBranch);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranch.setBeanIdProperty("branchId");
+			beanBranch.addAll(serviceBranch.getBranchList(((EmployeeDM) cbEmployee.getValue()).getBranchid(), null,
+					null, "Active", companyid, "P"));
+			cbBranch.setContainerDataSource(beanBranch);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * loadDepartmentList()-->this function is used for load the Department list
 	 */
 	private void loadDepartmentList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
-		cbDepartment.setContainerDataSource(beanDepartment);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Department Search...");
+			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beanDepartment.setBeanIdProperty("deptid");
+			beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
+			cbDepartment.setContainerDataSource(beanDepartment);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * loadEmploymentType()-->this function is used for load the employment type list
 	 */
 	private void loadEmploymentType(Long id) {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employment Search...");
-		BeanContainer<Long, EmploymentTypeDM> benemptype = new BeanContainer<Long, EmploymentTypeDM>(
-				EmploymentTypeDM.class);
-		benemptype.setBeanIdProperty("empTypeId");
-		benemptype.addAll(serviceEmploymentType.getEmpTypeList(id, null, companyid, "Active", "F"));
-		cbEmpType.setContainerDataSource(benemptype);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Employment Search...");
+			BeanContainer<Long, EmploymentTypeDM> benemptype = new BeanContainer<Long, EmploymentTypeDM>(
+					EmploymentTypeDM.class);
+			benemptype.setBeanIdProperty("empTypeId");
+			benemptype.addAll(serviceEmploymentType.getEmpTypeList(id, null, companyid, "Active", "F"));
+			cbEmpType.setContainerDataSource(benemptype);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * loadempgradelist()-->this function is used for load the grade list
 	 */
 	private void loadGradeList(Long id) {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Grade Search...");
-		BeanContainer<Long, GradeDM> beangrad = new BeanContainer<Long, GradeDM>(GradeDM.class);
-		beangrad.setBeanIdProperty("gradeId");
-		beangrad.addAll(serviceGrade.getGradeList(id, null, null, companyid, "Active", "F"));
-		cbGrade.setContainerDataSource(beangrad);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Grade Search...");
+			BeanContainer<Long, GradeDM> beangrad = new BeanContainer<Long, GradeDM>(GradeDM.class);
+			beangrad.setBeanIdProperty("gradeId");
+			beangrad.addAll(serviceGrade.getGradeList(id, null, null, companyid, "Active", "F"));
+			cbGrade.setContainerDataSource(beangrad);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * loadpayperiodlist()-->this function is used for load the payperiod list
 	 */
 	private void loadPayperiodList(Long id) {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Payperiod  Search...");
-		BeanContainer<Long, PayPeriodDM> beanpayperiod = new BeanContainer<Long, PayPeriodDM>(PayPeriodDM.class);
-		beanpayperiod.setBeanIdProperty("payPeriodId");
-		beanpayperiod.addAll(servicePayPeriodService.getPayList(id, null, null, null, companyid, "Active", "F"));
-		cbPayperiod.setContainerDataSource(beanpayperiod);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Payperiod  Search...");
+			BeanContainer<Long, PayPeriodDM> beanpayperiod = new BeanContainer<Long, PayPeriodDM>(PayPeriodDM.class);
+			beanpayperiod.setBeanIdProperty("payPeriodId");
+			beanpayperiod.addAll(servicePayPeriodService.getPayList(id, null, null, null, companyid, "Active", "F"));
+			cbPayperiod.setContainerDataSource(beanpayperiod);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * loaddesignationlist()-->this function is used for load the Designation List
 	 */
 	private void loadDesignationList(Long id) {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading Designation Search...");
-		BeanContainer<Long, DesignationDM> beandesignation = new BeanContainer<Long, DesignationDM>(DesignationDM.class);
-		beandesignation.setBeanIdProperty("designationId");
-		beandesignation.addAll(serviceDesignation.getDesignationList(id, null, null, null, companyid, "Active", "F"));
-		cbDesignation.setContainerDataSource(beandesignation);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Designation Search...");
+			BeanContainer<Long, DesignationDM> beandesignation = new BeanContainer<Long, DesignationDM>(
+					DesignationDM.class);
+			beandesignation.setBeanIdProperty("designationId");
+			beandesignation.addAll(serviceDesignation
+					.getDesignationList(id, null, null, null, companyid, "Active", "F"));
+			cbDesignation.setContainerDataSource(beandesignation);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	public String viewImage(byte[] myimage, String name) {

@@ -235,15 +235,15 @@ public class BankBranch extends BaseUI {
 	private void loadSrchRslt() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			List<BankBranchDM> bankBranchList = new ArrayList<BankBranchDM>();
+			List<BankBranchDM> listBankBranch = new ArrayList<BankBranchDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfIFSCCode.getValue() + ", " + tfMICRCode.getValue() + ","
 					+ (String) cbStatus.getValue());
-			bankBranchList = serviceBankBranch.getBankBranchlist(null, tfIFSCCode.getValue(), tfMICRCode.getValue(),
-					companyid, (String) cbStatus.getValue(),null, "F");
-			recordCnt = bankBranchList.size();
+			listBankBranch = serviceBankBranch.getBankBranchlist(null, tfIFSCCode.getValue(), tfMICRCode.getValue(),
+					companyid, (String) cbStatus.getValue(), null, "F");
+			recordCnt = listBankBranch.size();
 			beans = new BeanItemContainer<BankBranchDM>(BankBranchDM.class);
-			beans.addAll(bankBranchList);
+			beans.addAll(listBankBranch);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the BankBranch. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beans);
@@ -479,28 +479,39 @@ public class BankBranch extends BaseUI {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			logger.warn("Loading null values in loadBankList() functions----->>>>>" + e);
 		}
 	}
 	
 	private void loadCountryList() {
-		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
-		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
-		cbCountry.setContainerDataSource(beanCountry);
+		try {
+			BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+			beanCountry.setBeanIdProperty("countryID");
+			beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
+			cbCountry.setContainerDataSource(beanCountry);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadStateList() {
-		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
-		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(serviceState.getStateList(null, "Active", null, companyid, "P"));
-		cbState.setContainerDataSource(beanState);
+		try {
+			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
+			beanState.setBeanIdProperty("stateId");
+			beanState.addAll(serviceState.getStateList(null, "Active", null, companyid, "P"));
+			cbState.setContainerDataSource(beanState);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadCityList() {
-		BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
-		beanCity.setBeanIdProperty("cityid");
-		beanCity.addAll(serviceCity.getCityList(null, null, null, "Active", companyid, "P"));
-		cbCity.setContainerDataSource(beanCity);
+		try {
+			BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
+			beanCity.setBeanIdProperty("cityid");
+			beanCity.addAll(serviceCity.getCityList(null, null, null, "Active", companyid, "P"));
+			cbCity.setContainerDataSource(beanCity);
+		}
+		catch (Exception e) {
+		}
 	}
 }

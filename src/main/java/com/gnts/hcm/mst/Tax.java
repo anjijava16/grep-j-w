@@ -65,7 +65,7 @@ public class Tax extends BaseUI {
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private ParameterService serviceParameter = (ParameterService) SpringContextHelper.getBean("parameter");
-	private List<TaxSlapDM> taxSlapList = new ArrayList<TaxSlapDM>();
+	private List<TaxSlapDM> listTaxSlab = new ArrayList<TaxSlapDM>();
 	// form layout for input controls
 	private FormLayout fltaxCol1, fltaxCol2, fltaxCol3, flColumn4, flTaxslapCol1, flTaxslapCol2, flTaxslapCol3,
 			flTaxslapCol4;
@@ -92,8 +92,6 @@ public class Tax extends BaseUI {
 	private Long taxId;
 	private int recordCnt = 0;
 	private String username;
-	private Long earnAmtfrm = 0L;
-	private Long earnAmtTo = 0L;
 	private Boolean errorFlag = false;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Tax.class);
@@ -263,13 +261,13 @@ public class Tax extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<TaxDM> taxList = new ArrayList<TaxDM>();
+		List<TaxDM> listTax = new ArrayList<TaxDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfTaxName.getValue() + ", " + cbTaxStatus.getValue());
-		taxList = serviceTax.getTaxList(companyid, null, tfTaxName.getValue(), (String) cbTaxStatus.getValue(), "F");
-		recordCnt = taxList.size();
+		listTax = serviceTax.getTaxList(companyid, null, tfTaxName.getValue(), (String) cbTaxStatus.getValue(), "F");
+		recordCnt = listTax.size();
 		beanTaxDM = new BeanItemContainer<TaxDM>(TaxDM.class);
-		beanTaxDM.addAll(taxList);
+		beanTaxDM.addAll(listTax);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanTaxDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "taxid", "taxname", "taxstatus", "lastupdateddt",
@@ -286,9 +284,9 @@ public class Tax extends BaseUI {
 			logger.info("Company ID : " + companyid + " | saveTaxslapListDetails User Name : " + username + " > "
 					+ "Search Parameters are " + companyid + ", " + tfEarnAmtTo.getValue() + ", "
 					+ tfEarnAmtFrm.getValue() + (String) cbStatus.getValue() + ", " + taxId);
-			recordCnt = taxSlapList.size();
+			recordCnt = listTaxSlab.size();
 			beanTaxslapDM = new BeanItemContainer<TaxSlapDM>(TaxSlapDM.class);
-			beanTaxslapDM.addAll(taxSlapList);
+			beanTaxslapDM.addAll(listTaxSlab);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblTaxslap.setContainerDataSource(beanTaxslapDM);
@@ -315,7 +313,7 @@ public class Tax extends BaseUI {
 		tffinanceYr.setValue(serviceParameter.getParameterValue("FM_FINYEAR", companyid, null));
 		tffinanceYr.setReadOnly(true);
 		cbTaxStatus.setValue(cbTaxStatus.getItemIds().iterator().next());
-		taxSlapList = new ArrayList<TaxSlapDM>();
+		listTaxSlab = new ArrayList<TaxSlapDM>();
 		tblTaxslap.removeAllItems();
 	}
 	
@@ -324,23 +322,23 @@ public class Tax extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			TaxDM editTax = beanTaxDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			taxId = editTax.getTaxid();
+			TaxDM taxDM = beanTaxDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			taxId = taxDM.getTaxid();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Tax. Id -> "
 					+ taxId);
-			if (editTax.getTaxname() != null) {
-				tfTaxName.setValue(editTax.getTaxname());
+			if (taxDM.getTaxname() != null) {
+				tfTaxName.setValue(taxDM.getTaxname());
 			}
-			if (editTax.getFinyear() != null) {
+			if (taxDM.getFinyear() != null) {
 				tffinanceYr.setReadOnly(false);
-				tffinanceYr.setValue(editTax.getFinyear());
+				tffinanceYr.setValue(taxDM.getFinyear());
 				tffinanceYr.setReadOnly(true);
 			}
-			cbTaxStatus.setValue(editTax.getTaxstatus());
-			if (editTax.getGender() != null) {
-				cbGender.setValue(editTax.getGender());
+			cbTaxStatus.setValue(taxDM.getTaxstatus());
+			if (taxDM.getGender() != null) {
+				cbGender.setValue(taxDM.getGender());
 			}
-			taxSlapList.addAll(serviceTaxslap.getTaxSlapList(null, taxId, (String) cbStatus.getValue(), "F"));
+			listTaxSlab.addAll(serviceTaxslap.getTaxSlapList(null, taxId, (String) cbStatus.getValue(), "F"));
 		}
 		loadTaxslapRslt();
 	}
@@ -474,8 +472,8 @@ public class Tax extends BaseUI {
 					+ "Throwing ValidationException. User data is > " + tfTaxName.getValue());
 			errorFlag = true;
 		}
-		earnAmtTo = Long.valueOf(tfEarnAmtFrm.getValue().toString());
-		earnAmtfrm = Long.valueOf(tfEarnAmtTo.getValue().toString());
+		Long earnAmtTo = Long.valueOf(tfEarnAmtFrm.getValue().toString());
+		Long earnAmtfrm = Long.valueOf(tfEarnAmtTo.getValue().toString());
 		if (earnAmtTo > earnAmtfrm) {
 			tfEarnAmtTo.setComponentError(new UserError("Earn amount To is greater than to Earn amount From"));
 			errorFlag = true;
@@ -495,26 +493,26 @@ public class Tax extends BaseUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			TaxDM TaxObj = new TaxDM();
+			TaxDM taxDM = new TaxDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				TaxObj = beanTaxDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				taxDM = beanTaxDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			TaxObj.setCompanyid(companyid);
-			TaxObj.setTaxname(tfTaxName.getValue().toString());
-			TaxObj.setFinyear(tffinanceYr.getValue().toString());
+			taxDM.setCompanyid(companyid);
+			taxDM.setTaxname(tfTaxName.getValue().toString());
+			taxDM.setFinyear(tffinanceYr.getValue().toString());
 			if (cbTaxStatus.getValue() != null) {
-				TaxObj.setTaxstatus((String) cbTaxStatus.getValue());
+				taxDM.setTaxstatus((String) cbTaxStatus.getValue());
 			}
 			if (cbGender.getValue() != null) {
-				TaxObj.setGender((String) cbGender.getValue());
+				taxDM.setGender((String) cbGender.getValue());
 			}
-			TaxObj.setLastupdateddt(DateUtils.getcurrentdate());
-			TaxObj.setLastupdatedby(username);
-			serviceTax.saveTaxDetails(TaxObj);
+			taxDM.setLastupdateddt(DateUtils.getcurrentdate());
+			taxDM.setLastupdatedby(username);
+			serviceTax.saveTaxDetails(taxDM);
 			@SuppressWarnings("unchecked")
 			Collection<TaxSlapDM> itemIds = (Collection<TaxSlapDM>) tblTaxslap.getVisibleItemIds();
 			for (TaxSlapDM save : (Collection<TaxSlapDM>) itemIds) {
-				save.setTaxId(Long.valueOf(TaxObj.getTaxid().toString()));
+				save.setTaxId(Long.valueOf(taxDM.getTaxid().toString()));
 				serviceTaxslap.saveTaxDetails(save);
 			}
 			taxSlapResetField();
@@ -534,7 +532,7 @@ public class Tax extends BaseUI {
 			TaxSlapDM taxSlapObj = new TaxSlapDM();
 			if (tblTaxslap.getValue() != null) {
 				taxSlapObj = beanTaxslapDM.getItem(tblTaxslap.getValue()).getBean();
-				taxSlapList.remove(taxSlapObj);
+				listTaxSlab.remove(taxSlapObj);
 			}
 			if (tfEarnAmtTo.getValue() != null && tfEarnAmtTo.getValue().trim().length() > 0) {
 				taxSlapObj.setEarnAmtTo(Long.valueOf(tfEarnAmtTo.getValue()));
@@ -561,7 +559,7 @@ public class Tax extends BaseUI {
 			}
 			taxSlapObj.setLastUpdatedDate(DateUtils.getcurrentdate());
 			taxSlapObj.setLastUpdatedBy(username);
-			taxSlapList.add(taxSlapObj);
+			listTaxSlab.add(taxSlapObj);
 			loadTaxslapRslt();
 			btnAddTaxslap.setCaption("Add");
 		}
@@ -587,7 +585,7 @@ public class Tax extends BaseUI {
 		TaxSlapDM taxslapDtlObj = new TaxSlapDM();
 		if (tblTaxslap.getValue() != null) {
 			taxslapDtlObj = beanTaxslapDM.getItem(tblTaxslap.getValue()).getBean();
-			taxSlapList.remove(taxslapDtlObj);
+			listTaxSlab.remove(taxslapDtlObj);
 			taxSlapResetField();
 			tblTaxslap.setValue("");
 			loadTaxslapRslt();

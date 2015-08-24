@@ -225,14 +225,14 @@ public class FinancePlan extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<FinancePlanDM> finPlanList = new ArrayList<FinancePlanDM>();
+		List<FinancePlanDM> listFinPlan = new ArrayList<FinancePlanDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
 				+ companyId + ", " + tfFpDescription.getValue() + ", " + (String) cbStatus.getValue());
-		finPlanList = serviceFinancePlan.getFinancePlanList(null, companyId, tfFpDescription.getValue(), null,
+		listFinPlan = serviceFinancePlan.getFinancePlanList(null, companyId, tfFpDescription.getValue(), null,
 				(Long) cbDepartmentName.getValue(), null, (String) cbStatus.getValue());
-		recordCnt = finPlanList.size();
+		recordCnt = listFinPlan.size();
 		beansFinancePlanDM = new BeanItemContainer<FinancePlanDM>(FinancePlanDM.class);
-		beansFinancePlanDM.addAll(finPlanList);
+		beansFinancePlanDM.addAll(listFinPlan);
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Got the Account List result set");
 		tblMstScrSrchRslt.setContainerDataSource(beansFinancePlanDM);
@@ -246,62 +246,91 @@ public class FinancePlan extends BaseUI {
 	
 	// For Load Active Payment mode Details based on Company
 	private void loadFbCategoryList() {
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId,
-				SessionForModule.getModuleId("FMS"), "Active", "FM_FPCTGRY"));
-		cbFpCategory.setContainerDataSource(beanCompanyLookUp);
+		try {
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId,
+					SessionForModule.getModuleId("FMS"), "Active", "FM_FPCTGRY"));
+			cbFpCategory.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// For Load Active Account Type Details based on Company
 	private void loadDepartmentList() {
-		BeanContainer<Long, DepartmentDM> bean = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		bean.setBeanIdProperty("deptid");
-		bean.addAll(serviceDepartment.getDepartmentList(companyId, null, (String) cbStatus.getValue(), "P"));
-		cbDepartmentName.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, DepartmentDM> bean = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			bean.setBeanIdProperty("deptid");
+			bean.addAll(serviceDepartment.getDepartmentList(companyId, null, (String) cbStatus.getValue(), "P"));
+			cbDepartmentName.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// For Load Active Employee Details based on Company
 	private void loadOwnerList() {
-		BeanContainer<Long, EmployeeDM> employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		employeebeans.setBeanIdProperty("employeeid");
-		employeebeans.addAll(servicebeanEmployee.getEmployeeList(null, null, null, (String) cbStatus.getValue(),
-				companyId, null, null, null, null, "P"));
-		cbOwnerName.setContainerDataSource(employeebeans);
+		try {
+			BeanContainer<Long, EmployeeDM> employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			employeebeans.setBeanIdProperty("employeeid");
+			employeebeans.addAll(servicebeanEmployee.getEmployeeList(null, null, null, (String) cbStatus.getValue(),
+					companyId, null, null, null, null, "P"));
+			cbOwnerName.setContainerDataSource(employeebeans);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// For Load Active Transaction Type Details based on Company
 	private void loadMTranstypeList() {
-		BeanContainer<Long, TransactionTypeDM> bean = new BeanContainer<Long, TransactionTypeDM>(
-				TransactionTypeDM.class);
-		bean.setBeanIdProperty("transtypeid");
-		bean.addAll(serviceTransType.getTransactionTypeList(companyId, null, (String) cbStatus.getValue(), null, null));
-		cbTransactionType.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, TransactionTypeDM> bean = new BeanContainer<Long, TransactionTypeDM>(
+					TransactionTypeDM.class);
+			bean.setBeanIdProperty("transtypeid");
+			bean.addAll(serviceTransType.getTransactionTypeList(companyId, null, (String) cbStatus.getValue(), null,
+					null));
+			cbTransactionType.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// For Load Active Project Details based on Company
 	private void loadProjectList() {
-		BeanContainer<Long, ProjectDM> bean = new BeanContainer<Long, ProjectDM>(ProjectDM.class);
-		bean.setBeanIdProperty("projectId");
-		bean.addAll(serviceProjects.getProjectList(null, null, companyId, null, (String) cbStatus.getValue()));
-		cbProjectName.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, ProjectDM> bean = new BeanContainer<Long, ProjectDM>(ProjectDM.class);
+			bean.setBeanIdProperty("projectId");
+			bean.addAll(serviceProjects.getProjectList(null, null, companyId, null, (String) cbStatus.getValue()));
+			cbProjectName.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// For Load Active Account Type Details based on Company
 	private void loadCurrencyList() {
-		BeanContainer<Long, CurrencyDM> bean = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
-		bean.setBeanIdProperty("ccyid");
-		bean.addAll(serviceCurrency.getCurrencyList(null, null, null, (String) cbStatus.getValue(), "T"));
-		cbCurrency.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, CurrencyDM> bean = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
+			bean.setBeanIdProperty("ccyid");
+			bean.addAll(serviceCurrency.getCurrencyList(null, null, null, (String) cbStatus.getValue(), "T"));
+			cbCurrency.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// For Load Active Branch Details based on Company
 	private void loadBranchList() {
-		BeanContainer<Long, BranchDM> bean = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		bean.setBeanIdProperty("branchId");
-		bean.addAll(serviceBankBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId, "P"));
-		cbBranchName.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, BranchDM> bean = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			bean.setBeanIdProperty("branchId");
+			bean.addAll(serviceBankBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId, "P"));
+			cbBranchName.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void editFinancePlan() {

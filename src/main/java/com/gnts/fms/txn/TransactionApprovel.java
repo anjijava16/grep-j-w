@@ -287,7 +287,6 @@ public class TransactionApprovel implements ClickListener {
 				}
 				if (propertyId.toString().equals("appremarks")) {
 					TextField tf = new TextField();
-					// tf.setInputPrompt("Enter Remarks");
 					tf.setWidth("250");
 					tf.setNullRepresentation("");
 					return tf;

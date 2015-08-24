@@ -139,10 +139,10 @@ public class PTaxSlap extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<PTaxSlapDM> taxrebateList = new ArrayList<PTaxSlapDM>();
+		List<PTaxSlapDM> listTaxSlap = new ArrayList<PTaxSlapDM>();
 		Long countryId = null;
 		if (cbCountry.getValue() != null) {
 			countryId = ((Long.valueOf(cbCountry.getValue().toString())));
@@ -153,11 +153,11 @@ public class PTaxSlap extends BaseUI {
 		}
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbStateName.getValue() + ", " + cbStatus.getValue());
-		taxrebateList = servicePTaxSlap.getPTaxSlapList(null, companyid, countryId, stateId,
+		listTaxSlap = servicePTaxSlap.getPTaxSlapList(null, companyid, countryId, stateId,
 				(String) cbStatus.getValue(), "F");
-		recordCnt = taxrebateList.size();
+		recordCnt = listTaxSlap.size();
 		beanPTaxSlapDM = new BeanItemContainer<PTaxSlapDM>(PTaxSlapDM.class);
-		beanPTaxSlapDM.addAll(taxrebateList);
+		beanPTaxSlapDM.addAll(listTaxSlap);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Tax Rebate. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanPTaxSlapDM);
@@ -188,25 +188,24 @@ public class PTaxSlap extends BaseUI {
 	private void editPTaxSlap() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		PTaxSlapDM editPTaxSlapDM = beanPTaxSlapDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		taxrebateid = editPTaxSlapDM.getPtaxSlapId().toString();
+		PTaxSlapDM taxSlapDM = beanPTaxSlapDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		taxrebateid = taxSlapDM.getPtaxSlapId().toString();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Tax Rebate. Id -> "
 				+ taxrebateid);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			cbCountry.setValue(editPTaxSlapDM.getCountryId());
-			
-			cbStatus.setValue(editPTaxSlapDM.getStatus());
-			if (editPTaxSlapDM.getPtaxAmt() != null) {
-				tfPTaxAmt.setValue(editPTaxSlapDM.getPtaxAmt().toString());
+			cbCountry.setValue(taxSlapDM.getCountryId());
+			cbStatus.setValue(taxSlapDM.getStatus());
+			if (taxSlapDM.getPtaxAmt() != null) {
+				tfPTaxAmt.setValue(taxSlapDM.getPtaxAmt().toString());
 			}
-			if (editPTaxSlapDM.getAmtFrm() != null) {
-				tfAmtFrm.setValue(editPTaxSlapDM.getAmtFrm().toString());
+			if (taxSlapDM.getAmtFrm() != null) {
+				tfAmtFrm.setValue(taxSlapDM.getAmtFrm().toString());
 			}
-			if (editPTaxSlapDM.getAmtTo() != null) {
-				tfAmtTo.setValue(editPTaxSlapDM.getAmtTo().toString());
+			if (taxSlapDM.getAmtTo() != null) {
+				tfAmtTo.setValue(taxSlapDM.getAmtTo().toString());
 			}
-			if (editPTaxSlapDM.getStateId() != null) {
-				cbStateName.setValue(editPTaxSlapDM.getStateId().toString());
+			if (taxSlapDM.getStateId() != null) {
+				cbStateName.setValue(taxSlapDM.getStateId().toString());
 			}
 		}
 	}
@@ -354,20 +353,25 @@ public class PTaxSlap extends BaseUI {
 	}
 	
 	private void loadCountryList() {
-		List<CountryDM> list = serviceCountry.getCountryList(countryid, null, null, null, "Active", "P");
-		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
-		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(list);
-		cbCountry.setContainerDataSource(beanCountry);
+		try {
+			BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+			beanCountry.setBeanIdProperty("countryID");
+			beanCountry.addAll(serviceCountry.getCountryList(countryid, null, null, null, "Active", "P"));
+			cbCountry.setContainerDataSource(beanCountry);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// load the State name list details for form
 	private void loadStateList() {
-		List<StateDM> getStateList = new ArrayList<StateDM>();
-		getStateList.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), companyid, "P"));
-		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
-		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(getStateList);
-		cbStateName.setContainerDataSource(beanState);
+		try {
+			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
+			beanState.setBeanIdProperty("stateId");
+			beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), companyid, "P"));
+			cbStateName.setContainerDataSource(beanState);
+		}
+		catch (Exception e) {
+		}
 	}
 }

@@ -60,7 +60,7 @@ public class TransactionType extends BaseUI {
 	// Add Input fields
 	private TextField tfTranstypeName;
 	// private ComboBoxs
-	private ComboBox cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
+	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private ComboBox cbCreditDebit = new GERPComboBox("Credit/Debit", BASEConstants.M_FMS_TRANS_TYPE,
 			BASEConstants.M_FMS_CR_DE);
@@ -93,7 +93,7 @@ public class TransactionType extends BaseUI {
 		// add the user input items into appropriate form layout
 		formLayout1.addComponent(tfTranstypeName);
 		formLayout2.addComponent(cbCreditDebit);
-		formLayout3.addComponent(cbstatus);
+		formLayout3.addComponent(cbStatus);
 		// add the form layouts into user input layout
 		hlUserInputLayout.setSpacing(true);
 		hlUserInputLayout.addComponent(formLayout1);
@@ -122,14 +122,14 @@ public class TransactionType extends BaseUI {
 	
 	private void loadSrchRslt() {
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + "," + (String) cbstatus.getValue()
+				+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + "," + (String) cbStatus.getValue()
 				+ ", " + companyId + "Loading Search...");
 		List<TransactionTypeDM> listTransType = new ArrayList<TransactionTypeDM>();
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + "," + (String) cbstatus.getValue()
+				+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + "," + (String) cbStatus.getValue()
 				+ ", " + companyId);
 		listTransType = serviceTransType.getTransactionTypeList(companyId, tfTranstypeName.getValue(),
-				(String) cbstatus.getValue(), (String) cbCreditDebit.getValue(),null);
+				(String) cbStatus.getValue(), (String) cbCreditDebit.getValue(),null);
 		recordCnt = listTransType.size();
 		beanTransactionTypeDM = new BeanItemContainer<TransactionTypeDM>(TransactionTypeDM.class);
 		beanTransactionTypeDM.addAll(listTransType);
@@ -165,7 +165,7 @@ public class TransactionType extends BaseUI {
 				credr = "D";
 			}
 			cbCreditDebit.setValue(credr);
-			cbstatus.setValue(sltedRcd.getItemProperty("transtypestatus").getValue().toString());
+			cbStatus.setValue(sltedRcd.getItemProperty("transtypestatus").getValue().toString());
 		}
 	}
 	
@@ -192,7 +192,7 @@ public class TransactionType extends BaseUI {
 				+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + ",  Active ," + companyId
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
-		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		tfTranstypeName.setValue("");
 		cbCreditDebit.setValue(null);
 		lblNotification.setIcon(null);
@@ -252,21 +252,21 @@ public class TransactionType extends BaseUI {
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + ",  Active ," + companyId
 				+ "Saving Data... ");
-		TransactionTypeDM transtypobj = new TransactionTypeDM();
+		TransactionTypeDM transactionType = new TransactionTypeDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			transtypobj = beanTransactionTypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			transactionType = beanTransactionTypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		transtypobj.setCompanyid(companyId);
-		transtypobj.setTranstypename(tfTranstypeName.getValue().toString());
-		if (cbstatus.getValue() != null) {
-			transtypobj.setTranstypestatus((String) cbstatus.getValue());
+		transactionType.setCompanyid(companyId);
+		transactionType.setTranstypename(tfTranstypeName.getValue().toString());
+		if (cbStatus.getValue() != null) {
+			transactionType.setTranstypestatus((String) cbStatus.getValue());
 		}
 		if (cbCreditDebit.getValue() != null) {
-			transtypobj.setCrdr((String) cbCreditDebit.getValue());
+			transactionType.setCrdr((String) cbCreditDebit.getValue());
 		}
-		transtypobj.setLastupdateddt(DateUtils.getcurrentdate());
-		transtypobj.setLastupdatedby(strLoginUserName);
-		serviceTransType.saveDetails(transtypobj);
+		transactionType.setLastupdateddt(DateUtils.getcurrentdate());
+		transactionType.setLastupdatedby(strLoginUserName);
+		serviceTransType.saveDetails(transactionType);
 		resetFields();
 		loadSrchRslt();
 	}
@@ -299,7 +299,7 @@ public class TransactionType extends BaseUI {
 				+ "Resetting the UI controls");
 		tfTranstypeName.setValue("");
 		tfTranstypeName.setComponentError(null);
-		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		cbCreditDebit.setValue(null);
 	}
 }

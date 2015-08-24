@@ -151,15 +151,15 @@ public class Earnings extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<EarningsDM> EarningsList = new ArrayList<EarningsDM>();
+		List<EarningsDM> listEarnings = new ArrayList<EarningsDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfEarnDesc.getValue() + ", " + tfEarnDesc.getValue()
 				+ (String) cbStatus.getValue());
-		EarningsList = serviceEarnings.getEarningList(null, tfEarnCode.getValue(), tfEarnDesc.getValue(), null,
+		listEarnings = serviceEarnings.getEarningList(null, tfEarnCode.getValue(), tfEarnDesc.getValue(), null,
 				(String) cbStatus.getValue(), "F");
-		recordCnt = EarningsList.size();
+		recordCnt = listEarnings.size();
 		beanEarningsDM = new BeanItemContainer<EarningsDM>(EarningsDM.class);
-		beanEarningsDM.addAll(EarningsList);
+		beanEarningsDM.addAll(listEarnings);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Earnings. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanEarningsDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "earnId", "earnCode", "earnDESCR", "earnType", "status",
@@ -345,11 +345,16 @@ public class Earnings extends BaseUI {
 	}
 	
 	private void loadCmpLkup() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_ERNTYPE"));
-		cbEarnType.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"HC_ERNTYPE"));
+			cbEarnType.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 }

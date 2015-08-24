@@ -234,18 +234,18 @@ public class JobClass extends BaseUI {
 	@Override
 	protected void saveDetails() throws ERPException.SaveException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		JobClassificationDM saveJobClsFctnObj = new JobClassificationDM();
+		JobClassificationDM jobClassification = new JobClassificationDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			saveJobClsFctnObj = beanJobClassificationDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			jobClassification = beanJobClassificationDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		saveJobClsFctnObj.setCmpId(companyid);
-		saveJobClsFctnObj.setClasficatnName(tfClsFctnName.getValue().toString());
+		jobClassification.setCmpId(companyid);
+		jobClassification.setClasficatnName(tfClsFctnName.getValue().toString());
 		if (cbStatus.getValue() != null) {
-			saveJobClsFctnObj.setStatus((String) cbStatus.getValue());
+			jobClassification.setStatus((String) cbStatus.getValue());
 		}
-		saveJobClsFctnObj.setLastUpdatedDate(DateUtils.getcurrentdate());
-		saveJobClsFctnObj.setLastUpdatedBy(username);
-		serviceJobClassification.saveAndUpdate(saveJobClsFctnObj);
+		jobClassification.setLastUpdatedDate(DateUtils.getcurrentdate());
+		jobClassification.setLastUpdatedBy(username);
+		serviceJobClassification.saveAndUpdate(jobClassification);
 		resetFields();
 		loadSrchRslt();
 	}

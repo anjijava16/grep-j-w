@@ -151,19 +151,27 @@ public class AppraisalEmpIncident extends BaseUI {
 	
 	// Load Employee List
 	private void loadEmployee() {
-		BeanContainer<Long, EmployeeDM> bean = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		bean.setBeanIdProperty("employeeid");
-		bean.addAll(servicebeanEmployee.getEmployeeList((String) cbEmployee.getValue(), null, null, null, null, null,
-				null, null, null, "P"));
-		cbEmployee.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, EmployeeDM> bean = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			bean.setBeanIdProperty("employeeid");
+			bean.addAll(servicebeanEmployee.getEmployeeList((String) cbEmployee.getValue(), null, null, null, null,
+					null, null, null, null, "P"));
+			cbEmployee.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Load Load Kpigroup Name List
 	private void loadKpiGroupNameList() {
-		BeanContainer<Long, KpiGroupDM> beanEmployee = new BeanContainer<Long, KpiGroupDM>(KpiGroupDM.class);
-		beanEmployee.setBeanIdProperty("kpigrpid");
-		beanEmployee.addAll(serviceKpiGroup.getkpigrouplist(null, null, companyId, null, "Active", "F"));
-		cbKPIGroup.setContainerDataSource(beanEmployee);
+		try {
+			BeanContainer<Long, KpiGroupDM> beanEmployee = new BeanContainer<Long, KpiGroupDM>(KpiGroupDM.class);
+			beanEmployee.setBeanIdProperty("kpigrpid");
+			beanEmployee.addAll(serviceKpiGroup.getkpigrouplist(null, null, companyId, null, "Active", "F"));
+			cbKPIGroup.setContainerDataSource(beanEmployee);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Load Incident Severity List

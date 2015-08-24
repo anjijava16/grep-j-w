@@ -63,7 +63,7 @@ public class AppraisalLevels extends BaseUI {
 	private PopupDateField dfStartDate;
 	private PopupDateField dfEndDate;
 	private ComboBox cbStatus, cbapprasallvl, cbapprsalyr;
-	private GERPTextArea taapprdetl;
+	private GERPTextArea taApprasialDtls;
 	private FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4;
 	private HorizontalLayout hlsearchlayout;
 	private HorizontalLayout hluserInputlayout = new HorizontalLayout();
@@ -95,8 +95,8 @@ public class AppraisalLevels extends BaseUI {
 		dfEndDate = new GERPPopupDateField("End Date");
 		dfEndDate.setInputPrompt("Select Date");
 		cbStatus = new GERPComboBox("Level Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		taapprdetl = new GERPTextArea("Comment");
-		taapprdetl.setHeight("50");
+		taApprasialDtls = new GERPTextArea("Comment");
+		taApprasialDtls.setHeight("50");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assemblsearch();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
@@ -122,7 +122,7 @@ public class AppraisalLevels extends BaseUI {
 		hlsearchlayout.setMargin(true);
 	}
 	
-	public void assemblUserInputLayout() {
+	private void assemblUserInputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling User Input layout");
 		hluserInputlayout.removeAllComponents();
 		flcolumn1 = new GERPFormLayout();
@@ -139,8 +139,8 @@ public class AppraisalLevels extends BaseUI {
 		flcolumn3.addComponent(dfEndDate);
 		dfEndDate.setWidth("90");
 		flcolumn3.addComponent(cbStatus);
-		flcolumn4.addComponent(taapprdetl);
-		taapprdetl.setValue("");
+		flcolumn4.addComponent(taApprasialDtls);
+		taApprasialDtls.setValue("");
 		hluserInputlayout.addComponent(flcolumn1);
 		hluserInputlayout.addComponent(flcolumn2);
 		hluserInputlayout.addComponent(flcolumn3);
@@ -230,7 +230,7 @@ public class AppraisalLevels extends BaseUI {
 				dfEndDate.setValue(appraisalLevel.getEnddate());
 			}
 			if (appraisalLevel.getAppraisaldetails() != null) {
-				taapprdetl.setValue(appraisalLevel.getAppraisaldetails());
+				taApprasialDtls.setValue(appraisalLevel.getAppraisaldetails());
 			}
 		}
 	}
@@ -286,7 +286,7 @@ public class AppraisalLevels extends BaseUI {
 			apprlvlsobj.setEnddate(dfEndDate.getValue());
 			apprlvlsobj.setLastupdateddt(DateUtils.getcurrentdate());
 			apprlvlsobj.setLastupdatedby(username);
-			apprlvlsobj.setAppraisaldetails(taapprdetl.getValue());
+			apprlvlsobj.setAppraisaldetails(taApprasialDtls.getValue());
 			serviceAppraisalLevel.saveOrUpdateAppraisalLevels(apprlvlsobj);
 			resetFields();
 			loadSrchRslt();
@@ -325,7 +325,7 @@ public class AppraisalLevels extends BaseUI {
 		dfStartDate.setComponentError(null);
 		dfEndDate.setValue(null);
 		dfEndDate.setComponentError(null);
-		taapprdetl.setValue("");
+		taApprasialDtls.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	
@@ -335,17 +335,21 @@ public class AppraisalLevels extends BaseUI {
 		for (i = 0; i < 50; i++) {
 			year = year + 1;
 			cbapprsalyr.addItem(year + "");
-			System.out.println("year is " + year);
 		}
 	}
 	
 	private void loadappraisallvl() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading appraisal levels...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_GRDLVL"));
-		cbapprasallvl.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading appraisal levels...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"HC_GRDLVL"));
+			cbapprasallvl.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 }

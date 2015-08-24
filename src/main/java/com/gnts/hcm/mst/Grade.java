@@ -185,17 +185,17 @@ public class Grade extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<GradeDM> gradeList = new ArrayList<GradeDM>();
+		List<GradeDM> listGrade = new ArrayList<GradeDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfGRDDesc.getValue() + ", " + tfGRDDesc.getValue() + (String) cbStatus.getValue());
-		gradeList = serviceGrade.getGradeList(null, tfGRDDesc.getValue(), (String) cbGRDLvl.getValue(), companyid,
+		listGrade = serviceGrade.getGradeList(null, tfGRDDesc.getValue(), (String) cbGRDLvl.getValue(), companyid,
 				(String) cbStatus.getValue(), "F");
-		recordCnt = gradeList.size();
+		recordCnt = listGrade.size();
 		beanGradeDM = new BeanItemContainer<GradeDM>(GradeDM.class);
-		beanGradeDM.addAll(gradeList);
+		beanGradeDM.addAll(listGrade);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Grade. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanGradeDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "gradeId", "gradeDESC", "gradeLvl", "minSal", "maxSal",
@@ -226,28 +226,28 @@ public class Grade extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editGrade() {
-		GradeDM editGrade = beanGradeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		pkGradeId = editGrade.getGradeId().toString();
-		if (editGrade.getGradeDESC() != null) {
-			tfGRDDesc.setValue(editGrade.getGradeDESC());
+		GradeDM gradeDM = beanGradeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		pkGradeId = gradeDM.getGradeId().toString();
+		if (gradeDM.getGradeDESC() != null) {
+			tfGRDDesc.setValue(gradeDM.getGradeDESC());
 		}
-		if (editGrade.getMinSal() != null) {
-			tfMinSal.setValue(editGrade.getMinSal().toString());
+		if (gradeDM.getMinSal() != null) {
+			tfMinSal.setValue(gradeDM.getMinSal().toString());
 		}
-		if (editGrade.getMaxSal() != null) {
-			tfMaxSal.setValue(editGrade.getMaxSal().toString());
+		if (gradeDM.getMaxSal() != null) {
+			tfMaxSal.setValue(gradeDM.getMaxSal().toString());
 		}
-		if (editGrade.getNoOfLates() != null) {
-			tfNoLates.setValue(editGrade.getNoOfLates().toString());
+		if (gradeDM.getNoOfLates() != null) {
+			tfNoLates.setValue(gradeDM.getNoOfLates().toString());
 		}
-		if (editGrade.getGradeHirarchy() != null) {
-			tfGRDHierachy.setValue(editGrade.getGradeHirarchy().toString());
+		if (gradeDM.getGradeHirarchy() != null) {
+			tfGRDHierachy.setValue(gradeDM.getGradeHirarchy().toString());
 		}
-		if (editGrade.getNoOfPermission() != null) {
-			tfPermission.setValue(editGrade.getNoOfPermission().toString());
+		if (gradeDM.getNoOfPermission() != null) {
+			tfPermission.setValue(gradeDM.getNoOfPermission().toString());
 		}
-		cbStatus.setValue(editGrade.getStatus());
-		cbGRDLvl.setValue(editGrade.getGradeLvl());
+		cbStatus.setValue(gradeDM.getStatus());
+		cbGRDLvl.setValue(gradeDM.getGradeLvl());
 	}
 	
 	// Base class implementations
@@ -347,59 +347,63 @@ public class Grade extends BaseUI {
 	@Override
 	protected void saveDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		GradeDM gradeObj = new GradeDM();
+		GradeDM gradeDM = new GradeDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			gradeObj = beanGradeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			gradeDM = beanGradeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
 		if (tfGRDDesc.getValue() != null) {
-			gradeObj.setGradeDESC(tfGRDDesc.getValue().toString());
+			gradeDM.setGradeDESC(tfGRDDesc.getValue().toString());
 		}
 		if (cbGRDLvl.getValue() != null) {
-			gradeObj.setGradeLvl(cbGRDLvl.getValue().toString());
+			gradeDM.setGradeLvl(cbGRDLvl.getValue().toString());
 		}
 		if (tfMinSal.getValue() != null && tfMinSal.getValue().trim().length() > 0) {
-			gradeObj.setMinSal(Long.valueOf(tfMinSal.getValue()));
+			gradeDM.setMinSal(Long.valueOf(tfMinSal.getValue()));
 		} else {
-			gradeObj.setMinSal(new Long("0"));
+			gradeDM.setMinSal(new Long("0"));
 		}
 		if (tfMaxSal.getValue() != null && tfMaxSal.getValue().trim().length() > 0) {
-			gradeObj.setMaxSal(Long.valueOf(tfMaxSal.getValue()));
+			gradeDM.setMaxSal(Long.valueOf(tfMaxSal.getValue()));
 		} else {
-			gradeObj.setMaxSal(new Long("0"));
+			gradeDM.setMaxSal(new Long("0"));
 		}
 		if (tfNoLates.getValue() != null && tfNoLates.getValue().trim().length() > 0) {
-			gradeObj.setNoOfLates((Long.valueOf(tfNoLates.getValue())));
+			gradeDM.setNoOfLates((Long.valueOf(tfNoLates.getValue())));
 		} else {
-			gradeObj.setNoOfLates(new Long("0"));
+			gradeDM.setNoOfLates(new Long("0"));
 		}
 		if (tfGRDHierachy.getValue() != null && tfGRDHierachy.getValue().trim().length() > 0) {
-			gradeObj.setGradeHirarchy((Long.valueOf(tfGRDHierachy.getValue())));
+			gradeDM.setGradeHirarchy((Long.valueOf(tfGRDHierachy.getValue())));
 		} else {
-			gradeObj.setGradeHirarchy(new Long("0"));
+			gradeDM.setGradeHirarchy(new Long("0"));
 		}
 		if (tfPermission.getValue() != null && tfPermission.getValue().trim().length() > 0) {
-			gradeObj.setNoOfPermission((Long.valueOf(tfPermission.getValue())));
+			gradeDM.setNoOfPermission((Long.valueOf(tfPermission.getValue())));
 		} else {
-			gradeObj.setNoOfPermission(new Long("0"));
+			gradeDM.setNoOfPermission(new Long("0"));
 		}
-		gradeObj.setCmpId(companyid);
+		gradeDM.setCmpId(companyid);
 		if (cbStatus.getValue() != null) {
-			gradeObj.setStatus((String) cbStatus.getValue());
+			gradeDM.setStatus((String) cbStatus.getValue());
 		}
-		gradeObj.setLastUpdatedDate(DateUtils.getcurrentdate());
-		gradeObj.setLastUpdatedBy(username);
-		serviceGrade.saveAndUpdate(gradeObj);
+		gradeDM.setLastUpdatedDate(DateUtils.getcurrentdate());
+		gradeDM.setLastUpdatedBy(username);
+		serviceGrade.saveAndUpdate(gradeDM);
 		resetFields();
 		loadSrchRslt();
 	}
 	
 	private void loadGRDLvl() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_GRDLVL"));
-		cbGRDLvl.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"HC_GRDLVL"));
+			cbGRDLvl.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 }

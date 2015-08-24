@@ -49,7 +49,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class GradeAllowance extends BaseUI {
-	// Bean creation	
+	// Bean creation
 	private GradeAllowanceService serviceGradeAllowance = (GradeAllowanceService) SpringContextHelper
 			.getBean("GradeAllowance");
 	private GradeService serviceGrade = (GradeService) SpringContextHelper.getBean("Grade");
@@ -520,11 +520,15 @@ public class GradeAllowance extends BaseUI {
 	}
 	
 	private void loadGradeList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
-		beanGradeDM.setBeanIdProperty("gradeId");
-		beanGradeDM.addAll(serviceGrade.getGradeList(null, null, null, companyid, "Active", "P"));
-		cbGradeDesc.setContainerDataSource(beanGradeDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanContainer<Long, GradeDM> beanGradeDM = new BeanContainer<Long, GradeDM>(GradeDM.class);
+			beanGradeDM.setBeanIdProperty("gradeId");
+			beanGradeDM.addAll(serviceGrade.getGradeList(null, null, null, companyid, "Active", "P"));
+			cbGradeDesc.setContainerDataSource(beanGradeDM);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadAllowanceList() {

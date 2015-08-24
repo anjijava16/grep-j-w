@@ -143,14 +143,14 @@ public class PNCCenters extends BaseUI {
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<PNCCentersDM> pncCenterList = new ArrayList<PNCCentersDM>();
+		List<PNCCentersDM> listPNCCenter = new ArrayList<PNCCentersDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfPNCCode.getValue() + ", " + (String) cbPNCStatus.getValue());
-		pncCenterList = servicePNCCenter.getCenterTypeList(tfPNCCode.getValue(), companyId,
+		listPNCCenter = servicePNCCenter.getCenterTypeList(tfPNCCode.getValue(), companyId,
 				(String) cbPNCStatus.getValue(), "F");
-		recordCnt = pncCenterList.size();
+		recordCnt = listPNCCenter.size();
 		beanPNCCenter = new BeanItemContainer<PNCCentersDM>(PNCCentersDM.class);
-		beanPNCCenter.addAll(pncCenterList);
+		beanPNCCenter.addAll(listPNCCenter);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the PNCCenter. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanPNCCenter);

@@ -66,7 +66,7 @@ public class PNCDeptMap extends BaseUI {
 	// Add Input fields
 	private ComboBox cbPNCCenters = new GERPComboBox("PNC Center");
 	private ComboBox cbDepartmentName = new GERPComboBox("Department Name");
-	private ComboBox cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
+	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private String loginUserName;
 	private Long companyId;
@@ -109,7 +109,7 @@ public class PNCDeptMap extends BaseUI {
 		// Add the user input items into appropriate form layout
 		formLayout1.addComponent(cbPNCCenters);
 		formLayout2.addComponent(cbDepartmentName);
-		formLayout3.addComponent(cbstatus);
+		formLayout3.addComponent(cbStatus);
 		// build search layout
 		hlSearchLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
@@ -148,15 +148,15 @@ public class PNCDeptMap extends BaseUI {
 	private void loadSrchRslt() {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
-			List<PNCDeptMapDM> pncDeptList = new ArrayList<PNCDeptMapDM>();
+			List<PNCDeptMapDM> listPNCDeptMap = new ArrayList<PNCDeptMapDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Search Parameters are " + cbPNCCenters.getValue() + ", " + cbDepartmentName.getValue() + ","
-					+ companyId + " , " + (String) cbstatus.getValue());
-			pncDeptList = servicePNCDeptMap.getDeptMapList(null, (Long) cbDepartmentName.getValue(), companyId,
-					(String) cbstatus.getValue());
-			recordCnt = pncDeptList.size();
+					+ companyId + " , " + (String) cbStatus.getValue());
+			listPNCDeptMap = servicePNCDeptMap.getDeptMapList(null, (Long) cbDepartmentName.getValue(), companyId,
+					(String) cbStatus.getValue());
+			recordCnt = listPNCDeptMap.size();
 			beanPNCDeptMapDM = new BeanItemContainer<PNCDeptMapDM>(PNCDeptMapDM.class);
-			beanPNCDeptMapDM.addAll(pncDeptList);
+			beanPNCDeptMapDM.addAll(listPNCDeptMap);
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Got the PNCCenter. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanPNCDeptMapDM);
@@ -186,7 +186,7 @@ public class PNCDeptMap extends BaseUI {
 			if (pncDeptMapDM.getDeptid() != null) {
 				cbDepartmentName.setValue(pncDeptMapDM.getDeptid());
 			}
-			cbstatus.setValue(pncDeptMapDM.getStatus());
+			cbStatus.setValue(pncDeptMapDM.getStatus());
 		}
 	}
 	
@@ -206,7 +206,7 @@ public class PNCDeptMap extends BaseUI {
 	private void loadPNCCenterList() {
 		BeanContainer<Long, PNCCentersDM> bean = new BeanContainer<Long, PNCCentersDM>(PNCCentersDM.class);
 		bean.setBeanIdProperty("pncid");
-		bean.addAll(servicepnccnter.getCenterTypeList(null, companyId, (String) cbstatus.getValue(), "T"));
+		bean.addAll(servicepnccnter.getCenterTypeList(null, companyId, (String) cbStatus.getValue(), "T"));
 		cbPNCCenters.setContainerDataSource(bean);
 	}
 	
@@ -275,8 +275,8 @@ public class PNCDeptMap extends BaseUI {
 		pncDeptObj.setCompanyid(companyId);
 		pncDeptObj.setPncid(Long.valueOf(cbPNCCenters.getValue().toString()));
 		pncDeptObj.setDeptid(Long.valueOf(cbDepartmentName.getValue().toString()));
-		if (cbstatus.getValue() != null) {
-			pncDeptObj.setStatus((String) cbstatus.getValue());
+		if (cbStatus.getValue() != null) {
+			pncDeptObj.setStatus((String) cbStatus.getValue());
 		}
 		pncDeptObj.setLastupdateddt(DateUtils.getcurrentdate());
 		pncDeptObj.setLastupdatedby(loginUserName);
@@ -310,7 +310,7 @@ public class PNCDeptMap extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
-		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		cbPNCCenters.setValue(null);
 		cbDepartmentName.setValue(null);
 		lblNotification.setIcon(null);

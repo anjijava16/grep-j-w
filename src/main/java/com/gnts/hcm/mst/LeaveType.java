@@ -136,14 +136,14 @@ public class LeaveType extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<LeaveTypeDM> leaveTypeList = new ArrayList<LeaveTypeDM>();
+		List<LeaveTypeDM> listLeaveType = new ArrayList<LeaveTypeDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfLeaveTypeName.getValue() + ", " + cbLeaveTypeStatus.getValue());
-		leaveTypeList = serviceLeaveType.getLeaveTypeList(null, tfLeaveTypeName.getValue(), companyid,
+		listLeaveType = serviceLeaveType.getLeaveTypeList(null, tfLeaveTypeName.getValue(), companyid,
 				tfSymbol.getValue(), null, (String) cbLeaveTypeStatus.getValue(), "F");
-		recordCnt = leaveTypeList.size();
+		recordCnt = listLeaveType.size();
 		beanLeaveType = new BeanItemContainer<LeaveTypeDM>(LeaveTypeDM.class);
-		beanLeaveType.addAll(leaveTypeList);
+		beanLeaveType.addAll(listLeaveType);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Leave Type. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanLeaveType);
@@ -171,22 +171,22 @@ public class LeaveType extends BaseUI {
 	private void editLeaveType() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		LeaveTypeDM editLeaveType = beanLeaveType.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		leaveTypeId = editLeaveType.getLeaveTypeId().toString();
+		LeaveTypeDM leaveTypeDM = beanLeaveType.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		leaveTypeId = leaveTypeDM.getLeaveTypeId().toString();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected LeaveType. Id -> "
 				+ leaveTypeId);
-		if (editLeaveType.getLeaveTypeName() != null) {
-			tfLeaveTypeName.setValue(editLeaveType.getLeaveTypeName());
+		if (leaveTypeDM.getLeaveTypeName() != null) {
+			tfLeaveTypeName.setValue(leaveTypeDM.getLeaveTypeName());
 		}
-		if (editLeaveType.getLeaveTypeSymbl() != null) {
-			tfSymbol.setValue(editLeaveType.getLeaveTypeSymbl());
+		if (leaveTypeDM.getLeaveTypeSymbl() != null) {
+			tfSymbol.setValue(leaveTypeDM.getLeaveTypeSymbl());
 		}
-		if (editLeaveType.getLeaveTypeCarryFrwd().equals("Y")) {
+		if (leaveTypeDM.getLeaveTypeCarryFrwd().equals("Y")) {
 			ckCarryFrwd.setValue(true);
 		} else {
 			ckCarryFrwd.setValue(false);
 		}
-		cbLeaveTypeStatus.setValue(editLeaveType.getLeaveTypeStatus());
+		cbLeaveTypeStatus.setValue(leaveTypeDM.getLeaveTypeStatus());
 	}
 	
 	// Base class implementations
@@ -286,33 +286,33 @@ public class LeaveType extends BaseUI {
 	protected void saveDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
-			LeaveTypeDM leaveTypeObj = new LeaveTypeDM();
+			LeaveTypeDM leaveTypeDM = new LeaveTypeDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				leaveTypeObj = beanLeaveType.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				leaveTypeDM = beanLeaveType.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			leaveTypeObj.setCmpId(companyid);
+			leaveTypeDM.setCmpId(companyid);
 			if (tfLeaveTypeName.getValue() != null && tfLeaveTypeName.getValue().trim().length() > 0) {
-				leaveTypeObj.setLeaveTypeName(tfLeaveTypeName.getValue());
+				leaveTypeDM.setLeaveTypeName(tfLeaveTypeName.getValue());
 			}
 			if (tfSymbol.getValue() != null) {
-				leaveTypeObj.setLeaveTypeSymbl(tfSymbol.getValue());
+				leaveTypeDM.setLeaveTypeSymbl(tfSymbol.getValue());
 			}
 			if (ckCarryFrwd.getValue().equals(true)) {
-				leaveTypeObj.setLeaveTypeCarryFrwd("Y");
+				leaveTypeDM.setLeaveTypeCarryFrwd("Y");
 			} else {
-				leaveTypeObj.setLeaveTypeCarryFrwd("N");
+				leaveTypeDM.setLeaveTypeCarryFrwd("N");
 			}
 			if (ckCarryFrwd.getValue().equals(true)) {
-				leaveTypeObj.setLeaveTypeCarryFrwd("Y");
+				leaveTypeDM.setLeaveTypeCarryFrwd("Y");
 			} else if (ckCarryFrwd.getValue().equals(false)) {
-				leaveTypeObj.setLeaveTypeCarryFrwd("N");
+				leaveTypeDM.setLeaveTypeCarryFrwd("N");
 			}
 			if (cbLeaveTypeStatus.getValue() != null) {
-				leaveTypeObj.setLeaveTypeStatus((String) cbLeaveTypeStatus.getValue());
+				leaveTypeDM.setLeaveTypeStatus((String) cbLeaveTypeStatus.getValue());
 			}
-			leaveTypeObj.setLastUpdatedDate(DateUtils.getcurrentdate());
-			leaveTypeObj.setLastUpdatedBy(username);
-			serviceLeaveType.saveAndUpdate(leaveTypeObj);
+			leaveTypeDM.setLastUpdatedDate(DateUtils.getcurrentdate());
+			leaveTypeDM.setLastUpdatedBy(username);
+			serviceLeaveType.saveAndUpdate(leaveTypeDM);
 			resetFields();
 			loadSrchRslt();
 		}

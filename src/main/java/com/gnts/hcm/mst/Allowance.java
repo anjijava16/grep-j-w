@@ -137,18 +137,18 @@ public class Allowance extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<AllowanceDM> AllowanceList = new ArrayList<AllowanceDM>();
+		List<AllowanceDM> listAllowance = new ArrayList<AllowanceDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfAlowncDesc.getValue() + ", " + tfAlownceCode.getValue()
 				+ (String) cbStatus.getValue());
-		AllowanceList = serviceAllowance.getalowanceList(null, (String) tfAlownceCode.getValue(), companyid,
+		listAllowance = serviceAllowance.getalowanceList(null, (String) tfAlownceCode.getValue(), companyid,
 				(String) tfAlowncDesc.getValue(), (String) cbStatus.getValue(), "F");
-		recordCnt = AllowanceList.size();
+		recordCnt = listAllowance.size();
 		beanAllowanceDM = new BeanItemContainer<AllowanceDM>(AllowanceDM.class);
-		beanAllowanceDM.addAll(AllowanceList);
+		beanAllowanceDM.addAll(listAllowance);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Allowance. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanAllowanceDM);
@@ -174,20 +174,20 @@ public class Allowance extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editAllowance() {
-		AllowanceDM editAllowance = beanAllowanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		pkAllowanceId = editAllowance.getAlowncId().toString();
-		if (editAllowance.getAlowncDesc() != null) {
-			tfAlowncDesc.setValue(editAllowance.getAlowncDesc());
+		AllowanceDM allowance = beanAllowanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		pkAllowanceId = allowance.getAlowncId().toString();
+		if (allowance.getAlowncDesc() != null) {
+			tfAlowncDesc.setValue(allowance.getAlowncDesc());
 		}
-		if (editAllowance.getAlowncCode() != null) {
-			tfAlownceCode.setValue(editAllowance.getAlowncCode());
+		if (allowance.getAlowncCode() != null) {
+			tfAlownceCode.setValue(allowance.getAlowncCode());
 		}
-		if (editAllowance.getAddToGross().equals("Y")) {
+		if (allowance.getAddToGross().equals("Y")) {
 			chkAddToGros.setValue(true);
 		} else {
 			chkAddToGros.setValue(false);
 		}
-		cbStatus.setValue(editAllowance.getStatus());
+		cbStatus.setValue(allowance.getStatus());
 	}
 	
 	// Base class implementations
@@ -296,28 +296,28 @@ public class Allowance extends BaseUI {
 	@Override
 	protected void saveDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		AllowanceDM AllowanceObj = new AllowanceDM();
+		AllowanceDM allowanceDM = new AllowanceDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			AllowanceObj = beanAllowanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			allowanceDM = beanAllowanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
 		if (tfAlowncDesc.getValue() != null) {
-			AllowanceObj.setAlowncDesc(tfAlowncDesc.getValue().toString());
+			allowanceDM.setAlowncDesc(tfAlowncDesc.getValue().toString());
 		}
 		if (tfAlownceCode.getValue() != null) {
-			AllowanceObj.setAlowncCode(tfAlownceCode.getValue().toString());
+			allowanceDM.setAlowncCode(tfAlownceCode.getValue().toString());
 		}
 		if (chkAddToGros.getValue().equals(true)) {
-			AllowanceObj.setAddToGross("Y");
+			allowanceDM.setAddToGross("Y");
 		} else if (chkAddToGros.getValue().equals(false)) {
-			AllowanceObj.setAddToGross("N");
+			allowanceDM.setAddToGross("N");
 		}
-		AllowanceObj.setCmpId(companyid);
+		allowanceDM.setCmpId(companyid);
 		if (cbStatus.getValue() != null) {
-			AllowanceObj.setStatus((String) cbStatus.getValue());
+			allowanceDM.setStatus((String) cbStatus.getValue());
 		}
-		AllowanceObj.setLastUpdatedDate(DateUtils.getcurrentdate());
-		AllowanceObj.setLastUpdatedBy(username);
-		serviceAllowance.saveAndUpdate(AllowanceObj);
+		allowanceDM.setLastUpdatedDate(DateUtils.getcurrentdate());
+		allowanceDM.setLastUpdatedBy(username);
+		serviceAllowance.saveAndUpdate(allowanceDM);
 		resetFields();
 		loadSrchRslt();
 	}

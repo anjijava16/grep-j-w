@@ -181,15 +181,15 @@ public class AccountPayables extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<AccountPayablesDM> actpayablesList = new ArrayList<AccountPayablesDM>();
+		List<AccountPayablesDM> listACPayable = new ArrayList<AccountPayablesDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
 				+ companyId + ", " + (Long) cbBranchName.getValue() + " , " + tfBillNo.getValue() + ", "
 				+ (String) cbStatus.getValue());
-		actpayablesList = serviceAccountPayables.getAccountpayablesList(companyId, (Long) cbBranchName.getValue(),
+		listACPayable = serviceAccountPayables.getAccountpayablesList(companyId, (Long) cbBranchName.getValue(),
 				tfBillNo.getValue(), (String) cbStatus.getValue(), null);
-		recordCnt = actpayablesList.size();
+		recordCnt = listACPayable.size();
 		beansAccountPayablesDM = new BeanItemContainer<AccountPayablesDM>(AccountPayablesDM.class);
-		beansAccountPayablesDM.addAll(actpayablesList);
+		beansAccountPayablesDM.addAll(listACPayable);
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Got the Account Payables List result set");
 		tblMstScrSrchRslt.setContainerDataSource(beansAccountPayablesDM);
@@ -203,22 +203,31 @@ public class AccountPayables extends BaseUI {
 	
 	// For Load Active Branch Details based on Company
 	private void loadBranchList() {
-		BeanContainer<Long, BranchDM> bean = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		bean.setBeanIdProperty("branchId");
-		bean.addAll(serviceBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId, "P"));
-		cbBranchName.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, BranchDM> bean = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			bean.setBeanIdProperty("branchId");
+			bean.addAll(serviceBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId, "P"));
+			cbBranchName.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// For Load Active Account Type Details based on Company
 	private void loadAccountTypeList() {
-		BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
-		bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
-		cbAccountReference.setContainerDataSource(bean);
+		try {
+			BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
+			bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
+			cbAccountReference.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void editActPayables() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			AccountPayablesDM accountPayablesDM = beansAccountPayablesDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			AccountPayablesDM accountPayablesDM = beansAccountPayablesDM.getItem(tblMstScrSrchRslt.getValue())
+					.getBean();
 			primaryid = accountPayablesDM.getAccPayableId().toString();
 			if (accountPayablesDM.getBranchId() != null) {
 				cbBranchName.setValue(accountPayablesDM.getBranchId());

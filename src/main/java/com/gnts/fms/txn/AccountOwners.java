@@ -146,14 +146,14 @@ public class AccountOwners extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Account Owners Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Loading Search...");
-		List<AccountOwnersDM> ownerList = new ArrayList<AccountOwnersDM>();
+		List<AccountOwnersDM> listACOwners = new ArrayList<AccountOwnersDM>();
 		logger.info("" + "Account Owners : Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Search Parameters are " + companyid + ", " + cbEmpName.getValue() + ", " + cbStatus.getValue());
-		ownerList = serviceAccountOwner.getAccountOwnerList(null, (Long) cbAccountNo.getValue(),
+		listACOwners = serviceAccountOwner.getAccountOwnerList(null, (Long) cbAccountNo.getValue(),
 				(Long) cbEmpName.getValue(), (String) cbStatus.getValue());
-		recordCnt = ownerList.size();
+		recordCnt = listACOwners.size();
 		beanAccountOwnerDM = new BeanItemContainer<AccountOwnersDM>(AccountOwnersDM.class);
-		beanAccountOwnerDM.addAll(ownerList);
+		beanAccountOwnerDM.addAll(listACOwners);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the ParentCategory. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanAccountOwnerDM);
@@ -190,7 +190,7 @@ public class AccountOwners extends BaseUI {
 		}
 	}
 	
-	private void editccountOwner() {
+	private void editAccountOwner() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
@@ -276,7 +276,7 @@ public class AccountOwners extends BaseUI {
 		// reset the input controls to default value
 		resetFields();
 		assembleUserInputLayout();
-		editccountOwner();
+		editAccountOwner();
 	}
 	
 	@Override

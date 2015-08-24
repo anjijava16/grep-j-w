@@ -210,37 +210,55 @@ public class Transactions extends BaseTransUI {
 	
 	// For Load Active Employee Details based on Company
 	private void loadEmployeeList() {
-		BeanContainer<Long, EmployeeDM> employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		employeebeans.setBeanIdProperty("employeeid");
-		employeebeans.addAll(servicebeanEmployee.getEmployeeList(null, null, null, (String) cbStatus.getValue(),
-				companyId, null, null, null, null, "P"));
-		cbApproveManager.setContainerDataSource(employeebeans);
+		try {
+			BeanContainer<Long, EmployeeDM> employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			employeebeans.setBeanIdProperty("employeeid");
+			employeebeans.addAll(servicebeanEmployee.getEmployeeList(null, null, null, (String) cbStatus.getValue(),
+					companyId, null, null, null, null, "P"));
+			cbApproveManager.setContainerDataSource(employeebeans);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// For Load Active Account Type Details based on Company
 	private void loadAccountTypeList() {
-		BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
-		bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
-		cbAccountReference.setContainerDataSource(bean);
+		try {
+			BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
+			bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
+			cbAccountReference.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// For Load Active Transaction Type Details based on Company
 	private void loadMTranstypeList() {
-		BeanItemContainer<TransactionTypeDM> bean = new BeanItemContainer<TransactionTypeDM>(TransactionTypeDM.class);
-		bean.addAll(serviceTransType.getTransactionTypeList(companyId, null, (String) cbStatus.getValue(), null, null));
-		cbTransactionType.setContainerDataSource(bean);
+		try {
+			BeanItemContainer<TransactionTypeDM> bean = new BeanItemContainer<TransactionTypeDM>(
+					TransactionTypeDM.class);
+			bean.addAll(serviceTransType.getTransactionTypeList(companyId, null, (String) cbStatus.getValue(), null,
+					null));
+			cbTransactionType.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// * For Load Active Payment mode Details based on Company
 	private void loadPaymentmodeList() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Loading Gender Search...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId,
-				SessionForModule.getModuleId("FMS"), "Active", "FM_PAYMODE"));
-		cbPaymentMode.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Loading Gender Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId,
+					SessionForModule.getModuleId("FMS"), "Active", "FM_PAYMODE"));
+			cbPaymentMode.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -309,14 +327,14 @@ public class Transactions extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<TransactionsDM> transList = new ArrayList<TransactionsDM>();
+		List<TransactionsDM> listTrans = new ArrayList<TransactionsDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
 				+ companyId + ", " + cbAccountReference.getValue() + ", " + (String) cbStatus.getValue());
-		transList = serviceTransactions.getTransactionDetails(companyId, null, null, (String) cbStatus.getValue(),
+		listTrans = serviceTransactions.getTransactionDetails(companyId, null, null, (String) cbStatus.getValue(),
 				null, (String) cbPaymentMode.getValue(), (Long) cbAccountReference.getValue());
-		recordCnt = transList.size();
+		recordCnt = listTrans.size();
 		beanTransactionDM = new BeanItemContainer<TransactionsDM>(TransactionsDM.class);
-		beanTransactionDM.addAll(transList);
+		beanTransactionDM.addAll(listTrans);
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Got the Account List result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanTransactionDM);

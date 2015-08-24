@@ -31,7 +31,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.mst.ShiftDM;
 import com.gnts.hcm.service.mst.ShiftService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanItemContainer;
@@ -39,9 +38,9 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class Shift extends BaseUI {
 	private ShiftService serviceShift = (ShiftService) SpringContextHelper.getBean("Shift");
@@ -213,17 +212,17 @@ public class Shift extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<ShiftDM> shiftList = new ArrayList<ShiftDM>();
+		List<ShiftDM> listShift = new ArrayList<ShiftDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + txtShiftName.getValue() + ", " + cbStatus.getValue());
-		shiftList = serviceShift.getShiftList(null, txtShiftName.getValue(), companyid, (String) cbStatus.getValue(),
+		listShift = serviceShift.getShiftList(null, txtShiftName.getValue(), companyid, (String) cbStatus.getValue(),
 				"F");
-		recordCnt = shiftList.size();
+		recordCnt = listShift.size();
 		beanShift = new BeanItemContainer<ShiftDM>(ShiftDM.class);
-		beanShift.addAll(shiftList);
+		beanShift.addAll(listShift);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Shift Type. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanShift);
@@ -261,31 +260,30 @@ public class Shift extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		try {
 			hlUserInputLayout.setVisible(true);
-			Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-			ShiftDM editShift = beanShift.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			shiftId = editShift.getShiftId().toString();
+			ShiftDM shiftDM = beanShift.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			shiftId = shiftDM.getShiftId().toString();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Shift. Id -> "
 					+ shiftId);
-			if (editShift.getShiftName() != null) {
-				txtShiftName.setValue(itselect.getItemProperty("shiftName").getValue().toString());
+			if (shiftDM.getShiftName() != null) {
+				txtShiftName.setValue(shiftDM.getShiftName());
 			}
-			tfShiftIn.setTime(editShift.getShiftTimeIn());
-			tfShiftOut.setTime(editShift.getShiftTimeOut());
-			tfteaBrk1Ed.setTime(editShift.getTeaBrk1Ed());
-			tfteaBrk1st.setTime(editShift.getTeaBrk1St());
-			tfteaBrk2Ed.setTime(editShift.getTeaBrk2Ed());
-			tfteaBrk2st.setTime(editShift.getTeaBrk2St());
-			tfMealEd.setTime(editShift.getMealBrkEd());
-			tfMealSt.setTime(editShift.getMealBrkSt());
+			tfShiftIn.setTime(shiftDM.getShiftTimeIn());
+			tfShiftOut.setTime(shiftDM.getShiftTimeOut());
+			tfteaBrk1Ed.setTime(shiftDM.getTeaBrk1Ed());
+			tfteaBrk1st.setTime(shiftDM.getTeaBrk1St());
+			tfteaBrk2Ed.setTime(shiftDM.getTeaBrk2Ed());
+			tfteaBrk2st.setTime(shiftDM.getTeaBrk2St());
+			tfMealEd.setTime(shiftDM.getMealBrkEd());
+			tfMealSt.setTime(shiftDM.getMealBrkSt());
 			txtTotWrkHrs.setReadOnly(false);
-			if (editShift.getTotWorkHrs() != null) {
-				txtTotWrkHrs.setValue(itselect.getItemProperty("totWorkHrs").getValue().toString());
+			if (shiftDM.getTotWorkHrs() != null) {
+				txtTotWrkHrs.setValue(shiftDM.getTotWorkHrs().toString());
 			}
 			txtTotWrkHrs.setReadOnly(true);
-			if (editShift.getGracePeriod() != null) {
-				txtPeriod.setValue(itselect.getItemProperty("gracePeriod").getValue().toString());
+			if (shiftDM.getGracePeriod() != null) {
+				txtPeriod.setValue(shiftDM.getGracePeriod().toString());
 			}
-			cbStatus.setValue(itselect.getItemProperty("status").getValue());
+			cbStatus.setValue(shiftDM.getStatus());
 		}
 		catch (Exception e) {
 			e.printStackTrace();

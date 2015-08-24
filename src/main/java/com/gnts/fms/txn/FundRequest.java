@@ -191,17 +191,25 @@ public class FundRequest extends BaseUI {
 	
 	// For Load Active Branch Details based on Company
 	private void loadBranchList() {
-		BeanContainer<Long, BranchDM> bean = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		bean.setBeanIdProperty("branchId");
-		bean.addAll(serviceBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId, "P"));
-		cbBranchName.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, BranchDM> bean = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			bean.setBeanIdProperty("branchId");
+			bean.addAll(serviceBranch.getBranchList(null, null, null, (String) cbStatus.getValue(), companyId, "P"));
+			cbBranchName.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// For Load Active Account Type Details based on Company
 	private void loadAccountTypeList() {
-		BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
-		bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
-		cbAccountReference.setContainerDataSource(bean);
+		try {
+			BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
+			bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
+			cbAccountReference.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void editFundReq() {

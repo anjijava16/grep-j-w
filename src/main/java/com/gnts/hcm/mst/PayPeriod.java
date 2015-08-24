@@ -30,7 +30,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.mst.PayPeriodDM;
 import com.gnts.hcm.service.mst.PayPeriodService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanItemContainer;
@@ -38,9 +37,9 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class PayPeriod extends BaseUI {
 	// Bean creation
@@ -171,17 +170,17 @@ public class PayPeriod extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<PayPeriodDM> PayPeriodList = new ArrayList<PayPeriodDM>();
+		List<PayPeriodDM> listPayPeriod = new ArrayList<PayPeriodDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfPayPeriodName.getValue() + ", " + cbStatus.getValue());
-		PayPeriodList = servicePayPeriod.getPayList(null, tfPayPeriodName.getValue(), null, null, companyid,
+		listPayPeriod = servicePayPeriod.getPayList(null, tfPayPeriodName.getValue(), null, null, companyid,
 				(String) cbStatus.getValue(), "F");
-		recordCnt = PayPeriodList.size();
+		recordCnt = listPayPeriod.size();
 		beanPayPeriodDM = new BeanItemContainer<PayPeriodDM>(PayPeriodDM.class);
-		beanPayPeriodDM.addAll(PayPeriodList);
+		beanPayPeriodDM.addAll(listPayPeriod);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the PayPeriod Type. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanPayPeriodDM);
@@ -212,23 +211,22 @@ public class PayPeriod extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		try {
 			hlUserInputLayout.setVisible(true);
-			Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-			PayPeriodDM editPayPeriod = beanPayPeriodDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			PayPeriodId = editPayPeriod.getPayPeriodId().toString();
+			PayPeriodDM payPeriodDM = beanPayPeriodDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			PayPeriodId = payPeriodDM.getPayPeriodId().toString();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Selected PayPeriod. Id -> " + PayPeriodId);
-			if (editPayPeriod.getPeriodName() != null) {
-				tfPayPeriodName.setValue(itselect.getItemProperty("periodName").getValue().toString());
+			if (payPeriodDM.getPeriodName() != null) {
+				tfPayPeriodName.setValue(payPeriodDM.getPeriodName());
 			}
 			tfPayDays.setReadOnly(false);
-			if (editPayPeriod.getPayDays() != null) {
-				tfPayDays.setValue(itselect.getItemProperty("payDays").getValue().toString());
+			if (payPeriodDM.getPayDays() != null) {
+				tfPayDays.setValue(payPeriodDM.getPayDays().toString());
 			}
 			tfPayDays.setReadOnly(true);
-			cbStatus.setValue(itselect.getItemProperty("status").getValue());
-			int start = editPayPeriod.getPayStDay().intValue();
+			cbStatus.setValue(payPeriodDM.getStatus());
+			int start = payPeriodDM.getPayStDay().intValue();
 			cbPayStDay.select(start);
-			int end = editPayPeriod.getPayEdDay().intValue();
+			int end = payPeriodDM.getPayEdDay().intValue();
 			cbPayEdDay.select(end);
 		}
 		catch (Exception e) {
@@ -321,16 +319,6 @@ public class PayPeriod extends BaseUI {
 			cbPayEdDay.setComponentError(new UserError(GERPErrorCodes.NULL_PAYPERIOD_EDDAY));
 			errorFlag = true;
 		}
-		/*
-		 * PayPeriodDM savePayPeriodObj = new PayPeriodDM(); if (tblMstScrSrchRslt.getValue() != null) {
-		 * savePayPeriodObj = beanPayPeriodDM.getItem(tblMstScrSrchRslt.getValue()).getBean(); }
-		 */
-		/*
-		 * if ((tfPayPeriodName.getValue() != null) && savePayPeriodObj.getPayPeriodId() == null) { if
-		 * (servicePayPeriod.getPayList(null, tfPayPeriodName.getValue(), null, null, companyid, "Active", "P") .size()
-		 * > 0) { tfPayPeriodName.setComponentError(new UserError("Pay Period Name already Exist")); errorFlag = true; }
-		 * }
-		 */
 		if ((tfPayPeriodName.getValue() == null) || tfPayPeriodName.getValue().trim().length() == 0) {
 			tfPayPeriodName.setComponentError(new UserError(GERPErrorCodes.NULL_PAY_PERIOD));
 			errorFlag = true;
@@ -350,27 +338,27 @@ public class PayPeriod extends BaseUI {
 	protected void saveDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
-			PayPeriodDM savePayPeriodObj = new PayPeriodDM();
+			PayPeriodDM payPeriodDM = new PayPeriodDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				savePayPeriodObj = beanPayPeriodDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				payPeriodDM = beanPayPeriodDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			savePayPeriodObj.setCmpId(companyid);
-			savePayPeriodObj.setPeriodName(tfPayPeriodName.getValue());
+			payPeriodDM.setCmpId(companyid);
+			payPeriodDM.setPeriodName(tfPayPeriodName.getValue());
 			if (tfPayDays.getValue() != null) {
-				savePayPeriodObj.setPayDays(Long.valueOf(tfPayDays.getValue()));
+				payPeriodDM.setPayDays(Long.valueOf(tfPayDays.getValue()));
 			}
 			if (cbStatus.getValue() != null) {
-				savePayPeriodObj.setStatus((String) cbStatus.getValue());
+				payPeriodDM.setStatus((String) cbStatus.getValue());
 			}
 			if (cbPayStDay.getValue() != null) {
-				savePayPeriodObj.setPayStDay(Long.valueOf(cbPayStDay.getValue().toString()));
+				payPeriodDM.setPayStDay(Long.valueOf(cbPayStDay.getValue().toString()));
 			}
 			if (cbPayEdDay.getValue() != null) {
-				savePayPeriodObj.setPayEdDay(Long.valueOf(cbPayEdDay.getValue().toString()));
+				payPeriodDM.setPayEdDay(Long.valueOf(cbPayEdDay.getValue().toString()));
 			}
-			savePayPeriodObj.setLastUpdatedDate(DateUtils.getcurrentdate());
-			savePayPeriodObj.setLastUpdatedBy(username);
-			servicePayPeriod.saveAndUpdate(savePayPeriodObj);
+			payPeriodDM.setLastUpdatedDate(DateUtils.getcurrentdate());
+			payPeriodDM.setLastUpdatedBy(username);
+			servicePayPeriod.saveAndUpdate(payPeriodDM);
 			resetFields();
 			loadSrchRslt();
 		}

@@ -257,28 +257,36 @@ public class AttendenceProc extends BaseUI {
 	 * loadAttendanceProcessBranchList()-->this function is used for load the branch list to branch combo box
 	 */
 	private void loadAttendanceProcessBranchList() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Branch Search...");
-		List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
-		branchList.add(new BranchDM(0L, "All"));
-		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(branchList);
-		cbBranch.setContainerDataSource(beanBranch);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Branch Search...");
+			List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
+			branchList.add(new BranchDM(0L, "All"));
+			BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranch.setBeanIdProperty("branchId");
+			beanBranch.addAll(branchList);
+			cbBranch.setContainerDataSource(beanBranch);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * loadEmployeeList()-->this function is used for load the employee list
 	 */
 	private void loadEmployeeList() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		List<EmployeeDM> empList = new ArrayList<EmployeeDM>();
-		empList.add(new EmployeeDM(-1L, "All"));
-		empList.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null, null, null,
-				"P"));
-		BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanLoadEmployee.setBeanIdProperty("employeeid");
-		beanLoadEmployee.addAll(empList);
-		cbEmployeeName.setContainerDataSource(beanLoadEmployee);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			List<EmployeeDM> empList = new ArrayList<EmployeeDM>();
+			empList.add(new EmployeeDM(-1L, "All"));
+			empList.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null, null,
+					null, "P"));
+			BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanLoadEmployee.setBeanIdProperty("employeeid");
+			beanLoadEmployee.addAll(empList);
+			cbEmployeeName.setContainerDataSource(beanLoadEmployee);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*

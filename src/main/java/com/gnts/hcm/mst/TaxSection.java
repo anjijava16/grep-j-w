@@ -244,14 +244,14 @@ public class TaxSection extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<TaxSectionDM> taxsectionList = new ArrayList<TaxSectionDM>();
+		List<TaxSectionDM> listTaxSection = new ArrayList<TaxSectionDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfSectionCode.getValue() + ", " + cbSectionStatus.getValue());
-		taxsectionList = serviceTaxSection.getTaxSectionList(null, companyid, (String) tfSectionCode.getValue(), null,
+		listTaxSection = serviceTaxSection.getTaxSectionList(null, companyid, (String) tfSectionCode.getValue(), null,
 				null, (String) cbSectionStatus.getValue(), "F");
-		recordCnt = taxsectionList.size();
+		recordCnt = listTaxSection.size();
 		beanTaxSectionDM = new BeanItemContainer<TaxSectionDM>(TaxSectionDM.class);
-		beanTaxSectionDM.addAll(taxsectionList);
+		beanTaxSectionDM.addAll(listTaxSection);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Tax Section. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanTaxSectionDM);
@@ -399,25 +399,25 @@ public class TaxSection extends BaseUI {
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		TaxSectionDM TaxsecObj = new TaxSectionDM();
+		TaxSectionDM taxSectionDM = new TaxSectionDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			TaxsecObj = beanTaxSectionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			taxSectionDM = beanTaxSectionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		TaxsecObj.setCompanyid(companyid);
-		TaxsecObj.setSectioncode(tfSectionCode.getValue().toString());
-		TaxsecObj.setSectiondesc(taSectionDesc.getValue().toString());
+		taxSectionDM.setCompanyid(companyid);
+		taxSectionDM.setSectioncode(tfSectionCode.getValue().toString());
+		taxSectionDM.setSectiondesc(taSectionDesc.getValue().toString());
 		if (cbSectionStatus.getValue() != null) {
-			TaxsecObj.setSectionstatus((String) cbSectionStatus.getValue());
+			taxSectionDM.setSectionstatus((String) cbSectionStatus.getValue());
 		}
 		try {
-			TaxsecObj.setSectionlimit(Long.valueOf(tfSectionLimit.getValue().toString()));
-			TaxsecObj.setLastupdateddt(DateUtils.getcurrentdate());
-			TaxsecObj.setLastupdatedby(username);
-			serviceTaxSection.saveTaxSectionDetails(TaxsecObj);
+			taxSectionDM.setSectionlimit(Long.valueOf(tfSectionLimit.getValue().toString()));
+			taxSectionDM.setLastupdateddt(DateUtils.getcurrentdate());
+			taxSectionDM.setLastupdatedby(username);
+			serviceTaxSection.saveTaxSectionDetails(taxSectionDM);
 			@SuppressWarnings("unchecked")
 			Collection<TaxSubSectionDM> itemIds = (Collection<TaxSubSectionDM>) tblTaxsubsubsection.getVisibleItemIds();
 			for (TaxSubSectionDM save : (Collection<TaxSubSectionDM>) itemIds) {
-				save.setSectionid(Long.valueOf(TaxsecObj.getSectionid().toString()));
+				save.setSectionid(Long.valueOf(taxSectionDM.getSectionid().toString()));
 				serviceTaxSubSection.saveTaxSectionDetails(save);
 			}
 			taxsubsectionresetfields();
@@ -434,18 +434,18 @@ public class TaxSection extends BaseUI {
 	
 	private void saveTaxsubsectionListDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		TaxSubSectionDM taxsubsectionobj = new TaxSubSectionDM();
+		TaxSubSectionDM taxSubSectionDM = new TaxSubSectionDM();
 		if (tblTaxsubsubsection.getValue() != null) {
-			taxsubsectionobj = beanTaxSubSectionDM.getItem(tblTaxsubsubsection.getValue()).getBean();
-			taxSubsectionList.remove(taxsubsectionobj);
+			taxSubSectionDM = beanTaxSubSectionDM.getItem(tblTaxsubsubsection.getValue()).getBean();
+			taxSubsectionList.remove(taxSubSectionDM);
 		}
 		try {
-			taxsubsectionobj.setTaxlimit(Long.valueOf(tftaxlimit.getValue()));
-			taxsubsectionobj.setSubsecnstatus((String) cbsubsecnstatus.getValue());
-			taxsubsectionobj.setSubsectndesc(tasubsectndesc.getValue());
-			taxsubsectionobj.setLastupdateddt(DateUtils.getcurrentdate());
-			taxsubsectionobj.setLastupdatedby(username);
-			taxSubsectionList.add(taxsubsectionobj);
+			taxSubSectionDM.setTaxlimit(Long.valueOf(tftaxlimit.getValue()));
+			taxSubSectionDM.setSubsecnstatus((String) cbsubsecnstatus.getValue());
+			taxSubSectionDM.setSubsectndesc(tasubsectndesc.getValue());
+			taxSubSectionDM.setLastupdateddt(DateUtils.getcurrentdate());
+			taxSubSectionDM.setLastupdatedby(username);
+			taxSubsectionList.add(taxSubSectionDM);
 			beanTaxSubSectionDM.addAll(taxSubsectionList);
 			tblTaxsubsubsection.removeAllItems();
 			tblTaxsubsubsection.setColumnAlignment("taxlimit", Align.RIGHT);
@@ -505,20 +505,20 @@ public class TaxSection extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			TaxSectionDM editTaxSection = beanTaxSectionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			sectionId = editTaxSection.getSectionid();
+			TaxSectionDM taxSubSectionDM = beanTaxSectionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			sectionId = taxSubSectionDM.getSectionid();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Selected TaxSection. Id -> " + sectionId);
-			if (editTaxSection.getSectioncode() != null) {
-				tfSectionCode.setValue(editTaxSection.getSectioncode());
+			if (taxSubSectionDM.getSectioncode() != null) {
+				tfSectionCode.setValue(taxSubSectionDM.getSectioncode());
 			}
-			if (editTaxSection.getSectiondesc() != null) {
-				taSectionDesc.setValue(editTaxSection.getSectiondesc());
+			if (taxSubSectionDM.getSectiondesc() != null) {
+				taSectionDesc.setValue(taxSubSectionDM.getSectiondesc());
 			}
-			if (editTaxSection.getSectionlimit() != null) {
-				tfSectionLimit.setValue(editTaxSection.getSectionlimit().toString());
+			if (taxSubSectionDM.getSectionlimit() != null) {
+				tfSectionLimit.setValue(taxSubSectionDM.getSectionlimit().toString());
 			}
-			cbSectionStatus.setValue(editTaxSection.getSectionstatus());
+			cbSectionStatus.setValue(taxSubSectionDM.getSectionstatus());
 			taxSubsectionList.addAll(serviceTaxSubSection.getTaxSubSectionList(null, sectionId, null, "F"));
 		}
 		loadTaxsubsectionRslt();
@@ -539,10 +539,10 @@ public class TaxSection extends BaseUI {
 	}
 	
 	private void deleteDtls() {
-		TaxSubSectionDM taxslapDtlObj = new TaxSubSectionDM();
+		TaxSubSectionDM taxSubSectionDM = new TaxSubSectionDM();
 		if (tblTaxsubsubsection.getValue() != null) {
-			taxslapDtlObj = beanTaxSubSectionDM.getItem(tblTaxsubsubsection.getValue()).getBean();
-			taxSubsectionList.remove(taxslapDtlObj);
+			taxSubSectionDM = beanTaxSubSectionDM.getItem(tblTaxsubsubsection.getValue()).getBean();
+			taxSubsectionList.remove(taxSubSectionDM);
 			taxsubsectionresetfields();
 			tblTaxsubsubsection.setValue("");
 			loadTaxsubsectionRslt();

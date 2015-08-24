@@ -78,8 +78,6 @@ public class AttendenceApprove extends BaseUI {
 	private CallableStatement statement = null;
 	private String startDate = null;
 	private String endDate = null;
-	private String funationStatus;
-	private String errorMsg;
 	private int recordCnt = 0;
 	
 	// Constructor received the parameters from Login UI class
@@ -224,28 +222,36 @@ public class AttendenceApprove extends BaseUI {
 	 * loadAttendanceProcessBranchList()-->this function is used for load the branch list to branch combo box
 	 */
 	private void loadAttendanceProcessBranchList() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Branch Search...");
-		List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
-		branchList.add(new BranchDM(0L, "All"));
-		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(branchList);
-		cbBranch.setContainerDataSource(beanBranch);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Branch Search...");
+			List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
+			branchList.add(new BranchDM(0L, "All"));
+			BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranch.setBeanIdProperty("branchId");
+			beanBranch.addAll(branchList);
+			cbBranch.setContainerDataSource(beanBranch);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * loadEmployeeList()-->this function is used for load the employee list
 	 */
 	private void loadEmployeeList() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		List<EmployeeDM> empList = new ArrayList<EmployeeDM>();
-		empList.add(new EmployeeDM(-1L, "All"));
-		empList.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null, null, null,
-				"P"));
-		BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanLoadEmployee.setBeanIdProperty("employeeid");
-		beanLoadEmployee.addAll(empList);
-		cbEmployeeName.setContainerDataSource(beanLoadEmployee);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			List<EmployeeDM> empList = new ArrayList<EmployeeDM>();
+			empList.add(new EmployeeDM(-1L, "All"));
+			empList.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null, null,
+					null, "P"));
+			BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanLoadEmployee.setBeanIdProperty("employeeid");
+			beanLoadEmployee.addAll(empList);
+			cbEmployeeName.setContainerDataSource(beanLoadEmployee);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
@@ -390,8 +396,6 @@ public class AttendenceApprove extends BaseUI {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					System.out.println("sadvf" + format1.format(date));
-					System.out.println("sadvf" + format1.format(enddt));
 					statement = connection
 							.prepareCall("{ ? = call pkg_hcm_core.fn_calc_staff_attend (?,?,?,?,?,?,?,?) }");
 					statement.registerOutParameter(1, Types.VARCHAR);
@@ -404,10 +408,6 @@ public class AttendenceApprove extends BaseUI {
 					statement.setString(8, userName);
 					statement.registerOutParameter(9, Types.VARCHAR);
 					statement.execute();
-					funationStatus = statement.getString(1);
-					errorMsg = statement.getString(9);
-					System.out.println("funationStatus-->" + funationStatus);
-					System.out.println("errorMsg-->" + errorMsg);
 					connection.close();
 				}
 			});

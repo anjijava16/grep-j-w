@@ -65,7 +65,6 @@ public class Deduction extends BaseUI {
 	private String pkDeductionId;
 	private int recordCnt = 0;
 	private int dedncodeCount = 0;
-	private Long dednper;
 	private String username, getdeductionCode;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Deduction.class);
@@ -173,25 +172,25 @@ public class Deduction extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<DeductionDM> deductionList = new ArrayList<DeductionDM>();
+		List<DeductionDM> listDeduction = new ArrayList<DeductionDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfDeduDesc.getValue() + ", " + tfDeduCode.getValue()
 				+ (String) cbStatus.getValue());
-		deductionList = serviceDeduction.getDuctionList(null, tfDeduCode.getValue(), companyid, tfDeduDesc.getValue(),
+		listDeduction = serviceDeduction.getDuctionList(null, tfDeduCode.getValue(), companyid, tfDeduDesc.getValue(),
 				(String) cbStatus.getValue(), "F");
-		recordCnt = deductionList.size();
+		recordCnt = listDeduction.size();
 		beanDeductionDM = new BeanItemContainer<DeductionDM>(DeductionDM.class);
-		beanDeductionDM.addAll(deductionList);
+		beanDeductionDM.addAll(listDeduction);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Deduction. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanDeductionDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "deductionId", "deductionCode", "deducnDesc","dedcnPercent", "status",
-				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Deduction Code", "Deduction Desc","Percentage (%)", "Status",
-				"Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "deductionId", "deductionCode", "deducnDesc",
+				"dedcnPercent", "status", "lastUpdatedDate", "lastUpdatedBy" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Deduction Code", "Deduction Desc",
+				"Percentage (%)", "Status", "Last Updated Date", "Last Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("deductionId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnAlignment("dedcnPercent", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
@@ -374,7 +373,7 @@ public class Deduction extends BaseUI {
 	
 	private void percentValidation() {
 		try {
-			dednper = Long.valueOf(tfDeduPercent.getValue().toString());
+			Double dednper = Double.valueOf(tfDeduPercent.getValue().toString());
 			if (dednper < 0) {
 				tfDeduPercent.setComponentError(new UserError("Deduction Percent should not Less than zero"));
 			} else if (dednper > 100) {

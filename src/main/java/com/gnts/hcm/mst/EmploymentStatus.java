@@ -138,18 +138,18 @@ public class EmploymentStatus extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<EmploymentStatusDM> employmentStatusList = new ArrayList<EmploymentStatusDM>();
+		List<EmploymentStatusDM> listEmpStatus = new ArrayList<EmploymentStatusDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfStatusCode.getValue() + ", " + tfStatusCode.getValue()
 				+ (String) cbStatus.getValue());
-		employmentStatusList = serviceEmploymentStatus.getEmploymentStatusList(null, tfStatusCode.getValue(), companyid,
+		listEmpStatus = serviceEmploymentStatus.getEmploymentStatusList(null, tfStatusCode.getValue(), companyid,
 				(String) cbStatus.getValue());
-		recordCnt = employmentStatusList.size();
+		recordCnt = listEmpStatus.size();
 		beanEmploymentStatusDM = new BeanItemContainer<EmploymentStatusDM>(EmploymentStatusDM.class);
-		beanEmploymentStatusDM.addAll(employmentStatusList);
+		beanEmploymentStatusDM.addAll(listEmpStatus);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the EmploymentStatusList. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanEmploymentStatusDM);
@@ -211,7 +211,7 @@ public class EmploymentStatus extends BaseUI {
 		editEmp();
 	}
 	
-	protected void editEmp() {
+	private void editEmp() {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			EmploymentStatusDM empsts = beanEmploymentStatusDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			if (empsts.getEmpstatusdesc() != null) {
@@ -264,28 +264,28 @@ public class EmploymentStatus extends BaseUI {
 	protected void saveDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			EmploymentStatusDM employmentstatusobj = new EmploymentStatusDM();
+			EmploymentStatusDM employmentStatus = new EmploymentStatusDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				employmentstatusobj = beanEmploymentStatusDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				employmentStatus = beanEmploymentStatusDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			if (tfStatusCode.getValue() != null) {
-				employmentstatusobj.setEmpstatuscode(tfStatusCode.getValue().toString());
+				employmentStatus.setEmpstatuscode(tfStatusCode.getValue().toString());
 			}
 			if (tfStatusDesc.getValue() != null) {
-				employmentstatusobj.setEmpstatusdesc(tfStatusDesc.getValue().toString());
+				employmentStatus.setEmpstatusdesc(tfStatusDesc.getValue().toString());
 			}
 			if (ckprssalry.getValue().equals(true)) {
-				employmentstatusobj.setProcesssalary("Y");
+				employmentStatus.setProcesssalary("Y");
 			} else {
-				employmentstatusobj.setProcesssalary("N");
+				employmentStatus.setProcesssalary("N");
 			}
-			employmentstatusobj.setCompanyid(companyid);
+			employmentStatus.setCompanyid(companyid);
 			if (cbStatus.getValue() != null) {
-				employmentstatusobj.setStatus((String) cbStatus.getValue());
+				employmentStatus.setStatus((String) cbStatus.getValue());
 			}
-			employmentstatusobj.setLastupdateddt(DateUtils.getcurrentdate());
-			employmentstatusobj.setLastupdatedby(username);
-			serviceEmploymentStatus.saveAndUpdateEmploymentStsDetails(employmentstatusobj);
+			employmentStatus.setLastupdateddt(DateUtils.getcurrentdate());
+			employmentStatus.setLastupdatedby(username);
+			serviceEmploymentStatus.saveAndUpdateEmploymentStsDetails(employmentStatus);
 			resetFields();
 			loadSrchRslt();
 		}

@@ -30,16 +30,15 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.mst.LTABlockDM;
 import com.gnts.hcm.service.mst.LTABlockService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Table.Align;
 
 public class LTABlock extends BaseUI {
 	private LTABlockService serviceLTABlock = (LTABlockService) SpringContextHelper.getBean("LTABlock");
@@ -134,18 +133,17 @@ public class LTABlock extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<LTABlockDM> LTABlockList = new ArrayList<LTABlockDM>();
+		List<LTABlockDM> listLTABlock = new ArrayList<LTABlockDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfBlckPeriod.getValue() + ", " + cbLTABlockStatus.getValue());
-		LTABlockList = serviceLTABlock.getLTABlock(null, companyid,(String) tfBlckPeriod.getValue(), null,
+		listLTABlock = serviceLTABlock.getLTABlock(null, companyid, (String) tfBlckPeriod.getValue(), null,
 				(String) cbLTABlockStatus.getValue(), "F");
-		System.out.println("LTABlockList-------------->"+LTABlockList.size());
-		recordCnt = LTABlockList.size();
+		recordCnt = listLTABlock.size();
 		beanLTABlock = new BeanItemContainer<LTABlockDM>(LTABlockDM.class);
-		beanLTABlock.addAll(LTABlockList);
+		beanLTABlock.addAll(listLTABlock);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the LTA Block result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanLTABlock);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ltaBlockId", "blockPeriod", "periodFlag", "status",
@@ -171,23 +169,22 @@ public class LTABlock extends BaseUI {
 	private void editLTABlock() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
 		LTABlockDM editLTABlock = beanLTABlock.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		LTABlockId = editLTABlock.getLtaBlockId().toString();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected LTABlock. Id -> "
 				+ LTABlockId);
 		if (editLTABlock.getBlockPeriod() != null) {
-			tfBlckPeriod.setValue(itselect.getItemProperty("blockPeriod").getValue().toString());
+			tfBlckPeriod.setValue(editLTABlock.getBlockPeriod());
 		}
 		if (editLTABlock.getPeriodFlag() != null) {
-			tfPeriodFlag.setValue(itselect.getItemProperty("periodFlag").getValue().toString());
+			tfPeriodFlag.setValue(editLTABlock.getPeriodFlag());
 		}
 		if (editLTABlock.getIsCurrent().equals("Y")) {
 			ckIsCurrent.setValue(true);
 		} else {
 			ckIsCurrent.setValue(false);
 		}
-		cbLTABlockStatus.setValue(itselect.getItemProperty("status").getValue());
+		cbLTABlockStatus.setValue(editLTABlock.getStatus());
 	}
 	
 	// Base class implementations

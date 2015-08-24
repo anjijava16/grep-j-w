@@ -127,14 +127,14 @@ public class Bank extends BaseUI {
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<BankDM> bankList = new ArrayList<BankDM>();
+		List<BankDM> listBank = new ArrayList<BankDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfBankname.getValue() + ", " + (String) cbBankStatus.getValue());
-		bankList = serviceBank.getBanklist(null, tfBankname.getValue(), companyId, (String) cbBankStatus.getValue(),
+		listBank = serviceBank.getBanklist(null, tfBankname.getValue(), companyId, (String) cbBankStatus.getValue(),
 				"F");
-		recordCnt = bankList.size();
+		recordCnt = listBank.size();
 		beanBankDM = new BeanItemContainer<BankDM>(BankDM.class);
-		beanBankDM.addAll(bankList);
+		beanBankDM.addAll(listBank);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Bank. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanBankDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "bankid", "bankname", "bankStatus", "lastupdateddt",

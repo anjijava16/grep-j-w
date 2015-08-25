@@ -68,8 +68,8 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 	private static final long serialVersionUID = 1L;
 	// Declaration for add and edit panel components
 	private ComboBox cbOvertimeapprovemgr;
-	private PopupDateField dfovertimedt;
-	private GERPTimeField tfstarthour, tfendhour;
+	private PopupDateField dfOvertimedt;
+	private GERPTimeField tfStarthour, tfEndhour;
 	private TextArea taOvertimeremarks;
 	private TextField tfOvertimetotalhours;
 	private ComboBox cbOvertimestatus;
@@ -91,9 +91,9 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 	private HorizontalLayout hlTableTitleandCaptionLayout;
 	private String username;
 	private Long companyid;
-	private EmployeeOvertimeService serviceovertime = (EmployeeOvertimeService) SpringContextHelper
+	private EmployeeOvertimeService serviceOvertime = (EmployeeOvertimeService) SpringContextHelper
 			.getBean("EmployeeOvertime");
-	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private Logger logger = Logger.getLogger(EmployeePermissionDM.class);
 	private int total = 0;
 	private Long employeeid;
@@ -110,17 +110,17 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 	private void buildView() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting EmployeeOvertime UI");
 		// Initialization for dfovertimedate
-		dfovertimedt = new GERPPopupDateField("Permission date");
-		dfovertimedt.setDateFormat("dd-MMM-yyyy");
-		dfovertimedt.setRequired(true);
-		dfovertimedt.setWidth("95");
+		dfOvertimedt = new GERPPopupDateField("Permission date");
+		dfOvertimedt.setDateFormat("dd-MMM-yyyy");
+		dfOvertimedt.setRequired(true);
+		dfOvertimedt.setWidth("95");
 		// Initialization for tfstarthour
-		tfstarthour = new GERPTimeField("Start Hour");
-		tfstarthour.setRequired(true);
+		tfStarthour = new GERPTimeField("Start Hour");
+		tfStarthour.setRequired(true);
 		// Initialization for tfendhour
-		tfendhour = new GERPTimeField("End Hour");
-		tfendhour.setImmediate(true);
-		tfendhour.addValueChangeListener(new Property.ValueChangeListener() {
+		tfEndhour = new GERPTimeField("End Hour");
+		tfEndhour.setImmediate(true);
+		tfEndhour.addValueChangeListener(new Property.ValueChangeListener() {
 			/**
 			 * 
 			 */
@@ -129,8 +129,8 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 			public void valueChange(ValueChangeEvent event) {
 				try {
 					tfOvertimetotalhours.setReadOnly(false);
-					tfOvertimetotalhours.setValue(timediff(tfstarthour.getHorsMunitesinLong(),
-							tfendhour.getHorsMunitesinLong()));
+					tfOvertimetotalhours.setValue(timediff(tfStarthour.getHorsMunitesinLong(),
+							tfEndhour.getHorsMunitesinLong()));
 					tfOvertimetotalhours.setReadOnly(true);
 				}
 				catch (Exception e) {
@@ -138,7 +138,7 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 				}
 			}
 		});
-		tfendhour.setRequired(true);
+		tfEndhour.setRequired(true);
 		// Initialization for tfOvertimetotalhours
 		tfOvertimetotalhours = new GERPTextField("Total Hours");
 		tfOvertimetotalhours.setReadOnly(true);
@@ -227,10 +227,10 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
-		flColumn1.addComponent(dfovertimedt);
+		flColumn1.addComponent(dfOvertimedt);
 		flColumn1.addComponent(tfOvertimetotalhours);
-		flColumn2.addComponent(tfstarthour);
-		flColumn2.addComponent(tfendhour);
+		flColumn2.addComponent(tfStarthour);
+		flColumn2.addComponent(tfEndhour);
 		flColumn3.addComponent(taOvertimeremarks);
 		flColumn4.addComponent(cbOvertimeapprovemgr);
 		flColumn4.addComponent(cbOvertimestatus);
@@ -278,13 +278,17 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 	}
 	
 	private void loadAppMgrList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "loading Approve Manager List...");
-		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(serviceemployee.getEmployeeList(null, null, null,/* department */
-				"Active", companyid, null, null, null, null, "P"));
-		cbOvertimeapprovemgr.setContainerDataSource(beanEmployee);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "loading Approve Manager List...");
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null,/* department */
+					"Active", companyid, null, null, null, null, "P"));
+			cbOvertimeapprovemgr.setContainerDataSource(beanEmployee);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadSrchRslt() {
@@ -292,7 +296,7 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 				+ "loading SearchResult Details...");
 		total = 0;
 		if (employeeid != null) {
-			usertable = serviceovertime.geempovrlist(null, employeeid, null, "Active", "F");
+			usertable = serviceOvertime.geempovrlist(null, employeeid, null, "Active", "F");
 			total = usertable.size();
 		}
 		tblMstScrSrchRslt.setPageLength(10);
@@ -314,9 +318,9 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Overtime.......");
 		if (tblMstScrSrchRslt.getValue() != null) {
 			EmployeeOvertimeDM employeeOvertimeDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfovertimedt.setValue(employeeOvertimeDM.getOvertimedate());
-			tfstarthour.setTime(employeeOvertimeDM.getStarthour());
-			tfendhour.setTime(employeeOvertimeDM.getEndhour());
+			dfOvertimedt.setValue(employeeOvertimeDM.getOvertimedate());
+			tfStarthour.setTime(employeeOvertimeDM.getStarthour());
+			tfEndhour.setTime(employeeOvertimeDM.getEndhour());
 			tfOvertimetotalhours.setReadOnly(false);
 			tfOvertimetotalhours.setValue(employeeOvertimeDM.getTotalhours().toString());
 			tfOvertimetotalhours.setReadOnly(true);
@@ -335,14 +339,14 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 				saveOvertime = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				usertable.remove(saveOvertime);
 			}
-			if (dfovertimedt.getValue() != null) {
-				saveOvertime.setOvertimedt(dfovertimedt.getValue());
+			if (dfOvertimedt.getValue() != null) {
+				saveOvertime.setOvertimedt(dfOvertimedt.getValue());
 			}
-			if (tfstarthour.getValue() != null) {
-				saveOvertime.setStarthour(tfstarthour.getHorsMunites());
+			if (tfStarthour.getValue() != null) {
+				saveOvertime.setStarthour(tfStarthour.getHorsMunites());
 			}
-			if (tfendhour.getValue() != null) {
-				saveOvertime.setEndhour(tfendhour.getHorsMunites());
+			if (tfEndhour.getValue() != null) {
+				saveOvertime.setEndhour(tfEndhour.getHorsMunites());
 			}
 			if (tfOvertimetotalhours.getValue() != null) {
 				saveOvertime.setTotalhours((new BigDecimal(tfOvertimetotalhours.getValue())));
@@ -359,7 +363,7 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 			saveOvertime.setEmployeeid(employeeid);
 			saveOvertime.setLastupdatedby(username);
 			saveOvertime.setLastupdateddt(DateUtils.getcurrentdate());
-			serviceovertime.saveAndUpdate(saveOvertime);
+			serviceOvertime.saveAndUpdate(saveOvertime);
 			resetFields();
 			loadSrchRslt();
 		}
@@ -375,7 +379,7 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 		Collection<EmployeeOvertimeDM> itemIds = (Collection<EmployeeOvertimeDM>) tblMstScrSrchRslt.getVisibleItemIds();
 		for (EmployeeOvertimeDM saveovertime : (Collection<EmployeeOvertimeDM>) itemIds) {
 			saveovertime.setEmployeeid(employeeid);
-			serviceovertime.saveAndUpdate(saveovertime);
+			serviceOvertime.saveAndUpdate(saveovertime);
 		}
 		loadSrchRslt();
 		tblMstScrSrchRslt.removeAllItems();
@@ -385,21 +389,21 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Validating EmployeeOvertime Details.....");
 		boolean errorFlag = true;
-		dfovertimedt.setComponentError(null);
-		tfstarthour.setComponentError(null);
-		tfendhour.setComponentError(null);
+		dfOvertimedt.setComponentError(null);
+		tfStarthour.setComponentError(null);
+		tfEndhour.setComponentError(null);
 		tfOvertimetotalhours.setComponentError(null);
 		cbOvertimeapprovemgr.setComponentError(null);
-		if (dfovertimedt.getValue() == null) {
-			dfovertimedt.setComponentError(new UserError(GERPErrorCodes.NULL_OTIME_OTDATE));
+		if (dfOvertimedt.getValue() == null) {
+			dfOvertimedt.setComponentError(new UserError(GERPErrorCodes.NULL_OTIME_OTDATE));
 			errorFlag = false;
 		}
-		if (tfstarthour.getValue() == null) {
-			tfstarthour.setComponentError(new UserError(GERPErrorCodes.NULL_OTIME_STRHOUR));
+		if (tfStarthour.getValue() == null) {
+			tfStarthour.setComponentError(new UserError(GERPErrorCodes.NULL_OTIME_STRHOUR));
 			errorFlag = false;
 		}
-		if (tfendhour.getValue() == null) {
-			tfendhour.setComponentError(new UserError(GERPErrorCodes.NULL_OTIME_EDHOUR));
+		if (tfEndhour.getValue() == null) {
+			tfEndhour.setComponentError(new UserError(GERPErrorCodes.NULL_OTIME_EDHOUR));
 			errorFlag = false;
 		}
 		if ((tfOvertimetotalhours.getValue() == null) || tfOvertimetotalhours.getValue().trim().length() == 0) {
@@ -415,9 +419,9 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 	
 	public void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Reseting Fields.....");
-		dfovertimedt.setValue(null);
-		tfstarthour.setValue(null);
-		tfendhour.setValue(null);
+		dfOvertimedt.setValue(null);
+		tfStarthour.setValue(null);
+		tfEndhour.setValue(null);
 		tfOvertimetotalhours.setReadOnly(false);
 		tfOvertimetotalhours.setValue(null);
 		tfOvertimetotalhours.setReadOnly(true);
@@ -425,9 +429,9 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 		cbOvertimeapprovemgr.setValue(null);
 		btnadd.setCaption("Add");
 		btnadd.setStyleName("add");
-		dfovertimedt.setComponentError(null);
-		tfstarthour.setComponentError(null);
-		tfendhour.setComponentError(null);
+		dfOvertimedt.setComponentError(null);
+		tfStarthour.setComponentError(null);
+		tfEndhour.setComponentError(null);
 		tfOvertimetotalhours.setComponentError(null);
 		cbOvertimeapprovemgr.setComponentError(null);
 		cbOvertimestatus.setValue(cbOvertimestatus.getItemIds().iterator().next());

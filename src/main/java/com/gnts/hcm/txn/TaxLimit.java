@@ -357,20 +357,28 @@ public class TaxLimit extends BaseUI {
 	}
 	
 	private void loadGRDLvl() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_TXSECCD"));
-		cbSectnCode.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"HC_TXSECCD"));
+			cbSectnCode.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadTaxList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanContainer<String, TaxDM> beanTax = new BeanContainer<String, TaxDM>(TaxDM.class);
-		beanTax.setBeanIdProperty("taxid");
-		beanTax.addAll(serviceTax.getTaxList(companyid, null, null, null, "P"));
-		cbTaxId.setContainerDataSource(beanTax);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanContainer<String, TaxDM> beanTax = new BeanContainer<String, TaxDM>(TaxDM.class);
+			beanTax.setBeanIdProperty("taxid");
+			beanTax.addAll(serviceTax.getTaxList(companyid, null, null, null, "P"));
+			cbTaxId.setContainerDataSource(beanTax);
+		}
+		catch (Exception e) {
+		}
 	}
 }

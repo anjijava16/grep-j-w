@@ -69,8 +69,8 @@ public class JobVaccancy extends BaseUI {
 	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private JobClassificationService serviceJobClassification = (JobClassificationService) SpringContextHelper
 			.getBean("JobClassification");
-	private BranchService servicebeanBranch = (BranchService) SpringContextHelper.getBean("mbranch");
-	private DesignationService serviceDesinatn = (DesignationService) SpringContextHelper.getBean("Designation");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	private DesignationService serviceDesignation = (DesignationService) SpringContextHelper.getBean("Designation");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	// Form layout for input controls
@@ -259,22 +259,31 @@ public class JobVaccancy extends BaseUI {
 	}
 	
 	private void loadBranchList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranchDM.setBeanIdProperty("branchId");
-		beanBranchDM.addAll(servicebeanBranch.getBranchList(null, (String) cbBrnchName.getValue(), null, "Active",
-				companyid, "P"));
-		cbBrnchName.setContainerDataSource(beanBranchDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranchDM.setBeanIdProperty("branchId");
+			beanBranchDM.addAll(serviceBranch.getBranchList(null, (String) cbBrnchName.getValue(), null, "Active",
+					companyid, "P"));
+			cbBrnchName.setContainerDataSource(beanBranchDM);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadJobClassification() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading JobClassification Search...");
-		BeanContainer<Long, JobClassificationDM> beanClsFcnDM = new BeanContainer<Long, JobClassificationDM>(
-				JobClassificationDM.class);
-		beanClsFcnDM.setBeanIdProperty("jobClasfnId");
-		beanClsFcnDM.addAll(serviceJobClassification.getJobClassificationList(null, null, companyid, "Active", "P"));
-		cbJobClsName.setContainerDataSource(beanClsFcnDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading JobClassification Search...");
+			BeanContainer<Long, JobClassificationDM> beanClsFcnDM = new BeanContainer<Long, JobClassificationDM>(
+					JobClassificationDM.class);
+			beanClsFcnDM.setBeanIdProperty("jobClasfnId");
+			beanClsFcnDM
+					.addAll(serviceJobClassification.getJobClassificationList(null, null, companyid, "Active", "P"));
+			cbJobClsName.setContainerDataSource(beanClsFcnDM);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadEmployeeList() {
@@ -360,7 +369,8 @@ public class JobVaccancy extends BaseUI {
 		BeanContainer<Long, DesignationDM> beanDesignationDM = new BeanContainer<Long, DesignationDM>(
 				DesignationDM.class);
 		beanDesignationDM.setBeanIdProperty("designationId");
-		beanDesignationDM.addAll(serviceDesinatn.getDesignationList(null, null, null, null, companyid, "Active", "F"));
+		beanDesignationDM.addAll(serviceDesignation
+				.getDesignationList(null, null, null, null, companyid, "Active", "F"));
 		cbDesgntnName.setContainerDataSource(beanDesignationDM);
 	}
 	

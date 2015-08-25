@@ -429,12 +429,17 @@ public class EmployeeAllowanceCliam extends BaseUI {
 	}
 	
 	private void loadAlwncList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Allowance Search...");
-		BeanContainer<Long, EmployeeAllowanceDM> beanAlwncDM = new BeanContainer<Long, EmployeeAllowanceDM>(
-				EmployeeAllowanceDM.class);
-		beanAlwncDM.setBeanIdProperty("empallwnid");
-		beanAlwncDM.addAll(serviceEmpAllowance.getempallowanceList(null, (Long) cbEmpName.getValue(), gradeId,
-				"Active", "F"));
-		cbEmpAlwncName.setContainerDataSource(beanAlwncDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Allowance Search...");
+			BeanContainer<Long, EmployeeAllowanceDM> beanAlwncDM = new BeanContainer<Long, EmployeeAllowanceDM>(
+					EmployeeAllowanceDM.class);
+			beanAlwncDM.setBeanIdProperty("empallwnid");
+			beanAlwncDM.addAll(serviceEmpAllowance.getempallowanceList(null, (Long) cbEmpName.getValue(), gradeId,
+					"Active", "F"));
+			cbEmpAlwncName.setContainerDataSource(beanAlwncDM);
+		}
+		catch (Exception e) {
+		}
 	}
 }

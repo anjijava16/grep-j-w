@@ -75,7 +75,6 @@ public class EmployeeAttendence extends BaseUI {
 	private Button btnRunAtten = new GERPButton("Save", "savebt");
 	// BeanItemContainer
 	private BeanItemContainer<EmpAttendenceDM> beanEmpAtndncDM = null;
-	private BeanContainer<Long, EmployeeDM> beanEmployeeDM = null;
 	// local variables declaration
 	private Long companyid, attnceProcId;
 	private Long processId;
@@ -436,13 +435,18 @@ public class EmployeeAttendence extends BaseUI {
 	}
 	
 	private void loadEmpAprvrList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Approver Search...");
-		List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "P");
-		empList.add(new EmployeeDM(-1L, "All"));
-		beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.setBeanIdProperty("employeeid");
-		beanEmployeeDM.addAll(empList);
-		cbEmpName.setContainerDataSource(beanEmployeeDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Approver Search...");
+			List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null,
+					null, null, null, "P");
+			empList.add(new EmployeeDM(-1L, "All"));
+			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployeeDM.setBeanIdProperty("employeeid");
+			beanEmployeeDM.addAll(empList);
+			cbEmpName.setContainerDataSource(beanEmployeeDM);
+		}
+		catch (Exception e) {
+		}
 	}
 }

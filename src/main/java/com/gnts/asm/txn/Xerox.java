@@ -209,11 +209,16 @@ public class Xerox extends BaseTransUI {
 	
 	// Load Enquiry List
 	private void loadAssetList() {
-		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
-				AssetDetailsDM.class);
-		beanAssetDetails.setBeanIdProperty("assetId");
-		beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, "PRINTER", null, null, null, null));
-		cbAssetName.setContainerDataSource(beanAssetDetails);
+		try {
+			BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
+					AssetDetailsDM.class);
+			beanAssetDetails.setBeanIdProperty("assetId");
+			beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, "PRINTER", null, null, null,
+					null));
+			cbAssetName.setContainerDataSource(beanAssetDetails);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Load Product List
@@ -234,11 +239,16 @@ public class Xerox extends BaseTransUI {
 	 * loadFromDeptList()-->this function is used for load the Department list
 	 */
 	private void loadDepartmentList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(serviceDepartment.getDepartmentList(companyid, null, "Active", "P"));
-		cbDepartment.setContainerDataSource(beanDepartment);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Department Search...");
+			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beanDepartment.setBeanIdProperty("deptid");
+			beanDepartment.addAll(serviceDepartment.getDepartmentList(companyid, null, "Active", "P"));
+			cbDepartment.setContainerDataSource(beanDepartment);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header

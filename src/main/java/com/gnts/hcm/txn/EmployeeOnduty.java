@@ -278,13 +278,17 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 	}
 	
 	private void loadAppMgrList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "loading Approve Manager List...");
-		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(servicEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
-				null, "P"));
-		cbOndutyApprmgr.setContainerDataSource(beanEmployee);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "loading Approve Manager List...");
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(servicEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+					null, "P"));
+			cbOndutyApprmgr.setContainerDataSource(beanEmployee);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadSrchRslt() {

@@ -57,14 +57,14 @@ public class ClientInformation implements ClickListener {
 	private ClientInformationService serviceinformation = (ClientInformationService) SpringContextHelper
 			.getBean("clntinform");
 	private Table tblinform = new Table();
-	private ComboBox cbstatus;
-	private TextField tfinfocode;
-	private GERPTextArea tainfodesc;
+	private ComboBox cbStatus;
+	private TextField tfInfocode;
+	private GERPTextArea taInfodesc;
 	private FormLayout flcolumn1, flcolumn2;
 	private HorizontalLayout hlinput = new HorizontalLayout();
 	private VerticalLayout vlTableForm;
 	private BeanItemContainer<ClientInformationDM> beanClntinform = null;
-	private List<ClientInformationDM> informlist = new ArrayList<ClientInformationDM>();
+	private List<ClientInformationDM> listClientInfo = new ArrayList<ClientInformationDM>();
 	private int recordCnt = 0;
 	private String userName;
 	private Button btnadd = new GERPButton("Add", "add", this);
@@ -92,18 +92,18 @@ public class ClientInformation implements ClickListener {
 				}
 			}
 		});
-		cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
-		cbstatus.setWidth("150");
-		tfinfocode = new GERPTextField("Information Code");
-		tainfodesc = new GERPTextArea("Description");
-		tainfodesc.setWidth("150");
-		tainfodesc.setHeight("40");
+		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+		cbStatus.setWidth("150");
+		tfInfocode = new GERPTextField("Information Code");
+		taInfodesc = new GERPTextArea("Description");
+		taInfodesc.setWidth("150");
+		taInfodesc.setHeight("40");
 		flcolumn1 = new FormLayout();
 		flcolumn2 = new FormLayout();
-		flcolumn1.addComponent(tfinfocode);
-		flcolumn1.addComponent(tainfodesc);
-		flcolumn1.addComponent(cbstatus);
+		flcolumn1.addComponent(tfInfocode);
+		flcolumn1.addComponent(taInfodesc);
+		flcolumn1.addComponent(cbStatus);
 		flcolumn2.addComponent(btnadd);
 		flcolumn2.addComponent(btndelete);
 		hlinput.addComponent(flcolumn1);
@@ -126,9 +126,9 @@ public class ClientInformation implements ClickListener {
 					tblinform.setImmediate(true);
 					btnadd.setCaption("Add");
 					btnadd.setStyleName("addbt");
-					tfinfocode.setValue("");
-					cbstatus.setValue(null);
-					tainfodesc.setValue("");
+					tfInfocode.setValue("");
+					cbStatus.setValue(null);
+					taInfodesc.setValue("");
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnadd.setCaption("Update");
@@ -144,13 +144,13 @@ public class ClientInformation implements ClickListener {
 	
 	public void loadsrch(boolean fromdb, Long clientId) {
 		if (fromdb) {
-			informlist = serviceinformation.getClientDetails(null, clientId, null, (String) cbstatus.getValue(), null);
+			listClientInfo = serviceinformation.getClientDetails(null, clientId, null, (String) cbStatus.getValue(), null);
 		}
 		try {
 			tblinform.removeAllItems();
-			recordCnt = informlist.size();
+			recordCnt = listClientInfo.size();
 			beanClntinform = new BeanItemContainer<ClientInformationDM>(ClientInformationDM.class);
-			beanClntinform.addAll(informlist);
+			beanClntinform.addAll(listClientInfo);
 			tblinform.setSelectable(true);
 			tblinform.setPageLength(8);
 			tblinform.setContainerDataSource(beanClntinform);
@@ -170,9 +170,9 @@ public class ClientInformation implements ClickListener {
 		try {
 			if (tblinform.getValue() != null) {
 				ClientInformationDM editinform = beanClntinform.getItem(tblinform.getValue()).getBean();
-				tfinfocode.setValue(editinform.getClntinfocode());
-				cbstatus.setValue(editinform.getClntinfostatus());
-				tainfodesc.setValue(editinform.getClntinfodesc());
+				tfInfocode.setValue(editinform.getClntinfocode());
+				cbStatus.setValue(editinform.getClntinfostatus());
+				taInfodesc.setValue(editinform.getClntinfodesc());
 			}
 		}
 		catch (Exception e) {
@@ -183,20 +183,20 @@ public class ClientInformation implements ClickListener {
 	
 	private void validateAll() {
 		try {
-			tfinfocode.setRequired(true);
-			tfinfocode.validate();
+			tfInfocode.setRequired(true);
+			tfInfocode.validate();
 		}
 		catch (Exception e) {
 			logger.info("validaAll :information code name is empty--->" + e);
-			tfinfocode.setComponentError(new UserError("Enter Comments"));
+			tfInfocode.setComponentError(new UserError("Enter Comments"));
 		}
 		try {
-			tainfodesc.setRequired(true);
-			tainfodesc.validate();
+			taInfodesc.setRequired(true);
+			taInfodesc.validate();
 		}
 		catch (Exception e) {
 			logger.info("validaAll :description name is empty--->" + e);
-			tainfodesc.setComponentError(new UserError("Enter Description"));
+			taInfodesc.setComponentError(new UserError("Enter Description"));
 		}
 	}
 	
@@ -205,15 +205,15 @@ public class ClientInformation implements ClickListener {
 		ClientInformationDM clientInformationDM = new ClientInformationDM();
 		if (tblinform.getValue() != null) {
 			clientInformationDM = beanClntinform.getItem(tblinform.getValue()).getBean();
-			informlist.remove(clientInformationDM);
+			listClientInfo.remove(clientInformationDM);
 		}
-		clientInformationDM.setClntinfodesc(tainfodesc.getValue());
-		clientInformationDM.setClntinfocode(tfinfocode.getValue());
-		clientInformationDM.setClntinfostatus((String) cbstatus.getValue());
+		clientInformationDM.setClntinfodesc(taInfodesc.getValue());
+		clientInformationDM.setClntinfocode(tfInfocode.getValue());
+		clientInformationDM.setClntinfostatus((String) cbStatus.getValue());
 		clientInformationDM.setLastupdateddt(DateUtils.getcurrentdate());
 		clientInformationDM.setLastupdatedby(userName);
-		if (tfinfocode.isValid() && tainfodesc.isValid() && cbstatus.isValid()) {
-			informlist.add(clientInformationDM);
+		if (tfInfocode.isValid() && taInfodesc.isValid() && cbStatus.isValid()) {
+			listClientInfo.add(clientInformationDM);
 			resetfields();
 			loadsrch(false, null);
 		}
@@ -224,10 +224,10 @@ public class ClientInformation implements ClickListener {
 		ClientInformationDM saveClntinform = new ClientInformationDM();
 		if (tblinform.getValue() != null) {
 			saveClntinform = beanClntinform.getItem(tblinform.getValue()).getBean();
-			informlist.remove(saveClntinform);
-			tfinfocode.setValue("");
-			cbstatus.setValue(null);
-			tainfodesc.setValue("");
+			listClientInfo.remove(saveClntinform);
+			tfInfocode.setValue("");
+			cbStatus.setValue(null);
+			taInfodesc.setValue("");
 			btnadd.setCaption("Add");
 			loadsrch(false, null);
 		}
@@ -243,18 +243,18 @@ public class ClientInformation implements ClickListener {
 	}
 	
 	public void resetfls() {
-		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	
 	public void resetfields() {
-		tfinfocode.setRequired(false);
-		tainfodesc.setRequired(false);
-		tfinfocode.setValue("");
-		tfinfocode.setComponentError(null);
-		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
-		cbstatus.setComponentError(null);
-		tainfodesc.setValue("");
-		tainfodesc.setComponentError(null);
+		tfInfocode.setRequired(false);
+		taInfodesc.setRequired(false);
+		tfInfocode.setValue("");
+		tfInfocode.setComponentError(null);
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+		cbStatus.setComponentError(null);
+		taInfodesc.setValue("");
+		taInfodesc.setComponentError(null);
 		tblinform.removeAllItems();
 		recordCnt = 0;
 	}
@@ -263,7 +263,7 @@ public class ClientInformation implements ClickListener {
 	public void buttonClick(ClickEvent event) {
 		if (btndelete == event.getButton()) {
 			deleteDetails();
-			cbstatus.setValue((cbstatus.getItemIds().iterator().next()));
+			cbStatus.setValue((cbStatus.getItemIds().iterator().next()));
 		}
 	}
 }

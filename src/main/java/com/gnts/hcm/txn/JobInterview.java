@@ -59,7 +59,7 @@ public class JobInterview extends BaseUI {
 	private JobInterviewService serviceJobInterview = (JobInterviewService) SpringContextHelper.getBean("JobInterview");
 	private JobCandidateService serviceJobCandidate = (JobCandidateService) SpringContextHelper.getBean("JobCandidate");
 	private JobVaccancyService serviceJobVaccancy = (JobVaccancyService) SpringContextHelper.getBean("JobVaccancy");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	// Form layout for input controls
@@ -177,15 +177,15 @@ public class JobInterview extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<JobInterviewDM> loadjobinterviewList = new ArrayList<JobInterviewDM>();
+		List<JobInterviewDM> listJobInterview = new ArrayList<JobInterviewDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + (Long) cbCandidateName.getValue() + ", " + (Long) cbJobTitle.getValue()
 				+ (String) cbStatus.getValue());
-		loadjobinterviewList = serviceJobInterview.getJobInterviewyList(null, (Long) cbCandidateName.getValue(),
+		listJobInterview = serviceJobInterview.getJobInterviewyList(null, (Long) cbCandidateName.getValue(),
 				(Long) cbJobTitle.getValue(), null, (String) cbStatus.getValue());
-		recordCnt = loadjobinterviewList.size();
+		recordCnt = listJobInterview.size();
 		beanJobInterviewDM = new BeanItemContainer<JobInterviewDM>(JobInterviewDM.class);
-		beanJobInterviewDM.addAll(loadjobinterviewList);
+		beanJobInterviewDM.addAll(listJobInterview);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the JobInterview. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanJobInterviewDM);
@@ -198,31 +198,41 @@ public class JobInterview extends BaseUI {
 	}
 	
 	private void loadJobCandidate() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Candidate Search...");
-		BeanContainer<Long, JobCandidateDM> beanJobCandidateDM = new BeanContainer<Long, JobCandidateDM>(
-				JobCandidateDM.class);
-		beanJobCandidateDM.setBeanIdProperty("candidateId");
-		beanJobCandidateDM.addAll(serviceJobCandidate.getJobCandidateList(null, null,
-				(String) cbCandidateName.getValue(), null, null));
-		cbCandidateName.setContainerDataSource(beanJobCandidateDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Candidate Search...");
+			BeanContainer<Long, JobCandidateDM> beanJobCandidateDM = new BeanContainer<Long, JobCandidateDM>(
+					JobCandidateDM.class);
+			beanJobCandidateDM.setBeanIdProperty("candidateId");
+			beanJobCandidateDM.addAll(serviceJobCandidate.getJobCandidateList(null, null,
+					(String) cbCandidateName.getValue(), null, null));
+			cbCandidateName.setContainerDataSource(beanJobCandidateDM);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadJobVaccancy() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading JobVaccancy Search...");
-		BeanContainer<Long, JobVaccancyDM> beanJobVaccancyDM = new BeanContainer<Long, JobVaccancyDM>(
-				JobVaccancyDM.class);
-		beanJobVaccancyDM.setBeanIdProperty("vaccancyId");
-		beanJobVaccancyDM.addAll(serviceJobVaccancy.getJobVaccancyList(null, null, null, null, null, null, null, "F"));
-		cbJobTitle.setContainerDataSource(beanJobVaccancyDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading JobVaccancy Search...");
+			BeanContainer<Long, JobVaccancyDM> beanJobVaccancyDM = new BeanContainer<Long, JobVaccancyDM>(
+					JobVaccancyDM.class);
+			beanJobVaccancyDM.setBeanIdProperty("vaccancyId");
+			beanJobVaccancyDM.addAll(serviceJobVaccancy.getJobVaccancyList(null, null, null, null, null, null, null,
+					"F"));
+			cbJobTitle.setContainerDataSource(beanJobVaccancyDM);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadEmployeeList() {
 		try {
 			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid,
-					employeeId, null, null, null, "P"));
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeId,
+					null, null, null, "P"));
 			cbinterviewerid.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
@@ -426,22 +436,32 @@ public class JobInterview extends BaseUI {
 	}
 	
 	private void loadIinterviewLevels() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading Interview Level Search...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_INVWLVL"));
-		cbIntrvwLevel.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Interview Level Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"HC_INVWLVL"));
+			cbIntrvwLevel.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadInterviewStatus() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading Interview Status Search...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"HC_INVWSTS"));
-		cbStatus.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Interview Status Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"HC_INVWSTS"));
+			cbStatus.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 }

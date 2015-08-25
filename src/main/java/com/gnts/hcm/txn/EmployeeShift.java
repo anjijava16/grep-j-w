@@ -185,15 +185,15 @@ public class EmployeeShift extends BaseUI {
 		tblMstScrSrchRslt.removeAllItems();
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeShiftDM> loadempShiftList = new ArrayList<EmployeeShiftDM>();
+		List<EmployeeShiftDM> listEmployeeShift = new ArrayList<EmployeeShiftDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ companyId + ", " + (Long) cbShiftName.getValue() + ", " + (Long) cbEmployeeName.getValue()
 				+ (String) cbStatus.getValue());
-		loadempShiftList = serviceEmployeeShift.getempshiftlist(null, (Long) cbEmployeeName.getValue(),
+		listEmployeeShift = serviceEmployeeShift.getempshiftlist(null, (Long) cbEmployeeName.getValue(),
 				(Long) cbShiftName.getValue(), (String) cbStatus.getValue(), "F");
-		recordCnt = loadempShiftList.size();
+		recordCnt = listEmployeeShift.size();
 		beanEmployeeShift = new BeanItemContainer<EmployeeShiftDM>(EmployeeShiftDM.class);
-		beanEmployeeShift.addAll(loadempShiftList);
+		beanEmployeeShift.addAll(listEmployeeShift);
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Got the EmployeeShift. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanEmployeeShift);
@@ -338,21 +338,21 @@ public class EmployeeShift extends BaseUI {
 		cal.setTime(dfShiftStart.getValue());
 		cal.add(Calendar.DATE, -1);
 		while (cal.getTime().before(dfShiftEnd.getValue())) {
-			EmployeeShiftDM employeeShiftobj = new EmployeeShiftDM();
+			EmployeeShiftDM employeeShift = new EmployeeShiftDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				employeeShiftobj = beanEmployeeShift.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				employeeShift = beanEmployeeShift.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			employeeShiftobj.setEmployeeid((Long) cbEmployeeName.getValue());
-			employeeShiftobj.setShiftid((Long) cbShiftName.getValue());
+			employeeShift.setEmployeeid((Long) cbEmployeeName.getValue());
+			employeeShift.setShiftid((Long) cbShiftName.getValue());
 			if (cbStatus.getValue() != null) {
-				employeeShiftobj.setShiftstatus((String) cbStatus.getValue());
+				employeeShift.setShiftstatus((String) cbStatus.getValue());
 			}
-			employeeShiftobj.setLastupdateddt(DateUtils.getcurrentdate());
-			employeeShiftobj.setLastupdatedby(userName);
+			employeeShift.setLastupdateddt(DateUtils.getcurrentdate());
+			employeeShift.setLastupdatedby(userName);
 			// Date calculation
 			cal.add(Calendar.DATE, 1);
-			employeeShiftobj.setShiftdt(cal.getTime());
-			serviceEmployeeShift.saveAndUpdate(employeeShiftobj);
+			employeeShift.setShiftdt(cal.getTime());
+			serviceEmployeeShift.saveAndUpdate(employeeShift);
 		}
 		resetFields();
 		loadSrchRslt();

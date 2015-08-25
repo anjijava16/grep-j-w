@@ -96,7 +96,7 @@ public class ClientCases extends BaseTransUI {
 	 */
 	private TextField tfCaseTitle, tfCaseResult, tfEffortDays, tfSearchTitle, tfpartNo, tfDrgNo;
 	private ComboBox cbClient, cbEmployee, cbCaseCategory, cbPriority, cbSevrity, cbClntCaseStatus, cbEnquiryNo,
-			cbwoNo, cbPONo, cbprdname;
+			cbWONo, cbPONo, cbProduct;
 	private TextArea taCaseDesc;
 	private BeanItemContainer<ClientCasesDM> beanClntCases = null;
 	private Long moduleId, employeeId, deptId, clientId;
@@ -133,39 +133,39 @@ public class ClientCases extends BaseTransUI {
 		cbPONo.setItemCaptionPropertyId("pono");
 		cbPONo.setNullSelectionAllowed(false);
 		cbPONo.setWidth(strWidth);
-		cbprdname = new GERPComboBox("Product");
-		cbprdname.setItemCaptionPropertyId("prodname");
-		cbprdname.setNullSelectionAllowed(false);
-		cbprdname.setWidth(strWidth);
-		cbwoNo = new GERPComboBox("Work Order No.");
-		cbwoNo.setItemCaptionPropertyId("workOrdrNo");
-		cbwoNo.setNullSelectionAllowed(false);
-		cbwoNo.setWidth(strWidth);
+		cbProduct = new GERPComboBox("Product");
+		cbProduct.setItemCaptionPropertyId("prodname");
+		cbProduct.setNullSelectionAllowed(false);
+		cbProduct.setWidth(strWidth);
+		cbWONo = new GERPComboBox("Work Order No.");
+		cbWONo.setItemCaptionPropertyId("workOrdrNo");
+		cbWONo.setNullSelectionAllowed(false);
+		cbWONo.setWidth(strWidth);
 		cbClient = new GERPComboBox("Client Name");
 		cbClient.setItemCaptionPropertyId("clientName");
 		cbClient.setNullSelectionAllowed(false);
 		cbClient.setWidth(strWidth);
-		cbprdname.addValueChangeListener(new Property.ValueChangeListener() {
+		cbProduct.addValueChangeListener(new Property.ValueChangeListener() {
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
 			
 			public void valueChange(ValueChangeEvent event) {
-				if (cbprdname.getValue() != null) {
+				if (cbProduct.getValue() != null) {
 					try {
-						if (((SmsPODtlDM) cbprdname.getValue()).getCustomField1() != null) {
+						if (((SmsPODtlDM) cbProduct.getValue()).getCustomField1() != null) {
 							tfpartNo.setReadOnly(false);
-							tfpartNo.setValue(((SmsPODtlDM) cbprdname.getValue()).getCustomField1());
+							tfpartNo.setValue(((SmsPODtlDM) cbProduct.getValue()).getCustomField1());
 							tfpartNo.setReadOnly(true);
 						} else {
 							tfpartNo.setReadOnly(false);
 							tfpartNo.setValue("");
 							tfpartNo.setReadOnly(true);
 						}
-						if (((SmsPODtlDM) cbprdname.getValue()).getCustomField2() != null) {
+						if (((SmsPODtlDM) cbProduct.getValue()).getCustomField2() != null) {
 							tfDrgNo.setReadOnly(false);
-							tfDrgNo.setValue(((SmsPODtlDM) cbprdname.getValue()).getCustomField2());
+							tfDrgNo.setValue(((SmsPODtlDM) cbProduct.getValue()).getCustomField2());
 							tfDrgNo.setReadOnly(true);
 						} else {
 							tfDrgNo.setReadOnly(false);
@@ -308,9 +308,9 @@ public class ClientCases extends BaseTransUI {
 		flColumn4 = new FormLayout();
 		flColumn1.addComponent(cbEnquiryNo);
 		flColumn1.addComponent(cbClient);
-		flColumn1.addComponent(cbwoNo);
+		flColumn1.addComponent(cbWONo);
 		flColumn2.addComponent(cbPONo);
-		flColumn2.addComponent(cbprdname);
+		flColumn2.addComponent(cbProduct);
 		flColumn2.addComponent(tfpartNo);
 		flColumn2.addComponent(tfDrgNo);
 		tfDrgNo.setReadOnly(true);
@@ -356,14 +356,14 @@ public class ClientCases extends BaseTransUI {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<ClientCasesDM> caseList = new ArrayList<ClientCasesDM>();
+			List<ClientCasesDM> listClientCase = new ArrayList<ClientCasesDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyId + ", " + tfCaseResult.getValue() + ",");
-			caseList = serviceCase.getClientCaseDetails(companyId, null, (Long) cbClient.getValue(), null,
+			listClientCase = serviceCase.getClientCaseDetails(companyId, null, (Long) cbClient.getValue(), null,
 					tfCaseTitle.getValue(), (String) cbClntCaseStatus.getValue(), "F");
-			recordCnt = caseList.size();
+			recordCnt = listClientCase.size();
 			beanClntCases = new BeanItemContainer<ClientCasesDM>(ClientCasesDM.class);
-			beanClntCases.addAll(caseList);
+			beanClntCases.addAll(listClientCase);
 			tblMstScrSrchRslt.setContainerDataSource(beanClntCases);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "clientCaseId", "clientName", "caseTitle",
 					"employeename", "caseCategory", "casePriority", "caseStatus", "lastUpdatedDt", "lastUpdatedBy" });
@@ -390,7 +390,7 @@ public class ClientCases extends BaseTransUI {
 			cbEnquiryNo.setValue(clientCasesDM.getEnquiryId());
 			cbClient.setValue(clientCasesDM.getClientId());
 			cbPONo.setValue(clientCasesDM.getPoid());
-			cbwoNo.setValue(clientCasesDM.getWoId());
+			cbWONo.setValue(clientCasesDM.getWoId());
 			tfpartNo.setReadOnly(false);
 			tfDrgNo.setReadOnly(false);
 			tfpartNo.setValue(clientCasesDM.getPartno());
@@ -398,14 +398,14 @@ public class ClientCases extends BaseTransUI {
 			tfpartNo.setReadOnly(true);
 			tfDrgNo.setReadOnly(true);
 			Long prodid = clientCasesDM.getProdid();
-			Collection<?> prodids = cbprdname.getItemIds();
+			Collection<?> prodids = cbProduct.getItemIds();
 			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbprdname.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
 				// Get the actual bean and use the data
 				SmsPODtlDM st = (SmsPODtlDM) item.getBean();
 				if (prodid != null && prodid.equals(st.getProductid())) {
-					cbprdname.setValue(itemId);
+					cbProduct.setValue(itemId);
 				}
 			}
 			tfCaseTitle.setValue(clientCasesDM.getCaseTitle());
@@ -468,11 +468,15 @@ public class ClientCases extends BaseTransUI {
 	}
 	
 	private void loadCasePriorityByLookUpList() {
-		BeanContainer<String, CompanyLookupDM> beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompLookUp.setBeanIdProperty("lookupname");
-		beanCompLookUp.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "CM_CASEPRY"));
-		cbPriority.setContainerDataSource(beanCompLookUp);
+		try {
+			BeanContainer<String, CompanyLookupDM> beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompLookUp.setBeanIdProperty("lookupname");
+			beanCompLookUp.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "CM_CASEPRY"));
+			cbPriority.setContainerDataSource(beanCompLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
@@ -549,9 +553,9 @@ public class ClientCases extends BaseTransUI {
 		}
 		cbClient.setComponentError(null);
 		cbEnquiryNo.setComponentError(null);
-		cbwoNo.setComponentError(null);
+		cbWONo.setComponentError(null);
 		cbPONo.setComponentError(null);
-		cbprdname.setComponentError(null);
+		cbProduct.setComponentError(null);
 		if ((cbClient.getValue() == null)) {
 			cbClient.setComponentError(new UserError(GERPErrorCodes.NULL_CLNT_NAME));
 			errorflag = true;
@@ -560,16 +564,16 @@ public class ClientCases extends BaseTransUI {
 			cbEnquiryNo.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRYNO));
 			errorflag = true;
 		}
-		if ((cbwoNo.getValue() == null)) {
-			cbwoNo.setComponentError(new UserError(GERPErrorCodes.NULL_WORK_ORDER_NO));
+		if ((cbWONo.getValue() == null)) {
+			cbWONo.setComponentError(new UserError(GERPErrorCodes.NULL_WORK_ORDER_NO));
 			errorflag = true;
 		}
 		if ((cbPONo.getValue() == null)) {
 			cbPONo.setComponentError(new UserError(GERPErrorCodes.NULL_PURCAHSE_ORD_NO));
 			errorflag = true;
 		}
-		if ((cbprdname.getValue() == null)) {
-			cbprdname.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
+		if ((cbProduct.getValue() == null)) {
+			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
 			errorflag = true;
 		}
 		if ((cbCaseCategory.getValue() == null)) {
@@ -628,14 +632,14 @@ public class ClientCases extends BaseTransUI {
 			clientCasesDM.setPoid((Long) cbPONo.getValue());
 			clientCasesDM.setLastUpdatedBy(userName);
 			clientCasesDM.setLastUpdatedDt(DateUtils.getcurrentdate());
-			clientCasesDM.setProdid(((SmsPODtlDM) cbprdname.getValue()).getProductid());
+			clientCasesDM.setProdid(((SmsPODtlDM) cbProduct.getValue()).getProductid());
 			tfpartNo.setReadOnly(false);
 			tfDrgNo.setReadOnly(false);
 			clientCasesDM.setPartno(tfpartNo.getValue());
 			clientCasesDM.setDrgno(tfDrgNo.getValue());
 			tfpartNo.setReadOnly(true);
 			tfDrgNo.setReadOnly(true);
-			clientCasesDM.setWoId((Long) cbwoNo.getValue());
+			clientCasesDM.setWoId((Long) cbWONo.getValue());
 			serviceCase.saveClientCasesDetails(clientCasesDM);
 			resetFields();
 			comment.saveclientcases(clientCasesDM.getClientCaseId());
@@ -675,19 +679,19 @@ public class ClientCases extends BaseTransUI {
 		// TODO Auto-generated method stub
 		cbEnquiryNo.setValue(null);
 		cbEnquiryNo.setRequired(true);
-		cbwoNo.setRequired(true);
+		cbWONo.setRequired(true);
 		cbPONo.setRequired(true);
-		cbprdname.setRequired(true);
+		cbProduct.setRequired(true);
 		cbCaseCategory.setRequired(true);
 		cbClient.setValue(null);
 		cbPONo.setValue(null);
 		cbEnquiryNo.setComponentError(null);
-		cbwoNo.setComponentError(null);
+		cbWONo.setComponentError(null);
 		cbPONo.setComponentError(null);
-		cbprdname.setComponentError(null);
-		cbprdname.setValue(null);
-		cbprdname.setContainerDataSource(null);
-		cbwoNo.setValue(null);
+		cbProduct.setComponentError(null);
+		cbProduct.setValue(null);
+		cbProduct.setContainerDataSource(null);
+		cbWONo.setValue(null);
 		tfpartNo.setReadOnly(false);
 		tfDrgNo.setReadOnly(false);
 		tfpartNo.setValue("");
@@ -696,7 +700,7 @@ public class ClientCases extends BaseTransUI {
 		tfDrgNo.setReadOnly(true);
 		cbClient.setContainerDataSource(null);
 		cbPONo.setContainerDataSource(null);
-		cbwoNo.setContainerDataSource(null);
+		cbWONo.setContainerDataSource(null);
 		tfCaseResult.setValue("");
 		tfCaseTitle.setValue("");
 		tfCaseTitle.setComponentError(null);
@@ -715,34 +719,51 @@ public class ClientCases extends BaseTransUI {
 	
 	// Load EnquiryNo
 	private void loadEnquiryNo() {
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(serviceEnquiryHdr.getSmsEnqHdrList(companyId, null, null, null, null, "P", null, null));
-		cbEnquiryNo.setContainerDataSource(beansmsenqHdr);
+		try {
+			BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("enquiryId");
+			beansmsenqHdr
+					.addAll(serviceEnquiryHdr.getSmsEnqHdrList(companyId, null, null, null, null, "P", null, null));
+			cbEnquiryNo.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// load Workorderid
 	private void loadworkorder() {
-		BeanContainer<Long, WorkOrderHdrDM> beansmsenqHdr = new BeanContainer<Long, WorkOrderHdrDM>(
-				WorkOrderHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("workOrdrId");
-		beansmsenqHdr.addAll(serviceWrkOrdHdr.getWorkOrderHDRList(companyId, null, null, null, null, null, "F", null,
-				(Long) cbEnquiryNo.getValue(), null, null,null));
-		cbwoNo.setContainerDataSource(beansmsenqHdr);
+		try {
+			BeanContainer<Long, WorkOrderHdrDM> beansmsenqHdr = new BeanContainer<Long, WorkOrderHdrDM>(
+					WorkOrderHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("workOrdrId");
+			beansmsenqHdr.addAll(serviceWrkOrdHdr.getWorkOrderHDRList(companyId, null, null, null, null, null, "F",
+					null, (Long) cbEnquiryNo.getValue(), null, null, null));
+			cbWONo.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadPurchaseOrdNo() {
-		BeanContainer<Long, SmsPOHdrDM> beanPurchaseOrdHdr = new BeanContainer<Long, SmsPOHdrDM>(SmsPOHdrDM.class);
-		beanPurchaseOrdHdr.setBeanIdProperty("poid");
-		beanPurchaseOrdHdr.addAll(servicePurchaseOrdHdr.getSmspohdrList(null, null, companyId, null, null, null, null,
-				"F", (Long) cbEnquiryNo.getValue()));
-		cbPONo.setContainerDataSource(beanPurchaseOrdHdr);
+		try {
+			BeanContainer<Long, SmsPOHdrDM> beanPurchaseOrdHdr = new BeanContainer<Long, SmsPOHdrDM>(SmsPOHdrDM.class);
+			beanPurchaseOrdHdr.setBeanIdProperty("poid");
+			beanPurchaseOrdHdr.addAll(servicePurchaseOrdHdr.getSmspohdrList(null, null, companyId, null, null, null,
+					null, "F", (Long) cbEnquiryNo.getValue()));
+			cbPONo.setContainerDataSource(beanPurchaseOrdHdr);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadPurchseOrdDtlList() {
-		BeanItemContainer<SmsPODtlDM> beanPurchaseOrdDtl = new BeanItemContainer<SmsPODtlDM>(SmsPODtlDM.class);
-		beanPurchaseOrdDtl.addAll(serviceWrkOrdDtl.getPurchaseOrdDtlList((Long) cbPONo.getValue()));
-		cbprdname.setContainerDataSource(beanPurchaseOrdDtl);
+		try {
+			BeanItemContainer<SmsPODtlDM> beanPurchaseOrdDtl = new BeanItemContainer<SmsPODtlDM>(SmsPODtlDM.class);
+			beanPurchaseOrdDtl.addAll(serviceWrkOrdDtl.getPurchaseOrdDtlList((Long) cbPONo.getValue()));
+			cbProduct.setContainerDataSource(beanPurchaseOrdDtl);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	@Override

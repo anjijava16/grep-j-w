@@ -54,8 +54,8 @@ public class Outpass extends BaseTransUI {
 	// Bean Creation
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private OutpassService serviceOutpass = (OutpassService) SpringContextHelper.getBean("outpass");
-	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
-	private AssetDetailsService serviceassetdetails = (AssetDetailsService) SpringContextHelper.getBean("assetDetails");
+	private DepartmentService serviceDepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private AssetDetailsService serviceAssetdetails = (AssetDetailsService) SpringContextHelper.getBean("assetDetails");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(Outpass.class);
 	// User Input Fields for EC Request
@@ -254,11 +254,15 @@ public class Outpass extends BaseTransUI {
 	
 	// Load Employee List
 	private void loadEmployeeList() {
-		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanInitiatedBy.setBeanIdProperty("employeeid");
-		beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
-				null, "P"));
-		cbEmployee.setContainerDataSource(beanInitiatedBy);
+		try {
+			BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanInitiatedBy.setBeanIdProperty("employeeid");
+			beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+					null, null, "P"));
+			cbEmployee.setContainerDataSource(beanInitiatedBy);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
@@ -299,11 +303,16 @@ public class Outpass extends BaseTransUI {
 	 * Load vehicle list.
 	 */
 	private void loadVehicleName() {
-		BeanContainer<Long, AssetDetailsDM> beanDepartment = new BeanContainer<Long, AssetDetailsDM>(
-				AssetDetailsDM.class);
-		beanDepartment.setBeanIdProperty("assetId");
-		beanDepartment.addAll(serviceassetdetails.getAssetDetailList(companyid, null, null, null, null, "9050", null));
-		cbVehicleName.setContainerDataSource(beanDepartment);
+		try {
+			BeanContainer<Long, AssetDetailsDM> beanDepartment = new BeanContainer<Long, AssetDetailsDM>(
+					AssetDetailsDM.class);
+			beanDepartment.setBeanIdProperty("assetId");
+			beanDepartment.addAll(serviceAssetdetails.getAssetDetailList(companyid, null, null, null, null, "9050",
+					null));
+			cbVehicleName.setContainerDataSource(beanDepartment);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
@@ -327,11 +336,16 @@ public class Outpass extends BaseTransUI {
 	 * loadDepartmentList()-->this function is used for load the Department list
 	 */
 	private void loadDepartmentList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
-		cbDepartment.setContainerDataSource(beanDepartment);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Department Search...");
+			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beanDepartment.setBeanIdProperty("deptid");
+			beanDepartment.addAll(serviceDepartmant.getDepartmentList(companyid, null, "Active", "P"));
+			cbDepartment.setContainerDataSource(beanDepartment);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header

@@ -122,14 +122,14 @@ public class ClientCategory extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<ClientCategoryDM> clntList = new ArrayList<ClientCategoryDM>();
+		List<ClientCategoryDM> listClientCate = new ArrayList<ClientCategoryDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfClntcatName.getValue() + ", " + (String) cbClntcatStatus.getValue());
-		clntList = serviceClientCat.getCrmClientCategoryList(companyid, tfClntcatName.getValue(),
+		listClientCate = serviceClientCat.getCrmClientCategoryList(companyid, tfClntcatName.getValue(),
 				(String) cbClntcatStatus.getValue(), "F");
-		recordCnt = clntList.size();
+		recordCnt = listClientCate.size();
 		beanClentCat = new BeanItemContainer<ClientCategoryDM>(ClientCategoryDM.class);
-		beanClentCat.addAll(clntList);
+		beanClentCat.addAll(listClientCate);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the ClientCategory. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanClentCat);

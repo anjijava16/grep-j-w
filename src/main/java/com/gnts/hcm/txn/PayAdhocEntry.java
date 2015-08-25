@@ -53,8 +53,8 @@ import com.vaadin.ui.UI;
 public class PayAdhocEntry extends BaseUI {
 	private Logger logger = Logger.getLogger(PayAdhocEntry.class);
 	private static final long serialVersionUID = 1L;
-	private PayAdhocEntryService servicepayadhocentry = (PayAdhocEntryService) SpringContextHelper.getBean("PayAdhoc");
-	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private PayAdhocEntryService servicePayadhocentry = (PayAdhocEntryService) SpringContextHelper.getBean("PayAdhoc");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private HorizontalLayout hluserInputlayout = new HorizontalLayout();
 	// Search Horizontal Layout
 	private HorizontalLayout hlsearchlayout = new HorizontalLayout();
@@ -158,7 +158,7 @@ public class PayAdhocEntry extends BaseUI {
 		}
 		List<PayAdhocEntryDM> listPayAdhocEntry = new ArrayList<PayAdhocEntryDM>();
 		Date payrolldt = (Date) pdfPayDate.getValue();
-		listPayAdhocEntry = servicepayadhocentry.getPayAdhocEntry(null, empid, payrolldt, (String) cbStatus.getValue(),
+		listPayAdhocEntry = servicePayadhocentry.getPayAdhocEntry(null, empid, payrolldt, (String) cbStatus.getValue(),
 				"F");
 		recordCnt = listPayAdhocEntry.size();
 		beanPayAdhocEntryDM = new BeanItemContainer<PayAdhocEntryDM>(PayAdhocEntryDM.class);
@@ -177,12 +177,16 @@ public class PayAdhocEntry extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void loadEmployeeList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
-		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(serviceemployee.getEmployeeList(empname, null, null, "Active", companyid, employeeid, null,
-				null, null, "P"));
-		cbEmployeeName.setContainerDataSource(beanEmployee);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(serviceEmployee.getEmployeeList(empname, null, null, "Active", companyid, employeeid,
+					null, null, null, "P"));
+			cbEmployeeName.setContainerDataSource(beanEmployee);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	@Override
@@ -242,7 +246,7 @@ public class PayAdhocEntry extends BaseUI {
 			payadhocobj.setEntryRemarks(taRemarks.getValue());
 			payadhocobj.setLastUpdatedDt(DateUtils.getcurrentdate());
 			payadhocobj.setLastUpdatedBy(username);
-			servicepayadhocentry.saveAndUpdate(payadhocobj);
+			servicePayadhocentry.saveAndUpdate(payadhocobj);
 			resetFields();
 			loadSrchRslt();
 		}

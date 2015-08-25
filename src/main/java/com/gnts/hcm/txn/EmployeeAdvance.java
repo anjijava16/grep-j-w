@@ -438,25 +438,35 @@ public class EmployeeAdvance extends BaseUI {
 	}
 	
 	private void loadEmpList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
-		List<EmployeeDM> listEmp = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "P");
-		BeanContainer<Long, EmployeeDM> beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmpDM.setBeanIdProperty("employeeid");
-		beanEmpDM.addAll(listEmp);
-		cbEmpName.setContainerDataSource(beanEmpDM);
-		beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmpDM.setBeanIdProperty("employeeid");
-		beanEmpDM.addAll(listEmp);
-		cbAprveMngr.setContainerDataSource(beanEmpDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Employee Search...");
+			List<EmployeeDM> listEmp = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null,
+					null, null, null, "P");
+			BeanContainer<Long, EmployeeDM> beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmpDM.setBeanIdProperty("employeeid");
+			beanEmpDM.addAll(listEmp);
+			cbEmpName.setContainerDataSource(beanEmpDM);
+			beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmpDM.setBeanIdProperty("employeeid");
+			beanEmpDM.addAll(listEmp);
+			cbAprveMngr.setContainerDataSource(beanEmpDM);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadDeductionList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading deduction Search...");
-		BeanContainer<Long, DeductionDM> beanDeductnDM = new BeanContainer<Long, DeductionDM>(DeductionDM.class);
-		beanDeductnDM.setBeanIdProperty("deductionId");
-		beanDeductnDM.addAll(serviceDeduction.getDuctionList(null, null, companyid, null, (String) cbStatus.getValue(),
-				"F"));
-		cbDeductionName.setContainerDataSource(beanDeductnDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading deduction Search...");
+			BeanContainer<Long, DeductionDM> beanDeductnDM = new BeanContainer<Long, DeductionDM>(DeductionDM.class);
+			beanDeductnDM.setBeanIdProperty("deductionId");
+			beanDeductnDM.addAll(serviceDeduction.getDuctionList(null, null, companyid, null,
+					(String) cbStatus.getValue(), "F"));
+			cbDeductionName.setContainerDataSource(beanDeductnDM);
+		}
+		catch (Exception e) {
+		}
 	}
 }

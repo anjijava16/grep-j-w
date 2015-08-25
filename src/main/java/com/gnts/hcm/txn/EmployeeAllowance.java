@@ -582,11 +582,16 @@ public class EmployeeAllowance extends BaseUI {
 	}
 	
 	private void loadAllowanceList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading allowance Search...");
-		BeanContainer<Long, AllowanceDM> beanAlwncDM = new BeanContainer<Long, AllowanceDM>(AllowanceDM.class);
-		beanAlwncDM.setBeanIdProperty("alowncId");
-		beanAlwncDM.addAll(serviceAllowance.getalowanceList(null, null, companyid, (String) cbAlwncDesc.getValue(),
-				"Active", "P"));
-		cbAlwncDesc.setContainerDataSource(beanAlwncDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading allowance Search...");
+			BeanContainer<Long, AllowanceDM> beanAlwncDM = new BeanContainer<Long, AllowanceDM>(AllowanceDM.class);
+			beanAlwncDM.setBeanIdProperty("alowncId");
+			beanAlwncDM.addAll(serviceAllowance.getalowanceList(null, null, companyid, (String) cbAlwncDesc.getValue(),
+					"Active", "P"));
+			cbAlwncDesc.setContainerDataSource(beanAlwncDM);
+		}
+		catch (Exception e) {
+		}
 	}
 }

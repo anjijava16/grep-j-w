@@ -148,25 +148,29 @@ public class KpiGrp extends BaseUI {
 	}
 	
 	private void loadJobClassification() {
-		BeanContainer<Long, JobClassificationDM> bean = new BeanContainer<Long, JobClassificationDM>(
-				JobClassificationDM.class);
-		bean.setBeanIdProperty("jobClasfnId");
-		bean.addAll(serviceJobClassification.getJobClassificationList(null, null, companyId, "Active", "F"));
-		cbJobClasfn.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, JobClassificationDM> bean = new BeanContainer<Long, JobClassificationDM>(
+					JobClassificationDM.class);
+			bean.setBeanIdProperty("jobClasfnId");
+			bean.addAll(serviceJobClassification.getJobClassificationList(null, null, companyId, "Active", "F"));
+			cbJobClasfn.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<KpiGroupDM> kpiGrpList = new ArrayList<KpiGroupDM>();
+		List<KpiGroupDM> listKPIGroup = new ArrayList<KpiGroupDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
 				+ companyId + ", " + (Long) cbJobClasfn.getValue() + ", " + (String) cbStatus.getValue());
-		kpiGrpList = serviceKpiGroup.getkpigrouplist(tfKpigrpName.getValue(), null, companyId, null,
+		listKPIGroup = serviceKpiGroup.getkpigrouplist(tfKpigrpName.getValue(), null, companyId, null,
 				(String) cbStatus.getValue(), "F");
-		recordCnt = kpiGrpList.size();
+		recordCnt = listKPIGroup.size();
 		beanKpiGroupDM = new BeanItemContainer<KpiGroupDM>(KpiGroupDM.class);
-		beanKpiGroupDM.addAll(kpiGrpList);
+		beanKpiGroupDM.addAll(listKPIGroup);
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Got the KPI Group List result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanKpiGroupDM);

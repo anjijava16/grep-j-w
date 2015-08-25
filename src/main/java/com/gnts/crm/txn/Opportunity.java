@@ -70,7 +70,7 @@ public class Opportunity extends BaseUI {
 	private CampaignService serviceCampaign = (CampaignService) SpringContextHelper.getBean("clientCampaign");
 	private Long companyId;
 	// form layout for input controls
-	private FormLayout FormLayout1, FormLayout2, FormLayout3, FormLayout4;
+	private FormLayout formLayout1, formLayout2, formLayout3, formLayout4;
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// Parent layout for all the input controls
@@ -173,15 +173,15 @@ public class Opportunity extends BaseUI {
 		 * block. hence the same layout used as is
 		 */
 		hlSearchLayout.removeAllComponents();
-		FormLayout1 = new FormLayout();
-		FormLayout2 = new FormLayout();
-		FormLayout3 = new FormLayout();
-		FormLayout1.addComponent(tfOppertName);
-		FormLayout2.addComponent(cbClient);
-		FormLayout3.addComponent(cbSearchOppertStatus);
-		hlSearchLayout.addComponent(FormLayout1);
-		hlSearchLayout.addComponent(FormLayout2);
-		hlSearchLayout.addComponent(FormLayout3);
+		formLayout1 = new FormLayout();
+		formLayout2 = new FormLayout();
+		formLayout3 = new FormLayout();
+		formLayout1.addComponent(tfOppertName);
+		formLayout2.addComponent(cbClient);
+		formLayout3.addComponent(cbSearchOppertStatus);
+		hlSearchLayout.addComponent(formLayout1);
+		hlSearchLayout.addComponent(formLayout2);
+		hlSearchLayout.addComponent(formLayout3);
 		hlSearchLayout.setSizeUndefined();
 		hlSearchLayout.setMargin(true);
 	}
@@ -190,30 +190,30 @@ public class Opportunity extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Assembling search layout");
 		// add the form layouts into user input layout
 		hlUserInputLayout.removeAllComponents();
-		FormLayout1 = new FormLayout();
-		FormLayout2 = new FormLayout();
-		FormLayout3 = new FormLayout();
-		FormLayout4 = new FormLayout();
-		FormLayout1.addComponent(tfOppertName);
+		formLayout1 = new FormLayout();
+		formLayout2 = new FormLayout();
+		formLayout3 = new FormLayout();
+		formLayout4 = new FormLayout();
+		formLayout1.addComponent(tfOppertName);
 		tfOppertName.setRequired(true);
-		FormLayout1.addComponent(cbOppertType);
+		formLayout1.addComponent(cbOppertType);
 		cbOppertType.setRequired(true);
-		FormLayout1.addComponent(cbCampaign);
-		FormLayout2.addComponent(cbClient);
-		FormLayout2.addComponent(closingDt);
-		FormLayout2.addComponent(cbEmployee);
-		FormLayout3.addComponent(tfWinProb);
-		FormLayout3.addComponent(tfBusinessValue);
-		FormLayout3.addComponent(cbSearchOppertStatus);
-		FormLayout4.addComponent(taRemarks);
+		formLayout1.addComponent(cbCampaign);
+		formLayout2.addComponent(cbClient);
+		formLayout2.addComponent(closingDt);
+		formLayout2.addComponent(cbEmployee);
+		formLayout3.addComponent(tfWinProb);
+		formLayout3.addComponent(tfBusinessValue);
+		formLayout3.addComponent(cbSearchOppertStatus);
+		formLayout4.addComponent(taRemarks);
 		HorizontalLayout hlInput = new HorizontalLayout();
 		hlInput.setMargin(true);
 		VerticalLayout hlUserInput = new VerticalLayout();
 		hlInput.setWidth("1180");
-		hlInput.addComponent(FormLayout1);
-		hlInput.addComponent(FormLayout2);
-		hlInput.addComponent(FormLayout3);
-		hlInput.addComponent(FormLayout4);
+		hlInput.addComponent(formLayout1);
+		hlInput.addComponent(formLayout2);
+		hlInput.addComponent(formLayout3);
+		hlInput.addComponent(formLayout4);
 		hlUserInput.addComponent(GERPPanelGenerator.createPanel(hlInput));
 		TabSheet test3 = new TabSheet();
 		test3.addTab(vlCommetTblLayout, "Comments");
@@ -230,12 +230,11 @@ public class Opportunity extends BaseUI {
 	
 	private void loadSrchRslt() {
 		tblMstScrSrchRslt.removeAllItems();
-		List<OppertunitiesDM> clntOppertunityList = new ArrayList<OppertunitiesDM>();
-		clntOppertunityList = serviceOppertunity.getClientOppertunityDetails(companyId, null,
-				(Long) cbClient.getValue(), null, tfOppertName.getValue(), cbSearchOppertStatus.getValue().toString());
-		System.out.println("STATUS" + cbSearchOppertStatus.getValue());
-		total = clntOppertunityList.size();
-		beanClntOppertunity.addAll(clntOppertunityList);
+		List<OppertunitiesDM> listOppertunities = new ArrayList<OppertunitiesDM>();
+		listOppertunities = serviceOppertunity.getClientOppertunityDetails(companyId, null, (Long) cbClient.getValue(),
+				null, tfOppertName.getValue(), cbSearchOppertStatus.getValue().toString());
+		total = listOppertunities.size();
+		beanClntOppertunity.addAll(listOppertunities);
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.setContainerDataSource(beanClntOppertunity);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "oppertunityId", "oppertunityName", "oppertunityType",
@@ -253,15 +252,13 @@ public class Opportunity extends BaseUI {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			OppertunitiesDM oppertunitiesDM = beanClntOppertunity.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			oppertunityId = oppertunitiesDM.getOppertunityId();
-			if (oppertunitiesDM.getBusinessValue() != null
-					&& !"null".equals(oppertunitiesDM.getBusinessValue())) {
+			if (oppertunitiesDM.getBusinessValue() != null && !"null".equals(oppertunitiesDM.getBusinessValue())) {
 				tfBusinessValue.setValue(oppertunitiesDM.getBusinessValue().toString());
 			} else {
 				tfBusinessValue.setValue("0");
 			}
 			tfOppertName.setValue(oppertunitiesDM.getOppertunityName());
-			if (oppertunitiesDM.getWinProbability() != null
-					&& !"null".equals(oppertunitiesDM.getWinProbability())) {
+			if (oppertunitiesDM.getWinProbability() != null && !"null".equals(oppertunitiesDM.getWinProbability())) {
 				tfWinProb.setValue(oppertunitiesDM.getWinProbability().toString());
 			} else {
 				tfWinProb.setValue("0");
@@ -305,19 +302,27 @@ public class Opportunity extends BaseUI {
 	}
 	
 	private void loadClientCampaigns() {
-		BeanContainer<Long, CampaignDM> beancampaign = new BeanContainer<Long, CampaignDM>(CampaignDM.class);
-		beancampaign.setBeanIdProperty("campaingnId");
-		beancampaign.addAll(serviceCampaign.getCampaignDetailList(companyId, null, null, null, null, null, null, null,
-				"P"));
-		cbCampaign.setContainerDataSource(beancampaign);
+		try {
+			BeanContainer<Long, CampaignDM> beancampaign = new BeanContainer<Long, CampaignDM>(CampaignDM.class);
+			beancampaign.setBeanIdProperty("campaingnId");
+			beancampaign.addAll(serviceCampaign.getCampaignDetailList(companyId, null, null, null, null, null, null,
+					null, "P"));
+			cbCampaign.setContainerDataSource(beancampaign);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadoppertstatus() {
-		BeanContainer<String, CompanyLookupDM> beanlookup = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanlookup.setBeanIdProperty("lookupname");
-		beanlookup.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "CM_OPRSTAT"));
-		cbSearchOppertStatus.setContainerDataSource(beanlookup);
+		try {
+			BeanContainer<String, CompanyLookupDM> beanlookup = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanlookup.setBeanIdProperty("lookupname");
+			beanlookup.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "CM_OPRSTAT"));
+			cbSearchOppertStatus.setContainerDataSource(beanlookup);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/**

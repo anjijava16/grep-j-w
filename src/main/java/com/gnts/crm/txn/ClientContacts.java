@@ -72,7 +72,7 @@ public class ClientContacts extends BaseUI {
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private HorizontalLayout hlImageLayout = new HorizontalLayout();
 	private HorizontalLayout hlInput = new HorizontalLayout();
-	private FormLayout FormLayout1, FormLayout2, FormLayout3;
+	private FormLayout formLayout1, formLayout2, formLayout3;
 	private String userName, strWidth = "160px";
 	private HorizontalLayout hllayoutimage = new HorizontalLayout();
 	/**
@@ -264,18 +264,18 @@ public class ClientContacts extends BaseUI {
 		 * block. hence the same layout used as is
 		 */
 		hlSearchLayout.removeAllComponents();
-		FormLayout1 = new FormLayout();
-		FormLayout2 = new FormLayout();
-		FormLayout3 = new FormLayout();
+		formLayout1 = new FormLayout();
+		formLayout2 = new FormLayout();
+		formLayout3 = new FormLayout();
 		/**
 		 * add fields to form Layout
 		 */
-		FormLayout1.addComponent(tfContactName);
-		FormLayout2.addComponent(cbClient);
-		FormLayout3.addComponent(cbStatus);
-		hlSearchLayout.addComponent(FormLayout1);
-		hlSearchLayout.addComponent(FormLayout2);
-		hlSearchLayout.addComponent(FormLayout3);
+		formLayout1.addComponent(tfContactName);
+		formLayout2.addComponent(cbClient);
+		formLayout3.addComponent(cbStatus);
+		hlSearchLayout.addComponent(formLayout1);
+		hlSearchLayout.addComponent(formLayout2);
+		hlSearchLayout.addComponent(formLayout3);
 		hlSearchLayout.setSizeUndefined();
 		hlSearchLayout.setSpacing(true);
 		hlSearchLayout.setMargin(true);
@@ -289,29 +289,29 @@ public class ClientContacts extends BaseUI {
 		 */
 		hlUserInputLayout.removeAllComponents();
 		hlInput.removeAllComponents();
-		FormLayout1 = new FormLayout();
-		FormLayout2 = new FormLayout();
-		FormLayout3 = new FormLayout();
-		FormLayout1.addComponent(tfContactName);
+		formLayout1 = new FormLayout();
+		formLayout2 = new FormLayout();
+		formLayout3 = new FormLayout();
+		formLayout1.addComponent(tfContactName);
 		tfContactName.setRequired(true);
-		FormLayout1.addComponent(tfDesignation);
-		FormLayout1.addComponent(ogpersontype);
-		FormLayout1.addComponent(cbClient);
-		FormLayout1.addComponent(tfCityname);
-		FormLayout1.addComponent(tfCountry);
-		FormLayout2.addComponent(cbClienSalut);
-		FormLayout2.addComponent(tfEmailId);
-		FormLayout2.addComponent(tfMobileno);
-		FormLayout2.addComponent(tfPhoneNo);
+		formLayout1.addComponent(tfDesignation);
+		formLayout1.addComponent(ogpersontype);
+		formLayout1.addComponent(cbClient);
+		formLayout1.addComponent(tfCityname);
+		formLayout1.addComponent(tfCountry);
+		formLayout2.addComponent(cbClienSalut);
+		formLayout2.addComponent(tfEmailId);
+		formLayout2.addComponent(tfMobileno);
+		formLayout2.addComponent(tfPhoneNo);
 		tfPhoneNo.setRequired(true);
-		FormLayout2.addComponent(cbStatus);
-		FormLayout3.addComponent(hlImageLayout);
+		formLayout2.addComponent(cbStatus);
+		formLayout3.addComponent(hlImageLayout);
 		VerticalLayout hlUserInput = new VerticalLayout();
 		hlInput.setWidth("1175");
-		hlInput.addComponent(FormLayout1);
-		hlInput.addComponent(FormLayout2);
-		hlInput.addComponent(FormLayout3);
-		hlInput.setComponentAlignment(FormLayout3, Alignment.BOTTOM_RIGHT);
+		hlInput.addComponent(formLayout1);
+		hlInput.addComponent(formLayout2);
+		hlInput.addComponent(formLayout3);
+		hlInput.setComponentAlignment(formLayout3, Alignment.BOTTOM_RIGHT);
 		hlInput.setMargin(true);
 		hlUserInput.addComponent(GERPPanelGenerator.createPanel(hlInput));
 		TabSheet test3 = new TabSheet();
@@ -325,12 +325,12 @@ public class ClientContacts extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		List<ClientsContactsDM> clientContactList = new ArrayList<ClientsContactsDM>();
-		clientContactList = serviceClntContact.getClientContactsDetails(companyId, null, (Long) cbClient.getValue(),
+		List<ClientsContactsDM> listClientContact = new ArrayList<ClientsContactsDM>();
+		listClientContact = serviceClntContact.getClientContactsDetails(companyId, null, (Long) cbClient.getValue(),
 				(String) tfContactName.getValue(), (String) cbStatus.getValue(), null);
-		recordCnt = clientContactList.size();
+		recordCnt = listClientContact.size();
 		beanclntcontact = new BeanItemContainer<ClientsContactsDM>(ClientsContactsDM.class);
-		beanclntcontact.addAll(clientContactList);
+		beanclntcontact.addAll(listClientContact);
 		tblMstScrSrchRslt.setContainerDataSource(beanclntcontact);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "contactId", "contactName", "clientName", "designation",
 				"phoneNo", "contactStatus", "lastUpdatedDt", "lastUpdatedBy" });

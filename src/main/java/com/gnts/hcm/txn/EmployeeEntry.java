@@ -210,23 +210,31 @@ public class EmployeeEntry extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void loadEmployeeList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
-		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(serviceemployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(), "Active",
-				companyid, employeeId, null, null, null, "P"));
-		cbEmployeeName.setContainerDataSource(beanEmployee);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(serviceemployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(),
+					"Active", companyid, employeeId, null, null, null, "P"));
+			cbEmployeeName.setContainerDataSource(beanEmployee);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void loadDepartmentList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading DepartmentList");
-		List<DepartmentDM> listDepartment = servicedepartment.getDepartmentList(companyid, null, "Active", "F");
-		listDepartment.add(new DepartmentDM(0L, "All Departments"));
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(listDepartment);
-		cbDepartmentName.setContainerDataSource(beanDepartment);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading DepartmentList");
+			List<DepartmentDM> listDepartment = servicedepartment.getDepartmentList(companyid, null, "Active", "F");
+			listDepartment.add(new DepartmentDM(0L, "All Departments"));
+			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beanDepartment.setBeanIdProperty("deptid");
+			beanDepartment.addAll(listDepartment);
+			cbDepartmentName.setContainerDataSource(beanDepartment);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	@Override

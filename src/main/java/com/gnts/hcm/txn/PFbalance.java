@@ -44,16 +44,16 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class PFbalance extends BaseUI {
-	private PFbalanceService servicepfbalance = (PFbalanceService) SpringContextHelper.getBean("pfbalance");
-	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private PFbalanceService servicePFBalance = (PFbalanceService) SpringContextHelper.getBean("pfbalance");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private FormLayout flfinyear, flempname;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// User Input Components
-	private TextField tffinyear;
-	private ComboBox cbempname;
+	private TextField tfFinyear;
+	private ComboBox cbEmployee;
 	// Bean container
 	private BeanItemContainer<PFbalanceDM> beanPFbalanceDM = null;
 	// local variables declaration
@@ -77,18 +77,18 @@ public class PFbalance extends BaseUI {
 	private void buildview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Painting PF Balance UI");
 		// Employee Name Combo Box
-		cbempname = new GERPComboBox("Employee Name");
-		cbempname.setItemCaptionPropertyId("firstname");
+		cbEmployee = new GERPComboBox("Employee Name");
+		cbEmployee.setItemCaptionPropertyId("firstname");
 		loadEmpList();
 		// Financial Year text field
-		tffinyear = new GERPTextField("Financial Year");
-		tffinyear.setMaxLength(25);
+		tfFinyear = new GERPTextField("Financial Year");
+		tfFinyear.setMaxLength(25);
 		// create form layouts to hold the input items
 		flempname = new FormLayout();
 		flfinyear = new FormLayout();
 		// add the user input items into appropriate form layout
-		flempname.addComponent(cbempname);
-		flfinyear.addComponent(tffinyear);
+		flempname.addComponent(cbEmployee);
+		flfinyear.addComponent(tfFinyear);
 		// add the form layouts into user input layout
 		hlUserInputLayout.setSpacing(true);
 		hlUserInputLayout.addComponent(flempname);
@@ -124,14 +124,14 @@ public class PFbalance extends BaseUI {
 		tblMstScrSrchRslt.removeAllItems();
 		List<PFbalanceDM> listPFBalance = new ArrayList<PFbalanceDM>();
 		Long employeeid = null;
-		if (cbempname.getValue() != null) {
-			employeeid = ((Long) cbempname.getValue());
+		if (cbEmployee.getValue() != null) {
+			employeeid = ((Long) cbEmployee.getValue());
 		}
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ tffinyear.getValue());
+				+ tfFinyear.getValue());
 		recordCnt = 0;
-		if (cbempname.getValue() != null || tffinyear.getValue().trim().length() > 0) {
-			listPFBalance = servicepfbalance.getPfBalanceList(null, null, employeeid, null, null, tffinyear.getValue());
+		if (cbEmployee.getValue() != null || tfFinyear.getValue().trim().length() > 0) {
+			listPFBalance = servicePFBalance.getPfBalanceList(null, null, employeeid, null, null, tfFinyear.getValue());
 			recordCnt = listPFBalance.size();
 		}
 		beanPFbalanceDM = new BeanItemContainer<PFbalanceDM>(PFbalanceDM.class);
@@ -150,11 +150,15 @@ public class PFbalance extends BaseUI {
 	
 	// load employee names
 	private void loadEmpList() {
-		BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanLoadEmployee.setBeanIdProperty("employeeid");
-		beanLoadEmployee.addAll(serviceemployee.getEmployeeList(null, null, null, null, companyid, null, null,
-				null, null, "P"));
-		cbempname.setContainerDataSource(beanLoadEmployee);
+		try {
+			BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanLoadEmployee.setBeanIdProperty("employeeid");
+			beanLoadEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, null, companyid, null, null,
+					null, null, "P"));
+			cbEmployee.setContainerDataSource(beanLoadEmployee);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Base class implementations
@@ -169,7 +173,7 @@ public class PFbalance extends BaseUI {
 	@Override
 	protected void searchDetails() throws NoDataFoundException {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + " Invoking search");
-		if (cbempname.getValue() == null && tffinyear.getValue() == "") {
+		if (cbEmployee.getValue() == null && tfFinyear.getValue() == "") {
 			throw new ERPException.NoDataFoundException();
 		} else {
 			loadSrchRslt();
@@ -191,8 +195,8 @@ public class PFbalance extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
-		tffinyear.setValue("");
-		cbempname.setValue(null);
+		tfFinyear.setValue("");
+		cbEmployee.setValue(null);
 		tblMstScrSrchRslt.setVisible(false);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
@@ -204,14 +208,14 @@ public class PFbalance extends BaseUI {
 	@Override
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Validating Data ");
-		tffinyear.setComponentError(null);
+		tfFinyear.setComponentError(null);
 		Boolean errorFlag = false;
-		if ((tffinyear.getValue() == null) || tffinyear.getValue().trim().length() == 0) {
-			tffinyear.setComponentError(new UserError(GERPErrorCodes.NULL_FIN_YEAR));
+		if ((tfFinyear.getValue() == null) || tfFinyear.getValue().trim().length() == 0) {
+			tfFinyear.setComponentError(new UserError(GERPErrorCodes.NULL_FIN_YEAR));
 			errorFlag = true;
 		}
-		if (cbempname.getValue() == null) {
-			cbempname.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_FIRST_NAME));
+		if (cbEmployee.getValue() == null) {
+			cbEmployee.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_FIRST_NAME));
 			errorFlag = true;
 		}
 		if (errorFlag) {

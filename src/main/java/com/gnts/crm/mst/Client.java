@@ -100,10 +100,10 @@ public class Client extends BaseUI {
 	private HorizontalLayout hlInput;
 	private VerticalLayout hlUserInput;
 	// User Input Components
-	private TextField tfClntName, tfRevenue, tfpostcd, tfphnno, tffaxno, tfEmail, tfWebsite, tfclntcode;
+	private TextField tfClntName, tfRevenue, tfpostcd, tfPhone, tfFax, tfEmail, tfWebsite, tfClntcode;
 	private TextArea taClntAddrss, tfotherDetails;
 	private ComboBox cbClntCategory, cbClntSubCategory, cbCampaign, cbLeads, cbAssignedto, cbClientrate, cbCountry,
-			cbState, cbcity, cbclntindustry, cbClntStatus;
+			cbState, cbCity, cbclntindustry, cbClntStatus;
 	// Bean Container
 	private BeanItemContainer<ClientDM> beanClnt = null;
 	// local variables declaration
@@ -153,8 +153,8 @@ public class Client extends BaseUI {
 		taClntAddrss = new GERPTextArea("Client Address");
 		taClntAddrss.setHeight("75px");
 		taClntAddrss.setMaxLength(100);
-		tfclntcode = new GERPTextField("Client Code");
-		tfclntcode.setRequired(true);
+		tfClntcode = new GERPTextField("Client Code");
+		tfClntcode.setRequired(true);
 		// Revenue text Field
 		tfRevenue = new GERPTextField("Revenue");
 		tfRevenue.setRequired(false);
@@ -166,27 +166,27 @@ public class Client extends BaseUI {
 		tfpostcd.setRequired(false);
 		tfpostcd.setMaxLength(25);
 		// phone number text Field
-		tfphnno = new GERPTextField("Phone Number");
-		tfphnno.setRequired(true);
-		tfphnno.addBlurListener(new BlurListener() {
+		tfPhone = new GERPTextField("Phone Number");
+		tfPhone.setRequired(true);
+		tfPhone.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
-				tfphnno.setComponentError(null);
-				if (tfphnno.getValue() != null) {
-					if (!tfphnno.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) {
-						tfphnno.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
+				tfPhone.setComponentError(null);
+				if (tfPhone.getValue() != null) {
+					if (!tfPhone.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) {
+						tfPhone.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
 					} else {
-						tfphnno.setComponentError(null);
+						tfPhone.setComponentError(null);
 					}
 				}
 			}
 		});
-		tfphnno.setMaxLength(25);
+		tfPhone.setMaxLength(25);
 		// fax number text Field
-		tffaxno = new GERPTextField("Fax Number");
-		tffaxno.setRequired(false);
-		tffaxno.setMaxLength(25);
+		tfFax = new GERPTextField("Fax Number");
+		tfFax.setRequired(false);
+		tfFax.setMaxLength(25);
 		// Email text Field
 		tfEmail = new GERPTextField("Email");
 		tfEmail.setMaxLength(25);
@@ -275,9 +275,9 @@ public class Client extends BaseUI {
 			}
 		});
 		// city combobox
-		cbcity = new GERPComboBox("City");
-		cbcity.setItemCaptionPropertyId("cityname");
-		cbcity.setWidth("150");
+		cbCity = new GERPComboBox("City");
+		cbCity.setItemCaptionPropertyId("cityname");
+		cbCity.setWidth("150");
 		// Client status combo box
 		cbClntStatus = new GERPComboBox("Status", BASEConstants.M_CRM_CLIENTS, BASEConstants.CLIENTS);
 		cbClntStatus.setItemCaptionPropertyId("desc");
@@ -325,7 +325,7 @@ public class Client extends BaseUI {
 		formLayout2 = new FormLayout();
 		formLayout3 = new FormLayout();
 		formLayout4 = new FormLayout();
-		formLayout1.addComponent(tfclntcode);
+		formLayout1.addComponent(tfClntcode);
 		formLayout1.addComponent(tfClntName);
 		tfClntName.setRequired(true);
 		formLayout1.addComponent(taClntAddrss);
@@ -334,12 +334,12 @@ public class Client extends BaseUI {
 		formLayout2.addComponent(cbClntSubCategory);
 		formLayout2.addComponent(cbCountry);
 		formLayout2.addComponent(cbState);
-		formLayout2.addComponent(cbcity);
+		formLayout2.addComponent(cbCity);
 		formLayout3.addComponent(tfpostcd);
-		formLayout3.addComponent(tfphnno);
+		formLayout3.addComponent(tfPhone);
 		formLayout3.addComponent(tfEmail);
 		cbCountry.setRequired(true);
-		formLayout3.addComponent(tffaxno);
+		formLayout3.addComponent(tfFax);
 		formLayout3.addComponent(tfWebsite);
 		formLayout4.addComponent(tfotherDetails);
 		formLayout4.addComponent(cbClntStatus);
@@ -393,7 +393,7 @@ public class Client extends BaseUI {
 			beanCity.setBeanIdProperty("cityid");
 			beanCity.addAll(servicecity.getCityList(null, null, Long.valueOf(cbState.getValue().toString()), "Active",
 					companyid, "P"));
-			cbcity.setContainerDataSource(beanCity);
+			cbCity.setContainerDataSource(beanCity);
 		}
 		catch (Exception e) {
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " Country List is Null");
@@ -502,15 +502,15 @@ public class Client extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<ClientDM> clntList = new ArrayList<ClientDM>();
+			List<ClientDM> listClient = new ArrayList<ClientDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfClntName.getValue() + ", " + (String) cbClntStatus.getValue());
-			clntList = serviceClients.getClientDetails(companyid, null, (Long) cbClntCategory.getValue(),
+			listClient = serviceClients.getClientDetails(companyid, null, (Long) cbClntCategory.getValue(),
 					(Long) cbClntSubCategory.getValue(), null, null, null, (String) tfClntName.getValue(),
 					(String) cbClntStatus.getValue(), "F");
-			recordCnt = clntList.size();
+			recordCnt = listClient.size();
 			beanClnt = new BeanItemContainer<ClientDM>(ClientDM.class);
-			beanClnt.addAll(clntList);
+			beanClnt.addAll(listClient);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Client. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanClnt);
@@ -532,27 +532,27 @@ public class Client extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		tfClntName.setValue("");
 		tfClntName.setComponentError(null);
-		tfclntcode.setComponentError(null);
-		tfclntcode.setValue("");
+		tfClntcode.setComponentError(null);
+		tfClntcode.setValue("");
 		taClntAddrss.setValue("");
 		tfEmail.setValue("");
 		tfEmail.setComponentError(null);
-		tffaxno.setValue("");
+		tfFax.setValue("");
 		tfotherDetails.setValue("");
 		tfpostcd.setValue("");
-		tfphnno.setValue("");
-		tfphnno.setComponentError(null);
+		tfPhone.setValue("");
+		tfPhone.setComponentError(null);
 		tfRevenue.setValue("0");
 		tfWebsite.setValue("");
 		cbLeads.setValue(null);
 		cbAssignedto.setValue(null);
 		cbCampaign.setValue(null);
-		cbcity.setValue(null);
+		cbCity.setValue(null);
 		cbState.setValue(null);
 		cbCountry.setValue(countryid);
 		cbCountry.setRequired(false);
 		cbState.setRequired(false);
-		cbcity.setRequired(false);
+		cbCity.setRequired(false);
 		cbCountry.setComponentError(null);
 		cbClntCategory.setValue(null);
 		cbClntCategory.setComponentError(null);
@@ -585,18 +585,18 @@ public class Client extends BaseUI {
 			}
 			cbclntindustry.setValue(clientDM.getClientIndustry());
 			if (clientDM.getClientCode() != null) {
-				tfclntcode.setValue(clientDM.getClientCode());
+				tfClntcode.setValue(clientDM.getClientCode());
 			}
 			cbLeads.setValue(clientDM.getLeadId());
 			tfEmail.setValue(clientDM.getEmailId());
-			tffaxno.setValue(clientDM.getFaxNo());
-			tfphnno.setValue(clientDM.getPhoneNo());
+			tfFax.setValue(clientDM.getFaxNo());
+			tfPhone.setValue(clientDM.getPhoneNo());
 			tfpostcd.setValue(clientDM.getPostalCode());
 			tfWebsite.setValue(clientDM.getWebsite());
 			tfotherDetails.setValue(clientDM.getOtherDetails());
 			cbCountry.setValue((clientDM.getCountryId()));
 			cbState.setValue(clientDM.getStateId().toString());
-			cbcity.setValue(clientDM.getCityId().toString());
+			cbCity.setValue(clientDM.getCityId().toString());
 		}
 		comment = new Comments(vlCommetTblLayout, employeeid, null, null, clientId, null, null, null);
 		document = new Documents(vlDocumentLayout, null, null, clientId, null, null, null);
@@ -652,7 +652,7 @@ public class Client extends BaseUI {
 		resetFields();
 		cbCountry.setRequired(true);
 		cbState.setRequired(true);
-		cbcity.setRequired(true);
+		cbCity.setRequired(true);
 	}
 	
 	@Override
@@ -692,34 +692,34 @@ public class Client extends BaseUI {
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		tfClntName.setComponentError(null);
-		tfclntcode.setComponentError(null);
+		tfClntcode.setComponentError(null);
 		cbClntCategory.setComponentError(null);
-		tfphnno.setComponentError(null);
+		tfPhone.setComponentError(null);
 		cbCountry.setComponentError(null);
 		cbState.setComponentError(null);
-		cbcity.setComponentError(null);
+		cbCity.setComponentError(null);
 		if ((tfClntName.getValue() == null) || tfClntName.getValue().trim().length() == 0) {
 			tfClntName.setComponentError(new UserError(GERPErrorCodes.NULL_CLNT_NAME));
 			errorFlag = true;
 		}
-		if ((tfclntcode.getValue() == null) || tfclntcode.getValue().trim().length() == 0) {
-			tfclntcode.setComponentError(new UserError(GERPErrorCodes.NULL_CLNT_CODE));
+		if ((tfClntcode.getValue() == null) || tfClntcode.getValue().trim().length() == 0) {
+			tfClntcode.setComponentError(new UserError(GERPErrorCodes.NULL_CLNT_CODE));
 			errorFlag = true;
 		}
 		if (cbClntCategory.getValue() == null) {
 			cbClntCategory.setComponentError(new UserError(GERPErrorCodes.NULL_CLNT_CATGRY_NAME));
 			errorFlag = true;
 		}
-		if ((tfphnno.getValue() == null) || tfphnno.getValue().trim().length() == 0) {
-			tfphnno.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
+		if ((tfPhone.getValue() == null) || tfPhone.getValue().trim().length() == 0) {
+			tfPhone.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
 			errorFlag = true;
 		}
 		if (cbState.getValue() == null) {
 			cbState.setComponentError(new UserError(GERPErrorCodes.NULL_STATE_NAME));
 			errorFlag = true;
 		}
-		if (cbcity.getValue() == null) {
-			cbcity.setComponentError(new UserError(GERPErrorCodes.NULL_CITY_NAME));
+		if (cbCity.getValue() == null) {
+			cbCity.setComponentError(new UserError(GERPErrorCodes.NULL_CITY_NAME));
 			errorFlag = true;
 		}
 		if (cbCountry.getValue() == null) {
@@ -741,7 +741,7 @@ public class Client extends BaseUI {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				clientDM = beanClnt.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			clientDM.setClientCode(tfclntcode.getValue());
+			clientDM.setClientCode(tfClntcode.getValue());
 			clientDM.setCompanyId(companyid);
 			clientDM.setClientName(tfClntName.getValue().toString());
 			clientDM.setClientAddress(taClntAddrss.getValue());
@@ -754,8 +754,8 @@ public class Client extends BaseUI {
 			}
 			clientDM.setAssignedTo((Long) cbAssignedto.getValue());
 			clientDM.setPostalCode(tfpostcd.getValue());
-			clientDM.setPhoneNo(tfphnno.getValue());
-			clientDM.setFaxNo(tffaxno.getValue());
+			clientDM.setPhoneNo(tfPhone.getValue());
+			clientDM.setFaxNo(tfFax.getValue());
 			clientDM.setEmailId(tfEmail.getValue());
 			clientDM.setWebsite(tfWebsite.getValue());
 			clientDM.setOtherDetails(tfotherDetails.getValue());
@@ -771,8 +771,8 @@ public class Client extends BaseUI {
 			if (cbState.getValue() != null) {
 				clientDM.setStateId((Long.valueOf(cbState.getValue().toString())));
 			}
-			if (cbcity.getValue() != null) {
-				clientDM.setCityId((Long.valueOf(cbcity.getValue().toString())));
+			if (cbCity.getValue() != null) {
+				clientDM.setCityId((Long.valueOf(cbCity.getValue().toString())));
 			}
 			if (cbClntStatus.getValue() != null) {
 				clientDM.setClientSttus(cbClntStatus.getValue().toString());

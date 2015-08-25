@@ -128,16 +128,16 @@ public class OrgPolicies extends BaseUI {
 		tblMstScrSrchRslt.setWidth("100%");
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.removeAllItems();
-		List<OrgPoliciesDM> orgPoliciesList = new ArrayList<OrgPoliciesDM>();
+		List<OrgPoliciesDM> listOrgPolicies = new ArrayList<OrgPoliciesDM>();
 		String orgPolName = tfPolicyName.getValue().toString();
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Search Org Policies Parameters are " + orgPolName + "," + (String) cbPolicyStatus.getValue() + ","
 				+ companyId);
-		orgPoliciesList = serviceOrgPolicies.getOrgPoliciesList(null, companyId, null, orgPolName,
+		listOrgPolicies = serviceOrgPolicies.getOrgPoliciesList(null, companyId, null, orgPolName,
 				(String) cbPolicyStatus.getValue(), "F");
-		recordCnt = orgPoliciesList.size();
+		recordCnt = listOrgPolicies.size();
 		beanOrgPolicies = new BeanItemContainer<OrgPoliciesDM>(OrgPoliciesDM.class);
-		beanOrgPolicies.addAll(orgPoliciesList);
+		beanOrgPolicies.addAll(listOrgPolicies);
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Got the OrgPolicies result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanOrgPolicies);
@@ -216,14 +216,18 @@ public class OrgPolicies extends BaseUI {
 	 * loadOrgPolicisGroup()-->this function is used for load the material UOM type
 	 */
 	private void loadOrgPolicisGroup() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Loading OrgPolicis Group Search...");
-		BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("cmplookupid");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
-				"HC_PLCYGRP"));
-		cbPolicyGroup.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Loading OrgPolicis Group Search...");
+			BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("cmplookupid");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
+					"HC_PLCYGRP"));
+			cbPolicyGroup.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	@Override

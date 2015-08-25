@@ -69,7 +69,7 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 	private GERPTimeField tfAbsentstarthours, tfAbsentendhours;
 	private TextField tfAbsenttotalhours;
 	private TextArea taAbsentremarks;
-	private ComboBox cbabsentstatus;
+	private ComboBox cbAbsentstatus;
 	// for Search
 	private Button btnSearch, btnReset;
 	// Declaration for add and edit panel
@@ -144,8 +144,8 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 		taAbsentremarks.setWidth("170");
 		taAbsentremarks.setHeight("55");
 		// Initialization for cbabsentstatus
-		cbabsentstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		cbabsentstatus.setItemCaptionPropertyId("desc");
+		cbAbsentstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		cbAbsentstatus.setItemCaptionPropertyId("desc");
 		btnSearch = new Button("Search", this);
 		btnSearch.setStyleName("searchbt");
 		btnReset = new Button("Reset", this);
@@ -219,7 +219,7 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 		flColumn2.addComponent(tfAbsentendhours);
 		flColumn3.addComponent(taAbsentremarks);
 		flColumn4.addComponent(cbAbsentlwpmark);
-		flColumn4.addComponent(cbabsentstatus);
+		flColumn4.addComponent(cbAbsentstatus);
 		HorizontalLayout hlInput = new HorizontalLayout();
 		hlInput.setSpacing(true);
 		hlInput.setMargin(true);
@@ -298,7 +298,7 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 				cbAbsentlwpmark.setValue(false);
 			}
 			taAbsentremarks.setValue(absent.getAbsentremarks());
-			cbabsentstatus.setValue(absent.getAbsentstatus());
+			cbAbsentstatus.setValue(absent.getAbsentstatus());
 		}
 	}
 	
@@ -330,8 +330,8 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 			if (taAbsentremarks.getValue() != null) {
 				saveAbsent.setAbsentremarks(taAbsentremarks.getValue());
 			}
-			if (cbabsentstatus.getValue() != null) {
-				saveAbsent.setAbsentstatus(cbabsentstatus.getValue().toString());
+			if (cbAbsentstatus.getValue() != null) {
+				saveAbsent.setAbsentstatus(cbAbsentstatus.getValue().toString());
 			}
 			saveAbsent.setEmployeeid(employeeid);
 			saveAbsent.setLastupdatedby(username);
@@ -401,7 +401,7 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 		tfAbsentstarthours.setComponentError(null);
 		tfAbsentendhours.setComponentError(null);
 		tfAbsenttotalhours.setComponentError(null);
-		cbabsentstatus.setValue(cbabsentstatus.getItemIds().iterator().next());
+		cbAbsentstatus.setValue(cbAbsentstatus.getItemIds().iterator().next());
 	}
 	
 	@Override

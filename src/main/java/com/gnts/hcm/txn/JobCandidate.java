@@ -70,7 +70,7 @@ public class JobCandidate extends BaseUI {
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// Add User Input Controls
-	private TextField tffirstname, tflastname, tfemailid, tfcontactno;
+	private TextField tfFirstname, tfLastname, tfEMailid, tfContactno;
 	private PopupDateField dfDOA;
 	private TextArea taresumkywrd;
 	private ComboBox cbStatus, cbjobtitle;
@@ -124,12 +124,12 @@ public class JobCandidate extends BaseUI {
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbStatus.setWidth("150");
 		// Job Candidate Description text field
-		tffirstname = new GERPTextField("First Name");
-		tflastname = new GERPTextField("Last Name");
-		tfemailid = new GERPTextField("E-mail");
-		tfemailid.setMaxLength(30);
-		tfcontactno = new GERPTextField("Contact No.");
-		tfcontactno.setMaxLength(12);
+		tfFirstname = new GERPTextField("First Name");
+		tfLastname = new GERPTextField("Last Name");
+		tfEMailid = new GERPTextField("E-mail");
+		tfEMailid.setMaxLength(30);
+		tfContactno = new GERPTextField("Contact No.");
+		tfContactno.setMaxLength(12);
 		// Resume Keyword Description Area
 		taresumkywrd = new GERPTextArea("Resume Keyword");
 		taresumkywrd.setHeight("25");
@@ -159,8 +159,8 @@ public class JobCandidate extends BaseUI {
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		flColumn1.addComponent(cbjobtitle);
-		flColumn2.addComponent(tffirstname);
-		flColumn3.addComponent(tfcontactno);
+		flColumn2.addComponent(tfFirstname);
+		flColumn3.addComponent(tfContactno);
 		flColumn4.addComponent(cbStatus);
 		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn2);
@@ -172,7 +172,7 @@ public class JobCandidate extends BaseUI {
 	
 	private void assembleUserInputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling User Input layout");
-		tfemailid.setRequired(true);
+		tfEMailid.setRequired(true);
 		tblMstScrSrchRslt.setPageLength(12);
 		// Remove all components in Search Layout
 		hlSearchLayout.removeAllComponents();
@@ -182,10 +182,10 @@ public class JobCandidate extends BaseUI {
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		flColumn1.addComponent(cbjobtitle);
-		flColumn1.addComponent(tffirstname);
-		flColumn1.addComponent(tflastname);
-		flColumn1.addComponent(tfemailid);
-		flColumn2.addComponent(tfcontactno);
+		flColumn1.addComponent(tfFirstname);
+		flColumn1.addComponent(tfLastname);
+		flColumn1.addComponent(tfEMailid);
+		flColumn2.addComponent(tfContactno);
 		flColumn2.addComponent(dfDOA);
 		flColumn2.addComponent(taresumkywrd);
 		flColumn2.addComponent(cbWrkExp);
@@ -207,16 +207,16 @@ public class JobCandidate extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<JobCandidateDM> jobcandidatelist = new ArrayList<JobCandidateDM>();
+		List<JobCandidateDM> listJobCandidate = new ArrayList<JobCandidateDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tffirstname.getValue() + ", " + tfcontactno.getValue()
+				+ companyid + ", " + tfFirstname.getValue() + ", " + tfContactno.getValue()
 				+ (String) cbStatus.getValue());
-		jobcandidatelist = serviceJobCandidate.getJobCandidateList(null, (Long) cbjobtitle.getValue(),
-				tffirstname.getValue(), tfcontactno.getValue(), (String) cbStatus.getValue());
-		recordCnt = jobcandidatelist.size();
-		logger.info("size" + jobcandidatelist.size());
+		listJobCandidate = serviceJobCandidate.getJobCandidateList(null, (Long) cbjobtitle.getValue(),
+				tfFirstname.getValue(), tfContactno.getValue(), (String) cbStatus.getValue());
+		recordCnt = listJobCandidate.size();
+		logger.info("size" + listJobCandidate.size());
 		beanJobCandidateDM = new BeanItemContainer<JobCandidateDM>(JobCandidateDM.class);
-		beanJobCandidateDM.addAll(jobcandidatelist);
+		beanJobCandidateDM.addAll(listJobCandidate);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the jobcandidatelist. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanJobCandidateDM);
@@ -296,8 +296,8 @@ public class JobCandidate extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting search fields and reloading the result");
 		cbjobtitle.setValue(null);
-		tffirstname.setValue("");
-		tfcontactno.setValue("");
+		tfFirstname.setValue("");
+		tfContactno.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		// reload the search using the defaults
 		loadSrchRslt();
@@ -313,7 +313,7 @@ public class JobCandidate extends BaseUI {
 		assembleUserInputLayout();
 		resetFields();
 		cbjobtitle.setRequired(true);
-		tfemailid.setRequired(true);
+		tfEMailid.setRequired(true);
 	}
 	
 	private void editCandidate() {
@@ -324,16 +324,16 @@ public class JobCandidate extends BaseUI {
 				cbjobtitle.setValue(jobCandidateDM.getJobtitle());
 			}
 			if ((jobCandidateDM.getFirstName() != null)) {
-				tffirstname.setValue(jobCandidateDM.getFirstName().toString());
+				tfFirstname.setValue(jobCandidateDM.getFirstName().toString());
 			}
 			if ((jobCandidateDM.getLastName() != null)) {
-				tflastname.setValue(jobCandidateDM.getLastName());
+				tfLastname.setValue(jobCandidateDM.getLastName());
 			}
 			if ((jobCandidateDM.getEmail() != null)) {
-				tfemailid.setValue(jobCandidateDM.getEmail().toString());
+				tfEMailid.setValue(jobCandidateDM.getEmail().toString());
 			}
 			if ((jobCandidateDM.getContactNo() != null)) {
-				tfcontactno.setValue(jobCandidateDM.getContactNo());
+				tfContactno.setValue(jobCandidateDM.getContactNo());
 			}
 			if ((jobCandidateDM.getDoa() != null)) {
 				dfDOA.setValue(jobCandidateDM.getDoa());
@@ -371,7 +371,7 @@ public class JobCandidate extends BaseUI {
 		assembleUserInputLayout();
 		resetFields();
 		cbjobtitle.setRequired(true);
-		tfemailid.setRequired(true);
+		tfEMailid.setRequired(true);
 		editCandidate();
 	}
 	
@@ -380,14 +380,14 @@ public class JobCandidate extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		boolean errorFlag = false;
 		cbjobtitle.setComponentError(null);
-		tfemailid.setComponentError(null);
+		tfEMailid.setComponentError(null);
 		if ((cbjobtitle.getValue() == null)) {
 			cbjobtitle.setComponentError(new UserError(GERPErrorCodes.NULL_JOB_CANDIDATE));
 			errorFlag = true;
 		}
-		String emailSeq = tfemailid.getValue().toString();
+		String emailSeq = tfEMailid.getValue().toString();
 		if (!emailSeq.contains("@") || !emailSeq.contains(".")) {
-			tfemailid.setComponentError(new UserError(GERPErrorCodes.EMAIL_VALIDATION));
+			tfEMailid.setComponentError(new UserError(GERPErrorCodes.EMAIL_VALIDATION));
 			errorFlag = true;
 		}
 		if (errorFlag) {
@@ -404,10 +404,10 @@ public class JobCandidate extends BaseUI {
 				jobcandidateobj = beanJobCandidateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			jobcandidateobj.setVaccancyid((Long) cbjobtitle.getValue());
-			jobcandidateobj.setFirstName(tffirstname.getValue().toString());
-			jobcandidateobj.setLastName(tflastname.getValue().toString());
-			jobcandidateobj.setEmail(tfemailid.getValue().toString());
-			jobcandidateobj.setContactNo(tfcontactno.getValue().toString());
+			jobcandidateobj.setFirstName(tfFirstname.getValue().toString());
+			jobcandidateobj.setLastName(tfLastname.getValue().toString());
+			jobcandidateobj.setEmail(tfEMailid.getValue().toString());
+			jobcandidateobj.setContactNo(tfContactno.getValue().toString());
 			jobcandidateobj.setWorkExp(cbWrkExp.getValue().toString());
 			jobcandidateobj.setExpYear(tfWrkExpYr.getValue());
 			jobcandidateobj.setExpDesc(tfWrkExpDesc.getValue());
@@ -449,7 +449,7 @@ public class JobCandidate extends BaseUI {
 		assembleSearchLayout();
 		tblMstScrSrchRslt.setValue(null);
 		cbjobtitle.setRequired(false);
-		tfemailid.setRequired(false);
+		tfEMailid.setRequired(false);
 		resetFields();
 		loadSrchRslt();
 	}
@@ -458,18 +458,18 @@ public class JobCandidate extends BaseUI {
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting search fields and reloading the result");
-		tffirstname.setValue("");
-		tfcontactno.setValue("");
-		tfcontactno.setComponentError(null);
+		tfFirstname.setValue("");
+		tfContactno.setValue("");
+		tfContactno.setComponentError(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
-		tffirstname.setComponentError(null);
-		tffirstname.setValue("");
+		tfFirstname.setComponentError(null);
+		tfFirstname.setValue("");
 		cbjobtitle.setComponentError(null);
 		cbjobtitle.setValue(null);
-		tflastname.setComponentError(null);
-		tflastname.setValue("");
-		tfemailid.setComponentError(null);
-		tfemailid.setValue("");
+		tfLastname.setComponentError(null);
+		tfLastname.setValue("");
+		tfEMailid.setComponentError(null);
+		tfEMailid.setValue("");
 		dfDOA.setComponentError(null);
 		dfDOA.setValue(null);
 		taresumkywrd.setComponentError(null);

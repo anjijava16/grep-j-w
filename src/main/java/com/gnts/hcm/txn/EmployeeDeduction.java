@@ -360,38 +360,38 @@ public class EmployeeDeduction extends BaseUI {
 	
 	private void editEmpDeduction() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeDeductionDM empDeduction = beanEmployeeDecn.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbEmpName.setValue(empDeduction.getEmployeeid());
-			cbDedcnCode.setValue(empDeduction.getDednid());
-			cbFlatPercnt.setValue(empDeduction.getIsflatpt());
-			if (empDeduction.getDednpt() != null) {
-				tfDecnPerct.setValue(empDeduction.getDednpt().toString());
+			EmployeeDeductionDM employeeDeduction = beanEmployeeDecn.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			cbEmpName.setValue(employeeDeduction.getEmployeeid());
+			cbDedcnCode.setValue(employeeDeduction.getDednid());
+			cbFlatPercnt.setValue(employeeDeduction.getIsflatpt());
+			if (employeeDeduction.getDednpt() != null) {
+				tfDecnPerct.setValue(employeeDeduction.getDednpt().toString());
 			}
 			prevspt = (new BigDecimal(tfDecnPerct.getValue()));
-			if (empDeduction.getDednamt() != null) {
-				tfDecnAmt.setValue(empDeduction.getDednamt().toString());
+			if (employeeDeduction.getDednamt() != null) {
+				tfDecnAmt.setValue(employeeDeduction.getDednamt().toString());
 				prevsamt = (new BigDecimal(tfDecnAmt.getValue()));
-				if (empDeduction.getEffdt() != null) {
-					dfEffDt.setValue(empDeduction.getEffdt());
+				if (employeeDeduction.getEffdt() != null) {
+					dfEffDt.setValue(employeeDeduction.getEffdt());
 				}
-				if (empDeduction.getPreamt() != null) {
-					tfPreAmt.setValue(empDeduction.getPreamt().toString());
+				if (employeeDeduction.getPreamt() != null) {
+					tfPreAmt.setValue(employeeDeduction.getPreamt().toString());
 				}
-				if (empDeduction.getPrevpt() != null) {
-					tfPrePercnt.setValue(empDeduction.getPrevpt().toString());
+				if (employeeDeduction.getPrevpt() != null) {
+					tfPrePercnt.setValue(employeeDeduction.getPrevpt().toString());
 				}
-				if (empDeduction.getLastpaiddt() != null) {
-					dfLastPaidDt.setValue(empDeduction.getLastpaiddt());
+				if (employeeDeduction.getLastpaiddt() != null) {
+					dfLastPaidDt.setValue(employeeDeduction.getLastpaiddt());
 				}
-				if (empDeduction.getNxtpymtdt() != null) {
-					dfNextPayDt.setValue(empDeduction.getNxtpymtdt());
+				if (employeeDeduction.getNxtpymtdt() != null) {
+					dfNextPayDt.setValue(employeeDeduction.getNxtpymtdt());
 				}
-				if (empDeduction.getArrearflag().equals("Y")) {
+				if (employeeDeduction.getArrearflag().equals("Y")) {
 					ckFlag.setValue(true);
 				} else {
 					ckFlag.setValue(false);
 				}
-				cbStatus.setValue(empDeduction.getEmpdednstatus());
+				cbStatus.setValue(employeeDeduction.getEmpdednstatus());
 			}
 		}
 	}
@@ -427,45 +427,45 @@ public class EmployeeDeduction extends BaseUI {
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
-			EmployeeDeductionDM employeeDedcnobj = new EmployeeDeductionDM();
+			EmployeeDeductionDM employeeDeduction = new EmployeeDeductionDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				employeeDedcnobj = beanEmployeeDecn.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				employeeDedcnobj.setPreamt(prevsamt);
-				employeeDedcnobj.setPrevpt(prevspt);
+				employeeDeduction = beanEmployeeDecn.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				employeeDeduction.setPreamt(prevsamt);
+				employeeDeduction.setPrevpt(prevspt);
 			} else {
-				employeeDedcnobj.setPreamt(new BigDecimal("0"));
-				employeeDedcnobj.setPrevpt(new BigDecimal("0"));
+				employeeDeduction.setPreamt(new BigDecimal("0"));
+				employeeDeduction.setPrevpt(new BigDecimal("0"));
 			}
-			employeeDedcnobj.setEmployeeid((Long) cbEmpName.getValue());
-			employeeDedcnobj.setDednid((Long) cbDedcnCode.getValue());
-			employeeDedcnobj.setIsflatpt(cbFlatPercnt.getValue().toString());
-			employeeDedcnobj.setDednpt(new BigDecimal(tfDecnPerct.getValue()));
-			employeeDedcnobj.setDednamt(new BigDecimal(tfDecnAmt.getValue()));
+			employeeDeduction.setEmployeeid((Long) cbEmpName.getValue());
+			employeeDeduction.setDednid((Long) cbDedcnCode.getValue());
+			employeeDeduction.setIsflatpt(cbFlatPercnt.getValue().toString());
+			employeeDeduction.setDednpt(new BigDecimal(tfDecnPerct.getValue()));
+			employeeDeduction.setDednamt(new BigDecimal(tfDecnAmt.getValue()));
 			if (dfEffDt.getValue() != null) {
-				employeeDedcnobj.setEffdt(dfEffDt.getValue());
+				employeeDeduction.setEffdt(dfEffDt.getValue());
 			}
 			if (dfLastPaidDt.getValue() != null) {
-				employeeDedcnobj.setLastpaiddt(dfLastPaidDt.getValue());
+				employeeDeduction.setLastpaiddt(dfLastPaidDt.getValue());
 			}
 			if (dfNextPayDt.getValue() != null) {
-				employeeDedcnobj.setNxtpymtdt(dfNextPayDt.getValue());
+				employeeDeduction.setNxtpymtdt(dfNextPayDt.getValue());
 			}
 			if (ckFlag.getValue().equals(true)) {
-				employeeDedcnobj.setArrearflag("Y");
+				employeeDeduction.setArrearflag("Y");
 			} else {
-				employeeDedcnobj.setArrearflag("N");
+				employeeDeduction.setArrearflag("N");
 			}
 			if (ckFlag.getValue().equals(true)) {
-				employeeDedcnobj.setArrearflag("Y");
+				employeeDeduction.setArrearflag("Y");
 			} else if (ckFlag.getValue().equals(false)) {
-				employeeDedcnobj.setArrearflag("N");
+				employeeDeduction.setArrearflag("N");
 			}
 			if (cbStatus.getValue() != null) {
-				employeeDedcnobj.setEmpdednstatus((String) cbStatus.getValue());
+				employeeDeduction.setEmpdednstatus((String) cbStatus.getValue());
 			}
-			employeeDedcnobj.setLastupdateddt(DateUtils.getcurrentdate());
-			employeeDedcnobj.setLastupdatedby(userName);
-			serviceEmployeeDeduction.saveAndUpdate(employeeDedcnobj);
+			employeeDeduction.setLastupdateddt(DateUtils.getcurrentdate());
+			employeeDeduction.setLastupdatedby(userName);
+			serviceEmployeeDeduction.saveAndUpdate(employeeDeduction);
 		}
 		catch (Exception e) {
 			logger.info("SUCCESSS");

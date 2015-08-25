@@ -403,11 +403,15 @@ public class Leads extends BaseUI {
 	}
 	
 	private void loadClientCategoryList() {
-		BeanContainer<Long, ClientCategoryDM> beanClientCat = new BeanContainer<Long, ClientCategoryDM>(
-				ClientCategoryDM.class);
-		beanClientCat.setBeanIdProperty("clientCategoryId");
-		beanClientCat.addAll(serviceClientCat.getCrmClientCategoryList(companyid, null, "Active", "P"));
-		cbClientCat.setContainerDataSource(beanClientCat);
+		try {
+			BeanContainer<Long, ClientCategoryDM> beanClientCat = new BeanContainer<Long, ClientCategoryDM>(
+					ClientCategoryDM.class);
+			beanClientCat.setBeanIdProperty("clientCategoryId");
+			beanClientCat.addAll(serviceClientCat.getCrmClientCategoryList(companyid, null, "Active", "P"));
+			cbClientCat.setContainerDataSource(beanClientCat);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadCountryList() {
@@ -440,10 +444,14 @@ public class Leads extends BaseUI {
 	
 	// load the City name list details for form
 	private void loadCityList() {
-		BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
-		beanCity.setBeanIdProperty("cityid");
-		beanCity.addAll(serviceCity.getCityList(null, null, (Long) cbState.getValue(), "Active", companyid, "P"));
-		cbCity.setContainerDataSource(beanCity);
+		try {
+			BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
+			beanCity.setBeanIdProperty("cityid");
+			beanCity.addAll(serviceCity.getCityList(null, null, (Long) cbState.getValue(), "Active", companyid, "P"));
+			cbCity.setContainerDataSource(beanCity);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadSrchRslt() {

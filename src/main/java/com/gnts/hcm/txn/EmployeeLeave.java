@@ -94,7 +94,7 @@ public class EmployeeLeave extends BaseUI {
 	// Vertical Control Layout
 	private PopupDateField dfdatefrom, dfdateto;
 	private TextField tfnoofdays;
-	private ComboBox cbappmanager, cbleavetype, cbempstatus;
+	private ComboBox cbappmanager, cbLeavetype, cbempstatus;
 	private TextArea taLeaveReason;
 	private CheckBox cbhalfday;
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
@@ -306,9 +306,9 @@ public class EmployeeLeave extends BaseUI {
 		cbappmanager.setItemCaptionPropertyId("firstname");
 		cbappmanager.setRequired(true);
 		// Initialization for cbleavetype
-		cbleavetype = new GERPComboBox("Leave Type");
-		cbleavetype.setItemCaptionPropertyId("leaveTypeName");
-		cbleavetype.setRequired(true);
+		cbLeavetype = new GERPComboBox("Leave Type");
+		cbLeavetype.setItemCaptionPropertyId("leaveTypeName");
+		cbLeavetype.setRequired(true);
 		loadleavetype();
 		// Initialization for taleavereason
 		taLeaveReason = new GERPTextArea("Leave Reason");
@@ -384,7 +384,7 @@ public class EmployeeLeave extends BaseUI {
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		// add the user input items into appropriate form layout
-		flColumn1.addComponent(cbleavetype);
+		flColumn1.addComponent(cbLeavetype);
 		flColumn1.addComponent(dfdatefrom);
 		flColumn1.addComponent(dfdateto);
 		flColumn2.addComponent(tfnoofdays);
@@ -451,39 +451,49 @@ public class EmployeeLeave extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void loadDepartmentList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading DepartmentList");
-		List<DepartmentDM> departmentlist = servicedepartment.getDepartmentList(companyid, null, "Active", "F");
-		departmentlist.add(new DepartmentDM(0L, "All Departments"));
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
-		cbDepartmentName.setContainerDataSource(beanDepartment);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading DepartmentList");
+			List<DepartmentDM> departmentlist = servicedepartment.getDepartmentList(companyid, null, "Active", "F");
+			departmentlist.add(new DepartmentDM(0L, "All Departments"));
+			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beanDepartment.setBeanIdProperty("deptid");
+			beanDepartment.addAll(departmentlist);
+			cbDepartmentName.setContainerDataSource(beanDepartment);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void loadEmployeeList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
-		List<EmployeeDM> listEmpl = serviceemployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(),
-				"Active", companyid, null, null, null, null, "P");
-		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(listEmpl);
-		cbEmployeeName.setContainerDataSource(beanEmployee);
-		beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(listEmpl);
-		cbappmanager.setContainerDataSource(beanEmployee);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
+			List<EmployeeDM> listEmpl = serviceemployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(),
+					"Active", companyid, null, null, null, null, "P");
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(listEmpl);
+			cbEmployeeName.setContainerDataSource(beanEmployee);
+			beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(listEmpl);
+			cbappmanager.setContainerDataSource(beanEmployee);
+		}
+		catch (Exception e) {
+		}
 	}
-	
-	
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void loadleavetype() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading leave Type");
-		BeanContainer<Long, LeaveTypeDM> beanLeave = new BeanContainer<Long, LeaveTypeDM>(LeaveTypeDM.class);
-		beanLeave.setBeanIdProperty("leaveTypeId");
-		beanLeave.addAll(serviceLeaveType.getLeaveTypeList(null, null, companyid, null, "Y", "Active", "F"));
-		cbleavetype.setContainerDataSource(beanLeave);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading leave Type");
+			BeanContainer<Long, LeaveTypeDM> beanLeave = new BeanContainer<Long, LeaveTypeDM>(LeaveTypeDM.class);
+			beanLeave.setBeanIdProperty("leaveTypeId");
+			beanLeave.addAll(serviceLeaveType.getLeaveTypeList(null, null, companyid, null, "Y", "Active", "F"));
+			cbLeavetype.setContainerDataSource(beanLeave);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Method used to display selected row's values in desired text box and combo box for edit the values
@@ -497,7 +507,7 @@ public class EmployeeLeave extends BaseUI {
 			tfnoofdays.setValue(leave.getNoofdays().toString());
 			tfnoofdays.setReadOnly(true);
 			cbappmanager.setValue(leave.getAppmgr());
-			cbleavetype.setValue(leave.getLeavetypeid());
+			cbLeavetype.setValue(leave.getLeavetypeid());
 			if (leave.getHalfday().equals("Y")) {
 				cbhalfday.setValue(true);
 			} else {
@@ -530,8 +540,8 @@ public class EmployeeLeave extends BaseUI {
 			if (cbappmanager.getValue() != null) {
 				employeeLeaveDM.setAppmgr(Long.valueOf(cbappmanager.getValue().toString()));
 			}
-			if (cbleavetype.getValue() != null) {
-				employeeLeaveDM.setLeavetypeid(Long.valueOf(cbleavetype.getValue().toString()));
+			if (cbLeavetype.getValue() != null) {
+				employeeLeaveDM.setLeavetypeid(Long.valueOf(cbLeavetype.getValue().toString()));
 			}
 			if (taLeaveReason.getValue() != null) {
 				employeeLeaveDM.setLeavereason(taLeaveReason.getValue());
@@ -576,7 +586,7 @@ public class EmployeeLeave extends BaseUI {
 		dfdateto.setComponentError(null);
 		tfnoofdays.setComponentError(null);
 		cbappmanager.setComponentError(null);
-		cbleavetype.setComponentError(null);
+		cbLeavetype.setComponentError(null);
 		if (cbEmployeeName.getValue() == null) {
 			cbEmployeeName.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_EMPNAME));
 			errorFlag = false;
@@ -597,8 +607,8 @@ public class EmployeeLeave extends BaseUI {
 			cbappmanager.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_MANAGER));
 			errorFlag = false;
 		}
-		if (cbleavetype.getValue() == null) {
-			cbleavetype.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_LVETYPE));
+		if (cbLeavetype.getValue() == null) {
+			cbLeavetype.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_LVETYPE));
 			errorFlag = false;
 		}
 		return errorFlag;
@@ -614,7 +624,7 @@ public class EmployeeLeave extends BaseUI {
 		tfnoofdays.setValue("0");
 		tfnoofdays.setReadOnly(true);
 		cbappmanager.setValue(null);
-		cbleavetype.setValue(null);
+		cbLeavetype.setValue(null);
 		taLeaveReason.setValue("");
 		cbhalfday.setValue(null);
 		cbempstatus.setValue(cbempstatus.getItemIds().iterator().next());
@@ -626,7 +636,7 @@ public class EmployeeLeave extends BaseUI {
 		dfdateto.setComponentError(null);
 		tfnoofdays.setComponentError(null);
 		cbappmanager.setComponentError(null);
-		cbleavetype.setComponentError(null);
+		cbLeavetype.setComponentError(null);
 	}
 	
 	@Override

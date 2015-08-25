@@ -53,7 +53,7 @@ public class AssetBrand extends BaseUI {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private AssetBrandService assetBrandService = (AssetBrandService) SpringContextHelper.getBean("assetBrand");
+	private AssetBrandService serviceAssetBrand = (AssetBrandService) SpringContextHelper.getBean("assetBrand");
 	// form layout for input controls
 	private FormLayout flBrandName, flBrandStatus;
 	// Parent layout for all the input controls
@@ -131,14 +131,14 @@ public class AssetBrand extends BaseUI {
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<AssetBrandDM> assetList = new ArrayList<AssetBrandDM>();
+		List<AssetBrandDM> list = new ArrayList<AssetBrandDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfBrandName.getValue() + ", " + (String) cbBrandStatus.getValue());
-		assetList = assetBrandService.getAssetBrandList(null, tfBrandName.getValue(),
+		list = serviceAssetBrand.getAssetBrandList(null, tfBrandName.getValue(),
 				(String) cbBrandStatus.getValue(), "F");
-		recordCnt = assetList.size();
+		recordCnt = list.size();
 		beanAssetbrand = new BeanItemContainer<AssetBrandDM>(AssetBrandDM.class);
-		beanAssetbrand.addAll(assetList);
+		beanAssetbrand.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the AssetBrand. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanAssetbrand);
@@ -268,7 +268,7 @@ public class AssetBrand extends BaseUI {
 		}
 		assetBrandObj.setLastupdateddate(DateUtils.getcurrentdate());
 		assetBrandObj.setLastupdatedby(username);
-		assetBrandService.saveOrUpdate(assetBrandObj);
+		serviceAssetBrand.saveOrUpdate(assetBrandObj);
 		// Display successful save message
 		new GERPSaveNotification();
 		resetFields();

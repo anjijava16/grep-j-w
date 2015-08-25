@@ -62,7 +62,7 @@ public class AssetOwnDetails implements ClickListener {
 	private Long companyid, assetOwnId;
 	private AssetOwnDetailsService serviceAssetOwnDetails = (AssetOwnDetailsService) SpringContextHelper
 			.getBean("assetOwnDetails");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private Logger logger = Logger.getLogger(AssetOwnDetails.class);
 	private int total;
 	
@@ -172,7 +172,7 @@ public class AssetOwnDetails implements ClickListener {
 		try {
 			BeanContainer<Long, EmployeeDM> objAsserBrand = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			objAsserBrand.setBeanIdProperty("employeeid");
-			objAsserBrand.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+			objAsserBrand.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
 					null, null, "P"));
 			cbUsedBy.setContainerDataSource(objAsserBrand);
 		}

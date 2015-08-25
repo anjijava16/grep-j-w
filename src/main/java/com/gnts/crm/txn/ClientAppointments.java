@@ -641,13 +641,17 @@ public class ClientAppointments extends BaseUI {
 	}
 	
 	private void loadOpportunityDetails() {
-		List<OppertunitiesDM> clntOppertunity = serviceOppertunity.getClientOppertunityDetails(companyId, null, null,
-				null, null, null);
-		BeanContainer<Long, OppertunitiesDM> beanClntOppertunity = new BeanContainer<Long, OppertunitiesDM>(
-				OppertunitiesDM.class);
-		beanClntOppertunity.setBeanIdProperty("oppertunityId");
-		beanClntOppertunity.addAll(clntOppertunity);
-		cbOppertunity.setContainerDataSource(beanClntOppertunity);
+		try {
+			List<OppertunitiesDM> clntOppertunity = serviceOppertunity.getClientOppertunityDetails(companyId, null,
+					null, null, null, null);
+			BeanContainer<Long, OppertunitiesDM> beanClntOppertunity = new BeanContainer<Long, OppertunitiesDM>(
+					OppertunitiesDM.class);
+			beanClntOppertunity.setBeanIdProperty("oppertunityId");
+			beanClntOppertunity.addAll(clntOppertunity);
+			cbOppertunity.setContainerDataSource(beanClntOppertunity);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadEmployeeList() {
@@ -706,12 +710,16 @@ public class ClientAppointments extends BaseUI {
 	}
 	
 	private void loadSchedule() {
-		BeanContainer<Long, ClientAppointmentsDM> beanAppointment = new BeanContainer<Long, ClientAppointmentsDM>(
-				ClientAppointmentsDM.class);
-		beanAppointment.setBeanIdProperty("appointId");
-		beanAppointment.addAll(serviceAppointment.getAppointmentDetailList(companyId, null, null, null, null, null,
-				null, null, null, "F"));
-		cbPreviewAppoint.setContainerDataSource(beanAppointment);
+		try {
+			BeanContainer<Long, ClientAppointmentsDM> beanAppointment = new BeanContainer<Long, ClientAppointmentsDM>(
+					ClientAppointmentsDM.class);
+			beanAppointment.setBeanIdProperty("appointId");
+			beanAppointment.addAll(serviceAppointment.getAppointmentDetailList(companyId, null, null, null, null, null,
+					null, null, null, "F"));
+			cbPreviewAppoint.setContainerDataSource(beanAppointment);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadPriorityByLookUpList() {

@@ -267,27 +267,27 @@ public class AppraisalLevels extends BaseUI {
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			AppraisalLevelsDM apprlvlsobj = new AppraisalLevelsDM();
+			AppraisalLevelsDM appraisalLevels = new AppraisalLevelsDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				apprlvlsobj = beanAppraisalLevelsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				appraisalLevels = beanAppraisalLevelsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			apprlvlsobj.setCompanyid(companyid);
-			apprlvlsobj.setLevelname(tfLevelName.getValue());
+			appraisalLevels.setCompanyid(companyid);
+			appraisalLevels.setLevelname(tfLevelName.getValue());
 			if (cbapprsalyr.getValue() != null) {
-				apprlvlsobj.setAppraisalyear(cbapprsalyr.getValue().toString());
+				appraisalLevels.setAppraisalyear(cbapprsalyr.getValue().toString());
 			}
 			if (cbapprasallvl.getValue() != null) {
-				apprlvlsobj.setAppraisallevel(cbapprasallvl.getValue().toString());
+				appraisalLevels.setAppraisallevel(cbapprasallvl.getValue().toString());
 			}
 			if (cbStatus.getValue() != null) {
-				apprlvlsobj.setLevelstatus(cbStatus.getValue().toString());
+				appraisalLevels.setLevelstatus(cbStatus.getValue().toString());
 			}
-			apprlvlsobj.setStartdate(dfStartDate.getValue());
-			apprlvlsobj.setEnddate(dfEndDate.getValue());
-			apprlvlsobj.setLastupdateddt(DateUtils.getcurrentdate());
-			apprlvlsobj.setLastupdatedby(username);
-			apprlvlsobj.setAppraisaldetails(taApprasialDtls.getValue());
-			serviceAppraisalLevel.saveOrUpdateAppraisalLevels(apprlvlsobj);
+			appraisalLevels.setStartdate(dfStartDate.getValue());
+			appraisalLevels.setEnddate(dfEndDate.getValue());
+			appraisalLevels.setLastupdateddt(DateUtils.getcurrentdate());
+			appraisalLevels.setLastupdatedby(username);
+			appraisalLevels.setAppraisaldetails(taApprasialDtls.getValue());
+			serviceAppraisalLevel.saveOrUpdateAppraisalLevels(appraisalLevels);
 			resetFields();
 			loadSrchRslt();
 		}

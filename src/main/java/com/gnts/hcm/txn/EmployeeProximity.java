@@ -57,7 +57,7 @@ public class EmployeeProximity extends BaseUI {
 	// Bean creation
 	private EmployeeProximityService serviceEmployeeProximity = (EmployeeProximityService) SpringContextHelper
 			.getBean("EmployeeProximity");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn4, flColumn3;
 	// Parent layout for all the input controls
@@ -128,15 +128,15 @@ public class EmployeeProximity extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		tblMstScrSrchRslt.setPageLength(14);
-		List<EmployeeProximityDM> loadproximityList = new ArrayList<EmployeeProximityDM>();
+		List<EmployeeProximityDM> listEmployeeProximity = new ArrayList<EmployeeProximityDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ companyId + ", " + (String) tfProximityNo.getValue() + ", " + (Long) cbEmployeeName.getValue()
 				+ (String) cbStatus.getValue());
-		loadproximityList = serviceEmployeeProximity.getempproxmtyList(null, (String) tfProximityNo.getValue(),
+		listEmployeeProximity = serviceEmployeeProximity.getempproxmtyList(null, (String) tfProximityNo.getValue(),
 				(Long) cbEmployeeName.getValue(), (String) cbStatus.getValue(), "F");
-		recordCnt = loadproximityList.size();
+		recordCnt = listEmployeeProximity.size();
 		beanEmployeeProximityDM = new BeanItemContainer<EmployeeProximityDM>(EmployeeProximityDM.class);
-		beanEmployeeProximityDM.addAll(loadproximityList);
+		beanEmployeeProximityDM.addAll(listEmployeeProximity);
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Got the EmployeeProximity. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanEmployeeProximityDM);
@@ -335,7 +335,7 @@ public class EmployeeProximity extends BaseUI {
 		try {
 			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyId,
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId,
 					employeeId, null, null, null, "P"));
 			cbEmployeeName.setContainerDataSource(beanEmployeeDM);
 		}
@@ -350,25 +350,25 @@ public class EmployeeProximity extends BaseUI {
 		try {
 			validateDetails();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
-			EmployeeProximityDM employeeProximityobj = new EmployeeProximityDM();
+			EmployeeProximityDM employeeProximity = new EmployeeProximityDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				employeeProximityobj = beanEmployeeProximityDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				employeeProximity = beanEmployeeProximityDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			employeeProximityobj.setProxmtyno(tfProximityNo.getValue().toString());
-			employeeProximityobj.setEmployeeid((Long) cbEmployeeName.getValue());
+			employeeProximity.setProxmtyno(tfProximityNo.getValue().toString());
+			employeeProximity.setEmployeeid((Long) cbEmployeeName.getValue());
 			if (dfValidFrm.getValue() != null) {
-				employeeProximityobj.setValidfrom(dfValidFrm.getValue());
+				employeeProximity.setValidfrom(dfValidFrm.getValue());
 			}
 			if (dfValidUntil.getValue() != null) {
-				employeeProximityobj.setValiduntil(dfValidUntil.getValue());
+				employeeProximity.setValiduntil(dfValidUntil.getValue());
 			}
-			employeeProximityobj.setRemarks(taRemarks.getValue().toString());
+			employeeProximity.setRemarks(taRemarks.getValue().toString());
 			if (cbStatus.getValue() != null) {
-				employeeProximityobj.setProxmtystatus((String) cbStatus.getValue());
+				employeeProximity.setProxmtystatus((String) cbStatus.getValue());
 			}
-			employeeProximityobj.setLastupdateddt(DateUtils.getcurrentdate());
-			employeeProximityobj.setLastupdatdby(userName);
-			serviceEmployeeProximity.saveAndUpdate(employeeProximityobj);
+			employeeProximity.setLastupdateddt(DateUtils.getcurrentdate());
+			employeeProximity.setLastupdatdby(userName);
+			serviceEmployeeProximity.saveAndUpdate(employeeProximity);
 		}
 		catch (Exception e) {
 			logger.info("SUCCESSS");

@@ -82,23 +82,22 @@ public class AssetMaintDetail extends BaseTransUI {
 	private Long companyId, moduleId, employeeId;
 	// Main Field Components
 	private ComboBox cbStatus, cbMaintType, cbservicetype, cbAssetName, cbattenby, cbprepare, cbreviewby, cbMaint,
-			cbserviceby, cbcause;
+			cbServiceby, cbCause;
 	private TabSheet tabasset;
 	private TextField tfAssetName;
-	private PopupDateField dfcompleteDate, dfservicedate, dfmainSchedule;
+	private PopupDateField dfCompleteDate, dfServicedate, dfmainSchedule;
 	private TextArea taMaintDetails, taProblemDesc;
 	private GERPTimeField tfmaintime, tfcompletetime;
 	// Initialization Logger
 	private Logger logger = Logger.getLogger(AssetMaintDetail.class);
 	private AssetMaintSchedService serviceMaintSched = (AssetMaintSchedService) SpringContextHelper
 			.getBean("AssetMaintSchedul");
-	private AssetDetailsService servicebeanAssetDetails = (AssetDetailsService) SpringContextHelper
-			.getBean("assetDetails");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private AssetDetailsService serviceAssetDetails = (AssetDetailsService) SpringContextHelper.getBean("assetDetails");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private AssetMaintDetailService serviceAssetMaintDetails = (AssetMaintDetailService) SpringContextHelper
 			.getBean("assetMaintDetails");
-	private VendorService servicevendor = (VendorService) SpringContextHelper.getBean("Vendor");
-	private CompanyLookupService servicecompany = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
+	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
+	private CompanyLookupService serviceCompany = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
 	
 	// Constructor
 	public AssetMaintDetail() {
@@ -145,18 +144,18 @@ public class AssetMaintDetail extends BaseTransUI {
 		cbattenby.setWidth("160");
 		cbattenby.setItemCaptionPropertyId("firstname");
 		loadEmployeeList();
-		cbcause = new GERPComboBox("Caused by");
-		cbcause.setWidth("160");
-		cbcause.setItemCaptionPropertyId("lookupname");
+		cbCause = new GERPComboBox("Caused by");
+		cbCause.setWidth("160");
+		cbCause.setItemCaptionPropertyId("lookupname");
 		loadlookuplist();
 		cbreviewby = new GERPComboBox("Reviewed by");
 		cbreviewby.setWidth("160");
 		cbreviewby.setItemCaptionPropertyId("firstname");
 		loadEmployeeList();
-		cbserviceby = new GERPComboBox("Service by");
-		cbserviceby.setWidth("160");
-		cbserviceby.setNullSelectionAllowed(false);
-		cbserviceby.setItemCaptionPropertyId("vendorName");
+		cbServiceby = new GERPComboBox("Service by");
+		cbServiceby.setWidth("160");
+		cbServiceby.setNullSelectionAllowed(false);
+		cbServiceby.setItemCaptionPropertyId("vendorName");
 		loadvendorlist();
 		// comboBox for Maintenance Desription
 		cbMaint = new GERPComboBox("Maintenance Desription ");
@@ -174,13 +173,13 @@ public class AssetMaintDetail extends BaseTransUI {
 		});
 		loadmainDescriptionName();
 		// PopUpDateField for CompleteDate
-		dfcompleteDate = new GERPPopupDateField("Complete Date");
-		dfcompleteDate.setDateFormat("dd-MMM-yyyy");
-		dfcompleteDate.setWidth("110");
+		dfCompleteDate = new GERPPopupDateField("Complete Date");
+		dfCompleteDate.setDateFormat("dd-MMM-yyyy");
+		dfCompleteDate.setWidth("110");
 		// PopUpDateField for ServiceDate
-		dfservicedate = new GERPPopupDateField("Service Date");
-		dfservicedate.setDateFormat("dd-MMM-yyyy");
-		dfservicedate.setWidth("140");
+		dfServicedate = new GERPPopupDateField("Service Date");
+		dfServicedate.setDateFormat("dd-MMM-yyyy");
+		dfServicedate.setWidth("140");
 		// PopUpDateField for MainSchedule
 		dfmainSchedule = new GERPPopupDateField("Maintain Schedule");
 		dfmainSchedule.setWidth("140");
@@ -240,12 +239,12 @@ public class AssetMaintDetail extends BaseTransUI {
 		flColumn1.addComponent(dfmainSchedule);
 		flColumn2.addComponent(tfmaintime);
 		flColumn2.addComponent(tfcompletetime);
-		flColumn2.addComponent(dfcompleteDate);
-		flColumn3.addComponent(dfservicedate);
+		flColumn2.addComponent(dfCompleteDate);
+		flColumn3.addComponent(dfServicedate);
 		flColumn3.addComponent(cbservicetype);
 		flColumn3.setMargin(true);
-		flColumn3.addComponent(cbserviceby);
-		flColumn4.addComponent(cbcause);
+		flColumn3.addComponent(cbServiceby);
+		flColumn4.addComponent(cbCause);
 		flColumn4.addComponent(cbStatus);
 		// add the user input items into appropriate Horizontal layout
 		final HorizontalLayout hlUserInputLayout1 = new HorizontalLayout();
@@ -271,16 +270,16 @@ public class AssetMaintDetail extends BaseTransUI {
 	private void loadsearchrslt() {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-			List<AssetMaintDetailDM> assetDetailList = new ArrayList<AssetMaintDetailDM>();
+			List<AssetMaintDetailDM> listAssetDetails = new ArrayList<AssetMaintDetailDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyId + ", " + cbAssetName.getValue() + ", " + (String) cbStatus.getValue());
-			assetDetailList = serviceAssetMaintDetails.getAssetMaintDetailList(null, (Long) cbAssetName.getValue(),
+			listAssetDetails = serviceAssetMaintDetails.getAssetMaintDetailList(null, (Long) cbAssetName.getValue(),
 					(String) cbMaintType.getValue(), null, (String) cbStatus.getValue());
-			recordCnt = assetDetailList.size();
+			recordCnt = listAssetDetails.size();
 			beanMaintDetail = new BeanItemContainer<AssetMaintDetailDM>(AssetMaintDetailDM.class);
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 					+ "Got the Asset Maintain Detail. result set");
-			beanMaintDetail.addAll(assetDetailList);
+			beanMaintDetail.addAll(listAssetDetails);
 			tblMstScrSrchRslt.setContainerDataSource(beanMaintDetail);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "maintId", "assetName", "maintenanceType",
 					"maintenanceDt", "maintStatus", "lastUpdatedDt", "lastUpdatedBy" });
@@ -297,39 +296,55 @@ public class AssetMaintDetail extends BaseTransUI {
 	
 	// this method use to Load AssetNamelist inside of ComboBox
 	private void loadAssetName() {
-		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
-				AssetDetailsDM.class);
-		beanAssetDetails.setBeanIdProperty("assetId");
-		beanAssetDetails
-				.addAll(servicebeanAssetDetails.getAssetDetailList(companyId, null, null, null, null, null, "Active"));
-		cbAssetName.setContainerDataSource(beanAssetDetails);
+		try {
+			BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
+					AssetDetailsDM.class);
+			beanAssetDetails.setBeanIdProperty("assetId");
+			beanAssetDetails.addAll(serviceAssetDetails.getAssetDetailList(companyId, null, null, null, null, null,
+					"Active"));
+			cbAssetName.setContainerDataSource(beanAssetDetails);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// this method use to Load AssetNamelist inside of ComboBox
 	private void loadmainDescriptionName() {
-		BeanContainer<Long, AssetMaintSchedDM> beanMaintSched = new BeanContainer<Long, AssetMaintSchedDM>(
-				AssetMaintSchedDM.class);
-		beanMaintSched.setBeanIdProperty("maintId");
-		beanMaintSched.addAll(serviceMaintSched.getMaintScheduleList(null, null,null, "Active", null, null));
-		cbMaint.setContainerDataSource(beanMaintSched);
+		try {
+			BeanContainer<Long, AssetMaintSchedDM> beanMaintSched = new BeanContainer<Long, AssetMaintSchedDM>(
+					AssetMaintSchedDM.class);
+			beanMaintSched.setBeanIdProperty("maintId");
+			beanMaintSched.addAll(serviceMaintSched.getMaintScheduleList(null, null, null, "Active", null, null));
+			cbMaint.setContainerDataSource(beanMaintSched);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// this method use to Load Vendor Name list inside of ComboBox
 	private void loadvendorlist() {
-		BeanContainer<String, VendorDM> beanvendor = new BeanContainer<String, VendorDM>(VendorDM.class);
-		beanvendor.setBeanIdProperty("vendorId");
-		beanvendor.addAll(servicevendor.getVendorList(null, null, companyId, null, null, null, null, null, "Active",
-				null, "P"));
-		cbserviceby.setContainerDataSource(beanvendor);
+		try {
+			BeanContainer<String, VendorDM> beanvendor = new BeanContainer<String, VendorDM>(VendorDM.class);
+			beanvendor.setBeanIdProperty("vendorId");
+			beanvendor.addAll(serviceVendor.getVendorList(null, null, companyId, null, null, null, null, null,
+					"Active", null, "P"));
+			cbServiceby.setContainerDataSource(beanvendor);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// this method use to Load lookup Name list inside of ComboBox
 	private void loadlookuplist() {
-		BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanlook.setBeanIdProperty("lookupname");
-		beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "AM_MNTCAUS"));
-		cbcause.setContainerDataSource(beanlook);
+		try {
+			BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanlook.setBeanIdProperty("lookupname");
+			beanlook.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "AM_MNTCAUS"));
+			cbCause.setContainerDataSource(beanlook);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// this method use to Load Employee Name list inside of ComboBox
@@ -337,7 +352,7 @@ public class AssetMaintDetail extends BaseTransUI {
 		try {
 			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployee.setBeanIdProperty("employeeid");
-			beanEmployee.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyId, employeeId,
+			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, employeeId,
 					null, null, null, "P"));
 			cbprepare.setContainerDataSource(beanEmployee);
 		}
@@ -357,19 +372,20 @@ public class AssetMaintDetail extends BaseTransUI {
 				cbMaintType.setValue(assetMaintDetailDM.getMaintenanceType());
 				cbservicetype.setValue(assetMaintDetailDM.getServiceType());
 				cbMaint.setValue(assetMaintDetailDM.getAssetMaintSchdId());
-				cbcause.setValue(assetMaintDetailDM.getCausedBy());
-				if (assetMaintDetailDM.getMaintDetails() != null && !"null".equals(assetMaintDetailDM.getMaintDetails())) {
+				cbCause.setValue(assetMaintDetailDM.getCausedBy());
+				if (assetMaintDetailDM.getMaintDetails() != null
+						&& !"null".equals(assetMaintDetailDM.getMaintDetails())) {
 					taMaintDetails.setValue(assetMaintDetailDM.getMaintDetails());
 				}
-				cbserviceby.setValue(assetMaintDetailDM.getServiceBy());
-				dfservicedate.setValue(assetMaintDetailDM.getNextserviceDt());
+				cbServiceby.setValue(assetMaintDetailDM.getServiceBy());
+				dfServicedate.setValue(assetMaintDetailDM.getNextserviceDt());
 				if (assetMaintDetailDM.getMaintenancetime() != null) {
 					tfmaintime.setTime(assetMaintDetailDM.getMaintenancetime());
 				}
 				if (assetMaintDetailDM.getCompletedTime() != null) {
 					tfcompletetime.setTime(assetMaintDetailDM.getCompletedTime());
 				}
-				dfcompleteDate.setValue(assetMaintDetailDM.getCompleteddt());
+				dfCompleteDate.setValue(assetMaintDetailDM.getCompleteddt());
 				dfmainSchedule.setValue(assetMaintDetailDM.getMaintenanceDt());
 				taProblemDesc.setValue(assetMaintDetailDM.getProblemDescription());
 				cbStatus.setValue(assetMaintDetailDM.getMaintStatus());
@@ -460,8 +476,8 @@ public class AssetMaintDetail extends BaseTransUI {
 			if (tfmaintime.getValue() != null) {
 				assetMaintDetailDM.setMaintenancetime(tfmaintime.getHorsMunites().toString());
 			}
-			if (dfservicedate.getValue() != null) {
-				assetMaintDetailDM.setNextserviceDt(dfservicedate.getValue());
+			if (dfServicedate.getValue() != null) {
+				assetMaintDetailDM.setNextserviceDt(dfServicedate.getValue());
 			}
 			if (dfmainSchedule.getValue() != null) {
 				assetMaintDetailDM.setMaintenanceDt(dfmainSchedule.getValue());
@@ -470,8 +486,8 @@ public class AssetMaintDetail extends BaseTransUI {
 				assetMaintDetailDM.setAssetMaintSchdId((Long) cbMaint.getValue());
 			}
 			assetMaintDetailDM.setMaintStatus((String) cbStatus.getValue());
-			if (dfcompleteDate.getValue() != null) {
-				assetMaintDetailDM.setCompleteddt(dfcompleteDate.getValue());
+			if (dfCompleteDate.getValue() != null) {
+				assetMaintDetailDM.setCompleteddt(dfCompleteDate.getValue());
 			}
 			if (tfcompletetime.getValue() != null) {
 				assetMaintDetailDM.setCompletedTime(tfcompletetime.getHorsMunites());
@@ -479,11 +495,11 @@ public class AssetMaintDetail extends BaseTransUI {
 			assetMaintDetailDM.setPreparedBy(employeeId);
 			assetMaintDetailDM.setAttendedBy(null);
 			assetMaintDetailDM.setReviewedBy(null);
-			if (cbcause.getValue() != null) {
-				assetMaintDetailDM.setCausedBy((String) cbcause.getValue());
+			if (cbCause.getValue() != null) {
+				assetMaintDetailDM.setCausedBy((String) cbCause.getValue());
 			}
-			if (cbserviceby.getValue() != null) {
-				assetMaintDetailDM.setServiceBy(String.valueOf(cbserviceby.getValue()));
+			if (cbServiceby.getValue() != null) {
+				assetMaintDetailDM.setServiceBy(String.valueOf(cbServiceby.getValue()));
 			}
 			if (cbservicetype.getValue() != null) {
 				assetMaintDetailDM.setServiceType(cbservicetype.getValue().toString());
@@ -526,9 +542,9 @@ public class AssetMaintDetail extends BaseTransUI {
 		cbservicetype.setValue(null);
 		cbprepare.setValue(null);
 		cbreviewby.setValue(null);
-		cbserviceby.setValue(null);
+		cbServiceby.setValue(null);
 		cbattenby.setValue(null);
-		cbcause.setValue(null);
+		cbCause.setValue(null);
 		cbAssetName.setValue(null);
 		cbAssetName.setComponentError(null);
 		cbMaint.setValue(null);
@@ -536,13 +552,13 @@ public class AssetMaintDetail extends BaseTransUI {
 		taMaintDetails.setValue("");
 		taProblemDesc.setValue("");
 		tfmaintime.setValue(null);
-		dfcompleteDate.setValue(null);
-		dfservicedate.setValue(null);
+		dfCompleteDate.setValue(null);
+		dfServicedate.setValue(null);
 		dfmainSchedule.setValue(null);
 		tfcompletetime.setValue(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
-
+	
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub

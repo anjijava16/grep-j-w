@@ -70,7 +70,7 @@ public class ITHraDeclaration extends BaseUI {
 	private PopupDateField dfVerifiedDt = new GERPPopupDateField("Verified Date");
 	// Bean container
 	private BeanItemContainer<ITHraDeclDM> beanITHraDeclDM = null;
-	private Long companyId, EmployeeId;
+	private Long companyId, employeeId;
 	private String loginUserName;
 	private int recordCnt = 0;
 	private String primaryid;
@@ -86,7 +86,7 @@ public class ITHraDeclaration extends BaseUI {
 	public ITHraDeclaration() {
 		loginUserName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		EmployeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Inside ITHraDeclaration() constructor");
 		// Loading the UI
@@ -186,25 +186,29 @@ public class ITHraDeclaration extends BaseUI {
 	}
 	
 	private void loadEmployee() {
-		BeanContainer<Long, EmployeeDM> bean = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		bean.setBeanIdProperty("employeeid");
-		bean.addAll(servicebeanEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, null, null, null,
-				null, null, null, "P"));
-		cbEmpName.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, EmployeeDM> bean = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			bean.setBeanIdProperty("employeeid");
+			bean.addAll(servicebeanEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, null, null,
+					null, null, null, null, "P"));
+			cbEmpName.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<ITHraDeclDM> itOtherComeList = new ArrayList<ITHraDeclDM>();
+		List<ITHraDeclDM> listITHraDecl = new ArrayList<ITHraDeclDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
 				+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (String) cbStatus.getValue());
-		itOtherComeList = serviceITHraDecl.getITHRAList(null, (Long) cbEmpName.getValue(), null,
+		listITHraDecl = serviceITHraDecl.getITHRAList(null, (Long) cbEmpName.getValue(), null,
 				(String) cbStatus.getValue(), "F");
-		recordCnt = itOtherComeList.size();
+		recordCnt = listITHraDecl.size();
 		beanITHraDeclDM = new BeanItemContainer<ITHraDeclDM>(ITHraDeclDM.class);
-		beanITHraDeclDM.addAll(itOtherComeList);
+		beanITHraDeclDM.addAll(listITHraDecl);
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Got the IT Other HRA declaration List result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanITHraDeclDM);
@@ -351,7 +355,7 @@ public class ITHraDeclaration extends BaseUI {
 				itHraDeclObj.setStatus((String) cbStatus.getValue());
 			}
 			itHraDeclObj.setVerifiedDt(dfVerifiedDt.getValue());
-			itHraDeclObj.setVerifiedBy(EmployeeId.toString());
+			itHraDeclObj.setVerifiedBy(employeeId.toString());
 			itHraDeclObj.setLastUpdatedDt(DateUtils.getcurrentdate());
 			itHraDeclObj.setLastUpdatedBy(loginUserName);
 			file = new File(GERPConstants.DOCUMENT_PATH);

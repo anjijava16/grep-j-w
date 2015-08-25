@@ -213,11 +213,15 @@ public class EmployeeWarning extends BaseTransUI {
 	
 	// Load Employee List
 	private void loadEmployeeList() {
-		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanInitiatedBy.setBeanIdProperty("employeeid");
-		beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
-				null, "P"));
-		cbEmployee.setContainerDataSource(beanInitiatedBy);
+		try {
+			BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanInitiatedBy.setBeanIdProperty("employeeid");
+			beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+					null, null, "P"));
+			cbEmployee.setContainerDataSource(beanInitiatedBy);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Method to edit the values from table into fields to update process for VisitorPass

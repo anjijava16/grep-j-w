@@ -48,7 +48,7 @@ public class PhoneCallRegister extends BaseTransUI {
 	// Bean Creation
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private PhoneRegService servicePhoneReg = (PhoneRegService) SpringContextHelper.getBean("phoneregister");
-	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private DepartmentService serviceDepartmant = (DepartmentService) SpringContextHelper.getBean("department");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(PhoneCallRegister.class);
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
@@ -214,22 +214,31 @@ public class PhoneCallRegister extends BaseTransUI {
 	
 	// Load Employee List
 	private void loadEmployeeList() {
-		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanInitiatedBy.setBeanIdProperty("employeeid");
-		beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
-				null, "P"));
-		cbEmployee.setContainerDataSource(beanInitiatedBy);
+		try {
+			BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanInitiatedBy.setBeanIdProperty("employeeid");
+			beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+					null, null, "P"));
+			cbEmployee.setContainerDataSource(beanInitiatedBy);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/*
 	 * loadDepartmentList()-->this function is used for load the Department list
 	 */
 	private void loadDepartmentList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
-		cbDepartment.setContainerDataSource(beanDepartment);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Department Search...");
+			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beanDepartment.setBeanIdProperty("deptid");
+			beanDepartment.addAll(serviceDepartmant.getDepartmentList(companyid, null, "Active", "P"));
+			cbDepartment.setContainerDataSource(beanDepartment);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header

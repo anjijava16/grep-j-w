@@ -98,7 +98,7 @@ public class Campaign extends BaseUI {
 	private TextField tfProduct, tfcampaign, tfTagetAudieance, tfTargetSize, tfExptdBudget, tfExpRevenue,
 			tfExpSalesCount, tfExpResepCount, tfExpRoi, tfActualBudget, tfAcualRev, tfActSalesCount,
 			tfActResponseCount, tfActRoi;
-	private ComboBox cbCampaignType, cbEmployee, cbCurrencyName, cbproduct, cbstatus, cbaction, cbreview;
+	private ComboBox cbCampaignType, cbEmployee, cbCurrencyName, cbproduct, cbstatus, cbAction, cbReview;
 	private TextArea taComments;
 	private PopupDateField dtCampaignStart, dtCampaignEnd, searchCampaignDt;
 	private BeanItemContainer<CampaignDM> beanCampaign = null;
@@ -144,16 +144,16 @@ public class Campaign extends BaseUI {
 		tfExptROI.setWidth("30");
 		tfActROI.setWidth("30");
 		cbEmployee = new ComboBox("Owner");
-		cbaction = new GERPComboBox("Actioned By");
-		cbreview = new GERPComboBox("Reviewed By");
+		cbAction = new GERPComboBox("Actioned By");
+		cbReview = new GERPComboBox("Reviewed By");
 		cbEmployee.setItemCaptionPropertyId("firstname");
 		cbEmployee.setWidth(strWidth);
 		cbEmployee.setNullSelectionAllowed(false);
 		loadEmployeeList();
-		cbaction.setWidth(strWidth);
-		cbaction.setItemCaptionPropertyId("firstname");
-		cbreview.setWidth(strWidth);
-		cbreview.setItemCaptionPropertyId("firstname");
+		cbAction.setWidth(strWidth);
+		cbAction.setItemCaptionPropertyId("firstname");
+		cbReview.setWidth(strWidth);
+		cbReview.setItemCaptionPropertyId("firstname");
 		dtCampaignStart = new GERPPopupDateField("Start Date");
 		dtCampaignStart.setRequired(true);
 		dtCampaignStart.setDateFormat("dd-MMM-yyyy");
@@ -359,8 +359,8 @@ public class Campaign extends BaseUI {
 		//
 		flColumn3.addComponent(tfActSalesCount);
 		flColumn3.addComponent(tfActResponseCount);
-		flColumn3.addComponent(cbaction);
-		flColumn3.addComponent(cbreview);
+		flColumn3.addComponent(cbAction);
+		flColumn3.addComponent(cbReview);
 		//
 		HorizontalLayout hlActROI = new HorizontalLayout();
 		hlActROI.addComponent(tfActROI);
@@ -416,8 +416,8 @@ public class Campaign extends BaseUI {
 		tfActResponseCount.setReadOnly(true);
 		cbproduct.setReadOnly(true);
 		cbstatus.setReadOnly(true);
-		cbaction.setReadOnly(true);
-		cbreview.setReadOnly(true);
+		cbAction.setReadOnly(true);
+		cbReview.setReadOnly(true);
 	}
 	
 	private void hluserInputReadonlyFalse() {
@@ -444,20 +444,20 @@ public class Campaign extends BaseUI {
 		tfActResponseCount.setReadOnly(false);
 		cbproduct.setReadOnly(false);
 		cbstatus.setReadOnly(false);
-		cbaction.setReadOnly(false);
-		cbreview.setReadOnly(false);
+		cbAction.setReadOnly(false);
+		cbReview.setReadOnly(false);
 	}
 	
 	private void loadSrchRslt() {
 		try {
 			tblMstScrSrchRslt.removeAllItems();
-			List<CampaignDM> compaingList = new ArrayList<CampaignDM>();
-			compaingList = serviceCampaign.getCampaignDetailList(companyId, null, null,
+			List<CampaignDM> listCampaign = new ArrayList<CampaignDM>();
+			listCampaign = serviceCampaign.getCampaignDetailList(companyId, null, null,
 					(String) cbCampaignType.getValue(), (String) tfProduct.getValue(), (String) tfcampaign.getValue(),
 					null, ((String) cbstatus.getValue()), "F");
-			recordCnt = compaingList.size();
+			recordCnt = listCampaign.size();
 			beanCampaign = new BeanItemContainer<CampaignDM>(CampaignDM.class);
-			beanCampaign.addAll(compaingList);
+			beanCampaign.addAll(listCampaign);
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 					+ "Got the Client. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanCampaign);
@@ -523,8 +523,8 @@ public class Campaign extends BaseUI {
 			cbCampaignType.setValue(campaignDM.getCampaignType().toString());
 			cbproduct.setValue(campaignDM.getProductId());
 			Long prodid = campaignDM.getProductId();
-			Collection<?> ProductIdcol = cbproduct.getItemIds();
-			for (Iterator<?> iteratorclient = ProductIdcol.iterator(); iteratorclient.hasNext();) {
+			Collection<?> prodids = cbproduct.getItemIds();
+			for (Iterator<?> iteratorclient = prodids.iterator(); iteratorclient.hasNext();) {
 				Object itemIdClient = (Object) iteratorclient.next();
 				BeanItem<?> itemclient = (BeanItem<?>) cbproduct.getItem(itemIdClient);
 				// Get the actual bean and use the data
@@ -533,33 +533,33 @@ public class Campaign extends BaseUI {
 					cbproduct.setValue(itemIdClient);
 				}
 			}
-			Collection<?> collEmp = cbreview.getItemIds();
+			Collection<?> collEmp = cbReview.getItemIds();
 			for (Iterator<?> iterator = collEmp.iterator(); iterator.hasNext();) {
 				Object itemId4 = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbreview.getItem(itemId4);
+				BeanItem<?> item = (BeanItem<?>) cbReview.getItem(itemId4);
 				EmployeeDM editEmployee = (EmployeeDM) item.getBean();
 				if (editEmployee != null && editEmployee.getEmployeeid().equals(editEmployee.getEmployeeid())) {
-					cbreview.setValue(itemId4);
+					cbReview.setValue(itemId4);
 					break;
 				} else {
-					cbreview.setValue(null);
+					cbReview.setValue(null);
 				}
 			}
 			cbEmployee.setValue(campaignDM.getCampaignOwner());
-			Collection<?> Emp = cbaction.getItemIds();
-			for (Iterator<?> iterator = Emp.iterator(); iterator.hasNext();) {
+			Collection<?> actids = cbAction.getItemIds();
+			for (Iterator<?> iterator = actids.iterator(); iterator.hasNext();) {
 				Object itemId4 = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbaction.getItem(itemId4);
+				BeanItem<?> item = (BeanItem<?>) cbAction.getItem(itemId4);
 				EmployeeDM editEmployee = (EmployeeDM) item.getBean();
 				if (editEmployee != null && editEmployee.getEmployeeid().equals(editEmployee.getEmployeeid())) {
-					cbaction.setValue(itemId4);
+					cbAction.setValue(itemId4);
 					break;
 				} else {
-					cbaction.setValue(null);
+					cbAction.setValue(null);
 				}
 			}
-			cbaction.setValue(campaignDM.getActionedby());
-			cbreview.setValue(campaignDM.getReviewdby());
+			cbAction.setValue(campaignDM.getActionedby());
+			cbReview.setValue(campaignDM.getReviewdby());
 			if (campaignDM.getTargetAudience() != null && !"null".equals(campaignDM.getTargetAudience())) {
 				tfTagetAudieance.setValue(campaignDM.getTargetAudience());
 			}
@@ -636,13 +636,17 @@ public class Campaign extends BaseUI {
 	 * this method used to load the employee list based on company id and status
 	 */
 	private void loadEmployeeList() {
-		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null, null,
-				null, "P"));
-		cbaction.setContainerDataSource(beanEmployee);
-		cbEmployee.setContainerDataSource(beanEmployee);
-		cbreview.setContainerDataSource(beanEmployee);
+		try {
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null,
+					null, null, "P"));
+			cbAction.setContainerDataSource(beanEmployee);
+			cbEmployee.setContainerDataSource(beanEmployee);
+			cbReview.setContainerDataSource(beanEmployee);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadCampaignTypeByLookUpList() {
@@ -812,11 +816,11 @@ public class Campaign extends BaseUI {
 				campaignDM.setTargetSize(Long.valueOf(tfTargetSize.getValue()));
 			}
 			campaignDM.setPreparedby(employeeid);
-			if (cbaction != null) {
-				campaignDM.setActionedby((Long) cbaction.getValue());
+			if (cbAction != null) {
+				campaignDM.setActionedby((Long) cbAction.getValue());
 			}
-			if (cbreview.getValue() != null) {
-				campaignDM.setReviewdby((Long) cbreview.getValue());
+			if (cbReview.getValue() != null) {
+				campaignDM.setReviewdby((Long) cbReview.getValue());
 			}
 			serviceCampaign.saveOrUpdateCampaignDetails(campaignDM);
 			loadSrchRslt();
@@ -874,8 +878,8 @@ public class Campaign extends BaseUI {
 		tfTargetSize.setValue("");
 		tfProduct.setValue("");
 		tfProduct.setComponentError(null);
-		cbreview.setValue(null);
-		cbaction.setValue(null);
+		cbReview.setValue(null);
+		cbAction.setValue(null);
 		cbEmployee.setValue(null);
 		cbproduct.setValue(null);
 		cbproduct.setComponentError(null);

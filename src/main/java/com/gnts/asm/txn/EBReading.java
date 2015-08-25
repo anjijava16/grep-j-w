@@ -631,11 +631,15 @@ public class EBReading extends BaseTransUI {
 	
 	// Load Employee List
 	private void loadEmployeeList() {
-		BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanInitiatedBy.setBeanIdProperty("employeeid");
-		beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, dpmt, "Active", companyid, null, null, null,
-				null, "P"));
-		cbEmploye.setContainerDataSource(beanInitiatedBy);
+		try {
+			BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanInitiatedBy.setBeanIdProperty("employeeid");
+			beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, dpmt, "Active", companyid, null, null,
+					null, null, "P"));
+			cbEmploye.setContainerDataSource(beanInitiatedBy);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void getCalcDetails() {

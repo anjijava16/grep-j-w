@@ -72,7 +72,7 @@ public class AssetMaintSched extends BaseUI {
 	private Long companyId, moduleId, maintId;
 	// Main Field Components
 	private ComboBox cbAssetStatus, cbMaintFreq, cbAssetName;
-	private TextField tfFreqPerDay, tfmaindesc;
+	private TextField tfFreqPerDay, tfMaindesc;
 	private PopupDateField maintenanceDt;
 	private TextArea taRemarks;
 	// Labels
@@ -146,16 +146,16 @@ public class AssetMaintSched extends BaseUI {
 			}
 		});
 		// TextField for Maintenance Description
-		tfmaindesc = new GERPTextField("Maintain Description");
-		tfmaindesc.setInputPrompt("Description");
-		tfmaindesc.setRequired(true);
-		tfmaindesc.addBlurListener(new BlurListener() {
+		tfMaindesc = new GERPTextField("Maintain Description");
+		tfMaindesc.setInputPrompt("Description");
+		tfMaindesc.setRequired(true);
+		tfMaindesc.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
-				tfmaindesc.setComponentError(null);
-				if (tfmaindesc.getValue() != null) {
-					tfmaindesc.setComponentError(null);
+				tfMaindesc.setComponentError(null);
+				if (tfMaindesc.getValue() != null) {
+					tfMaindesc.setComponentError(null);
 				}
 			}
 		});
@@ -228,7 +228,7 @@ public class AssetMaintSched extends BaseUI {
 		flColumn1.addComponent(maintenanceDt);
 		flColumn1.addComponent(cbMaintFreq);
 		cbMaintFreq.setRequired(true);
-		flColumn2.addComponent(tfmaindesc);
+		flColumn2.addComponent(tfMaindesc);
 		flColumn2.addComponent(tfFreqPerDay);
 		flColumn2.setSizeUndefined();
 		tfFreqPerDay.setRequired(true);
@@ -274,12 +274,16 @@ public class AssetMaintSched extends BaseUI {
 	
 	// this method use to Load AssetNamelist inside of ComboBox
 	private void loadAssetName() {
-		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
-				AssetDetailsDM.class);
-		beanAssetDetails.setBeanIdProperty("assetId");
-		beanAssetDetails.addAll(servicebeanAssetDetails.getAssetDetailList(companyId, null, schedassetName, null, null,null,
-				"Active"));
-		cbAssetName.setContainerDataSource(beanAssetDetails);
+		try {
+			BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
+					AssetDetailsDM.class);
+			beanAssetDetails.setBeanIdProperty("assetId");
+			beanAssetDetails.addAll(servicebeanAssetDetails.getAssetDetailList(companyId, null, schedassetName, null,
+					null, null, "Active"));
+			cbAssetName.setContainerDataSource(beanAssetDetails);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void editMaintSchedule() {
@@ -297,7 +301,7 @@ public class AssetMaintSched extends BaseUI {
 			if (editSched.getRemarks() != null && !"null".equals(editSched.getRemarks())) {
 				taRemarks.setValue(editSched.getRemarks());
 			}
-			tfmaindesc.setValue(editSched.getMaintaindescription());
+			tfMaindesc.setValue(editSched.getMaintaindescription());
 			cbAssetStatus.setValue(cbAssetStatus.getItemIds().iterator().hasNext());
 		}
 	}
@@ -358,8 +362,8 @@ public class AssetMaintSched extends BaseUI {
 			tfFreqPerDay.setComponentError(new UserError(GERPErrorCodes.FREQUENCY_PER_DAY));
 			errorflag = true;
 		}
-		if ((tfmaindesc.getValue() == null) || tfmaindesc.getValue().trim().length() == 0) {
-			tfmaindesc.setComponentError(new UserError(GERPErrorCodes.NULL_ASSET_MAINTENANCE));
+		if ((tfMaindesc.getValue() == null) || tfMaindesc.getValue().trim().length() == 0) {
+			tfMaindesc.setComponentError(new UserError(GERPErrorCodes.NULL_ASSET_MAINTENANCE));
 			errorflag = true;
 		}
 		if (errorflag) {
@@ -383,7 +387,7 @@ public class AssetMaintSched extends BaseUI {
 		mainsched.setDauFreq(tfFreqPerDay.getValue());
 		mainsched.setMaintStatus((String) cbAssetStatus.getValue());
 		mainsched.setRemarks(taRemarks.getValue());
-		mainsched.setMaintaindescription(tfmaindesc.getValue());
+		mainsched.setMaintaindescription(tfMaindesc.getValue());
 		mainsched.setLastUpdatedDt(DateUtils.getcurrentdate());
 		mainsched.setLastUpdatedBy(username);
 		serviceMaintSched.saveOrUpdateMaintSched(mainsched);
@@ -420,7 +424,7 @@ public class AssetMaintSched extends BaseUI {
 		cbMaintFreq.setComponentError(null);
 		maintenanceDt.setValue(null);
 		taRemarks.setValue("");
-		tfmaindesc.setValue("");
-		tfmaindesc.setComponentError(null);
+		tfMaindesc.setValue("");
+		tfMaindesc.setComponentError(null);
 	}
 }

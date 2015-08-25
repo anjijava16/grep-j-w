@@ -365,11 +365,16 @@ public class Generator extends BaseTransUI {
 	
 	// Load Enquiry List
 	private void loadAssetList() {
-		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
-				AssetDetailsDM.class);
-		beanAssetDetails.setBeanIdProperty("assetId");
-		beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, "GEN", null, null, null, null));
-		cbAssetName.setContainerDataSource(beanAssetDetails);
+		try {
+			BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
+					AssetDetailsDM.class);
+			beanAssetDetails.setBeanIdProperty("assetId");
+			beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, "GEN", null, null, null,
+					null));
+			cbAssetName.setContainerDataSource(beanAssetDetails);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header

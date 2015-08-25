@@ -64,7 +64,7 @@ public class AttendenceApprove extends BaseUI {
 			.getBean("AttendenceProc");
 	private Button btnsaveAttenProc = new GERPButton("Add", "add", this);
 	private BeanItemContainer<AttendenceProcDM> beanAttendenceProcDM = null;
-	private List<AttendenceProcDM> attendProcList = new ArrayList<AttendenceProcDM>();
+	private List<AttendenceProcDM> listAttendProc = new ArrayList<AttendenceProcDM>();
 	private Long attProcId;
 	// Attendance Process Component Declaration
 	private ComboBox cbPayPeried, cbBranch, cbEmployeeName;
@@ -109,8 +109,6 @@ public class AttendenceApprove extends BaseUI {
 					payPeriodList = (PayPeriodDM) item.getBean();
 					payPeriodId = payPeriodList.getPayPeriodId();
 					loadStartandEndDates();
-					// loadEmployeeList();
-					// loadPayPeriod();
 				}
 			}
 		});
@@ -438,10 +436,10 @@ public class AttendenceApprove extends BaseUI {
 	private void loadSrchRslt() {
 		try {
 			tblMstScrSrchRslt.removeAllItems();
-			attendProcList = serviceAttendanceProcess.getAttendenceProc(null, null, null, null, "Pending", "F");
-			recordCnt = attendProcList.size();
+			listAttendProc = serviceAttendanceProcess.getAttendenceProc(null, null, null, null, "Pending", "F");
+			recordCnt = listAttendProc.size();
 			beanAttendenceProcDM = new BeanItemContainer<AttendenceProcDM>(AttendenceProcDM.class);
-			beanAttendenceProcDM.addAll(attendProcList);
+			beanAttendenceProcDM.addAll(listAttendProc);
 			tblMstScrSrchRslt.setContainerDataSource(beanAttendenceProcDM);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "attProcId", "payperiodName", "allStDt", "allEndDt",
 					"status" });
@@ -458,20 +456,20 @@ public class AttendenceApprove extends BaseUI {
 	private void editClient() {
 		hlCmdBtnLayout.setVisible(false);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			AttendenceProcDM editClientlist = beanAttendenceProcDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (editClientlist.getPayPeriodId() != null) {
-				cbPayPeried.setValue(editClientlist.getPayPeriodId());
+			AttendenceProcDM attendenceProcDM = beanAttendenceProcDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			if (attendenceProcDM.getPayPeriodId() != null) {
+				cbPayPeried.setValue(attendenceProcDM.getPayPeriodId());
 			}
-			attProcId = editClientlist.getAttProcId();
-			String startsdt = DateUtils.datetostring(editClientlist.getAllStDt());
-			String enddst = DateUtils.datetostring(editClientlist.getAllEndDt());
+			attProcId = attendenceProcDM.getAttProcId();
+			String startsdt = DateUtils.datetostring(attendenceProcDM.getAllStDt());
+			String enddst = DateUtils.datetostring(attendenceProcDM.getAllEndDt());
 			tfProcessPeriod.setReadOnly(false);
 			tfProcessPeriod.setValue(startsdt + " to " + enddst);
 			tfProcessPeriod.setReadOnly(true);
-			if (editClientlist.getBranchId() != null) {
-				cbBranch.setValue(editClientlist.getBranchId());
+			if (attendenceProcDM.getBranchId() != null) {
+				cbBranch.setValue(attendenceProcDM.getBranchId());
 			}
-			cbEmployeeName.setValue(editClientlist.getEmpid());
+			cbEmployeeName.setValue(attendenceProcDM.getEmpid());
 		}
 	}
 	

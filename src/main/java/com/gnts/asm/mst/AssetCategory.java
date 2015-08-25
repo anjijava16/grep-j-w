@@ -120,13 +120,13 @@ public class AssetCategory extends BaseUI {
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<AssetCategoryDM> assetCtgryList = new ArrayList<AssetCategoryDM>();
+		List<AssetCategoryDM> list = new ArrayList<AssetCategoryDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfCategoryName.getValue() + ", " + (String) cbCatgryStatus.getValue());
-		assetCtgryList = assetCatgryService.getAssetCategoryList(null,tfCategoryName.getValue(), (String)cbCatgryStatus.getValue(), "P");
-		recordCnt = assetCtgryList.size();
+		list = assetCatgryService.getAssetCategoryList(null,tfCategoryName.getValue(), (String)cbCatgryStatus.getValue(), "P");
+		recordCnt = list.size();
 		beanAssetCatgry = new BeanItemContainer<AssetCategoryDM>(AssetCategoryDM.class);
-		beanAssetCatgry.addAll(assetCtgryList);
+		beanAssetCatgry.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Dept. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanAssetCatgry);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "catgryId", "catgryName", "catgryStatus", "lastUpdatedDate",

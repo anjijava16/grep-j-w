@@ -54,7 +54,7 @@ public class ITOtherIncome extends BaseUI {
 	private ITOtherIncomeService serviceITOtherIncomeService = (ITOtherIncomeService) SpringContextHelper
 			.getBean("ITOtherIncome");
 	private ParameterService serviceParameter = (ParameterService) SpringContextHelper.getBean("parameter");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Parent layout for all the input controls
@@ -168,25 +168,29 @@ public class ITOtherIncome extends BaseUI {
 	}
 	
 	private void loadEmployee() {
-		BeanContainer<Long, EmployeeDM> bean = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		bean.setBeanIdProperty("employeeid");
-		bean.addAll(servicebeanEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, null,
-				null, null, null, null, null, "P"));
-		cbEmpName.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, EmployeeDM> bean = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			bean.setBeanIdProperty("employeeid");
+			bean.addAll(serviceEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, null, null, null,
+					null, null, null, "P"));
+			cbEmpName.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<ITOtherIncomeDM> itOtherComeList = new ArrayList<ITOtherIncomeDM>();
+		List<ITOtherIncomeDM> listOtherIncome = new ArrayList<ITOtherIncomeDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
 				+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (String) cbStatus.getValue());
-		itOtherComeList = serviceITOtherIncomeService.getItOtherIncomeList(null, (Long) cbEmpName.getValue(), null,
+		listOtherIncome = serviceITOtherIncomeService.getItOtherIncomeList(null, (Long) cbEmpName.getValue(), null,
 				(String) cbStatus.getValue(), "F");
-		recordCnt = itOtherComeList.size();
+		recordCnt = listOtherIncome.size();
 		beanITOtherIncomeDM = new BeanItemContainer<ITOtherIncomeDM>(ITOtherIncomeDM.class);
-		beanITOtherIncomeDM.addAll(itOtherComeList);
+		beanITOtherIncomeDM.addAll(listOtherIncome);
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Got the IT Other Income List result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanITOtherIncomeDM);

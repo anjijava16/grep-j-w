@@ -284,15 +284,15 @@ public class EmployeeEarning extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeEarningDM> loadEmpEarnList = new ArrayList<EmployeeEarningDM>();
+		List<EmployeeEarningDM> listEmployeeEarning = new ArrayList<EmployeeEarningDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (Long) cbEarnCode.getValue()
 				+ (String) cbStatus.getValue());
-		loadEmpEarnList = serviceEmployeeEarning.getempearningList(null, (Long) cbSearchEmpName.getValue(),
+		listEmployeeEarning = serviceEmployeeEarning.getempearningList(null, (Long) cbSearchEmpName.getValue(),
 				(Long) cbSearchEarnCode.getValue(), (String) cbStatus.getValue(), "F");
-		recordCnt = loadEmpEarnList.size();
+		recordCnt = listEmployeeEarning.size();
 		beanEmployeeEarn = new BeanItemContainer<EmployeeEarningDM>(EmployeeEarningDM.class);
-		beanEmployeeEarn.addAll(loadEmpEarnList);
+		beanEmployeeEarn.addAll(listEmployeeEarning);
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Got the EmployeeEarning. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanEmployeeEarn);

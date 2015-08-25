@@ -100,6 +100,8 @@ public class DashboardProduction implements ClickListener {
 		if (event.getButton() == btnservicecall) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
+			UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", false);
+
 			UI.getCurrent().getSession().setAttribute("IS_PROD_FRM", true);
 
 			UI.getCurrent().getSession().setAttribute("screenName", "Service Call Form");

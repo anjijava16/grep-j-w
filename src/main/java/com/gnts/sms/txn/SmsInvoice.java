@@ -906,10 +906,10 @@ public class SmsInvoice extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblInvoicDtl.setContainerDataSource(beanInvoiceDtl);
-			tblInvoicDtl.setVisibleColumns(new Object[] { "productName", "cusProdDesc", "productUom", "invoiceQty",
-					"unitRate", "basicValue", "cusProdCode", "customField1", "customField2", "invoDtlStatus" });
-			tblInvoicDtl.setColumnHeaders(new String[] { "Product Name", "Description", "UOM", "Invoice qty",
-					"UnitRate", "Basic Value", "Product Code", "Part No.", "Drawing No.", "Status" });
+			tblInvoicDtl.setVisibleColumns(new Object[] { "productName", "invoiceQty",
+					"unitRate", "basicValue", "customField1", "customField2", "invoDtlStatus" });
+			tblInvoicDtl.setColumnHeaders(new String[] { "Product Name", "Invoice qty",
+					"UnitRate", "Basic Value", "Part No.", "Drawing No.", "Status" });
 			tblInvoicDtl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {

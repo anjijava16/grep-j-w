@@ -6,17 +6,28 @@
 	<style name="Crosstab Data Text" hAlign="Center"/>
 	<parameter name="ENQID" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[select  enqhdr.ENQUIRY_DATE, enqhdr.ENQUIRY_NO, enqdtl.CUST_PROD_DESC,  cust.CLIENT_NAME customer_name,enqs.spec_code,enqs.spec_desc,p.PRODUCT_NAME,city.CITY_NAME,enqdtl.ENQRY_QTY
-
-from T_SMS_ENQUIRY_HDR enqhdr, T_SMS_ENQUIRY_DTL enqdtl, M_CRM_CLIENTS cust,t_sms_enquiry_spec enqs,M_BASE_PRODUCT p,M_BASE_CITY city
-where enqhdr.ENQUIRY_ID= enqdtl.ENQUIRY_ID
-and  enqhdr.CLIENT_ID=cust.CLIENT_ID
-
-and enqhdr.CLIENT_ID=cust.CLIENT_ID
-and city.CITY_ID=cust.CITY_ID
-and p.PRODUCT_ID=enqdtl.PRODUCT_ID
-and enqdtl.PRODUCT_ID=enqs.PRODUCT_ID(+)
-and  enqhdr.ENQUIRY_ID=$P{ENQID}]]>
+		<![CDATA[SELECT enqhdr.ENQUIRY_DATE,
+  enqhdr.ENQUIRY_NO,
+  enqdtl.CUST_PROD_DESC,
+  cust.CLIENT_NAME customer_name,
+  enqs.spec_code,
+  enqs.spec_desc,
+  p.PRODUCT_NAME,
+  city.CITY_NAME,
+  enqdtl.ENQRY_QTY
+FROM T_SMS_ENQUIRY_HDR enqhdr,
+  T_SMS_ENQUIRY_DTL enqdtl,
+  M_CRM_CLIENTS cust,
+  t_sms_enquiry_spec enqs,
+  M_BASE_PRODUCT p,
+  M_BASE_CITY city
+WHERE enqhdr.ENQUIRY_ID= enqdtl.ENQUIRY_ID
+AND enqhdr.CLIENT_ID   =cust.CLIENT_ID
+AND enqhdr.CLIENT_ID   =cust.CLIENT_ID
+AND city.CITY_ID       =cust.CITY_ID
+AND p.PRODUCT_ID       =enqdtl.PRODUCT_ID
+AND enqdtl.PRODUCT_ID  =enqs.PRODUCT_ID
+AND enqhdr.ENQUIRY_ID  =$P{ENQID}]]>
 	</queryString>
 	<field name="ENQUIRY_DATE" class="java.sql.Timestamp"/>
 	<field name="ENQUIRY_NO" class="java.lang.String"/>
@@ -88,7 +99,7 @@ and  enqhdr.ENQUIRY_ID=$P{ENQID}]]>
 				</textElement>
 				<text><![CDATA[Customer Name:]]></text>
 			</staticText>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="342" y="6" width="210" height="20" uuid="8746e409-5819-496f-bed7-17709d16bb3f"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
@@ -108,7 +119,7 @@ and  enqhdr.ENQUIRY_ID=$P{ENQID}]]>
 				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[:]]></text>
 			</staticText>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="88" y="6" width="100" height="20" uuid="30e57670-998d-4e01-85f7-fa7ca22b226e"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{ENQUIRY_DATE}]]></textFieldExpression>
@@ -125,8 +136,8 @@ and  enqhdr.ENQUIRY_ID=$P{ENQID}]]>
 				</textElement>
 				<text><![CDATA[City:]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="344" y="26" width="208" height="20" uuid="74124a9f-52c7-45c2-8250-24e907afa5a7"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="342" y="26" width="210" height="20" uuid="74124a9f-52c7-45c2-8250-24e907afa5a7"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{CITY_NAME}]]></textFieldExpression>
 			</textField>
@@ -145,7 +156,7 @@ and  enqhdr.ENQUIRY_ID=$P{ENQID}]]>
 				<text><![CDATA[Product Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="348" y="4" width="207" height="20" uuid="d224f18b-5d68-4c4a-89f1-8857fc44690c"/>
+				<reportElement x="334" y="4" width="221" height="20" uuid="d224f18b-5d68-4c4a-89f1-8857fc44690c"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true" isItalic="false"/>
 				</textElement>
@@ -166,14 +177,14 @@ and  enqhdr.ENQUIRY_ID=$P{ENQID}]]>
 				<text><![CDATA[S. No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="299" y="4" width="45" height="20" uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2"/>
+				<reportElement x="289" y="4" width="45" height="20" uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[Qty]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="21" splitType="Stretch">
+		<band height="39" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="0" width="32" height="20" uuid="b99c2ef8-a94c-4eae-b1b4-b76c166c58de"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
@@ -189,18 +200,18 @@ and  enqhdr.ENQUIRY_ID=$P{ENQID}]]>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{PRODUCT_NAME}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="297" y="1" width="47" height="20" uuid="fc70ce21-f1de-439e-b56c-9272374dccf9"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="287" y="1" width="47" height="20" uuid="fc70ce21-f1de-439e-b56c-9272374dccf9"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{ENQRY_QTY}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="348" y="1" width="52" height="20" uuid="24957b3d-95bb-4f72-82c9-94274e957414"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="334" y="1" width="66" height="38" uuid="24957b3d-95bb-4f72-82c9-94274e957414"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{SPEC_CODE}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="400" y="0" width="152" height="20" uuid="3f07cc6c-3641-4969-83fc-dd5eec39eab6"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="400" y="1" width="152" height="38" uuid="3f07cc6c-3641-4969-83fc-dd5eec39eab6"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{SPEC_DESC}]]></textFieldExpression>
 			</textField>

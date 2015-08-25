@@ -212,6 +212,8 @@ public class DashbordView implements ClickListener {
 		if (event.getButton() == btnClientCount) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
+			UI.getCurrent().getSession().setAttribute("IS_PROD_FRM", false);
+
 			UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", true);
 
 			UI.getCurrent().getSession().setAttribute("screenName", "Service Call Form");

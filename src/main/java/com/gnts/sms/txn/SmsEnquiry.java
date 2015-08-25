@@ -209,6 +209,7 @@ public class SmsEnquiry extends BaseTransUI {
 	private Long enquiryId;
 	private String username;
 	private Long companyid, moduleId;
+	Long prodid;
 	private int recordCnt = 0;
 	private SmsComments comments;
 	private String status;
@@ -1000,7 +1001,7 @@ public class SmsEnquiry extends BaseTransUI {
 		hldtllayout.setVisible(true);
 		if (tblEnqDetails.getValue() != null) {
 			SmsEnquiryDtlDM enquiryDtlDM = beandtl.getItem(tblEnqDetails.getValue()).getBean();
-			Long prodid = enquiryDtlDM.getProductid();
+			 prodid = enquiryDtlDM.getProductid();
 			Collection<?> prodids = cdProduct.getItemIds();
 			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -1040,6 +1041,7 @@ public class SmsEnquiry extends BaseTransUI {
 		if (tblspec.getValue() != null) {
 			SmsEnquirySpecDM enqspecList = beanpec.getItem(tblspec.getValue()).getBean();
 			cbspecstatus.setValue(enqspecList.getEnqryspecstatus());
+			prodid=enqspecList.getProductId();
 			tfspeccode.setValue(enqspecList.getSpeccode());
 			if (enqspecList.getSpecdesc() != null) {
 				taspecdesc.setValue(enqspecList.getSpecdesc().toString());
@@ -1179,6 +1181,7 @@ public class SmsEnquiry extends BaseTransUI {
 		smsEnquirySpecDM.setEnqryspecstatus(((String) cbspecstatus.getValue()));
 		smsEnquirySpecDM.setLastupdateddt(DateUtils.getcurrentdate());
 		smsEnquirySpecDM.setLastupdatedby(username);
+		smsEnquirySpecDM.setProductId(prodid);
 		enqspecList.add(smsEnquirySpecDM);
 		enqSpecResetfields();
 		loadEnquirySpec(false, null);

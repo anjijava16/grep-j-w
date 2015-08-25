@@ -18,6 +18,8 @@ import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.service.txn.WorkOrderDtlService;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
+import com.gnts.sms.domain.txn.CustomerVisitHdrDM;
+import com.gnts.sms.service.txn.CustomerVisitHdrService;
 import com.gnts.stt.mfg.domain.txn.EnquiryWorkflowDM;
 import com.gnts.stt.mfg.service.txn.EnquiryWorkflowService;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -45,6 +47,8 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 	private DieRequestService serviceDieRequest = (DieRequestService) SpringContextHelper.getBean("dieRequest");
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private EmployeeLeaveService serviceEmplLeave = (EmployeeLeaveService) SpringContextHelper.getBean("EmployeeLeave");
+	private CustomerVisitHdrService serviceCustomerVisit = (CustomerVisitHdrService) SpringContextHelper
+			.getBean("customervisithdr");
 	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper
 			.getBean("enquiryWorkflow");
 	private GregorianCalendar calendar = new GregorianCalendar();
@@ -208,6 +212,32 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 				event.setDescription(workordDtl);
 				e.add(event);
 			}
+			//Customer Visit Date On Calender.
+			for (CustomerVisitHdrDM customervisitHdrDM : serviceCustomerVisit.getCustomerVisitHdrList(null, null, null,
+					null, null, "F")) {
+				calendar.setTime(customervisitHdrDM.getVisitDt1());
+				calendar.add(GregorianCalendar.DATE, 2);
+				CalendarTestEvent event2 = getNewEvent(
+						"Visit No: " + customervisitHdrDM.getCusVisNo() + " - \nCustomer Name: "
+								+ customervisitHdrDM.getCustName() + "- \nCustomer City: "
+								+ customervisitHdrDM.getCustCity() + "- \nProject Name: "
+								+ customervisitHdrDM.getProjectName(), customervisitHdrDM.getVisitDt1(),
+						customervisitHdrDM.getVisitDt1());
+				if (customervisitHdrDM.getVisitDt1().after(new Date())) {
+					event2.setStyleName("color1");
+				} else if (customervisitHdrDM.getVisitDt1().equals(new Date())) {
+					event2.setStyleName("color4");
+				} else {
+					event2.setStyleName("color3");
+				}
+				/*
+				 * String visitDtl = ""; for (WorkOrderDtlDM workOrderDtlDM : serviceWrkOrdDtl.getWorkOrderDtlList(null,
+				 * workOrderHdrDM.getWorkOrdrId(), null, "F")) { visitDtl += workOrderDtlDM.getProdName() + "(" +
+				 * workOrderDtlDM.getPlanQty() + " P - " + workOrderDtlDM.getWorkOrdQty() + " W - " +
+				 * workOrderDtlDM.getBalQty() + " B)\n"; } event2.setDescription(visitDtl);
+				 */
+				e.add(event2);
+			}
 		} else if (type.equalsIgnoreCase("EMP_LEAVE")) {
 			for (EmployeeLeaveDM employeeLeaveDM : serviceEmplLeave.getempleaveList(null, null, null, null,
 					fromStartDate, toEndDate, "F")) {
@@ -250,4 +280,5 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 		event.setEnd(end);
 		return event;
 	}
+
 }

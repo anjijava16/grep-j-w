@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
+import com.gnts.base.domain.mst.SlnoGenDM;
+import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.crm.domain.mst.ClientDM;
 import com.gnts.crm.service.mst.ClientService;
 import com.gnts.erputil.BASEConstants;
@@ -66,6 +68,8 @@ public class CustomerVisit extends BaseTransUI {
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private CustomerVisitNoDtlService serviceCustomerVisitNoDtl = (CustomerVisitNoDtlService) SpringContextHelper
 			.getBean("customervisitnodtl");
+	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
+
 	private CustomerVisitInfoDtlService serviceCustomerVisitInfoDtl = (CustomerVisitInfoDtlService) SpringContextHelper
 			.getBean("customervisitinfodtl");
 	private CustomerVisitHdrService serviceCustomerVisitHdr = (CustomerVisitHdrService) SpringContextHelper
@@ -108,7 +112,7 @@ public class CustomerVisit extends BaseTransUI {
 	private Button btnAddInfo = new GERPButton("Add", "add", this);
 	private Button btnDeleteInfo = new GERPButton("Delete", "delete", this);
 	private String username;
-	private Long companyid, visitHdrId;
+	private Long companyid, visitHdrId,moduleId,branchId;
 	private int recordCnt = 0;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(CustomerVisit.class);
@@ -118,6 +122,8 @@ public class CustomerVisit extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside CustomerVisit() constructor");
 		// Loading the UI
@@ -437,7 +443,9 @@ public class CustomerVisit extends BaseTransUI {
 	private void editCustVisitHdrDetails() {
 		CustomerVisitHdrDM customerVisitHdrDM = beanCustomerVisitHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		visitHdrId = customerVisitHdrDM.getCusVisId();
+		tfCusVisNo.setReadOnly(false);
 		tfCusVisNo.setValue(customerVisitHdrDM.getCusVisNo());
+		tfCusVisNo.setReadOnly(true);
 		dfFormDt.setValue(customerVisitHdrDM.getFillDt());
 		tfPjtName.setValue(customerVisitHdrDM.getProjectName());
 		cbEnqNo.setValue(customerVisitHdrDM.getEnquiryId());
@@ -546,6 +554,18 @@ public class CustomerVisit extends BaseTransUI {
 		btnAddInfo.setCaption("Add");
 		btnAddPerson.setCaption("Add");
 		tblPersonNo.setVisible(true);
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, moduleId, "SM_CUSVISIT").get(0);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfCusVisNo.setReadOnly(false);
+				tfCusVisNo.setValue(slnoObj.getKeyDesc());
+				tfCusVisNo.setReadOnly(true);
+			} else {
+				tfCusVisNo.setReadOnly(false);
+			}
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	@Override
@@ -665,7 +685,9 @@ public class CustomerVisit extends BaseTransUI {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				customerVisitHdrDM = beanCustomerVisitHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
+			tfCusVisNo.setReadOnly(false);
 			customerVisitHdrDM.setCusVisNo(tfCusVisNo.getValue());
+			tfCusVisNo.setReadOnly(true);
 			customerVisitHdrDM.setFillDt(dfFormDt.getValue());
 			customerVisitHdrDM.setVisitDt(dfVisitDt.getValue());
 			customerVisitHdrDM.setProjectName(tfPjtName.getValue());
@@ -739,11 +761,26 @@ public class CustomerVisit extends BaseTransUI {
 						}
 					}
 				}
+				
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 			}
 			resetFields();
+			if (tblMstScrSrchRslt.getValue() == null) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_CUSVISIT")
+							.get(0);
+					if (slnoObj.getAutoGenYN().equals("Y")) {
+						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_CUSVISIT");
+					}
+				}
+				catch (Exception e) {
+				}
+			}
+			tfCusVisNo.setReadOnly(false);
+			tfCusVisNo.setValue(customerVisitHdrDM.getCusVisNo().toString());
+			tfCusVisNo.setReadOnly(true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -842,12 +879,14 @@ public class CustomerVisit extends BaseTransUI {
 			}
 			beanCustomerVisitNoDtlDM.addAll(listCustVisitNo);
 			tblPersonNo.setContainerDataSource(beanCustomerVisitNoDtlDM);
-			tblPersonNo.setVisibleColumns(new Object[] { "personName", "contactNo", "custNoDtlStatus", "lastUpdateddt",
-					"lastUpdatedby" });
+			tblPersonNo.setVisibleColumns(new Object[] { "personName", "contactNo", "custNoDtlStatus"});
 			tblPersonNo
-					.setColumnHeaders(new String[] { "Name", "Contact No.", "Status", "Updated Date", "Updated By" });
+					.setColumnHeaders(new String[] { "Name", "Contact No.", "Status"});
 			tblPersonNo.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 			tblPersonNo.setPageLength(10);
+			tblPersonNo.setColumnWidth("personName", 200);
+			tblPersonNo.setColumnWidth("contactNo", 150);
+			tblPersonNo.setColumnWidth("custNoDtlStatus", 100);
 			resetPersonDetails();
 		}
 		catch (Exception e) {
@@ -903,15 +942,19 @@ public class CustomerVisit extends BaseTransUI {
 	
 	@Override
 	protected void validateDetails() throws ValidationException {
+		tfCusVisNo.setReadOnly(false);
 		tfCusVisNo.setComponentError(null);
+		tfCusVisNo.setReadOnly(true);
 		dfFormDt.setComponentError(null);
 		tnNoPerson.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
+		tfCusVisNo.setReadOnly(false);
 		if (tfCusVisNo.getValue() == null || tfCusVisNo.getValue().trim().length() == 0) {
 			tfCusVisNo.setComponentError(new UserError(GERPErrorCodes.REQUIRED));
 			errorFlag = true;
 		}
+		tfCusVisNo.setReadOnly(true);
 		if (dfFormDt.getValue() == null) {
 			dfFormDt.setComponentError(new UserError(GERPErrorCodes.REQUIRED));
 			errorFlag = true;
@@ -920,6 +963,23 @@ public class CustomerVisit extends BaseTransUI {
 			tnNoPerson.setComponentError(new UserError(GERPErrorCodes.REQUIRED));
 			errorFlag = true;
 		}
+		tfCusVisNo.setReadOnly(false);
+		if ((tfCusVisNo.getValue() == null) || tfCusVisNo.getValue().trim().length() == 0) {
+			try {
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_CUSVISIT")
+						.get(0);
+				if (slnoObj.getAutoGenYN().equals("N")) {
+					tfCusVisNo.setComponentError(new UserError(""));
+					errorFlag = true;
+				}
+			}
+			catch (Exception e) {
+			}
+		} else {
+			tfCusVisNo.setComponentError(null);
+			errorFlag = false;
+		}
+		tfCusVisNo.setReadOnly(true);
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
@@ -928,7 +988,9 @@ public class CustomerVisit extends BaseTransUI {
 	@Override
 	protected void resetFields() {
 		// TODO Auto-generated method stub
+		tfCusVisNo.setReadOnly(false);
 		tfCusVisNo.setValue(null);
+		tfCusVisNo.setReadOnly(true);
 		dfFormDt.setValue(DateUtils.getcurrentdate());
 		dfVisitDt.setValue(null);
 		cbEnqNo.setValue(null);

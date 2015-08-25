@@ -8,7 +8,7 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select hdr.indent_no ,hdr.indent_dt ,nvl(hdr.indent_remarks,'---') indent_remarks,m.materail_name,dtl.indent_qty
+		<![CDATA[select hdr.indent_no ,hdr.indent_dt ,nvl(hdr.indent_remarks,'---') indent_remarks,m.materail_name,dtl.indent_qty,hdr.expected_dt
 from t_mms_indent_hdr hdr,t_mms_indent_dtl dtl,m_mms_material m
 where hdr.indent_id = dtl.indent_id
 and m.material_id = dtl.material_id
@@ -19,6 +19,7 @@ and hdr.indent_id = $P{INDID}]]>
 	<field name="INDENT_REMARKS" class="java.lang.String"/>
 	<field name="MATERAIL_NAME" class="java.lang.String"/>
 	<field name="INDENT_QTY" class="java.math.BigDecimal"/>
+	<field name="EXPECTED_DT" class="java.sql.Timestamp"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -152,6 +153,13 @@ and hdr.indent_id = $P{INDID}]]>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{INDENT_QTY}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement uuid="7cc348f9-7a09-4bd6-a162-525e43db56e3" x="199" y="0" width="61" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EXPECTED_DT}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

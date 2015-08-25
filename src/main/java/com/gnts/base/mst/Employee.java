@@ -50,6 +50,7 @@ import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPSaveNotification;
 import com.gnts.erputil.components.GERPTable;
+import com.gnts.erputil.components.GERPTextArea;
 import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
@@ -135,6 +136,7 @@ import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -257,9 +259,10 @@ public class Employee extends BaseUI {
 	private Table tblempdtls = new GERPTable();
 	private Button btnaddempdtls = new GERPButton("Add", "addbt", this);
 	// Employee contact Declaration
-	private TextField tfempcontactname, tfempcontrelationship, tfempcontphno, tfempcontmono, tfempcontaddress;
+	private TextField tfempcontactname, tfempcontrelationship, tfempcontphno, tfempcontmono;
 	private ComboBox cbempcontstatus = new GERPComboBox("Status", BASEConstants.M_BASE_USER, BASEConstants.USER_STATUS);
 	private Table tblempcont = new GERPTable();
+	private TextArea tfempcontaddress;
 	private Button btnaddempcont = new GERPButton("Add", "addbt", this);
 	// Employee Immigration Declaration
 	private TextField tfempimmgdocno, tfempimmgissuedby, tfempimmgdocremark;
@@ -856,23 +859,23 @@ public class Employee extends BaseUI {
 		tfempcontactname.setRequired(true);
 		tfempcontrelationship = new GERPTextField("Relationship");
 		tfempcontrelationship.setWidth("200");
-		tfempcontaddress = new GERPTextField("Address");
+		tfempcontaddress = new GERPTextArea("Address");
 		tfempcontaddress.setWidth("200");
 		tfempcontaddress.setHeight("50");
 		tfempcontphno = new GERPTextField("Phone No");
 		tfempcontphno.setWidth("200");
-		tfempcontphno.addBlurListener(new BlurListener() {
-			private static final long serialVersionUID = 1L;
-			
-			public void blur(BlurEvent event) {
-				// tfempcontphno.setComponentError(null);
-				if (!tfempcontphno.getValue().matches("^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$")) {
-					tfempcontphno.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_CONTACTS_PHONENUMBER));
-				} else {
-					tfempcontphno.setComponentError(null);
-				}
-			}
-		});
+		// tfempcontphno.addBlurListener(new BlurListener() {
+		// private static final long serialVersionUID = 1L;
+		//
+		// public void blur(BlurEvent event) {
+		// // tfempcontphno.setComponentError(null);
+		// if (!tfempcontphno.getValue().matches("^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$")) {
+		// tfempcontphno.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_CONTACTS_PHONENUMBER));
+		// } else {
+		// tfempcontphno.setComponentError(null);
+		// }
+		// }
+		// });
 		tfempcontmono = new GERPTextField("Mobile No");
 		tfempcontmono.setWidth("200");
 		tfempcontmono.setRequired(true);
@@ -966,11 +969,16 @@ public class Employee extends BaseUI {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
-				if (dfempimmgexpirydf.getValue().before(immgissdf)) {
-					dfempimmgexpirydf.setComponentError(new UserError(
-							GERPErrorCodes.NULL_EMPLOYEE_IMMIGRATION_IMMGEXPDATE));
-				} else {
-					dfempimmgexpirydf.setComponentError(null);
+				try {
+					if (dfempimmgexpirydf.getValue().before(immgissdf)) {
+						dfempimmgexpirydf.setComponentError(new UserError(
+								GERPErrorCodes.NULL_EMPLOYEE_IMMIGRATION_IMMGEXPDATE));
+					} else {
+						dfempimmgexpirydf.setComponentError(null);
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		});
@@ -4009,7 +4017,6 @@ public class Employee extends BaseUI {
 			minVal = pojo.getMinVal();
 			String onBasicGross = pojo.getOnBasicGros();
 			System.out.println("isFlat--->" + isFlat + "\nonBasicGrossaa--->" + onBasicGross);
-
 			List<EarningsDM> earnlist = serviceEarnings.getEarningByEarnID(earnid);
 			EarningsDM earnPojo = null;
 			for (EarningsDM ernpojo : earnlist) {
@@ -4091,9 +4098,12 @@ public class Employee extends BaseUI {
 		List<GradeDeductionDM> list = serviceDeduction.getGradeDeductionByGradeId(gradeid);
 		Long minValueByBasic = null;
 		Long minValueByGross = null;
+		Long minValueByBasicFTA = null;
 		Long earnpercent = serviceDeduction.getMinValueByGradeid(gradeid);
 		minValueByGross = serviceDeduction.getMinValueByGradeidOnGross(gradeid);
 		minValueByBasic = Long.valueOf(Math.round(minValueByGross * earnpercent) / 100);
+		minValueByBasicFTA = Long.valueOf(Math.round((minValueByBasic+minValueByBasicFTA) *earnpercent) /100);
+		
 		for (GradeDeductionDM pojo : list) {
 			Long dednid = pojo.getDednId();
 			String isFlat = pojo.getIsFlatPer();
@@ -4126,6 +4136,19 @@ public class Employee extends BaseUI {
 				serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
 			} else if (isFlat.equalsIgnoreCase("Percent") && onBasic_Gross.equalsIgnoreCase("BASIC")) {
 				BigDecimal deductionAmt = new BigDecimal(calculateDeductionAmount(dednpercent, minValueByBasic));
+				staffDednPojo.setEmployeeid(headerID);
+				staffDednPojo.setDednid(deductionPojo.getDeductionId());
+				staffDednPojo.setIsflatpt(isFlat);
+				staffDednPojo.setDednpt(dednpercent);
+				staffDednPojo.setDednamt(deductionAmt);// Get the percentage and calculate with basic value from
+				staffDednPojo.setEmployeeid(employeeid); // grade earnings
+				staffDednPojo.setEffdt(new Date());
+				staffDednPojo.setEmpdednstatus("Active");
+				staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
+				staffDednPojo.setLastupdatedby(username);
+				serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
+			} else if (isFlat.equalsIgnoreCase("Percent") && onBasic_Gross.equalsIgnoreCase("BASIC+FTA")) {
+				BigDecimal deductionAmt = new BigDecimal(calculateDeductionAmount(dednpercent, minValueByBasicFTA));
 				staffDednPojo.setEmployeeid(headerID);
 				staffDednPojo.setDednid(deductionPojo.getDeductionId());
 				staffDednPojo.setIsflatpt(isFlat);

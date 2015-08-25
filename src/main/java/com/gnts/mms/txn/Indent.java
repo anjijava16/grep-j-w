@@ -374,7 +374,7 @@ public class Indent extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfIndNo.getValue() + ", " + cbIndStatus.getValue());
 		indentHdrList = serviceIndentHdr.getMmsIndentHdrList(tfIndNo.getValue(), (String) cbIndType.getValue(), null,
-				null, null, null, null, (String) cbIndStatus.getValue(), "F");
+				null, null, null, null, null, (String) cbIndStatus.getValue(), "F");
 		recordCnt = indentHdrList.size();
 		beanIndentHdrDM = new BeanItemContainer<IndentHdrDM>(IndentHdrDM.class);
 		beanIndentHdrDM.addAll(indentHdrList);
@@ -401,7 +401,8 @@ public class Indent extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblIndentDtl.setContainerDataSource(beanIndentDtlDM);
-			tblIndentDtl.setVisibleColumns(new Object[] { "materialName", "materialUOM", "indentQty", "balenceQty", "status" });
+			tblIndentDtl.setVisibleColumns(new Object[] { "materialName", "materialUOM", "indentQty", "balenceQty",
+					"status" });
 			tblIndentDtl.setColumnHeaders(new String[] { "Material Name", "Material UOM", "Indent Qty", "Balance Qty",
 					"Status" });
 			tblIndentDtl.setColumnFooter("status", "No.of Records : " + recordCnt);
@@ -430,6 +431,7 @@ public class Indent extends BaseTransUI {
 		cbIndType.setValue(null);
 		dfIndDate.setValue(new Date());
 		dfExpDt.setValue(DateUtils.addDays(new Date(), 7));
+		cbDepartment.setValue(null);
 		tfIndNo.setReadOnly(false);
 		tfIndNo.setValue("");
 		taRemarks.setValue(null);
@@ -461,6 +463,7 @@ public class Indent extends BaseTransUI {
 				dfIndDate.setValue(editHdrIndent.getIndentDate1());
 			}
 			cbBranchId.setValue(editHdrIndent.getBranchId());
+			cbDepartment.setValue(editHdrIndent.getDeptid());
 			dfExpDt.setValue(editHdrIndent.getExpectedDate());
 			taRemarks.setValue(editHdrIndent.getIndentRemarks());
 			cbIndStatus.setValue(editHdrIndent.getIndentStatus());
@@ -720,6 +723,7 @@ public class Indent extends BaseTransUI {
 			indentObj.setIndentDate((Date) dfIndDate.getValue());
 			indentObj.setExpectedDate((Date) dfExpDt.getValue());
 			indentObj.setBranchId((Long.valueOf(cbBranchId.getValue().toString())));
+			indentObj.setDeptid((Long.valueOf(cbDepartment.getValue().toString())));
 			indentObj.setRaisedBy(employeeId);
 			indentObj.setPreparedBy(employeeId);
 			indentObj.setReviewedBy(employeeId);
@@ -755,6 +759,7 @@ public class Indent extends BaseTransUI {
 			comments.saveindent(indentObj.getIndentId(), indentObj.getIndentStatus());
 			loadSrchRslt();
 			loadIndentDtl();
+			resetFields();
 		}
 		catch (Exception e) {
 			e.printStackTrace();

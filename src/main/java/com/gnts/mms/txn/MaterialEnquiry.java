@@ -842,7 +842,8 @@ public class MaterialEnquiry extends BaseTransUI {
 	private void loadindent() {
 		BeanContainer<Long, IndentHdrDM> beanIndent = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
 		beanIndent.setBeanIdProperty("indentId");
-		beanIndent.addAll(serviceindent.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null, "F"));
+		beanIndent.addAll(serviceindent.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null, null,
+				"F"));
 		cbindentno.setContainerDataSource(beanIndent);
 	}
 	

@@ -206,6 +206,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				if (item != null) {
 					loadmaterial();
 					loadQuoteDetails();
+					
 				}
 			}
 		});
@@ -878,7 +879,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				tfBasictotal.setReadOnly(true);
 				tfpackingPer.setValue(poHdrDM.getPackingPrcnt().toString());
 				tfPaclingValue.setReadOnly(false);
-				tfPaclingValue.setValue(poHdrDM.getPackingPrcnt().toString());
+				tfPaclingValue.setValue(poHdrDM.getPackingVL().toString());
 				tfPaclingValue.setReadOnly(true);
 				tfSubTotal.setReadOnly(false);
 				tfSubTotal.setValue(poHdrDM.getSubTotal().toString());
@@ -1329,6 +1330,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				poDtlDM.setPodtlstatus(cbPODtlStatus.getValue().toString());
 				poDtlDM.setLastupdatedt(DateUtils.getcurrentdate());
 				poDtlDM.setLastupdatedby(username);
+				
 				listPODetails.add(poDtlDM);
 				loadPODetails();
 				getCalculatedValues();

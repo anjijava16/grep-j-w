@@ -23,7 +23,7 @@ public class DashboardTestingView implements ClickListener {
 	private HorizontalLayout hlHeader;
 	private Button btnQCCount = new Button("11 Nos.", this);
 	private Button btnQACount = new Button("15 Nos.", this);
-	private Button btnSCFCount = new Button("13 Nos.", this);
+	private Button btnserCallForm = new Button("13 Nos.", this);
 	private Button btnDieReqCount = new Button("17 Nos.", this);
 	private Button btnOthers = new Button("0 Nos.", this);
 	
@@ -45,12 +45,12 @@ public class DashboardTestingView implements ClickListener {
 		clMainLayout.addComponent(custom);
 		btnQCCount.setStyleName(Runo.BUTTON_LINK);
 		btnQACount.setStyleName(Runo.BUTTON_LINK);
-		btnSCFCount.setStyleName(Runo.BUTTON_LINK);
+		btnserCallForm.setStyleName(Runo.BUTTON_LINK);
 		btnDieReqCount.setStyleName(Runo.BUTTON_LINK);
 		btnOthers.setStyleName(Runo.BUTTON_LINK);
 		custom.addComponent(btnQCCount, "qc");
 		custom.addComponent(btnQACount, "qa");
-		custom.addComponent(btnSCFCount, "scf");
+		custom.addComponent(btnserCallForm, "scf");
 		custom.addComponent(btnDieReqCount, "dierequest");
 		custom.addComponent(btnOthers, "others");
 		custom.addComponent(new CalendarMonthly("TEST_QC_SCHEDULE"), "testschedule");
@@ -68,9 +68,13 @@ public class DashboardTestingView implements ClickListener {
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "QA Test");
 			new QATest();
-		} else if (event.getButton() == btnSCFCount) {
+		} else if (event.getButton() == btnserCallForm) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
+			UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", false);
+			UI.getCurrent().getSession().setAttribute("IS_PROD_FRM", false);
+			UI.getCurrent().getSession().setAttribute("IS_QC_FRM", true);
+
 			UI.getCurrent().getSession().setAttribute("screenName", "Service Call Form");
 			new ServiceCallForm();
 		} else if (event.getButton() == btnDieReqCount) {

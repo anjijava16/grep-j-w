@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.SlnoGenDM;
+import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.crm.domain.mst.ClientDM;
 import com.gnts.crm.service.mst.ClientService;
@@ -69,11 +70,12 @@ public class CustomerVisit extends BaseTransUI {
 	private CustomerVisitNoDtlService serviceCustomerVisitNoDtl = (CustomerVisitNoDtlService) SpringContextHelper
 			.getBean("customervisitnodtl");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
-
 	private CustomerVisitInfoDtlService serviceCustomerVisitInfoDtl = (CustomerVisitInfoDtlService) SpringContextHelper
 			.getBean("customervisitinfodtl");
 	private CustomerVisitHdrService serviceCustomerVisitHdr = (CustomerVisitHdrService) SpringContextHelper
 			.getBean("customervisithdr");
+	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
 	private WorkOrderHdrService serviceWorkOrderHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private SmsEnqHdrService serviceEnquiryHdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	// User Input Components for Work Order Details
@@ -112,7 +114,7 @@ public class CustomerVisit extends BaseTransUI {
 	private Button btnAddInfo = new GERPButton("Add", "add", this);
 	private Button btnDeleteInfo = new GERPButton("Delete", "delete", this);
 	private String username;
-	private Long companyid, visitHdrId,moduleId,branchId;
+	private Long companyid, visitHdrId, moduleId, branchId;
 	private int recordCnt = 0;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(CustomerVisit.class);
@@ -226,7 +228,6 @@ public class CustomerVisit extends BaseTransUI {
 		dfFormDt.setInputPrompt("Select Date");
 		cbWorkorder = new GERPComboBox("Work Order");
 		cbWorkorder.setItemCaptionPropertyId("workOrdrNo");
-		loadWorkOrderNo();
 		taPurposeVisit = new GERPTextArea("Purpose");
 		taPurposeVisit.setHeight("70");
 		cbEnqNo = new GERPComboBox("Enquiry No.");
@@ -241,6 +242,7 @@ public class CustomerVisit extends BaseTransUI {
 				if (item != null) {
 					if (cbEnqNo.getValue() != null) {
 						loadClientDetails();
+						loadWorkOrderNo();
 					}
 				}
 			}
@@ -670,7 +672,7 @@ public class CustomerVisit extends BaseTransUI {
 				WorkOrderHdrDM.class);
 		beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
 		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "P",
-				null, null, null, null, null));
+				null, (Long) cbEnqNo.getValue(), null, null, null));
 		cbWorkorder.setContainerDataSource(beanWrkOrdHdr);
 	}
 	
@@ -733,35 +735,93 @@ public class CustomerVisit extends BaseTransUI {
 					String messageHdr = "Reg : Client Visit on " + customerVisitHdrDM.getVisitDt();
 					// To Do : Lookup the mail id s from Lookup table or properties file.
 					if (visitInfoDtlDM.getDie() != null && visitInfoDtlDM.getDie().equalsIgnoreCase("Active")) {
+						String dieMailId = serviceCompanyLookup
+								.getCompanyLookUpByLookUp(companyid, null, "Active", "SMS_DIE").get(0).getLookupname();
 						try {
-							new EmailTrigger("die@saarccases.com", messageBody, messageHdr);
+							new EmailTrigger(dieMailId, messageBody, messageHdr);
 						}
 						catch (Exception e) {
 						}
 					}
 					if (visitInfoDtlDM.getHodPo() != null && visitInfoDtlDM.getHodPo().equalsIgnoreCase("Active")) {
+						String prodHodMailId = serviceCompanyLookup
+								.getCompanyLookUpByLookUp(companyid, null, "Active", "SMS_PROD_HOD").get(0)
+								.getLookupname();
 						try {
-							new EmailTrigger("jagan@saarccases.com", messageBody, messageHdr);
+							new EmailTrigger(prodHodMailId, messageBody, messageHdr);
 						}
 						catch (Exception e) {
 						}
 					}
 					if (visitInfoDtlDM.getHr() != null && visitInfoDtlDM.getHr().equalsIgnoreCase("Active")) {
+						String hrMailId = serviceCompanyLookup
+								.getCompanyLookUpByLookUp(companyid, null, "Active", "SMS_HR").get(0).getLookupname();
 						try {
-							new EmailTrigger("hr@saarccases.com", messageBody, messageHdr);
+							new EmailTrigger(hrMailId, messageBody, messageHdr);
 						}
 						catch (Exception e) {
 						}
 					}
 					if (visitInfoDtlDM.getDesign() != null && visitInfoDtlDM.getDesign().equalsIgnoreCase("Active")) {
+						String designMailId = serviceCompanyLookup
+								.getCompanyLookUpByLookUp(companyid, null, "Active", "SMS_DESIGN").get(0)
+								.getLookupname();
 						try {
-							new EmailTrigger("design@saarccases.com", messageBody, messageHdr);
+							new EmailTrigger(designMailId, messageBody, messageHdr);
+						}
+						catch (Exception e) {
+						}
+					}
+					if (visitInfoDtlDM.getPlan() != null && visitInfoDtlDM.getPlan().equalsIgnoreCase("Active")) {
+						String planningMailId = serviceCompanyLookup
+								.getCompanyLookUpByLookUp(companyid, null, "Active", "SMS_PLANNING").get(0)
+								.getLookupname();
+						try {
+							new EmailTrigger(planningMailId, messageBody, messageHdr);
+						}
+						catch (Exception e) {
+						}
+					}
+					if (visitInfoDtlDM.getProd() != null && visitInfoDtlDM.getProd().equalsIgnoreCase("Active")) {
+						String prodMailId = serviceCompanyLookup
+								.getCompanyLookUpByLookUp(companyid, null, "Active", "SMS_PROD").get(0).getLookupname();
+						try {
+							new EmailTrigger(prodMailId, messageBody, messageHdr);
+						}
+						catch (Exception e) {
+						}
+					}
+					if (visitInfoDtlDM.getQc() != null && visitInfoDtlDM.getQc().equalsIgnoreCase("Active")) {
+						String qcMailId = serviceCompanyLookup
+								.getCompanyLookUpByLookUp(companyid, null, "Active", "SMS_QC").get(0).getLookupname();
+						try {
+							new EmailTrigger(qcMailId, messageBody, messageHdr);
+						}
+						catch (Exception e) {
+						}
+					}
+					if (visitInfoDtlDM.getMaintenance() != null
+							&& visitInfoDtlDM.getMaintenance().equalsIgnoreCase("Active")) {
+						String maintMailId = serviceCompanyLookup
+								.getCompanyLookUpByLookUp(companyid, null, "Active", "SMS_MAINT").get(0)
+								.getLookupname();
+						try {
+							new EmailTrigger(maintMailId, messageBody, messageHdr);
+						}
+						catch (Exception e) {
+						}
+					}
+					if (visitInfoDtlDM.getAccounts() != null && visitInfoDtlDM.getAccounts().equalsIgnoreCase("Active")) {
+						String accountsMailId = serviceCompanyLookup
+								.getCompanyLookUpByLookUp(companyid, null, "Active", "SMS_ACCOUNTS").get(0)
+								.getLookupname();
+						try {
+							new EmailTrigger(accountsMailId, messageBody, messageHdr);
 						}
 						catch (Exception e) {
 						}
 					}
 				}
-				
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -879,9 +939,8 @@ public class CustomerVisit extends BaseTransUI {
 			}
 			beanCustomerVisitNoDtlDM.addAll(listCustVisitNo);
 			tblPersonNo.setContainerDataSource(beanCustomerVisitNoDtlDM);
-			tblPersonNo.setVisibleColumns(new Object[] { "personName", "contactNo", "custNoDtlStatus"});
-			tblPersonNo
-					.setColumnHeaders(new String[] { "Name", "Contact No.", "Status"});
+			tblPersonNo.setVisibleColumns(new Object[] { "personName", "contactNo", "custNoDtlStatus" });
+			tblPersonNo.setColumnHeaders(new String[] { "Name", "Contact No.", "Status" });
 			tblPersonNo.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 			tblPersonNo.setPageLength(10);
 			tblPersonNo.setColumnWidth("personName", 200);
@@ -923,7 +982,7 @@ public class CustomerVisit extends BaseTransUI {
 	private void resetPersonDetails() {
 		tfPerName.setValue("");
 		tfPerPhone.setValue("");
-		cbPersonNoStatus.setValue(null);
+		cbPersonNoStatus.setValue("Active");
 	}
 	
 	// Reset Information Details People.
@@ -966,8 +1025,8 @@ public class CustomerVisit extends BaseTransUI {
 		tfCusVisNo.setReadOnly(false);
 		if ((tfCusVisNo.getValue() == null) || tfCusVisNo.getValue().trim().length() == 0) {
 			try {
-				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_CUSVISIT")
-						.get(0);
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_CUSVISIT").get(
+						0);
 				if (slnoObj.getAutoGenYN().equals("N")) {
 					tfCusVisNo.setComponentError(new UserError(""));
 					errorFlag = true;
@@ -1000,6 +1059,12 @@ public class CustomerVisit extends BaseTransUI {
 		taPurposeVisit.setValue("");
 		taPurposeRe.setValue("");
 		tnNoPerson.setValue("0");
-		cbHdrStatus.setValue(null);
+		cbHdrStatus.setValue("Active");
+		tfPjtName.setValue("");
+		listCustVisitNo = new ArrayList<CustomerVisitNoDtlDM>();
+		tblPersonNo.removeAllItems();
+		listCustVisitInfo = new ArrayList<CustomerVisitInfoDtlDM>();
+		tblInfoPass.removeAllItems();
+		cbDtlStatus.setValue("Active");
 	}
 }

@@ -59,6 +59,7 @@ import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
+import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
 import com.gnts.sms.domain.txn.SmsPOAcceptanceDM;
 import com.gnts.sms.domain.txn.SmsPODtlDM;
 import com.gnts.sms.domain.txn.SmsPOHdrDM;
@@ -67,6 +68,7 @@ import com.gnts.sms.domain.txn.SmsQuoteHdrDM;
 import com.gnts.sms.service.mst.SmsTaxesService;
 import com.gnts.sms.service.txn.SmsCommentsService;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
+import com.gnts.sms.service.txn.SmsEnquiryDtlService;
 import com.gnts.sms.service.txn.SmsPOAcceptanceService;
 import com.gnts.sms.service.txn.SmsPODtlService;
 import com.gnts.sms.service.txn.SmsPOHdrService;
@@ -115,6 +117,8 @@ public class SalesPO extends BaseTransUI {
 	private SmsQuoteDtlService servicesmseQuoteDtl = (SmsQuoteDtlService) SpringContextHelper.getBean("SmsQuoteDtl");
 	private SmsPOAcceptanceService servicesmspoacceptance = (SmsPOAcceptanceService) SpringContextHelper
 			.getBean("SmsPOAcceptance");
+	private SmsEnquiryDtlService serviceenqdtl = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
+
 	private SmsTaxesService serviceTaxesSms = (SmsTaxesService) SpringContextHelper.getBean("SmsTaxes");
 	private SmsQuoteHdrService servicesmsquotehdr = (SmsQuoteHdrService) SpringContextHelper.getBean("smsquotehdr");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
@@ -242,6 +246,10 @@ public class SalesPO extends BaseTransUI {
 				if (item != null) {
 					loadQuoteNoList();
 					loadClientsDetails();
+					if(cbQuoteNo.getValue()==null){
+						loadProductListenq();
+					}
+			
 				}
 			}
 		});
@@ -254,7 +262,7 @@ public class SalesPO extends BaseTransUI {
 				Object itemId = event.getProperty().getValue();
 				BeanItem<?> item = (BeanItem<?>) cbQuoteNo.getItem(itemId);
 				System.out.println("sddscds");
-				if (cbQuoteNo.getValue() == null) {
+				if (cbQuoteNo.getValue() == null && cbEnquiryNumber.getValue()==null) {
 					tblSmsPODtl.removeAllItems();
 					System.out.println("inininini");
 					loadPODetails();
@@ -666,7 +674,19 @@ public class SalesPO extends BaseTransUI {
 				((SmsQuoteHdrDM) cbQuoteNo.getValue()).getQuoteId(), null, null));
 		cbproduct.setContainerDataSource(beanquoteDtl);
 	}
-	
+	private void loadProductListenq() {	try {
+		BeanContainer<Long, SmsEnquiryDtlDM> beanEnqDtl = new BeanContainer<Long, SmsEnquiryDtlDM>(SmsEnquiryDtlDM.class);
+		beanEnqDtl.setBeanIdProperty("enquiryid");
+		beanEnqDtl.addAll(serviceenqdtl.getsmsenquirydtllist(null, (Long)cbEnquiryNumber.getValue(), null, null, "Active", "F"));
+		cbproduct.setContainerDataSource(beanEnqDtl);
+	}
+	catch (Exception e) {
+		e.printStackTrace();
+		logger.info("load Clients Details " + e);
+	}
+}
+
+
 	private void assembleSearchLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		/*
@@ -1732,11 +1752,9 @@ public class SalesPO extends BaseTransUI {
 		cbproduct.setValue(null);
 		cbStatus.setValue(null);
 		cbClient.setValue(null);
-		cbBranch.setValue(null);
 		dfPODt.setValue(new Date());
 		taRemark.setValue("");
 		taLiquidatedDamage.setValue("");
-		cbBranch.setValue(null);
 		cbBranch.setComponentError(null);
 		ckPdcRqu.setValue(false);
 		listPODetails = new ArrayList<SmsPODtlDM>();

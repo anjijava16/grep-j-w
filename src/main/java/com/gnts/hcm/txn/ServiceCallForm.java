@@ -454,11 +454,12 @@ public class ServiceCallForm extends BaseTransUI {
 				+ (Long) cbEnquiryNumber.getValue());
 		if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM") != null
 				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")) {
-			Notification.show("Arun");
+			btnAdd.setEnabled(true);
+
 			hdrlist = serviveCallFormService.getServicecallFormList(null, (Long) cbEnquiryNumber.getValue(), null,
 					dfdate.getValue(), (String) cbtype.getValue(), null, null, "F", null, null, null);
 		} else {
-			Notification.show("Jeyaraj");
+			btnAdd.setEnabled(false);
 
 			hdrlist = serviveCallFormService.getServicecallFormList(null, (Long) cbEnquiryNumber.getValue(), null,
 					dfdate.getValue(), (String) cbtype.getValue(), null, null, "F", "Approved", null, null);
@@ -469,8 +470,8 @@ public class ServiceCallForm extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the SMSENQUIRY. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanServiceCallForm);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "slNo", "refDate", "enquiryNo", "clientName", "cityname","type" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Ref.Date", "Enquiry No", "Client Name","City Name", "Type" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "slNo", "refDate", "enquiryNo", "clientName", "cityname","type","markStatus" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Ref.Date", "Enquiry No", "Client Name","City Name", "Type","Marketing Status" });
 		tblMstScrSrchRslt.setColumnAlignment("slNo", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("", "No.of Records : " + recordCnt);
 	}
@@ -587,9 +588,9 @@ public class ServiceCallForm extends BaseTransUI {
 			ServiceCallFormDM serviceCallFormDM = new ServiceCallFormDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				serviceCallFormDM = beanServiceCallForm.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				serviceCallFormDM.setSlNo(Long.valueOf(tfslno.getValue()));
+				serviceCallFormDM.setSlNo(tfslno.getValue().toString());
 			} else {
-				serviceCallFormDM.setSlNo(Long.valueOf(tfslno.getValue()));
+				serviceCallFormDM.setSlNo(tfslno.getValue().toString());
 			}
 			serviceCallFormDM.setCompanyId(companyid);
 			serviceCallFormDM.setRefDate(dfdate.getValue());
@@ -773,6 +774,59 @@ public class ServiceCallForm extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(false);
 		resetFields();
 		editSmsEnquiry();
+		try {
+			btnAdd.setVisible(true);
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")) {
+				dtlTab.setSelectedTab(hlspecadd);
+				hlDocumentLayout.setEnabled(false);
+				hlspecadd1.setEnabled(false);
+				hlqccontrol.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+		}
+		try {
+			btnAdd.setVisible(true);
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM")) {
+				dtlTab.setSelectedTab(hlDocumentLayout);
+				hlspecadd.setEnabled(false);
+				hlspecadd1.setEnabled(false);
+				hlqccontrol.setEnabled(false);
+				hlUserIPContainer.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+		}
+		try {
+			btnAdd.setVisible(true);
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")) {
+				dtlTab.setSelectedTab(hlqccontrol);
+				hlDocumentLayout.setEnabled(false);
+				hlspecadd1.setEnabled(false);
+				hlspecadd.setEnabled(false);
+				hlUserIPContainer.setEnabled(false);
+
+			}
+		}
+		catch (Exception e) {
+		}
+		try {
+			btnAdd.setVisible(true);
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_PROD_FRM") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_PROD_FRM")) {
+				dtlTab.setSelectedTab(hlspecadd1);
+				hlspecadd.setEnabled(false);
+				hlDocumentLayout.setEnabled(false);
+				hlqccontrol.setEnabled(false);
+				hlUserIPContainer.setEnabled(false);
+
+			}
+		}
+		catch (Exception e) {
+		}
 		cbBranch.setRequired(true);
 	}
 	

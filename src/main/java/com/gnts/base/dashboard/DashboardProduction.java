@@ -101,6 +101,7 @@ public class DashboardProduction implements ClickListener {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", false);
+			UI.getCurrent().getSession().setAttribute("IS_QC_FRM", false);
 
 			UI.getCurrent().getSession().setAttribute("IS_PROD_FRM", true);
 

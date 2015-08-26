@@ -152,7 +152,7 @@ public class SmsEnquiry extends BaseTransUI {
 	private GERPTextField tfEnquiry = new GERPTextField("Enquiry");
 	private GERPTextField tfDocumentName = new GERPTextField("Document Name");
 	private GERPTextArea taComments = new GERPTextArea("Comments");
-	private GERPButton btnSave = new GERPButton("Save", "add", this);
+//	private GERPButton btnSave = new GERPButton("Save", "add", this);
 	private GERPTable tblDocuments = new GERPTable();
 	// commom data
 	private Window mywindow = new Window("Add New Client");
@@ -432,6 +432,21 @@ public class SmsEnquiry extends BaseTransUI {
 				}
 			}
 		});
+		tblDocuments.addItemClickListener(new ItemClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				if (tblDocuments.isSelected(event.getItemId())) {
+					tblDocuments.setImmediate(true);
+					resetdocuments();
+				} else {
+					((AbstractSelect) event.getSource()).select(event.getItemId());
+				
+					editdocumentsenq();				}
+			}
+		});
+		
 		btndetaildelete.addClickListener(new ClickListener() {
 			// Click Listener for delete Enquiry Detail
 			private static final long serialVersionUID = 6551953728534136363L;
@@ -493,25 +508,7 @@ public class SmsEnquiry extends BaseTransUI {
 		catch (Exception e) {
 		}
 		// Document Components
-		hlDocumentLayout.addLayoutClickListener(new LayoutClickListener() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void layoutClick(LayoutClickEvent event) {
-				try {
-					tfEnquiryNo.setReadOnly(false);
-					if (tfEnquiryNo.getValue() != null) {
-						loadSearchResult();
-					}
-					tfEnquiryNo.setReadOnly(true);
-				}
-				catch (Exception e) {
-				}
-			}
-		});
+		
 	}
 	
 	private void deleteEnquirySpec() {
@@ -657,7 +654,6 @@ public class SmsEnquiry extends BaseTransUI {
 		fldoc1.addComponent(tfEnquiry);
 		fldoc2.addComponent(tfDocumentName);
 		fldoc3.addComponent(taComments);
-		fldoc4.addComponent(btnSave);
 		hldoc.setMargin(true);
 		hldoc.addComponent(fldoc1);
 		hldoc.addComponent(fldoc2);
@@ -875,7 +871,7 @@ public class SmsEnquiry extends BaseTransUI {
 		// enqNoLong = Long.valueOf(tfEnquiry.getValue());
 		try {
 			List<DocumentsDM> documentList = new ArrayList<DocumentsDM>();
-			if (tfEnquiryNo.getValue() != null) {
+			if (tfEnquiryNo.getValue() != null && tfEnquiryNo.getValue() != null) {
 				System.out.println("cbEnquiry.getValue()--->" + tfEnquiry.getValue()); // Long.valueOf(tfEnquiry.getValue())
 			}
 			int recordcount = documentList.size();
@@ -989,10 +985,21 @@ public class SmsEnquiry extends BaseTransUI {
 		}
 		loadEnquiryDetails(true);
 		loadEnquirySpec(false, null);
+		
 		new EnquiryWorkflow(hlEnquiryWorkflow, enquiryId, username);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, enquiryId, null, null,
 				null, status);
 		comments.loadsrch(true, null, null, null, null, null, null, null, enquiryId, null, null, null, null);
+		try {
+			tfEnquiryNo.setReadOnly(false);
+			if (tfEnquiryNo.getValue() != null && tfEnquiryNo.getValue() != "") {
+				loadSearchResult();
+			}
+			tfEnquiryNo.setReadOnly(true);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Detail
@@ -1001,7 +1008,7 @@ public class SmsEnquiry extends BaseTransUI {
 		hldtllayout.setVisible(true);
 		if (tblEnqDetails.getValue() != null) {
 			SmsEnquiryDtlDM enquiryDtlDM = beandtl.getItem(tblEnqDetails.getValue()).getBean();
-			 prodid = enquiryDtlDM.getProductid();
+			prodid = enquiryDtlDM.getProductid();
 			Collection<?> prodids = cdProduct.getItemIds();
 			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -1041,10 +1048,21 @@ public class SmsEnquiry extends BaseTransUI {
 		if (tblspec.getValue() != null) {
 			SmsEnquirySpecDM enqspecList = beanpec.getItem(tblspec.getValue()).getBean();
 			cbspecstatus.setValue(enqspecList.getEnqryspecstatus());
-			prodid=enqspecList.getProductId();
+			prodid = enqspecList.getProductId();
 			tfspeccode.setValue(enqspecList.getSpeccode());
 			if (enqspecList.getSpecdesc() != null) {
 				taspecdesc.setValue(enqspecList.getSpecdesc().toString());
+			}
+		}
+	}
+	private void editdocumentsenq() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
+		hldtllayout.setVisible(true);
+		if (tblDocuments.getValue() != null) {
+			DocumentsDM enqspecList = beanDocuments.getItem(tblDocuments.getValue()).getBean();
+			tfDocumentName.setValue(enqspecList.getDocumentName());
+			if (enqspecList.getComments() != null) {
+				taComments.setValue(enqspecList.getComments().toString());
 			}
 		}
 	}
@@ -1448,6 +1466,7 @@ public class SmsEnquiry extends BaseTransUI {
 		cbEnquiryStatus.setValue(null);
 		dfEnquiryDate.setValue(new Date());
 		dfDueDate.setValue(addDays(new Date(), 7));
+		
 	}
 	
 	private Date addDays(Date d, int days) {
@@ -1563,5 +1582,9 @@ public class SmsEnquiry extends BaseTransUI {
 				e.printStackTrace();
 			}
 		}
+	}
+	private void resetdocuments() {
+		tfDocumentName.setValue("");
+		taComments.setValue("");
 	}
 }

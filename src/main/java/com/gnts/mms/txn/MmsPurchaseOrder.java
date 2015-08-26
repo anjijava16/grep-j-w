@@ -67,6 +67,7 @@ import com.gnts.mms.service.txn.MmsPoDtlService;
 import com.gnts.mms.service.txn.MmsQuoteDtlService;
 import com.gnts.mms.service.txn.MmsQuoteHdrService;
 import com.gnts.mms.service.txn.POHdrService;
+import com.gnts.saarc.util.SerialNumberGenerator;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -269,13 +270,25 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfGrandtotal.setWidth("150");
 		tfPaymentTerms = new TextField("Payment Terms");
 		tfPaymentTerms.setWidth("150");
+		tfPaymentTerms.setHeight("30");
 		tfFreightTerms = new TextField("Freight Terms");
 		tfFreightTerms.setWidth("150");
+		tfFreightTerms.setHeight("30");
 		tfWarrentyTerms = new TextField("Warrenty Terms");
 		tfWarrentyTerms.setWidth("150");
+		tfWarrentyTerms.setHeight("30");
 		tfDelTerms = new TextField("Delivery Terms");
 		tfDelTerms.setWidth("150");
+		tfDelTerms.setHeight("30");
 		ckdutyexm = new CheckBox("Duty Exempted");
+		ckdutyexm.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				loadChkBoxDuty();
+			}
+		});
 		ckCformRqu = new CheckBox("Cfrom Req");
 		ckCformRqu.addValueChangeListener(new Property.ValueChangeListener() {
 			/**
@@ -284,7 +297,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			private static final long serialVersionUID = 1L;
 			
 			public void valueChange(ValueChangeEvent event) {
-				loadCForm();
+				loadChkBoxCst();
 			}
 		});
 		ckPdcRqu = new CheckBox("PDC Req");
@@ -492,26 +505,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		flColumn1.addComponent(ckcasePO);
 		flColumn1.addComponent(tfPONo);
 		flColumn1.addComponent(dfPODt);
-		flColumn2.addComponent(tfversionNo);
+		flColumn1.addComponent(tfversionNo);
 		flColumn2.addComponent(taInvoiceOrd);
 		flColumn2.addComponent(taShpnAddr);
 		flColumn2.addComponent(taRemark);
 		flColumn2.addComponent(tfBasictotal);
-		// // flColumn2.addComponent(tfPaclingValue);
-		// HorizontalLayout pv = new HorizontalLayout();
-		// pv.addComponent(tfpackingPer);
-		// pv.addComponent(tfPaclingValue);
-		// pv.setCaption("Packing");
-		// flColumn2.addComponent(pv);
-		// flColumn2.setComponentAlignment(pv, Alignment.TOP_LEFT);
-		//
-		// flColumn2.addComponent(tfSubTotal);
-		// flColumn2.addComponent(tfSubTotal);
-		// flColumn3.addComponent(tfVatValue);
-		// flColumn3.addComponent(tfCstValue);
-		// flColumn3.addComponent(tfSubTaxTotal);
-		// flColumn3.addComponent(tfFreightValue);
-		// flColumn3.addComponent(tfOtherValue);
 		HorizontalLayout pv = new HorizontalLayout();
 		pv.addComponent(tfpackingPer);
 		pv.addComponent(tfPaclingValue);
@@ -523,27 +521,27 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		vp.addComponent(tfVatPer);
 		vp.addComponent(tfVatValue);
 		vp.setCaption("VAT");
-		flColumn3.addComponent(vp);
-		flColumn3.setComponentAlignment(vp, Alignment.TOP_LEFT);
-		// HorizontalLayout ed = new HorizontalLayout();
-		// ed.addComponent(tfEDPer);
-		// ed.addComponent(tfEDValue);
-		// ed.setCaption("ED");
-		// flColumn2.addComponent(ed);
-		// flColumn2.setComponentAlignment(ed, Alignment.TOP_LEFT);
-		// HorizontalLayout hed = new HorizontalLayout();
-		// hed.addComponent(tfHEDPer);
-		// hed.addComponent(tfHEDValue);
-		// hed.setCaption("HED");
-		// flColumn2.addComponent(hed);
-		// flColumn2.setComponentAlignment(hed, Alignment.TOP_LEFT);
-		// flColumn2.addComponent(hed);
-		// HorizontalLayout cess = new HorizontalLayout();
-		// cess.addComponent(tfCessPer);
-		// cess.addComponent(tfCessValue);
-		// cess.setCaption("CESS");
-		// flColumn3.addComponent(cess);
-		// flColumn3.setComponentAlignment(cess, Alignment.TOP_LEFT);
+		flColumn2.addComponent(vp);
+		flColumn2.setComponentAlignment(vp, Alignment.TOP_LEFT);
+		HorizontalLayout ed = new HorizontalLayout();
+		ed.addComponent(tfEDPer);
+		ed.addComponent(tfEDValue);
+		ed.setCaption("ED");
+		flColumn2.addComponent(ed);
+		flColumn2.setComponentAlignment(ed, Alignment.TOP_LEFT);
+		HorizontalLayout hed = new HorizontalLayout();
+		hed.addComponent(tfHEDPer);
+		hed.addComponent(tfHEDValue);
+		hed.setCaption("HED");
+		flColumn2.addComponent(hed);
+		flColumn2.setComponentAlignment(hed, Alignment.TOP_LEFT);
+		flColumn2.addComponent(hed);
+		HorizontalLayout cess = new HorizontalLayout();
+		cess.addComponent(tfCessPer);
+		cess.addComponent(tfCessValue);
+		cess.setCaption("CESS");
+		flColumn3.addComponent(cess);
+		flColumn3.setComponentAlignment(cess, Alignment.TOP_LEFT);
 		HorizontalLayout cst = new HorizontalLayout();
 		cst.addComponent(tfCstPer);
 		cst.addComponent(tfCstValue);
@@ -567,7 +565,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		flColumn3.addComponent(tfPaymentTerms);
 		flColumn3.addComponent(tfFreightTerms);
 		flColumn3.addComponent(tfWarrentyTerms);
-		flColumn4.addComponent(tfDelTerms);
+		flColumn3.addComponent(tfDelTerms);
 		flColumn4.addComponent(dfExpDt);
 		flColumn4.addComponent(cbStatus);
 		flColumn4.addComponent(ckdutyexm);
@@ -693,12 +691,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			}
 			catch (Exception e) {
 			}
-			try {
-				tfDelTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getDeliveryTerms().toString());
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			/*
+			 * try { if(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getDeliveryTerms().toString()!=null){
+			 * tfDelTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getDeliveryTerms().toString()); } } catch
+			 * (Exception e) { e.printStackTrace(); }
+			 */
 			// load quote details
 			listPODetails = new ArrayList<MmsPoDtlDM>();
 			MmsQuoteDtlDM quoteDtlDMobj = serviceMmsQuoteDtlService.getmmsquotedtllist(null,
@@ -765,22 +762,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				"Basic Value", "Status", "Last Updated Date", "Last Updated By" });
 	}
 	
-	private void loadCForm() {
-		try {
-			if (ckCformRqu.getValue() == true) {
-				tfCstValue.setReadOnly(false);
-				tfCstValue.setValue("2");
-				tfCstValue.setReadOnly(true);
-			} else {
-				tfCstValue.setReadOnly(false);
-				tfCstValue.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getCstValue().toString());
-				tfCstValue.setReadOnly(true);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+
 	
 	private void loadBranchList() {
 		try {
@@ -856,6 +838,53 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		cbQuoteRef.setContainerDataSource(beanQuote);
 	}
 	
+	// Load Check Box Duty
+	public void loadChkBoxDuty() {
+		try {
+			if (ckdutyexm.getValue() == true) {
+				tfEDValue.setReadOnly(false);
+				tfEDPer.setReadOnly(false);
+				tfEDValue.setValue("0");
+				tfEDPer.setValue("0");
+				tfEDValue.setReadOnly(true);
+				tfEDPer.setReadOnly(true);
+			} else {
+				tfEDPer.setReadOnly(false);
+				tfEDValue.setReadOnly(false);
+				tfEDPer.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getEdPrcnt().toString());
+				tfEDValue.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getEdValue().toString());
+				tfEDPer.setReadOnly(true);
+				tfEDValue.setReadOnly(true);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Load Check Box CST
+	public void loadChkBoxCst() {
+		try {
+			if (ckCformRqu.getValue() == true) {
+				tfCstValue.setReadOnly(false);
+				tfCstPer.setReadOnly(false);
+				tfCstPer.setValue("2.0");
+				tfCstValue.setReadOnly(true);
+				tfCstPer.setReadOnly(true);
+			} else {
+				tfCstValue.setReadOnly(false);
+				tfCstPer.setReadOnly(false);
+				tfCstPer.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getCstPrcnt().toString());
+				tfCstValue.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getCstValue().toString());
+				tfCstPer.setReadOnly(true);
+				tfCstValue.setReadOnly(true);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void editPOHdr() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -883,6 +912,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				tfSubTotal.setReadOnly(false);
 				tfSubTotal.setValue(poHdrDM.getSubTotal().toString());
 				tfSubTotal.setReadOnly(true);
+				// tfEDPer.setValue(poHdrDM.get);
 				tfVatPer.setValue(poHdrDM.getVatPrcnt().toString());
 				tfVatValue.setReadOnly(false);
 				tfVatValue.setValue(poHdrDM.getVatValue().toString());
@@ -966,7 +996,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 					ckcasePO.setValue(false);
 				}
 				cbStatus.setValue(poHdrDM.getpOStatus());
-				listPODetails = servicepodtl.getpodtllist(poId, null, null, null, null, "F");
+				listPODetails = servicepodtl.getpodtllist(poId, null, null, "F");
 			}
 			loadPODetails();
 			comments = new MmsComments(vlTableForm, null, companyid, null, null, null, poId, null, null, null, null);
@@ -1001,18 +1031,14 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			tfPOQnty.setReadOnly(false);
 			tfPOQnty.setValue(editmmspodtllist.getPoqty().toString());
 			tfPOQnty.setReadOnly(true);
-			if (editmmspodtllist.getUnitrate().toString() != null) {
-				tfUnitRate.setValue(editmmspodtllist.getUnitrate() + "");
-			}
+			tfUnitRate.setValue(editmmspodtllist.getUnitrate().toString());
 			cbMatUom.setReadOnly(false);
 			cbMatUom.setValue(editmmspodtllist.getMaterialuom());
 			cbMatUom.setReadOnly(true);
 			tfBasicValue.setReadOnly(false);
 			tfBasicValue.setValue(editmmspodtllist.getBasicvalue().toString());
 			tfBasicValue.setReadOnly(true);
-			if (editmmspodtllist.getRemarks() != null) {
-				taPODtlRemark.setValue(editmmspodtllist.getRemarks() + "");
-			}
+			taPODtlRemark.setValue(editmmspodtllist.getRemarks());
 			cbPODtlStatus.setValue(editmmspodtllist.getPodtlstatus());
 		}
 	}
@@ -1075,16 +1101,14 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		new UploadDocumentUI(hlPODoc);
 		try {
 			resetFields();
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_NPONO").get(0);
+			
 			tfPONo.setReadOnly(false);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfPONo.setValue(slnoObj.getKeyDesc());
+				tfPONo.setValue(SerialNumberGenerator.generateSNoMMSPO(companyid, branchId, moduleId, "MM_NPONO",null));
 				tfPONo.setReadOnly(true);
-			} else {
-				tfPONo.setReadOnly(false);
-			}
+			
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 		}
 		btnsavepurQuote.setCaption("Add");
 		tblPODetails.setVisible(true);

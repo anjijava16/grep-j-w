@@ -22,6 +22,8 @@ import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.crm.domain.mst.ClientDM;
 import com.gnts.crm.service.mst.ClientService;
 import com.gnts.erputil.helper.SpringContextHelper;
+import com.gnts.sms.domain.txn.SmsEnqHdrDM;
+import com.gnts.sms.service.txn.SmsEnqHdrService;
 
 public class SerialNumberGenerator {
 	private static SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
@@ -34,7 +36,7 @@ public class SerialNumberGenerator {
 		String serialnumber = "";
 		try {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "SM_ENQRYNO").get(0);
-			System.out.println("slnoObj---->"+slnoObj);
+			System.out.println("slnoObj---->" + slnoObj);
 			logger.info("Serial No Generation  Data...===>" + companyid + "," + branchid + "," + moduleid);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				ClientDM clientobj = serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null,
@@ -47,7 +49,7 @@ public class SerialNumberGenerator {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("serialnumber--->"+serialnumber);
+		System.out.println("serialnumber--->" + serialnumber);
 		return serialnumber;
 	}
 	
@@ -56,7 +58,7 @@ public class SerialNumberGenerator {
 		String serialnumber = "";
 		try {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "BS_VNDRCD").get(0);
-			System.out.println("slnoObj---->"+slnoObj);
+			System.out.println("slnoObj---->" + slnoObj);
 			logger.info("Serial No Generation  Data...===>" + companyid + "," + branchid + "," + vendortype);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + vendortype
@@ -67,15 +69,16 @@ public class SerialNumberGenerator {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("serialnumber--->"+serialnumber);
+		System.out.println("serialnumber--->" + serialnumber);
 		return serialnumber;
 	}
+	
 	public static String generateseralcallNumber(Long companyid, Long branchid, Long moduleid, String refkey,
 			Long clientid) {
 		String serialnumber = "";
 		try {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "SM_CALLFORM").get(0);
-			System.out.println("slnoObj---->"+slnoObj);
+			System.out.println("slnoObj---->" + slnoObj);
 			logger.info("Serial No Generation  Data...===>" + companyid + "," + branchid + "," + moduleid);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				ClientDM clientobj = serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null,
@@ -88,8 +91,25 @@ public class SerialNumberGenerator {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("serialnumber--->"+serialnumber);
+		System.out.println("serialnumber--->" + serialnumber);
 		return serialnumber;
 	}
 	
+	public static String generateSNoMMSPO(Long companyid, Long branchid, Long moduleid, String refkey, String enqNo) {
+		String serialnumber = "";
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "MM_NPONO").get(0);
+			System.out.println("slnoObj---->" + slnoObj);
+			logger.info("Serial No Generation  Data...===>" + companyid + "," + branchid + "," + moduleid);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + "EQ-"+slnoObj.getCurrSeqNo() + slnoObj.getPrefixCncat()
+						+ slnoObj.getSuffixKey();
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("serialnumber--->" + serialnumber);
+		return serialnumber;
+	}
 }

@@ -190,6 +190,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			e.printStackTrace();
 		}
 		cbEnqStatus.setWidth("150");
+		cbEnqStatus.setRequired(true);
 		cbEnqDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		lsmaterial = new ListSelect("Material Name");
 		lsmaterial.setItemCaptionPropertyId("materialName");

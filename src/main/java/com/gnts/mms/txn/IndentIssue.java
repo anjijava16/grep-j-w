@@ -865,7 +865,7 @@ public class IndentIssue extends BaseTransUI {
 		BeanContainer<Long, IndentHdrDM> beanIndentHdrDM = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
 		beanIndentHdrDM.setBeanIdProperty("indentId");
 		beanIndentHdrDM.addAll(serviceIndHdr.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null,
-				"F"));
+				null, "F"));
 		cbIntNo.setContainerDataSource(beanIndentHdrDM);
 	}
 	
@@ -889,7 +889,7 @@ public class IndentIssue extends BaseTransUI {
 			tfStockQty.setReadOnly(true);
 		}
 		catch (Exception e) {
-			e.printStackTrace();  
+			e.printStackTrace();
 		}
 	}
 	

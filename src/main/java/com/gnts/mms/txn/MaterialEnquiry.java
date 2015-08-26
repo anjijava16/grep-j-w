@@ -732,6 +732,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			comments.resetfields();
 			enqDtlresetFields();
 			loadSrchRslt();
+			resetFields();
 		}
 		catch (Exception e) {
 			e.printStackTrace();

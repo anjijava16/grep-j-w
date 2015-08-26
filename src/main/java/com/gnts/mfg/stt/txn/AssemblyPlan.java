@@ -433,14 +433,14 @@ public class AssemblyPlan extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<AsmblyPlanHdrDM> assemblyPlanList = new ArrayList<AsmblyPlanHdrDM>();
+		List<AsmblyPlanHdrDM> list = new ArrayList<AsmblyPlanHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfPlanRefNo.getValue() + ", " + cbHdrStatus.getValue());
-		assemblyPlanList = serviceAsmblyPlanHrd.getAsmblyPlanHdrDetails(null, companyid, null,
-				(String) tfPlnRefNo.getValue(), dfAsmPlanDt.getValue(), (String) cbHdrStatus.getValue(), "F");
-		recordCnt = assemblyPlanList.size();
+		list = serviceAsmblyPlanHrd.getAsmblyPlanHdrDetails(null, companyid, null, (String) tfPlnRefNo.getValue(),
+				dfAsmPlanDt.getValue(), (String) cbHdrStatus.getValue(), "F");
+		recordCnt = list.size();
 		beanAsmblyPlanHdrDM = new BeanItemContainer<AsmblyPlanHdrDM>(AsmblyPlanHdrDM.class);
-		beanAsmblyPlanHdrDM.addAll(assemblyPlanList);
+		beanAsmblyPlanHdrDM.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the AssemblyPlan. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanAsmblyPlanHdrDM);
@@ -519,22 +519,22 @@ public class AssemblyPlan extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			AsmblyPlanHdrDM editAssemblyPlan = beanAsmblyPlanHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			asmbPlnHdrId = editAssemblyPlan.getAsmplnid().toString();
+			AsmblyPlanHdrDM asmblyPlanHdr = beanAsmblyPlanHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			asmbPlnHdrId = asmblyPlanHdr.getAsmplnid().toString();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Selected AssemblyPlan. Id -> " + asmbPlnHdrId);
-			cbBranch.setValue(editAssemblyPlan.getBranchid());
+			cbBranch.setValue(asmblyPlanHdr.getBranchid());
 			tfPlanRefNo.setReadOnly(false);
-			tfPlanRefNo.setValue(editAssemblyPlan.getAsmplnreffno());
+			tfPlanRefNo.setValue(asmblyPlanHdr.getAsmplnreffno());
 			tfPlanRefNo.setReadOnly(true);
-			if (editAssemblyPlan.getAsmplndate() != null) {
-				dfAsmPlanDt.setValue(editAssemblyPlan.getAsmplndate1());
+			if (asmblyPlanHdr.getAsmplndate() != null) {
+				dfAsmPlanDt.setValue(asmblyPlanHdr.getAsmplndate1());
 			}
-			tfPlanHdrQty.setValue(editAssemblyPlan.getPlannedqty().toString());
-			if (editAssemblyPlan.getRemarks() != null) {
-				taRemark.setValue(editAssemblyPlan.getRemarks());
+			tfPlanHdrQty.setValue(asmblyPlanHdr.getPlannedqty().toString());
+			if (asmblyPlanHdr.getRemarks() != null) {
+				taRemark.setValue(asmblyPlanHdr.getRemarks());
 			}
-			cbHdrStatus.setValue(editAssemblyPlan.getAsmplnstatus());
+			cbHdrStatus.setValue(asmblyPlanHdr.getAsmplnstatus());
 			asmblPlnDtlList.addAll(serviceAsmblyPlanDtl.getAsmPlnDtlList(null, Long.valueOf(asmbPlnHdrId), null, null,
 					null, (String) cbStatus.getValue(), "F"));
 			asmblyPlnShitftList.addAll(serviceAsmblyPlanShift.getAsmblyPlanShiftDtls(null, Long.valueOf(asmbPlnHdrId),
@@ -1026,53 +1026,80 @@ public class AssemblyPlan extends BaseTransUI {
 	 * loadBranchList()-->this function is used for load the branch name
 	 */
 	private void loadBranchList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranchDM.setBeanIdProperty("branchId");
-		beanBranchDM.addAll(serviceBranch.getBranchList(branchID, null, null, "Active", companyid, "P"));
-		cbBranch.setContainerDataSource(beanBranchDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranchDM.setBeanIdProperty("branchId");
+			beanBranchDM.addAll(serviceBranch.getBranchList(branchID, null, null, "Active", companyid, "P"));
+			cbBranch.setContainerDataSource(beanBranchDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadEmployeeList()-->this function is used for load the employee name
 	 */
 	private void loadEmployeeList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
-		BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null, null,
-				"P"));
-		cbEmpName.setContainerDataSource(beanEmployeeDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Employee Search...");
+			BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null,
+					null, "P"));
+			cbEmpName.setContainerDataSource(beanEmployeeDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadClientList()-->this function is used for load the Client name
 	 */
 	private void loadClientList() {
-		BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
-		beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null, "Active",
-				"P"));
-		cbClientId.setContainerDataSource(beanClient);
+		try {
+			BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
+			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
+					"Active", "P"));
+			cbClientId.setContainerDataSource(beanClient);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadProductList()-->this function is used for load the product Name
 	 */
 	private void loadProductList() {
-		Long workOrdHdrId = ((WorkOrderHdrDM) cbWorkOrder.getValue()).getWorkOrdrId();
-		BeanItemContainer<WorkOrderDtlDM> beanPlnDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
-		beanPlnDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, workOrdHdrId, null, "F"));
-		cbProduct.setContainerDataSource(beanPlnDtl);
+		try {
+			Long workOrdHdrId = ((WorkOrderHdrDM) cbWorkOrder.getValue()).getWorkOrdrId();
+			BeanItemContainer<WorkOrderDtlDM> beanPlnDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
+			beanPlnDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, workOrdHdrId, null, "F"));
+			cbProduct.setContainerDataSource(beanPlnDtl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadWorkOrderNo()-->this function is used for load the workorderno
 	 */
 	private void loadWorkOrderNo() {
-		Long clientId = (((ClientDM) cbClientId.getValue()).getClientId());
-		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
-		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null, "F",
-				null, null,null,null,null));
-		cbWorkOrder.setContainerDataSource(beanWrkOrdHdr);
+		try {
+			Long clientId = (((ClientDM) cbClientId.getValue()).getClientId());
+			BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(
+					WorkOrderHdrDM.class);
+			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null,
+					"F", null, null, null, null, null));
+			cbWorkOrder.setContainerDataSource(beanWrkOrdHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void deleteShiftDetails() {

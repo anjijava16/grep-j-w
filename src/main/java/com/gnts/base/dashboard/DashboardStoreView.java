@@ -170,9 +170,9 @@ public class DashboardStoreView implements ClickListener {
 			beanmaterialstock.addAll(servicematerialstock.getMaterialStockList(null, companyId, null, null, null, null,
 					"F"));
 			tblMaterialStock.setContainerDataSource(beanmaterialstock);
-			tblMaterialStock.setVisibleColumns(new Object[] { "materialName", "stockType",
-					"currentStock","parkedStock", "effectiveStock" });
-			tblMaterialStock.setColumnHeaders(new String[] { "Material", "Stock Type","Curr. Stock","Parked",
+			tblMaterialStock.setVisibleColumns(new Object[] { "materialName", "stockType", "currentStock",
+					"parkedStock", "effectiveStock" });
+			tblMaterialStock.setColumnHeaders(new String[] { "Material", "Stock Type", "Curr. Stock", "Parked",
 					"Eff. Stock" });
 			tblMaterialStock.setColumnWidth("materialName", 150);
 			tblMaterialStock.setColumnWidth("currentStock", 75);
@@ -220,7 +220,7 @@ public class DashboardStoreView implements ClickListener {
 	private void loadEnquiryList() {
 		tblIndent.removeAllItems();
 		List<IndentHdrDM> indentHdrList = new ArrayList<IndentHdrDM>();
-		indentHdrList = serviceIndentHdr.getMmsIndentHdrList(null, null, null, null, null, null, null, null, "F");
+		indentHdrList = serviceIndentHdr.getMmsIndentHdrList(null, null, null, null, null, null, null, null, null, "F");
 		BeanItemContainer<IndentHdrDM> beanIndentHdrDM = new BeanItemContainer<IndentHdrDM>(IndentHdrDM.class);
 		beanIndentHdrDM.addAll(indentHdrList);
 		tblIndent.setContainerDataSource(beanIndentHdrDM);
@@ -301,8 +301,8 @@ public class DashboardStoreView implements ClickListener {
 		tblGatepass.removeAllItems();
 		List<GatepassHdrDM> listGatepass = new ArrayList<GatepassHdrDM>();
 		BeanItemContainer<GatepassHdrDM> beanGatePassHdr = new BeanItemContainer<GatepassHdrDM>(GatepassHdrDM.class);
-		listGatepass = serviceGatepass.getGatepassHdrList(companyId, null, "Returnable", null, null, null, "Pending", null,
-				"F");
+		listGatepass = serviceGatepass.getGatepassHdrList(companyId, null, "Returnable", null, null, null, "Pending",
+				null, "F");
 		beanGatePassHdr.addAll(listGatepass);
 		tblGatepass.setContainerDataSource(beanGatePassHdr);
 		tblGatepass.setVisibleColumns(new Object[] { "gatepassId", "gatepassDt", "gatepassType", "returnDate",

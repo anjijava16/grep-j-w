@@ -433,16 +433,26 @@ public class QCTestType extends BaseUI {
 	}
 	
 	private void loadMaterialTypList() {
-		BeanItemContainer<MaterialTypeDM> beanMtrlTyp = new BeanItemContainer<MaterialTypeDM>(MaterialTypeDM.class);
-		beanMtrlTyp.addAll(serviceMaterialTyp.getMaterialTypeList(null, null, "Active", "F"));
-		cbMtrlType.setContainerDataSource(beanMtrlTyp);
+		try {
+			BeanItemContainer<MaterialTypeDM> beanMtrlTyp = new BeanItemContainer<MaterialTypeDM>(MaterialTypeDM.class);
+			beanMtrlTyp.addAll(serviceMaterialTyp.getMaterialTypeList(null, null, "Active", "F"));
+			cbMtrlType.setContainerDataSource(beanMtrlTyp);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadMaterialList() {
-		BeanItemContainer<MaterialDM> beanMtrl = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanMtrl.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null,
-				((MaterialTypeDM) cbMtrlType.getValue()).getMaterialTypeId(), null, "Active", "F"));
-		lsMtrlName.setContainerDataSource(beanMtrl);
+		try {
+			BeanItemContainer<MaterialDM> beanMtrl = new BeanItemContainer<MaterialDM>(MaterialDM.class);
+			beanMtrl.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null,
+					((MaterialTypeDM) cbMtrlType.getValue()).getMaterialTypeId(), null, "Active", "F"));
+			lsMtrlName.setContainerDataSource(beanMtrl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override

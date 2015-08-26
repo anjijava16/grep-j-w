@@ -645,20 +645,28 @@ public class WorkOrder extends BaseTransUI {
 	
 	// Method to load branch List
 	private void loadBranchList() {
-		{
+		try {
 			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanbranch.setBeanIdProperty("branchId");
 			beanbranch.addAll(serviceBranch.getBranchList(branchID, null, null, "Active", companyid, "F"));
 			cbBranchName.setContainerDataSource(beanbranch);
 		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadPurchaseOrdNo() {
-		BeanContainer<Long, SmsPOHdrDM> beanPurchaseOrdHdr = new BeanContainer<Long, SmsPOHdrDM>(SmsPOHdrDM.class);
-		beanPurchaseOrdHdr.setBeanIdProperty("poid");
-		beanPurchaseOrdHdr.addAll(servicePurchaseOrdHdr.getSmspohdrList(null, null, companyid, null, null, null, null,
-				"F", (Long) cbEnquiryNumber.getValue()));
-		cbPONumber.setContainerDataSource(beanPurchaseOrdHdr);
+		try {
+			BeanContainer<Long, SmsPOHdrDM> beanPurchaseOrdHdr = new BeanContainer<Long, SmsPOHdrDM>(SmsPOHdrDM.class);
+			beanPurchaseOrdHdr.setBeanIdProperty("poid");
+			beanPurchaseOrdHdr.addAll(servicePurchaseOrdHdr.getSmspohdrList(null, null, companyid, null, null, null,
+					null, "F", (Long) cbEnquiryNumber.getValue()));
+			cbPONumber.setContainerDataSource(beanPurchaseOrdHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadClientList() {
@@ -674,13 +682,19 @@ public class WorkOrder extends BaseTransUI {
 			cbClientName.setValue(clientid);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadPurchseOrdDtlList() {
-		BeanItemContainer<SmsPODtlDM> beanPurchaseOrdDtl = new BeanItemContainer<SmsPODtlDM>(SmsPODtlDM.class);
-		beanPurchaseOrdDtl.addAll(serviceWrkOrdDtl.getPurchaseOrdDtlList((Long) cbPONumber.getValue()));
-		cbPrdName.setContainerDataSource(beanPurchaseOrdDtl);
+		try {
+			BeanItemContainer<SmsPODtlDM> beanPurchaseOrdDtl = new BeanItemContainer<SmsPODtlDM>(SmsPODtlDM.class);
+			beanPurchaseOrdDtl.addAll(serviceWrkOrdDtl.getPurchaseOrdDtlList((Long) cbPONumber.getValue()));
+			cbPrdName.setContainerDataSource(beanPurchaseOrdDtl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to reset the fields
@@ -1187,10 +1201,16 @@ public class WorkOrder extends BaseTransUI {
 	
 	// Load EnquiryNo
 	private void loadEnquiryNo() {
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(serviceEnquiryHdr.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
-		cbEnquiryNumber.setContainerDataSource(beansmsenqHdr);
+		try {
+			BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("enquiryId");
+			beansmsenqHdr
+					.addAll(serviceEnquiryHdr.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
+			cbEnquiryNumber.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void changeworkorderstatus() {

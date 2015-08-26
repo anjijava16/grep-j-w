@@ -66,7 +66,7 @@ public class ECRequest extends BaseTransUI {
 			.getBean("SmsEnquiryDtl");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private ECRequestService serviceECRequest = (ECRequestService) SpringContextHelper.getBean("ecRequest");
-	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private DepartmentService serviceDepartmant = (DepartmentService) SpringContextHelper.getBean("department");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(ECRequest.class);
 	// User Input Fields for EC Request
@@ -279,10 +279,15 @@ public class ECRequest extends BaseTransUI {
 	
 	// Load Enquiry List
 	private void loadEnquiryList() {
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
-		cbEnquiry.setContainerDataSource(beansmsenqHdr);
+		try {
+			BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("enquiryId");
+			beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
+			cbEnquiry.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Product List
@@ -301,36 +306,55 @@ public class ECRequest extends BaseTransUI {
 	
 	// Load Client List
 	private void loadSmsClientList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
-		BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
-		beanclientDM.setBeanIdProperty("clientId");
-		beanclientDM.addAll(serviceClients.getClientDetails(companyid,
-				serviceEnqHeader.getSmsEnqHdrList(null, (Long) cbEnquiry.getValue(), null, null, null, "F", null, null)
-						.get(0).getClientId(), null, null, null, null, null, null, "Active", "P"));
-		cbClient.setContainerDataSource(beanclientDM);
-		cbClient.setValue(cbClient.getItemIds().iterator().next());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
+			BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			beanclientDM.setBeanIdProperty("clientId");
+			beanclientDM.addAll(serviceClients.getClientDetails(
+					companyid,
+					serviceEnqHeader
+							.getSmsEnqHdrList(null, (Long) cbEnquiry.getValue(), null, null, null, "F", null, null)
+							.get(0).getClientId(), null, null, null, null, null, null, "Active", "P"));
+			cbClient.setContainerDataSource(beanclientDM);
+			cbClient.setValue(cbClient.getItemIds().iterator().next());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadFromDeptList()-->this function is used for load the Department list
 	 */
 	private void loadFromDeptList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
-		cbFromDept.setContainerDataSource(beanDepartment);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Department Search...");
+			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beanDepartment.setBeanIdProperty("deptid");
+			beanDepartment.addAll(serviceDepartmant.getDepartmentList(companyid, null, "Active", "P"));
+			cbFromDept.setContainerDataSource(beanDepartment);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadToDeptList()-->this function is used for load the Department list
 	 */
 	private void loadToDeptList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
-		cbToDept.setContainerDataSource(beanDepartment);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Department Search...");
+			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beanDepartment.setBeanIdProperty("deptid");
+			beanDepartment.addAll(serviceDepartmant.getDepartmentList(companyid, null, "Active", "P"));
+			cbToDept.setContainerDataSource(beanDepartment);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header

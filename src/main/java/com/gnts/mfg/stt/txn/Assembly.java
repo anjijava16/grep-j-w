@@ -168,7 +168,7 @@ public class Assembly extends BaseTransUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (validateShiftDetails()) {
-					saveasmShiftListDetails();
+					saveAsmShiftListDetails();
 				}
 			}
 		});
@@ -391,14 +391,14 @@ public class Assembly extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<AsmblyHdrDM> listAssemblyHdr = new ArrayList<AsmblyHdrDM>();
+		List<AsmblyHdrDM> list = new ArrayList<AsmblyHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ companyid + ", " + cbPlndQty.getValue() + ", " + cbHdrStatus.getValue());
-		listAssemblyHdr = serviceAsmblyHdr.getAsmblyHdrDMs(null, null, (String) tfplnRefNo.getValue(),
-				dfAsmDt.getValue(), null, (String) cbHdrStatus.getValue(), "F");
-		recordCnt = listAssemblyHdr.size();
+		list = serviceAsmblyHdr.getAsmblyHdrDMs(null, null, (String) tfplnRefNo.getValue(), dfAsmDt.getValue(), null,
+				(String) cbHdrStatus.getValue(), "F");
+		recordCnt = list.size();
 		beanAsmblyHdr = new BeanItemContainer<AsmblyHdrDM>(AsmblyHdrDM.class);
-		beanAsmblyHdr.addAll(listAssemblyHdr);
+		beanAsmblyHdr.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
 				+ "Got the AssemblyHdr. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanAsmblyHdr);
@@ -455,25 +455,40 @@ public class Assembly extends BaseTransUI {
 	}
 	
 	private void loadEmployeeList() {
-		BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeId, null,
-				null, null, "P"));
-		cbEmployeeName.setContainerDataSource(beanEmployeeDM);
+		try {
+			BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeId,
+					null, null, null, "P"));
+			cbEmployeeName.setContainerDataSource(beanEmployeeDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadProductList() {
-		BeanItemContainer<ProductDM> beanProductDM = new BeanItemContainer<ProductDM>(ProductDM.class);
-		beanProductDM.addAll(serviceProduct.getProductList(null, null, null, null, "Active", null, null, "F"));
-		cbProductName.setContainerDataSource(beanProductDM);
+		try {
+			BeanItemContainer<ProductDM> beanProductDM = new BeanItemContainer<ProductDM>(ProductDM.class);
+			beanProductDM.addAll(serviceProduct.getProductList(null, null, null, null, "Active", null, null, "F"));
+			cbProductName.setContainerDataSource(beanProductDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadAsmPlan() {
-		BeanContainer<Long, AsmblyPlanHdrDM> beanAsmPlanHdr = new BeanContainer<Long, AsmblyPlanHdrDM>(
-				AsmblyPlanHdrDM.class);
-		beanAsmPlanHdr.setBeanIdProperty("asmplnid");
-		beanAsmPlanHdr.addAll(serviceAsmblyPlanHrd
-				.getAsmblyPlanHdrDetails(null, cmpId, null, null, null, "Active", "F"));
-		cbPlndQty.setContainerDataSource(beanAsmPlanHdr);
+		try {
+			BeanContainer<Long, AsmblyPlanHdrDM> beanAsmPlanHdr = new BeanContainer<Long, AsmblyPlanHdrDM>(
+					AsmblyPlanHdrDM.class);
+			beanAsmPlanHdr.setBeanIdProperty("asmplnid");
+			beanAsmPlanHdr.addAll(serviceAsmblyPlanHrd.getAsmblyPlanHdrDetails(null, cmpId, null, null, null, "Active",
+					"F"));
+			cbPlndQty.setContainerDataSource(beanAsmPlanHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -821,7 +836,7 @@ public class Assembly extends BaseTransUI {
 		asmblDtlResetFields();
 	}
 	
-	protected void saveasmShiftListDetails() {
+	private void saveAsmShiftListDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Saving Data... ");
 			AsmblyShiftDM assemblyShiftObj = new AsmblyShiftDM();

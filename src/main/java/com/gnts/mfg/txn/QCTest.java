@@ -476,62 +476,104 @@ public class QCTest extends BaseTransUI {
 	}
 	
 	private void loadBranchList() {
-		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", null, "P"));
-		cbBranch.setContainerDataSource(beanbranch);
+		try {
+			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanbranch.setBeanIdProperty("branchId");
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", null, "P"));
+			cbBranch.setContainerDataSource(beanbranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadProductDrgCodeList() {
-		BeanContainer<Long, ProductDrawingDM> beanProdDrg = new BeanContainer<Long, ProductDrawingDM>(
-				ProductDrawingDM.class);
-		beanProdDrg.setBeanIdProperty("productDrgId");
-		beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, null, null, "Active"));
-		cbProductDrg.setContainerDataSource(beanProdDrg);
+		try {
+			BeanContainer<Long, ProductDrawingDM> beanProdDrg = new BeanContainer<Long, ProductDrawingDM>(
+					ProductDrawingDM.class);
+			beanProdDrg.setBeanIdProperty("productDrgId");
+			beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, null, null, "Active"));
+			cbProductDrg.setContainerDataSource(beanProdDrg);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadProductList() {
-		BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
-		beanProd.setBeanIdProperty("prodid");
-		beanProd.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "P"));
-		cbProduct.setContainerDataSource(beanProd);
+		try {
+			BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
+			beanProd.setBeanIdProperty("prodid");
+			beanProd.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "P"));
+			cbProduct.setContainerDataSource(beanProd);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadReceiptlist() {
-		BeanContainer<Long, PoReceiptHdrDM> beanReceipt = new BeanContainer<Long, PoReceiptHdrDM>(PoReceiptHdrDM.class);
-		beanReceipt.setBeanIdProperty("receiptId");
-		beanReceipt.addAll(servicePoReceipt.getPoReceiptsHdrList(companyid, null, null, null, null, "Approved", "F"));
-		cbReceipt.setContainerDataSource(beanReceipt);
+		try {
+			BeanContainer<Long, PoReceiptHdrDM> beanReceipt = new BeanContainer<Long, PoReceiptHdrDM>(
+					PoReceiptHdrDM.class);
+			beanReceipt.setBeanIdProperty("receiptId");
+			beanReceipt.addAll(servicePoReceipt
+					.getPoReceiptsHdrList(companyid, null, null, null, null, "Approved", "F"));
+			cbReceipt.setContainerDataSource(beanReceipt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadTestTypeList() {
-		BeanContainer<Long, QCTestTypeDM> beanTestTyp = new BeanContainer<Long, QCTestTypeDM>(QCTestTypeDM.class);
-		beanTestTyp.setBeanIdProperty("qcTstTypId");
-		beanTestTyp.addAll(serviceQCTestType.getQCTestTypeDetails(companyid, null, null, "Active"));
-		cbTestType.setContainerDataSource(beanTestTyp);
+		try {
+			BeanContainer<Long, QCTestTypeDM> beanTestTyp = new BeanContainer<Long, QCTestTypeDM>(QCTestTypeDM.class);
+			beanTestTyp.setBeanIdProperty("qcTstTypId");
+			beanTestTyp.addAll(serviceQCTestType.getQCTestTypeDetails(companyid, null, null, "Active"));
+			cbTestType.setContainerDataSource(beanTestTyp);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadTestByList() {
-		BeanContainer<Long, EmployeeDM> beanbranch = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanbranch.setBeanIdProperty("employeeid");
-		beanbranch.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
-				null, "P"));
-		cbTestedBy.setContainerDataSource(beanbranch);
+		try {
+			BeanContainer<Long, EmployeeDM> beanbranch = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanbranch.setBeanIdProperty("employeeid");
+			beanbranch.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
+					null, "P"));
+			cbTestedBy.setContainerDataSource(beanbranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadMaterialList() {
-		BeanContainer<Long, MaterialDM> beanMaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
-		beanMaterial.setBeanIdProperty("materialId");
-		beanMaterial.addAll(serviceMaterial.getMaterialList(null, null, null, null, null, null, null, null, "Active",
-				"P"));
-		cbMaterial.setContainerDataSource(beanMaterial);
+		try {
+			BeanContainer<Long, MaterialDM> beanMaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
+			beanMaterial.setBeanIdProperty("materialId");
+			beanMaterial.addAll(serviceMaterial.getMaterialList(null, null, null, null, null, null, null, null,
+					"Active", "P"));
+			cbMaterial.setContainerDataSource(beanMaterial);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadTestSpecList() {
-		BeanItemContainer<QCTestSpecificationDM> beanTstSpec = new BeanItemContainer<QCTestSpecificationDM>(
-				QCTestSpecificationDM.class);
-		beanTstSpec.addAll(serviceQCTestSpec.getQCTestSpecDetails(null, companyid, null, "Active"));
-		cbTstSpec.setContainerDataSource(beanTstSpec);
+		try {
+			BeanItemContainer<QCTestSpecificationDM> beanTstSpec = new BeanItemContainer<QCTestSpecificationDM>(
+					QCTestSpecificationDM.class);
+			beanTstSpec.addAll(serviceQCTestSpec.getQCTestSpecDetails(null, companyid, null, "Active"));
+			cbTstSpec.setContainerDataSource(beanTstSpec);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to reset the fields

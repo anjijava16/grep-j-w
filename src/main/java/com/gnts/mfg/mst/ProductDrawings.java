@@ -39,7 +39,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.mst.ProductDrawingDM;
 import com.gnts.mfg.service.mst.ProductDrawingService;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -80,7 +79,7 @@ public class ProductDrawings extends BaseUI {
 	private HorizontalLayout hlUserInputLayout = new GERPAddEditHLayout();
 	private Long productDrgId;
 	// Initialize logger
-	private static Logger logger = Logger.getLogger(ProductDrawings.class);
+	private Logger logger = Logger.getLogger(ProductDrawings.class);
 	
 	// Constructor received the parameters from Login UI class
 	public ProductDrawings() {
@@ -120,16 +119,16 @@ public class ProductDrawings extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.setPageLength(13);
-		List<ProductDrawingDM> productDrawingList = new ArrayList<ProductDrawingDM>();
+		List<ProductDrawingDM> list = new ArrayList<ProductDrawingDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ companyId);
 		Long branchId = (Long) cbBranchName.getValue();
 		Long ProductId = (Long) cbProductName.getValue();
-		productDrawingList = serviceProductDrawings.getProductDrgDetails(companyId, branchId, ProductId,
+		list = serviceProductDrawings.getProductDrgDetails(companyId, branchId, ProductId,
 				(String) tfDrgCode.getValue(), (String) cbPrdDrgStatus.getValue());
-		recordCnt = productDrawingList.size();
+		recordCnt = list.size();
 		beanProductDrawing = new BeanItemContainer<ProductDrawingDM>(ProductDrawingDM.class);
-		beanProductDrawing.addAll(productDrawingList);
+		beanProductDrawing.addAll(list);
 		tblMstScrSrchRslt.setContainerDataSource(beanProductDrawing);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "productDrgId", "branchName", "productName", "drawingCode",
 				"versionNo", "isLatest", "drwStatus", "lastUpdatedDt", "lastUpdatedBy" });
@@ -207,22 +206,28 @@ public class ProductDrawings extends BaseUI {
 	}
 	
 	private void loadProductList() {
-		List<ProductDM> getProductList = new ArrayList<ProductDM>();
-		getProductList.addAll(serviceProductService.getProductList(companyId, null, null, null, "Active", null, null,
-				"F"));
-		BeanContainer<Long, ProductDM> beanProduct = new BeanContainer<Long, ProductDM>(ProductDM.class);
-		beanProduct.setBeanIdProperty("prodid");
-		beanProduct.addAll(getProductList);
-		cbProductName.setContainerDataSource(beanProduct);
+		try {
+			BeanContainer<Long, ProductDM> beanProduct = new BeanContainer<Long, ProductDM>(ProductDM.class);
+			beanProduct.setBeanIdProperty("prodid");
+			beanProduct.addAll(serviceProductService.getProductList(companyId, null, null, null, "Active", null, null,
+					"F"));
+			cbProductName.setContainerDataSource(beanProduct);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadBranchList() {
-		List<BranchDM> getBranchList = new ArrayList<BranchDM>();
-		getBranchList.addAll(serviceBranch.getBranchList(null, null, null, "Active", null, "F"));
-		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(getBranchList);
-		cbBranchName.setContainerDataSource(beanbranch);
+		try {
+			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanbranch.setBeanIdProperty("branchId");
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", null, "F"));
+			cbBranchName.setContainerDataSource(beanbranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -272,23 +277,24 @@ public class ProductDrawings extends BaseUI {
 	}
 	
 	private void editProductDrawingDetails() {
-		Item itselect = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (itselect != null) {
-			ProductDrawingDM editPrdDrgList = beanProductDrawing.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			productDrgId = editPrdDrgList.getProductDrgIdLong();
-			cbBranchName.setValue(editPrdDrgList.getBranchId());
-			cbProductName.setValue(editPrdDrgList.getProductId());
-			if (editPrdDrgList.getIsLatest().equals("Yes")) {
+		if (tblMstScrSrchRslt.getValue() != null) {
+			ProductDrawingDM prodDrawing = beanProductDrawing.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			productDrgId = prodDrawing.getProductDrgIdLong();
+			cbBranchName.setValue(prodDrawing.getBranchId());
+			cbProductName.setValue(prodDrawing.getProductId());
+			if (prodDrawing.getIsLatest().equals("Yes")) {
 				chIsLatest.setValue(true);
 			} else {
 				chIsLatest.setValue(false);
 			}
-			if (editPrdDrgList.getDrawingDesc() != null) {
-				taDrgCodeDesc.setValue((String) itselect.getItemProperty("drawingDesc").getValue());
+			if (prodDrawing.getDrawingDesc() != null) {
+				taDrgCodeDesc.setValue(prodDrawing.getDrawingDesc());
 			}
-			tfDrgCode.setValue((String) itselect.getItemProperty("drawingCode").getValue());
-			tfVersionNO.setValue(itselect.getItemProperty("versionNo").getValue().toString());
-			cbPrdDrgStatus.setValue((String) itselect.getItemProperty("drwStatus").getValue());
+			tfDrgCode.setValue(prodDrawing.getDrawingCode());
+			if (prodDrawing.getVersionNo() != null) {
+				tfVersionNO.setValue(prodDrawing.getVersionNo().toString());
+			}
+			cbPrdDrgStatus.setValue(prodDrawing.getDrwStatus());
 		}
 	}
 	
@@ -368,25 +374,25 @@ public class ProductDrawings extends BaseUI {
 	
 	@Override
 	protected void saveDetails() {
-		ProductDrawingDM productDgrObj = new ProductDrawingDM();
+		ProductDrawingDM prodDrawing = new ProductDrawingDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			productDgrObj = beanProductDrawing.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			prodDrawing = beanProductDrawing.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		productDgrObj.setCompanyId(companyId);
-		productDgrObj.setBranchId((Long) cbBranchName.getValue());
-		productDgrObj.setProductId((Long) cbProductName.getValue());
-		productDgrObj.setDrawingCode(tfDrgCode.getValue());
-		productDgrObj.setVersionNo(new BigDecimal(tfVersionNO.getValue()));
-		productDgrObj.setDrawingDesc(taDrgCodeDesc.getValue());
+		prodDrawing.setCompanyId(companyId);
+		prodDrawing.setBranchId((Long) cbBranchName.getValue());
+		prodDrawing.setProductId((Long) cbProductName.getValue());
+		prodDrawing.setDrawingCode(tfDrgCode.getValue());
+		prodDrawing.setVersionNo(new BigDecimal(tfVersionNO.getValue()));
+		prodDrawing.setDrawingDesc(taDrgCodeDesc.getValue());
 		if (chIsLatest.getValue() == null || chIsLatest.getValue().equals(false)) {
-			productDgrObj.setIsLatest("N");
+			prodDrawing.setIsLatest("N");
 		} else {
-			productDgrObj.setIsLatest("Y");
+			prodDrawing.setIsLatest("Y");
 		}
-		productDgrObj.setDrwStatus((String) cbPrdDrgStatus.getValue());
-		productDgrObj.setLastUpdatedDt(DateUtils.getcurrentdate());
-		productDgrObj.setLastUpdatedBy(userName);
-		serviceProductDrawings.saveorUpdateProductDrgDetails(productDgrObj);
+		prodDrawing.setDrwStatus((String) cbPrdDrgStatus.getValue());
+		prodDrawing.setLastUpdatedDt(DateUtils.getcurrentdate());
+		prodDrawing.setLastUpdatedBy(userName);
+		serviceProductDrawings.saveorUpdateProductDrgDetails(prodDrawing);
 		resetFields();
 		loadSrchRslt();
 	}

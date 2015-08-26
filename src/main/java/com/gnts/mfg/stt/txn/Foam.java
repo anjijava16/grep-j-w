@@ -426,8 +426,8 @@ public class Foam extends BaseTransUI {
 		beanFoamShiftDM.addAll(listFoamShift);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Foam. result set");
 		tblFoamShift.setContainerDataSource(beanFoamShiftDM);
-		tblFoamShift.setVisibleColumns(new Object[] { "shiftName", "empName", "achivedQty", "status", "lastupdateddate",
-				"lastupdatedby" });
+		tblFoamShift.setVisibleColumns(new Object[] { "shiftName", "empName", "achivedQty", "status",
+				"lastupdateddate", "lastupdatedby" });
 		tblFoamShift.setColumnHeaders(new String[] { "Shift Name", "Emp.Name", "Achieved Qty.", "Status",
 				"Last Updated Dt", "Last Updated By" });
 		tblFoamShift.setColumnFooter("lastupdatedby", "No.of Records : " + recordShiftCnt);
@@ -929,32 +929,48 @@ public class Foam extends BaseTransUI {
 	 * loadFoamList()-->this function is used for load the branch name
 	 */
 	private void loadFoamList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, FoamPlanHdrDM> beanFoamPlanHdrDM = new BeanContainer<Long, FoamPlanHdrDM>(
-				FoamPlanHdrDM.class);
-		beanFoamPlanHdrDM.setBeanIdProperty("formplanid");
-		beanFoamPlanHdrDM.addAll(serviceFoamHdr.getFormPlanHdrDetails(null, null, companyid, null, null));
-		cbFoamPlanNo.setContainerDataSource(beanFoamPlanHdrDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, FoamPlanHdrDM> beanFoamPlanHdrDM = new BeanContainer<Long, FoamPlanHdrDM>(
+					FoamPlanHdrDM.class);
+			beanFoamPlanHdrDM.setBeanIdProperty("formplanid");
+			beanFoamPlanHdrDM.addAll(serviceFoamHdr.getFormPlanHdrDetails(null, null, companyid, null, null));
+			cbFoamPlanNo.setContainerDataSource(beanFoamPlanHdrDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadEmployeeList()-->this function is used for load the employee name
 	 */
 	private void loadEmployeeList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
-		BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null, null,
-				"P"));
-		cbEmpName.setContainerDataSource(beanEmployeeDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Employee Search...");
+			BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null,
+					null, "P"));
+			cbEmpName.setContainerDataSource(beanEmployeeDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadProductList()-->this function is used for load the product Name
 	 */
 	private void loadProductList() {
-		BeanItemContainer<WorkOrderDtlDM> beanPlnDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
-		beanPlnDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, null, null, "F"));
-		cbProduct.setContainerDataSource(beanPlnDtl);
+		try {
+			BeanItemContainer<WorkOrderDtlDM> beanPlnDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
+			beanPlnDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, null, null, "F"));
+			cbProduct.setContainerDataSource(beanPlnDtl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void deleteShiftDetails() {

@@ -43,6 +43,8 @@ import com.gnts.hcm.domain.mst.EmploymentTypeDM;
 import com.gnts.hcm.domain.mst.GradeDM;
 import com.gnts.hcm.domain.mst.PayPeriodDM;
 import com.gnts.hcm.domain.txn.EmployeeAbsentDM;
+import com.gnts.hcm.domain.txn.EmployeeDeductionDM;
+import com.gnts.hcm.domain.txn.EmployeeEarningDM;
 import com.gnts.hcm.domain.txn.EmployeeLateDetailDM;
 import com.gnts.hcm.domain.txn.EmployeeLeaveDM;
 import com.gnts.hcm.domain.txn.EmployeeOndutyDM;
@@ -55,6 +57,8 @@ import com.gnts.hcm.service.mst.EmploymentTypeService;
 import com.gnts.hcm.service.mst.GradeService;
 import com.gnts.hcm.service.mst.PayPeriodService;
 import com.gnts.hcm.service.txn.EmployeeAbsentService;
+import com.gnts.hcm.service.txn.EmployeeDeductionService;
+import com.gnts.hcm.service.txn.EmployeeEarningService;
 import com.gnts.hcm.service.txn.EmployeeLateDetailService;
 import com.gnts.hcm.service.txn.EmployeeLeaveService;
 import com.gnts.hcm.service.txn.EmployeeOndutyService;
@@ -115,6 +119,10 @@ public class EmployeeDetail implements ClickListener {
 	private EmployeeEducationService serviceLeave = (EmployeeEducationService) SpringContextHelper
 			.getBean("EmployeeEducation");
 	private EmployeeLeaveService serviceleave = (EmployeeLeaveService) SpringContextHelper.getBean("EmployeeLeave");
+	private EmployeeDeductionService serviceEmployeeDeduction = (EmployeeDeductionService) SpringContextHelper
+			.getBean("EmployeeDeduction");
+	private EmployeeEarningService serviceEmployeeEarning = (EmployeeEarningService) SpringContextHelper
+			.getBean("EmployeeEarning");
 	private String screenName = "", username = "";
 	private Button btnScreenName;
 	private Long companyid;
@@ -144,6 +152,8 @@ public class EmployeeDetail implements ClickListener {
 	private Table tblAddress = new Table();
 	private Table tblEducation = new Table();
 	private Table tblLeave = new Table("Leave :");
+	private Table tblEarnings = new Table("Earnings");
+	private Table tblDeduction = new Table("Deduction");
 	
 	public EmployeeDetail() {
 		// TODO Auto-generated constructor stub
@@ -195,6 +205,10 @@ public class EmployeeDetail implements ClickListener {
 		tblPermission.setWidth("500px");
 		tblAddress.setWidth("100%");
 		tblEducation.setWidth("100%");
+		tblEarnings.setWidth("100%");
+		tblEarnings.setPageLength(5);
+		tblDeduction.setWidth("100%");
+		tblDeduction.setPageLength(5);
 		hlPageRootContainter.setSpacing(true);
 		hlPageRootContainter.addComponent(cbEmployee);
 		// Create the Accordion.
@@ -226,12 +240,17 @@ public class EmployeeDetail implements ClickListener {
 		});
 		HorizontalLayout l2 = new HorizontalLayout();
 		l2.addComponent(tblOnduty);
+		VerticalLayout l4 = new VerticalLayout();
+		l4.addComponent(tblEarnings);
+		l4.addComponent(tblDeduction);
+		l4.setSpacing(true);
 		// Add the components as tabs in the Accordion.
 		accordion.addTab(buildProfile(), "Personal Information", null);
 		accordion.addTab(l3, "Time Off", null);
 		accordion.addTab(l2, "Time On", null);
 		accordion.addTab(tblAddress, "Address", null);
 		accordion.addTab(tblEducation, "Education", null);
+		accordion.addTab(l4, "Earnings & Deductions", null);
 		hlPageRootContainter.addComponent(accordion);
 		loadEmployeeList();
 	}
@@ -514,6 +533,16 @@ public class EmployeeDetail implements ClickListener {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		try {
+			loadEarnings();
+		}
+		catch (Exception e) {
+		}
+		try {
+			loadDeductions();
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void loadOndutyDetails() {
@@ -646,14 +675,52 @@ public class EmployeeDetail implements ClickListener {
 	}
 	
 	/*
+	 * loadDeductions()-->this function is used for load the search Employee Deductions to table
+	 */
+	private void loadDeductions() {
+		tblDeduction.removeAllItems();
+		List<EmployeeDeductionDM> list = new ArrayList<EmployeeDeductionDM>();
+		list = serviceEmployeeDeduction.getempdeductionlist(null, ((EmployeeDM) cbEmployee.getValue()).getEmployeeid(),
+				null, null, "F");
+		BeanItemContainer<EmployeeDeductionDM> beanEmployeeDecn = new BeanItemContainer<EmployeeDeductionDM>(
+				EmployeeDeductionDM.class);
+		beanEmployeeDecn.addAll(list);
+		tblDeduction.setContainerDataSource(beanEmployeeDecn);
+		tblDeduction.setVisibleColumns(new Object[] { "empdednid", "empName", "dedcnCode", "isflatpt", "dednamt",
+				"dednpt", "empdednstatus", "lastupdateddt", "lastupdatedby" });
+		tblDeduction.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Deduction Code", "Flat/Percent",
+				"Deduction Amount", "Deduction Percent", "Status", "Last Updated Date", "Last Updated By" });
+		tblDeduction.setColumnAlignment("empdednid", Align.RIGHT);
+	}
+	
+	/*
+	 * loadEarnings()-->this function is used for load the search Employee Earnings to table
+	 */
+	private void loadEarnings() {
+		tblEarnings.removeAllItems();
+		List<EmployeeEarningDM> list = new ArrayList<EmployeeEarningDM>();
+		list = serviceEmployeeEarning.getempearningList(null, ((EmployeeDM) cbEmployee.getValue()).getEmployeeid(),
+				null, null, "F");
+		BeanItemContainer<EmployeeEarningDM> beanEmployeeEarn = new BeanItemContainer<EmployeeEarningDM>(
+				EmployeeEarningDM.class);
+		beanEmployeeEarn.addAll(list);
+		tblEarnings.setContainerDataSource(beanEmployeeEarn);
+		tblEarnings.setVisibleColumns(new Object[] { "empearnid", "employeeName", "earnCode", "isflatpercent",
+				"earnpercent", "earnamt", "empearnstatus", "lastpdateddt", "lastupdatedby" });
+		tblEarnings.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Earn Code", "Flat/Percent",
+				"Earn Percent", "Earn Amount", "Status", "Last Updated Date", "Last Updated By" });
+		tblEarnings.setColumnAlignment("empearnid", Align.RIGHT);
+	}
+	
+	/*
 	 * loadEmployeeList()-->this function is used for load the employee list
 	 */
 	private void loadEmployeeList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name :  > " + "Loading  Employee Search...");
 			BeanItemContainer<EmployeeDM> beanLoadEmployee = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-			beanLoadEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null,
-					null, null, null, "F"));
+			beanLoadEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+					null, null, "F"));
 			cbEmployee.setContainerDataSource(beanLoadEmployee);
 		}
 		catch (Exception e) {

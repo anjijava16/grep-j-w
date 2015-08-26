@@ -271,12 +271,17 @@ public class ECNote extends BaseTransUI {
 	
 	// Load Enquiry List
 	private void loadEnquiryList(Long enquiryId) {
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr
-				.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, enquiryId, null, null, null, "P", null, null));
-		cbEnquiry.setContainerDataSource(beansmsenqHdr);
-		cbEnquiry.setValue(cbEnquiry.getItemIds().iterator().next());
+		try {
+			BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("enquiryId");
+			beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, enquiryId, null, null, null, "P", null,
+					null));
+			cbEnquiry.setContainerDataSource(beansmsenqHdr);
+			cbEnquiry.setValue(cbEnquiry.getItemIds().iterator().next());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Product List
@@ -295,13 +300,18 @@ public class ECNote extends BaseTransUI {
 	
 	// Load Client List
 	private void loadSmsClientList(Long clientid) {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
-		BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
-		beanclientDM.setBeanIdProperty("clientId");
-		beanclientDM.addAll(serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null, null,
-				"Active", "P"));
-		cbClient.setContainerDataSource(beanclientDM);
-		cbClient.setValue(cbClient.getItemIds().iterator().next());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
+			BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			beanclientDM.setBeanIdProperty("clientId");
+			beanclientDM.addAll(serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null,
+					null, "Active", "P"));
+			cbClient.setContainerDataSource(beanclientDM);
+			cbClient.setValue(cbClient.getItemIds().iterator().next());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadECRequest() {

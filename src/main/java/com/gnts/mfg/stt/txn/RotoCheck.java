@@ -535,7 +535,6 @@ public class RotoCheck extends BaseTransUI {
 		assembleInputUserLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		dfRotoDt.setRequired(true);
-		;
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
@@ -608,7 +607,6 @@ public class RotoCheck extends BaseTransUI {
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-
 		cbBranch.setValue(cbBranch.getItemIds().iterator().next());
 		tfRotoRef.setReadOnly(false);
 		tfRotoRef.setValue("");
@@ -618,7 +616,6 @@ public class RotoCheck extends BaseTransUI {
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		dfRotoDt.setComponentError(null);
 		cbBranch.setComponentError(null);
-
 		tblRotoDetails.removeAllItems();
 	}
 	
@@ -758,20 +755,29 @@ public class RotoCheck extends BaseTransUI {
 	 * loadBranchList()-->this function is used for load the branch name
 	 */
 	private void loadBranchList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranchDM.setBeanIdProperty("branchId");
-		beanBranchDM.addAll(servicebeanBranch.getBranchList(null, null, null, "Active", companyid, "P"));
-		cbBranch.setContainerDataSource(beanBranchDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranchDM.setBeanIdProperty("branchId");
+			beanBranchDM.addAll(servicebeanBranch.getBranchList(null, null, null, "Active", companyid, "P"));
+			cbBranch.setContainerDataSource(beanBranchDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadRotoPlanList() {
-		BeanItemContainer<RotoPlanHdrDM> beanrotoplanhdr = new BeanItemContainer<RotoPlanHdrDM>(RotoPlanHdrDM.class);
-		beanrotoplanhdr.addAll(serviceRotoplanhdr.getRotoPlanHdrDetails(null, companyid, null, "Active"));
-		cbPlanRef.setContainerDataSource(beanrotoplanhdr);
+		try {
+			BeanItemContainer<RotoPlanHdrDM> beanrotoplanhdr = new BeanItemContainer<RotoPlanHdrDM>(RotoPlanHdrDM.class);
+			beanrotoplanhdr.addAll(serviceRotoplanhdr.getRotoPlanHdrDetails(null, companyid, null, "Active"));
+			cbPlanRef.setContainerDataSource(beanrotoplanhdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
-
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub

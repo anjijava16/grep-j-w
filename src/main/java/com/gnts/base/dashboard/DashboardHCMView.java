@@ -8,6 +8,7 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.EmployeeLeaveDM;
 import com.gnts.hcm.domain.txn.JobCandidateDM;
+import com.gnts.hcm.mst.EmployeeDetail;
 import com.gnts.hcm.rpt.Payslip;
 import com.gnts.hcm.service.txn.EmployeeLeaveService;
 import com.gnts.hcm.service.txn.JobCandidateService;
@@ -16,7 +17,6 @@ import com.gnts.hcm.txn.Courier;
 import com.gnts.hcm.txn.EmployeeAttendence;
 import com.gnts.hcm.txn.EmployeeLeave;
 import com.gnts.hcm.txn.JobCandidate;
-import com.gnts.hcm.txn.JobVaccancy;
 import com.gnts.hcm.txn.Outpass;
 import com.gnts.hcm.txn.PhoneCallRegister;
 import com.gnts.hcm.txn.VisitorPass;
@@ -36,7 +36,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.FormLayout;
@@ -47,17 +46,17 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 public class DashboardHCMView implements ClickListener {
 	/**
 	 * 
 	 */
 	static final long serialVersionUID = 1L;
-	private OutpassService serviceoutpass = (OutpassService) SpringContextHelper.getBean("outpass");
-	private VisitPassService servicevisitpass = (VisitPassService) SpringContextHelper.getBean("visitPass");
-	private EmployeeLeaveService serviceemployeeleave = (EmployeeLeaveService) SpringContextHelper
-			.getBean("EmployeeLeave");
-	private PhoneRegService servicephonereg = (PhoneRegService) SpringContextHelper.getBean("phoneregister");
+	private OutpassService serviceOutpass = (OutpassService) SpringContextHelper.getBean("outpass");
+	private VisitPassService serviceVisitpass = (VisitPassService) SpringContextHelper.getBean("visitPass");
+	private EmployeeLeaveService serviceEmpLeave = (EmployeeLeaveService) SpringContextHelper.getBean("EmployeeLeave");
+	private PhoneRegService servicePhoneReg = (PhoneRegService) SpringContextHelper.getBean("phoneregister");
 	private Label lblDashboardTitle;
 	private VerticalLayout clMainLayout;
 	private HorizontalLayout hlHeader;
@@ -65,7 +64,7 @@ public class DashboardHCMView implements ClickListener {
 	private Button btnEmpAtten = new Button("10", this);
 	private Button btnAttenProcess = new Button("10", this);
 	private Button btnPayslip = new Button("10", this);
-	private Button btnJobVacancy = new Button("10", this);
+	private Button btnEmpOverview = new Button(">>", this);
 	private Button btnEmpLeave = new Button("10", this);
 	private Button btnOutpass = new Button("10", this);
 	private Button btnVisitPass = new Button("10", this);
@@ -77,7 +76,7 @@ public class DashboardHCMView implements ClickListener {
 	private Table tblEmplLeave = new Table();
 	private Table tblPhoneReg = new Table();
 	private Window notificationsWindow;
-	private JobCandidateService jobcandidateService = (JobCandidateService) SpringContextHelper.getBean("JobCandidate");
+	private JobCandidateService serviceJobCandidate = (JobCandidateService) SpringContextHelper.getBean("JobCandidate");
 	
 	public DashboardHCMView() {
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
@@ -120,7 +119,7 @@ public class DashboardHCMView implements ClickListener {
 		btnEmpAtten.setStyleName("borderless-colored");
 		btnPayslip.setStyleName("borderless-colored");
 		btnAttenProcess.setStyleName("borderless-colored");
-		btnJobVacancy.setStyleName("borderless-colored");
+		btnEmpOverview.setStyleName("borderless-colored");
 		btnEmpLeave.setStyleName("borderless-colored");
 		btnOutpass.setStyleName("borderless-colored");
 		btnVisitPass.setStyleName("borderless-colored");
@@ -142,7 +141,7 @@ public class DashboardHCMView implements ClickListener {
 		custom.addComponent(btnEmpAtten, "empattencount");
 		custom.addComponent(btnPayslip, "payslipcount");
 		custom.addComponent(btnAttenProcess, "attenproccount");
-		custom.addComponent(btnJobVacancy, "jobvacancy");
+		custom.addComponent(btnEmpOverview, "jobvacancy");
 		custom.addComponent(btnEmpLeave, "empleave");
 		custom.addComponent(btnOutpass, "outpass");
 		custom.addComponent(btnVisitPass, "visitpass");
@@ -150,7 +149,6 @@ public class DashboardHCMView implements ClickListener {
 		custom.addComponent(btnPhoneReg, "phonereg");
 		custom.addComponent(tblOutpass, "tableoutpass");
 		custom.addComponent(tblVisitpass, "tablevisitorpass");
-		// custom.addComponent(tblEmplLeave, "tableempleave");
 		custom.addComponent(tblPhoneReg, "tablephonereg");
 		custom.addComponent(new CalendarMonthly("EMP_LEAVE"), "employeeleave");
 		tblOutpass.setHeight("300px");
@@ -174,7 +172,7 @@ public class DashboardHCMView implements ClickListener {
 			tblEmplLeave.removeAllItems();
 			BeanItemContainer<EmployeeLeaveDM> beanempleave = new BeanItemContainer<EmployeeLeaveDM>(
 					EmployeeLeaveDM.class);
-			beanempleave.addAll(serviceemployeeleave.getempleaveList(null, null, null, null, null, null, "P"));
+			beanempleave.addAll(serviceEmpLeave.getempleaveList(null, null, null, null, null, null, "P"));
 			tblEmplLeave.setContainerDataSource(beanempleave);
 			tblEmplLeave.setVisibleColumns(new Object[] { "employeeid", "leavetypeid", "noofdays", "leavereason",
 					"appmgr", "empleavestatus" });
@@ -198,7 +196,7 @@ public class DashboardHCMView implements ClickListener {
 			// logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
 			tblPhoneReg.removeAllItems();
 			BeanItemContainer<PhoneRegDM> beanphonereg = new BeanItemContainer<PhoneRegDM>(PhoneRegDM.class);
-			beanphonereg.addAll(servicephonereg.getPhoneRegList(null, null, null, null, null,null,null));
+			beanphonereg.addAll(servicePhoneReg.getPhoneRegList(null, null, null, null, null, null, null));
 			tblPhoneReg.setContainerDataSource(beanphonereg);
 			tblPhoneReg.setVisibleColumns(new Object[] { "callDate", "callType", "companyName", "employeeId",
 					"phoneNumber", "interNo" });
@@ -222,7 +220,7 @@ public class DashboardHCMView implements ClickListener {
 			// logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
 			tblOutpass.removeAllItems();
 			BeanItemContainer<OutpassDM> beanoutpass = new BeanItemContainer<OutpassDM>(OutpassDM.class);
-			beanoutpass.addAll(serviceoutpass.getOutpassList(null, null, null, null, "Active"));
+			beanoutpass.addAll(serviceOutpass.getOutpassList(null, null, null, null, "Active"));
 			tblOutpass.setContainerDataSource(beanoutpass);
 			tblOutpass.setVisibleColumns(new Object[] { "passDate", "firstname", "place", "vehicle", "totalTime",
 					"totalKM" });
@@ -246,7 +244,7 @@ public class DashboardHCMView implements ClickListener {
 			// logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
 			tblVisitpass.removeAllItems();
 			BeanItemContainer<VisitPassDM> beanvisitpass = new BeanItemContainer<VisitPassDM>(VisitPassDM.class);
-			beanvisitpass.addAll(servicevisitpass.getVisitPasList(null, null, null, null, null));
+			beanvisitpass.addAll(serviceVisitpass.getVisitPasList(null, null, null, null, null));
 			tblVisitpass.setContainerDataSource(beanvisitpass);
 			tblVisitpass.setVisibleColumns(new Object[] { "visitDate", "visitorName", "contactNo", "mateFLow",
 					"inTime", "totalTime" });
@@ -299,11 +297,11 @@ public class DashboardHCMView implements ClickListener {
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Attendenece Process");
 			new AttendenceProc();
-		} else if (event.getButton() == btnJobVacancy) {
+		} else if (event.getButton() == btnEmpOverview) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
-			UI.getCurrent().getSession().setAttribute("screenName", "Job Vaccancy");
-			new JobVaccancy();
+			UI.getCurrent().getSession().setAttribute("screenName", "Employee Overview");
+			new EmployeeDetail();
 		} else if (event.getButton() == btnEmpLeave) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
@@ -360,7 +358,7 @@ public class DashboardHCMView implements ClickListener {
 		List<JobCandidateDM> jobcandidateList = new ArrayList<JobCandidateDM>();
 		JobCandidateDM jobcandidatedm = new JobCandidateDM();
 		jobcandidateList.add(jobcandidatedm);
-		jobcandidateList = jobcandidateService.getJobCandidateList(null, null, null, null, "Active");
+		jobcandidateList = serviceJobCandidate.getJobCandidateList(null, null, null, null, "Active");
 		FormLayout fmlayout = new FormLayout();
 		Date dttodaydt = new Date();
 		VerticalLayout hrLayout = new VerticalLayout();

@@ -915,11 +915,16 @@ public class Extruder extends BaseTransUI {
 	
 	// this method use to Load lookup Name list inside of ComboBox
 	private void loadlookuplist() {
-		BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanlook.setBeanIdProperty("lookupname");
-		beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyid, moduleId, "Active", "MP_ZONNAME"));
-		cbZoneName.setContainerDataSource(beanlook);
+		try {
+			BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanlook.setBeanIdProperty("lookupname");
+			beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyid, moduleId, "Active", "MP_ZONNAME"));
+			cbZoneName.setContainerDataSource(beanlook);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void extMtrlResetFields() {
@@ -1246,41 +1251,61 @@ public class Extruder extends BaseTransUI {
 	}
 	
 	private void loadMachineList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, AssetDetailsDM> beanAssetdetail = new BeanContainer<Long, AssetDetailsDM>(
-				AssetDetailsDM.class);
-		beanAssetdetail.setBeanIdProperty("assetId");
-		beanAssetdetail.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null, "7050",
-				"Active"));
-		cbMachineName.setContainerDataSource(beanAssetdetail);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, AssetDetailsDM> beanAssetdetail = new BeanContainer<Long, AssetDetailsDM>(
+					AssetDetailsDM.class);
+			beanAssetdetail.setBeanIdProperty("assetId");
+			beanAssetdetail.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null, "7050",
+					"Active"));
+			cbMachineName.setContainerDataSource(beanAssetdetail);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadMaterialList() {
-		Long materialId = new Long("229");
-		BeanItemContainer<MaterialDM> beanMaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanMaterial.addAll(serviceMaterial.getMaterialList(materialId, companyid, null, null, null, null, null, null,
-				"Active", "P"));
-		cbMatName.setContainerDataSource(beanMaterial);
+		try {
+			Long materialId = new Long("229");
+			BeanItemContainer<MaterialDM> beanMaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
+			beanMaterial.addAll(serviceMaterial.getMaterialList(materialId, companyid, null, null, null, null, null,
+					null, "Active", "P"));
+			cbMatName.setContainerDataSource(beanMaterial);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadOPMaterialList() {
-		BeanContainer<Long, MaterialDM> beanMaterials = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
-		beanMaterials.setBeanIdProperty("materialId");
-		beanMaterials.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
-				"Active", "P"));
-		cbMaterial.setContainerDataSource(beanMaterials);
+		try {
+			BeanContainer<Long, MaterialDM> beanMaterials = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
+			beanMaterials.setBeanIdProperty("materialId");
+			beanMaterials.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
+					"Active", "P"));
+			cbMaterial.setContainerDataSource(beanMaterials);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadLotNumber() {
-		BeanContainer<String, MaterialStockDM> beanMaterialStockDM = new BeanContainer<String, MaterialStockDM>(
-				MaterialStockDM.class);
-		for (MaterialStockDM materialStockDM : serviceMaterialStock.getMaterialStockList(
-				(((MaterialDM) cbMatName.getValue()).getMaterialId()), companyid, null, null, null, null, "F")) {
-			if (materialStockDM.getCurrentStock() > 0) {
-				beanMaterialStockDM.setBeanIdProperty("lotNo");
-				beanMaterialStockDM.addBean(materialStockDM);
-				cbLotno.setContainerDataSource(beanMaterialStockDM);
+		try {
+			BeanContainer<String, MaterialStockDM> beanMaterialStockDM = new BeanContainer<String, MaterialStockDM>(
+					MaterialStockDM.class);
+			for (MaterialStockDM materialStockDM : serviceMaterialStock.getMaterialStockList(
+					(((MaterialDM) cbMatName.getValue()).getMaterialId()), companyid, null, null, null, null, "F")) {
+				if (materialStockDM.getCurrentStock() > 0) {
+					beanMaterialStockDM.setBeanIdProperty("lotNo");
+					beanMaterialStockDM.addBean(materialStockDM);
+					cbLotno.setContainerDataSource(beanMaterialStockDM);
+				}
 			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

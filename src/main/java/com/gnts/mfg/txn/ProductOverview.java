@@ -101,8 +101,8 @@ public class ProductOverview implements ClickListener {
 	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper
 			.getBean("enquiryWorkflow");
 	private QcTestHdrService serviceQcTstHdr = (QcTestHdrService) SpringContextHelper.getBean("qcTestHdr");
-	//private QCTestDtlService serviceQcTstDtl = (QCTestDtlService) SpringContextHelper.getBean("qcTestDtl");
-	//private QATestDtlService serviceQATstDtl = (QATestDtlService) SpringContextHelper.getBean("qatestDetls");
+	// private QCTestDtlService serviceQcTstDtl = (QCTestDtlService) SpringContextHelper.getBean("qcTestDtl");
+	// private QATestDtlService serviceQATstDtl = (QATestDtlService) SpringContextHelper.getBean("qatestDetls");
 	private QATestHdrService serviceQATstHdr = (QATestHdrService) SpringContextHelper.getBean("qatesthdr");
 	// Header container which holds, screen name, notification and page master
 	// buttons
@@ -745,8 +745,12 @@ public class ProductOverview implements ClickListener {
 			}
 			if (productDM != null) {
 				if (productDM.getProdimg() != null) {
-					imgProduct.setSource(new ThemeResource(viewProdImage(productDM.getProdimg(),
-							productDM.getProductcode())));
+					try {
+						imgProduct.setSource(new ThemeResource(viewProdImage(productDM.getProdimg(),
+								productDM.getProductcode())));
+					}
+					catch (Exception e) {
+					}
 				}
 				tfProductCode.setValue(productDM.getProductcode());
 				tfProductName.setValue(productDM.getProdname());
@@ -756,8 +760,8 @@ public class ProductOverview implements ClickListener {
 					RotoPlanDtlDM rotoPlanDtlDM = serviceRotoplandtl.getRotoPlanDtlList(null,
 							rotoCheckDtlDM.getRotoid(), null, rotoCheckDtlDM.getProductId(), null).get(0);
 					try {
-						WorkOrderHdrDM workOrderHdrDM = serviceWrkOrdHdr.getWorkOrderHDRList(null,
-								null, null, null, null, null, "F", rotoPlanDtlDM.getWoId(), null, null, null,null).get(0);
+						WorkOrderHdrDM workOrderHdrDM = serviceWrkOrdHdr.getWorkOrderHDRList(null, null, null, null,
+								null, null, "F", rotoPlanDtlDM.getWoId(), null, null, null, null).get(0);
 						loadEnquiryDetails(workOrderHdrDM.getEnquiryId(), rotoCheckDtlDM.getProductId());
 						getEnqWorkflowDetails(workOrderHdrDM.getEnquiryId());
 						getQATestHeaderDetails(workOrderHdrDM.getWorkOrdrId(), rotoCheckDtlDM.getProductId());
@@ -864,31 +868,40 @@ public class ProductOverview implements ClickListener {
 	}
 	
 	private void getQATestHeaderDetails(Long workOrdNumber, Long productId) {
-		List<QATestHdrDM> listQcTstHdr = new ArrayList<QATestHdrDM>();
-		if (productId != null && workOrdNumber != null) {
-			listQcTstHdr = serviceQATstHdr.getQaTestHdrDetails(null, null, null, null, productId, null);
+		try {
+			List<QATestHdrDM> listQcTstHdr = new ArrayList<QATestHdrDM>();
+			if (productId != null && workOrdNumber != null) {
+				listQcTstHdr = serviceQATstHdr.getQaTestHdrDetails(null, null, null, null, productId, null);
+			}
+			BeanItemContainer<QATestHdrDM> beanQATstHdr = new BeanItemContainer<QATestHdrDM>(QATestHdrDM.class);
+			beanQATstHdr.addAll(listQcTstHdr);
+			tblQATestHdr.setContainerDataSource(beanQATstHdr);
+			tblQATestHdr.setVisibleColumns(new Object[] { "qatestHdrid", "inspectionno", "inspectiondate",
+					"clientName", "productName", "workOrdNo", "testresult", "teststatus", "lastupdateddate",
+					"lastupdatedby" });
+			tblQATestHdr.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Inspection Date", "Client Name",
+					"Product Name", "Work Ord.No", "QC. Result", "Status", "Last Updated Date", "Last Updated By" });
+			tblQATestHdr.setColumnAlignment("qatestHdrid", Align.RIGHT);
 		}
-		BeanItemContainer<QATestHdrDM> beanQATstHdr = new BeanItemContainer<QATestHdrDM>(QATestHdrDM.class);
-		beanQATstHdr.addAll(listQcTstHdr);
-		tblQATestHdr.setContainerDataSource(beanQATstHdr);
-		tblQATestHdr.setVisibleColumns(new Object[] { "qatestHdrid", "inspectionno", "inspectiondate", "clientName",
-				"productName", "workOrdNo", "testresult", "teststatus", "lastupdateddate", "lastupdatedby" });
-		tblQATestHdr.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Inspection Date", "Client Name",
-				"Product Name", "Work Ord.No", "QC. Result", "Status", "Last Updated Date", "Last Updated By" });
-		tblQATestHdr.setColumnAlignment("qatestHdrid", Align.RIGHT);
+		catch (Exception e) {
+		}
 	}
 	
 	private void getQCTestDetails(Long woOrdId) {
-		List<QcTestHdrDM> listQcTstHdr = new ArrayList<QcTestHdrDM>();
-		listQcTstHdr = serviceQcTstHdr.getQcTestHdrDetails(null, null, null, null, null, null);
-		BeanItemContainer<QcTestHdrDM> beanQcTstHdr = new BeanItemContainer<QcTestHdrDM>(QcTestHdrDM.class);
-		beanQcTstHdr.addAll(listQcTstHdr);
-		tblQCTestDetails.setContainerDataSource(beanQcTstHdr);
-		tblQCTestDetails.setVisibleColumns(new Object[] { "qctestid", "inspectionno", "inspectiondate", "branchName",
-				"prodName", "qcresult", "qcteststatus", "lastupdateddate", "lastupdatedby" });
-		tblQCTestDetails.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Inspection Date", "Branch Name",
-				"Product Name", "QC Result", "Status", "Last Updated Dt.", "Last Updated By" });
-		tblQCTestDetails.setColumnAlignment("qctestid", Align.RIGHT);
+		try {
+			List<QcTestHdrDM> listQcTstHdr = new ArrayList<QcTestHdrDM>();
+			listQcTstHdr = serviceQcTstHdr.getQcTestHdrDetails(null, null, null, null, null, null);
+			BeanItemContainer<QcTestHdrDM> beanQcTstHdr = new BeanItemContainer<QcTestHdrDM>(QcTestHdrDM.class);
+			beanQcTstHdr.addAll(listQcTstHdr);
+			tblQCTestDetails.setContainerDataSource(beanQcTstHdr);
+			tblQCTestDetails.setVisibleColumns(new Object[] { "qctestid", "inspectionno", "inspectiondate",
+					"branchName", "prodName", "qcresult", "qcteststatus", "lastupdateddate", "lastupdatedby" });
+			tblQCTestDetails.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Inspection Date",
+					"Branch Name", "Product Name", "QC Result", "Status", "Last Updated Dt.", "Last Updated By" });
+			tblQCTestDetails.setColumnAlignment("qctestid", Align.RIGHT);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void getQuoteDetails(Long enquiryId) {

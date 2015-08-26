@@ -621,70 +621,116 @@ public class QATest extends BaseTransUI {
 	}
 	
 	private void loadProductDrgCodeList() {
-		BeanContainer<Long, ProductDrawingDM> beanProdDrg = new BeanContainer<Long, ProductDrawingDM>(
-				ProductDrawingDM.class);
-		beanProdDrg.setBeanIdProperty("productDrgId");
-		beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, null, null, "Active"));
-		cbProdDrg.setContainerDataSource(beanProdDrg);
+		try {
+			BeanContainer<Long, ProductDrawingDM> beanProdDrg = new BeanContainer<Long, ProductDrawingDM>(
+					ProductDrawingDM.class);
+			beanProdDrg.setBeanIdProperty("productDrgId");
+			beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, null, null, "Active"));
+			cbProdDrg.setContainerDataSource(beanProdDrg);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadWorkOrdNo() {
-		BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
-				WorkOrderHdrDM.class);
-		beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
-		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "P",
-				null, null, null, null, null));
-		cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
+		try {
+			BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
+					WorkOrderHdrDM.class);
+			beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
+			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "P",
+					null, null, null, null, null));
+			cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadProductList() {
-		BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
-		beanProd.setBeanIdProperty("prodid");
-		beanProd.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "F"));
-		cbProduct.setContainerDataSource(beanProd);
+		try {
+			BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
+			beanProd.setBeanIdProperty("prodid");
+			beanProd.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "F"));
+			cbProduct.setContainerDataSource(beanProd);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadClientList() {
-		BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
-		beanClient.setBeanIdProperty("clientId");
-		beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null, "Active",
-				"P"));
-		cbClient.setContainerDataSource(beanClient);
+		try {
+			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			beanClient.setBeanIdProperty("clientId");
+			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
+					"Active", "P"));
+			cbClient.setContainerDataSource(beanClient);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadTestGroup() {
-		BeanContainer<Long, TestGroupDM> beanTstGrp = new BeanContainer<Long, TestGroupDM>(TestGroupDM.class);
-		beanTstGrp.setBeanIdProperty("qaTestGpID");
-		beanTstGrp.addAll(serviceTestGroup.getTestGpDetails(null, null, "Active", "F"));
-		cbTestGrp.setContainerDataSource(beanTstGrp);
+		try {
+			BeanContainer<Long, TestGroupDM> beanTstGrp = new BeanContainer<Long, TestGroupDM>(TestGroupDM.class);
+			beanTstGrp.setBeanIdProperty("qaTestGpID");
+			beanTstGrp.addAll(serviceTestGroup.getTestGpDetails(null, null, "Active", "F"));
+			cbTestGrp.setContainerDataSource(beanTstGrp);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadTesttype() {
-		BeanContainer<Long, TestTypeDM> beanTsttype = new BeanContainer<Long, TestTypeDM>(TestTypeDM.class);
-		beanTsttype.setBeanIdProperty("qaTstTypId");
-		beanTsttype.addAll(serviceTestType.getTestTypeDetails(null, null, null, "Active"));
-		cbTesType.setContainerDataSource(beanTsttype);
+		try {
+			BeanContainer<Long, TestTypeDM> beanTsttype = new BeanContainer<Long, TestTypeDM>(TestTypeDM.class);
+			beanTsttype.setBeanIdProperty("qaTstTypId");
+			beanTsttype.addAll(serviceTestType.getTestTypeDetails(null, null, null, "Active"));
+			cbTesType.setContainerDataSource(beanTsttype);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadTstHdrConditions() {
-		BeanContainer<Long, TestConditionDM> beanTstCondn = new BeanContainer<Long, TestConditionDM>(
-				TestConditionDM.class);
-		beanTstCondn.setBeanIdProperty("testCondnId");
-		beanTstCondn.addAll(serviceTestCondition.getTestCondnDetails(companyid, null, null, "Active"));
-		cbTestCondition.setContainerDataSource(beanTstCondn);
+		try {
+			BeanContainer<Long, TestConditionDM> beanTstCondn = new BeanContainer<Long, TestConditionDM>(
+					TestConditionDM.class);
+			beanTstCondn.setBeanIdProperty("testCondnId");
+			beanTstCondn.addAll(serviceTestCondition.getTestCondnDetails(companyid, null, null, "Active"));
+			cbTestCondition.setContainerDataSource(beanTstCondn);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadTstDefDtlConditions() {
-		BeanItemContainer<TestConditionDM> beanTstCondn = new BeanItemContainer<TestConditionDM>(TestConditionDM.class);
-		beanTstCondn.addAll(serviceTestCondition.getTestCondnDetails(companyid, null, null, "Active"));
-		cbTstCondtn.setContainerDataSource(beanTstCondn);
+		try {
+			BeanItemContainer<TestConditionDM> beanTstCondn = new BeanItemContainer<TestConditionDM>(
+					TestConditionDM.class);
+			beanTstCondn.addAll(serviceTestCondition.getTestCondnDetails(companyid, null, null, "Active"));
+			cbTstCondtn.setContainerDataSource(beanTstCondn);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadTstSpecification() {
-		BeanItemContainer<TestSpecificationDM> beanTstSpec = new BeanItemContainer<TestSpecificationDM>(
-				TestSpecificationDM.class);
-		beanTstSpec.addAll(seriviceTestSpecification.getTestSpecDetails(companyid, null, "Active"));
-		cbTstSpec.setContainerDataSource(beanTstSpec);
+		try {
+			BeanItemContainer<TestSpecificationDM> beanTstSpec = new BeanItemContainer<TestSpecificationDM>(
+					TestSpecificationDM.class);
+			beanTstSpec.addAll(seriviceTestSpecification.getTestSpecDetails(companyid, null, "Active"));
+			cbTstSpec.setContainerDataSource(beanTstSpec);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -721,8 +767,8 @@ public class QATest extends BaseTransUI {
 			cbProduct.setValue(qaTestHdrDM.getProductid());
 			cbWorkOrderNo.setValue(qaTestHdrDM.getWoid().toString());
 			cbProdDrg.setValue(qaTestHdrDM.getProddwgid().toString());
-			cbTestGrp.setValue((Long)qaTestHdrDM.getQatestgroupid());
-			cbTesType.setValue((Long)qaTestHdrDM.getQattesttypeid());
+			cbTestGrp.setValue((Long) qaTestHdrDM.getQatestgroupid());
+			cbTesType.setValue((Long) qaTestHdrDM.getQattesttypeid());
 			cbTestCondition.setValue(qaTestHdrDM.getQatestcondid());
 			cbQThdrStatus.setValue(qaTestHdrDM.getTeststatus());
 			pdInspectionDt.setValue(qaTestHdrDM.getInspectiondateDt());

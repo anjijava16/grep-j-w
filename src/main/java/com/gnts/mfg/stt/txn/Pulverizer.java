@@ -398,28 +398,46 @@ public class Pulverizer extends BaseTransUI {
 	}
 	
 	private void loadBranchlist() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading Branchlist");
-		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(servicebranch.getBranchList(brnchid, branchName, null, "Active", companyid, "F"));
-		cbBranchName.setContainerDataSource(beanbranch);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading Branchlist");
+			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanbranch.setBeanIdProperty("branchId");
+			beanbranch.addAll(servicebranch.getBranchList(brnchid, branchName, null, "Active", companyid, "F"));
+			cbBranchName.setContainerDataSource(beanbranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadextudersrefno() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading Extrud refno");
-		BeanContainer<Long, ExtrudersHdrDM> beanextrud = new BeanContainer<Long, ExtrudersHdrDM>(ExtrudersHdrDM.class);
-		beanextrud.setBeanIdProperty("extId");
-		beanextrud.addAll(extrudservice.getExtruderList(extId, companyid, brnchid, null, null, null, null, null,
-				"Active", "F"));
-		cbExtrudRefNo.setContainerDataSource(beanextrud);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading Extrud refno");
+			BeanContainer<Long, ExtrudersHdrDM> beanextrud = new BeanContainer<Long, ExtrudersHdrDM>(
+					ExtrudersHdrDM.class);
+			beanextrud.setBeanIdProperty("extId");
+			beanextrud.addAll(extrudservice.getExtruderList(extId, companyid, brnchid, null, null, null, null, null,
+					"Active", "F"));
+			cbExtrudRefNo.setContainerDataSource(beanextrud);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadMachineDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading pulviz Reference No...");
-		BeanItemContainer<AssetDetailsDM> beanassetdetails = new BeanItemContainer<AssetDetailsDM>(AssetDetailsDM.class);
-		beanassetdetails.addAll(serviceassetdetails.getAssetDetailList(null, assetId, "PUL", null, null,null, null));
-		cbMachineName.setContainerDataSource(beanassetdetails);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading pulviz Reference No...");
+			BeanItemContainer<AssetDetailsDM> beanassetdetails = new BeanItemContainer<AssetDetailsDM>(
+					AssetDetailsDM.class);
+			beanassetdetails.addAll(serviceassetdetails
+					.getAssetDetailList(null, assetId, "PUL", null, null, null, null));
+			cbMachineName.setContainerDataSource(beanassetdetails);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -517,7 +535,8 @@ public class Pulverizer extends BaseTransUI {
 			}
 			taInstruction.setValue(pulvizHdrDM.getInstruction());
 			tblPulvizDtl.removeAllItems();
-			listPulverDetails.addAll(pulvizDtlservice.getPulvizDtlDetails(null, (Long.valueOf(pulvizid)), null, null, "F"));
+			listPulverDetails.addAll(pulvizDtlservice.getPulvizDtlDetails(null, (Long.valueOf(pulvizid)), null, null,
+					"F"));
 		}
 		loadPulverizerDetails();
 	}
@@ -581,7 +600,7 @@ public class Pulverizer extends BaseTransUI {
 			pulvizHdrDM.setLastupdatedby(username);
 			validatePulverizerDetails();
 			Pulvizhdrservice.saveorupdatePulvizHdr(pulvizHdrDM);
-			pulvizid=pulvizHdrDM.getPulvizid();
+			pulvizid = pulvizHdrDM.getPulvizid();
 			@SuppressWarnings("unchecked")
 			Collection<PulvizDtlDM> itemids = (Collection<PulvizDtlDM>) tblPulvizDtl.getVisibleItemIds();
 			for (PulvizDtlDM save : (Collection<PulvizDtlDM>) itemids) {
@@ -590,13 +609,15 @@ public class Pulverizer extends BaseTransUI {
 			}
 			hluserInputlayout.setMargin(false);
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchid, moduleid,
-						"STT_MF_PVZREFNO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchid, moduleid,
+							"STT_MF_PVZREFNO").get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyid, branchid, moduleid, "STT_MF_PVZREFNO");
-						System.out.println("Serial no=>" + companyid + "," + moduleid + "," + branchid);
 					}
+				}
+				catch (Exception e) {
+					logger.info(e.getMessage());
 				}
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
@@ -608,6 +629,7 @@ public class Pulverizer extends BaseTransUI {
 					}
 				}
 				catch (Exception e) {
+					logger.info(e.getMessage());
 				}
 			}
 			resetPulvizerDetails();

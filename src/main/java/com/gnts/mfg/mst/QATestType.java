@@ -635,25 +635,40 @@ public class QATestType extends BaseUI {
 	}
 	
 	private void loadTestGrpList() {
-		BeanContainer<Long, TestGroupDM> beanCity = new BeanContainer<Long, TestGroupDM>(TestGroupDM.class);
-		beanCity.setBeanIdProperty("qaTestGpID");
-		beanCity.addAll(serviceTestGroup.getTestGpDetails(companyid, null, "Active", "F"));
-		cbTestGroup.setContainerDataSource(beanCity);
+		try {
+			BeanContainer<Long, TestGroupDM> beanCity = new BeanContainer<Long, TestGroupDM>(TestGroupDM.class);
+			beanCity.setBeanIdProperty("qaTestGpID");
+			beanCity.addAll(serviceTestGroup.getTestGpDetails(companyid, null, "Active", "F"));
+			cbTestGroup.setContainerDataSource(beanCity);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadCategoryList() {
-		BeanItemContainer<ProductCategoryListDM> beanProdCatgry = new BeanItemContainer<ProductCategoryListDM>(
-				ProductCategoryListDM.class);
-		beanProdCatgry.addAll(serviceProductCategory.getProdCategoryList(null, null, null, "Active", null, "F"));
-		cbCatgry.setContainerDataSource(beanProdCatgry);
+		try {
+			BeanItemContainer<ProductCategoryListDM> beanProdCatgry = new BeanItemContainer<ProductCategoryListDM>(
+					ProductCategoryListDM.class);
+			beanProdCatgry.addAll(serviceProductCategory.getProdCategoryList(null, null, null, "Active", null, "F"));
+			cbCatgry.setContainerDataSource(beanProdCatgry);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadProductList() {
-		BeanContainer<Long, ProductDM> beanProduct = new BeanContainer<Long, ProductDM>(ProductDM.class);
-		beanProduct.setBeanIdProperty("prodid");
-		beanProduct.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active",
-				((ProductCategoryListDM) cbCatgry.getValue()).getCateid(), null, "F"));
-		lsPrdList.setContainerDataSource(beanProduct);
+		try {
+			BeanContainer<Long, ProductDM> beanProduct = new BeanContainer<Long, ProductDM>(ProductDM.class);
+			beanProduct.setBeanIdProperty("prodid");
+			beanProduct.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active",
+					((ProductCategoryListDM) cbCatgry.getValue()).getCateid(), null, "F"));
+			lsPrdList.setContainerDataSource(beanProduct);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to reset the fields
@@ -910,7 +925,7 @@ public class QATestType extends BaseUI {
 			tstType.setLastUpdatedDt(DateUtils.getcurrentdate());
 			tstType.setLastUpdatedBy(userName);
 			serviceTestType.saveTestTypeDetails(tstType);
-			testTypeId=tstType.getQaTstTypId().toString();
+			testTypeId = tstType.getQaTstTypId().toString();
 			// To save Test Definition
 			@SuppressWarnings("unchecked")
 			Collection<TestDefnDM> itemIds = (Collection<TestDefnDM>) tblTstDef.getVisibleItemIds();
@@ -969,22 +984,16 @@ public class QATestType extends BaseUI {
 		for (String obj : split) {
 			if (obj.trim().length() > 0) {
 				for (TestDefnDM tstDefDM : listTestDefn) {
-					// System.out.println("mat,getv" + tstDefDM.getProductId() + "," + Long.valueOf(obj.trim()));
-					// System.out.println("cbmat" + lsPrdList.getValue());
 					if (tstDefDM.getProductid().equals(Long.valueOf(obj.trim()))) {
 						count++;
 						break;
 					}
 				}
-				System.out.println("count--->" + count);
 				if (tblTstDef.getValue() != null) {
 					count = 0;
 				}
 				if (count == 0) {
-					/*
-					 * @SuppressWarnings({ "rawtypes", "unchecked" }) List<ProductDM> prdList = new
-					 * ArrayList<ProductDM>((Set) lsPrdList.getValue()); for (ProductDM obj : prdList) {
-					 */TestDefnDM objTstDef = new TestDefnDM();
+					TestDefnDM objTstDef = new TestDefnDM();
 					if (tblTstDef.getValue() != null) {
 						objTstDef = beanTestDef.getItem(tblTstDef.getValue()).getBean();
 						listTestDefn.remove(objTstDef);
@@ -1014,7 +1023,7 @@ public class QATestType extends BaseUI {
 		resetTstDefDetails();
 	}
 	
-	public void resetTstDefDetails() {
+	private void resetTstDefDetails() {
 		cbCatgry.setValue(null);
 		cbCatgry.setComponentError(null);
 		lsPrdList.removeAllItems();

@@ -906,11 +906,17 @@ public class Roto extends BaseTransUI {
 	 * loadEmployeeList()-->this function is used for load the employee name
 	 */
 	private void loadARMEmployeeList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
-		BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null, null,
-				"P"));
-		cbArmEmployee.setContainerDataSource(beanEmployeeDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Employee Search...");
+			BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null,
+					null, "P"));
+			cbArmEmployee.setContainerDataSource(beanEmployeeDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editRotoDtls() {
@@ -1164,7 +1170,7 @@ public class Roto extends BaseTransUI {
 			rotohdrDM.setLastupdateddate(DateUtils.getcurrentdate());
 			rotohdrDM.setLastupdatedby(username);
 			serviceRotohdr.saveRotohdr(rotohdrDM);
-			rotoid=rotohdrDM.getRotoid();
+			rotoid = rotohdrDM.getRotoid();
 			@SuppressWarnings("unchecked")
 			Collection<RotoDtlDM> rotoDtls = ((Collection<RotoDtlDM>) tblRotoDetails.getVisibleItemIds());
 			for (RotoDtlDM rotoDtl : (Collection<RotoDtlDM>) rotoDtls) {
@@ -1296,21 +1302,32 @@ public class Roto extends BaseTransUI {
 	 * loadClientList()-->this function is used for load the Client name
 	 */
 	private void loadClientList() {
-		BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
-		beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null, "Active",
-				"P"));
-		cbClient.setContainerDataSource(beanClient);
+		try {
+			BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
+			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
+					"Active", "P"));
+			cbClient.setContainerDataSource(beanClient);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadEmployeeList()-->this function is used for load the employee name
 	 */
 	private void loadEmployeeList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
-		BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null, null,
-				"P"));
-		cbEmpname.setContainerDataSource(beanEmployeeDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Employee Search...");
+			BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null,
+					null, "P"));
+			cbEmpname.setContainerDataSource(beanEmployeeDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
@@ -1354,17 +1371,28 @@ public class Roto extends BaseTransUI {
 	 * loadWorkOrderNo()-->this function is used for load the workorderno
 	 */
 	private void loadWorkOrderNo() {
-		Long clientId = (((ClientDM) cbClient.getValue()).getClientId());
-		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
-		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null, "F",
-				null, null,null,null,null));
-		cbWorkorder.setContainerDataSource(beanWrkOrdHdr);
+		try {
+			Long clientId = (((ClientDM) cbClient.getValue()).getClientId());
+			BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(
+					WorkOrderHdrDM.class);
+			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null,
+					"F", null, null, null, null, null));
+			cbWorkorder.setContainerDataSource(beanWrkOrdHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadRotoPlanArmList() {
-		BeanItemContainer<RotoPlanArmDM> beanrotoplanarm = new BeanItemContainer<RotoPlanArmDM>(RotoPlanArmDM.class);
-		beanrotoplanarm.addAll(serviceRotoplanarm.getRotoPlanArmList(null, null, null, null));
-		cbArmWorkorder.setContainerDataSource(beanrotoplanarm);
+		try {
+			BeanItemContainer<RotoPlanArmDM> beanrotoplanarm = new BeanItemContainer<RotoPlanArmDM>(RotoPlanArmDM.class);
+			beanrotoplanarm.addAll(serviceRotoplanarm.getRotoPlanArmList(null, null, null, null));
+			cbArmWorkorder.setContainerDataSource(beanrotoplanarm);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void deleteShiftDetails() {

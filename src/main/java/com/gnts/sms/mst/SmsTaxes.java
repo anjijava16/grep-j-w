@@ -13,7 +13,6 @@
 package com.gnts.sms.mst;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.CompanyLookupDM;
@@ -37,7 +36,6 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.sms.domain.mst.SmsTaxesDM;
 import com.gnts.sms.service.mst.SmsTaxesService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -68,21 +66,18 @@ public class SmsTaxes extends BaseUI {
 	// User Input Components
 	private TextField tfTaxPer;
 	private TextArea taDesc;
-	private ComboBox cbState, cbCountry, cbStatus, cbtaxCode;
-	private PopupDateField dfstartDate, dfendDate;
+	private ComboBox cbState, cbCountry, cbStatus, cbTaxCode;
+	private PopupDateField dfStartDate, dfEndDate;
 	// Bean container
 	private BeanItemContainer<SmsTaxesDM> beanTaxDM = null;
-	private BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = null;
 	// local variables declaration
 	private Long companyid;
 	private String taxid;
 	private int recordCnt = 0;
 	private String username;
-	public static boolean filevalue1 = false;
 	// for initialize logger
 	private Logger logger = Logger.getLogger(SmsTaxes.class);
 	private String userName;
-	Long stateId;
 	private Long moduleId, countryID;
 	private static final long serialVersionUID = 1L;
 	
@@ -91,8 +86,9 @@ public class SmsTaxes extends BaseUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		if(countryID!=null){
-		countryID = Long.valueOf(UI.getCurrent().getSession().getAttribute("countryid").toString());}
+		if (countryID != null) {
+			countryID = Long.valueOf(UI.getCurrent().getSession().getAttribute("countryid").toString());
+		}
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside SmsTaxes() constructor");
 		// Loading the UI
@@ -103,11 +99,11 @@ public class SmsTaxes extends BaseUI {
 	private void buildview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting SmsTaxes  UI");
 		// Tax Code text field
-		cbtaxCode = new GERPComboBox("Tax Code");
-		cbtaxCode.setItemCaptionPropertyId("lookupname");
-		cbtaxCode.setImmediate(true);
-		cbtaxCode.setNullSelectionAllowed(false);
-		cbtaxCode.setWidth("150");
+		cbTaxCode = new GERPComboBox("Tax Code");
+		cbTaxCode.setItemCaptionPropertyId("lookupname");
+		cbTaxCode.setImmediate(true);
+		cbTaxCode.setNullSelectionAllowed(false);
+		cbTaxCode.setWidth("150");
 		loadTaxCode();
 		// Tax Percentage text field
 		tfTaxPer = new GERPTextField("Tax Percentage");
@@ -144,11 +140,11 @@ public class SmsTaxes extends BaseUI {
 		taDesc.setHeight("40");
 		taDesc.setWidth("150");
 		// Start Date
-		dfstartDate = new GERPPopupDateField("Start Date");
-		dfstartDate.setInputPrompt("Select Date");
+		dfStartDate = new GERPPopupDateField("Start Date");
+		dfStartDate.setInputPrompt("Select Date");
 		// End Date
-		dfendDate = new GERPPopupDateField("End Date");
-		dfendDate.setInputPrompt("Select Date");
+		dfEndDate = new GERPPopupDateField("End Date");
+		dfEndDate.setInputPrompt("Select Date");
 		// build search layout
 		hlSearchLayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
@@ -165,7 +161,7 @@ public class SmsTaxes extends BaseUI {
 		// Add components for Search Layout
 		flColumn1 = new FormLayout();
 		flColumn2 = new FormLayout();
-		flColumn1.addComponent(cbtaxCode);
+		flColumn1.addComponent(cbTaxCode);
 		flColumn2.addComponent(cbStatus);
 		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn2);
@@ -183,12 +179,12 @@ public class SmsTaxes extends BaseUI {
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		flColumn5 = new FormLayout();
-		flColumn1.addComponent(cbtaxCode);
+		flColumn1.addComponent(cbTaxCode);
 		flColumn1.addComponent(tfTaxPer);
 		flColumn2.addComponent(cbCountry);
 		flColumn2.addComponent(cbState);
-		flColumn3.addComponent(dfstartDate);
-		flColumn3.addComponent(dfendDate);
+		flColumn3.addComponent(dfStartDate);
+		flColumn3.addComponent(dfEndDate);
 		Label lbl = new Label("");
 		flColumn3.addComponent(lbl);
 		flColumn4.addComponent(taDesc);
@@ -202,16 +198,16 @@ public class SmsTaxes extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("SmsTaxes Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<SmsTaxesDM> SmsTaxesList = new ArrayList<SmsTaxesDM>();
+		List<SmsTaxesDM> listTaxes = new ArrayList<SmsTaxesDM>();
 		logger.info("" + "SmsTaxes : Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Search Parameters are " + companyid + ", " + cbtaxCode.getValue());
-		SmsTaxesList = serviceTaxesSms.getTaxesSmsList(companyid, null, (String) cbtaxCode.getValue(),
+				+ "Search Parameters are " + companyid + ", " + cbTaxCode.getValue());
+		listTaxes = serviceTaxesSms.getTaxesSmsList(companyid, null, (String) cbTaxCode.getValue(),
 				(String) cbStatus.getValue(), null);
-		recordCnt = SmsTaxesList.size();
+		recordCnt = listTaxes.size();
 		beanTaxDM = new BeanItemContainer<SmsTaxesDM>(SmsTaxesDM.class);
-		beanTaxDM.addAll(SmsTaxesList);
+		beanTaxDM.addAll(listTaxes);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the SmsTaxes. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanTaxDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "taxid", "taxcode", "taxprnct", "taxstatus",
@@ -236,45 +232,49 @@ public class SmsTaxes extends BaseUI {
 		}
 	}
 	
-	public void loadTaxCode() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"SM_TAXCD");
-		beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
-		cbtaxCode.setContainerDataSource(beanCompanyLookUp);
+	private void loadTaxCode() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanContainer<Long, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<Long, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"SM_TAXCD"));
+			cbTaxCode.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// load the State name list details for form
 	private void loadStateList() {
-		List<StateDM> getStateList = new ArrayList<StateDM>();
-		getStateList.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
-		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
-		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(getStateList);
-		cbState.setContainerDataSource(beanState);
+		try {
+			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
+			beanState.setBeanIdProperty("stateId");
+			beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
+			cbState.setContainerDataSource(beanState);
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editSmsTax() {
 		hlUserInputLayout.setVisible(true);
-		Item rowSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (rowSelected != null) {
-			SmsTaxesDM editSmsTaxList = beanTaxDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbtaxCode.setValue(rowSelected.getItemProperty("taxcode").getValue().toString());
-			String stCode = rowSelected.getItemProperty("taxstatus").getValue().toString();
-			cbStatus.setValue(stCode);
-			cbCountry.setValue(Long.valueOf(editSmsTaxList.getCountryid()));
-			cbState.setValue(Long.valueOf(editSmsTaxList.getStateid()).toString());
-			if ((rowSelected.getItemProperty("taxdesc").getValue() != null)) {
-				taDesc.setValue(rowSelected.getItemProperty("taxdesc").getValue().toString());
+		if (tblMstScrSrchRslt.getValue() != null) {
+			SmsTaxesDM taxesDM = beanTaxDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			cbTaxCode.setValue(taxesDM.getTaxcode());
+			cbStatus.setValue(taxesDM.getTaxstatus());
+			cbCountry.setValue(Long.valueOf(taxesDM.getCountryid()));
+			cbState.setValue(Long.valueOf(taxesDM.getStateid()).toString());
+			if (taxesDM.getTaxdesc() != null) {
+				taDesc.setValue(taxesDM.getTaxdesc());
 			}
-			if ((rowSelected.getItemProperty("taxprnct").getValue() != null)) {
-				tfTaxPer.setValue(rowSelected.getItemProperty("taxprnct").getValue().toString());
+			if (taxesDM.getTaxprnct() != null) {
+				tfTaxPer.setValue(taxesDM.getTaxprnct().toString());
 			}
-			dfstartDate.setValue((Date) rowSelected.getItemProperty("startdt").getValue());
-			dfendDate.setValue((Date) rowSelected.getItemProperty("enddt").getValue());
+			dfStartDate.setValue(taxesDM.getStartdt());
+			dfEndDate.setValue(taxesDM.getEnddt());
 		}
 	}
 	
@@ -298,19 +298,19 @@ public class SmsTaxes extends BaseUI {
 	protected void resetSearchDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
-		cbtaxCode.setValue(null);
+		cbTaxCode.setValue(null);
 		loadSrchRslt();
 	}
 	
 	@Override
 	protected void addDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
-		cbtaxCode.setRequired(true);
+		cbTaxCode.setRequired(true);
 		cbCountry.setRequired(true);
 		cbState.setRequired(true);
 		tfTaxPer.setRequired(true);
-		dfendDate.setRequired(true);
-		dfstartDate.setRequired(true);
+		dfEndDate.setRequired(true);
+		dfStartDate.setRequired(true);
 		hlUserInputLayout.removeAllComponents();
 		// remove the components in the search layout and input controls in the same container
 		hlSearchLayout.removeAllComponents();
@@ -324,12 +324,12 @@ public class SmsTaxes extends BaseUI {
 	@Override
 	protected void editDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
-		cbtaxCode.setRequired(true);
+		cbTaxCode.setRequired(true);
 		cbCountry.setRequired(true);
 		cbState.setRequired(true);
 		tfTaxPer.setRequired(true);
-		dfendDate.setRequired(true);
-		dfstartDate.setRequired(true);
+		dfEndDate.setRequired(true);
+		dfStartDate.setRequired(true);
 		hlUserInputLayout.removeAllComponents();
 		// remove the components in the search layout and input controls in the same container
 		hlUserIPContainer.removeAllComponents();
@@ -346,8 +346,8 @@ public class SmsTaxes extends BaseUI {
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		Boolean errorFlag = false;
-		if ((cbtaxCode.getValue() == null)) {
-			cbtaxCode.setComponentError(new UserError(GERPErrorCodes.NULL_TAX_CODE));
+		if ((cbTaxCode.getValue() == null)) {
+			cbTaxCode.setComponentError(new UserError(GERPErrorCodes.NULL_TAX_CODE));
 			errorFlag = true;
 		}
 		if ((cbCountry.getValue() == null)) {
@@ -358,79 +358,69 @@ public class SmsTaxes extends BaseUI {
 			cbState.setComponentError(new UserError(GERPErrorCodes.NULL_COMPANY_STATE));
 			errorFlag = true;
 		}
-		
 		if (tfTaxPer.getValue() == "0") {
 			tfTaxPer.setComponentError(new UserError(GERPErrorCodes.NULL_COMPANY_STATE));
 			errorFlag = true;
 		}
-		if (dfstartDate.getValue() == null) {
-			dfstartDate.setComponentError(new UserError(GERPErrorCodes.START_DATE));
+		if (dfStartDate.getValue() == null) {
+			dfStartDate.setComponentError(new UserError(GERPErrorCodes.START_DATE));
 			errorFlag = true;
 		}
-		
-		if (dfendDate.getValue() == null) {
-			dfendDate.setComponentError(new UserError(GERPErrorCodes.END_DATE));
+		if (dfEndDate.getValue() == null) {
+			dfEndDate.setComponentError(new UserError(GERPErrorCodes.END_DATE));
 			errorFlag = true;
 		}
-		
-		if ((dfstartDate.getValue() != null) || (dfendDate.getValue() != null)) {
-			if (dfstartDate.getValue().after(dfendDate.getValue())) {
-				dfendDate.setComponentError(new UserError(GERPErrorCodes.DATE_OUTOFRANGE));
+		if ((dfStartDate.getValue() != null) || (dfEndDate.getValue() != null)) {
+			if (dfStartDate.getValue().after(dfEndDate.getValue())) {
+				dfEndDate.setComponentError(new UserError(GERPErrorCodes.DATE_OUTOFRANGE));
 				logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-						+ "Throwing ValidationException. User data is > " + cbtaxCode.getValue());
+						+ "Throwing ValidationException. User data is > " + cbTaxCode.getValue());
 				throw new ERPException.ValidationException();
 			}
 		}
-		cbtaxCode.setComponentError(null);
-		if(tblMstScrSrchRslt.getValue()==null){
-		if (serviceTaxesSms.getTaxesSmsListSize(cbtaxCode.getValue().toString(), (Long) cbCountry.getValue(),
-				Long.valueOf(cbState.getValue().toString()), dfstartDate.getValue(), dfendDate.getValue()).size()> 0) {
-			cbtaxCode.setComponentError(new UserError("This tax code is already available"));
-			errorFlag = true;
-		}
+		cbTaxCode.setComponentError(null);
+		if (tblMstScrSrchRslt.getValue() == null) {
+			if (serviceTaxesSms.getTaxesSmsListSize(cbTaxCode.getValue().toString(), (Long) cbCountry.getValue(),
+					Long.valueOf(cbState.getValue().toString()), dfStartDate.getValue(), dfEndDate.getValue()).size() > 0) {
+				cbTaxCode.setComponentError(new UserError("This tax code is already available"));
+				errorFlag = true;
+			}
 		}
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
 	}
+	
 	@Override
 	protected void saveDetails() {
-		/*
-		 * List<SmsTaxesDM> siz=serviceTaxesSms.getTaxesSmsListSize(cbtaxCode.getValue().toString(),
-		 * (Long)cbCountry.getValue(),Long.valueOf( cbState.getValue().toString()), dfstartDate.getValue(),
-		 * dfendDate.getValue()); int val=siz.size(); if(val==0){
-		 */
-		try{
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		SmsTaxesDM smsTaxobj = new SmsTaxesDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			smsTaxobj = beanTaxDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+			SmsTaxesDM taxesDM = new SmsTaxesDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				taxesDM = beanTaxDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
+			taxesDM.setCompanyid(companyid);
+			taxesDM.setTaxcode(cbTaxCode.getValue().toString());
+			taxesDM.setCountryid((Long) cbCountry.getValue());
+			taxesDM.setStateid(Long.valueOf(cbState.getValue().toString()));
+			taxesDM.setTaxdesc(taDesc.getValue());
+			if (tfTaxPer.getValue() != null && tfTaxPer.getValue().trim().length() > 0) {
+				taxesDM.setTaxprnct((Double.valueOf(tfTaxPer.getValue())));
+			}
+			taxesDM.setStartdt(dfStartDate.getValue());
+			taxesDM.setEnddt(dfEndDate.getValue());
+			taxesDM.setTaxstatus((String) cbStatus.getValue());
+			taxesDM.setLastupdateddt(DateUtils.getcurrentdate());
+			taxesDM.setLastupdatedby(username);
+			serviceTaxesSms.saveTaxesSmsDetails(taxesDM);
+			btnAdd.setCaption("add");
+			resetFields();
+			loadSrchRslt();
+			btnAdd.setCaption("add");
 		}
-		smsTaxobj.setCompanyid(companyid);
-		smsTaxobj.setTaxcode(cbtaxCode.getValue().toString());
-		smsTaxobj.setCountryid((Long) cbCountry.getValue());
-		smsTaxobj.setStateid(Long.valueOf(cbState.getValue().toString()));
-		smsTaxobj.setTaxdesc(taDesc.getValue());
-		if (tfTaxPer.getValue() != null && tfTaxPer.getValue().trim().length() > 0) {
-			smsTaxobj.setTaxprnct((Double.valueOf(tfTaxPer.getValue())));
-		}
-		smsTaxobj.setStartdt(dfstartDate.getValue());
-		smsTaxobj.setEnddt(dfendDate.getValue());
-		smsTaxobj.setTaxstatus((String) cbStatus.getValue());
-		smsTaxobj.setLastupdateddt(DateUtils.getcurrentdate());
-		smsTaxobj.setLastupdatedby(username);
-		serviceTaxesSms.saveTaxesSmsDetails(smsTaxobj);
-		btnAdd.setCaption("add");
-		resetFields();
-		loadSrchRslt();
-		btnAdd.setCaption("add");
-		}catch(Exception e){
+		catch (Exception e) {
 			e.printStackTrace();
 		}
-		// }
-		/*
-		 * else{ cbtaxCode.setComponentError(new UserError("This tax code is already available")); }
-		 */
 	}
 	
 	@Override
@@ -445,20 +435,20 @@ public class SmsTaxes extends BaseUI {
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assembleSearchLayout();
-		cbtaxCode.setRequired(false);
+		cbTaxCode.setRequired(false);
 		cbCountry.setRequired(false);
 		cbState.setRequired(false);
 		tfTaxPer.setRequired(false);
-		dfendDate.setRequired(false);
-		dfstartDate.setRequired(false);
+		dfEndDate.setRequired(false);
+		dfStartDate.setRequired(false);
 		resetFields();
 	}
 	
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		cbtaxCode.setValue(null);
-		cbtaxCode.setComponentError(null);
+		cbTaxCode.setValue(null);
+		cbTaxCode.setComponentError(null);
 		tfTaxPer.setValue("0");
 		tfTaxPer.setComponentError(null);
 		taDesc.setValue("");
@@ -467,11 +457,11 @@ public class SmsTaxes extends BaseUI {
 		cbState.setComponentError(null);
 		cbCountry.setValue(null);
 		cbCountry.setComponentError(null);
-		dfstartDate.setValue(null);
-		dfstartDate.setComponentError(null);
-		dfendDate.setValue(null);
-		cbtaxCode.setComponentError(null);
-		dfendDate.setComponentError(null);
+		dfStartDate.setValue(null);
+		dfStartDate.setComponentError(null);
+		dfEndDate.setValue(null);
+		cbTaxCode.setComponentError(null);
+		dfEndDate.setComponentError(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		cbCountry.setValue(cbCountry.getItemIds().iterator().next());
 	}

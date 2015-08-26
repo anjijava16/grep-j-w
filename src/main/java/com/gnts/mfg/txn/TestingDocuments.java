@@ -157,11 +157,15 @@ public class TestingDocuments implements ClickListener {
 	}
 	
 	private void editDetails() {
-		DocumentsDM documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
-		DesignDocumentUI designDocumentUI = new DesignDocumentUI(vlDocument);
-		tfDocumentName.setValue(documentsDM.getDocumentName());
-		taComments.setValue(documentsDM.getComments());
-		designDocumentUI.displayDocument(documentsDM.getDocument(), documentsDM.getFileName());
+		try {
+			DocumentsDM documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
+			DesignDocumentUI designDocumentUI = new DesignDocumentUI(vlDocument);
+			tfDocumentName.setValue(documentsDM.getDocumentName());
+			taComments.setValue(documentsDM.getComments());
+			designDocumentUI.displayDocument(documentsDM.getDocument(), documentsDM.getFileName());
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private void resetDetails() {

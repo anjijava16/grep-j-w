@@ -82,7 +82,6 @@ public class EnquiryWorkflow implements ClickListener {
 	private BeanItemContainer<EnquiryWorkflowDM> beanWorkflow;
 	private String username;
 	private Long enquiryId, companyid, workflowId;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	private Logger logger = Logger.getLogger(EnquiryWorkflow.class);
 	
 	public EnquiryWorkflow(HorizontalLayout hlEnquiryWorkflow, Long enquiryId, String username) {
@@ -365,12 +364,13 @@ public class EnquiryWorkflow implements ClickListener {
 	}
 	
 	// Load Existing case models from Lookup
-	public void loadcasemodelList() {
+	private void loadcasemodelList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
 			List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 					"BS_CAMOD");
-			beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
 			beanCompanyLookUp.addAll(lookUpList);
 			cbExistingCase.setContainerDataSource(beanCompanyLookUp);
@@ -384,16 +384,23 @@ public class EnquiryWorkflow implements ClickListener {
 	 * loadDepartmentList()-->this function is used for load the Department list
 	 */
 	private void loadDepartmentList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		List<DepartmentDM> departmentlist = servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P");
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
-		cbFromDept.setContainerDataSource(beanDepartment);
-		BeanContainer<Long, DepartmentDM> beanDepartment1 = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment1.setBeanIdProperty("deptid");
-		beanDepartment1.addAll(departmentlist);
-		cbToDept.setContainerDataSource(beanDepartment1);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Department Search...");
+			List<DepartmentDM> departmentlist = servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P");
+			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beanDepartment.setBeanIdProperty("deptid");
+			beanDepartment.addAll(departmentlist);
+			cbFromDept.setContainerDataSource(beanDepartment);
+			BeanContainer<Long, DepartmentDM> beanDepartment1 = new BeanContainer<Long, DepartmentDM>(
+					DepartmentDM.class);
+			beanDepartment1.setBeanIdProperty("deptid");
+			beanDepartment1.addAll(departmentlist);
+			cbToDept.setContainerDataSource(beanDepartment1);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override

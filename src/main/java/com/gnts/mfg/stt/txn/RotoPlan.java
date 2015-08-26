@@ -1280,70 +1280,108 @@ public class RotoPlan extends BaseTransUI {
 	 * loadBranchList()-->this function is used for load the branch name
 	 */
 	private void loadBranchList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranchDM.setBeanIdProperty("branchId");
-		beanBranchDM.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
-		cbBranch.setContainerDataSource(beanBranchDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranchDM.setBeanIdProperty("branchId");
+			beanBranchDM.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
+			cbBranch.setContainerDataSource(beanBranchDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadEmployeeList()-->this function is used for load the employee name
 	 */
 	private void loadEmployeeList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Employee Search...");
-		BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null, null,
-				"P"));
-		cbEmpName.setContainerDataSource(beanEmployeeDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Employee Search...");
+			BeanItemContainer<EmployeeDM> beanEmployeeDM = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", null, null, null, null,
+					null, "P"));
+			cbEmpName.setContainerDataSource(beanEmployeeDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadClientList()-->this function is used for load the Client name
 	 */
 	private void loadClientList() {
-		BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
-		beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null, "Active",
-				"P"));
-		cbClientId.setContainerDataSource(beanClient);
+		try {
+			BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
+			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
+					"Active", "P"));
+			cbClientId.setContainerDataSource(beanClient);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadProductList()-->this function is used for load the product Name
 	 */
 	private void loadProductList() {
-		Long workOrdHdrId = ((WorkOrderHdrDM) cbWO.getValue()).getWorkOrdrId();
-		BeanItemContainer<WorkOrderDtlDM> beanPlnDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
-		beanPlnDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, workOrdHdrId, null, "F"));
-		cbProd.setContainerDataSource(beanPlnDtl);
+		try {
+			Long workOrdHdrId = ((WorkOrderHdrDM) cbWO.getValue()).getWorkOrdrId();
+			BeanItemContainer<WorkOrderDtlDM> beanPlnDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
+			beanPlnDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, workOrdHdrId, null, "F"));
+			cbProd.setContainerDataSource(beanPlnDtl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Product List
 	private void loadProduct() {
-		BeanItemContainer<WorkOrderDtlDM> beanProduct = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
-		beanProduct.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, null, null, "F"));
-		cbArmProd.setContainerDataSource(beanProduct);
+		try {
+			BeanItemContainer<WorkOrderDtlDM> beanProduct = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
+			beanProduct.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, null, null, "F"));
+			cbArmProd.setContainerDataSource(beanProduct);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadWorkOrderNo()-->this function is used for load the workorderno
 	 */
 	private void loadWorkOrderNo() {
-		Long clientId = (((ClientDM) cbClientId.getValue()).getClientId());
-		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
-		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null, "F",
-				null, null,null,null,null));
-		cbWO.setContainerDataSource(beanWrkOrdHdr);
+		try {
+			Long clientId = (((ClientDM) cbClientId.getValue()).getClientId());
+			BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(
+					WorkOrderHdrDM.class);
+			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null,
+					"F", null, null, null, null, null));
+			cbWO.setContainerDataSource(beanWrkOrdHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadarmWorkOrderNo()-->this function is used for load the workorderno
 	 */
 	private void loadarmWorkOrderNo() {
-		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
-		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
-				null, null,null,null,null));
-		cbarmwono.setContainerDataSource(beanWrkOrdHdr);
+		try {
+			BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(
+					WorkOrderHdrDM.class);
+			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
+					null, null, null, null, null));
+			cbarmwono.setContainerDataSource(beanWrkOrdHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void deleteShiftDetails() {

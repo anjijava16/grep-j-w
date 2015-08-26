@@ -93,14 +93,14 @@ public class MaterialType extends BaseUI {
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.setPageLength(15);
 		tblMstScrSrchRslt.removeAllItems();
-		List<MaterialTypeDM> materialTypeList = new ArrayList<MaterialTypeDM>();
+		List<MaterialTypeDM> listMatType = new ArrayList<MaterialTypeDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ tfMatTypeName.getValue() + "," + cbMatTypeStatus.getValue() + "," + companyId);
-		materialTypeList = serviceMaterialType.getMaterialTypeList(null, tfMatTypeName.getValue(),
+		listMatType = serviceMaterialType.getMaterialTypeList(null, tfMatTypeName.getValue(),
 				(String) cbMatTypeStatus.getValue(), "F");
-		recordCnt = materialTypeList.size();
+		recordCnt = listMatType.size();
 		beanMaterialType = new BeanItemContainer<MaterialTypeDM>(MaterialTypeDM.class);
-		beanMaterialType.addAll(materialTypeList);
+		beanMaterialType.addAll(listMatType);
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Got the Material Type result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanMaterialType);
@@ -221,18 +221,18 @@ public class MaterialType extends BaseUI {
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
-		MaterialTypeDM materialTypeObj = new MaterialTypeDM();
+		MaterialTypeDM materialType = new MaterialTypeDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			materialTypeObj = beanMaterialType.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			materialType = beanMaterialType.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		materialTypeObj.setCompanyId(companyId);
-		materialTypeObj.setMaterialTypeName(tfMatTypeName.getValue().toString());
+		materialType.setCompanyId(companyId);
+		materialType.setMaterialTypeName(tfMatTypeName.getValue().toString());
 		if (cbMatTypeStatus.getValue() != null) {
-			materialTypeObj.setMaterialTypeStatus((String) cbMatTypeStatus.getValue());
+			materialType.setMaterialTypeStatus((String) cbMatTypeStatus.getValue());
 		}
-		materialTypeObj.setLastupdateddt(DateUtils.getcurrentdate());
-		materialTypeObj.setLastupdatedby(userName);
-		serviceMaterialType.saveOrUpdateMaterialType(materialTypeObj);
+		materialType.setLastupdateddt(DateUtils.getcurrentdate());
+		materialType.setLastupdatedby(userName);
+		serviceMaterialType.saveOrUpdateMaterialType(materialType);
 		resetFields();
 		loadSrchRslt();
 	}

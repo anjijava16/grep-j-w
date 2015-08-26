@@ -449,20 +449,30 @@ public class SignOff extends BaseTransUI {
 	}
 	
 	private void loadClientList() {
-		BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
-		beanClient.setBeanIdProperty("clientId");
-		beanClient.addAll(serviceClient.getClientDetails(companyId, null, null, null, null, null, null, null, "Active",
-				"P"));
-		cbClient.setContainerDataSource(beanClient);
+		try {
+			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			beanClient.setBeanIdProperty("clientId");
+			beanClient.addAll(serviceClient.getClientDetails(companyId, null, null, null, null, null, null, null,
+					"Active", "P"));
+			cbClient.setContainerDataSource(beanClient);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadWorkOrderNoList() {
-		BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
-				WorkOrderHdrDM.class);
-		beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
-		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyId, null, (Long) cbClient.getValue(), null,
-				null, null, "F", null, null, null, null,null));
-		cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
+		try {
+			BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
+					WorkOrderHdrDM.class);
+			beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
+			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyId, null, (Long) cbClient.getValue(),
+					null, null, null, "F", null, null, null, null, null));
+			cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadProductList() {
@@ -474,8 +484,9 @@ public class SignOff extends BaseTransUI {
 					(serviceWorkOrderDtl.getWorkOrderDtlList(
 							null,
 							(serviceWorkOrderHdr.getWorkOrderHDRList(companyId, null, null, null, null, "Approved",
-									"F", (Long) cbWorkOrderNo.getValue(), null, null, null,null).get(0).getWorkOrdrId()),
-							"Approved", "F").get(0).getProdId()), null, null, "Active", null, null, "F"));
+									"F", (Long) cbWorkOrderNo.getValue(), null, null, null, null).get(0)
+									.getWorkOrdrId()), "Approved", "F").get(0).getProdId()), null, null, "Active",
+					null, null, "F"));
 			cbProduct.setContainerDataSource(beanProd);
 		}
 		catch (Exception e) {
@@ -484,16 +495,26 @@ public class SignOff extends BaseTransUI {
 	}
 	
 	private void loadBranchList() {
-		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", null, "F"));
-		cbBranch.setContainerDataSource(beanbranch);
+		try {
+			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanbranch.setBeanIdProperty("branchId");
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", null, "F"));
+			cbBranch.setContainerDataSource(beanbranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadInspectionNo() {
-		BeanItemContainer<QATestHdrDM> beanQATestHdr = new BeanItemContainer<QATestHdrDM>(QATestHdrDM.class);
-		beanQATestHdr.addAll(serviceQATestHdr.getQaTestHdrDetails(null, companyId, null, null, null, "Active"));
-		cbInspectionNo.setContainerDataSource(beanQATestHdr);
+		try {
+			BeanItemContainer<QATestHdrDM> beanQATestHdr = new BeanItemContainer<QATestHdrDM>(QATestHdrDM.class);
+			beanQATestHdr.addAll(serviceQATestHdr.getQaTestHdrDetails(null, companyId, null, null, null, "Active"));
+			cbInspectionNo.setContainerDataSource(beanQATestHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override

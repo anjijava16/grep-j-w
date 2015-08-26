@@ -137,7 +137,7 @@ public class DesignDocuments implements ClickListener {
 			if (cbEnquiry.getValue() != null) {
 				System.out.println("cbEnquiry.getValue()--->" + cbEnquiry.getValue());
 				documentList = serviceDocuments.getDocumentDetails(null, null, (Long) cbEnquiry.getValue(), null, null,
-						null, null, null, null, null, null,null);
+						null, null, null, null, null, null, null);
 			}
 			int recordcount = documentList.size();
 			beanDocuments = new BeanItemContainer<DocumentsDM>(DocumentsDM.class);
@@ -156,10 +156,15 @@ public class DesignDocuments implements ClickListener {
 	
 	// Load Enquiry List
 	private void loadEnquiryList() {
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyId, null, null, null, null, "P", null, null));
-		cbEnquiry.setContainerDataSource(beansmsenqHdr);
+		try {
+			BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("enquiryId");
+			beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyId, null, null, null, null, "P", null, null));
+			cbEnquiry.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void saveDetails() {
@@ -194,11 +199,16 @@ public class DesignDocuments implements ClickListener {
 	}
 	
 	private void editDetails() {
-		DocumentsDM documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
-		DesignDocumentUI designDocumentUI = new DesignDocumentUI(vlDocument);
-		tfDocumentName.setValue(documentsDM.getDocumentName());
-		taComments.setValue(documentsDM.getComments());
-		designDocumentUI.displayDocument(documentsDM.getDocument(), documentsDM.getFileName());
+		try {
+			DocumentsDM documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
+			DesignDocumentUI designDocumentUI = new DesignDocumentUI(vlDocument);
+			tfDocumentName.setValue(documentsDM.getDocumentName());
+			taComments.setValue(documentsDM.getComments());
+			designDocumentUI.displayDocument(documentsDM.getDocument(), documentsDM.getFileName());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void resetDetails() {
@@ -212,7 +222,6 @@ public class DesignDocuments implements ClickListener {
 	public void buttonClick(ClickEvent event) {
 		// TODO Auto-generated method stub
 		if (event.getButton() == btnSave) {
-			System.out.println("call save Details....");
 			saveDetails();
 		}
 	}

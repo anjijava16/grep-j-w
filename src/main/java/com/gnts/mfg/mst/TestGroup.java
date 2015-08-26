@@ -113,16 +113,16 @@ public class TestGroup extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<TestGroupDM> testGrpList = new ArrayList<TestGroupDM>();
+		List<TestGroupDM> list = new ArrayList<TestGroupDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid);
-		testGrpList = serviceTestGroup.getTestGpDetails(companyid, tfTestGroup.getValue().toString(),
+		list = serviceTestGroup.getTestGpDetails(companyid, tfTestGroup.getValue().toString(),
 				(String) cbStatus.getValue(), "F");
-		recordCnt = testGrpList.size();
+		recordCnt = list.size();
 		beanTestGroup = new BeanItemContainer<TestGroupDM>(TestGroupDM.class);
-		beanTestGroup.addAll(testGrpList);
+		beanTestGroup.addAll(list);
 		tblMstScrSrchRslt.setContainerDataSource(beanTestGroup);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qaTestGpID", "testGroup", "tgroupStatus", "lastUpdatedDt",
 				"lastUpdateBy" });
@@ -143,10 +143,10 @@ public class TestGroup extends BaseUI {
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	protected void editMFGQATestGroupDetails() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			TestGroupDM editMFGQATestGroup = beanTestGroup.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfTestGroup.setValue(editMFGQATestGroup.getTestGroup());
-			cbStatus.setValue(editMFGQATestGroup.gettgroupStatus());
-			testGpID = Long.valueOf(editMFGQATestGroup.getQaTestGpID());
+			TestGroupDM testGroupDM = beanTestGroup.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			tfTestGroup.setValue(testGroupDM.getTestGroup());
+			cbStatus.setValue(testGroupDM.gettgroupStatus());
+			testGpID = Long.valueOf(testGroupDM.getQaTestGpID());
 		}
 	}
 	

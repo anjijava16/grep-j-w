@@ -563,25 +563,41 @@ public class WorkOrderPlan extends BaseTransUI {
 	}
 	
 	private void loadWorkOrderNo() {
-		BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
-		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
-				null, null,null,null,null));
-		cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
+		try {
+			BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(
+					WorkOrderHdrDM.class);
+			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
+					null, null, null, null, null));
+			cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadProductList() {
-		Long workOrdHdrId = ((WorkOrderHdrDM) cbWorkOrderNo.getValue()).getWorkOrdrId();
-		BeanItemContainer<WorkOrderDtlDM> beanPlnDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
-		beanPlnDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, workOrdHdrId, null, "F"));
-		cbProductName.setContainerDataSource(beanPlnDtl);
+		try {
+			Long workOrdHdrId = ((WorkOrderHdrDM) cbWorkOrderNo.getValue()).getWorkOrdrId();
+			BeanItemContainer<WorkOrderDtlDM> beanPlnDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
+			beanPlnDtl.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, workOrdHdrId, null, "F"));
+			cbProductName.setContainerDataSource(beanPlnDtl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadBranchlist() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(servicebeanBranch.getBranchList(null, null, null, "Active", companyid, "P"));
-		cbBranchName.setContainerDataSource(beanBranch);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranch.setBeanIdProperty("branchId");
+			beanBranch.addAll(servicebeanBranch.getBranchList(null, null, null, "Active", companyid, "P"));
+			cbBranchName.setContainerDataSource(beanBranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override

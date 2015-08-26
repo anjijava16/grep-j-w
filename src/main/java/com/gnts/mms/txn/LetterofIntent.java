@@ -307,12 +307,11 @@ public class LetterofIntent extends BaseTransUI {
 		flIndentDtlCol4 = new FormLayout();
 		flIndentDtlCol1.addComponent(cbMatName);
 		HorizontalLayout hlQtyUom = new HorizontalLayout();
-		hlQtyUom.setCaption("Qty123");
 		hlQtyUom.addComponent(tfIntQty);
 		hlQtyUom.addComponent(cbUom);
-		cbUom.setWidth("60");
+		hlQtyUom.setCaption("Qty");
 		flIndentDtlCol1.addComponent(hlQtyUom);
-		flIndentDtlCol1.setComponentAlignment(hlQtyUom, Alignment.TOP_LEFT);
+		// flIndentDtlCol1.setComponentAlignment(hlQtyUom, Alignment.TOP_LEFT);
 		flIndentDtlCol2.addComponent(tfUnitprice);
 		flIndentDtlCol2.addComponent(cbDtlStatus);
 		flIndentDtlCol3.addComponent(tfDtlRemarks);
@@ -698,6 +697,7 @@ public class LetterofIntent extends BaseTransUI {
 			@SuppressWarnings("unchecked")
 			Collection<LOIDetailsDM> loiDetails = ((Collection<LOIDetailsDM>) tblLOIDetail.getVisibleItemIds());
 			for (LOIDetailsDM loiDetailobj : (Collection<LOIDetailsDM>) loiDetails) {
+				loiDetailobj.setLoiHeaderId(loiHeaderDM.getLoiHdrId());
 				serviceLOIDetail.saveOrUpdateLOIHdr(loiDetailobj);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
@@ -710,7 +710,7 @@ public class LetterofIntent extends BaseTransUI {
 			}
 			loadSrchRslt();
 			loadLOIDetails();
-			 resetFields();
+			// resetFields();
 		}
 		catch (Exception e) {
 			e.printStackTrace();

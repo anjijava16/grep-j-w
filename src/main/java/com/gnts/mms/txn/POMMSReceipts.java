@@ -449,7 +449,8 @@ public class POMMSReceipts extends BaseTransUI {
 	private void loadindent() {
 		BeanContainer<Long, IndentHdrDM> beanIndent = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
 		beanIndent.setBeanIdProperty("indentId");
-		beanIndent.addAll(serviceIndent.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null, "F"));
+		beanIndent.addAll(serviceIndent.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null, null,
+				"F"));
 		cbIndentNo.setContainerDataSource(beanIndent);
 	}
 	
@@ -474,7 +475,8 @@ public class POMMSReceipts extends BaseTransUI {
 	private void loadMaterial() {
 		try {
 			BeanItemContainer<MmsPoDtlDM> beanProduct = new BeanItemContainer<MmsPoDtlDM>(MmsPoDtlDM.class);
-			beanProduct.addAll(serviceMMSPODtls.getpodtllist(((POHdrDM) cbPoNo.getValue()).getPoId(), null, null, "F"));
+			beanProduct.addAll(serviceMMSPODtls.getpodtllist(((POHdrDM) cbPoNo.getValue()).getPoId(), null, null, null,
+					null, "F"));
 			cbMaterial.setContainerDataSource(beanProduct);
 		}
 		catch (Exception e) {

@@ -599,10 +599,10 @@ public class MaterialVendorBill extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblVendorBillDtl.setContainerDataSource(beanVendorBillDtl);
-			tblVendorBillDtl.setVisibleColumns(new Object[] { "materialName", "materialUom", "basicValue", "unitRate",
-					"receiptQty", "rejectQty", "recpDtlStatus", "lastupdateddt", "lastupdatedby" });
-			tblVendorBillDtl.setColumnHeaders(new String[] { "Material", "Uom", "Basic Value", "Unit Rate",
-					"Receipt Qty", "Reject Qty", "Status", "Updated Date", "Updated By" });
+			tblVendorBillDtl.setVisibleColumns(new Object[] { "materialName", "materialUom", "receiptQty", "unitRate",
+					"basicValue", "rejectQty", "recpDtlStatus", "lastupdateddt", "lastupdatedby" });
+			tblVendorBillDtl.setColumnHeaders(new String[] { "Material", "Uom", "Receipt Qty", "Unit Rate",
+					"Basic Value", "Reject Qty", "Status", "Updated Date", "Updated By" });
 			tblVendorBillDtl.setColumnFooter("lastupdateddt", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
@@ -614,7 +614,7 @@ public class MaterialVendorBill extends BaseTransUI {
 		try {
 			Long poid = ((POHdrDM) cbpoNo.getValue()).getPoId();
 			BeanItemContainer<MmsPoDtlDM> beanPlnDtl = new BeanItemContainer<MmsPoDtlDM>(MmsPoDtlDM.class);
-			beanPlnDtl.addAll(servicepodtl.getpodtllist(poid, null, null, "F"));
+			beanPlnDtl.addAll(servicepodtl.getpodtllist(poid, null, null, null, null, "F"));
 			cbMaterial.setContainerDataSource(beanPlnDtl);
 		}
 		catch (Exception e) {

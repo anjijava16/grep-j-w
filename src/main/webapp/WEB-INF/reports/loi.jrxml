@@ -2,19 +2,20 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="loi" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
 	<property name="ireport.zoom" value="1.1000000000000012"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="338"/>
+	<property name="ireport.y" value="96"/>
 	<style name="Crosstab Data Text" hAlign="Center"/>
 	<parameter name="LOIID" class="java.lang.Long">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[select loihdr.loi_number,loihdr.ref_date ,v.vendor_name,v.vendor_address,v.contact_number,loihdr.subject,
-loihdr.remarks,m.materail_name ,loidtl.qty,loidtl.unit_rate,loidtl.remarks dtlremarks
+loihdr.remarks,m.materail_name ,loidtl.qty,loidtl.unit_rate,loidtl.remarks dtlremarks,c.city_name
 from t_mms_loi_hdr loihdr,
-t_mms_loi_dtl loidtl,m_base_vendor v,m_mms_material m
+t_mms_loi_dtl loidtl,m_base_vendor v,m_mms_material m,m_base_city c
 where loihdr.loi_hdr_id = loidtl.loi_hdr_id
 and v.vendor_id=loihdr.vendor_id
 and m.material_id=loidtl.mat_id
+and c.city_id=v.city_id
 and loihdr.loi_hdr_id=$P{LOIID}]]>
 	</queryString>
 	<field name="LOI_NUMBER" class="java.lang.String"/>
@@ -28,6 +29,7 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 	<field name="QTY" class="java.math.BigDecimal"/>
 	<field name="UNIT_RATE" class="java.math.BigDecimal"/>
 	<field name="DTLREMARKS" class="java.lang.String"/>
+	<field name="CITY_NAME" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -81,14 +83,14 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 				<text><![CDATA[M/s.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="99cc87c7-ab24-4049-b446-cf760783cfcf" x="257" y="6" width="85" height="20"/>
+				<reportElement uuid="99cc87c7-ab24-4049-b446-cf760783cfcf" x="343" y="6" width="85" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font isBold="false"/>
 				</textElement>
 				<text><![CDATA[Ref No :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="8746e409-5819-496f-bed7-17709d16bb3f" x="343" y="6" width="210" height="20"/>
+				<reportElement uuid="8746e409-5819-496f-bed7-17709d16bb3f" x="432" y="6" width="121" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
@@ -98,14 +100,14 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 				<reportElement uuid="7273f9f8-7766-49dc-be1e-a2c73aba4b97" x="-1" y="232" width="555" height="1"/>
 			</line>
 			<staticText>
-				<reportElement uuid="b070dc2c-019f-4681-adbd-7f6c3e5e5b78" x="299" y="26" width="43" height="20"/>
+				<reportElement uuid="b070dc2c-019f-4681-adbd-7f6c3e5e5b78" x="385" y="26" width="43" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font isBold="false"/>
 				</textElement>
 				<text><![CDATA[Date :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="74124a9f-52c7-45c2-8250-24e907afa5a7" x="343" y="26" width="208" height="20"/>
+				<reportElement uuid="74124a9f-52c7-45c2-8250-24e907afa5a7" x="432" y="26" width="122" height="20"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{REF_DATE}]]></textFieldExpression>
 			</textField>
@@ -135,7 +137,7 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 				<textFieldExpression><![CDATA[$F{VENDOR_NAME}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="35e716e3-2cad-4452-bafd-a27d58468dee" x="62" y="66" width="280" height="54"/>
+				<reportElement uuid="35e716e3-2cad-4452-bafd-a27d58468dee" x="62" y="66" width="237" height="40"/>
 				<textElement/>
 				<textFieldExpression><![CDATA[$F{VENDOR_ADDRESS}]]></textFieldExpression>
 			</textField>
@@ -155,6 +157,11 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 			<line>
 				<reportElement uuid="3c585914-5afc-4399-95f4-2bed70c3c714" x="101" y="158" width="447" height="1"/>
 			</line>
+			<textField>
+				<reportElement uuid="929c9ba9-4f33-42d5-9868-87a612d681e5" x="62" y="106" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{CITY_NAME}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -170,7 +177,7 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="d224f18b-5d68-4c4a-89f1-8857fc44690c" x="348" y="0" width="207" height="20"/>
+				<reportElement uuid="d224f18b-5d68-4c4a-89f1-8857fc44690c" x="385" y="0" width="163" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true" isItalic="false"/>
 				</textElement>
@@ -191,7 +198,7 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 				<text><![CDATA[S. No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="277" y="0" width="67" height="20"/>
+				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="287" y="0" width="67" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
@@ -212,12 +219,12 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 				<textFieldExpression><![CDATA[$F{MATERAIL_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="fc70ce21-f1de-439e-b56c-9272374dccf9" x="277" y="1" width="67" height="20"/>
+				<reportElement uuid="fc70ce21-f1de-439e-b56c-9272374dccf9" x="295" y="1" width="37" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{UNIT_RATE}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="3f07cc6c-3641-4969-83fc-dd5eec39eab6" x="348" y="0" width="204" height="20"/>
+				<reportElement uuid="3f07cc6c-3641-4969-83fc-dd5eec39eab6" x="385" y="0" width="163" height="20"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{DTLREMARKS}]]></textFieldExpression>
 			</textField>

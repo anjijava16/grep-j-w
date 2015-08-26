@@ -206,7 +206,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				if (item != null) {
 					loadmaterial();
 					loadQuoteDetails();
-					
 				}
 			}
 		});
@@ -967,7 +966,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 					ckcasePO.setValue(false);
 				}
 				cbStatus.setValue(poHdrDM.getpOStatus());
-				listPODetails = servicepodtl.getpodtllist(poId, null, null, "F");
+				listPODetails = servicepodtl.getpodtllist(poId, null, null, null, null, "F");
 			}
 			loadPODetails();
 			comments = new MmsComments(vlTableForm, null, companyid, null, null, null, poId, null, null, null, null);
@@ -1002,14 +1001,18 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			tfPOQnty.setReadOnly(false);
 			tfPOQnty.setValue(editmmspodtllist.getPoqty().toString());
 			tfPOQnty.setReadOnly(true);
-			tfUnitRate.setValue(editmmspodtllist.getUnitrate().toString());
+			if (editmmspodtllist.getUnitrate().toString() != null) {
+				tfUnitRate.setValue(editmmspodtllist.getUnitrate() + "");
+			}
 			cbMatUom.setReadOnly(false);
 			cbMatUom.setValue(editmmspodtllist.getMaterialuom());
 			cbMatUom.setReadOnly(true);
 			tfBasicValue.setReadOnly(false);
 			tfBasicValue.setValue(editmmspodtllist.getBasicvalue().toString());
 			tfBasicValue.setReadOnly(true);
-			taPODtlRemark.setValue(editmmspodtllist.getRemarks());
+			if (editmmspodtllist.getRemarks() != null) {
+				taPODtlRemark.setValue(editmmspodtllist.getRemarks() + "");
+			}
 			cbPODtlStatus.setValue(editmmspodtllist.getPodtlstatus());
 		}
 	}
@@ -1330,7 +1333,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				poDtlDM.setPodtlstatus(cbPODtlStatus.getValue().toString());
 				poDtlDM.setLastupdatedt(DateUtils.getcurrentdate());
 				poDtlDM.setLastupdatedby(username);
-				
 				listPODetails.add(poDtlDM);
 				loadPODetails();
 				getCalculatedValues();

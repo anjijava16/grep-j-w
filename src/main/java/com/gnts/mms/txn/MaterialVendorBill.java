@@ -152,6 +152,7 @@ public class MaterialVendorBill extends BaseTransUI {
 	private void buildView() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting Tax UI");
 		// Initialization for VendorBill Details user input components
+		btnPrint.setVisible(false);
 		cbpoNo = new GERPComboBox("PO No");
 		cbpoNo.setItemCaptionPropertyId("pono");
 		loadPoNo();

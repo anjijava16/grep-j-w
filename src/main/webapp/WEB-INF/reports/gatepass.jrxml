@@ -51,7 +51,7 @@ and h.gatepass_id=$P{GPASSID}]]>
 				<text><![CDATA[No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="961de1c4-cedf-4866-ac80-89938ec8ec1e" x="172" y="45" width="46" height="15"/>
+				<reportElement uuid="961de1c4-cedf-4866-ac80-89938ec8ec1e" x="195" y="45" width="46" height="15"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[Date :]]></text>
 			</staticText>
@@ -68,7 +68,7 @@ and h.gatepass_id=$P{GPASSID}]]>
 				<textFieldExpression><![CDATA[$F{GATEPASS_NO}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
-				<reportElement uuid="0d8d9e40-6569-46c0-ad5c-0fd52e226332" x="220" y="45" width="90" height="15"/>
+				<reportElement uuid="0d8d9e40-6569-46c0-ad5c-0fd52e226332" x="247" y="45" width="63" height="15"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>

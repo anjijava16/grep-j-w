@@ -2,14 +2,14 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="dc" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b2110745-7f55-49d9-960b-5671724150b6">
 	<property name="ireport.zoom" value="1.3310000000000015"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="360"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="DCID" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select dch.dc_no dc_no,dch.dc_date dc_date,
 decode(dcd.goods_type,'Material',mat.materail_name,'Product',prod.product_name) as description,
 decode(dch.dc_type,'Customer',client.client_name,'Vendor',vendor.vendor_name) as contname,
 decode(dch.dc_type,'Customer',client.clnt_address,'Vendor',vendor.vendor_address) as address,
-dcd.dc_qty dc_qty,dch.mode_of_trans mode_of_trans
+dcd.dc_qty dc_qty,dch.mode_of_trans mode_of_trans,dch.remarks,dch.person_name
 from t_mms_dc_hdr dch,t_mms_dc_dtl dcd,m_mms_material mat,m_base_product prod,m_crm_clients client,m_base_vendor vendor
 where dch.dc_id = dcd.dc_id
 and dcd.material_id=mat.material_id(+)
@@ -25,6 +25,8 @@ and dcd.dc_id =$P{DCID}]]>
 	<field name="ADDRESS" class="java.lang.String"/>
 	<field name="DC_QTY" class="java.math.BigDecimal"/>
 	<field name="MODE_OF_TRANS" class="java.lang.String"/>
+	<field name="REMARKS" class="java.lang.String"/>
+	<field name="PERSON_NAME" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -161,7 +163,7 @@ and dcd.dc_id =$P{DCID}]]>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement uuid="04955f66-eeeb-472b-bbb1-60691530b468" x="27" y="73" width="476" height="1"/>
+				<reportElement uuid="04955f66-eeeb-472b-bbb1-60691530b468" mode="Opaque" x="27" y="73" width="476" height="1"/>
 				<graphicElement>
 					<pen lineStyle="Dotted"/>
 				</graphicElement>
@@ -199,6 +201,11 @@ and dcd.dc_id =$P{DCID}]]>
 				<reportElement uuid="8d5abd93-ce70-4d1c-9022-c39385641dc1" x="27" y="37" width="474" height="16"/>
 				<textElement verticalAlignment="Bottom"/>
 				<textFieldExpression><![CDATA[$F{ADDRESS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="0fbeffd7-bfda-4b63-993d-c2fe5837a43f" x="69" y="80" width="432" height="20"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{PERSON_NAME}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -254,6 +261,11 @@ and dcd.dc_id =$P{DCID}]]>
 				<reportElement uuid="f33bc851-d847-4c6d-90f7-3cfc2c593d27" x="0" y="0" width="39" height="32"/>
 				<textElement textAlignment="Center" verticalAlignment="Top"/>
 				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="1cf492ba-afb6-4c4b-99cf-8161b0a76402" x="357" y="0" width="197" height="32"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{REMARKS}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

@@ -2,26 +2,27 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="loi" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
 	<property name="ireport.zoom" value="1.1000000000000012"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="96"/>
+	<property name="ireport.y" value="0"/>
 	<style name="Crosstab Data Text" hAlign="Center"/>
 	<parameter name="LOIID" class="java.lang.Long">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select loihdr.loi_number,loihdr.ref_date ,v.vendor_name,v.vendor_address,v.contact_number,loihdr.subject,
-loihdr.remarks,m.materail_name ,loidtl.qty,loidtl.unit_rate,loidtl.remarks dtlremarks,c.city_name
+		<![CDATA[select loihdr.loi_number,loihdr.ref_date ,v.vendor_name,v.vendor_address||','||c.city_name ||','||s.state_name,v.contact_number,loihdr.subject,
+loihdr.remarks,m.materail_name ,loidtl.qty,loidtl.unit_rate,loidtl.remarks dtlremarks
 from t_mms_loi_hdr loihdr,
-t_mms_loi_dtl loidtl,m_base_vendor v,m_mms_material m,m_base_city c
+t_mms_loi_dtl loidtl,m_base_vendor v,m_mms_material m,m_base_city c,m_base_state s
 where loihdr.loi_hdr_id = loidtl.loi_hdr_id
 and v.vendor_id=loihdr.vendor_id
 and m.material_id=loidtl.mat_id
 and c.city_id=v.city_id
+and s.state_id=v.state_id
 and loihdr.loi_hdr_id=$P{LOIID}]]>
 	</queryString>
 	<field name="LOI_NUMBER" class="java.lang.String"/>
 	<field name="REF_DATE" class="java.sql.Timestamp"/>
 	<field name="VENDOR_NAME" class="java.lang.String"/>
-	<field name="VENDOR_ADDRESS" class="java.lang.String"/>
+	<field name="V.VENDOR_ADDRESS||&apos;,&apos;||C.CITY_NAME||&apos;,&apos;||S.STATE_NAME" class="java.lang.String"/>
 	<field name="CONTACT_NUMBER" class="java.lang.String"/>
 	<field name="SUBJECT" class="java.lang.String"/>
 	<field name="REMARKS" class="java.lang.String"/>
@@ -29,7 +30,6 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 	<field name="QTY" class="java.math.BigDecimal"/>
 	<field name="UNIT_RATE" class="java.math.BigDecimal"/>
 	<field name="DTLREMARKS" class="java.lang.String"/>
-	<field name="CITY_NAME" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -136,11 +136,6 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{VENDOR_NAME}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement uuid="35e716e3-2cad-4452-bafd-a27d58468dee" x="62" y="66" width="237" height="40"/>
-				<textElement/>
-				<textFieldExpression><![CDATA[$F{VENDOR_ADDRESS}]]></textFieldExpression>
-			</textField>
 			<textField>
 				<reportElement uuid="abc10e3c-a0d1-4a7f-95f0-e8651794581d" x="101" y="120" width="241" height="20"/>
 				<textElement verticalAlignment="Middle"/>
@@ -158,9 +153,9 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 				<reportElement uuid="3c585914-5afc-4399-95f4-2bed70c3c714" x="101" y="158" width="447" height="1"/>
 			</line>
 			<textField>
-				<reportElement uuid="929c9ba9-4f33-42d5-9868-87a612d681e5" x="62" y="106" width="100" height="14"/>
+				<reportElement uuid="79db46b3-fcfc-44e6-9a01-1ee95c80fcdf" x="62" y="66" width="237" height="54"/>
 				<textElement/>
-				<textFieldExpression><![CDATA[$F{CITY_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{V.VENDOR_ADDRESS||','||C.CITY_NAME||','||S.STATE_NAME}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>

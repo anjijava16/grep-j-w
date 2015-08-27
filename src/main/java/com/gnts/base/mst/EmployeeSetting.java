@@ -66,10 +66,9 @@ import com.vaadin.ui.UI;
 public class EmployeeSetting extends BaseUI {
 	// Bean creation
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
-	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
-	private BranchService servicebeanBranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	private DepartmentService serviceDepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Search Control Layout
@@ -351,7 +350,7 @@ public class EmployeeSetting extends BaseUI {
 			empObj.setLoginAccess("Y");
 			empObj.setLastupdateddt(DateUtils.getcurrentdate());
 			empObj.setLastupdatedby(username);
-			servicebeanEmployee.updateEmployeedetails(empObj);
+			serviceEmployee.updateEmployeedetails(empObj);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -363,32 +362,49 @@ public class EmployeeSetting extends BaseUI {
 	 * loadCountryList()-->this function is used for load the Country list
 	 */
 	private void loadCountryList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Country Search...");
-		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
-		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
-		cbCountry.setContainerDataSource(beanCountry);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Country Search...");
+			BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+			beanCountry.setBeanIdProperty("countryID");
+			beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
+			cbCountry.setContainerDataSource(beanCountry);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadDepartmentList()-->this function is used for load the Department list
 	 */
 	private void loadDepartmentList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, null, "P"));
-		cbDepartment.setContainerDataSource(beanDepartment);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Department Search...");
+			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beanDepartment.setBeanIdProperty("deptid");
+			beanDepartment.addAll(serviceDepartmant.getDepartmentList(companyid, null, null, "P"));
+			cbDepartment.setContainerDataSource(beanDepartment);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadBranchList()-->this function is used for load the Branch list
 	 */
 	private void loadBranchList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(servicebeanBranch.getBranchList(null, null, null, null, companyid, "P"));
-		cbBranch.setContainerDataSource(beanBranch);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranch.setBeanIdProperty("branchId");
+			beanBranch.addAll(serviceBranch.getBranchList(null, null, null, null, companyid, "P"));
+			cbBranch.setContainerDataSource(beanBranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

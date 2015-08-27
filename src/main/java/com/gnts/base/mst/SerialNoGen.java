@@ -178,24 +178,34 @@ public class SerialNoGen extends BaseUI {
 	}
 	
 	private void loadModuleList() {
-		List<ModuleDM> list = new ArrayList<ModuleDM>();
-		list.add(new ModuleDM(0L, "All Modules"));
-		list.addAll(serviceModule.getModuleList(companyid));
-		BeanContainer<Long, ModuleDM> beanModule = new BeanContainer<Long, ModuleDM>(ModuleDM.class);
-		beanModule.setBeanIdProperty("moduleId");
-		beanModule.addAll(list);
-		cbModuleName.setContainerDataSource(beanModule);
+		try {
+			List<ModuleDM> list = new ArrayList<ModuleDM>();
+			list.add(new ModuleDM(0L, "All Modules"));
+			list.addAll(serviceModule.getModuleList(companyid));
+			BeanContainer<Long, ModuleDM> beanModule = new BeanContainer<Long, ModuleDM>(ModuleDM.class);
+			beanModule.setBeanIdProperty("moduleId");
+			beanModule.addAll(list);
+			cbModuleName.setContainerDataSource(beanModule);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Branch list for pnlmain's combo Box
 	private void loadBranchDetails() {
-		List<BranchDM> list = new ArrayList<BranchDM>();
-		list.add(new BranchDM(0L, "All Branches"));
-		list.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
-		BeanContainer<Long, BranchDM> beansbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beansbranch.setBeanIdProperty("branchId");
-		beansbranch.addAll(list);
-		cbBranchName.setContainerDataSource(beansbranch);
+		try {
+			List<BranchDM> list = new ArrayList<BranchDM>();
+			list.add(new BranchDM(0L, "All Branches"));
+			list.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
+			BeanContainer<Long, BranchDM> beansbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beansbranch.setBeanIdProperty("branchId");
+			beansbranch.addAll(list);
+			cbBranchName.setContainerDataSource(beansbranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadSrchRslt() {
@@ -212,15 +222,15 @@ public class SerialNoGen extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfReferenceKey.getValue() + ", ");
 		slnoGList = serviceSlnogen.getSlnoGenerationList(null, companyid, tfReferenceKey.getValue(), branchid,
-				moduleId, (String) cbSlnoGenLvl.getValue(),"F");
+				moduleId, (String) cbSlnoGenLvl.getValue(), "F");
 		recordCnt = slnoGList.size();
 		beanSlnoGen = new BeanItemContainer<SlnoGenDM>(SlnoGenDM.class);
 		beanSlnoGen.addAll(slnoGList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the orgNews. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanSlnoGen);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "slnoId","moduleName", "refKey", "keyDesc", "slnogenLevel",
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "slnoId", "moduleName", "refKey", "keyDesc", "slnogenLevel",
 				"lastUpdatedDt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id","Module", "Reference Key", "Description", "Level",
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Module", "Reference Key", "Description", "Level",
 				"Updated Date", "Updated By" });
 		tblMstScrSrchRslt.setColumnAlignment("slnoId", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
@@ -230,7 +240,6 @@ public class SerialNoGen extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		btnSave.setEnabled(true);
-		
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected news. Id -> "
 				+ slnoId);
 		if (tblMstScrSrchRslt.getValue() != null) {

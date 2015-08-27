@@ -32,9 +32,7 @@ import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.mst.ProductDrawingDM;
 import com.gnts.mfg.domain.mst.TestConditionDM;
-import com.gnts.mfg.domain.mst.TestGroupDM;
 import com.gnts.mfg.domain.mst.TestSpecificationDM;
-import com.gnts.mfg.domain.mst.TestTypeDM;
 import com.gnts.mfg.domain.txn.CommentDM;
 import com.gnts.mfg.domain.txn.QATestCndtnResltDM;
 import com.gnts.mfg.domain.txn.QATestDtlDM;
@@ -43,9 +41,7 @@ import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.mst.QCTestType;
 import com.gnts.mfg.service.mst.ProductDrawingService;
 import com.gnts.mfg.service.mst.TestConditionService;
-import com.gnts.mfg.service.mst.TestGroupService;
 import com.gnts.mfg.service.mst.TestSpecificationService;
-import com.gnts.mfg.service.mst.TestTypeService;
 import com.gnts.mfg.service.txn.QATestCndRsltService;
 import com.gnts.mfg.service.txn.QATestDtlService;
 import com.gnts.mfg.service.txn.QATestHdrService;
@@ -58,19 +54,19 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Table.Align;
 
 public class FinalInspection extends BaseTransUI {
 	/**
@@ -112,8 +108,6 @@ public class FinalInspection extends BaseTransUI {
 	private SlnoGenService serviceSLNo = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private WorkOrderHdrService serviceWorkOrderHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private ClientService serviceClient = (ClientService) SpringContextHelper.getBean("clients");
-	private TestGroupService serviceTestGroup = (TestGroupService) SpringContextHelper.getBean("testGroup");
-	private TestTypeService serviceTestType = (TestTypeService) SpringContextHelper.getBean("testType");
 	private TestConditionService serviceTestCondition = (TestConditionService) SpringContextHelper
 			.getBean("qaTestCondn");
 	private TestSpecificationService seriviceTestSpecification = (TestSpecificationService) SpringContextHelper
@@ -559,69 +553,78 @@ public class FinalInspection extends BaseTransUI {
 	}
 	
 	private void loadProductDrgCodeList() {
-		BeanContainer<Long, ProductDrawingDM> beanProdDrg = new BeanContainer<Long, ProductDrawingDM>(
-				ProductDrawingDM.class);
-		beanProdDrg.setBeanIdProperty("productDrgId");
-		beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, null, null, "Active"));
-		cbProdDrg.setContainerDataSource(beanProdDrg);
+		try {
+			BeanContainer<Long, ProductDrawingDM> beanProdDrg = new BeanContainer<Long, ProductDrawingDM>(
+					ProductDrawingDM.class);
+			beanProdDrg.setBeanIdProperty("productDrgId");
+			beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, null, null, "Active"));
+			cbProdDrg.setContainerDataSource(beanProdDrg);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadWorkOrdNo() {
-		BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
-				WorkOrderHdrDM.class);
-		beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
-		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "P",
-				null, null, null, null,null));
+		try {
+			BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
+					WorkOrderHdrDM.class);
+			beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
+			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "P",
+					null, null, null, null, null));
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadProductList() {
-		BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
-		beanProd.setBeanIdProperty("prodid");
-		beanProd.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "F"));
-		cbCaseCol.setContainerDataSource(beanProd);
+		try {
+			BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
+			beanProd.setBeanIdProperty("prodid");
+			beanProd.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "F"));
+			cbCaseCol.setContainerDataSource(beanProd);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadClientList() {
-		BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
-		beanClient.setBeanIdProperty("clientId");
-		beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null, "Active",
-				"P"));
-		cbCaseMod.setContainerDataSource(beanClient);
-	}
-	
-	private void loadTestGroup() {
-		BeanContainer<Long, TestGroupDM> beanTstGrp = new BeanContainer<Long, TestGroupDM>(TestGroupDM.class);
-		beanTstGrp.setBeanIdProperty("qaTestGpID");
-		beanTstGrp.addAll(serviceTestGroup.getTestGpDetails(null, null, "Active", "F"));
-		cbCustCode.setContainerDataSource(beanTstGrp);
-	}
-	
-	private void loadTesttype() {
-		BeanContainer<Long, TestTypeDM> beanTsttype = new BeanContainer<Long, TestTypeDM>(TestTypeDM.class);
-		beanTsttype.setBeanIdProperty("qaTstTypId");
-		beanTsttype.addAll(serviceTestType.getTestTypeDetails(null, null, null, "Active"));
-		cbProdDrg.setContainerDataSource(beanTsttype);
-	}
-	
-	private void loadTstHdrConditions() {
-		BeanContainer<Long, TestConditionDM> beanTstCondn = new BeanContainer<Long, TestConditionDM>(
-				TestConditionDM.class);
-		beanTstCondn.setBeanIdProperty("testCondnId");
-		beanTstCondn.addAll(serviceTestCondition.getTestCondnDetails(companyid, null, null, "Active"));
-		cbQATstCndnStatus.setContainerDataSource(beanTstCondn);
+		try {
+			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			beanClient.setBeanIdProperty("clientId");
+			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
+					"Active", "P"));
+			cbCaseMod.setContainerDataSource(beanClient);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadTstDefDtlConditions() {
-		BeanItemContainer<TestConditionDM> beanTstCondn = new BeanItemContainer<TestConditionDM>(TestConditionDM.class);
-		beanTstCondn.addAll(serviceTestCondition.getTestCondnDetails(companyid, null, null, "Active"));
-		cbTstCondtn.setContainerDataSource(beanTstCondn);
+		try {
+			BeanItemContainer<TestConditionDM> beanTstCondn = new BeanItemContainer<TestConditionDM>(
+					TestConditionDM.class);
+			beanTstCondn.addAll(serviceTestCondition.getTestCondnDetails(companyid, null, null, "Active"));
+			cbTstCondtn.setContainerDataSource(beanTstCondn);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadTstSpecification() {
-		BeanItemContainer<TestSpecificationDM> beanTstSpec = new BeanItemContainer<TestSpecificationDM>(
-				TestSpecificationDM.class);
-		beanTstSpec.addAll(seriviceTestSpecification.getTestSpecDetails(companyid, null, "Active"));
-		cbTstSpec.setContainerDataSource(beanTstSpec);
+		try {
+			BeanItemContainer<TestSpecificationDM> beanTstSpec = new BeanItemContainer<TestSpecificationDM>(
+					TestSpecificationDM.class);
+			beanTstSpec.addAll(seriviceTestSpecification.getTestSpecDetails(companyid, null, "Active"));
+			cbTstSpec.setContainerDataSource(beanTstSpec);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -736,6 +739,8 @@ public class FinalInspection extends BaseTransUI {
 			errorFlag = true;
 		} else {
 			cbCaseCol.setComponentError(null);
+		}
+		if (errorFlag) {
 		}
 	}
 	

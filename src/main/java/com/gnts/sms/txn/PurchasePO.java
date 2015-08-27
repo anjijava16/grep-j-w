@@ -634,14 +634,14 @@ public class PurchasePO extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<PurchasePOHdrDM> purchasePOHdrList = new ArrayList<PurchasePOHdrDM>();
+		List<PurchasePOHdrDM> list = new ArrayList<PurchasePOHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
-		purchasePOHdrList = servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, (Long) cbBranch.getValue(),
+		list = servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, (Long) cbBranch.getValue(),
 				(String) cbpoType.getValue(), (String) cbStatus.getValue(), tfPONo.getValue());
-		recordCnt = purchasePOHdrList.size();
+		recordCnt = list.size();
 		beanPurchasePOHdr = new BeanItemContainer<PurchasePOHdrDM>(PurchasePOHdrDM.class);
-		beanPurchasePOHdr.addAll(purchasePOHdrList);
+		beanPurchasePOHdr.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanPurchasePOHdr);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "poId", "branchName", "pono", "poType", "pOStatus",
@@ -692,7 +692,7 @@ public class PurchasePO extends BaseUI {
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -708,7 +708,7 @@ public class PurchasePO extends BaseUI {
 			cbUom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -721,7 +721,7 @@ public class PurchasePO extends BaseUI {
 			cbProduct.setContainerDataSource(beanPlnDtl);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -736,7 +736,7 @@ public class PurchasePO extends BaseUI {
 			cbpoType.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -749,7 +749,7 @@ public class PurchasePO extends BaseUI {
 			cbQuoteNo.setContainerDataSource(beanQuote);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

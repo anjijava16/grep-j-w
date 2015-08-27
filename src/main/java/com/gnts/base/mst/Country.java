@@ -116,14 +116,14 @@ public class Country extends BaseUI {
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<CountryDM> countryList = new ArrayList<CountryDM>();
+		List<CountryDM> list = new ArrayList<CountryDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + " for search parameters are "
 				+ companyid + ", " + tfCountryname.getValue() + "," + tfCountrycode + "," + (String) cbCountrystatus.getValue());
-		countryList = serviceCountry.getCountryList(null,null, tfCountrycode.getValue(), tfCountryname.getValue(), (String) cbCountrystatus.getValue(),
+		list = serviceCountry.getCountryList(null,null, tfCountrycode.getValue(), tfCountryname.getValue(), (String) cbCountrystatus.getValue(),
 				"F");
-		recordCnt = countryList.size();
+		recordCnt = list.size();
 		beanCountryDM = new BeanItemContainer<CountryDM>(CountryDM.class);
-		beanCountryDM.addAll(countryList);
+		beanCountryDM.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Country. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanCountryDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "countryID", "countryName", "countryCode", "isdcode",

@@ -49,7 +49,7 @@ public class UserFav extends BaseUI {
 	private Long userId;
 	private int recordCnt = 0;
 	private String username;
-	private List<UserFavDM> userfavList = new ArrayList<UserFavDM>();
+	private List<UserFavDM> listUserFav = new ArrayList<UserFavDM>();
 	// Initialize logger
 	private Logger logger = Logger.getLogger(UserFav.class);
 	private static final long serialVersionUID = 1L;
@@ -96,8 +96,8 @@ public class UserFav extends BaseUI {
 			 */
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (userfavList != null) {
-					for (UserFavDM obj : userfavList) {
+				if (listUserFav != null) {
+					for (UserFavDM obj : listUserFav) {
 						if (obj.isSelected()) {
 							servUserfavBean.deleteUserfavourites(obj
 									.getUserfavId());
@@ -146,11 +146,11 @@ public class UserFav extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username
 				+ " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		userfavList = servUserfavBean.getUserFavouritesList(userId, null, "F");
-		recordCnt = userfavList.size();
+		listUserFav = servUserfavBean.getUserFavouritesList(userId, null, "F");
+		recordCnt = listUserFav.size();
 		if ( chCheckall.getValue().equals(true)) {
 			List<UserFavDM> mylist = new ArrayList<UserFavDM>();
-			for (UserFavDM obj : userfavList) {
+			for (UserFavDM obj : listUserFav) {
 				obj.setSelected(true);
 				mylist.add(obj);
 			}
@@ -158,7 +158,7 @@ public class UserFav extends BaseUI {
 			beanUserfav.addAll(mylist);
 		} else {
 			List<UserFavDM> mylist = new ArrayList<UserFavDM>();
-			for (UserFavDM obj : userfavList) {
+			for (UserFavDM obj : listUserFav) {
 				obj.setSelected(false);
 				mylist.add(obj);
 			}

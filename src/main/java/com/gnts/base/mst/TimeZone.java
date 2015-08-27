@@ -103,13 +103,13 @@ public class TimeZone extends BaseUI {
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<TimeZoneDM> timeZoneList = new ArrayList<TimeZoneDM>();
+		List<TimeZoneDM> list = new ArrayList<TimeZoneDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + "," + tfTimeZoneCode.getValue() + "," + tfTimeZoneDesc.getValue());
-		timeZoneList = timezoneBean.getTimeZoneList(tfTimeZoneCode.getValue(), tfTimeZoneDesc.getValue(),"F");
-		recordCnt = timeZoneList.size();
+		list = timezoneBean.getTimeZoneList(tfTimeZoneCode.getValue(), tfTimeZoneDesc.getValue(),"F");
+		recordCnt = list.size();
 		beans = new BeanItemContainer<TimeZoneDM>(TimeZoneDM.class);
-		beans.addAll(timeZoneList);
+		beans.addAll(list);
 		tblMstScrSrchRslt.setContainerDataSource(beans);
 		tblMstScrSrchRslt
 				.setVisibleColumns(new Object[] { "timezoneid", "timezonecode", "timezonedesc", "clockadjust" });

@@ -68,7 +68,7 @@ public class User extends BaseUI {
 	private TextField tfLoginId, tfloginCount, tfCompanyName, tfTimeZone, tfSystemUser;
 	private TextField tfPswdExpDt, tfPswdChangeDt, tfLastLoginDt, tfLoginCreationDt;
 	private PasswordField pfPassWord;
-	private ListSelect LSUserRole;
+	private ListSelect lsUserRole;
 	private ComboBox cbUserStatus;
 	private Button btnLogs = new Button("User Logs");
 	// BeanItemContainer
@@ -150,11 +150,11 @@ public class User extends BaseUI {
 		tfTimeZone = new GERPTextField("Time Zone");
 		tfTimeZone.setReadOnly(true);
 		// User Role TextfieldR
-		LSUserRole = new ListSelect("User Role");
-		LSUserRole.setItemCaptionPropertyId("roleName");
-		LSUserRole.setWidth("200");
-		LSUserRole.setHeight("110");
-		LSUserRole.setMultiSelect(true);
+		lsUserRole = new ListSelect("User Role");
+		lsUserRole.setItemCaptionPropertyId("roleName");
+		lsUserRole.setWidth("200");
+		lsUserRole.setHeight("110");
+		lsUserRole.setMultiSelect(true);
 		loadUserRole();
 		// SystemUser Textfield
 		tfSystemUser = new GERPTextField("System User");
@@ -220,7 +220,7 @@ public class User extends BaseUI {
 		flColumn2.addComponent(tfPswdChangeDt);
 		flColumn3.addComponent(tfloginCount);
 		flColumn3.addComponent(cbUserStatus);
-		flColumn4.addComponent(LSUserRole);
+		flColumn4.addComponent(lsUserRole);
 		hlUserInputLayout.addComponent(flColumn1);
 		hlUserInputLayout.addComponent(flColumn2);
 		hlUserInputLayout.addComponent(flColumn3);
@@ -312,11 +312,11 @@ public class User extends BaseUI {
 			}
 			cbUserStatus.setValue(userDM.getUserstatus());
 			// select roles
-			LSUserRole.setValue(null);
+			lsUserRole.setValue(null);
 			List<UserRolesDM> listUserRole = serviceUserRole.getRoleList(null, userId, cbUserStatus.getValue()
 					.toString(), companyid, null, "F");
 			for (UserRolesDM userrole : listUserRole) {
-				LSUserRole.select(userrole.getRoleId());
+				lsUserRole.select(userrole.getRoleId());
 			}
 		}
 	}
@@ -429,7 +429,7 @@ public class User extends BaseUI {
 			resetFields();
 			loadSrchRslt();
 			// for save UserRole details
-			String[] split = LSUserRole.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+			String[] split = lsUserRole.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
 			logger.info("User Role> split" + split);
 			serviceUserRole.deleteUserRole(userId);
 			for (String obj : split) {
@@ -451,9 +451,14 @@ public class User extends BaseUI {
 	}
 	
 	private void loadUserRole() {
-		BeanContainer<Long, RoleDM> beanUser = new BeanContainer<Long, RoleDM>(RoleDM.class);
-		beanUser.setBeanIdProperty("roleId");
-		beanUser.addAll(serviceRole.getRoleList(null, "Active", null, "F"));
-		LSUserRole.setContainerDataSource(beanUser);
+		try {
+			BeanContainer<Long, RoleDM> beanUser = new BeanContainer<Long, RoleDM>(RoleDM.class);
+			beanUser.setBeanIdProperty("roleId");
+			beanUser.addAll(serviceRole.getRoleList(null, "Active", null, "F"));
+			lsUserRole.setContainerDataSource(beanUser);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

@@ -126,14 +126,14 @@ public class VendorType extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<VendorTypeDM> vendorTypeList = new ArrayList<VendorTypeDM>();
+		List<VendorTypeDM> list = new ArrayList<VendorTypeDM>();
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ tfvendortypename.getValue() + ", " + (String) cbStatus.getValue());
-		vendorTypeList = serviceVendorType.getVendorTypeList(tfvendortypename.getValue(), (String) cbStatus.getValue(),
+		list = serviceVendorType.getVendorTypeList(tfvendortypename.getValue(), (String) cbStatus.getValue(),
 				null, companyId);
-		recordCnt = vendorTypeList.size();
+		recordCnt = list.size();
 		beanVendortypeDM = new BeanItemContainer<VendorTypeDM>(VendorTypeDM.class);
-		beanVendortypeDM.addAll(vendorTypeList);
+		beanVendortypeDM.addAll(list);
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Got the VendorType result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanVendortypeDM);
@@ -150,23 +150,28 @@ public class VendorType extends BaseUI {
 	private void editVendorTypeDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
 		if (tblMstScrSrchRslt.getValue() != null) {
-			VendorTypeDM editvendorTypelist = beanVendortypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (editvendorTypelist.getVendortypename() != null) {
-				tfvendortypename.setValue(editvendorTypelist.getVendortypename());
+			VendorTypeDM vendorType = beanVendortypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			if (vendorType.getVendortypename() != null) {
+				tfvendortypename.setValue(vendorType.getVendortypename());
 			}
-			cbStatus.setValue(editvendorTypelist.getVendortypestatus());
-			cbBranchname.setValue(editvendorTypelist.getBranchid());
-			vendoreid = editvendorTypelist.getVendorid().toString();
+			cbStatus.setValue(vendorType.getVendortypestatus());
+			cbBranchname.setValue(vendorType.getBranchid());
+			vendoreid = vendorType.getVendorid().toString();
 		}
 	}
 	
 	private void loadBranchList() {
-		List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
-		branchList.add(new BranchDM(0L, "All Branches"));
-		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(branchList);
-		cbBranchname.setContainerDataSource(beanbranch);
+		try {
+			List<BranchDM> branchList = serviceBranch.getBranchList(null, null, null, "Active", companyId, "P");
+			branchList.add(new BranchDM(0L, "All Branches"));
+			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanbranch.setBeanIdProperty("branchId");
+			beanbranch.addAll(branchList);
+			cbBranchname.setContainerDataSource(beanbranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Base class implementations

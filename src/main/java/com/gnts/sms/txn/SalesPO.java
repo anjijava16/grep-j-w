@@ -118,7 +118,6 @@ public class SalesPO extends BaseTransUI {
 	private SmsPOAcceptanceService servicesmspoacceptance = (SmsPOAcceptanceService) SpringContextHelper
 			.getBean("SmsPOAcceptance");
 	private SmsEnquiryDtlService serviceenqdtl = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
-
 	private SmsTaxesService serviceTaxesSms = (SmsTaxesService) SpringContextHelper.getBean("SmsTaxes");
 	private SmsQuoteHdrService servicesmsquotehdr = (SmsQuoteHdrService) SpringContextHelper.getBean("smsquotehdr");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
@@ -246,10 +245,9 @@ public class SalesPO extends BaseTransUI {
 				if (item != null) {
 					loadQuoteNoList();
 					loadClientsDetails();
-					if(cbQuoteNo.getValue()==null){
+					if (cbQuoteNo.getValue() == null) {
 						loadProductListenq();
 					}
-			
 				}
 			}
 		});
@@ -262,7 +260,7 @@ public class SalesPO extends BaseTransUI {
 				Object itemId = event.getProperty().getValue();
 				BeanItem<?> item = (BeanItem<?>) cbQuoteNo.getItem(itemId);
 				System.out.println("sddscds");
-				if (cbQuoteNo.getValue() == null && cbEnquiryNumber.getValue()==null) {
+				if (cbQuoteNo.getValue() == null && cbEnquiryNumber.getValue() == null) {
 					tblSmsPODtl.removeAllItems();
 					System.out.println("inininini");
 					loadPODetails();
@@ -665,28 +663,36 @@ public class SalesPO extends BaseTransUI {
 			tfBasicValue.setReadOnly(true);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadProductList() {
-		BeanItemContainer<SmsQuoteDtlDM> beanquoteDtl = new BeanItemContainer<SmsQuoteDtlDM>(SmsQuoteDtlDM.class);
-		beanquoteDtl.addAll(servicesmseQuoteDtl.getsmsquotedtllist(null,
-				((SmsQuoteHdrDM) cbQuoteNo.getValue()).getQuoteId(), null, null));
-		cbproduct.setContainerDataSource(beanquoteDtl);
+		try {
+			BeanItemContainer<SmsQuoteDtlDM> beanquoteDtl = new BeanItemContainer<SmsQuoteDtlDM>(SmsQuoteDtlDM.class);
+			beanquoteDtl.addAll(servicesmseQuoteDtl.getsmsquotedtllist(null,
+					((SmsQuoteHdrDM) cbQuoteNo.getValue()).getQuoteId(), null, null));
+			cbproduct.setContainerDataSource(beanquoteDtl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
-	private void loadProductListenq() {	try {
-		BeanContainer<Long, SmsEnquiryDtlDM> beanEnqDtl = new BeanContainer<Long, SmsEnquiryDtlDM>(SmsEnquiryDtlDM.class);
-		beanEnqDtl.setBeanIdProperty("enquiryid");
-		beanEnqDtl.addAll(serviceenqdtl.getsmsenquirydtllist(null, (Long)cbEnquiryNumber.getValue(), null, null, "Active", "F"));
-		cbproduct.setContainerDataSource(beanEnqDtl);
+	
+	private void loadProductListenq() {
+		try {
+			BeanContainer<Long, SmsEnquiryDtlDM> beanEnqDtl = new BeanContainer<Long, SmsEnquiryDtlDM>(
+					SmsEnquiryDtlDM.class);
+			beanEnqDtl.setBeanIdProperty("enquiryid");
+			beanEnqDtl.addAll(serviceenqdtl.getsmsenquirydtllist(null, (Long) cbEnquiryNumber.getValue(), null, null,
+					"Active", "F"));
+			cbproduct.setContainerDataSource(beanEnqDtl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
-	catch (Exception e) {
-		e.printStackTrace();
-		logger.info("load Clients Details " + e);
-	}
-}
-
-
+	
 	private void assembleSearchLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		/*
@@ -726,8 +732,7 @@ public class SalesPO extends BaseTransUI {
 			cbClient.setValue(clientid);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.info("load Clients Details " + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -892,14 +897,14 @@ public class SalesPO extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<SmsPOHdrDM> smsPOHdrList = new ArrayList<SmsPOHdrDM>();
+		List<SmsPOHdrDM> list = new ArrayList<SmsPOHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
-		smsPOHdrList = servicesmsPOHdr.getSmspohdrList((String) cbPOType.getValue(), null, companyid,
+		list = servicesmsPOHdr.getSmspohdrList((String) cbPOType.getValue(), null, companyid,
 				(Long) cbBranch.getValue(), null, null, (String) cbStatus.getValue(), "F", null);
-		recordCnt = smsPOHdrList.size();
+		recordCnt = list.size();
 		beansmsPOHdr = new BeanItemContainer<SmsPOHdrDM>(SmsPOHdrDM.class);
-		beansmsPOHdr.addAll(smsPOHdrList);
+		beansmsPOHdr.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beansmsPOHdr);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "poid", "enqNo", "clientName", "clientCity", "pono",
@@ -936,7 +941,7 @@ public class SalesPO extends BaseTransUI {
 			tblSmsPODtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -979,7 +984,7 @@ public class SalesPO extends BaseTransUI {
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -995,7 +1000,7 @@ public class SalesPO extends BaseTransUI {
 			cbproduom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1010,7 +1015,7 @@ public class SalesPO extends BaseTransUI {
 			cbPOType.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1025,7 +1030,7 @@ public class SalesPO extends BaseTransUI {
 			cbpaymetTerms.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1040,7 +1045,7 @@ public class SalesPO extends BaseTransUI {
 			cbFreightTerms.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1055,7 +1060,7 @@ public class SalesPO extends BaseTransUI {
 			cbWarrentyTerms.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1070,23 +1075,34 @@ public class SalesPO extends BaseTransUI {
 			cbDelTerms.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadQuoteNoList() {
-		BeanItemContainer<SmsQuoteHdrDM> beanQuote = new BeanItemContainer<SmsQuoteHdrDM>(SmsQuoteHdrDM.class);
-		beanQuote.addAll(servicesmsquotehdr.getSmsQuoteHdrList(companyid, null, null, null, null, null, "F",
-				Long.valueOf(cbEnquiryNumber.getValue().toString())));
-		cbQuoteNo.setContainerDataSource(beanQuote);
+		try {
+			BeanItemContainer<SmsQuoteHdrDM> beanQuote = new BeanItemContainer<SmsQuoteHdrDM>(SmsQuoteHdrDM.class);
+			beanQuote.addAll(servicesmsquotehdr.getSmsQuoteHdrList(companyid, null, null, null, null, null, "F",
+					Long.valueOf(cbEnquiryNumber.getValue().toString())));
+			cbQuoteNo.setContainerDataSource(beanQuote);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load EnquiryNo
 	private void loadEnquiryNo() {
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(serviceEnquiryHdr.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
-		cbEnquiryNumber.setContainerDataSource(beansmsenqHdr);
+		try {
+			BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("enquiryId");
+			beansmsenqHdr
+					.addAll(serviceEnquiryHdr.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
+			cbEnquiryNumber.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editPOHdr() {
@@ -2081,7 +2097,7 @@ public class SalesPO extends BaseTransUI {
 			cbproduct.setContainerDataSource(beanProduct);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 }

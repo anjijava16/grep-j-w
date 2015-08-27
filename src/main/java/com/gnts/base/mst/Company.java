@@ -313,35 +313,55 @@ public class Company extends BaseUI {
 	
 	// load the Country name list details for form
 	private void loadCountryList() {
-		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
-		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
-		cbCountry.setContainerDataSource(beanCountry);
+		try {
+			BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+			beanCountry.setBeanIdProperty("countryID");
+			beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
+			cbCountry.setContainerDataSource(beanCountry);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// load the State name list details for form
 	private void loadStateList() {
-		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
-		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
-		cbState.setContainerDataSource(beanState);
+		try {
+			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
+			beanState.setBeanIdProperty("stateId");
+			beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
+			cbState.setContainerDataSource(beanState);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// load the City name list details for form
 	private void loadCityList() {
-		BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
-		beanCity.setBeanIdProperty("cityid");
-		beanCity.addAll(serviceCity.getCityList(null, null, Long.valueOf(cbState.getValue().toString()), "Active",
-				null, "P"));
-		cbCity.setContainerDataSource(beanCity);
+		try {
+			BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
+			beanCity.setBeanIdProperty("cityid");
+			beanCity.addAll(serviceCity.getCityList(null, null, Long.valueOf(cbState.getValue().toString()), "Active",
+					null, "P"));
+			cbCity.setContainerDataSource(beanCity);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// load the Currency name list details for form
 	private void loadCurrencyList() {
-		BeanContainer<Long, CurrencyDM> beanCurrency = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
-		beanCurrency.setBeanIdProperty("ccyid");
-		beanCurrency.addAll(serviceCurrency.getCurrencyList(null, null, null, "Active", "P"));
-		cbCurrency.setContainerDataSource(beanCurrency);
+		try {
+			BeanContainer<Long, CurrencyDM> beanCurrency = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
+			beanCurrency.setBeanIdProperty("ccyid");
+			beanCurrency.addAll(serviceCurrency.getCurrencyList(null, null, null, "Active", "P"));
+			cbCurrency.setContainerDataSource(beanCurrency);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values

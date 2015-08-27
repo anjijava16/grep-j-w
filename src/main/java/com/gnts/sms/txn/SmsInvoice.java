@@ -148,7 +148,7 @@ public class SmsInvoice extends BaseTransUI {
 	private BeanItemContainer<SmsInvoiceHdrDM> beanInvoiceHdr = null;
 	private BeanItemContainer<SmsInvoiceDtlDM> beanInvoiceDtl = new BeanItemContainer<SmsInvoiceDtlDM>(
 			SmsInvoiceDtlDM.class);
-	private List<SmsInvoiceDtlDM> invoiceDtllList = new ArrayList<SmsInvoiceDtlDM>();
+	private List<SmsInvoiceDtlDM> listInvDetails = new ArrayList<SmsInvoiceDtlDM>();
 	// local variables declaration
 	private String username;
 	private Long companyid;
@@ -682,7 +682,7 @@ public class SmsInvoice extends BaseTransUI {
 			cbproduct.setContainerDataSource(beanProduct);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -891,11 +891,11 @@ public class SmsInvoice extends BaseTransUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblInvoicDtl.setPageLength(3);
-			recordCnt = invoiceDtllList.size();
+			recordCnt = listInvDetails.size();
 			beanInvoiceDtl = new BeanItemContainer<SmsInvoiceDtlDM>(SmsInvoiceDtlDM.class);
-			beanInvoiceDtl.addAll(invoiceDtllList);
+			beanInvoiceDtl.addAll(listInvDetails);
 			BigDecimal sum = new BigDecimal("0");
-			for (SmsInvoiceDtlDM obj : invoiceDtllList) {
+			for (SmsInvoiceDtlDM obj : listInvDetails) {
 				if (obj.getBasicValue() != null) {
 					sum = sum.add(obj.getBasicValue());
 				}
@@ -906,10 +906,10 @@ public class SmsInvoice extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblInvoicDtl.setContainerDataSource(beanInvoiceDtl);
-			tblInvoicDtl.setVisibleColumns(new Object[] { "productName", "invoiceQty",
-					"unitRate", "basicValue", "customField1", "customField2", "invoDtlStatus" });
-			tblInvoicDtl.setColumnHeaders(new String[] { "Product Name", "Invoice qty",
-					"UnitRate", "Basic Value", "Part No.", "Drawing No.", "Status" });
+			tblInvoicDtl.setVisibleColumns(new Object[] { "productName", "invoiceQty", "unitRate", "basicValue",
+					"customField1", "customField2", "invoDtlStatus" });
+			tblInvoicDtl.setColumnHeaders(new String[] { "Product Name", "Invoice qty", "UnitRate", "Basic Value",
+					"Part No.", "Drawing No.", "Status" });
 			tblInvoicDtl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
@@ -925,7 +925,7 @@ public class SmsInvoice extends BaseTransUI {
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -941,7 +941,7 @@ public class SmsInvoice extends BaseTransUI {
 			cbUom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -952,28 +952,38 @@ public class SmsInvoice extends BaseTransUI {
 			cbproduct.setContainerDataSource(beanPurchaseOrdDtl);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadClientList() {
-		Long clientid = serviceEnqHeader
-				.getSmsEnqHdrList(null, Long.valueOf(cbEnqNumber.getValue().toString()), null, null, null, "F", null,
-						null).get(0).getClientId();
-		BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
-		beanClient.setBeanIdProperty("clientId");
-		beanClient.addAll(serviceClient.getClientDetails(companyid, clientid, null, null, null, null, null, null, null,
-				"P"));
-		cbClient.setContainerDataSource(beanClient);
-		cbClient.setValue(clientid);
+		try {
+			Long clientid = serviceEnqHeader
+					.getSmsEnqHdrList(null, Long.valueOf(cbEnqNumber.getValue().toString()), null, null, null, "F",
+							null, null).get(0).getClientId();
+			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			beanClient.setBeanIdProperty("clientId");
+			beanClient.addAll(serviceClient.getClientDetails(companyid, clientid, null, null, null, null, null, null,
+					null, "P"));
+			cbClient.setContainerDataSource(beanClient);
+			cbClient.setValue(clientid);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadPoNo() {
-		BeanContainer<Long, SmsPOHdrDM> beanPurchaseOrdHdr = new BeanContainer<Long, SmsPOHdrDM>(SmsPOHdrDM.class);
-		beanPurchaseOrdHdr.setBeanIdProperty("poid");
-		beanPurchaseOrdHdr.addAll(servicePurchaseOrdHdr.getSmspohdrList(null, null, companyid, null, null, null, null,
-				"F", Long.valueOf(cbEnqNumber.getValue().toString())));
-		cbPONumber.setContainerDataSource(beanPurchaseOrdHdr);
+		try {
+			BeanContainer<Long, SmsPOHdrDM> beanPurchaseOrdHdr = new BeanContainer<Long, SmsPOHdrDM>(SmsPOHdrDM.class);
+			beanPurchaseOrdHdr.setBeanIdProperty("poid");
+			beanPurchaseOrdHdr.addAll(servicePurchaseOrdHdr.getSmspohdrList(null, null, companyid, null, null, null,
+					null, "F", Long.valueOf(cbEnqNumber.getValue().toString())));
+			cbPONumber.setContainerDataSource(beanPurchaseOrdHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadPaymentTerms() {
@@ -1194,7 +1204,7 @@ public class SmsInvoice extends BaseTransUI {
 			} else {
 				ckPdcRqu.setValue(false);
 			}
-			invoiceDtllList = serviceInvoiceDtl.getSmsInvoiceDtlList(null, invoiceId, null);
+			listInvDetails = serviceInvoiceDtl.getSmsInvoiceDtlList(null, invoiceId, null);
 		}
 		loadInvoiceDtl();
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null,
@@ -1586,7 +1596,7 @@ public class SmsInvoice extends BaseTransUI {
 			SmsInvoiceDtlDM invoiceDtlDM = new SmsInvoiceDtlDM();
 			if (tblInvoicDtl.getValue() != null) {
 				invoiceDtlDM = beanInvoiceDtl.getItem(tblInvoicDtl.getValue()).getBean();
-				invoiceDtllList.remove(invoiceDtlDM);
+				listInvDetails.remove(invoiceDtlDM);
 			}
 			invoiceDtlDM.setProductId(((SmsPODtlDM) cbproduct.getValue()).getProductid());
 			invoiceDtlDM.setProductName(((SmsPODtlDM) cbproduct.getValue()).getProdname());
@@ -1607,7 +1617,7 @@ public class SmsInvoice extends BaseTransUI {
 			invoiceDtlDM.setCusProdDesc(taCustProdDessc.getValue());
 			invoiceDtlDM.setLastUpdtDate(DateUtils.getcurrentdate());
 			invoiceDtlDM.setLastUpdatedBy(username);
-			invoiceDtllList.add(invoiceDtlDM);
+			listInvDetails.add(invoiceDtlDM);
 			loadInvoiceDtl();
 			getCalculatedValues();
 		}
@@ -1753,7 +1763,7 @@ public class SmsInvoice extends BaseTransUI {
 		cbpaymetTerms.setValue(null);
 		cbWarrentyTerms.setValue(null);
 		cbFreightTerms.setValue(null);
-		invoiceDtllList = new ArrayList<SmsInvoiceDtlDM>();
+		listInvDetails = new ArrayList<SmsInvoiceDtlDM>();
 		tblInvoicDtl.removeAllItems();
 		new UploadDocumentUI(hlquoteDoc);
 		tfvendorName.setValue("");
@@ -1773,7 +1783,7 @@ public class SmsInvoice extends BaseTransUI {
 		SmsInvoiceDtlDM smsinvoicehdr = new SmsInvoiceDtlDM();
 		if (tblInvoicDtl.getValue() != null) {
 			smsinvoicehdr = beanInvoiceDtl.getItem(tblInvoicDtl.getValue()).getBean();
-			invoiceDtllList.remove(smsinvoicehdr);
+			listInvDetails.remove(smsinvoicehdr);
 			resetInvoiceDetails();
 			tblInvoicDtl.setValue("");
 			loadInvoiceDtl();
@@ -1968,9 +1978,14 @@ public class SmsInvoice extends BaseTransUI {
 	
 	// Load EnquiryNo
 	private void loadEnquiryNo() {
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
-		cbEnqNumber.setContainerDataSource(beansmsenqHdr);
+		try {
+			BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("enquiryId");
+			beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
+			cbEnqNumber.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

@@ -219,14 +219,14 @@ public class ApprovalSchema extends BaseUI {
 	
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<ApprovalSchemaDM> apprlist = new ArrayList<ApprovalSchemaDM>();
+		List<ApprovalSchemaDM> list = new ArrayList<ApprovalSchemaDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + (Long) cbBranch.getValue() + ", " + (Long) cbRole.getValue());
-		apprlist = serviceApprSchema.getApprovalSchemaList(companyid, (Long) cbBranch.getValue(),
-				(Long) cbRole.getValue(), null, null);
-		recordCnt = apprlist.size();
+		list = serviceApprSchema.getApprovalSchemaList(companyid, (Long) cbBranch.getValue(), (Long) cbRole.getValue(),
+				null, null);
+		recordCnt = list.size();
 		beanApprovalSchema = new BeanItemContainer<ApprovalSchemaDM>(ApprovalSchemaDM.class);
-		beanApprovalSchema.addAll(apprlist);
+		beanApprovalSchema.addAll(list);
 		tblApproSchm.setContainerDataSource(beanApprovalSchema);
 		tblApproSchm.setVisibleColumns(new Object[] { "apprSchmId", "screenName", "apprLevel", "apprLimit",
 				"apprStatus", "lastUpdatedDate", "lastUpdatedBy" });
@@ -265,18 +265,28 @@ public class ApprovalSchema extends BaseUI {
 	
 	// loading BranchDM list
 	private void loadBranchList() {
-		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
-		cbBranch.setContainerDataSource(beanBranch);
+		try {
+			BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranch.setBeanIdProperty("branchId");
+			beanBranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
+			cbBranch.setContainerDataSource(beanBranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// loading RoleDM list
 	private void loadRoleList() {
-		BeanContainer<Long, RoleDM> beanRole = new BeanContainer<Long, RoleDM>(RoleDM.class);
-		beanRole.setBeanIdProperty("roleId");
-		beanRole.addAll(serviceRole.getRoleList(null, "Active", companyid, "P"));
-		cbRole.setContainerDataSource(beanRole);
+		try {
+			BeanContainer<Long, RoleDM> beanRole = new BeanContainer<Long, RoleDM>(RoleDM.class);
+			beanRole.setBeanIdProperty("roleId");
+			beanRole.addAll(serviceRole.getRoleList(null, "Active", companyid, "P"));
+			cbRole.setContainerDataSource(beanRole);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void saveAuthSchema() throws ERPException.SaveException, FileNotFoundException, IOException {

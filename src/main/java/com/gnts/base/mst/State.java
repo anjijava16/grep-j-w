@@ -182,7 +182,7 @@ public class State extends BaseUI {
 			cbCountryName.setContainerDataSource(beanCountryDM);
 		}
 		catch (Exception e) {
-			logger.warn("Company ID : " + companyId + " | User Name : " + userName + " Country List is Null");
+			logger.info(e.getMessage());
 		}
 	}
 	

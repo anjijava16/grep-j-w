@@ -83,8 +83,6 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
@@ -152,7 +150,7 @@ public class SmsEnquiry extends BaseTransUI {
 	private GERPTextField tfEnquiry = new GERPTextField("Enquiry");
 	private GERPTextField tfDocumentName = new GERPTextField("Document Name");
 	private GERPTextArea taComments = new GERPTextArea("Comments");
-//	private GERPButton btnSave = new GERPButton("Save", "add", this);
+	// private GERPButton btnSave = new GERPButton("Save", "add", this);
 	private GERPTable tblDocuments = new GERPTable();
 	// commom data
 	private Window mywindow = new Window("Add New Client");
@@ -442,11 +440,10 @@ public class SmsEnquiry extends BaseTransUI {
 					resetdocuments();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
-				
-					editdocumentsenq();				}
+					editdocumentsenq();
+				}
 			}
 		});
-		
 		btndetaildelete.addClickListener(new ClickListener() {
 			// Click Listener for delete Enquiry Detail
 			private static final long serialVersionUID = 6551953728534136363L;
@@ -508,7 +505,6 @@ public class SmsEnquiry extends BaseTransUI {
 		catch (Exception e) {
 		}
 		// Document Components
-		
 	}
 	
 	private void deleteEnquirySpec() {
@@ -785,15 +781,15 @@ public class SmsEnquiry extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<SmsEnqHdrDM> hdrlist = new ArrayList<SmsEnqHdrDM>();
+		List<SmsEnqHdrDM> list = new ArrayList<SmsEnqHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbBranch.getValue() + "," + tfEnquiryNo.getValue() + ", "
 				+ (String) cbEnquiryStatus.getValue());
-		hdrlist = serviceenqhdr.getSmsEnqHdrList(companyid, null, (Long) cbBranch.getValue(), null,
+		list = serviceenqhdr.getSmsEnqHdrList(companyid, null, (Long) cbBranch.getValue(), null,
 				(String) cbEnquiryStatus.getValue(), username, (String) tfEnquiryNo.getValue(), null);
-		recordCnt = hdrlist.size();
+		recordCnt = list.size();
 		beanhdr = new BeanItemContainer<SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beanhdr.addAll(hdrlist);
+		beanhdr.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the SMSENQUIRY. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanhdr);
@@ -900,18 +896,23 @@ public class SmsEnquiry extends BaseTransUI {
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Load Client List
 	private void loadSmsClientList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
-		BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
-		beanclientDM.setBeanIdProperty("clientId");
-		beanclientDM.addAll(serviceClients.getClientDetails(companyid, null, null, null, null, null, null, null,
-				"Active", "P"));
-		cbClient.setContainerDataSource(beanclientDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
+			BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			beanclientDM.setBeanIdProperty("clientId");
+			beanclientDM.addAll(serviceClients.getClientDetails(companyid, null, null, null, null, null, null, null,
+					"Active", "P"));
+			cbClient.setContainerDataSource(beanclientDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Mod_of_Enquiry List
@@ -926,7 +927,7 @@ public class SmsEnquiry extends BaseTransUI {
 			cbmodeofenquiry.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -942,7 +943,7 @@ public class SmsEnquiry extends BaseTransUI {
 			tfspeccode.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -954,7 +955,7 @@ public class SmsEnquiry extends BaseTransUI {
 			cdProduct.setContainerDataSource(beanProduct);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -985,7 +986,6 @@ public class SmsEnquiry extends BaseTransUI {
 		}
 		loadEnquiryDetails(true);
 		loadEnquirySpec(false, null);
-		
 		new EnquiryWorkflow(hlEnquiryWorkflow, enquiryId, username);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, enquiryId, null, null,
 				null, status);
@@ -1055,6 +1055,7 @@ public class SmsEnquiry extends BaseTransUI {
 			}
 		}
 	}
+	
 	private void editdocumentsenq() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hldtllayout.setVisible(true);
@@ -1136,10 +1137,14 @@ public class SmsEnquiry extends BaseTransUI {
 			}
 		}
 		if (tblMstScrSrchRslt.getValue() == null) {
-			System.out.println("inside1" + moduleId);
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_ENQRYNO").get(0);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_ENQRYNO");
+			try {
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_ENQRYNO")
+						.get(0);
+				if (slnoObj.getAutoGenYN().equals("Y")) {
+					serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_ENQRYNO");
+				}
+			}
+			catch (Exception e) {
 			}
 		}
 		tfEnquiryNo.setReadOnly(false);
@@ -1466,7 +1471,6 @@ public class SmsEnquiry extends BaseTransUI {
 		cbEnquiryStatus.setValue(null);
 		dfEnquiryDate.setValue(new Date());
 		dfDueDate.setValue(addDays(new Date(), 7));
-		
 	}
 	
 	private Date addDays(Date d, int days) {
@@ -1583,6 +1587,7 @@ public class SmsEnquiry extends BaseTransUI {
 			}
 		}
 	}
+	
 	private void resetdocuments() {
 		tfDocumentName.setValue("");
 		taComments.setValue("");

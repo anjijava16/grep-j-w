@@ -175,11 +175,16 @@ public class AssetMaintSched extends BaseUI {
 	}
 	
 	private void loadlookuplist() {
-		BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanlook.setBeanIdProperty("lookupname");
-		beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "AM_MNTFREQ"));
-		cbMaintFreq.setContainerDataSource(beanlook);
+		try {
+			BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanlook.setBeanIdProperty("lookupname");
+			beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "AM_MNTFREQ"));
+			cbMaintFreq.setContainerDataSource(beanlook);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -283,6 +288,7 @@ public class AssetMaintSched extends BaseUI {
 			cbAssetName.setContainerDataSource(beanAssetDetails);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

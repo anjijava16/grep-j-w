@@ -105,7 +105,6 @@ public class AuditConfig extends BaseUI {
 				}
 			}
 		});
-		
 		cbTableName.setWidth("200px");
 		// create form layouts to hold the input items
 		fltableName = new FormLayout();
@@ -134,11 +133,17 @@ public class AuditConfig extends BaseUI {
 	
 	// load the lookup details for search
 	private void loadsearchAuditConfigList() {
-		BeanContainer<String, AuditConfigDM> auditConfigbean = new BeanContainer<String, AuditConfigDM>(
-				AuditConfigDM.class);
-		auditConfigbean.setBeanIdProperty("tableName");
-		auditConfigbean.addAll(serviceAuditConfig.getColumnNameByTableName(null,(String)cbTableName.getValue(), companyId,null));
-		cbTableName.setContainerDataSource(auditConfigbean);
+		try {
+			BeanContainer<String, AuditConfigDM> auditConfigbean = new BeanContainer<String, AuditConfigDM>(
+					AuditConfigDM.class);
+			auditConfigbean.setBeanIdProperty("tableName");
+			auditConfigbean.addAll(serviceAuditConfig.getColumnNameByTableName(null, (String) cbTableName.getValue(),
+					companyId, null));
+			cbTableName.setContainerDataSource(auditConfigbean);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	public void loadSrchRslt() {
@@ -148,10 +153,12 @@ public class AuditConfig extends BaseUI {
 		try {
 			tblMstScrSrchRslt.removeAllItems();
 			List<AuditConfigDM> auditConfigList = new ArrayList<AuditConfigDM>();
-			auditConfigList = serviceAuditConfig.getColumnNameByTableName(null,(String) cbTableName.getValue(), companyId,null);
+			auditConfigList = serviceAuditConfig.getColumnNameByTableName(null, (String) cbTableName.getValue(),
+					companyId, null);
 			recordCnt = auditConfigList.size();
 			tblMstScrSrchRslt.setEditable(true);
-			BeanItemContainer<AuditConfigDM> BeanAuditConfigDM = new BeanItemContainer<AuditConfigDM>(AuditConfigDM.class);
+			BeanItemContainer<AuditConfigDM> BeanAuditConfigDM = new BeanItemContainer<AuditConfigDM>(
+					AuditConfigDM.class);
 			for (AuditConfigDM auditList : auditConfigList) {
 				if (auditList.getOnOff().equals("ON")) {
 					auditList.setOnOff("true");
@@ -161,8 +168,9 @@ public class AuditConfig extends BaseUI {
 			}
 			BeanAuditConfigDM.addAll(auditConfigList);
 			tblMstScrSrchRslt.setTableFieldFactory(new TableFieldFactory() {
-			private static final long serialVersionUID = 1L;
-			public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+				private static final long serialVersionUID = 1L;
+				
+				public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
 					if (propertyId.toString().equals("onOff")) {
 						ckBox = new CheckBox();
 						ckBox.setValue(true);
@@ -175,8 +183,7 @@ public class AuditConfig extends BaseUI {
 			tblMstScrSrchRslt.setColumnFooter("onOff", "No.of Records:" + recordCnt);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "configId", "screendesc", "scrFldName", "auditEvent",
 					"onOff" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Table", "Column", "Audit Event",
-					"On Off" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Table", "Column", "Audit Event", "On Off" });
 			tblMstScrSrchRslt.setSelectable(true);
 		}
 		catch (Exception e) {

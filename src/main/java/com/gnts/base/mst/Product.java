@@ -104,7 +104,7 @@ public class Product extends BaseUI {
 	private HorizontalLayout clrGlry = new HorizontalLayout();
 	// User Input Components
 	private TextField tfProdName, tfprice, tfcode, tfprodcode;
-	private ComboBox cbprntProdct, cbprodCtgry, cbstatus, cbcurrency, cbbrand, cbbranchname, cbuom;
+	private ComboBox cbprntProdct, cbprodCtgry, cbstatus, cbCurrency, cbbrand, cbBranch, cbuom;
 	private TextArea taprodDesc, tadescription, tasrtDesc;
 	private CheckBox cbView, cbVisualizer;
 	private Button btnaddSpec = new GERPButton("Add", "addbt", this);
@@ -161,11 +161,11 @@ public class Product extends BaseUI {
 		tfprice = new TextField();
 		tfprice.setWidth("75");
 		// Currency Combo box
-		cbcurrency = new ComboBox();
-		cbcurrency.setItemCaptionPropertyId("ccyname");
+		cbCurrency = new ComboBox();
+		cbCurrency.setItemCaptionPropertyId("ccyname");
 		loadCurrencyaddList();
-		cbcurrency.setWidth("77");
-		cbcurrency.setHeight("18px");
+		cbCurrency.setWidth("77");
+		cbCurrency.setHeight("18px");
 		// text field unit of measurement
 		cbuom = new ComboBox("UOM");
 		loadUomList();
@@ -185,10 +185,10 @@ public class Product extends BaseUI {
 		// text field for Product Code
 		tfprodcode = new GERPTextField("Product Code");
 		// Combobox for Branch
-		cbbranchname = new ComboBox("Branch Name");
-		cbbranchname.setWidth("150");
+		cbBranch = new ComboBox("Branch Name");
+		cbBranch.setWidth("150");
 		loadBranchList();
-		cbbranchname.setItemCaptionPropertyId("branchName");
+		cbBranch.setItemCaptionPropertyId("branchName");
 		// Text area for Short Desc
 		tasrtDesc = new TextArea("Short Desc");
 		tasrtDesc.setHeight("30");
@@ -296,7 +296,7 @@ public class Product extends BaseUI {
 		// Add Price and Currency in horizontal layout
 		HorizontalLayout hlpricecurency = new HorizontalLayout();
 		hlpricecurency.addComponent(tfprice);
-		hlpricecurency.addComponent(cbcurrency);
+		hlpricecurency.addComponent(cbCurrency);
 		hlpricecurency.setCaption("Price");
 		// Remove all components in Search Layout
 		hlUserInputLayout.removeAllComponents();
@@ -386,15 +386,15 @@ public class Product extends BaseUI {
 	
 	private void loadSrchRslt() {
 		logger.info("Product Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<ProductDM> productList = new ArrayList<ProductDM>();
+		List<ProductDM> list = new ArrayList<ProductDM>();
 		logger.info("" + "Product Category : Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Search Parameters are " + companyid + ", " + tfProdName.getValue() + ", " + tfProdName.getValue()
 				+ (String) cbstatus.getValue());
-		productList = serviceProduct.getProductList(companyid, null, null, tfProdName.getValue().toString(),
+		list = serviceProduct.getProductList(companyid, null, null, tfProdName.getValue().toString(),
 				(String) cbstatus.getValue(), null, null, "F");
-		recordCnt = productList.size();
+		recordCnt = list.size();
 		beanProductDM = new BeanItemContainer<ProductDM>(ProductDM.class);
-		beanProductDM.addAll(productList);
+		beanProductDM.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the ParentCategory. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanProductDM);
@@ -434,7 +434,7 @@ public class Product extends BaseUI {
 			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanbranch.setBeanIdProperty("branchId");
 			beanbranch.addAll(branchList);
-			cbbranchname.setContainerDataSource(beanbranch);
+			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -481,7 +481,7 @@ public class Product extends BaseUI {
 			BeanContainer<Long, CurrencyDM> BeanCurrency = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
 			BeanCurrency.setBeanIdProperty("ccyid");
 			BeanCurrency.addAll(getCurrencylist);
-			cbcurrency.setContainerDataSource(BeanCurrency);
+			cbCurrency.setContainerDataSource(BeanCurrency);
 		}
 		catch (Exception e) {
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " Country List is Null");
@@ -556,7 +556,7 @@ public class Product extends BaseUI {
 					cbuom.setValue(productDM.getUom().toString());
 				}
 				if ((productDM.getCcyid() != null)) {
-					cbcurrency.setValue(productDM.getCcyid());
+					cbCurrency.setValue(productDM.getCcyid());
 				}
 				if (productDM.getProdstatus() != null) {
 					cbstatus.setValue(productDM.getProdstatus());
@@ -623,12 +623,12 @@ public class Product extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		tfProdName.setValue("");
 		cbbrand.setValue(null);
-		cbbranchname.setValue(null);
+		cbBranch.setValue(null);
 		tfprodcode.setValue("");
 		tasrtDesc.setValue("");
 		taprodDesc.setValue("");
 		tfprice.setValue("0");
-		cbcurrency.setValue(null);
+		cbCurrency.setValue(null);
 		cbuom.setValue(null);
 		cbView.setValue(false);
 		cbVisualizer.setValue(false);
@@ -636,8 +636,8 @@ public class Product extends BaseUI {
 		tfProdName.setComponentError(null);
 		tfcode.setComponentError(null);
 		cbbrand.setComponentError(null);
-		cbbranchname.setComponentError(null);
-		cbcurrency.setComponentError(null);
+		cbBranch.setComponentError(null);
+		cbCurrency.setComponentError(null);
 		cbuom.setComponentError(null);
 		tfprice.setComponentError(null);
 		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
@@ -701,7 +701,7 @@ public class Product extends BaseUI {
 		cbprodCtgry.setRequired(true);
 		tfcode.setRequired(true);
 		cbbrand.setRequired(true);
-		cbbranchname.setRequired(true);
+		cbBranch.setRequired(true);
 		cbprntProdct.setRequired(true);
 		hlUserInputLayout.setSpacing(true);
 		// reset the input controls to default value
@@ -725,7 +725,7 @@ public class Product extends BaseUI {
 		cbprodCtgry.setRequired(true);
 		tfcode.setRequired(true);
 		cbbrand.setRequired(true);
-		cbbranchname.setRequired(true);
+		cbBranch.setRequired(true);
 		cbprntProdct.setRequired(true);
 		hlUserInputLayout.setSpacing(true);
 		hlUserInputLayout.setSizeUndefined();
@@ -744,7 +744,7 @@ public class Product extends BaseUI {
 		cbprodCtgry.setComponentError(null);
 		tfcode.setComponentError(null);
 		cbbrand.setComponentError(null);
-		cbbranchname.setComponentError(null);
+		cbBranch.setComponentError(null);
 		cbprntProdct.setComponentError(null);
 		Boolean errorFlag = false;
 		if ((tfProdName.getValue() == null) || tfProdName.getValue().trim().length() == 0) {
@@ -775,9 +775,9 @@ public class Product extends BaseUI {
 		cbprodCtgry.setRequired(false);
 		tfcode.setRequired(false);
 		cbbrand.setRequired(false);
-		cbbranchname.setRequired(false);
+		cbBranch.setRequired(false);
 		cbprntProdct.setRequired(false);
-		cbcurrency.setRequired(false);
+		cbCurrency.setRequired(false);
 		resetFields();
 	}
 	
@@ -789,9 +789,9 @@ public class Product extends BaseUI {
 		cbprodCtgry.setRequired(false);
 		tfcode.setRequired(false);
 		cbbrand.setRequired(false);
-		cbbranchname.setRequired(false);
+		cbBranch.setRequired(false);
 		cbprntProdct.setRequired(false);
-		cbcurrency.setRequired(false);
+		cbCurrency.setRequired(false);
 		tblMstScrSrchRslt.setVisible(true);
 		hlCmdBtnLayout.setVisible(true);
 		resetFields();
@@ -812,8 +812,8 @@ public class Product extends BaseUI {
 			if (tfprice.getValue() != null) {
 				productobj.setPrice(Long.valueOf(tfprice.getValue().toString()));
 			}
-			if (cbcurrency.getValue() != null) {
-				productobj.setCcyid((Long) cbcurrency.getValue());
+			if (cbCurrency.getValue() != null) {
+				productobj.setCcyid((Long) cbCurrency.getValue());
 			}
 			if (cbuom.getValue() != null) {
 				productobj.setUom(cbuom.getValue().toString());
@@ -885,18 +885,18 @@ public class Product extends BaseUI {
 	private void savespecDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
-			ProductSpecificationDM productspecobj = new ProductSpecificationDM();
+			ProductSpecificationDM productSpec = new ProductSpecificationDM();
 			if (tblspec.getValue() != null) {
-				productspecobj = beanProdSpecDM.getItem(tblspec.getValue()).getBean();
+				productSpec = beanProdSpecDM.getItem(tblspec.getValue()).getBean();
 			}
-			productspecobj.setSpeccode(tfcode.getValue());
-			productspecobj.setSpecdesc(tadescription.getValue().toString());
+			productSpec.setSpeccode(tfcode.getValue());
+			productSpec.setSpecdesc(tadescription.getValue().toString());
 			if (cbstatus.getValue() != null) {
-				productspecobj.setSpecstatus((String) cbstatus.getValue());
+				productSpec.setSpecstatus((String) cbstatus.getValue());
 			}
-			productspecobj.setLastupdateddt(DateUtils.getcurrentdate());
-			productspecobj.setLastupdatedby(username);
-			specList.add(productspecobj);
+			productSpec.setLastupdateddt(DateUtils.getcurrentdate());
+			productSpec.setLastupdatedby(username);
+			specList.add(productSpec);
 			loadSrchspecRslt();
 		}
 		catch (Exception e) {

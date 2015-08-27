@@ -367,6 +367,7 @@ public class TaxLimit extends BaseUI {
 			cbSectnCode.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -379,6 +380,7 @@ public class TaxLimit extends BaseUI {
 			cbTaxId.setContainerDataSource(beanTax);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

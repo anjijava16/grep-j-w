@@ -218,6 +218,7 @@ public class Xerox extends BaseTransUI {
 			cbAssetName.setContainerDataSource(beanAssetDetails);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -231,7 +232,7 @@ public class Xerox extends BaseTransUI {
 			cbEmployeeName.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -248,6 +249,7 @@ public class Xerox extends BaseTransUI {
 			cbDepartment.setContainerDataSource(beanDepartment);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

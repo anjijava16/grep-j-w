@@ -78,7 +78,7 @@ public class AssetSpec implements ClickListener {
 	private String username;
 	private Long companyid;
 	private AssetSpecService serviceSpec = (AssetSpecService) SpringContextHelper.getBean("assetSpec");
-	private static Logger logger = Logger.getLogger(AssetSpec.class);
+	private Logger logger = Logger.getLogger(AssetSpec.class);
 	private int total = 0;
 	private Long assetsId;
 	
@@ -196,15 +196,15 @@ public class AssetSpec implements ClickListener {
 		flColumn1.addComponent(btnadd);
 		flColumn1.addComponent(btndelete);
 		flColumn2.addComponent(tblMstScrSrchRslt);
-		HorizontalLayout Input = new HorizontalLayout();
-		Input.setMargin(true);
+		HorizontalLayout hlInput = new HorizontalLayout();
+		hlInput.setMargin(true);
 		// Input.setWidth("1100");
-		Input.addComponent(flColumn1);
-		Input.addComponent(flColumn2);
-		Input.setComponentAlignment(flColumn2, Alignment.MIDDLE_LEFT);
+		hlInput.addComponent(flColumn1);
+		hlInput.addComponent(flColumn2);
+		hlInput.setComponentAlignment(flColumn2, Alignment.MIDDLE_LEFT);
 		// vlTableForm.addComponent(Input);
 		vlTableLayout = new VerticalLayout();
-		vlTableLayout.addComponent(Input);
+		vlTableLayout.addComponent(hlInput);
 		vlAssetSpec.addComponent(vlTableLayout);
 		setTableProperties();
 		resetFields();

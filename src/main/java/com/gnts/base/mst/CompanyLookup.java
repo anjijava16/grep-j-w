@@ -186,13 +186,18 @@ public class CompanyLookup extends BaseUI {
 	
 	// load the ModuleDeatils List details for form
 	private void loadmodulelist() {
-		List<ModuleDM> moduleList = new ArrayList<ModuleDM>();
-		moduleList.add(new ModuleDM(0L, "All Modules"));
-		moduleList.addAll(servModuleBean.getModuleList(companyid));
-		BeanContainer<Long, ModuleDM> modulebean = new BeanContainer<Long, ModuleDM>(ModuleDM.class);
-		modulebean.setBeanIdProperty("moduleId");
-		modulebean.addAll(moduleList);
-		cbModuleCode.setContainerDataSource(modulebean);
+		try {
+			List<ModuleDM> moduleList = new ArrayList<ModuleDM>();
+			moduleList.add(new ModuleDM(0L, "All Modules"));
+			moduleList.addAll(servModuleBean.getModuleList(companyid));
+			BeanContainer<Long, ModuleDM> modulebean = new BeanContainer<Long, ModuleDM>(ModuleDM.class);
+			modulebean.setBeanIdProperty("moduleId");
+			modulebean.addAll(moduleList);
+			cbModuleCode.setContainerDataSource(modulebean);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// load the lookupDetails List details for form without
@@ -208,11 +213,16 @@ public class CompanyLookup extends BaseUI {
 	}
 	
 	private void loadLookupBean(List<LookupDM> lookupList) {
-		lookupList.addAll(serviceLookUp.getLookupList(((Long) cbModuleCode.getValue()), null, null, "Active", "D"));
-		BeanContainer<Long, LookupDM> lookupbean = new BeanContainer<Long, LookupDM>(LookupDM.class);
-		lookupbean.setBeanIdProperty("lookupid");
-		lookupbean.addAll(lookupList);
-		cbLookupCode.setContainerDataSource(lookupbean);
+		try {
+			lookupList.addAll(serviceLookUp.getLookupList(((Long) cbModuleCode.getValue()), null, null, "Active", "D"));
+			BeanContainer<Long, LookupDM> lookupbean = new BeanContainer<Long, LookupDM>(LookupDM.class);
+			lookupbean.setBeanIdProperty("lookupid");
+			lookupbean.addAll(lookupList);
+			cbLookupCode.setContainerDataSource(lookupbean);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values

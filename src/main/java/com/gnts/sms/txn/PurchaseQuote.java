@@ -90,7 +90,7 @@ public class PurchaseQuote extends BaseUI {
 	private EnquiryVendorDtlService serviceEnquiryVendorDtl = (EnquiryVendorDtlService) SpringContextHelper
 			.getBean("purvendor");
 	private SmsCommentsService serviceComment = (SmsCommentsService) SpringContextHelper.getBean("smsComments");
-	private PurchaseQuotHdrService servicepurchaeQuoteHdr = (PurchaseQuotHdrService) SpringContextHelper
+	private PurchaseQuotHdrService servicePurQuoteHdr = (PurchaseQuotHdrService) SpringContextHelper
 			.getBean("PurchaseQuot");
 	private PurchaseQuoteDtlService servicePurchaseQuoteDtl = (PurchaseQuoteDtlService) SpringContextHelper
 			.getBean("PurchaseQuotDtl");
@@ -269,7 +269,7 @@ public class PurchaseQuote extends BaseUI {
 		cbBranch.setItemCaptionPropertyId("branchName");
 		loadBranchList();
 		try {
-			ApprovalSchemaDM obj = servicepurchaeQuoteHdr.getReviewerId(companyid, screenId, branchId, roleId).get(0);
+			ApprovalSchemaDM obj = servicePurQuoteHdr.getReviewerId(companyid, screenId, branchId, roleId).get(0);
 			if (obj.getApprLevel().equals("Reviewer")) {
 				cbStatus = new GERPComboBox("Status", BASEConstants.T_SMS_P_QUOTE_HDR, BASEConstants.QUOTE_STATUS_RV);
 			} else {
@@ -601,9 +601,9 @@ public class PurchaseQuote extends BaseUI {
 		if (cbEnqNo.getValue() != null) {
 			eno = (((SmsPurEnqHdrDM) cbEnqNo.getValue()).getEnquiryNo());
 		}
-		listPurQuoteHdr = servicepurchaeQuoteHdr.getPurchaseQuotHdrList(null, companyid, (Long) cbBranch.getValue(),
-				eno, (String) cbStatus.getValue(), (String) tfvendorName.getValue(), (String) tfQuoteRef.getValue(),
-				null, "F");
+		listPurQuoteHdr = servicePurQuoteHdr.getPurchaseQuotHdrList(null, companyid, (Long) cbBranch.getValue(), eno,
+				(String) cbStatus.getValue(), (String) tfvendorName.getValue(), (String) tfQuoteRef.getValue(), null,
+				"F");
 		recordCnt = listPurQuoteHdr.size();
 		beanQuoteHdr = new BeanItemContainer<PurchaseQuotHdrDM>(PurchaseQuotHdrDM.class);
 		beanQuoteHdr.addAll(listPurQuoteHdr);
@@ -655,7 +655,7 @@ public class PurchaseQuote extends BaseUI {
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -671,16 +671,21 @@ public class PurchaseQuote extends BaseUI {
 			cbUom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadProductList() {
-		BeanItemContainer<SmsPurEnqDtlDM> beanPlnDtl = new BeanItemContainer<SmsPurEnqDtlDM>(SmsPurEnqDtlDM.class);
-		beanPlnDtl.addAll(serviceSmsPurEnqDtl.getSmsPurEnqDtlList(null,
-				((SmsPurEnqHdrDM) cbEnqNo.getValue()).getEnquiryId(), null, null));
-		cbProduct.setContainerDataSource(beanPlnDtl);
-		cbProduct.setItemCaptionPropertyId("pordName");
+		try {
+			BeanItemContainer<SmsPurEnqDtlDM> beanPlnDtl = new BeanItemContainer<SmsPurEnqDtlDM>(SmsPurEnqDtlDM.class);
+			beanPlnDtl.addAll(serviceSmsPurEnqDtl.getSmsPurEnqDtlList(null,
+					((SmsPurEnqHdrDM) cbEnqNo.getValue()).getEnquiryId(), null, null));
+			cbProduct.setContainerDataSource(beanPlnDtl);
+			cbProduct.setItemCaptionPropertyId("pordName");
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Product List
@@ -692,16 +697,21 @@ public class PurchaseQuote extends BaseUI {
 			cbProduct.setItemCaptionPropertyId("prodname");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadEnquiryNo() {
-		BeanItemContainer<SmsPurEnqHdrDM> beanSmsPurEnqHdrDM = new BeanItemContainer<SmsPurEnqHdrDM>(
-				SmsPurEnqHdrDM.class);
-		beanSmsPurEnqHdrDM
-				.addAll(serviceSmsPurEnqHdr.getSmsPurEnqHdrList(companyid, null, null, null, "Approved", "P"));
-		cbEnqNo.setContainerDataSource(beanSmsPurEnqHdrDM);
+		try {
+			BeanItemContainer<SmsPurEnqHdrDM> beanSmsPurEnqHdrDM = new BeanItemContainer<SmsPurEnqHdrDM>(
+					SmsPurEnqHdrDM.class);
+			beanSmsPurEnqHdrDM.addAll(serviceSmsPurEnqHdr.getSmsPurEnqHdrList(companyid, null, null, null, "Approved",
+					"P"));
+			cbEnqNo.setContainerDataSource(beanSmsPurEnqHdrDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Vendor List
@@ -1123,7 +1133,7 @@ public class PurchaseQuote extends BaseUI {
 			fio.read(fileContents);
 			fio.close();
 			purchaseQuotHdrDM.setQuoteDoc(fileContents);
-			servicepurchaeQuoteHdr.saveorUpdatePurchaseQuotHdrDetails(purchaseQuotHdrDM);
+			servicePurQuoteHdr.saveorUpdatePurchaseQuotHdrDetails(purchaseQuotHdrDM);
 			@SuppressWarnings("unchecked")
 			Collection<PurchaseQuotDtlDM> itemIds = (Collection<PurchaseQuotDtlDM>) tblPurQuDtl.getVisibleItemIds();
 			for (PurchaseQuotDtlDM save : (Collection<PurchaseQuotDtlDM>) itemIds) {

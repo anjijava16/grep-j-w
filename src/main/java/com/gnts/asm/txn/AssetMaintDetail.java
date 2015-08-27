@@ -305,6 +305,7 @@ public class AssetMaintDetail extends BaseTransUI {
 			cbAssetName.setContainerDataSource(beanAssetDetails);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -318,6 +319,7 @@ public class AssetMaintDetail extends BaseTransUI {
 			cbMaint.setContainerDataSource(beanMaintSched);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -344,6 +346,7 @@ public class AssetMaintDetail extends BaseTransUI {
 			cbCause.setContainerDataSource(beanlook);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -392,7 +395,7 @@ public class AssetMaintDetail extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -512,8 +515,7 @@ public class AssetMaintDetail extends BaseTransUI {
 			loadsearchrslt();
 		}
 		catch (Exception e) {
-			logger.info("saveMaintDetail-->" + e);
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

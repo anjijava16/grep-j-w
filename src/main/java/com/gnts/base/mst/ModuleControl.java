@@ -50,7 +50,7 @@ public class ModuleControl extends BaseUI {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private ModuleControlService servicemodulectrl = (ModuleControlService) SpringContextHelper
+	private ModuleControlService serviceModuleCtrl = (ModuleControlService) SpringContextHelper
 			.getBean("modulecontrol");
 	// form layout for input controls
 	private FormLayout flModulecode, flStatus, flLisenced, fldfLicenseendDt, fldfLicensestartDt;
@@ -166,32 +166,37 @@ public class ModuleControl extends BaseUI {
 	}
 	
 	private void loadSearchModulelist() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Load search mo");
-		// Load the Active status screen only
-		List<ModuleDM> moduleList = new ArrayList<ModuleDM>();
-		moduleList.add(new ModuleDM(0L, "All Modules"));
-		moduleList.addAll(servicemodulectrl.getModuleList());
-		BeanContainer<Long, ModuleDM> moduleControlBean = new BeanContainer<Long, ModuleDM>(ModuleDM.class);
-		moduleControlBean.setBeanIdProperty("moduleId");
-		moduleControlBean.addAll(moduleList);
-		cbModuleCode.setContainerDataSource(moduleControlBean);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Load search mo");
+			// Load the Active status screen only
+			List<ModuleDM> moduleList = new ArrayList<ModuleDM>();
+			moduleList.add(new ModuleDM(0L, "All Modules"));
+			moduleList.addAll(serviceModuleCtrl.getModuleList());
+			BeanContainer<Long, ModuleDM> moduleControlBean = new BeanContainer<Long, ModuleDM>(ModuleDM.class);
+			moduleControlBean.setBeanIdProperty("moduleId");
+			moduleControlBean.addAll(moduleList);
+			cbModuleCode.setContainerDataSource(moduleControlBean);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 		Long modulecodeid = null;
-		List<ModuleControlDM> modulecontrolList = new ArrayList<ModuleControlDM>();
+		List<ModuleControlDM> list = new ArrayList<ModuleControlDM>();
 		if (cbModuleCode.getValue() != null) {
 			modulecodeid = ((Long) cbModuleCode.getValue());
 		}
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ modulecodeid + ", " + (String) cbStatus.getValue() + ", " + companyId);
-		modulecontrolList = servicemodulectrl.getModuleControlList(modulecodeid, (String) cbStatus.getValue(),
+		list = serviceModuleCtrl.getModuleControlList(modulecodeid, (String) cbStatus.getValue(),
 				companyId);
-		recordCnt = modulecontrolList.size();
+		recordCnt = list.size();
 		beansModuleControlDM = new BeanItemContainer<ModuleControlDM>(ModuleControlDM.class);
-		beansModuleControlDM.addAll(modulecontrolList);
+		beansModuleControlDM.addAll(list);
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Got the Module control result set");
 		tblMstScrSrchRslt.setContainerDataSource(beansModuleControlDM);

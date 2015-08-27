@@ -152,14 +152,14 @@ public class Parameter extends BaseUI {
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<ParameterDM> parameterList = new ArrayList<ParameterDM>();
+		List<ParameterDM> list = new ArrayList<ParameterDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfparameterRef.getValue() + ", " + (String) cbparameterstatus.getValue());
-		parameterList = serviceParameter.getParameterList(null, null, tfparameterRef.getValue(),
+		list = serviceParameter.getParameterList(null, null, tfparameterRef.getValue(),
 				(String) cbparameterstatus.getValue(), companyid);
-		recordCnt = parameterList.size();
+		recordCnt = list.size();
 		beanparameterDM = new BeanItemContainer<ParameterDM>(ParameterDM.class);
-		beanparameterDM.addAll(parameterList);
+		beanparameterDM.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Parameter. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanparameterDM);

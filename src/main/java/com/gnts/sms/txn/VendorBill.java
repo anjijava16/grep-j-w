@@ -561,18 +561,18 @@ public class VendorBill extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<VendorBillHdrDM> vendorBillHdrList = new ArrayList<VendorBillHdrDM>();
+		List<VendorBillHdrDM> list = new ArrayList<VendorBillHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
 		Long poNo = null;
 		if (cbpoNo.getValue() != null) {
 			poNo = (((PurchasePOHdrDM) cbpoNo.getValue()).getPoId());
 		}
-		vendorBillHdrList = servicevendorBillHdr.getVendorBillHdrList(companyid, null, poNo,
-				(Long) cbBranch.getValue(), (String) cbStatus.getValue(), tfbillNo.getValue(), "f");
-		recordCnt = vendorBillHdrList.size();
+		list = servicevendorBillHdr.getVendorBillHdrList(companyid, null, poNo, (Long) cbBranch.getValue(),
+				(String) cbStatus.getValue(), tfbillNo.getValue(), "f");
+		recordCnt = list.size();
 		beanVendorBillHdr = new BeanItemContainer<VendorBillHdrDM>(VendorBillHdrDM.class);
-		beanVendorBillHdr.addAll(vendorBillHdrList);
+		beanVendorBillHdr.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanVendorBillHdr);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "billId", "branchName", "billNo", "purchaseOrderNo",
@@ -609,7 +609,7 @@ public class VendorBill extends BaseTransUI {
 			tblVendorBillDtl.setColumnFooter("lastupdateddt", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -624,7 +624,7 @@ public class VendorBill extends BaseTransUI {
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -640,7 +640,7 @@ public class VendorBill extends BaseTransUI {
 			cbMatUom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -654,15 +654,21 @@ public class VendorBill extends BaseTransUI {
 			cbproduct.setContainerDataSource(beanPlnDtl);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Load PoNo
 	private void loadPoNo() {
-		BeanItemContainer<PurchasePOHdrDM> beanPurPoDM = new BeanItemContainer<PurchasePOHdrDM>(PurchasePOHdrDM.class);
-		beanPurPoDM.addAll(servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, null, null, null, null));
-		cbpoNo.setContainerDataSource(beanPurPoDM);
+		try {
+			BeanItemContainer<PurchasePOHdrDM> beanPurPoDM = new BeanItemContainer<PurchasePOHdrDM>(
+					PurchasePOHdrDM.class);
+			beanPurPoDM.addAll(servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, null, null, null, null));
+			cbpoNo.setContainerDataSource(beanPurPoDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editVendorBillHdr() {

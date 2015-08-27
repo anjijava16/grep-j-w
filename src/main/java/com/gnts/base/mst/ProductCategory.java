@@ -200,6 +200,7 @@ public class ProductCategory extends BaseUI {
 		tfProdCtgryName.setComponentError(null);
 		cbProdCtgryStatus.setValue(cbProdCtgryStatus.getItemIds().iterator().next());
 	}
+	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editProductCategory() {
 		hlUserInputLayout.setVisible(true);
@@ -226,6 +227,7 @@ public class ProductCategory extends BaseUI {
 			}
 		}
 	}
+	
 	// Base class implementations
 	// BaseUI searchDetails() implementation
 	@Override
@@ -311,6 +313,7 @@ public class ProductCategory extends BaseUI {
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.M_BASE_PRODUCT_CATEGORY);
 		UI.getCurrent().getSession().setAttribute("audittablepk", cateid);
 	}
+	
 	@Override
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
@@ -318,13 +321,20 @@ public class ProductCategory extends BaseUI {
 		tfProdCtgryName.setRequired(false);
 		resetFields();
 	}
+	
 	private void loadCategoryList() {
-		BeanContainer<Long, ProductCategoryListDM> beanCtgry = new BeanContainer<Long, ProductCategoryListDM>(
-				ProductCategoryListDM.class);
-		beanCtgry.setBeanIdProperty("cateid");
-		beanCtgry.addAll(serviceProductCategory.getProdCategoryList(null, null, null, null, null, "P"));
-		cbPrntCtgry.setContainerDataSource(beanCtgry);
+		try {
+			BeanContainer<Long, ProductCategoryListDM> beanCtgry = new BeanContainer<Long, ProductCategoryListDM>(
+					ProductCategoryListDM.class);
+			beanCtgry.setBeanIdProperty("cateid");
+			beanCtgry.addAll(serviceProductCategory.getProdCategoryList(null, null, null, null, null, "P"));
+			cbPrntCtgry.setContainerDataSource(beanCtgry);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
+	
 	@Override
 	protected void saveDetails() throws SaveException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");

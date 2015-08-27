@@ -1,5 +1,6 @@
 package com.gnts.asm.txn;
 
+import org.apache.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 import com.gnts.asm.domain.txn.AssetDetailsDM;
 import com.gnts.asm.domain.txn.AssetMaintDetailDM;
@@ -40,6 +41,7 @@ public class AssetComplaintRegister extends Window {
 	private Button btnCancel = new GERPButton("Cancel", "cancelbt");
 	private Long companyid, employeeId;
 	private String username;
+	private Logger logger = Logger.getLogger(AssetComplaintRegister.class);
 	
 	public AssetComplaintRegister() {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
@@ -161,11 +163,17 @@ public class AssetComplaintRegister extends Window {
 	
 	// Load Enquiry List
 	private void loadAssetList() {
-		BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
-				AssetDetailsDM.class);
-		beanAssetDetails.setBeanIdProperty("assetId");
-		beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, null, null, null, null, null));
-		cbAssetName.setContainerDataSource(beanAssetDetails);
+		try {
+			BeanContainer<Long, AssetDetailsDM> beanAssetDetails = new BeanContainer<Long, AssetDetailsDM>(
+					AssetDetailsDM.class);
+			beanAssetDetails.setBeanIdProperty("assetId");
+			beanAssetDetails.addAll(serviceAssetDetail
+					.getAssetDetailList(companyid, null, null, null, null, null, null));
+			cbAssetName.setContainerDataSource(beanAssetDetails);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Department list for pnladdedit's combo Box
@@ -178,6 +186,7 @@ public class AssetComplaintRegister extends Window {
 			cbEmployee.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

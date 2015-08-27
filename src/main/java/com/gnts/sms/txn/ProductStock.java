@@ -30,11 +30,11 @@ public class ProductStock extends BaseUI {
 	 */
 	private static final long serialVersionUID = 1L;
 	// Bean Creation
-	private ProductStockService serviceproductstock = (ProductStockService) SpringContextHelper.getBean("productstock");
+	private ProductStockService serviceProdStock = (ProductStockService) SpringContextHelper.getBean("productstock");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	// User Input Fields for Product Stock
-	private ComboBox cbbranchid, cbproductid, cbstocktype;
+	private ComboBox cbBranch, cbProduct, cbStocktype;
 	private BeanItemContainer<ProductStockDM> beanproductstock = null;
 	private FormLayout fl1, fl2, fl3;
 	private GERPAddEditHLayout hlSearLayout;
@@ -62,17 +62,17 @@ public class ProductStock extends BaseUI {
 	private void buildview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Product Stock UI");
 		// Initialization for product stock Details
-		cbbranchid = new GERPComboBox("Branch");
-		cbbranchid.setItemCaptionPropertyId("branchName");
-		cbbranchid.setNullSelectionAllowed(false);
+		cbBranch = new GERPComboBox("Branch");
+		cbBranch.setItemCaptionPropertyId("branchName");
+		cbBranch.setNullSelectionAllowed(false);
 		loadBranchList();
-		cbproductid = new GERPComboBox("Product Name");
-		cbproductid.setItemCaptionPropertyId("prodname");
+		cbProduct = new GERPComboBox("Product Name");
+		cbProduct.setItemCaptionPropertyId("prodname");
 		loadProduct();
-		cbstocktype = new GERPComboBox("Stock Type");
-		cbstocktype.addItem("new");
-		cbstocktype.addItem("scrap");
-		cbstocktype.addItem("Refurbish");
+		cbStocktype = new GERPComboBox("Stock Type");
+		cbStocktype.addItem("new");
+		cbStocktype.addItem("scrap");
+		cbStocktype.addItem("Refurbish");
 		hlSearLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearLayout));
 		assembleSearchLayout();
@@ -90,9 +90,9 @@ public class ProductStock extends BaseUI {
 		fl1 = new FormLayout();
 		fl2 = new FormLayout();
 		fl3 = new FormLayout();
-		fl1.addComponent(cbbranchid);
-		fl2.addComponent(cbproductid);
-		fl3.addComponent(cbstocktype);
+		fl1.addComponent(cbBranch);
+		fl2.addComponent(cbProduct);
+		fl3.addComponent(cbStocktype);
 		hlSearLayout.addComponent(fl1);
 		hlSearLayout.addComponent(fl2);
 		hlSearLayout.addComponent(fl3);
@@ -101,10 +101,15 @@ public class ProductStock extends BaseUI {
 	}
 	
 	private void loadBranchList() {
-		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, null, companyid, "P"));
-		cbbranchid.setContainerDataSource(beanbranch);
+		try {
+			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanbranch.setBeanIdProperty("branchId");
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, null, companyid, "P"));
+			cbBranch.setContainerDataSource(beanbranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Product List
@@ -116,7 +121,7 @@ public class ProductStock extends BaseUI {
 			BeanContainer<Long, ProductDM> beanprod = new BeanContainer<Long, ProductDM>(ProductDM.class);
 			beanprod.setBeanIdProperty("prodid");
 			beanprod.addAll(list);
-			cbproductid.setContainerDataSource(beanprod);
+			cbProduct.setContainerDataSource(beanprod);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -128,8 +133,8 @@ public class ProductStock extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<ProductStockDM> listProductstock = new ArrayList<ProductStockDM>();
-		listProductstock = serviceproductstock.getProductStockList((Long) cbproductid.getValue(),
-				(String) cbstocktype.getValue(), productStockId, (Long) cbbranchid.getValue(), "F");
+		listProductstock = serviceProdStock.getProductStockList((Long) cbProduct.getValue(),
+				(String) cbStocktype.getValue(), productStockId, (Long) cbBranch.getValue(), "F");
 		recordcnt = listProductstock.size();
 		beanproductstock = new BeanItemContainer<ProductStockDM>(ProductStockDM.class);
 		beanproductstock.addAll(listProductstock);
@@ -163,9 +168,9 @@ public class ProductStock extends BaseUI {
 	
 	@Override
 	protected void resetSearchDetails() {
-		cbbranchid.setValue(branchId);
-		cbproductid.setValue(0L);
-		cbstocktype.setValue(null);
+		cbBranch.setValue(branchId);
+		cbProduct.setValue(0L);
+		cbStocktype.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		loadSrchRslt();
@@ -199,8 +204,8 @@ public class ProductStock extends BaseUI {
 	
 	@Override
 	protected void resetFields() {
-		cbbranchid.setValue(branchId);
-		cbproductid.setValue(0L);
-		cbstocktype.setValue(null);
+		cbBranch.setValue(branchId);
+		cbProduct.setValue(0L);
+		cbStocktype.setValue(null);
 	}
 }

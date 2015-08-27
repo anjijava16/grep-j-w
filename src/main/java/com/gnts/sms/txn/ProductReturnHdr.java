@@ -88,7 +88,7 @@ public class ProductReturnHdr extends BaseUI {
 	private SmsInvoiceHdrService serviceSmsInvoiceHdr = (SmsInvoiceHdrService) SpringContextHelper
 			.getBean("smsInvoiceheader");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
-	private BranchService servicebeanBranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	// Product Return Hdr Declaration
 	private ComboBox cbInvoiceid, cbbranch;
 	private TextField tfreturndoc;
@@ -107,7 +107,7 @@ public class ProductReturnHdr extends BaseUI {
 	private Button btnaddreturndtl = new GERPButton("Add", "addbt", this);
 	private Table tblProdRetDetails = new GERPTable();
 	private List<ProductReturnDtlDM> listProdReturn = new ArrayList<ProductReturnDtlDM>();
-	private BeanItemContainer<ProductReturnHdrDM> beanproductreturn = null;
+	private BeanItemContainer<ProductReturnHdrDM> beanProdReturn = null;
 	// Search control layout
 	private GERPAddEditHLayout hlSearchLayout;
 	// UserInput control layout
@@ -323,11 +323,16 @@ public class ProductReturnHdr extends BaseUI {
 	
 	// Load Branch List
 	private void loadBranchList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(servicebeanBranch.getBranchList(null, null, null, null, companyid, "P"));
-		cbbranch.setContainerDataSource(beanBranch);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranch.setBeanIdProperty("branchId");
+			beanBranch.addAll(serviceBranch.getBranchList(null, null, null, null, companyid, "P"));
+			cbbranch.setContainerDataSource(beanBranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Product List
@@ -338,7 +343,7 @@ public class ProductReturnHdr extends BaseUI {
 			cbdtlprodid.setContainerDataSource(beanProduct);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -354,20 +359,20 @@ public class ProductReturnHdr extends BaseUI {
 			cbInvoiceid.setContainerDataSource(beaninvoiece);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Load Product Return Hdr
 	private void loadSrchRslt() {
 		tblMstScrSrchRslt.removeAllItems();
-		List<ProductReturnHdrDM> prodretu = new ArrayList<ProductReturnHdrDM>();
-		prodretu = serviceProductReturnHdr.getProductReturnHdrList((Long) cbInvoiceid.getValue(), companyid, null,
+		List<ProductReturnHdrDM> list = new ArrayList<ProductReturnHdrDM>();
+		list = serviceProductReturnHdr.getProductReturnHdrList((Long) cbInvoiceid.getValue(), companyid, null,
 				(Long) cbbranch.getValue(), (String) cbprdstatus.getValue(), "F");
-		recordcnt = prodretu.size();
-		beanproductreturn = new BeanItemContainer<ProductReturnHdrDM>(ProductReturnHdrDM.class);
-		beanproductreturn.addAll(prodretu);
-		tblMstScrSrchRslt.setContainerDataSource(beanproductreturn);
+		recordcnt = list.size();
+		beanProdReturn = new BeanItemContainer<ProductReturnHdrDM>(ProductReturnHdrDM.class);
+		beanProdReturn.addAll(list);
+		tblMstScrSrchRslt.setContainerDataSource(beanProdReturn);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "productreturnId", "branchName", "invoiceAddress",
 				"returnRemarks", "prdrtnStatus", "lastUpdateddt", "lastUpdatedby" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch", "Invoice Address", "Return Remark",
@@ -495,8 +500,7 @@ public class ProductReturnHdr extends BaseUI {
 	private void editProductReturn() {
 		try {
 			if (tblMstScrSrchRslt.getValue() != null) {
-				ProductReturnHdrDM productReturnHdrDM = beanproductreturn.getItem(tblMstScrSrchRslt.getValue())
-						.getBean();
+				ProductReturnHdrDM productReturnHdrDM = beanProdReturn.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				productreturnId = productReturnHdrDM.getProductreturnId();
 				cbbranch.setValue(productReturnHdrDM.getBranchId());
 				cbInvoiceid.setValue(productReturnHdrDM.getInvoiceId());
@@ -516,7 +520,8 @@ public class ProductReturnHdr extends BaseUI {
 	private void editproductreturndtl() {
 		try {
 			if (tblProdRetDetails.getValue() != null) {
-				ProductReturnDtlDM productReturnDtlDM = beanprodctretdtls.getItem(tblProdRetDetails.getValue()).getBean();
+				ProductReturnDtlDM productReturnDtlDM = beanprodctretdtls.getItem(tblProdRetDetails.getValue())
+						.getBean();
 				Long prodid = productReturnDtlDM.getProdid();
 				Collection<?> prodids = cbdtlprodid.getItemIds();
 				for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
@@ -588,7 +593,7 @@ public class ProductReturnHdr extends BaseUI {
 		try {
 			ProductReturnHdrDM rethdrobj = new ProductReturnHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				rethdrobj = beanproductreturn.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				rethdrobj = beanProdReturn.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			rethdrobj.setCompanyId(companyid);
 			rethdrobj.setBranchId((Long) cbbranch.getValue());
@@ -606,7 +611,8 @@ public class ProductReturnHdr extends BaseUI {
 			rethdrobj.setLastUpdatedby(username);
 			serviceProductReturnHdr.saveorupdateproreturnhdr(rethdrobj);
 			@SuppressWarnings("unchecked")
-			Collection<ProductReturnDtlDM> returndtls = (Collection<ProductReturnDtlDM>) tblProdRetDetails.getVisibleItemIds();
+			Collection<ProductReturnDtlDM> returndtls = (Collection<ProductReturnDtlDM>) tblProdRetDetails
+					.getVisibleItemIds();
 			for (ProductReturnDtlDM saveprodretdtls : (Collection<ProductReturnDtlDM>) returndtls) {
 				saveprodretdtls.setProdreturnid(Long.valueOf(rethdrobj.getProductreturnId()));
 				serviceprodcutreturndtl.saveorupdateProdRetdtls(saveprodretdtls);

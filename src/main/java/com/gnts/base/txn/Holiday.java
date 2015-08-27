@@ -352,15 +352,19 @@ public class Holiday extends BaseUI {
 		}
 	}
 	
-	// Load foreignkey details
+	// Load Branch details
 	private void loadBranchlist() {
-		List<BranchDM> list = new ArrayList<BranchDM>();
-		BranchDM branch = new BranchDM(0L, "All Branchces");
-		list.add(branch);
-		list.addAll(branchbean.getBranchList(null, null, null, "Active", companyid, "P"));
-		BeanContainer<Long, BranchDM> beanState = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanState.setBeanIdProperty("branchId");
-		beanState.addAll(list);
-		cbBranch.setContainerDataSource(beanState);
+		try {
+			List<BranchDM> list = new ArrayList<BranchDM>();
+			list.add(new BranchDM(0L, "All Branchces"));
+			list.addAll(branchbean.getBranchList(null, null, null, "Active", companyid, "P"));
+			BeanContainer<Long, BranchDM> beanState = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanState.setBeanIdProperty("branchId");
+			beanState.addAll(list);
+			cbBranch.setContainerDataSource(beanState);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

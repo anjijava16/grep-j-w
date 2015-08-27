@@ -123,15 +123,15 @@ public class Currency extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Loading Search...");
-		List<CurrencyDM> currencyList = new ArrayList<CurrencyDM>();
+		List<CurrencyDM> list = new ArrayList<CurrencyDM>();
 		logger.info("Company ID :" + companyId + "| Login User Name : " + strLoginUserName + " > "
 				+ "Search Parameters are " + "," + tfCurrencyCode.getValue() + ", " + tfCurrencyName.getValue() + ", "
 				+ (String) cbCurrencyStatus.getValue() + ", F");
-		currencyList = serviceCurrency.getCurrencyList(null, tfCurrencyCode.getValue(), tfCurrencyName.getValue(),
+		list = serviceCurrency.getCurrencyList(null, tfCurrencyCode.getValue(), tfCurrencyName.getValue(),
 				(String) cbCurrencyStatus.getValue(), "F");
-		recordCnt = currencyList.size();
+		recordCnt = list.size();
 		beanCurrencyDM = new BeanItemContainer<CurrencyDM>(CurrencyDM.class);
-		beanCurrencyDM.addAll(currencyList);
+		beanCurrencyDM.addAll(list);
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Got the Currency result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanCurrencyDM);

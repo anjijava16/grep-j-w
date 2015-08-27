@@ -358,14 +358,13 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<SmsSDAHdrDM> hdrlist = new ArrayList<SmsSDAHdrDM>();
+		List<SmsSDAHdrDM> list = new ArrayList<SmsSDAHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + null + "," + tfSDANumber.getValue() + ", " + (String) cbSDAStatus.getValue());
-		hdrlist = serviceSDAHeader
-				.getsmsSDRdetails(null, tfSDANumber.getValue(), null, (String) cbSDAStatus.getValue());
-		recordCnt = hdrlist.size();
+		list = serviceSDAHeader.getsmsSDRdetails(null, tfSDANumber.getValue(), null, (String) cbSDAStatus.getValue());
+		recordCnt = list.size();
 		beanhdr = new BeanItemContainer<SmsSDAHdrDM>(SmsSDAHdrDM.class);
-		beanhdr.addAll(hdrlist);
+		beanhdr.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the SMSENQUIRY. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanhdr);
@@ -407,10 +406,15 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 	
 	// Load Client List
 	private void loadEnquiryList() {
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
-		cbEnquiry.setContainerDataSource(beansmsenqHdr);
+		try {
+			BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("enquiryId");
+			beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
+			cbEnquiry.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Product List
@@ -423,7 +427,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			cbProduct.setContainerDataSource(beanEnqDtl);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -794,7 +798,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			cbwindTechPers.setItemCaptionPropertyId("contactName");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -812,7 +816,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			cbwindcommPerson.setItemCaptionPropertyId("contactName");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 }

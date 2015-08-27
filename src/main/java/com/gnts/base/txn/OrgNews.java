@@ -170,24 +170,35 @@ public class OrgNews extends BaseUI {
 	
 	// Load Branch list for pnlmain's combo Box
 	private void loadBranchDetails() {
-		List<BranchDM> list = new ArrayList<BranchDM>();
-		list.add(new BranchDM(0L, "All Branches"));
-		list.addAll(serviceBranch.getBranchList(branchId, null, null, (String) cbNewsStatus.getValue(), companyid, "P"));
-		BeanContainer<Long, BranchDM> beansbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beansbranch.setBeanIdProperty("branchId");
-		beansbranch.addAll(list);
-		cbBranch.setContainerDataSource(beansbranch);
+		try {
+			List<BranchDM> list = new ArrayList<BranchDM>();
+			list.add(new BranchDM(0L, "All Branches"));
+			list.addAll(serviceBranch.getBranchList(branchId, null, null, (String) cbNewsStatus.getValue(), companyid,
+					"P"));
+			BeanContainer<Long, BranchDM> beansbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beansbranch.setBeanIdProperty("branchId");
+			beansbranch.addAll(list);
+			cbBranch.setContainerDataSource(beansbranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Department list for pnladdedit's combo Box
 	private void loadDepartment() {
-		List<DepartmentDM> list = new ArrayList<DepartmentDM>();
-		list.add(new DepartmentDM(0L, "All Department"));
-		list.addAll(serviceDepartment.getDepartmentList(companyid, null, "Active", "P"));
-		BeanContainer<Long, DepartmentDM> beandept = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beandept.setBeanIdProperty("deptid");
-		beandept.addAll(list);
-		cbDepartment.setContainerDataSource(beandept);
+		try {
+			List<DepartmentDM> list = new ArrayList<DepartmentDM>();
+			list.add(new DepartmentDM(0L, "All Department"));
+			list.addAll(serviceDepartment.getDepartmentList(companyid, null, "Active", "P"));
+			BeanContainer<Long, DepartmentDM> beandept = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beandept.setBeanIdProperty("deptid");
+			beandept.addAll(list);
+			cbDepartment.setContainerDataSource(beandept);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadSrchRslt() {

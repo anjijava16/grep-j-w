@@ -514,16 +514,26 @@ public class AccessConfig extends BaseUI {
 	}
 	
 	private void loadRoleList() {
-		BeanContainer<Long, RoleDM> beanRole = new BeanContainer<Long, RoleDM>(RoleDM.class);
-		beanRole.setBeanIdProperty("roleId");
-		beanRole.addAll(serviceRole.getRoleList(null, "Active", companyid, "P"));
-		cbRole.setContainerDataSource(beanRole);
+		try {
+			BeanContainer<Long, RoleDM> beanRole = new BeanContainer<Long, RoleDM>(RoleDM.class);
+			beanRole.setBeanIdProperty("roleId");
+			beanRole.addAll(serviceRole.getRoleList(null, "Active", companyid, "P"));
+			cbRole.setContainerDataSource(beanRole);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadBranchList() {
-		BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranch.setBeanIdProperty("branchId");
-		beanBranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
-		cbBranch.setContainerDataSource(beanBranch);
+		try {
+			BeanContainer<Long, BranchDM> beanBranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranch.setBeanIdProperty("branchId");
+			beanBranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
+			cbBranch.setContainerDataSource(beanBranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

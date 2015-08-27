@@ -70,7 +70,6 @@ import com.vaadin.server.VaadinService;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table.Align;
@@ -360,7 +359,6 @@ public class ServiceCallForm extends BaseTransUI {
 		tfslno.setReadOnly(true);
 		flcol1.addComponent(cbBranch);
 		flcol1.addComponent(dfdate);
-
 		flcol2.addComponent(cbEnquiryNumber);
 		flcol2.addComponent(cbDragNo);
 		flcol2.addComponent(cbClient);
@@ -455,12 +453,10 @@ public class ServiceCallForm extends BaseTransUI {
 		if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM") != null
 				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")) {
 			btnAdd.setEnabled(true);
-
 			hdrlist = serviveCallFormService.getServicecallFormList(null, (Long) cbEnquiryNumber.getValue(), null,
 					dfdate.getValue(), (String) cbtype.getValue(), null, null, "F", null, null, null);
 		} else {
 			btnAdd.setEnabled(false);
-
 			hdrlist = serviveCallFormService.getServicecallFormList(null, (Long) cbEnquiryNumber.getValue(), null,
 					dfdate.getValue(), (String) cbtype.getValue(), null, null, "F", "Approved", null, null);
 		}
@@ -470,8 +466,10 @@ public class ServiceCallForm extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the SMSENQUIRY. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanServiceCallForm);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "slNo", "refDate", "enquiryNo", "clientName", "cityname","type","markStatus" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Ref.Date", "Enquiry No", "Client Name","City Name", "Type","Marketing Status" });
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "slNo", "refDate", "enquiryNo", "clientName", "cityname",
+				"type", "markStatus" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Ref.Date", "Enquiry No", "Client Name",
+				"City Name", "Type", "Marketing Status" });
 		tblMstScrSrchRslt.setColumnAlignment("slNo", Align.RIGHT);
 		tblMstScrSrchRslt.setColumnFooter("", "No.of Records : " + recordCnt);
 	}
@@ -808,7 +806,6 @@ public class ServiceCallForm extends BaseTransUI {
 				hlspecadd1.setEnabled(false);
 				hlspecadd.setEnabled(false);
 				hlUserIPContainer.setEnabled(false);
-
 			}
 		}
 		catch (Exception e) {
@@ -822,7 +819,6 @@ public class ServiceCallForm extends BaseTransUI {
 				hlDocumentLayout.setEnabled(false);
 				hlqccontrol.setEnabled(false);
 				hlUserIPContainer.setEnabled(false);
-
 			}
 		}
 		catch (Exception e) {
@@ -1031,34 +1027,55 @@ public class ServiceCallForm extends BaseTransUI {
 	
 	// Load EnquiryNo
 	private void loadEnquiryNo() {
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(serviceEnqHdr.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
-		cbEnquiryNumber.setContainerDataSource(beansmsenqHdr);
+		try {
+			BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("enquiryId");
+			beansmsenqHdr.addAll(serviceEnqHdr.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
+			cbEnquiryNumber.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadPurchaseOrdNo() {
-		BeanContainer<Long, SmsPOHdrDM> beanPurchaseOrdHdr = new BeanContainer<Long, SmsPOHdrDM>(SmsPOHdrDM.class);
-		beanPurchaseOrdHdr.setBeanIdProperty("poid");
-		beanPurchaseOrdHdr.addAll(servicePurchaseOrdHdr.getSmspohdrList(null, null, companyid, null, null, null, null,
-				"F", (Long) cbEnquiryNumber.getValue()));
-		cbPONumber.setContainerDataSource(beanPurchaseOrdHdr);
+		try {
+			BeanContainer<Long, SmsPOHdrDM> beanPurchaseOrdHdr = new BeanContainer<Long, SmsPOHdrDM>(SmsPOHdrDM.class);
+			beanPurchaseOrdHdr.setBeanIdProperty("poid");
+			beanPurchaseOrdHdr.addAll(servicePurchaseOrdHdr.getSmspohdrList(null, null, companyid, null, null, null,
+					null, "F", (Long) cbEnquiryNumber.getValue()));
+			cbPONumber.setContainerDataSource(beanPurchaseOrdHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadWorkOrderNo() {
-		BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
-				WorkOrderHdrDM.class);
-		beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
-		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
-				null, null, null, null, (Long) cbPONumber.getValue()));
-		cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
+		try {
+			BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
+					WorkOrderHdrDM.class);
+			beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
+			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
+					null, null, null, null, (Long) cbPONumber.getValue()));
+			cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loaddrawingNo() {
-		BeanContainer<Long, SmsEnquiryDtlDM> beandrgNo = new BeanContainer<Long, SmsEnquiryDtlDM>(SmsEnquiryDtlDM.class);
-		beandrgNo.setBeanIdProperty("productid");
-		beandrgNo.addAll(serviceEnqDtls.getsmsenquirydtllist(null, (Long) cbEnquiryNumber.getValue(), null, null, null,
-				null));
-		cbDragNo.setContainerDataSource(beandrgNo);
+		try {
+			BeanContainer<Long, SmsEnquiryDtlDM> beandrgNo = new BeanContainer<Long, SmsEnquiryDtlDM>(
+					SmsEnquiryDtlDM.class);
+			beandrgNo.setBeanIdProperty("productid");
+			beandrgNo.addAll(serviceEnqDtls.getsmsenquirydtllist(null, (Long) cbEnquiryNumber.getValue(), null, null,
+					null, null));
+			cbDragNo.setContainerDataSource(beandrgNo);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

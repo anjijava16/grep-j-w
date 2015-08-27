@@ -222,6 +222,7 @@ public class PhoneCallRegister extends BaseTransUI {
 			cbEmployee.setContainerDataSource(beanInitiatedBy);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -238,6 +239,7 @@ public class PhoneCallRegister extends BaseTransUI {
 			cbDepartment.setContainerDataSource(beanDepartment);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

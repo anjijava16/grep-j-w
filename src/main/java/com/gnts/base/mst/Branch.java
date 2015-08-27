@@ -217,18 +217,29 @@ public class Branch extends BaseUI {
 	
 	// load the State name list details for form
 	private void loadStateList() {
-		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
-		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountryName.getValue(), companyid, "P"));
-		cbStateName.setContainerDataSource(beanState);
+		try {
+			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
+			beanState.setBeanIdProperty("stateId");
+			beanState
+					.addAll(serviceState.getStateList(null, "Active", (Long) cbCountryName.getValue(), companyid, "P"));
+			cbStateName.setContainerDataSource(beanState);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// load the City name list details for form
 	private void loadCityList() {
-		BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
-		beanCity.setBeanIdProperty("cityid");
-		beanCity.addAll(serviceCity.getCityList(null, null, (Long) cbStateName.getValue(), "Active", companyid, "P"));
-		cbCityName.setContainerDataSource(beanCity);
+		try {
+			BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
+			beanCity.setBeanIdProperty("cityid");
+			beanCity.addAll(serviceCity.getCityList(null, null, (Long) cbStateName.getValue(), "Active", companyid, "P"));
+			cbCityName.setContainerDataSource(beanCity);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// get the search result from DB based on the search parameters

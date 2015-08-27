@@ -46,7 +46,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class Department extends BaseUI {
-	private DepartmentService beandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private DepartmentService serviceDepartment = (DepartmentService) SpringContextHelper.getBean("department");
 	// form layout for input controls
 	private FormLayout flDeptName, flDeptStatus;
 	// Parent layout for all the input controls
@@ -115,13 +115,13 @@ public class Department extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<DepartmentDM> deptList = new ArrayList<DepartmentDM>();
+		List<DepartmentDM> list = new ArrayList<DepartmentDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfDeptname.getValue() + ", " + cbDeptStatus.getValue());
-		deptList = beandepartmant.getDepartmentList(companyid, tfDeptname.getValue(),(String) cbDeptStatus.getValue(), "F");
-		recordCnt = deptList.size();
+		list = serviceDepartment.getDepartmentList(companyid, tfDeptname.getValue(),(String) cbDeptStatus.getValue(), "F");
+		recordCnt = list.size();
 		beanDepartment = new BeanItemContainer<DepartmentDM>(DepartmentDM.class);
-		beanDepartment.addAll(deptList);
+		beanDepartment.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Dept. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanDepartment);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "deptid", "deptname", "deptstatus", "lastupdateddt",
@@ -246,7 +246,7 @@ public class Department extends BaseUI {
 		}
 		depertmentobj.setLastupdateddt(DateUtils.getcurrentdate());
 		depertmentobj.setLastupdatedby(username);
-		beandepartmant.saveDepartmentDetails(depertmentobj);
+		serviceDepartment.saveDepartmentDetails(depertmentobj);
 		UI.getCurrent().getSession().setAttribute("blIsEditMode", false);
 		resetFields();
 		loadSrchRslt();

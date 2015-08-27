@@ -175,7 +175,7 @@ public class VisitorPass extends BaseTransUI {
 			cbMaterialFlw.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -286,6 +286,7 @@ public class VisitorPass extends BaseTransUI {
 			cbEmployee.setContainerDataSource(beanInitiatedBy);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

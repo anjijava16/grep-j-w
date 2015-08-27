@@ -415,18 +415,18 @@ public class PurchasePoReceipt extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<PurPoReceiptsHdrDM> receiptHdrList = new ArrayList<PurPoReceiptsHdrDM>();
+		List<PurPoReceiptsHdrDM> list = new ArrayList<PurPoReceiptsHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbBranch.getValue() + ", " + cbPONo.getValue());
 		Long poNo = null;
 		if (cbPONo.getValue() != null) {
 			poNo = (((PurchasePOHdrDM) cbPONo.getValue()).getPoId());
 		}
-		receiptHdrList = servicePurPoReceiptHdr.getPurPoReceiptsHdrList(companyid, null, poNo,
-				(Long) cbBranch.getValue(), (String) cbHdrStatus.getValue(), tfLotNo.getValue(), "f");
-		recordCnt = receiptHdrList.size();
+		list = servicePurPoReceiptHdr.getPurPoReceiptsHdrList(companyid, null, poNo, (Long) cbBranch.getValue(),
+				(String) cbHdrStatus.getValue(), tfLotNo.getValue(), "f");
+		recordCnt = list.size();
 		beanPurPoReceiptHdrDM = new BeanItemContainer<PurPoReceiptsHdrDM>(PurPoReceiptsHdrDM.class);
-		beanPurPoReceiptHdrDM.addAll(receiptHdrList);
+		beanPurPoReceiptHdrDM.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the PurchaseEnquiry. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanPurPoReceiptHdrDM);
@@ -470,7 +470,7 @@ public class PurchasePoReceipt extends BaseUI {
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -486,7 +486,7 @@ public class PurchasePoReceipt extends BaseUI {
 			cbUom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -500,7 +500,7 @@ public class PurchasePoReceipt extends BaseUI {
 			cbProduct.setContainerDataSource(beanPlnDtl);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -522,9 +522,15 @@ public class PurchasePoReceipt extends BaseUI {
 	}
 	
 	private void loadPoNo() {
-		BeanItemContainer<PurchasePOHdrDM> beanPurPoDM = new BeanItemContainer<PurchasePOHdrDM>(PurchasePOHdrDM.class);
-		beanPurPoDM.addAll(servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, branchId, null, null, null));
-		cbPONo.setContainerDataSource(beanPurPoDM);
+		try {
+			BeanItemContainer<PurchasePOHdrDM> beanPurPoDM = new BeanItemContainer<PurchasePOHdrDM>(
+					PurchasePOHdrDM.class);
+			beanPurPoDM.addAll(servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, branchId, null, null, null));
+			cbPONo.setContainerDataSource(beanPurPoDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to edit the values from table into fields to update process
@@ -532,8 +538,7 @@ public class PurchasePoReceipt extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			PurPoReceiptsHdrDM receiptsHdrDM = beanPurPoReceiptHdrDM.getItem(tblMstScrSrchRslt.getValue())
-					.getBean();
+			PurPoReceiptsHdrDM receiptsHdrDM = beanPurPoReceiptHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			receiptId = receiptsHdrDM.getReceiptId();
 			cbBranch.setValue(receiptsHdrDM.getBranchId());
 			tfLotNo.setReadOnly(false);

@@ -462,10 +462,15 @@ public class CustomerVisit extends BaseTransUI {
 	}
 	
 	private void editPersonDetails() {
-		CustomerVisitNoDtlDM visitNoDtlDM = beanCustomerVisitNoDtlDM.getItem(tblPersonNo.getValue()).getBean();
-		tfPerName.setValue(visitNoDtlDM.getPersonName());
-		tfPerPhone.setValue(visitNoDtlDM.getContactNo());
-		cbPersonNoStatus.setValue(visitNoDtlDM.getCustNoDtlStatus());
+		try {
+			CustomerVisitNoDtlDM visitNoDtlDM = beanCustomerVisitNoDtlDM.getItem(tblPersonNo.getValue()).getBean();
+			tfPerName.setValue(visitNoDtlDM.getPersonName());
+			tfPerPhone.setValue(visitNoDtlDM.getContactNo());
+			cbPersonNoStatus.setValue(visitNoDtlDM.getCustNoDtlStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editVisitInfoDetails() {
@@ -643,10 +648,16 @@ public class CustomerVisit extends BaseTransUI {
 	 */
 	// Load Enquiry Number
 	private void loadEnquiryNo() {
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(serviceEnquiryHdr.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
-		cbEnqNo.setContainerDataSource(beansmsenqHdr);
+		try {
+			BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("enquiryId");
+			beansmsenqHdr
+					.addAll(serviceEnquiryHdr.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
+			cbEnqNo.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Client Details
@@ -668,12 +679,17 @@ public class CustomerVisit extends BaseTransUI {
 	
 	// Load Work Order List
 	private void loadWorkOrderNo() {
-		BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
-				WorkOrderHdrDM.class);
-		beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
-		beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "P",
-				null, (Long) cbEnqNo.getValue(), null, null, null));
-		cbWorkorder.setContainerDataSource(beanWrkOrdHdr);
+		try {
+			BeanContainer<Long, WorkOrderHdrDM> beanWrkOrdHdr = new BeanContainer<Long, WorkOrderHdrDM>(
+					WorkOrderHdrDM.class);
+			beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
+			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "P",
+					null, (Long) cbEnqNo.getValue(), null, null, null));
+			cbWorkorder.setContainerDataSource(beanWrkOrdHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*

@@ -639,6 +639,7 @@ public class EBReading extends BaseTransUI {
 			cbEmploye.setContainerDataSource(beanInitiatedBy);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

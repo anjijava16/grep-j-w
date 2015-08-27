@@ -76,7 +76,7 @@ public class City extends BaseUI {
 	private TextField tfcityname, tftier;
 	private ComboBox cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
-	private ComboBox cbcountry, cbtimezone, cbstate, cbregion;
+	private ComboBox cbCountry, cbTimezone, cbstate, cbregion;
 	// To add Bean Item Container
 	private BeanItemContainer<CityDM> citybean = null;
 	// local variables declaration
@@ -112,15 +112,15 @@ public class City extends BaseUI {
 		cbregion = new GERPComboBox("Region Name");
 		cbregion.setItemCaptionPropertyId("regionName");
 		cbregion.setWidth("150px");
-		cbcountry = new GERPComboBox("Country Name");
-		cbcountry.setItemCaptionPropertyId("countryName");
-		cbcountry.setWidth("150px");
+		cbCountry = new GERPComboBox("Country Name");
+		cbCountry.setItemCaptionPropertyId("countryName");
+		cbCountry.setWidth("150px");
 		loadCountry();
-		cbtimezone = new GERPComboBox("Time Zone ");
-		cbtimezone.setItemCaptionPropertyId("timezonedesc");
-		cbtimezone.setWidth("150px");
+		cbTimezone = new GERPComboBox("Time Zone ");
+		cbTimezone.setItemCaptionPropertyId("timezonedesc");
+		cbTimezone.setWidth("150px");
 		loadTimezoneCode();
-		cbcountry.addValueChangeListener(new Property.ValueChangeListener() {
+		cbCountry.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void valueChange(ValueChangeEvent event) {
@@ -134,9 +134,9 @@ public class City extends BaseUI {
 					}
 					loadRegion();
 					@SuppressWarnings("unchecked")
-					BeanItem<CountryDM> cntry = (BeanItem<CountryDM>) cbcountry.getItem((Long) cbcountry.getValue());
+					BeanItem<CountryDM> cntry = (BeanItem<CountryDM>) cbCountry.getItem((Long) cbCountry.getValue());
 					CountryDM cntryBean = cntry.getBean();
-					cbtimezone.setValue(cntryBean.getTimeZoneId());
+					cbTimezone.setValue(cntryBean.getTimeZoneId());
 				}
 			}
 		});
@@ -149,9 +149,9 @@ public class City extends BaseUI {
 		flcityname.addComponent(tfcityname);
 		flcityname.addComponent(cbregion);
 		fltier.addComponent(tftier);
-		fltier.addComponent(cbtimezone);
+		fltier.addComponent(cbTimezone);
 		flstatus.addComponent(cbstatus);
-		flstatename.addComponent(cbcountry);
+		flstatename.addComponent(cbCountry);
 		flstatename.addComponent(cbstate);
 		// add the form layouts into user input layout
 		hlUserInputLayout.setSpacing(true);
@@ -181,8 +181,8 @@ public class City extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		cbcountry.setVisible(false);
-		cbtimezone.setVisible(false);
+		cbCountry.setVisible(false);
+		cbTimezone.setVisible(false);
 		cbregion.setVisible(false);
 		tftier.setVisible(false);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
@@ -195,8 +195,8 @@ public class City extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfcityname.getValue() + ", " + cbstate.getValue() + ","
 				+ (String) cbstatus.getValue());
-		list = serviceCity.getCityList(null, tfcityname.getValue(), stateid, (String) cbstatus.getValue(),
-				companyid, "F");
+		list = serviceCity.getCityList(null, tfcityname.getValue(), stateid, (String) cbstatus.getValue(), companyid,
+				"F");
 		recordCnt = list.size();
 		citybean = new BeanItemContainer<CityDM>(CityDM.class);
 		citybean.addAll(list);
@@ -213,22 +213,22 @@ public class City extends BaseUI {
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editCity() {
 		tfcityname.setRequired(true);
-		cbcountry.setVisible(true);
-		cbtimezone.setVisible(true);
+		cbCountry.setVisible(true);
+		cbTimezone.setVisible(true);
 		cbregion.setVisible(true);
 		tftier.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
 			CityDM cityDM = citybean.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			cityid = cityDM.getCityid().toString();
 			cbstatus.setValue(cityDM.getStatus());
-			cbcountry.setValue(Long.valueOf(cityDM.getCountryid()));
+			cbCountry.setValue(Long.valueOf(cityDM.getCountryid()));
 			loadstateList();
 			cbstate.removeItem("0");
 			cbstate.setValue(Long.valueOf(cityDM.getStateId()).toString());
 			tfcityname.setValue(cityDM.getCityname());
 			cbregion.setValue(Long.valueOf(cityDM.getRegionId()).toString());
 			tftier.setValue(cityDM.getTier());
-			cbtimezone.setValue((Long) cityDM.getTimezoneid());
+			cbTimezone.setValue((Long) cityDM.getTimezoneid());
 		}
 	}
 	
@@ -246,38 +246,59 @@ public class City extends BaseUI {
 	
 	// Load state list for panelmain's combo Box
 	private void loadaddStatelist(List<StateDM> getStateList) {
-		getStateList.addAll(serviceState.getStateList(null, (String) cbstatus.getValue(), (Long) cbcountry.getValue(),
-				null, "P"));
-		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
-		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(serviceState.getStateList(null, (String) cbstatus.getValue(), (Long) cbcountry.getValue(),
-				null, "P"));
-		cbstate.setContainerDataSource(beanState);
+		try {
+			getStateList.addAll(serviceState.getStateList(null, (String) cbstatus.getValue(),
+					(Long) cbCountry.getValue(), null, "P"));
+			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
+			beanState.setBeanIdProperty("stateId");
+			beanState.addAll(serviceState.getStateList(null, (String) cbstatus.getValue(), (Long) cbCountry.getValue(),
+					null, "P"));
+			cbstate.setContainerDataSource(beanState);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Country List
 	private void loadCountry() {
-		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
-		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, (String) cbstatus.getValue(), "T"));
-		cbcountry.setContainerDataSource(beanCountry);
+		try {
+			BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+			beanCountry.setBeanIdProperty("countryID");
+			beanCountry
+					.addAll(serviceCountry.getCountryList(null, null, null, null, (String) cbstatus.getValue(), "T"));
+			cbCountry.setContainerDataSource(beanCountry);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Time Zone
 	private void loadTimezoneCode() {
-		BeanContainer<Long, TimeZoneDM> beanTime = new BeanContainer<Long, TimeZoneDM>(TimeZoneDM.class);
-		beanTime.setBeanIdProperty("timezoneid");
-		beanTime.addAll(serviceTimezone.getTimeZoneList(null, null, "P"));
-		cbtimezone.setContainerDataSource(beanTime);
+		try {
+			BeanContainer<Long, TimeZoneDM> beanTime = new BeanContainer<Long, TimeZoneDM>(TimeZoneDM.class);
+			beanTime.setBeanIdProperty("timezoneid");
+			beanTime.addAll(serviceTimezone.getTimeZoneList(null, null, "P"));
+			cbTimezone.setContainerDataSource(beanTime);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load region list for pnladdedit's combo Box
 	private void loadRegion() {
-		logger.info("Region  domain  --->" + (String) cbstatus.getValue());
-		BeanContainer<Long, RegionDM> beanRegion = new BeanContainer<Long, RegionDM>(RegionDM.class);
-		beanRegion.setBeanIdProperty("regionId");
-		beanRegion.addAll(serviceRegion.getRegionList(null, (String) cbstatus.getValue(), null, companyid, "P"));
-		cbregion.setContainerDataSource(beanRegion);
+		try {
+			logger.info("Region  domain  --->" + (String) cbstatus.getValue());
+			BeanContainer<Long, RegionDM> beanRegion = new BeanContainer<Long, RegionDM>(RegionDM.class);
+			beanRegion.setBeanIdProperty("regionId");
+			beanRegion.addAll(serviceRegion.getRegionList(null, (String) cbstatus.getValue(), null, companyid, "P"));
+			cbregion.setContainerDataSource(beanRegion);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Base class implementations
@@ -304,11 +325,11 @@ public class City extends BaseUI {
 		tfcityname.setComponentError(null);
 		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
 		cbstate.setComponentError(null);
-		cbtimezone.setValue(null);
+		cbTimezone.setValue(null);
 		cbregion.setValue(null);
 		tftier.setValue(null);
-		cbcountry.setValue(null);
-		cbcountry.setValue(countryid);
+		cbCountry.setValue(null);
+		cbCountry.setValue(countryid);
 		cbstate.setValue(null);
 	}
 	
@@ -326,9 +347,9 @@ public class City extends BaseUI {
 		tftier.setValue("");
 		cbstate.setValue(null);
 		cbregion.setValue(null);
-		cbcountry.setValue(countryid);
+		cbCountry.setValue(countryid);
 		cbstate.setValue("0");
-		cbtimezone.setValue(null);
+		cbTimezone.setValue(null);
 		tftier.setValue("");
 		loadSrchRslt();
 	}
@@ -343,8 +364,8 @@ public class City extends BaseUI {
 		tfcityname.setRequired(true);
 		cbstate.setRequired(true);
 		tftier.setVisible(true);
-		cbcountry.setVisible(true);
-		cbtimezone.setVisible(true);
+		cbCountry.setVisible(true);
+		cbTimezone.setVisible(true);
 		// reset the input controls to default value
 		resetFields();
 		cbstate.setContainerDataSource(null);
@@ -363,8 +384,8 @@ public class City extends BaseUI {
 		cbstate.setValue(Long.valueOf(0L).toString());
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assembleSearchLayout();
-		cbcountry.setVisible(false);
-		cbtimezone.setVisible(false);
+		cbCountry.setVisible(false);
+		cbTimezone.setVisible(false);
 		cbregion.setVisible(false);
 		tfcityname.setRequired(false);
 		cbstate.setRequired(false);
@@ -421,8 +442,8 @@ public class City extends BaseUI {
 			cityDM.setTier(tftier.getValue());
 		}
 		cityDM.setStateId(Long.valueOf(cbstate.getValue().toString()));
-		cityDM.setCountryid(Long.valueOf(cbcountry.getValue().toString()));
-		cityDM.setTimezoneid(Long.valueOf(cbtimezone.getValue().toString()));
+		cityDM.setCountryid(Long.valueOf(cbCountry.getValue().toString()));
+		cityDM.setTimezoneid(Long.valueOf(cbTimezone.getValue().toString()));
 		if (cbregion.getValue() != null) {
 			cityDM.setRegionId(Long.valueOf(cbregion.getValue().toString()));
 		}

@@ -374,6 +374,7 @@ public class Generator extends BaseTransUI {
 			cbAssetName.setContainerDataSource(beanAssetDetails);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -636,7 +637,7 @@ public class Generator extends BaseTransUI {
 					new BigDecimal(tfGenTotalTime.getValue())).toString());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 }

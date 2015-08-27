@@ -733,39 +733,64 @@ public class Vendor extends BaseUI {
 	}
 	
 	private void loadCountryList() {
-		BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
-		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
-		cbCountry.setContainerDataSource(beanCountry);
+		try {
+			BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+			beanCountry.setBeanIdProperty("countryID");
+			beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
+			cbCountry.setContainerDataSource(beanCountry);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadStateList() {
-		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
-		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
-		cbState.setContainerDataSource(beanState);
+		try {
+			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
+			beanState.setBeanIdProperty("stateId");
+			beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
+			cbState.setContainerDataSource(beanState);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadCityList() {
-		BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
-		beanCity.setBeanIdProperty("cityid");
-		beanCity.addAll(serviceCity.getCityList(null, null, ((Long.valueOf((String) cbState.getValue()))), "Active",
-				null, "P"));
-		cbCity.setContainerDataSource(beanCity);
+		try {
+			BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
+			beanCity.setBeanIdProperty("cityid");
+			beanCity.addAll(serviceCity.getCityList(null, null, ((Long.valueOf((String) cbState.getValue()))),
+					"Active", null, "P"));
+			cbCity.setContainerDataSource(beanCity);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadBranchList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanBranchDM.setBeanIdProperty("branchId");
-		beanBranchDM.addAll(serviceBranch.getBranchList(null, null, null, null, companyid, "P"));
-		cbBranch.setContainerDataSource(beanBranchDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanBranchDM.setBeanIdProperty("branchId");
+			beanBranchDM.addAll(serviceBranch.getBranchList(null, null, null, null, companyid, "P"));
+			cbBranch.setContainerDataSource(beanBranchDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadVendorTypeList() {
-		BeanContainer<Long, VendorTypeDM> beanvendrdm = new BeanContainer<Long, VendorTypeDM>(VendorTypeDM.class);
-		beanvendrdm.setBeanIdProperty("vendorid");
-		beanvendrdm.addAll(serviceVendorType.getVendorTypeList(null, null, null, companyid));
-		cbVendorTypeName.setContainerDataSource(beanvendrdm);
+		try {
+			BeanContainer<Long, VendorTypeDM> beanvendrdm = new BeanContainer<Long, VendorTypeDM>(VendorTypeDM.class);
+			beanvendrdm.setBeanIdProperty("vendorid");
+			beanvendrdm.addAll(serviceVendorType.getVendorTypeList(null, null, null, companyid));
+			cbVendorTypeName.setContainerDataSource(beanvendrdm);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

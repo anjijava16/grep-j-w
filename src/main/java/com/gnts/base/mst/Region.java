@@ -123,27 +123,32 @@ public class Region extends BaseUI {
 	
 	// load country names
 	private void loadCountryname() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<CountryDM> loadCountrylist = serviceCountry.getCountryList(null, null, null, null, "Active", "F");
-		loadCountrylist.add(new CountryDM(0L, "All Countries", null));
-		beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
-		beanCountry.setBeanIdProperty("countryID");
-		beanCountry.addAll(loadCountrylist);
-		cbCountry.setContainerDataSource(beanCountry);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<CountryDM> loadCountrylist = serviceCountry.getCountryList(null, null, null, null, "Active", "F");
+			loadCountrylist.add(new CountryDM(0L, "All Countries", null));
+			beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
+			beanCountry.setBeanIdProperty("countryID");
+			beanCountry.addAll(loadCountrylist);
+			cbCountry.setContainerDataSource(beanCountry);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// load search result to table
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<RegionDM> regionList = new ArrayList<RegionDM>();
-		regionList = serviceRegion.getRegionList(tfRegionName.getValue(), (String) cbRegionStatus.getValue(),
+		List<RegionDM> list = new ArrayList<RegionDM>();
+		list = serviceRegion.getRegionList(tfRegionName.getValue(), (String) cbRegionStatus.getValue(),
 				(Long) cbCountry.getValue(), companyid, "F");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfRegionName.getValue() + ", " + cbRegionStatus.getValue() + ",");
-		recordCnt = regionList.size();
+		recordCnt = list.size();
 		beanRegion = new BeanItemContainer<RegionDM>(RegionDM.class);
-		beanRegion.addAll(regionList);
+		beanRegion.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Region result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanRegion);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "regionId", "regionName", "countryname", "status",

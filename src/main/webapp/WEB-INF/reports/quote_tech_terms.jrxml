@@ -14,7 +14,7 @@
 		<band splitType="Stretch"/>
 	</background>
 	<detail>
-		<band height="31" splitType="Stretch">
+		<band height="35" splitType="Stretch">
 			<textField>
 				<reportElement x="20" y="0" width="535" height="31" uuid="0dbac7dc-d9cb-453c-b406-6f0e4553067c"/>
 				<textElement verticalAlignment="Top">
@@ -24,6 +24,7 @@
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="20" height="20" uuid="9c64120c-321b-452d-8bfb-a8e4b837a30f"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
 			</textField>
 		</band>

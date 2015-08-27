@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="quoteback" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="50c72e5a-1060-4f44-a8cd-34297f769c40">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Sara\\22.Projects\\workspace\\gerp-web\\src\\main\\webapp\\WEB-INF\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="QTID" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select code,ltrim(description) description from t_sms_quote_comm_con where quote_id=$P{QTID}]]>
+	</queryString>
+	<field name="CODE" class="java.lang.String"/>
+	<field name="DESCRIPTION" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<summary>
+		<band height="708" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="572" height="699" uuid="853d1657-215c-449f-a7c0-a442dc8e293a"/>
+			</rectangle>
+			<subreport>
+				<reportElement x="1" y="32" width="571" height="221" uuid="05482032-898a-44bc-a5a6-b1a24a13b12d"/>
+				<subreportParameter name="QTID">
+					<subreportParameterExpression><![CDATA[$P{QTID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "quote_tech_terms.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="255" width="572" height="361" uuid="b3220fc6-7fa8-4a80-a94c-b020ea5c5763"/>
+				<subreportParameter name="QTID">
+					<subreportParameterExpression><![CDATA[$P{QTID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "quote_comm_terms.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="3" y="4" width="306" height="20" uuid="5b6aef1b-735f-4e4c-ac27-2ebe00e661f3"/>
+				<textElement>
+					<font isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Technical Terms & Conditions]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="225" width="306" height="20" uuid="0907c0d4-37b7-4288-9d86-0f2cea0e17ed"/>
+				<textElement>
+					<font isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Commercial Terms & Conditions]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="616" width="571" height="1" uuid="69a6a90c-790d-48db-bc46-5e3e1fddbb68"/>
+			</line>
+			<staticText>
+				<reportElement x="16" y="643" width="110" height="20" uuid="e23e1fa1-bf69-4075-9155-08cdbee4c335"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Prepared by]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="236" y="643" width="110" height="20" uuid="26e65f78-6b73-4dfa-84cd-3968dc7eee03"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Checked by]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="434" y="643" width="110" height="20" uuid="558bf116-19df-4c28-b206-cf6032b2656b"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Approved by]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="16" y="677" width="30" height="20" uuid="88894b54-3f55-424c-b9dc-d08c73734072"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Encl:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="70" y="679" width="100" height="20" uuid="7ce7207d-07b0-4c04-b7ac-2f8eea640122"/>
+				<text><![CDATA[Preliminary Drawing]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="236" y="679" width="100" height="20" uuid="6339c429-1e19-4e00-ba52-cfcdd06f4bad"/>
+				<text><![CDATA[Complete Drawing]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

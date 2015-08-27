@@ -438,7 +438,6 @@ public class MaterialQuote extends BaseTransUI {
 			tfBasicValue.setReadOnly(false);
 			tfBasicValue.setValue((new BigDecimal(tfAcceptQty.getValue())).multiply(
 					new BigDecimal(tfUnitRate.getValue())).toString());
-			tfBasicValue.setReadOnly(true);
 		}
 		catch (Exception e) {
 		}
@@ -501,6 +500,12 @@ public class MaterialQuote extends BaseTransUI {
 		pp.setCaption("Packing(%)");
 		flColumn2.addComponent(pp);
 		flColumn2.setComponentAlignment(pp, Alignment.TOP_LEFT);
+		HorizontalLayout ed = new HorizontalLayout();
+		ed.addComponent(tfEDPer);
+		ed.addComponent(tfEDValue);
+		ed.setCaption("ED");
+		flColumn2.addComponent(ed);
+		flColumn2.setComponentAlignment(ed, Alignment.TOP_LEFT);
 		flColumn2.addComponent(tfSubTotal);
 		HorizontalLayout vp = new HorizontalLayout();
 		vp.addComponent(tfVatPer);
@@ -508,12 +513,6 @@ public class MaterialQuote extends BaseTransUI {
 		vp.setCaption("VAT");
 		flColumn2.addComponent(vp);
 		flColumn2.setComponentAlignment(vp, Alignment.TOP_LEFT);
-		HorizontalLayout ed = new HorizontalLayout();
-		ed.addComponent(tfEDPer);
-		ed.addComponent(tfEDValue);
-		ed.setCaption("ED");
-		flColumn2.addComponent(ed);
-		flColumn2.setComponentAlignment(ed, Alignment.TOP_LEFT);
 		HorizontalLayout hed = new HorizontalLayout();
 		hed.addComponent(tfHEDPer);
 		hed.addComponent(tfHEDValue);
@@ -575,12 +574,12 @@ public class MaterialQuote extends BaseTransUI {
 		HorizontalLayout hluom = new HorizontalLayout();
 		hluom.addComponent(tfQuoteQunt);
 		hluom.addComponent(tfUomTemp);
-		hluom.setCaption("Raised Qty");
+		hluom.setCaption("Enquiry Qty");
 		flDtlColumn2.addComponent(hluom);
 		HorizontalLayout hlAvuom = new HorizontalLayout();
 		hlAvuom.addComponent(tfAcceptQty);
 		hlAvuom.addComponent(cbUom);
-		hlAvuom.setCaption("Available Qty");
+		hlAvuom.setCaption("Required Qty");
 		flDtlColumn2.addComponent(hlAvuom);
 		flDtlColumn3.addComponent(tfUnitRate);
 		flDtlColumn4.addComponent(tfBasicValue);
@@ -1457,6 +1456,7 @@ public class MaterialQuote extends BaseTransUI {
 		new UploadDocumentUI(hlquoteDoc);
 		cbBranch.setValue(branchId);
 		cbStatus.setValue(null);
+		setPercentZero();
 	}
 	
 	protected void resetDetailsFields() {
@@ -1476,7 +1476,6 @@ public class MaterialQuote extends BaseTransUI {
 		tfQuoteQunt.setReadOnly(true);
 		tfAcceptQty.setReadOnly(false);
 		tfAcceptQty.setValue("0");
-		tfAcceptQty.setReadOnly(true);
 		tfUnitRate.setValue("0");
 		tfUnitRate.setComponentError(null);
 	}
@@ -1488,13 +1487,14 @@ public class MaterialQuote extends BaseTransUI {
 		tfPackingValue.setValue(packingvalue.toString());
 		tfPackingValue.setReadOnly(true);
 		BigDecimal subtotal = packingvalue.add(basictotal);
-		tfSubTotal.setReadOnly(false);
-		tfSubTotal.setValue(subtotal.toString());
-		tfSubTotal.setReadOnly(true);
 		BigDecimal edValue = gerPercentageValue(new BigDecimal(tfEDPer.getValue()), subtotal);
 		tfEDValue.setReadOnly(false);
 		tfEDValue.setValue(edValue.toString());
 		tfEDValue.setReadOnly(true);
+		subtotal = edValue.add(subtotal);
+		tfSubTotal.setReadOnly(false);
+		tfSubTotal.setValue(subtotal.toString());
+		tfSubTotal.setReadOnly(true);
 		BigDecimal vatvalue = gerPercentageValue(new BigDecimal(tfVatPer.getValue()), subtotal);
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue(vatvalue.toString());
@@ -1511,7 +1511,7 @@ public class MaterialQuote extends BaseTransUI {
 		tfCstValue.setReadOnly(false);
 		tfCstValue.setValue(cstval.toString());
 		tfCstValue.setReadOnly(true);
-		BigDecimal csttotal = vatvalue.add(edValue).add(hedValue).add(cessval).add(cstval);
+		BigDecimal csttotal = vatvalue.add(hedValue).add(cessval).add(cstval);
 		BigDecimal subtaxTotal = subtotal.add(csttotal);
 		tfSubTaxTotal.setReadOnly(false);
 		tfSubTaxTotal.setValue(subtaxTotal.toString());
@@ -1522,6 +1522,7 @@ public class MaterialQuote extends BaseTransUI {
 		tfFreightValue.setReadOnly(true);
 		BigDecimal otherval = gerPercentageValue(new BigDecimal(tfOtherPer.getValue()), subtaxTotal);
 		tfOtherValue.setReadOnly(false);
+		tfOtherValue.setValue(otherval.toString());
 		tfOtherValue.setReadOnly(true);
 		BigDecimal Grand = frgval.add(otherval);
 		BigDecimal GranTotal = subtaxTotal.add(Grand);
@@ -1543,6 +1544,18 @@ public class MaterialQuote extends BaseTransUI {
 	
 	private BigDecimal gerPercentageValue(BigDecimal percent, BigDecimal value) {
 		return (percent.multiply(value).divide(new BigDecimal("100"))).setScale(2, RoundingMode.CEILING);
+	}
+	
+	// to set percentage fields zero
+	private void setPercentZero() {
+		tfpackingPer.setValue("0");
+		tfEDPer.setValue("0");
+		tfVatPer.setValue("0");
+		tfHEDPer.setValue("0");
+		tfCessPer.setValue("0");
+		tfCstPer.setValue("0");
+		tfFreightPer.setValue("0");
+		tfOtherPer.setValue("0");
 	}
 	
 	@Override

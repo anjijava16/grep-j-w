@@ -135,7 +135,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	private VerticalLayout hlPODoc = new VerticalLayout();
 	// PODtl components
 	private ComboBox cbMaterial, cbMatUom, cbPODtlStatus;
-	private TextField tfPOQnty, tfUnitRate, tfBasicValue;
+	private TextField tfPOQnty, tfUnitRate, tfBasicValue, tfAcceptQty, tfUomTemp;
 	private TextArea taPODtlRemark;
 	private static final long serialVersionUID = 1L;
 	// BeanItem container
@@ -367,8 +367,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 					tfPOQnty.setValue(((MmsQuoteDtlDM) cbMaterial.getValue()).getQuoteqty() + "");
 					tfPOQnty.setReadOnly(true);
 					cbMatUom.setReadOnly(false);
+					tfUomTemp.setReadOnly(false);
 					cbMatUom.setValue(((MmsQuoteDtlDM) cbMaterial.getValue()).getMatuom() + "");
+					tfUomTemp.setValue(cbMatUom.getValue().toString());
 					cbMatUom.setReadOnly(true);
+					tfUomTemp.setReadOnly(true);
 				}
 			}
 		});
@@ -377,20 +380,27 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfPOQnty.setWidth("80");
 		cbMatUom = new ComboBox();
 		cbMatUom.setItemCaptionPropertyId("lookupname");
-		cbMatUom.setWidth("60");
-		cbMatUom.setHeight("20");
+		cbMatUom.setWidth("50");
+		cbMatUom.setHeight("23");
 		loadUomList();
 		tfUnitRate = new TextField("Unit Rate");
 		tfUnitRate.setWidth("150");
 		tfUnitRate.setValue("0");
-		tfUnitRate.addBlurListener(new BlurListener() {
+		tfUnitRate.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
-			public void blur(BlurEvent event) {
+			public void valueChange(ValueChangeEvent event) {
 				calculateBasicvalue();
 			}
 		});
+		tfAcceptQty = new TextField();
+		tfAcceptQty.setWidth("80");
+		tfAcceptQty.setValue("0");
+		tfUomTemp = new TextField();
+		tfUomTemp.setWidth("50");
+		tfUomTemp.setHeight("23");
+		tfUomTemp.setReadOnly(true);
 		tfBasicValue = new TextField("Basic value");
 		tfBasicValue.setWidth("150");
 		tfBasicValue.setValue("0");
@@ -589,10 +599,14 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		flDtlColumn1.addComponent(cbMaterial);
 		HorizontalLayout hlQtyUom = new HorizontalLayout();
 		hlQtyUom.addComponent(tfPOQnty);
-		hlQtyUom.addComponent(cbMatUom);
+		hlQtyUom.addComponent(tfUomTemp);
 		hlQtyUom.setCaption("PO Qty");
-		flDtlColumn2.addComponent(hlQtyUom);
-		flDtlColumn2.setComponentAlignment(hlQtyUom, Alignment.TOP_LEFT);
+		flDtlColumn1.addComponent(hlQtyUom);
+		HorizontalLayout hlAvuom = new HorizontalLayout();
+		hlAvuom.addComponent(tfAcceptQty);
+		hlAvuom.addComponent(cbMatUom);
+		hlAvuom.setCaption("Required Qty");
+		flDtlColumn2.addComponent(hlAvuom);
 		flDtlColumn2.addComponent(tfUnitRate);
 		flDtlColumn3.addComponent(tfBasicValue);
 		flDtlColumn3.addComponent(cbPODtlStatus);
@@ -761,8 +775,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tblPODetails.setColumnHeaders(new String[] { "Material Name", "Material Uom", "Qty", "Unit Rate",
 				"Basic Value", "Status", "Last Updated Date", "Last Updated By" });
 	}
-	
-
 	
 	private void loadBranchList() {
 		try {
@@ -996,7 +1008,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 					ckcasePO.setValue(false);
 				}
 				cbStatus.setValue(poHdrDM.getpOStatus());
-				listPODetails = servicepodtl.getpodtllist(poId, null, null, "F");
+				listPODetails = servicepodtl.getpodtllist(companyid, poId, branchId.toString(), null, null, "F");
 			}
 			loadPODetails();
 			comments = new MmsComments(vlTableForm, null, companyid, null, null, null, poId, null, null, null, null);
@@ -1101,11 +1113,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		new UploadDocumentUI(hlPODoc);
 		try {
 			resetFields();
-			
 			tfPONo.setReadOnly(false);
-				tfPONo.setValue(SerialNumberGenerator.generateSNoMMSPO(companyid, branchId, moduleId, "MM_NPONO",null));
-				tfPONo.setReadOnly(true);
-			
+			tfPONo.setValue(SerialNumberGenerator.generateSNoMMSPO(companyid, branchId, moduleId, "MM_NPONO", null));
+			tfPONo.setReadOnly(true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1566,8 +1576,8 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		// TODO Auto-generated method stub
 		try {
 			tfBasicValue.setReadOnly(false);
-			tfBasicValue.setValue((new BigDecimal(tfPOQnty.getValue())).multiply(new BigDecimal(tfUnitRate.getValue()))
-					.toString());
+			tfBasicValue.setValue((new BigDecimal(tfAcceptQty.getValue())).multiply(
+					new BigDecimal(tfUnitRate.getValue())).toString());
 			tfBasicValue.setReadOnly(true);
 		}
 		catch (Exception e) {

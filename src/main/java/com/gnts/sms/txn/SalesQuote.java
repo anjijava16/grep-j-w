@@ -134,6 +134,8 @@ public class SalesQuote extends BaseTransUI {
 	private PopupDateField dfQuoteDt, dfvalidDt;
 	private CheckBox chkDutyExe, ckPdcRqu, chkCformReq;
 	private GERPButton btnsavepurQuote = new GERPButton("Add", "addbt", this);
+	private GERPButton btnprintback = new GERPButton("Print Back", "downloadbt", this);
+
 	private VerticalLayout hlquoteDoc = new VerticalLayout();
 	// Sales QuoteDtl components
 	private ComboBox cbProduct, cbUom, cbdtlstatus;
@@ -501,6 +503,13 @@ public class SalesQuote extends BaseTransUI {
 					saveSalesQuoteDetails();
 				}
 			}
+		});
+		hlPageHdrContainter.addComponent(btnprintback);
+		hlPageHdrContainter.setComponentAlignment(btnprintback, Alignment.MIDDLE_RIGHT);
+			btnprintback.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+printDetailsback();			}
 		});
 		btndelete.setEnabled(false);
 		tblsmsQuoteDtl = new GERPTable();
@@ -1406,6 +1415,7 @@ public class SalesQuote extends BaseTransUI {
 		// for load Technical and Commercial Terms
 		addDefaultCommercialTerms();
 		addDefaultTechnicalTerms();
+		btnprintback.setVisible(true);
 	}
 	
 	@Override
@@ -1435,6 +1445,8 @@ public class SalesQuote extends BaseTransUI {
 		editQuoteHdr();
 		comments.loadsrch(true, null, null, null, quoteId, null, null, null, null, null, null, null, null);
 		comments.editcommentDetails();
+		btnprintback.setVisible(true);
+
 	}
 	
 	@Override
@@ -1805,6 +1817,8 @@ public class SalesQuote extends BaseTransUI {
 		tblsmsQuoteDtl.removeAllItems();
 		new UploadDocumentUI(hlquoteDoc);
 		cbStatus.setValue(null);
+		btnprintback.setVisible(false);
+
 	}
 	
 	@Override
@@ -1821,6 +1835,34 @@ public class SalesQuote extends BaseTransUI {
 			System.out.println("quote id"+quoteId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "//WEB-INF//reports//qutationReport"); // productlist is the name of my jasper
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	private void printDetailsback() {
+		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, String> parameterMap = new HashMap<String, String>();
+			parameterMap.put("QTID", quoteId.toString());
+			System.out.println("quote id"+quoteId);
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "//WEB-INF//reports//quoteback"); // productlist is the name of my jasper
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

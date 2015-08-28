@@ -40,6 +40,7 @@ import com.vaadin.server.VaadinService;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
@@ -57,7 +58,7 @@ public class EBReading extends BaseTransUI {
 	// User Input Fields for EC Request
 	private TextField tfMainKwHr, tfC1, tfC2, tfC3, tfC4, tfC5, tfKvaHr, tfR1, tfR2, tfR3, tfR4, tfR5, tfRkvaHrCag,
 			tfLead, tfPfc, tfPerDayUnit, tfPf, tfUnitCharge, tfAdjstCharge, tfHalfUnitCharge, tfCHours, tfKvaMdr,
-			tfOffPeakHrs, oneUnitChrO, oneUnitChrP, tfTotalCost, tfPerdayCost, tfPeakCost, tfOffCost;
+			tfOffPeakHrs, oneUnitChrO, oneUnitChrP;
 	private PopupDateField dfRefDate;
 	private TextArea taMachineRunDetails, taRemarks;
 	private GERPComboBox cbEmploye;
@@ -91,7 +92,7 @@ public class EBReading extends BaseTransUI {
 	private void buildview() {
 		logger.info("CompanyId" + companyid + "username" + username + "painting ECRequest UI");
 		// EC Request Components Definition
-		getunitvalues();
+		// getunitvalues();
 		tfMainKwHr = new GERPNumberField("Main KW HR");
 		tfMainKwHr.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
@@ -178,10 +179,10 @@ public class EBReading extends BaseTransUI {
 		tfR3.setWidth("70");
 		tfR4.setWidth("70");
 		tfR5.setWidth("70");
-		tfTotalCost.setWidth("150");
-		tfPerdayCost.setWidth("150");
-		tfPeakCost.setWidth("150");
-		tfOffCost.setWidth("150");
+		// tfTotalCost.setWidth("150");
+		// tfPerdayCost.setWidth("150");
+		// tfPeakCost.setWidth("150");
+		// tfOffCost.setWidth("150");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
@@ -197,7 +198,9 @@ public class EBReading extends BaseTransUI {
 		flcol1 = new FormLayout();
 		flcol2 = new FormLayout();
 		flcol3 = new FormLayout();
-		flcol2.addComponent(dfRefDate);
+		flcol1.addComponent(dfRefDate);
+		Label lbl = new Label();
+		flcol2.addComponent(lbl);
 		flcol3.addComponent(cbStatus);
 		hlsearchlayout.addComponent(flcol1);
 		hlsearchlayout.addComponent(flcol2);
@@ -241,10 +244,10 @@ public class EBReading extends BaseTransUI {
 		flcol5.addComponent(tfAdjstCharge);
 		flcol5.addComponent(tfHalfUnitCharge);
 		flcol5.addComponent(tfOffPeakHrs);
-		flcol5.addComponent(tfTotalCost);
-		flcol5.addComponent(tfPerdayCost);
-		flcol5.addComponent(tfPeakCost);
-		flcol5.addComponent(tfOffCost);
+		// flcol5.addComponent(tfTotalCost);
+		// flcol5.addComponent(tfPerdayCost);
+		// flcol5.addComponent(tfPeakCost);
+		// flcol5.addComponent(tfOffCost);
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
 		hllayout.addComponent(flcol2);
@@ -571,6 +574,7 @@ public class EBReading extends BaseTransUI {
 		tfRkvaHrCag.setValue("0");
 		tfLead.setValue("0");
 		tfPfc.setValue("0");
+		tfPerDayUnit.setReadOnly(false);
 		tfPerDayUnit.setValue("0");
 		tfPf.setValue("0");
 		tfUnitCharge.setValue("0");

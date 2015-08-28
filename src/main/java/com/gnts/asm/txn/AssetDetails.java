@@ -223,6 +223,7 @@ public class AssetDetails extends BaseTransUI {
 		tfSerialNo = new GERPTextField("Serial No.");
 		tfMfgSerialNo = new GERPTextField("MFG.Serial No.");
 		tfAssetLocation = new GERPTextField("Asset Location");
+		tfAssetLocation.setRequired(true);
 		// Initialization for dtPurchaseDate
 		dtPurchaseDate = new GERPPopupDateField("Purchase Date");
 		dtPurchaseDate.setDateFormat("dd-MMM-yyyy");
@@ -466,48 +467,54 @@ public class AssetDetails extends BaseTransUI {
 	// Based on the selected record, the data would be populated into user input
 	// fields in the input form
 	private void editAssetDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			AssetDetailsDM assetDetailsDM = beanAssetdetail.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			assetId = assetDetailsDM.getAssetId();
-			tfAssetName.setValue(assetDetailsDM.getAssetName());
-			cbAssetType.setValue(assetDetailsDM.getAssetType());
-			cbBrandId.setValue(assetDetailsDM.getBrandId());
-			cbDeptId.setValue(assetDetailsDM.getDeptId());
-			cbbranch.setValue(assetDetailsDM.getBranchId());
-			if (assetDetailsDM.getAssetdetails() != null && !"null".equals(assetDetailsDM.getAssetdetails())) {
-				tfAssetDetailDesc.setValue(assetDetailsDM.getAssetdetails());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				AssetDetailsDM assetDetailsDM = beanAssetdetail.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				assetId = assetDetailsDM.getAssetId();
+				tfAssetName.setValue(assetDetailsDM.getAssetName());
+				cbAssetType.setValue(assetDetailsDM.getAssetType());
+				cbBrandId.setValue(assetDetailsDM.getBrandId());
+				cbDeptId.setValue(assetDetailsDM.getDeptId());
+				cbbranch.setValue(assetDetailsDM.getBranchId());
+				if (assetDetailsDM.getAssetdetails() != null && !"null".equals(assetDetailsDM.getAssetdetails())) {
+					tfAssetDetailDesc.setValue(assetDetailsDM.getAssetdetails());
+				}
+				tfSerialNo.setValue(assetDetailsDM.getSerialno());
+				tfMfgSerialNo.setValue(assetDetailsDM.getMfgserialno());
+				tfAssetLocation.setValue(assetDetailsDM.getAssetlocation());
+				if (tfPurchaseValue.getValue() != null) {
+					tfPurchaseValue.setValue(assetDetailsDM.getPurchasevalue().toString());
+				}
+				dtPurchaseDate.setValue(assetDetailsDM.getPurchasedate());
+				dtLastServiceDate.setValue(assetDetailsDM.getLastservicedt());
+				dtNextServiceDate.setValue(assetDetailsDM.getNextservicedt());
+				dtWarrentyDate.setValue(assetDetailsDM.getWarrentyenddt());
+				tfSalvageValue.setValue(assetDetailsDM.getSalvagevalue().toString());
+				cbReview.setValue(assetDetailsDM.getActionedby());
+				cbAction.setValue(assetDetailsDM.getReviewedby());
+				tfLifeInYears.setValue(assetDetailsDM.getLifeinyears().toString());
+				tfLifeInMonths.setValue(assetDetailsDM.getLifeinmonths().toString());
+				tfLicenseInfo.setValue(assetDetailsDM.getLicenseinfo());
+				tfInvoiceNo.setValue(assetDetailsDM.getInvoiceno());
+				if (assetDetailsDM.getRemarks() != null && !"null".equals(assetDetailsDM.getRemarks())) {
+					tfRemarks.setValue(assetDetailsDM.getRemarks());
+				}
+				if (assetDetailsDM.getWarrentydesc() != null && !"null".equals(assetDetailsDM.getWarrentydesc())) {
+					tawarrentdesc.setValue(assetDetailsDM.getWarrentydesc());
+				}
+				cbCategory.setValue(assetDetailsDM.getCatgryId());
+				tfservicerequire.setValue(assetDetailsDM.getServicereqd());
+				cbAssetStatus.setValue(assetDetailsDM.getAssetstatus());
 			}
-			tfSerialNo.setValue(assetDetailsDM.getSerialno());
-			tfMfgSerialNo.setValue(assetDetailsDM.getMfgserialno());
-			tfAssetLocation.setValue(assetDetailsDM.getAssetlocation());
-			if (tfPurchaseValue.getValue() != null) {
-				tfPurchaseValue.setValue(assetDetailsDM.getPurchasevalue().toString());
-			}
-			dtPurchaseDate.setValue(assetDetailsDM.getPurchasedate());
-			dtLastServiceDate.setValue(assetDetailsDM.getLastservicedt());
-			dtNextServiceDate.setValue(assetDetailsDM.getNextservicedt());
-			dtWarrentyDate.setValue(assetDetailsDM.getWarrentyenddt());
-			tfSalvageValue.setValue(assetDetailsDM.getSalvagevalue().toString());
-			cbReview.setValue(assetDetailsDM.getActionedby());
-			cbAction.setValue(assetDetailsDM.getReviewedby());
-			tfLifeInYears.setValue(assetDetailsDM.getLifeinyears().toString());
-			tfLifeInMonths.setValue(assetDetailsDM.getLifeinmonths().toString());
-			tfLicenseInfo.setValue(assetDetailsDM.getLicenseinfo());
-			tfInvoiceNo.setValue(assetDetailsDM.getInvoiceno());
-			if (assetDetailsDM.getRemarks() != null && !"null".equals(assetDetailsDM.getRemarks())) {
-				tfRemarks.setValue(assetDetailsDM.getRemarks());
-			}
-			if (assetDetailsDM.getWarrentydesc() != null && !"null".equals(assetDetailsDM.getWarrentydesc())) {
-				tawarrentdesc.setValue(assetDetailsDM.getWarrentydesc());
-			}
-			cbCategory.setValue(assetDetailsDM.getCatgryId());
-			tfservicerequire.setValue(assetDetailsDM.getServicereqd());
-			cbAssetStatus.setValue(assetDetailsDM.getAssetstatus());
+			spec.loadSrchRslt(true, assetId);
+			owndetails.loadSrchRslt(true, assetId);
 		}
-		spec.loadSrchRslt(true, assetId);
-		owndetails.loadSrchRslt(true, assetId);
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

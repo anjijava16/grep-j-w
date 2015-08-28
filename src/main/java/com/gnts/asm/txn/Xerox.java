@@ -2,6 +2,7 @@ package com.gnts.asm.txn;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -112,6 +115,7 @@ public class Xerox extends BaseTransUI {
 		cbAssetName.setImmediate(true);
 		cbAssetName.setNullSelectionAllowed(false);
 		cbAssetName.setWidth("150");
+		cbAssetName.setRequired(true);
 		loadAssetList();
 		dfRefDate = new GERPPopupDateField("Date");
 		dfRefDate.setDateFormat("dd-MMM-yyyy");
@@ -214,7 +218,7 @@ public class Xerox extends BaseTransUI {
 					AssetDetailsDM.class);
 			beanAssetDetails.setBeanIdProperty("assetId");
 			beanAssetDetails.addAll(serviceAssetDetail.getAssetDetailList(companyid, null, "PRINTER", null, null, null,
-					null));
+					"Active"));
 			cbAssetName.setContainerDataSource(beanAssetDetails);
 		}
 		catch (Exception e) {
@@ -316,6 +320,7 @@ public class Xerox extends BaseTransUI {
 		cbStatus.setValue(null);
 		cbAssetName.setValue(null);
 		cbDepartment.setValue(null);
+		cbEmployeeName.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		// reload the search using the defaults
@@ -346,6 +351,8 @@ public class Xerox extends BaseTransUI {
 	@Override
 	protected void validateDetails() throws ValidationException {
 		cbAssetName.setComponentError(null);
+		cbDepartment.setComponentError(null);
+		cbEmployeeName.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		if (cbAssetName.getValue() == null) {
@@ -402,6 +409,8 @@ public class Xerox extends BaseTransUI {
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbAssetName.setComponentError(null);
+		cbDepartment.setComponentError(null);
+		cbEmployeeName.setComponentError(null);
 		cbAssetName.setValue(null);
 		cbEmployeeName.setValue(null);
 		cbAssetAssignee.setValue(null);
@@ -463,4 +472,12 @@ public class Xerox extends BaseTransUI {
 			}
 		}
 	}
+	// private void getCalculatedValues() {
+	// BigDecimal printouts = new BigDecimal(tfNoOfPrintouts.getValue());
+	// BigDecimal xerox = new BigDecimal(tfNoOfXerox.getValue());
+	// BigDecimal papers = printouts.add(xerox);
+	// tfNoOfPapers.setReadOnly(false);
+	// tfNoOfPapers.setValue(papers.toString());
+	// tfNoOfPapers.setReadOnly(true);
+	// }
 }

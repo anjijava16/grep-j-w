@@ -42,6 +42,7 @@ import com.vaadin.server.VaadinService;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
@@ -199,7 +200,7 @@ public class Generator extends BaseTransUI {
 			}
 		});
 		loadAssetList();
-		dfRefDate = new GERPPopupDateField("Date");
+		dfRefDate = new GERPPopupDateField(" Start Date");
 		dfRefEndDate = new GERPPopupDateField("End Date");
 		cbStatus.setWidth("150");
 		hlsearchlayout = new GERPAddEditHLayout();
@@ -282,12 +283,16 @@ public class Generator extends BaseTransUI {
 		flcol1 = new FormLayout();
 		flcol2 = new FormLayout();
 		flcol3 = new FormLayout();
+		flcol4 = new FormLayout();
 		flcol1.addComponent(cbAssetName);
 		flcol2.addComponent(dfRefDate);
-		flcol3.addComponent(dfRefEndDate);
+		Label lbl = new Label();
+		flcol3.addComponent(lbl);
+		flcol4.addComponent(dfRefEndDate);
 		hlsearchlayout.addComponent(flcol1);
 		hlsearchlayout.addComponent(flcol2);
 		hlsearchlayout.addComponent(flcol3);
+		hlsearchlayout.addComponent(flcol4);
 		hlsearchlayout.setMargin(true);
 		hlsearchlayout.setSizeUndefined();
 	}
@@ -409,7 +414,9 @@ public class Generator extends BaseTransUI {
 				tfRpmHz.setValue(generatorDM.getRpmHz().toString());
 			}
 			if (generatorDM.getDiselCloseBalance() != null) {
+				tfDiselCloseBal.setReadOnly(false);
 				tfDiselCloseBal.setValue(generatorDM.getDiselCloseBalance().toString());
+				tfDiselCloseBal.setReadOnly(true);
 			}
 			if (generatorDM.getDieselPurLiters() != null) {
 				tfDiselPurLtrs.setValue(generatorDM.getDieselPurLiters().toString());
@@ -418,7 +425,9 @@ public class Generator extends BaseTransUI {
 				tfOtherUseLtrs.setValue(generatorDM.getOtherUseLiters().toString());
 			}
 			if (generatorDM.getLiterPerHour() != null) {
+				tfLtrPerHours.setReadOnly(false);
 				tfLtrPerHours.setValue(generatorDM.getLiterPerHour().toString());
+				tfLtrPerHours.setReadOnly(true);
 			}
 			if (generatorDM.getMachineServiceRemain() != null) {
 				tfMachineServRemain.setValue(generatorDM.getMachineServiceRemain().toString());
@@ -450,10 +459,14 @@ public class Generator extends BaseTransUI {
 		generatorDM.setVolts(new BigDecimal(tfVolts.getValue()));
 		generatorDM.setAmps(new BigDecimal(tfAmps.getValue()));
 		generatorDM.setRpmHz(new BigDecimal(tfRpmHz.getValue()));
+		tfDiselCloseBal.setReadOnly(false);
 		generatorDM.setDiselCloseBalance(new BigDecimal(tfDiselCloseBal.getValue()));
+		tfDiselCloseBal.setReadOnly(true);
 		generatorDM.setDieselPurLiters(new BigDecimal(tfDiselPurLtrs.getValue()));
 		generatorDM.setOtherUseLiters(new BigDecimal(tfOtherUseLtrs.getValue()));
+		tfLtrPerHours.setReadOnly(false);
 		generatorDM.setLiterPerHour(new BigDecimal(tfLtrPerHours.getValue()));
+		tfLtrPerHours.setReadOnly(true);
 		generatorDM.setMachineServiceRemain(new BigDecimal(tfMachineServRemain.getValue()));
 		generatorDM.setOneLiterCost(new BigDecimal(tfOneLtrCost.getValue()));
 		generatorDM.setTotalCost(new BigDecimal(tfTotalCost.getValue()));
@@ -560,20 +573,25 @@ public class Generator extends BaseTransUI {
 		tfTotalTime.setValue("0");
 		tfDiselOpenBal.setValue("0");
 		tfGenTotalTime.setValue("0");
-		tfDiselConsBal.setReadOnly(false);
-		tfDiselConsBal.setWidth("150");
+		// tfDiselConsBal.setReadOnly(false);
+		// tfDiselConsBal.setWidth("150");
 		tfVolts.setValue("0");
 		tfAmps.setValue("0");
 		tfRpmHz.setValue("0");
+		tfDiselCloseBal.setReadOnly(false);
 		tfDiselCloseBal.setValue("0");
+		tfDiselCloseBal.setReadOnly(true);
 		tfDiselPurLtrs.setValue("0");
 		tfOtherUseLtrs.setValue("0");
+		tfLtrPerHours.setReadOnly(false);
 		tfLtrPerHours.setValue("0");
+		tfLtrPerHours.setReadOnly(true);
 		tfMachineServRemain.setValue("");
 		tfTotalCost.setValue("0");
 		taRunningMachineDtl.setValue("");
 		taRemarks.setValue("");
 		cbStatus.setValue(null);
+		btnPrint.setVisible(true);
 	}
 	
 	@Override

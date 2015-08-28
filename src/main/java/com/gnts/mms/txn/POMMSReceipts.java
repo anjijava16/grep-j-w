@@ -114,7 +114,7 @@ public class POMMSReceipts extends BaseTransUI {
 	private TextField tfReceiptqty, tfRejectqty;
 	private TextArea taRejectReason;
 	private Table tblReceiptDtl = new GERPTable();
-	private List<PoReceiptDtlDM> receiptDtlList = null;
+	private List<PoReceiptDtlDM> listPOReceipts = null;
 	private FormLayout flDtl1, flDtl2, flDtl3, flDtl4, flDtl5;
 	// Bean Container
 	private BeanItemContainer<PoReceiptHdrDM> beanPoReceiptHdrDM = null;
@@ -415,9 +415,9 @@ public class POMMSReceipts extends BaseTransUI {
 	private void loadReceiptDtl() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			recordCnt = receiptDtlList.size();
+			recordCnt = listPOReceipts.size();
 			beanPoReceiptDtlDM = new BeanItemContainer<PoReceiptDtlDM>(PoReceiptDtlDM.class);
-			beanPoReceiptDtlDM.addAll(receiptDtlList);
+			beanPoReceiptDtlDM.addAll(listPOReceipts);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the DtlRecDt. result set");
 			tblReceiptDtl.setContainerDataSource(beanPoReceiptDtlDM);
@@ -438,7 +438,7 @@ public class POMMSReceipts extends BaseTransUI {
 		PoReceiptDtlDM save = new PoReceiptDtlDM();
 		if (tblReceiptDtl.getValue() != null) {
 			save = beanPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
-			receiptDtlList.remove(save);
+			listPOReceipts.remove(save);
 			receiptResetFields();
 			loadReceiptDtl();
 			btndelete.setEnabled(false);
@@ -447,28 +447,44 @@ public class POMMSReceipts extends BaseTransUI {
 	
 	// Load Indent No
 	private void loadindent() {
-		BeanContainer<Long, IndentHdrDM> beanIndent = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
-		beanIndent.setBeanIdProperty("indentId");
-		beanIndent.addAll(serviceIndent.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null, null,
-				"F"));
-		cbIndentNo.setContainerDataSource(beanIndent);
+		try {
+			BeanContainer<Long, IndentHdrDM> beanIndent = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
+			beanIndent.setBeanIdProperty("indentId");
+			beanIndent.addAll(serviceIndent.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null,
+					null, "F"));
+			cbIndentNo.setContainerDataSource(beanIndent);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Purchase order No
 	private void loadPoNo() {
-		BeanItemContainer<POHdrDM> beanPurPoDM = new BeanItemContainer<POHdrDM>(POHdrDM.class);
-		beanPurPoDM.addAll(serviceMMSPOHdr.getPOHdrList(null, null, null, null, null, null, null, "P"));
-		cbPoNo.setContainerDataSource(beanPurPoDM);
+		try {
+			BeanItemContainer<POHdrDM> beanPurPoDM = new BeanItemContainer<POHdrDM>(POHdrDM.class);
+			beanPurPoDM.addAll(serviceMMSPOHdr.getPOHdrList(null, null, null, null, null, null, null, "P"));
+			cbPoNo.setContainerDataSource(beanPurPoDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Uom List
 	private void loadUomList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "SM_UOM"));
-		cbMaterialUOM.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp
+					.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active", "SM_UOM"));
+			cbMaterialUOM.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Material List
@@ -486,10 +502,15 @@ public class POMMSReceipts extends BaseTransUI {
 	
 	// Load Branch List
 	private void loadBranchList() {
-		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
-		cbBranch.setContainerDataSource(beanbranch);
+		try {
+			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanbranch.setBeanIdProperty("branchId");
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
+			cbBranch.setContainerDataSource(beanbranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to edit the values from table into fields to update process
@@ -547,7 +568,7 @@ public class POMMSReceipts extends BaseTransUI {
 				}
 			}
 			cbHdrStatus.setValue(poReceiptHdrDM.getProjectStatus());
-			receiptDtlList = servicePoReceiptDtl.getPoReceiptDtlList(null, receiptId, null, null, null);
+			listPOReceipts = servicePoReceiptDtl.getPoReceiptDtlList(null, receiptId, null, null, null);
 			loadReceiptDtl();
 		}
 	}
@@ -648,6 +669,7 @@ public class POMMSReceipts extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -836,7 +858,7 @@ public class POMMSReceipts extends BaseTransUI {
 									null, null, null, "New", "F").get(0);
 						}
 						catch (Exception e) {
-							e.printStackTrace();
+							logger.info(e.getMessage());
 						}
 						if (materialStockDM == null) {
 							materialStockDM = new MaterialStockDM();
@@ -861,10 +883,11 @@ public class POMMSReceipts extends BaseTransUI {
 						}
 					}
 					catch (Exception e) {
+						logger.info(e.getMessage());
 					}
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					logger.info(e.getMessage());
 				}
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
@@ -876,7 +899,7 @@ public class POMMSReceipts extends BaseTransUI {
 					}
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					logger.info(e.getMessage());
 				}
 			}
 			tfLotNo.setReadOnly(false);
@@ -887,7 +910,7 @@ public class POMMSReceipts extends BaseTransUI {
 			receiptId = 0L;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -898,7 +921,7 @@ public class POMMSReceipts extends BaseTransUI {
 			PoReceiptDtlDM receiptDtlObj = new PoReceiptDtlDM();
 			if (tblReceiptDtl.getValue() != null) {
 				receiptDtlObj = beanPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
-				receiptDtlList.remove(receiptDtlObj);
+				listPOReceipts.remove(receiptDtlObj);
 			}
 			receiptDtlObj.setMaterialid(((MmsPoDtlDM) cbMaterial.getValue()).getMaterialid());
 			receiptDtlObj.setMaterialName(((MmsPoDtlDM) cbMaterial.getValue()).getMaterialname());
@@ -915,11 +938,11 @@ public class POMMSReceipts extends BaseTransUI {
 			}
 			receiptDtlObj.setLastupdateddt(DateUtils.getcurrentdate());
 			receiptDtlObj.setLastupdatedby(username);
-			receiptDtlList.add(receiptDtlObj);
+			listPOReceipts.add(receiptDtlObj);
 			loadReceiptDtl();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		receiptResetFields();
 		btnadd.setCaption("Add");
@@ -953,7 +976,7 @@ public class POMMSReceipts extends BaseTransUI {
 	// Reset Fields
 	@Override
 	protected void resetFields() {
-		receiptDtlList = new ArrayList<PoReceiptDtlDM>();
+		listPOReceipts = new ArrayList<PoReceiptDtlDM>();
 		tblReceiptDtl.removeAllItems();
 		cbBranch.setValue(branchId);
 		cbBranch.setComponentError(null);

@@ -695,6 +695,7 @@ public class SmsInvoice extends BaseTransUI {
 			tfBasicValue.setReadOnly(true);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -868,15 +869,15 @@ public class SmsInvoice extends BaseTransUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<SmsInvoiceHdrDM> inviceHdrList = new ArrayList<SmsInvoiceHdrDM>();
+		List<SmsInvoiceHdrDM> list = new ArrayList<SmsInvoiceHdrDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
-		inviceHdrList = serviceInvoiceHdr.getSmsInvoiceHeaderList(null, (Long) cbClient.getValue(),
+		list = serviceInvoiceHdr.getSmsInvoiceHeaderList(null, (Long) cbClient.getValue(),
 				(Long) cbBranch.getValue(), (String) cbStatus.getValue(), (Long) cbPONumber.getValue(),
 				tfInvNo.getValue(), null, "F");
-		recordCnt = inviceHdrList.size();
+		recordCnt = list.size();
 		beanInvoiceHdr = new BeanItemContainer<SmsInvoiceHdrDM>(SmsInvoiceHdrDM.class);
-		beanInvoiceHdr.addAll(inviceHdrList);
+		beanInvoiceHdr.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanInvoiceHdr);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "invoiceId", "branchName", "enqNo", "clientName",
@@ -998,7 +999,7 @@ public class SmsInvoice extends BaseTransUI {
 			cbpaymetTerms.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1014,7 +1015,7 @@ public class SmsInvoice extends BaseTransUI {
 			cbFreightTerms.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1030,7 +1031,7 @@ public class SmsInvoice extends BaseTransUI {
 			cbWarrentyTerms.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1046,7 +1047,7 @@ public class SmsInvoice extends BaseTransUI {
 			cbDelTerms.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1062,7 +1063,7 @@ public class SmsInvoice extends BaseTransUI {
 			cbCarrier.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1586,7 +1587,7 @@ public class SmsInvoice extends BaseTransUI {
 			invoiceId = 0L;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1622,7 +1623,7 @@ public class SmsInvoice extends BaseTransUI {
 			getCalculatedValues();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		resetInvoiceDetails();
 	}

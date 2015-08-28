@@ -1054,72 +1054,103 @@ public class DC extends BaseTransUI {
 	 * loadMaterialList()-->this function is used for load the Material name
 	 */
 	private void loadMaterialList() {
-		BeanItemContainer<MaterialDM> beanMaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanMaterial.addAll(serviceMaterial.getMaterialList(null, null, null, null, null, null, null, null, "Active",
-				"F"));
-		cbMaterialId.setContainerDataSource(beanMaterial);
+		try {
+			BeanItemContainer<MaterialDM> beanMaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
+			beanMaterial.addAll(serviceMaterial.getMaterialList(null, null, null, null, null, null, null, null,
+					"Active", "F"));
+			cbMaterialId.setContainerDataSource(beanMaterial);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadEmployeeList()-->this function is used for load the Employee name
 	 */
 	private void loadEmployeeList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<String, EmployeeDM> beanPersonEmployeeDM = new BeanContainer<String, EmployeeDM>(EmployeeDM.class);
-		beanPersonEmployeeDM.setBeanIdProperty("firstname");
-		beanPersonEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
-				null, null, "P"));
-		cbPersonName.setContainerDataSource(beanPersonEmployeeDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<String, EmployeeDM> beanPersonEmployeeDM = new BeanContainer<String, EmployeeDM>(
+					EmployeeDM.class);
+			beanPersonEmployeeDM.setBeanIdProperty("firstname");
+			beanPersonEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null,
+					null, null, null, "P"));
+			cbPersonName.setContainerDataSource(beanPersonEmployeeDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadVendorList()-->this function is used for load the vendor name
 	 */
 	private void loadVendorList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, VendorDM> beanVendorDM = new BeanContainer<Long, VendorDM>(VendorDM.class);
-		beanVendorDM.setBeanIdProperty("vendorId");
-		beanVendorDM.addAll(serviceVendor.getVendorList(null, null, null, null, null, null, null, null, "Active", null,
-				"P"));
-		cbVendor.setContainerDataSource(beanVendorDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, VendorDM> beanVendorDM = new BeanContainer<Long, VendorDM>(VendorDM.class);
+			beanVendorDM.setBeanIdProperty("vendorId");
+			beanVendorDM.addAll(serviceVendor.getVendorList(null, null, null, null, null, null, null, null, "Active",
+					null, "P"));
+			cbVendor.setContainerDataSource(beanVendorDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadCustomerList()-->this function is used for load the customer name
 	 */
 	private void loadCustomerList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
-		Long clientid = serviceEnqHeader
-				.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "P", null, null).get(0)
-				.getClientId();
-		BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
-		beanclientDM.setBeanIdProperty("clientId");
-		beanclientDM.addAll(serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null, null,
-				"Active", "P"));
-		cbClients.setContainerDataSource(beanclientDM);
-		cbClients.setValue(clientid);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
+			Long clientid = serviceEnqHeader
+					.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "P", null, null).get(0)
+					.getClientId();
+			BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			beanclientDM.setBeanIdProperty("clientId");
+			beanclientDM.addAll(serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null,
+					null, "Active", "P"));
+			cbClients.setContainerDataSource(beanclientDM);
+			cbClients.setValue(clientid);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadModeOfTransList()-->this function is used for load the ModeOfTransaction name
 	 */
 	private void loadModeOfTransList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"MM_TRNSPRT"));
-		cbModeOfTrans.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"MM_TRNSPRT"));
+			cbModeOfTrans.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadProductList()-->this function is used for load the Product name
 	 */
 	private void loadProductList() {
-		BeanItemContainer<ProductDM> beanProduct = new BeanItemContainer<ProductDM>(ProductDM.class);
-		beanProduct.addAll(serviceProduct.getProductList(null, null, null, null, "Active", null, null, "F"));
-		cbProduct.setContainerDataSource(beanProduct);
+		try {
+			BeanItemContainer<ProductDM> beanProduct = new BeanItemContainer<ProductDM>(ProductDM.class);
+			beanProduct.addAll(serviceProduct.getProductList(null, null, null, null, "Active", null, null, "F"));
+			cbProduct.setContainerDataSource(beanProduct);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void deleteDetails() {
@@ -1176,7 +1207,7 @@ public class DC extends BaseTransUI {
 			cbwindTechPers.setContainerDataSource(beanclientcontact);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1193,14 +1224,19 @@ public class DC extends BaseTransUI {
 			cbwindcommPerson.setContainerDataSource(beanclientcontact);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadEnquiryList() {
-		BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.setBeanIdProperty("enquiryId");
-		beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
-		cbEnquiry.setContainerDataSource(beansmsenqHdr);
+		try {
+			BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("enquiryId");
+			beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
+			cbEnquiry.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

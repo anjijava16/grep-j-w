@@ -51,7 +51,6 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -102,7 +101,6 @@ public class LetterofIntent extends BaseTransUI {
 	private Table tblLOIDetail;
 	private BeanItemContainer<LOIHeaderDM> beanIndentHdrDM = null;
 	private BeanItemContainer<LOIDetailsDM> beanIndentDtlDM = null;
-	private BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = null;
 	// local variables declaration
 	private String taxSlapId;
 	private Long companyid;
@@ -383,20 +381,25 @@ public class LetterofIntent extends BaseTransUI {
 			tblLOIDetail.setColumnFooter("status", "No.of Records : " + indentDtlList.size());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Load Uom List
 	private void loadMaterialUOMList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading Material UOM Search...");
-		List<CompanyLookupDM> lookUpList = serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"MM_UOM");
-		beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp.addAll(lookUpList);
-		cbUom.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Material UOM Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"MM_UOM"));
+			cbUom.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to reset the fields
@@ -762,12 +765,17 @@ public class LetterofIntent extends BaseTransUI {
 	 * loadBranchList()-->this function is used for load the branch name
 	 */
 	private void loadVendorNameList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading VendorNameList");
-		BeanContainer<Long, VendorDM> beanVendor = new BeanContainer<Long, VendorDM>(VendorDM.class);
-		beanVendor.setBeanIdProperty("vendorId");
-		beanVendor.addAll(serviceVendor.getVendorList(null, null, companyid, null, null, null, null, null, "Active",
-				null, "P"));
-		cbVendor.setContainerDataSource(beanVendor);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading VendorNameList");
+			BeanContainer<Long, VendorDM> beanVendor = new BeanContainer<Long, VendorDM>(VendorDM.class);
+			beanVendor.setBeanIdProperty("vendorId");
+			beanVendor.addAll(serviceVendor.getVendorList(null, null, companyid, null, null, null, null, null,
+					"Active", null, "P"));
+			cbVendor.setContainerDataSource(beanVendor);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadMaterialList() {
@@ -778,14 +786,19 @@ public class LetterofIntent extends BaseTransUI {
 			cbMatName.setContainerDataSource(beanpodtl);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadQuoteNoList() {
-		BeanItemContainer<MmsQuoteHdrDM> beanQuote = new BeanItemContainer<MmsQuoteHdrDM>(MmsQuoteHdrDM.class);
-		beanQuote.addAll(serviceMmsQuoteHdr.getMmsQuoteHdrList(companyid, null, null, null, null, null, null, "F"));
-		cbQuotation.setContainerDataSource(beanQuote);
+		try {
+			BeanItemContainer<MmsQuoteHdrDM> beanQuote = new BeanItemContainer<MmsQuoteHdrDM>(MmsQuoteHdrDM.class);
+			beanQuote.addAll(serviceMmsQuoteHdr.getMmsQuoteHdrList(companyid, null, null, null, null, null, null, "F"));
+			cbQuotation.setContainerDataSource(beanQuote);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// delete row in temporary table

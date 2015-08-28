@@ -57,7 +57,6 @@ import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.mms.domain.txn.MmsEnqDtlDM;
 import com.gnts.mms.domain.txn.MmsPoDtlDM;
 import com.gnts.mms.domain.txn.MmsQuoteDtlDM;
 import com.gnts.mms.domain.txn.MmsQuoteHdrDM;
@@ -75,8 +74,6 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.FieldEvents.BlurEvent;
-import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
@@ -344,11 +341,16 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		cbpoType.setItemCaptionPropertyId("lookupname");
 		cbpoType.setWidth("150");
 		loadPOTypet();
-		ApprovalSchemaDM obj = servicepohdr.getReviewerId(companyid, appScreenId, branchID, roleId).get(0);
-		if (obj.getApprLevel().equals("Reviewer")) {
-			cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_RV_STATUS);
-		} else {
-			cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_AP_STATUS);
+		try {
+			ApprovalSchemaDM obj = servicepohdr.getReviewerId(companyid, appScreenId, branchID, roleId).get(0);
+			if (obj.getApprLevel().equals("Reviewer")) {
+				cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_RV_STATUS);
+			} else {
+				cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_AP_STATUS);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		cbStatus.setWidth("150");
 		// PurchaseOrder Detail Comp
@@ -705,11 +707,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			}
 			catch (Exception e) {
 			}
-			/*
-			 * try { if(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getDeliveryTerms().toString()!=null){
-			 * tfDelTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getDeliveryTerms().toString()); } } catch
-			 * (Exception e) { e.printStackTrace(); }
-			 */
 			// load quote details
 			listPODetails = new ArrayList<MmsPoDtlDM>();
 			MmsQuoteDtlDM quoteDtlDMobj = serviceMmsQuoteDtlService.getmmsquotedtllist(null,
@@ -728,7 +725,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			loadPODetails();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -736,10 +733,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<POHdrDM> pohdrlist = new ArrayList<POHdrDM>();
-		String poType = null;
-		if (cbpoType.getValue() != null) {
-			poType = cbpoType.getValue().toString();
-		}
 		pohdrlist = servicepohdr.getPOHdrList(companyid, null, (Long) cbBranch.getValue(), null,
 				(String) cbStatus.getValue(), (String) cbpoType.getValue(), tfPONo.getValue(), "F");
 		recordcnt = pohdrlist.size();
@@ -784,7 +777,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -800,7 +793,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			cbMatUom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -812,7 +805,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			cbMaterial.setContainerDataSource(beanpodtl);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -825,7 +818,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			cbVendor.setContainerDataSource(beanVendor);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -840,14 +833,19 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			cbpoType.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadQuoteRefNumber() {
-		BeanItemContainer<MmsQuoteHdrDM> beanQuote = new BeanItemContainer<MmsQuoteHdrDM>(MmsQuoteHdrDM.class);
-		beanQuote.addAll(serviceMmsQuoteHdr.getMmsQuoteHdrList(companyid, null, null, null, null, null, null, "F"));
-		cbQuoteRef.setContainerDataSource(beanQuote);
+		try {
+			BeanItemContainer<MmsQuoteHdrDM> beanQuote = new BeanItemContainer<MmsQuoteHdrDM>(MmsQuoteHdrDM.class);
+			beanQuote.addAll(serviceMmsQuoteHdr.getMmsQuoteHdrList(companyid, null, null, null, null, null, null, "F"));
+			cbQuoteRef.setContainerDataSource(beanQuote);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Check Box Duty

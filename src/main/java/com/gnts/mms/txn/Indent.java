@@ -90,7 +90,7 @@ public class Indent extends BaseTransUI {
 			.getBean("companyLookUp");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
-	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private DepartmentService serviceDepartmant = (DepartmentService) SpringContextHelper.getBean("department");
 	private List<IndentDtlDM> indentDtlList = null;
 	// form layout for input controls
 	private FormLayout flIndentCol1, flIndentCol2, flIndentCol3, flIndentCol4, flIndentCol5, flIndentDtlCol1,
@@ -408,20 +408,25 @@ public class Indent extends BaseTransUI {
 			tblIndentDtl.setColumnFooter("status", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Load Uom List
 	private void loadMaterialUOMList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading Material UOM Search...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("lookupname");
-		beanCompanyLookUp
-				.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active", "MM_UOM"));
-		cbUom.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Material UOM Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"MM_UOM"));
+			cbUom.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to reset the fields
@@ -681,12 +686,10 @@ public class Indent extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		Boolean errorFlag = false;
 		if ((tfIndNo.getValue() == null) || tfIndNo.getValue().trim().length() == 0) {
-			List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO");
-			for (SlnoGenDM slnoObj : slnoList) {
-				if (slnoObj.getAutoGenYN().equals("N")) {
-					tfIndNo.setComponentError(new UserError(GERPErrorCodes.NULL_INDENT_NO));
-					errorFlag = true;
-				}
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO").get(0);
+			if (slnoObj.getAutoGenYN().equals("N")) {
+				tfIndNo.setComponentError(new UserError(GERPErrorCodes.NULL_INDENT_NO));
+				errorFlag = true;
 			}
 		}
 		if (cbIndType.getValue() == null) {
@@ -739,18 +742,19 @@ public class Indent extends BaseTransUI {
 			@SuppressWarnings("unchecked")
 			Collection<IndentDtlDM> colPlanDtls = ((Collection<IndentDtlDM>) tblIndentDtl.getVisibleItemIds());
 			for (IndentDtlDM saveDtl : (Collection<IndentDtlDM>) colPlanDtls) {
-				System.out.println("indentObj.getIndentId()-->" + indentObj.getIndentId());
 				saveDtl.setIndentHdrId(Long.valueOf(indentObj.getIndentId()));
-				System.out.println("Hdr-->" + saveDtl.getIndentDtlId());
-				System.out.println("blnceqty" + saveDtl.getBalenceQty());
 				serviceIndentDtl.saveorUpdate(saveDtl);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
-				List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNO");
-				for (SlnoGenDM slnoObj : slnoList) {
+				try {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNO")
+							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_INDNO");
 					}
+				}
+				catch (Exception e) {
+					logger.info(e.getMessage());
 				}
 			}
 			tfIndNo.setReadOnly(false);
@@ -774,14 +778,11 @@ public class Indent extends BaseTransUI {
 			for (String obj : split) {
 				if (obj.trim().length() > 0) {
 					for (IndentDtlDM indentDtlDM : indentDtlList) {
-						System.out.println("mat" + indentDtlDM.getMaterialId());
-						System.out.println("cbmat" + cbMatName.getValue());
 						if (indentDtlDM.getMaterialId() == Long.valueOf(obj.trim())) {
 							count++;
 							break;
 						}
 					}
-					System.out.println("count--->" + count);
 					if (tblIndentDtl.getValue() != null) {
 						count = 0;
 					}
@@ -838,7 +839,7 @@ public class Indent extends BaseTransUI {
 			cbBranchId.setContainerDataSource(beanBranchDM);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -846,24 +847,35 @@ public class Indent extends BaseTransUI {
 	 * loadMaterialList()-->this function is used for load the Material name
 	 */
 	private void loadMaterialList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading Material UOM Search...");
-		BeanContainer<Long, MaterialDM> beanMaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
-		beanMaterial.setBeanIdProperty("materialId");
-		beanMaterial.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
-				"Active", "P"));
-		cbMatName.setContainerDataSource(beanMaterial);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Material UOM Search...");
+			BeanContainer<Long, MaterialDM> beanMaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
+			beanMaterial.setBeanIdProperty("materialId");
+			beanMaterial.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
+					"Active", "P"));
+			cbMatName.setContainerDataSource(beanMaterial);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadDepartmentList()-->this function is used for load the Department list
 	 */
 	private void loadDepartmentList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Department Search...");
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(servicebeandepartmant.getDepartmentList(companyid, null, "Active", "P"));
-		cbDepartment.setContainerDataSource(beanDepartment);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Department Search...");
+			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beanDepartment.setBeanIdProperty("deptid");
+			beanDepartment.addAll(serviceDepartmant.getDepartmentList(companyid, null, "Active", "P"));
+			cbDepartment.setContainerDataSource(beanDepartment);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// delete row in temporary table

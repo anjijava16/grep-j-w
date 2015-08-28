@@ -306,12 +306,13 @@ public class RotoCheck extends BaseTransUI {
 		tfEmpNo.setWidth("130");
 		tfRemarksDtl = new GERPTextArea("Remarks");
 		tfRemarksDtl.setWidth("130");
+		tfRemarksDtl.setHeight("45px");
 		hlSearchLayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		resetFields();
 		loadSrchRslt();
-		loadArmRslt();
+		loadArmRslt(false);
 		loadPlanDtlRslt();
 		btnAddDtls.setStyleName("add");
 		btnAddArm.setStyleName("add");
@@ -484,11 +485,13 @@ public class RotoCheck extends BaseTransUI {
 		}
 	}
 	
-	private void loadArmRslt() {
+	private void loadArmRslt(Boolean fromdb) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		List<RotoArmDM> armList = new ArrayList<RotoArmDM>();
 		recordArmCnt = armList.size();
-		armList = serviceRotoArm.getRotoArmList(null, null, null, null, null, "F", null);
+		if (fromdb) {
+			armList = serviceRotoArm.getRotoArmList(null, rotoid, null, null, null, "F", null);
+		}
 		beanRotoArmDM = new BeanItemContainer<RotoArmDM>(RotoArmDM.class);
 		beanRotoArmDM.addAll(armList);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Roto. result set");
@@ -551,9 +554,10 @@ public class RotoCheck extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		tblRotoDetails.setVisible(true);
-		loadArmRslt();
+		loadArmRslt(false);
 	}
 	
 	@Override
@@ -624,22 +628,22 @@ public class RotoCheck extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblMstScrSrchRslt.getValue() != null) {
-			RotohdrDM editRotohdr = beanRotohdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			rotoid = editRotohdr.getRotoid();
+			RotohdrDM rotohdr = beanRotohdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			rotoid = rotohdr.getRotoid();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Selected AssemblyPlan. Id -> " + rotodtlid);
-			cbBranch.setValue(editRotohdr.getBranchid());
+			cbBranch.setValue(rotohdr.getBranchid());
 			tfRotoRef.setReadOnly(false);
-			tfRotoRef.setValue(editRotohdr.getRotorefno());
+			tfRotoRef.setValue(rotohdr.getRotorefno());
 			tfRotoRef.setReadOnly(true);
-			if (editRotohdr.getRotodate() != null) {
-				dfRotoDt.setValue(editRotohdr.getRotodate1());
+			if (rotohdr.getRotodate() != null) {
+				dfRotoDt.setValue(rotohdr.getRotodate1());
 			}
-			tfRemarks.setValue(editRotohdr.getRemarks());
-			cbStatus.setValue(editRotohdr.getRotostatus());
+			tfRemarks.setValue(rotohdr.getRemarks());
+			cbStatus.setValue(rotohdr.getRotostatus());
 		}
 		loadPlanDtlRslt();
-		loadArmRslt();
+		loadArmRslt(true);
 	}
 	
 	private void editRotoDtls() {
@@ -726,7 +730,7 @@ public class RotoCheck extends BaseTransUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

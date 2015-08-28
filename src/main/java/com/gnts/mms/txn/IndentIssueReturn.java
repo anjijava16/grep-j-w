@@ -68,10 +68,10 @@ public class IndentIssueReturn extends BaseUI {
 	private IndentDtlService serviceIndentDtlDM = (IndentDtlService) SpringContextHelper.getBean("IndentDtl");
 	private IndentIssueHdrService serviceIndentIssueHdr = (IndentIssueHdrService) SpringContextHelper
 			.getBean("IndentIssueHdr");
-	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
+	private MaterialLedgerService serviceLedger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
 	private MaterialStockService serviceMaterialStock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
-	private MaterialService servicematerial = (MaterialService) SpringContextHelper.getBean("material");
+	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	// form layout for input controls
 	private FormLayout fltaxCol1, fltaxCol2, fltaxCol3, flColumn4;
 	// Parent layout for all the input controls
@@ -222,11 +222,16 @@ public class IndentIssueReturn extends BaseUI {
 	}
 	
 	private void loadMaterialNameList() {
-		BeanContainer<Long, MaterialDM> beanCtgry = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
-		beanCtgry.setBeanIdProperty("materialId");
-		beanCtgry.addAll(servicematerial.getMaterialList(null, companyid, null, null, null, null, null, null, "Active",
-				"P"));
-		cbMatName.setContainerDataSource(beanCtgry);
+		try {
+			BeanContainer<Long, MaterialDM> beanCtgry = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
+			beanCtgry.setBeanIdProperty("materialId");
+			beanCtgry.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
+					"Active", "P"));
+			cbMatName.setContainerDataSource(beanCtgry);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadSrchRslt() {
@@ -526,7 +531,7 @@ public class IndentIssueReturn extends BaseUI {
 		try {
 			MaterialLedgerDM materialledgerDM = null;
 			try {
-				materialledgerDM = serviceledger.getMaterialLedgerList(save.getMaterialId(), null, null, null,
+				materialledgerDM = serviceLedger.getMaterialLedgerList(save.getMaterialId(), null, null, null,
 						cbStockType.getValue().toString(), null, "Y", "F").get(0);
 			}
 			catch (Exception e) {
@@ -549,7 +554,7 @@ public class IndentIssueReturn extends BaseUI {
 				ledgerDM.setReferenceRemark(save.getRemarks());
 				ledgerDM.setLastUpdatedby(username);
 				ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
-				serviceledger.saveOrUpdateLedger(ledgerDM);
+				serviceLedger.saveOrUpdateLedger(ledgerDM);
 			} else {
 				MaterialLedgerDM ledgerDM = new MaterialLedgerDM();
 				ledgerDM.setStockledgeDate(new Date());
@@ -567,10 +572,11 @@ public class IndentIssueReturn extends BaseUI {
 				ledgerDM.setReferenceRemark(save.getRemarks());
 				ledgerDM.setLastUpdatedby(username);
 				ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
-				serviceledger.saveOrUpdateLedger(ledgerDM);
+				serviceLedger.saveOrUpdateLedger(ledgerDM);
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		resetFields();
 		loadSrchRslt();
@@ -580,11 +586,16 @@ public class IndentIssueReturn extends BaseUI {
 	 * loadMaterialList()-->this function is used for load the Material name
 	 */
 	private void loadMaterialList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanItemContainer<IndentDtlDM> beanIndentDtl = new BeanItemContainer<IndentDtlDM>(IndentDtlDM.class);
-		beanIndentDtl.addAll(serviceIndentDtlDM.getIndentDtlDMList(null,
-				((IndentIssueHdrDM) cbIssueName.getValue()).getIndentId(), null, "Active", "F"));
-		cbMatName.setContainerDataSource(beanIndentDtl);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanItemContainer<IndentDtlDM> beanIndentDtl = new BeanItemContainer<IndentDtlDM>(IndentDtlDM.class);
+			beanIndentDtl.addAll(serviceIndentDtlDM.getIndentDtlDMList(null,
+					((IndentIssueHdrDM) cbIssueName.getValue()).getIndentId(), null, "Active", "F"));
+			cbMatName.setContainerDataSource(beanIndentDtl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	//
@@ -592,23 +603,34 @@ public class IndentIssueReturn extends BaseUI {
 	 * loadModeOfTransList()-->this function is used for load the ModeOfTransaction name
 	 */
 	private void loadReturnReason() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanCompanyLookUp.setBeanIdProperty("cmplookupid");
-		beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
-				"MM_ISURTN"));
-		cbReturnReason.setContainerDataSource(beanCompanyLookUp);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("cmplookupid");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+					"MM_ISURTN"));
+			cbReturnReason.setContainerDataSource(beanCompanyLookUp);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadMaterialList()-->this function is used for load the Material name
 	 */
 	private void loadIssueList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
-		BeanItemContainer<IndentIssueHdrDM> beanIndentDtl = new BeanItemContainer<IndentIssueHdrDM>(
-				IndentIssueHdrDM.class);
-		beanIndentDtl.addAll(serviceIndentIssueHdr.getIndentIssueHdrList(null, companyid, null, null, null, null, "F"));
-		cbIssueName.setContainerDataSource(beanIndentDtl);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Gender Search...");
+			BeanItemContainer<IndentIssueHdrDM> beanIndentDtl = new BeanItemContainer<IndentIssueHdrDM>(
+					IndentIssueHdrDM.class);
+			beanIndentDtl.addAll(serviceIndentIssueHdr.getIndentIssueHdrList(null, companyid, null, null, null, null,
+					"F"));
+			cbIssueName.setContainerDataSource(beanIndentDtl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

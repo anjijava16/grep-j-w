@@ -480,31 +480,46 @@ public class MaterialGatepass extends BaseTransUI {
 			tblGatepassDetails.setSizeFull();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadvendordetails() {
-		BeanItemContainer<VendorDM> beanvendor = new BeanItemContainer<VendorDM>(VendorDM.class);
-		beanvendor.addAll(serviceVendor.getVendorList(null, null, companyId, null, null, null, null, null, "Active",
-				null, "P"));
-		cbVendor.setContainerDataSource(beanvendor);
+		try {
+			BeanItemContainer<VendorDM> beanvendor = new BeanItemContainer<VendorDM>(VendorDM.class);
+			beanvendor.addAll(serviceVendor.getVendorList(null, null, companyId, null, null, null, null, null,
+					"Active", null, "P"));
+			cbVendor.setContainerDataSource(beanvendor);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loaddcdetails() {
-		BeanContainer<String, DcHdrDM> beanHdrDC = new BeanContainer<String, DcHdrDM>(DcHdrDM.class);
-		beanHdrDC.setBeanIdProperty("dcNo");
-		beanHdrDC.addAll(serviceDCHdr.getMmsDcHdrList(null, null, companyId, null, null, null, null, null, "Active",
-				"F"));
-		cbVendorDCNo.setContainerDataSource(beanHdrDC);
+		try {
+			BeanContainer<String, DcHdrDM> beanHdrDC = new BeanContainer<String, DcHdrDM>(DcHdrDM.class);
+			beanHdrDC.setBeanIdProperty("dcNo");
+			beanHdrDC.addAll(serviceDCHdr.getMmsDcHdrList(null, null, companyId, null, null, null, null, null,
+					"Active", "F"));
+			cbVendorDCNo.setContainerDataSource(beanHdrDC);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadlookupdetails() {
-		BeanContainer<String, CompanyLookupDM> beanlookup = new BeanContainer<String, CompanyLookupDM>(
-				CompanyLookupDM.class);
-		beanlookup.setBeanIdProperty("lookupname");
-		beanlookup.addAll(servicelookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "MM_TRNSPRT"));
-		cbModeTransport.setContainerDataSource(beanlookup);
+		try {
+			BeanContainer<String, CompanyLookupDM> beanlookup = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanlookup.setBeanIdProperty("lookupname");
+			beanlookup.addAll(servicelookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "MM_TRNSPRT"));
+			cbModeTransport.setContainerDataSource(beanlookup);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Uom List
@@ -518,35 +533,56 @@ public class MaterialGatepass extends BaseTransUI {
 			cbGoodsUom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadMateriallist() {
-		BeanItemContainer<MaterialDM> beanmaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanmaterial.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null,
-				"Active", "P"));
-		cbMaterial.setContainerDataSource(beanmaterial);
+		try {
+			BeanItemContainer<MaterialDM> beanmaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
+			beanmaterial.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null,
+					"Active", "P"));
+			cbMaterial.setContainerDataSource(beanmaterial);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadProductlist() {
-		BeanItemContainer<ProductDM> beanproduct = new BeanItemContainer<ProductDM>(ProductDM.class);
-		beanproduct.addAll(serviceProduct.getProductList(companyId, null, null, null, "Active", null, null, "P"));
-		cbProduct.setContainerDataSource(beanproduct);
+		try {
+			BeanItemContainer<ProductDM> beanproduct = new BeanItemContainer<ProductDM>(ProductDM.class);
+			beanproduct.addAll(serviceProduct.getProductList(companyId, null, null, null, "Active", null, null, "P"));
+			cbProduct.setContainerDataSource(beanproduct);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadgatepasslist() {
-		BeanItemContainer<GatepassHdrDM> beanGatePassHdrlist = new BeanItemContainer<GatepassHdrDM>(GatepassHdrDM.class);
-		beanGatePassHdrlist.addAll(serviceGatepass.getGatepassHdrList(companyId, null, null, null, null, null, null,
-				null, "F"));
-		cbGoods.setContainerDataSource(beanGatePassHdrlist);
+		try {
+			BeanItemContainer<GatepassHdrDM> beanGatePassHdrlist = new BeanItemContainer<GatepassHdrDM>(
+					GatepassHdrDM.class);
+			beanGatePassHdrlist.addAll(serviceGatepass.getGatepassHdrList(companyId, null, null, null, null, null,
+					null, null, "F"));
+			cbGoods.setContainerDataSource(beanGatePassHdrlist);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadDCList() {
-		BeanContainer<Long, DcHdrDM> beanDC = new BeanContainer<Long, DcHdrDM>(DcHdrDM.class);
-		beanDC.setBeanIdProperty("dcId");
-		beanDC.addAll(servicedc.getMmsDcHdrList(null, null, companyId, null, null, null, null, null, "Active", "F"));
-		cbDC.setContainerDataSource(beanDC);
+		try {
+			BeanContainer<Long, DcHdrDM> beanDC = new BeanContainer<Long, DcHdrDM>(DcHdrDM.class);
+			beanDC.setBeanIdProperty("dcId");
+			beanDC.addAll(servicedc.getMmsDcHdrList(null, null, companyId, null, null, null, null, null, "Active", "F"));
+			cbDC.setContainerDataSource(beanDC);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -723,16 +759,6 @@ public class MaterialGatepass extends BaseTransUI {
 		} else {
 			cbVendor.setComponentError(null);
 		}
-		/*
-		 * if (tfGatePassQty.getValue().equals("0")) { tfGatePassQty.setComponentError(new
-		 * UserError(GERPErrorCodes.NULL_GATEPASSQTY)); }
-		 */
-		/*
-		 * Long achievedQty; try { achievedQty = Long.valueOf(tfGatePassQty.getValue()); if (achievedQty > 0) {
-		 * tfGatePassQty.setComponentError(new UserError(GERPErrorCodes.NULL_GATEPASSQTY)); errorflag = true; } } catch
-		 * (Exception e) { tfGatePassQty.setComponentError(new UserError(GERPErrorCodes.UNITRATE_NUMBER_VALIDATIONS));
-		 * errorflag = true; }
-		 */
 		if (tblGatepassDetails.size() == 0) {
 			cbGoodsType.setComponentError(new UserError(GERPErrorCodes.NULL_POMATERIAL_UOM));
 			cbGoodsUom.setComponentError(new UserError(GERPErrorCodes.NULL_POMATERIAL_UOM));
@@ -942,7 +968,6 @@ public class MaterialGatepass extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
-			System.out.println("gatePassId-->" + gatePassId);
 			parameterMap.put("GPASSID", gatePassId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/gatepass"); // productlist is the name of my jasper

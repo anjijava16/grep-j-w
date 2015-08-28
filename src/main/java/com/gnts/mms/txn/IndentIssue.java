@@ -773,12 +773,12 @@ public class IndentIssue extends BaseTransUI {
 					}
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					logger.info(e.getMessage());
 				}
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -828,7 +828,7 @@ public class IndentIssue extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -839,34 +839,49 @@ public class IndentIssue extends BaseTransUI {
 		tfStockQty.setReadOnly(false);
 		tfStockQty.setValue(null);
 		tfStockQty.setReadOnly(true);
-		BeanItemContainer<IndentDtlDM> beanIndentDtl = new BeanItemContainer<IndentDtlDM>(IndentDtlDM.class);
-		beanIndentDtl
-				.addAll(serviceIndentDtlDM.getIndentDtlDMList(null, (Long) cbIntNo.getValue(), null, "Active", "F"));
-		cbMatName.setContainerDataSource(beanIndentDtl);
+		try {
+			BeanItemContainer<IndentDtlDM> beanIndentDtl = new BeanItemContainer<IndentDtlDM>(IndentDtlDM.class);
+			beanIndentDtl.addAll(serviceIndentDtlDM.getIndentDtlDMList(null, (Long) cbIntNo.getValue(), null, "Active",
+					"F"));
+			cbMatName.setContainerDataSource(beanIndentDtl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadEmployeeList()-->this function is used for load the Employee name
 	 */
 	private void loadEmployeeList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmployeeDM.setBeanIdProperty("employeeid");
-		beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null, null,
-				null, "P"));
-		cbIssuedTo.setContainerDataSource(beanEmployeeDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployeeDM.setBeanIdProperty("employeeid");
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+					null, null, "P"));
+			cbIssuedTo.setContainerDataSource(beanEmployeeDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadIndentList()-->this function is used for load the IndentNo
 	 */
 	private void loadIndentList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
-		BeanContainer<Long, IndentHdrDM> beanIndentHdrDM = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
-		beanIndentHdrDM.setBeanIdProperty("indentId");
-		beanIndentHdrDM.addAll(serviceIndHdr.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null,
-				null, "F"));
-		cbIntNo.setContainerDataSource(beanIndentHdrDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
+			BeanContainer<Long, IndentHdrDM> beanIndentHdrDM = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
+			beanIndentHdrDM.setBeanIdProperty("indentId");
+			beanIndentHdrDM.addAll(serviceIndHdr.getMmsIndentHdrList(null, null, null, companyid, null, null, null,
+					null, null, "F"));
+			cbIntNo.setContainerDataSource(beanIndentHdrDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Stock of Selected Material.

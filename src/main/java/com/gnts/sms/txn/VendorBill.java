@@ -112,7 +112,7 @@ public class VendorBill extends BaseTransUI {
 	private VerticalLayout hlPODoc = new VerticalLayout();
 	private VerticalLayout hldtlDoc = new VerticalLayout();
 	// VendorBillDtl components
-	private ComboBox cbproduct, cbMatUom, cbDtlStatus;
+	private ComboBox cbProduct, cbMatUom, cbDtlStatus;
 	private TextField tfreceiptQnty, tfrejectQty, tfUnitRate, tfBasicValue, tfDebitValue;
 	private TextArea tarejectReason;
 	private CheckBox ckdebitNote;
@@ -275,11 +275,11 @@ public class VendorBill extends BaseTransUI {
 		}
 		cbStatus.setWidth("120");
 		// VendorBill Detail Comp
-		cbproduct = new ComboBox("Product Name");
-		cbproduct.setItemCaptionPropertyId("productName");
-		cbproduct.setWidth("150");
-		cbproduct.setImmediate(true);
-		cbproduct.addValueChangeListener(new ValueChangeListener() {
+		cbProduct = new ComboBox("Product Name");
+		cbProduct.setItemCaptionPropertyId("productName");
+		cbProduct.setWidth("150");
+		cbProduct.setImmediate(true);
+		cbProduct.addValueChangeListener(new ValueChangeListener() {
 			/**
 			 * 
 			 */
@@ -288,15 +288,15 @@ public class VendorBill extends BaseTransUI {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
-				if (cbproduct.getValue() != null) {
+				if (cbProduct.getValue() != null) {
 					cbMatUom.setReadOnly(false);
-					cbMatUom.setValue(((PurchasePODtlDM) cbproduct.getValue()).getMaterialUom());
+					cbMatUom.setValue(((PurchasePODtlDM) cbProduct.getValue()).getMaterialUom());
 					tfreceiptQnty.setReadOnly(false);
-					tfreceiptQnty.setValue(((PurchasePODtlDM) cbproduct.getValue()).getPoQty() + "");
+					tfreceiptQnty.setValue(((PurchasePODtlDM) cbProduct.getValue()).getPoQty() + "");
 					tfUnitRate.setReadOnly(false);
-					tfUnitRate.setValue(((PurchasePODtlDM) cbproduct.getValue()).getUnitRate() + "");
+					tfUnitRate.setValue(((PurchasePODtlDM) cbProduct.getValue()).getUnitRate() + "");
 					tfBasicValue.setReadOnly(false);
-					tfBasicValue.setValue(((PurchasePODtlDM) cbproduct.getValue()).getBasicValue() + "");
+					tfBasicValue.setValue(((PurchasePODtlDM) cbProduct.getValue()).getBasicValue() + "");
 				}
 			}
 		});
@@ -515,7 +515,7 @@ public class VendorBill extends BaseTransUI {
 		flDtlColumn3 = new FormLayout();
 		flDtlColumn4 = new FormLayout();
 		flDtlColumn5 = new FormLayout();
-		flDtlColumn1.addComponent(cbproduct);
+		flDtlColumn1.addComponent(cbProduct);
 		flDtlColumn1.addComponent(cbMatUom);
 		flDtlColumn1.addComponent(tfreceiptQnty);
 		flDtlColumn2.addComponent(tfrejectQty);
@@ -651,7 +651,7 @@ public class VendorBill extends BaseTransUI {
 			BeanItemContainer<PurchasePODtlDM> beanPlnDtl = new BeanItemContainer<PurchasePODtlDM>(
 					PurchasePODtlDM.class);
 			beanPlnDtl.addAll(servicePurchasePODtl.getPurchaseOrdDtlList(null, poId, null, null));
-			cbproduct.setContainerDataSource(beanPlnDtl);
+			cbProduct.setContainerDataSource(beanPlnDtl);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -777,14 +777,14 @@ public class VendorBill extends BaseTransUI {
 		if (tblVendorBillDtl.getValue() != null) {
 			VendorBillDtlDM vendorBillDtlDM = beanVendorBillDtl.getItem(tblVendorBillDtl.getValue()).getBean();
 			Long prodid = vendorBillDtlDM.getProductId();
-			Collection<?> prodids = cbproduct.getItemIds();
+			Collection<?> prodids = cbProduct.getItemIds();
 			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbproduct.getItem(itemId);
+				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
 				// Get the actual bean and use the data
 				PurchasePODtlDM st = (PurchasePODtlDM) item.getBean();
 				if (prodid != null && prodid.equals(st.getProductId())) {
-					cbproduct.setValue(itemId);
+					cbProduct.setValue(itemId);
 				}
 			}
 			if (vendorBillDtlDM.getReceiptQty() != null) {
@@ -840,7 +840,7 @@ public class VendorBill extends BaseTransUI {
 	protected void addDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		hlCmdBtnLayout.setVisible(false);
-		cbproduct.setRequired(true);
+		cbProduct.setRequired(true);
 		cbMatUom.setRequired(true);
 		hlUserInputLayout.removeAllComponents();
 		// remove the components in the search layout and input controls in the same container
@@ -883,7 +883,7 @@ public class VendorBill extends BaseTransUI {
 	protected void editDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		hlCmdBtnLayout.setVisible(false);
-		cbproduct.setRequired(true);
+		cbProduct.setRequired(true);
 		cbMatUom.setRequired(true);
 		hlUserInputLayout.removeAllComponents();
 		// remove the components in the search layout and input controls in the same container
@@ -925,14 +925,14 @@ public class VendorBill extends BaseTransUI {
 		tfrejectQty.setComponentError(null);
 		tfUnitRate.setComponentError(null);
 		tfBasicValue.setComponentError(null);
-		cbproduct.setComponentError(null);
+		cbProduct.setComponentError(null);
 		if (tblVendorBillDtl.size() == 0) {
 			cbMatUom.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
 			tfreceiptQnty.setComponentError(new UserError(GERPErrorCodes.RECEIPT_QTY));
 			tfrejectQty.setComponentError(new UserError(GERPErrorCodes.REGECT_QTY));
 			tfUnitRate.setComponentError(new UserError(GERPErrorCodes.UNIT_RATE));
 			tfBasicValue.setComponentError(new UserError(GERPErrorCodes.BASIC_VALUE));
-			cbproduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
+			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
 			errorFlag = true;
 		}
 		if (errorFlag) {
@@ -979,11 +979,11 @@ public class VendorBill extends BaseTransUI {
 		} else {
 			tarejectReason.setComponentError(null);
 		}
-		if (cbproduct.getValue() == null) {
-			cbproduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
+		if (cbProduct.getValue() == null) {
+			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_NAME));
 			isValid = false;
 		} else {
-			cbproduct.setComponentError(null);
+			cbProduct.setComponentError(null);
 		}
 		return isValid;
 	}
@@ -1080,7 +1080,7 @@ public class VendorBill extends BaseTransUI {
 			billId = 0L;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1089,7 +1089,7 @@ public class VendorBill extends BaseTransUI {
 		try {
 			int count = 0;
 			for (VendorBillDtlDM vendorBillDtlDM : vendorDtlList) {
-				if (vendorBillDtlDM.getProductId() == ((PurchasePODtlDM) cbproduct.getValue()).getProductId()) {
+				if (vendorBillDtlDM.getProductId() == ((PurchasePODtlDM) cbProduct.getValue()).getProductId()) {
 					count++;
 					break;
 				}
@@ -1100,8 +1100,8 @@ public class VendorBill extends BaseTransUI {
 					vendorDtlDtlobj = beanVendorBillDtl.getItem(tblVendorBillDtl.getValue()).getBean();
 					vendorDtlList.remove(vendorDtlDtlobj);
 				}
-				vendorDtlDtlobj.setProductId(((PurchasePODtlDM) cbproduct.getValue()).getProductId());
-				vendorDtlDtlobj.setProductName(((PurchasePODtlDM) cbproduct.getValue()).getProductName());
+				vendorDtlDtlobj.setProductId(((PurchasePODtlDM) cbProduct.getValue()).getProductId());
+				vendorDtlDtlobj.setProductName(((PurchasePODtlDM) cbProduct.getValue()).getProductName());
 				vendorDtlDtlobj.setReceiptQty((Long.valueOf(tfreceiptQnty.getValue())));
 				vendorDtlDtlobj.setRejectQty((Long.valueOf(tfrejectQty.getValue())));
 				vendorDtlDtlobj.setUnitRate((Long.valueOf(tfUnitRate.getValue())));
@@ -1132,11 +1132,11 @@ public class VendorBill extends BaseTransUI {
 				loadVendorDtl();
 				getCalculatedValues();
 			} else {
-				cbproduct.setComponentError(new UserError("Product Already Exist. ."));
+				cbProduct.setComponentError(new UserError("Product Already Exist. ."));
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		vendorBillResetFields();
 	}
@@ -1156,7 +1156,7 @@ public class VendorBill extends BaseTransUI {
 		assembleSearchLayout();
 		hlCmdBtnLayout.setVisible(true);
 		tblMstScrSrchRslt.setVisible(true);
-		cbproduct.setRequired(false);
+		cbProduct.setRequired(false);
 		cbBranch.setRequired(false);
 		cbpoNo.setRequired(false);
 		tfbillNo.setRequired(false);
@@ -1258,7 +1258,7 @@ public class VendorBill extends BaseTransUI {
 			tfFreightPer.setValue("0");
 		}
 		tfFreightTerms.setValue("");
-		cbproduct.setValue(null);
+		cbProduct.setValue(null);
 		cbStatus.setValue(null);
 		dfbillDt.setValue(new Date());
 		taRemark.setValue("");
@@ -1270,12 +1270,12 @@ public class VendorBill extends BaseTransUI {
 		new UploadDocumentUI(hlPODoc);
 		cbpoNo.setComponentError(null);
 		tfbillNo.setValue("");
-		cbproduct.setContainerDataSource(null);
+		cbProduct.setContainerDataSource(null);
 	}
 	
 	private void vendorBillResetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		cbproduct.setValue(null);
+		cbProduct.setValue(null);
 		tfUnitRate.setValue("0");
 		tfUnitRate.setComponentError(null);
 		cbMatUom.setReadOnly(false);
@@ -1286,7 +1286,7 @@ public class VendorBill extends BaseTransUI {
 		tfBasicValue.setComponentError(null);
 		tarejectReason.setValue("");
 		cbDtlStatus.setValue(null);
-		cbproduct.setComponentError(null);
+		cbProduct.setComponentError(null);
 		tfreceiptQnty.setValue("0");
 		tfreceiptQnty.setComponentError(null);
 		tfrejectQty.setValue("0");

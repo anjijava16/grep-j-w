@@ -50,15 +50,15 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class MaterialParkedStock extends BaseUI {
-	private MaterialParkedStockService serviceparked = (MaterialParkedStockService) SpringContextHelper
+	private MaterialParkedStockService serviceParked = (MaterialParkedStockService) SpringContextHelper
 			.getBean("materialparkedstock");
-	private MaterialService servicematerial = (MaterialService) SpringContextHelper.getBean("material");
-	private BranchService servicebranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private PopupDateField dtparkdate, dfRefDate;
+	private PopupDateField dfParkedDate, dfRefDate;
 	private ComboBox cbMaterial, cbBranch, cbStocktype;
 	private TextField tfparkedQty, tfusedQty, tfbalanceQty, tfLotNO, tfrefNo;
 	private TextArea taRefRemarks;
@@ -86,8 +86,8 @@ public class MaterialParkedStock extends BaseUI {
 	
 	// Build the UI components
 	private void buildview() {
-		dtparkdate = new GERPPopupDateField("Parked Date");
-		dtparkdate.setWidth("150");
+		dfParkedDate = new GERPPopupDateField("Parked Date");
+		dfParkedDate.setWidth("150");
 		cbMaterial = new GERPComboBox("Material");
 		cbMaterial.setItemCaptionPropertyId("materialName");
 		cbMaterial.setWidth("150");
@@ -134,7 +134,7 @@ public class MaterialParkedStock extends BaseUI {
 		flcolumn4 = new FormLayout();
 		flcolumn1.addComponent(cbBranch);
 		flcolumn2.addComponent(cbMaterial);
-		flcolumn3.addComponent(dtparkdate);
+		flcolumn3.addComponent(dfParkedDate);
 		flcolumn3.setMargin(true);
 		flcolumn4.addComponent(cbStocktype);
 		hlsearch.addComponent(flcolumn1);
@@ -158,7 +158,7 @@ public class MaterialParkedStock extends BaseUI {
 		flcolumn1.addComponent(cbBranch);
 		flcolumn1.addComponent(cbMaterial);
 		flcolumn1.addComponent(cbStocktype);
-		flcolumn2.addComponent(dtparkdate);
+		flcolumn2.addComponent(dfParkedDate);
 		flcolumn2.addComponent(tfparkedQty);
 		flcolumn2.addComponent(tfusedQty);
 		flcolumn3.addComponent(tfbalanceQty);
@@ -174,7 +174,7 @@ public class MaterialParkedStock extends BaseUI {
 	}
 	
 	private void readonlytrue() {
-		dtparkdate.setReadOnly(true);
+		dfParkedDate.setReadOnly(true);
 		cbMaterial.setReadOnly(true);
 		cbStocktype.setReadOnly(true);
 		cbBranch.setReadOnly(true);
@@ -188,7 +188,7 @@ public class MaterialParkedStock extends BaseUI {
 	}
 	
 	private void readonlyfalse() {
-		dtparkdate.setReadOnly(false);
+		dfParkedDate.setReadOnly(false);
 		cbMaterial.setReadOnly(false);
 		cbStocktype.setReadOnly(false);
 		cbBranch.setReadOnly(false);
@@ -203,11 +203,12 @@ public class MaterialParkedStock extends BaseUI {
 	
 	private void viewLogger() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			MaterialParkedStockDM parkedStockDM = beanmaterialparkedstock.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			MaterialParkedStockDM parkedStockDM = beanmaterialparkedstock.getItem(tblMstScrSrchRslt.getValue())
+					.getBean();
 			readonlyfalse();
 			cbMaterial.setValue(parkedStockDM.getMaterialId());
 			cbBranch.setValue(parkedStockDM.getBranchId());
-			dtparkdate.setValue(parkedStockDM.getParkedDate());
+			dfParkedDate.setValue(parkedStockDM.getParkedDate());
 			cbStocktype.setValue(parkedStockDM.getStockType().toString());
 			tfparkedQty.setValue(parkedStockDM.getParkedQty().toString());
 			tfusedQty.setValue(parkedStockDM.getUsedQty().toString());
@@ -224,8 +225,8 @@ public class MaterialParkedStock extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			parkedDate = dtparkdate.getValue();
-			List<MaterialParkedStockDM> materiallist = serviceparked.getMaterialParkedStockList(
+			parkedDate = dfParkedDate.getValue();
+			List<MaterialParkedStockDM> materiallist = serviceParked.getMaterialParkedStockList(
 					(Long) cbMaterial.getValue(), null, (String) cbStocktype.getValue(), parkedDate,
 					(Long) cbBranch.getValue(), "F");
 			recordCnt = materiallist.size();
@@ -250,22 +251,27 @@ public class MaterialParkedStock extends BaseUI {
 		try {
 			List<MaterialDM> list = new ArrayList<MaterialDM>();
 			list.add(new MaterialDM(0L, "All Materials"));
-			list.addAll(servicematerial.getMaterialList(null, companyId, null, null, null, null, null, null, null, "P"));
+			list.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null, null, "P"));
 			BeanContainer<Long, MaterialDM> beanmaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 			beanmaterial.setBeanIdProperty("materialId");
 			beanmaterial.addAll(list);
 			cbMaterial.setContainerDataSource(beanmaterial);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadbranchlist() {
-		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(servicebranch.getBranchList(null, null, null, null, companyId, "P"));
-		cbBranch.setContainerDataSource(beanbranch);
+		try {
+			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanbranch.setBeanIdProperty("branchId");
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, null, companyId, "P"));
+			cbBranch.setContainerDataSource(beanbranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -296,7 +302,7 @@ public class MaterialParkedStock extends BaseUI {
 		cbMaterial.setValue(0L);
 		cbBranch.setValue(branchId);
 		cbStocktype.setValue(null);
-		dtparkdate.setValue(null);
+		dfParkedDate.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		// reload the search using the defaults
@@ -359,7 +365,7 @@ public class MaterialParkedStock extends BaseUI {
 		cbMaterial.setValue(0L);
 		cbBranch.setValue(branchId);
 		cbStocktype.setValue(null);
-		dtparkdate.setValue(null);
+		dfParkedDate.setValue(null);
 		tfparkedQty.setValue("");
 		tfusedQty.setValue("");
 		tfbalanceQty.setValue("");

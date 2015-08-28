@@ -55,8 +55,8 @@ public class MaterialVendorGroup extends BaseUI {
 	// Bean Creation
 	private MaterialVendorGrpService servicegrpmaterialvendor = (MaterialVendorGrpService) SpringContextHelper
 			.getBean("materialvendorgrp");
-	private MaterialService servicematerial = (MaterialService) SpringContextHelper.getBean("material");
-	private VendorService servicevendor = (VendorService) SpringContextHelper.getBean("Vendor");
+	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
+	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
 	// Form layout for input controls
 	private FormLayout form1, form2, form3;
 	// Parent layout for all the input controls
@@ -155,12 +155,12 @@ public class MaterialVendorGroup extends BaseUI {
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<MaterialVendorGrpDM> vendorGrpList = new ArrayList<MaterialVendorGrpDM>();
-		vendorGrpList = servicegrpmaterialvendor.getMaterialVendorGrpList(null, (Long) cbMaterial.getValue(), null,
+		List<MaterialVendorGrpDM> list = new ArrayList<MaterialVendorGrpDM>();
+		list = servicegrpmaterialvendor.getMaterialVendorGrpList(null, (Long) cbMaterial.getValue(), null,
 				(String) cbStatus.getValue(), "F");
-		recordCnt = vendorGrpList.size();
+		recordCnt = list.size();
 		beanMaterialVendorGrpDM = new BeanItemContainer<MaterialVendorGrpDM>(MaterialVendorGrpDM.class);
-		beanMaterialVendorGrpDM.addAll(vendorGrpList);
+		beanMaterialVendorGrpDM.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the vendorGrpList. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanMaterialVendorGrpDM);
@@ -185,23 +185,33 @@ public class MaterialVendorGroup extends BaseUI {
 	}
 	
 	private void loadMaterialNameList() {
-		BeanContainer<Long, MaterialDM> beanCtgry = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
-		beanCtgry.setBeanIdProperty("materialId");
-		beanCtgry.addAll(servicematerial.getMaterialList(null, companyid, null, null, null, null, null, null, "Active",
-				"P"));
-		cbMaterial.setContainerDataSource(beanCtgry);
+		try {
+			BeanContainer<Long, MaterialDM> beanCtgry = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
+			beanCtgry.setBeanIdProperty("materialId");
+			beanCtgry.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
+					"Active", "P"));
+			cbMaterial.setContainerDataSource(beanCtgry);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadVendorNameList()-->this function is used for load the vendor name list
 	 */
 	private void loadVendorNameList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading VendorNameList");
-		BeanContainer<Long, VendorDM> beanVendor = new BeanContainer<Long, VendorDM>(VendorDM.class);
-		beanVendor.setBeanIdProperty("vendorId");
-		beanVendor.addAll(servicevendor.getVendorList(null, null, companyid, null, null, null, null, null, "Active",
-				null, "P"));
-		cbVendor.setContainerDataSource(beanVendor);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading VendorNameList");
+			BeanContainer<Long, VendorDM> beanVendor = new BeanContainer<Long, VendorDM>(VendorDM.class);
+			beanVendor.setBeanIdProperty("vendorId");
+			beanVendor.addAll(serviceVendor.getVendorList(null, null, companyid, null, null, null, null, null,
+					"Active", null, "P"));
+			cbVendor.setContainerDataSource(beanVendor);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input
@@ -212,8 +222,8 @@ public class MaterialVendorGroup extends BaseUI {
 					+ "Editing the selected record");
 			hluserInputlayout.setVisible(true);
 			if (tblMstScrSrchRslt.getValue() != null) {
-				MaterialVendorGrpDM materialVendorGrpDM = beanMaterialVendorGrpDM.getItem(
-						tblMstScrSrchRslt.getValue()).getBean();
+				MaterialVendorGrpDM materialVendorGrpDM = beanMaterialVendorGrpDM.getItem(tblMstScrSrchRslt.getValue())
+						.getBean();
 				materialVendorGrpId = materialVendorGrpDM.getMaterialVendorGrpId();
 				cbMaterial.setValue(materialVendorGrpDM.getMaterialId());
 				cbVendor.setValue(null);
@@ -234,7 +244,7 @@ public class MaterialVendorGroup extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -252,7 +262,7 @@ public class MaterialVendorGroup extends BaseUI {
 			editMaterialVendorGrpDetails();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -342,7 +352,7 @@ public class MaterialVendorGroup extends BaseUI {
 					materialvendorgrpObj.setMaterialId((Long) cbMaterial.getValue());
 					if (cbVendor.getValue() != null) {
 						materialvendorgrpObj.setVendorId(Long.valueOf(obj.trim()));
-						materialvendorgrpObj.setVendorName(servicevendor
+						materialvendorgrpObj.setVendorName(serviceVendor
 								.getVendorList(null, Long.valueOf(obj.trim()), null, null, null, null, null, null,
 										null, null, "P").get(0).getVendorName());
 					}

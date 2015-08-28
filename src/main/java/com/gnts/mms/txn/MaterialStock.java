@@ -192,10 +192,15 @@ public class MaterialStock extends BaseUI {
 	}
 	
 	private void loadBranchdetails() {
-		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyId, "P"));
-		cbBranch.setContainerDataSource(beanbranch);
+		try {
+			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanbranch.setBeanIdProperty("branchId");
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyId, "P"));
+			cbBranch.setContainerDataSource(beanbranch);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Loading Material List
@@ -211,7 +216,7 @@ public class MaterialStock extends BaseUI {
 			cbMaterial.setContainerDataSource(beanmaterial);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -325,7 +330,7 @@ public class MaterialStock extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

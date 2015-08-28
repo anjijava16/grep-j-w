@@ -50,9 +50,9 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class MaterialLedger extends BaseUI {
-	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
-	private MaterialService servicematerial = (MaterialService) SpringContextHelper.getBean("material");
-	private BranchService servicebranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	private MaterialLedgerService serviceLedger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
+	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private static final long serialVersionUID = 1L;
 	private HorizontalLayout hlsearch;
 	private PopupDateField dfLedgerDate;
@@ -93,7 +93,7 @@ public class MaterialLedger extends BaseUI {
 		cbMaterial = new GERPComboBox("Material");
 		cbMaterial.setItemCaptionPropertyId("materialName");
 		cbMaterial.setWidth("150");
-		loadmateriallist();
+		loadMateriallist();
 		cbstocktype = new GERPComboBox("Stock Type", BASEConstants.T_MMS_MATERIAL_STOCK, BASEConstants.STOCKTYPE);
 		cbstocktype.setWidth("150");
 		cbBranch = new GERPComboBox("Branch");
@@ -187,7 +187,7 @@ public class MaterialLedger extends BaseUI {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
 			stockledgeDate = dfLedgerDate.getValue();
-			List<MaterialLedgerDM> materiallist = serviceledger.getMaterialLedgerList((Long) cbMaterial.getValue(),
+			List<MaterialLedgerDM> materiallist = serviceLedger.getMaterialLedgerList((Long) cbMaterial.getValue(),
 					null, stockledgeDate, (Long) cbBranch.getValue(), (String) cbstocktype.getValue(), null, null, "F");
 			recordCnt = materiallist.size();
 			beanmatrlledger = new BeanItemContainer<MaterialLedgerDM>(MaterialLedgerDM.class);
@@ -201,17 +201,16 @@ public class MaterialLedger extends BaseUI {
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of.Records :" + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
 			logger.info("loadSrchRslt-->" + e);
 		}
 	}
 	
 	// Loading Material List
-	private void loadmateriallist() {
+	private void loadMateriallist() {
 		try {
 			List<MaterialDM> list = new ArrayList<MaterialDM>();
 			list.add(new MaterialDM(0L, "All Materials"));
-			list.addAll(servicematerial.getMaterialList(null, companyId, null, null, null, null, null, null, "Active",
+			list.addAll(serviceMaterial.getMaterialList(null, companyId, null, null, null, null, null, null, "Active",
 					"F"));
 			BeanContainer<Long, MaterialDM> beanmaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 			beanmaterial.setBeanIdProperty("materialId");
@@ -219,7 +218,7 @@ public class MaterialLedger extends BaseUI {
 			cbMaterial.setContainerDataSource(beanmaterial);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info("loadSrchRslt-->" + e);
 		}
 	}
 	
@@ -255,10 +254,15 @@ public class MaterialLedger extends BaseUI {
 	
 	// Loading Branch List
 	private void loadbranchlist() {
-		BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
-		beanbranch.setBeanIdProperty("branchId");
-		beanbranch.addAll(servicebranch.getBranchList(null, null, null, "Active", companyId, "P"));
-		cbBranch.setContainerDataSource(beanbranch);
+		try {
+			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
+			beanbranch.setBeanIdProperty("branchId");
+			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyId, "P"));
+			cbBranch.setContainerDataSource(beanbranch);
+		}
+		catch (Exception e) {
+			logger.info("loadSrchRslt-->" + e);
+		}
 	}
 	
 	// Base class implementations
@@ -310,22 +314,27 @@ public class MaterialLedger extends BaseUI {
 	}
 	
 	private void editMaterialLedger() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			MaterialLedgerDM ledgerDM = beanmatrlledger.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			setReadOnlyFalseFields();
-			cbBranch.setValue(ledgerDM.getBranchId());
-			cbMaterial.setValue(ledgerDM.getMaterialId());
-			cbstocktype.setValue(ledgerDM.getStockType());
-			tfopenqty.setValue(ledgerDM.getOpenQty().toString());
-			tfInoutflag.setValue(ledgerDM.getInoutFlag());
-			tfinoutqty.setValue(ledgerDM.getInoutFQty().toString());
-			tfcloseqty.setValue(ledgerDM.getCloseQty().toString());
-			tfrefNo.setValue(ledgerDM.getReferenceNo());
-			dfLedgerDate.setValue(ledgerDM.getStockledgeDate1());
-			dfRefdate.setValue(ledgerDM.getReferenceDate());
-			tfIslatest.setValue(ledgerDM.getIsLatest());
-			tfRemarks.setValue(ledgerDM.getReferenceRemark());
-			setReadOnlyTrueFields();
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				MaterialLedgerDM ledgerDM = beanmatrlledger.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				setReadOnlyFalseFields();
+				cbBranch.setValue(ledgerDM.getBranchId());
+				cbMaterial.setValue(ledgerDM.getMaterialId());
+				cbstocktype.setValue(ledgerDM.getStockType());
+				tfopenqty.setValue(ledgerDM.getOpenQty().toString());
+				tfInoutflag.setValue(ledgerDM.getInoutFlag());
+				tfinoutqty.setValue(ledgerDM.getInoutFQty().toString());
+				tfcloseqty.setValue(ledgerDM.getCloseQty().toString());
+				tfrefNo.setValue(ledgerDM.getReferenceNo());
+				dfLedgerDate.setValue(ledgerDM.getStockledgeDate1());
+				dfRefdate.setValue(ledgerDM.getReferenceDate());
+				tfIslatest.setValue(ledgerDM.getIsLatest());
+				tfRemarks.setValue(ledgerDM.getReferenceRemark());
+				setReadOnlyTrueFields();
+			}
+		}
+		catch (Exception e) {
+			logger.info("editMaterialLedger-->" + e);
 		}
 	}
 	

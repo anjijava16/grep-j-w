@@ -905,25 +905,38 @@ public class ProductOverview implements ClickListener {
 	}
 	
 	private void getQuoteDetails(Long enquiryId) {
-		SmsQuoteHdrDM quoteHdrDM = serviceQuoteHdr.getSmsQuoteHdrList(null, null, null, null, null, null, "P",
-				enquiryId).get(0);
-		tfQuoteRef.setValue(quoteHdrDM.getQuoteRef());
-		tfQuoteNumber.setValue(quoteHdrDM.getQuoteNumber());
-		dfQuoteDate.setValue(quoteHdrDM.getQuoteDate());
+		try {
+			SmsQuoteHdrDM quoteHdrDM = serviceQuoteHdr.getSmsQuoteHdrList(null, null, null, null, null, null, "P",
+					enquiryId).get(0);
+			tfQuoteRef.setValue(quoteHdrDM.getQuoteRef());
+			tfQuoteNumber.setValue(quoteHdrDM.getQuoteNumber());
+			dfQuoteDate.setValue(quoteHdrDM.getQuoteDate());
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	private Long getPODetails(Long enquiryId) {
-		SmsPOHdrDM poHdrDM = servicesPOHdr.getSmspohdrList(null, null, null, null, null, null, null, "P", enquiryId)
-				.get(0);
-		tfPORef.setValue(poHdrDM.getPono());
-		dfPODate.setValue(poHdrDM.getPodate());
-		return poHdrDM.getPoid();
+		try {
+			SmsPOHdrDM poHdrDM = servicesPOHdr
+					.getSmspohdrList(null, null, null, null, null, null, null, "P", enquiryId).get(0);
+			tfPORef.setValue(poHdrDM.getPono());
+			dfPODate.setValue(poHdrDM.getPodate());
+			return poHdrDM.getPoid();
+		}
+		catch (Exception e) {
+			return 0L;
+		}
 	}
 	
 	private void getInvoiceDetails(Long poid) {
-		SmsInvoiceHdrDM invoiceHdrDM = serviceInvoiceHdr.getSmsInvoiceHeaderList(null, null, null, null, poid, null,
-				null, "P").get(0);
-		tfInvoiceRef.setValue(invoiceHdrDM.getInvoiceNo());
-		dfInvoiceDate.setValue(invoiceHdrDM.getInvoiceDate());
+		try {
+			SmsInvoiceHdrDM invoiceHdrDM = serviceInvoiceHdr.getSmsInvoiceHeaderList(null, null, null, null, poid,
+					null, null, "P").get(0);
+			tfInvoiceRef.setValue(invoiceHdrDM.getInvoiceNo());
+			dfInvoiceDate.setValue(invoiceHdrDM.getInvoiceDate());
+		}
+		catch (Exception e) {
+		}
 	}
 }

@@ -10,8 +10,8 @@
   enqhdr.ENQUIRY_NO,
   enqdtl.CUST_PROD_DESC,
   cust.CLIENT_NAME customer_name,
-  enqs.spec_code,
-  enqs.spec_desc,
+  enqs.spec_code ||' : '|| enqs.spec_desc specif,
+
   p.PRODUCT_NAME,
   city.CITY_NAME,
   enqdtl.ENQRY_QTY
@@ -33,8 +33,7 @@ AND enqhdr.ENQUIRY_ID  =$P{ENQID}]]>
 	<field name="ENQUIRY_NO" class="java.lang.String"/>
 	<field name="CUST_PROD_DESC" class="java.lang.String"/>
 	<field name="CUSTOMER_NAME" class="java.lang.String"/>
-	<field name="SPEC_CODE" class="java.lang.String"/>
-	<field name="SPEC_DESC" class="java.lang.String"/>
+	<field name="SPECIF" class="java.lang.String"/>
 	<field name="PRODUCT_NAME" class="java.lang.String"/>
 	<field name="CITY_NAME" class="java.lang.String"/>
 	<field name="ENQRY_QTY" class="java.math.BigDecimal"/>
@@ -43,6 +42,9 @@ AND enqhdr.ENQUIRY_ID  =$P{ENQID}]]>
 	</background>
 	<title>
 		<band height="78" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="2" width="555" height="75" uuid="c0eb5fbd-1caa-4e2e-9ec7-0110d8df1ee8"/>
+			</rectangle>
 			<staticText>
 				<reportElement x="81" y="8" width="218" height="23" uuid="ae744ec5-bc02-4b70-bf2e-a0074ca48f99"/>
 				<textElement verticalAlignment="Middle">
@@ -51,17 +53,17 @@ AND enqhdr.ENQUIRY_ID  =$P{ENQID}]]>
 				<text><![CDATA[SAARC Tool Tech (P) Ltd.,]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="81" y="31" width="206" height="16" uuid="a0c75f9f-1164-4352-af40-2b478bdfe32b"/>
+				<reportElement x="81" y="26" width="206" height="16" uuid="a0c75f9f-1164-4352-af40-2b478bdfe32b"/>
 				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[85,86,87, Sidco Industrial Estate,]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="81" y="47" width="206" height="14" uuid="b0944c40-73b1-4c06-97b0-db98fd231c03"/>
+				<reportElement x="81" y="42" width="206" height="14" uuid="b0944c40-73b1-4c06-97b0-db98fd231c03"/>
 				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[Malumichampatti,Coimbatore - 641 050,]]></text>
 			</staticText>
 			<image>
-				<reportElement x="4" y="2" width="84" height="70" uuid="64de2ad2-b915-4665-8917-4a1f39e91a80"/>
+				<reportElement x="4" y="4" width="84" height="70" uuid="64de2ad2-b915-4665-8917-4a1f39e91a80"/>
 				<imageExpression><![CDATA["saarclogo-small.jpg"]]></imageExpression>
 			</image>
 			<staticText>
@@ -75,27 +77,37 @@ AND enqhdr.ENQUIRY_ID  =$P{ENQID}]]>
 				<reportElement x="0" y="77" width="555" height="1" uuid="3faa7861-be7a-49b6-812b-dad8680653df"/>
 			</line>
 			<staticText>
-				<reportElement x="81" y="61" width="304" height="15" uuid="2cb68b06-b5fa-41df-ab35-f630d62d3bbd"/>
+				<reportElement x="81" y="56" width="304" height="15" uuid="2cb68b06-b5fa-41df-ab35-f630d62d3bbd"/>
 				<text><![CDATA[Tamil Nadu. Ph: 0422- 6060121/122/123, Fax : 0422-2655156/157]]></text>
 			</staticText>
 		</band>
 	</title>
 	<pageHeader>
 		<band height="52" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="555" height="51" uuid="233fdd02-a3e8-4b50-865a-820d4763db0f"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="-1" width="555" height="51" uuid="1179953a-406c-4558-acc3-6dac71c5f533"/>
+			</rectangle>
 			<staticText>
 				<reportElement x="9" y="6" width="71" height="20" uuid="56a66dd8-8da1-4372-bdf4-6415c6bff584"/>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
 				<text><![CDATA[Enquiry Date  ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="9" y="28" width="71" height="20" uuid="234fb649-6639-4923-9bf6-41fc01d8d78d"/>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
 				<text><![CDATA[Enquiry Ref. No  ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="257" y="6" width="85" height="20" uuid="99cc87c7-ab24-4049-b446-cf760783cfcf"/>
 				<textElement verticalAlignment="Middle">
-					<font isBold="false"/>
+					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Customer Name:]]></text>
 			</staticText>
@@ -119,7 +131,7 @@ AND enqhdr.ENQUIRY_ID  =$P{ENQID}]]>
 				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[:]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
 				<reportElement x="88" y="6" width="100" height="20" uuid="30e57670-998d-4e01-85f7-fa7ca22b226e"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{ENQUIRY_DATE}]]></textFieldExpression>
@@ -132,7 +144,7 @@ AND enqhdr.ENQUIRY_ID  =$P{ENQID}]]>
 			<staticText>
 				<reportElement x="315" y="26" width="27" height="20" uuid="b070dc2c-019f-4681-adbd-7f6c3e5e5b78"/>
 				<textElement verticalAlignment="Middle">
-					<font isBold="false"/>
+					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[City:]]></text>
 			</staticText>
@@ -145,6 +157,9 @@ AND enqhdr.ENQUIRY_ID  =$P{ENQID}]]>
 	</pageHeader>
 	<columnHeader>
 		<band height="31" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="-3" width="555" height="29" uuid="78b5587e-b5f9-4834-8e7a-719d6c708460"/>
+			</rectangle>
 			<line>
 				<reportElement x="0" y="29" width="555" height="1" uuid="8f46f420-f4b8-46c0-ab18-2d839227ef0e"/>
 			</line>
@@ -178,13 +193,18 @@ AND enqhdr.ENQUIRY_ID  =$P{ENQID}]]>
 			</staticText>
 			<staticText>
 				<reportElement x="289" y="4" width="45" height="20" uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
 				<text><![CDATA[Qty]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="39" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="-5" width="555" height="39" uuid="5cfeb744-cad2-4ec0-a57e-749734b1e1cb"/>
+			</rectangle>
 			<textField>
 				<reportElement x="0" y="0" width="32" height="20" uuid="b99c2ef8-a94c-4eae-b1b4-b76c166c58de"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
@@ -205,23 +225,17 @@ AND enqhdr.ENQUIRY_ID  =$P{ENQID}]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{ENQRY_QTY}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="334" y="1" width="66" height="38" uuid="24957b3d-95bb-4f72-82c9-94274e957414"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{SPEC_CODE}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="400" y="1" width="152" height="38" uuid="3f07cc6c-3641-4969-83fc-dd5eec39eab6"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{SPEC_DESC}]]></textFieldExpression>
+			<textField>
+				<reportElement x="334" y="1" width="221" height="20" uuid="fb1cd012-0399-4871-a6cf-0299e4d8072e"/>
+				<textFieldExpression><![CDATA[$F{SPECIF}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="35" splitType="Stretch"/>
-	</columnFooter>
 	<pageFooter>
 		<band height="80" splitType="Stretch">
+			<rectangle>
+				<reportElement x="1" y="2" width="554" height="76" uuid="e4e1b77e-f77f-4378-b213-1f6fa1b8aca1"/>
+			</rectangle>
 			<staticText>
 				<reportElement x="386" y="2" width="166" height="14" uuid="2632bf53-d6c2-45f2-9788-7b5c3e04d48e"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -243,7 +257,7 @@ AND enqhdr.ENQUIRY_ID  =$P{ENQID}]]>
 				<reportElement x="0" y="62" width="555" height="1" uuid="031fd68b-57af-40ae-8432-ca9a584b0e3d"/>
 			</line>
 			<staticText>
-				<reportElement x="0" y="63" width="62" height="15" uuid="96f01932-e404-40dd-8da9-9009137f7508"/>
+				<reportElement x="3" y="63" width="62" height="15" uuid="96f01932-e404-40dd-8da9-9009137f7508"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>

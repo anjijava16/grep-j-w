@@ -1089,7 +1089,7 @@ public class SmsEnquiry extends BaseTransUI {
 	private void enqSpecResetfields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbspecstatus.setValue(cbspecstatus.getItemIds().iterator().next());
-		tfspeccode.setValue("");
+		tfspeccode.setValue(null);
 		tfspeccode.setComponentError(null);
 		taspecdesc.setValue("");
 		taspecdesc.setComponentError(null);
@@ -1217,7 +1217,7 @@ public class SmsEnquiry extends BaseTransUI {
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
 		cbBranch.setValue(branchId);
-		cbEnquiryStatus.setValue(null);
+		cbEnquiryStatus.setValue("Open");
 		tfEnquiryNo.setValue("");
 		tfEnquiryNo.setReadOnly(false);
 		lblNotification.setIcon(null);
@@ -1468,7 +1468,7 @@ public class SmsEnquiry extends BaseTransUI {
 		cbmodeofenquiry.setValue(null);
 		taRemarks.setValue("");
 		taRemarks.setComponentError(null);
-		cbEnquiryStatus.setValue(null);
+		cbEnquiryStatus.setValue("Open");
 		dfEnquiryDate.setValue(new Date());
 		dfDueDate.setValue(addDays(new Date(), 7));
 	}

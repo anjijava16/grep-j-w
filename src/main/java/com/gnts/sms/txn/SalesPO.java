@@ -1347,7 +1347,7 @@ public class SalesPO extends BaseTransUI {
 		new UploadDocumentUI(hlPODoc);
 		tfPONumber.setReadOnly(false);
 		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_NPONO ").get(0);
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_NPONO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				tfPONumber.setReadOnly(false);
 			} else {
@@ -1875,9 +1875,10 @@ public class SalesPO extends BaseTransUI {
 		if (!tfDiscountPer.getValue().equals("0")) {
 			BigDecimal discountamt = gerPercentageValue(new BigDecimal(tfDiscountPer.getValue()), basictotal);
 			tfDiscountValue.setValue(discountamt.toString());
-		} else {
-			tfDiscountValue.setValue("0");
+		} else if (!tfDiscountValue.getValue().equals("0")) {
+			tfDiscountValue.setValue(tfDiscountValue.getValue());
 		}
+		
 		BigDecimal discountTotal = basictotal.subtract(new BigDecimal(tfDiscountValue.getValue()));
 		tfDisToatal.setValue(discountTotal.toString());
 		BigDecimal packingvalue = gerPercentageValue(new BigDecimal(tfpackingPer.getValue()), discountTotal);

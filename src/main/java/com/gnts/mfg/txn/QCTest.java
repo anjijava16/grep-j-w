@@ -903,9 +903,9 @@ public class QCTest extends BaseTransUI {
 			qcTestHdr.setInspectiondate(pdInspectionDt.getValue());
 			qcTestHdr.setMaterialid((Long) cbMaterial.getValue());
 			qcTestHdr.setTestedby((Long) cbTestedBy.getValue());
-			qcTestHdr.setQctesttypeid((Long) cbTestType.getValue());
+			qcTestHdr.setQctesttypeid( Long.valueOf((String) cbTestType.getValue()));
 			qcTestHdr.setProductid(Long.valueOf(cbProduct.getValue().toString()));
-			qcTestHdr.setProddrawgid((Long) cbProductDrg.getValue());
+			qcTestHdr.setProddrawgid(Long.valueOf(cbProductDrg.getValue().toString()));
 			qcTestHdr.setProdserlno((String) tfPrdSlNo.getValue());
 			qcTestHdr.setSamplestested(Long.valueOf(tfSamplTst.getValue()));
 			qcTestHdr.setQtyfailed(Long.valueOf(tfQtyFailed.getValue()));

@@ -1352,7 +1352,7 @@ printDetailsback();			}
 	@Override
 	protected void resetSearchDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		cbStatus.setValue(null);
+		cbStatus.setValue("Progress");
 		cbEnqNo.setValue(null);
 		tfQuoteNumber.setValue("");
 		cbBranch.setValue(branchId);
@@ -1800,7 +1800,7 @@ printDetailsback();			}
 		tfGrandtotal.setValue("0");
 		tfFreightValue.setValue("0");
 		cbFreightTerms.setValue(null);
-		cbStatus.setValue(null);
+		cbStatus.setValue("Progress");
 		cbBranch.setValue(null);
 		cbQuotationType.setValue("Enquiry");
 		dfQuoteDt.setValue(new Date());
@@ -1816,7 +1816,6 @@ printDetailsback();			}
 		smsQuoteDtlList = new ArrayList<SmsQuoteDtlDM>();
 		tblsmsQuoteDtl.removeAllItems();
 		new UploadDocumentUI(hlquoteDoc);
-		cbStatus.setValue(null);
 		btnprintback.setVisible(false);
 
 	}
@@ -1925,7 +1924,9 @@ printDetailsback();			}
 	}
 	
 	private void addDefaultCommercialTerms() {
-		listCommercialTerms.clear();
+		
+		listCommercialTerms=new ArrayList<QuoteCommCondDM>();
+		
 		for (CompanyLookupDM companyLookupDM : serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 				"QUOTE_COMM")) {
 			try {
@@ -1946,7 +1947,7 @@ printDetailsback();			}
 	}
 	
 	private void addDefaultTechnicalTerms() {
-		listTechnicalTerms.clear();
+		listTechnicalTerms=new ArrayList<QuoteTechCondDM>();
 		for (CompanyLookupDM companyLookupDM : serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 				"QUOTE_TECH")) {
 			QuoteTechCondDM quoteTechCondDM = new QuoteTechCondDM();

@@ -1389,7 +1389,7 @@ public class SalesPO extends BaseTransUI {
 		editPODtl();
 		editPOHdr();
 		getCalculatedValues();
-		comments.loadsrch(true, null, null, null, null, poid, null, null, null, null, null, null, null);
+		comments.loadsrch(true, null, null, null, null, null, null, null, null, null, poid, null, null);
 	}
 	
 	@Override
@@ -1783,6 +1783,8 @@ public class SalesPO extends BaseTransUI {
 		cbPOType.setComponentError(null);
 		cbQuoteNo.setComponentError(null);
 		cbClient.setValue("");
+		listPOAccept = new ArrayList<SmsPOAcceptanceDM>();
+tblSmsAccept.removeAllItems();
 	}
 	
 	private void poDetailsResetFields() {

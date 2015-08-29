@@ -332,6 +332,7 @@ public class EmployeeAttendence extends BaseUI {
 	protected void addDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		resetFields();
+		assembleSearchLayout();
 		// remove the components in the search layout and input controls in the same container
 		hlUserInputLayout.removeAllComponents();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));

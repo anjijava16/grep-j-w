@@ -118,15 +118,15 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	// // User Input Components for PO Details
 	private ComboBox cbBranch, cbStatus, cbVendor, cbpoType;
 	private GERPComboBox cbQuoteRef;
-	private TextField tfversionNo, tfBasictotal, tfPaclingValue, tfPONo, tfPaymentTerms, tfFreightTerms,
-			tfWarrentyTerms, tfDelTerms;
+	private TextField tfversionNo, tfBasictotal, tfPaclingValue, tfPONo;
 	private TextField tfSubTotal;
 	private TextField tfquoteNum;
 	private TextField tfCstValue, tfSubTaxTotal, tfEDValue, tfHEDValue, tfCessValue, tfVatValue;
 	private TextField tfFreightValue, tfOtherValue, tfGrandtotal, tfvendorCode, tfpackingPer, tfVatPer, tfEDPer,
 			tfHEDPer, tfCessPer, tfCstPer, tfFreightPer, tfOtherPer;
-	private TextArea taRemark, taInvoiceOrd, taShpnAddr;
-	private CheckBox ckdutyexm, ckPdcRqu, ckCformRqu, ckcasePO;
+	private TextArea taRemark, taInvoiceOrd, taShpnAddr,tfPaymentTerms, tfFreightTerms,
+	tfWarrentyTerms, tfDelTerms;
+	private CheckBox ckdutyexm, ckPdcRqu, ckCformRqu;
 	private PopupDateField dfPODt, dfExpDt;
 	private Button btnsavepurQuote = new GERPButton("Add", "addbt", this);
 	private VerticalLayout hlPODoc = new VerticalLayout();
@@ -265,16 +265,16 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfOtherValue.setWidth("124");
 		tfGrandtotal = new GERPNumberField("Grand Total");
 		tfGrandtotal.setWidth("150");
-		tfPaymentTerms = new TextField("Payment Terms");
+		tfPaymentTerms = new TextArea("Payment Terms");
 		tfPaymentTerms.setWidth("150");
 		tfPaymentTerms.setHeight("30");
-		tfFreightTerms = new TextField("Freight Terms");
+		tfFreightTerms = new TextArea("Freight Terms");
 		tfFreightTerms.setWidth("150");
 		tfFreightTerms.setHeight("30");
-		tfWarrentyTerms = new TextField("Warrenty Terms");
+		tfWarrentyTerms = new TextArea("Warrenty Terms");
 		tfWarrentyTerms.setWidth("150");
 		tfWarrentyTerms.setHeight("30");
-		tfDelTerms = new TextField("Delivery Terms");
+		tfDelTerms = new TextArea("Delivery Terms");
 		tfDelTerms.setWidth("150");
 		tfDelTerms.setHeight("30");
 		ckdutyexm = new CheckBox("Duty Exempted");
@@ -298,7 +298,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			}
 		});
 		ckPdcRqu = new CheckBox("PDC Req");
-		ckcasePO = new CheckBox("Case PO");
+		// ckcasePO = new CheckBox("Case PO");
 		cbBranch = new ComboBox("Branch Name");
 		cbBranch.setWidth("150");
 		cbBranch.setItemCaptionPropertyId("branchName");
@@ -313,11 +313,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				if (cbVendor.getValue() != null) {
-					tfvendorCode.setReadOnly(false);
-					tfvendorCode.setValue(serviceVendor
-							.getVendorList(null, (Long) cbVendor.getValue(), companyid, null, null, null, stateId,
-									null, null, null, "P").get(0).getVendorCode());
-					tfvendorCode.setReadOnly(true);
+					// tfvendorCode.setReadOnly(false);
+					// tfvendorCode.setValue(serviceVendor
+					// .getVendorList(null, (Long) cbVendor.getValue(), companyid, null, null, null, stateId,
+					// null, null, null, "P").get(0).getVendorCode());
+					// tfvendorCode.setReadOnly(true);
 					Long VendorstateId = serviceVendor
 							.getVendorList(null, (Long) cbVendor.getValue(), null, null, null, null, stateId, null,
 									null, null, "P").get(0).getStateId();
@@ -336,7 +336,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		loadVendor();
 		tfvendorCode = new TextField("Vendor Code");
 		tfvendorCode.setWidth("150");
-		tfvendorCode.setReadOnly(true);
+		//tfvendorCode.setReadOnly(true);
 		cbpoType = new ComboBox("Order Type");
 		cbpoType.setItemCaptionPropertyId("lookupname");
 		cbpoType.setWidth("150");
@@ -365,9 +365,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				if (cbMaterial.getValue() != null) {
-					tfPOQnty.setReadOnly(false);
+					//tfPOQnty.setReadOnly(false);
 					tfPOQnty.setValue(((MmsQuoteDtlDM) cbMaterial.getValue()).getQuoteqty() + "");
-					tfPOQnty.setReadOnly(true);
+					//tfPOQnty.setReadOnly(true);
 					cbMatUom.setReadOnly(false);
 					tfUomTemp.setReadOnly(false);
 					cbMatUom.setValue(((MmsQuoteDtlDM) cbMaterial.getValue()).getMatuom() + "");
@@ -514,7 +514,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		flColumn1.addComponent(cbVendor);
 		flColumn1.addComponent(tfvendorCode);
 		flColumn1.addComponent(cbpoType);
-		flColumn1.addComponent(ckcasePO);
+		// flColumn1.addComponent(ckcasePO);
 		flColumn1.addComponent(tfPONo);
 		flColumn1.addComponent(dfPODt);
 		flColumn1.addComponent(tfversionNo);
@@ -749,6 +749,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	
 	private void loadPODetails() {
 		recordcnt = listPODetails.size();
+		tblPODetails.removeAllItems();
 		tblPODetails.setPageLength(3);
 		tblPODetails.setWidth("1000px");
 		beanpodtl = new BeanItemContainer<MmsPoDtlDM>(MmsPoDtlDM.class);
@@ -911,6 +912,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				dfPODt.setValue(poHdrDM.getPurchaseDate());
 				dfExpDt.setValue(poHdrDM.getExpDate1());
 				taRemark.setValue(poHdrDM.getPoRemark());
+				tfvendorCode.setValue(poHdrDM.getVendorCode());
 				tfversionNo.setValue(poHdrDM.getVersionNo().toString());
 				tfBasictotal.setReadOnly(false);
 				tfBasictotal.setValue(poHdrDM.getBasicTotal().toString());
@@ -1000,11 +1002,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				} else {
 					ckPdcRqu.setValue(false);
 				}
-				if (poHdrDM.getCasePoYn().equals("Y")) {
-					ckcasePO.setValue(true);
-				} else {
-					ckcasePO.setValue(false);
-				}
+				// if (poHdrDM.getCasePoYn().equals("Y")) {
+				// ckcasePO.setValue(true);
+				// } else {
+				// ckcasePO.setValue(false);
+				// }
 				cbStatus.setValue(poHdrDM.getpOStatus());
 				listPODetails = servicepodtl.getpodtllist(companyid, poId, branchId.toString(), null, null, "F");
 			}
@@ -1038,9 +1040,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 					cbMaterial.setValue(itemId);
 				}
 			}
-			tfPOQnty.setReadOnly(false);
+			//tfPOQnty.setReadOnly(false);
 			tfPOQnty.setValue(editmmspodtllist.getPoqty().toString());
-			tfPOQnty.setReadOnly(true);
+			//tfPOQnty.setReadOnly(true);
 			tfUnitRate.setValue(editmmspodtllist.getUnitrate().toString());
 			cbMatUom.setReadOnly(false);
 			cbMatUom.setValue(editmmspodtllist.getMaterialuom());
@@ -1247,6 +1249,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			poHdrDM.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
 			poHdrDM.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
 			poHdrDM.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
+			poHdrDM.setVendorCode(tfvendorCode.getValue());
 			if (tfPaymentTerms.getValue() != null) {
 				poHdrDM.setPaymentTerms((tfPaymentTerms.getValue().toString()));
 			}
@@ -1274,11 +1277,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			} else if (ckPdcRqu.getValue().equals(false)) {
 				poHdrDM.setpDCReqd("N");
 			}
-			if (ckcasePO.getValue().equals(true)) {
-				poHdrDM.setCasePoYn("Y");
-			} else if (ckcasePO.getValue().equals(false)) {
-				poHdrDM.setCasePoYn("N");
-			}
+			// if (ckcasePO.getValue().equals(true)) {
+			// poHdrDM.setCasePoYn("Y");
+			// } else if (ckcasePO.getValue().equals(false)) {
+			// poHdrDM.setCasePoYn("N");
+			// }
 			if (tfquoteNum.getValue() != null) {
 				poHdrDM.setQuoteId(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getQuoteId());
 			}
@@ -1351,9 +1354,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				}
 				poDtlDM.setMaterialid(((MmsQuoteDtlDM) cbMaterial.getValue()).getMaterialid());
 				poDtlDM.setMaterialname(((MmsQuoteDtlDM) cbMaterial.getValue()).getMaterialname());
-				tfPOQnty.setReadOnly(false);
+				//tfPOQnty.setReadOnly(false);
 				poDtlDM.setPoqty((Long.valueOf(tfPOQnty.getValue())));
-				tfPOQnty.setReadOnly(true);
+				//tfPOQnty.setReadOnly(true);
 				poDtlDM.setUnitrate((Long.valueOf(tfUnitRate.getValue())));
 				cbMatUom.setReadOnly(false);
 				poDtlDM.setMaterialuom(cbMatUom.getValue().toString());
@@ -1430,6 +1433,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfversionNo.setReadOnly(false);
 		tfversionNo.setValue("0");
 		tfquoteNum.setValue("");
+		tfvendorCode.setValue("");
 		tfPaymentTerms.setValue("");
 		tfPaclingValue.setReadOnly(false);
 		tfPaclingValue.setValue("0");
@@ -1457,7 +1461,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		cbVendor.setValue(null);
 		taInvoiceOrd.setValue("");
 		taShpnAddr.setValue("");
-		ckcasePO.setValue(false);
+		// ckcasePO.setValue(false);
 		cbpoType.setComponentError(null);
 		tfquoteNum.setComponentError(null);
 		cbMaterial.setContainerDataSource(null);
@@ -1468,9 +1472,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbMaterial.setValue(null);
 		cbMaterial.setComponentError(null);
-		tfPOQnty.setReadOnly(false);
+	//	tfPOQnty.setReadOnly(false);
 		tfPOQnty.setValue("0");
-		tfPOQnty.setReadOnly(true);
+	//	tfPOQnty.setReadOnly(true);
 		tfPOQnty.setComponentError(null);
 		tfUnitRate.setValue("0");
 		tfUnitRate.setComponentError(null);

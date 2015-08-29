@@ -528,24 +528,29 @@ public class DC extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<DcHdrDM> dcHdrList = new ArrayList<DcHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + ", " + cbStatus.getValue());
-		dcHdrList = serviceDCHdr.getMmsDcHdrList(null, tfDcNo.getValue(), null, null, null,
-				(String) cbDCType.getValue(), null, null, (String) cbStatus.getValue(), "F");
-		recordCnt = dcHdrList.size();
-		beanDcHdrDM = new BeanItemContainer<DcHdrDM>(DcHdrDM.class);
-		beanDcHdrDM.addAll(dcHdrList);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the DC. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanDcHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enqNo", "dcNo", "dcType", "techPerson", "commPerson",
-				"lastUpdateddt", "lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Enquiry No", "DC No", "DC Type", "Technical Person",
-				"Commercial Person", "Updated Date", "Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("dcId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<DcHdrDM> dcHdrList = new ArrayList<DcHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + ", " + cbStatus.getValue());
+			dcHdrList = serviceDCHdr.getMmsDcHdrList(null, tfDcNo.getValue(), null, null, null,
+					(String) cbDCType.getValue(), null, null, (String) cbStatus.getValue(), "F");
+			recordCnt = dcHdrList.size();
+			beanDcHdrDM = new BeanItemContainer<DcHdrDM>(DcHdrDM.class);
+			beanDcHdrDM.addAll(dcHdrList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the DC. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanDcHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enqNo", "dcNo", "dcType", "techPerson", "commPerson",
+					"lastUpdateddt", "lastUpdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Enquiry No", "DC No", "DC Type", "Technical Person",
+					"Commercial Person", "Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("dcId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadDCDtl() {
@@ -567,7 +572,7 @@ public class DC extends BaseTransUI {
 			tblDCDetails.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCntDtl);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -748,6 +753,7 @@ public class DC extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		tblDCDetails.setVisible(true);
 		// reset the input controls to default value
@@ -1011,7 +1017,7 @@ public class DC extends BaseTransUI {
 			tfDcNo.setReadOnly(false);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		resetFields();
 	}

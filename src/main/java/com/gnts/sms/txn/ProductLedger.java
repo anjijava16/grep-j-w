@@ -195,26 +195,31 @@ public class ProductLedger extends BaseUI {
 			cbProduct.setContainerDataSource(beanprod);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Load Product Ledger
 	private void loadSrchRslt() {
-		tblMstScrSrchRslt.removeAllItems();
-		List<ProductLedgerDM> listProductLedger = new ArrayList<ProductLedgerDM>();
-		listProductLedger = serviceProductLedger.getProductLedgerList((Long) cbProduct.getValue(),
-				(String) cbStockType.getValue(), productledgeId, (Long) cbBranch.getValue(), "F");
-		recordcnt = listProductLedger.size();
-		beanprodledger = new BeanItemContainer<ProductLedgerDM>(ProductLedgerDM.class);
-		beanprodledger.addAll(listProductLedger);
-		tblMstScrSrchRslt.setContainerDataSource(beanprodledger);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "productledgeId", "branchName", "prodname",
-				"productledgeDate", "stockType", "uom", "lastUpdateddt", "lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Product Name",
-				"Product Ledger Date", "Stock Type", "UOM", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("productledgeId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordcnt);
+		try {
+			tblMstScrSrchRslt.removeAllItems();
+			List<ProductLedgerDM> listProductLedger = new ArrayList<ProductLedgerDM>();
+			listProductLedger = serviceProductLedger.getProductLedgerList((Long) cbProduct.getValue(),
+					(String) cbStockType.getValue(), productledgeId, (Long) cbBranch.getValue(), "F");
+			recordcnt = listProductLedger.size();
+			beanprodledger = new BeanItemContainer<ProductLedgerDM>(ProductLedgerDM.class);
+			beanprodledger.addAll(listProductLedger);
+			tblMstScrSrchRslt.setContainerDataSource(beanprodledger);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "productledgeId", "branchName", "prodname",
+					"productledgeDate", "stockType", "uom", "lastUpdateddt", "lastUpdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Product Name",
+					"Product Ledger Date", "Stock Type", "UOM", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("productledgeId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordcnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override

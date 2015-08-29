@@ -125,7 +125,7 @@ public class RotoPlan extends BaseTransUI {
 	private TextField tfPlanRefNo, tfPlanHdrQty, tfShiftName, tfTargetQty, tfPlanDtlQty, tfArmno, tfNoofcycle;
 	private DateField dfRotoPlanDt;
 	private TextArea taRemark;
-	private Table tblRotoPlanDtls, tblShift, tblarm;
+	private Table tblRotoPlanDtls, tblShift, tblArmDtls;
 	private BeanItemContainer<RotoPlanHdrDM> beanRotoPlanHdrDM = null;
 	private BeanItemContainer<RotoPlanDtlDM> beanRotoPlandtlDM = null;
 	private BeanItemContainer<RotoPlanArmDM> beanRotoPlanarmDM = null;
@@ -234,18 +234,18 @@ public class RotoPlan extends BaseTransUI {
 				}
 			}
 		});
-		tblarm = new Table();
-		tblarm.setWidth("550");
-		tblarm.setPageLength(5);
-		tblarm.setFooterVisible(true);
-		tblarm.setSelectable(true);
-		tblarm.addItemClickListener(new ItemClickListener() {
+		tblArmDtls = new Table();
+		tblArmDtls.setWidth("550");
+		tblArmDtls.setPageLength(5);
+		tblArmDtls.setFooterVisible(true);
+		tblArmDtls.setSelectable(true);
+		tblArmDtls.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblarm.isSelected(event.getItemId())) {
-					tblarm.setImmediate(true);
+				if (tblArmDtls.isSelected(event.getItemId())) {
+					tblArmDtls.setImmediate(true);
 					btnAddArm.setCaption("Add");
 					btnAddArm.setStyleName("savebt");
 					resetRotoArmDetails();
@@ -401,45 +401,62 @@ public class RotoPlan extends BaseTransUI {
 	}
 	
 	private void loadRotoDtlList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		recordCnt = listRotoPlanDetail.size();
-		beanRotoPlandtlDM = new BeanItemContainer<RotoPlanDtlDM>(RotoPlanDtlDM.class);
-		beanRotoPlandtlDM.addAll(listRotoPlanDetail);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the AssemblyPlanslap. result set");
-		tblRotoPlanDtls.setContainerDataSource(beanRotoPlandtlDM);
-		tblRotoPlanDtls.setVisibleColumns(new Object[] { "clientname", "woNo", "productname", "plannedqty" });
-		tblRotoPlanDtls.setColumnHeaders(new String[] { "Client Name", "WO No.", "Product Name", "Planned Qty." });
-		tblRotoPlanDtls.setColumnAlignment("rotoplandtlId", Align.RIGHT);
-		tblRotoPlanDtls.setColumnFooter("plannedqty", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			recordCnt = listRotoPlanDetail.size();
+			beanRotoPlandtlDM = new BeanItemContainer<RotoPlanDtlDM>(RotoPlanDtlDM.class);
+			beanRotoPlandtlDM.addAll(listRotoPlanDetail);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the AssemblyPlanslap. result set");
+			tblRotoPlanDtls.setContainerDataSource(beanRotoPlandtlDM);
+			tblRotoPlanDtls.setVisibleColumns(new Object[] { "clientname", "woNo", "productname", "plannedqty" });
+			tblRotoPlanDtls.setColumnHeaders(new String[] { "Client Name", "WO No.", "Product Name", "Planned Qty." });
+			tblRotoPlanDtls.setColumnAlignment("rotoplandtlId", Align.RIGHT);
+			tblRotoPlanDtls.setColumnFooter("plannedqty", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadRotoArmList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		recordCnt = listRotoPlanArm.size();
-		beanRotoPlanarmDM = new BeanItemContainer<RotoPlanArmDM>(RotoPlanArmDM.class);
-		beanRotoPlanarmDM.addAll(listRotoPlanArm);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Rotoplan. result set");
-		tblarm.setContainerDataSource(beanRotoPlanarmDM);
-		tblarm.setVisibleColumns(new Object[] { "workOrdrNo", "prodname", "armNo", "noOfcycle" });
-		tblarm.setColumnHeaders(new String[] { "WO No", "Product Name", "Arm No", "No Of Cycle" });
-		tblarm.setColumnAlignment("rotoplanarmId", Align.RIGHT);
-		tblarm.setColumnFooter("prodname", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			recordCnt = listRotoPlanArm.size();
+			beanRotoPlanarmDM = new BeanItemContainer<RotoPlanArmDM>(RotoPlanArmDM.class);
+			beanRotoPlanarmDM.addAll(listRotoPlanArm);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Rotoplan. result set");
+			tblArmDtls.setContainerDataSource(beanRotoPlanarmDM);
+			tblArmDtls.setVisibleColumns(new Object[] { "workOrdrNo", "prodname", "armNo", "noOfcycle" });
+			tblArmDtls.setColumnHeaders(new String[] { "WO No", "Product Name", "Arm No", "No Of Cycle" });
+			tblArmDtls.setColumnAlignment("rotoplanarmId", Align.RIGHT);
+			tblArmDtls.setColumnFooter("prodname", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadShiftRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		hlHdrAndShift.addComponent(GERPPanelGenerator.createPanel(vlDtl));
-		recordShiftCnt = listRotoPlanShift.size();
-		beanRotoPlanShiftDM = new BeanItemContainer<RotoPlanShiftDM>(RotoPlanShiftDM.class);
-		beanRotoPlanShiftDM.addAll(listRotoPlanShift);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Rotoplan. result set");
-		tblShift.setContainerDataSource(beanRotoPlanShiftDM);
-		tblShift.setVisibleColumns(new Object[] { "shiftname", "empName", "targetqty" });
-		tblShift.setColumnHeaders(new String[] { "Shift Name", "Employee Name", "Target Qty" });
-		tblShift.setColumnAlignment("rotoplanshftId", Align.RIGHT);
-		tblShift.setColumnFooter("targetqty", "No.of Records : " + recordShiftCnt);
-		tblShift.setFooterVisible(true);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			hlHdrAndShift.addComponent(GERPPanelGenerator.createPanel(vlDtl));
+			recordShiftCnt = listRotoPlanShift.size();
+			beanRotoPlanShiftDM = new BeanItemContainer<RotoPlanShiftDM>(RotoPlanShiftDM.class);
+			beanRotoPlanShiftDM.addAll(listRotoPlanShift);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Rotoplan. result set");
+			tblShift.setContainerDataSource(beanRotoPlanShiftDM);
+			tblShift.setVisibleColumns(new Object[] { "shiftname", "empName", "targetqty" });
+			tblShift.setColumnHeaders(new String[] { "Shift Name", "Employee Name", "Target Qty" });
+			tblShift.setColumnAlignment("rotoplanshftId", Align.RIGHT);
+			tblShift.setColumnFooter("targetqty", "No.of Records : " + recordShiftCnt);
+			tblShift.setFooterVisible(true);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -547,7 +564,7 @@ public class RotoPlan extends BaseTransUI {
 		hlHdrslap.setSpacing(true);
 		hlHdrslap.setMargin(true);
 		vl.addComponent(hlArm);
-		vl.addComponent(tblarm);
+		vl.addComponent(tblArmDtls);
 		vlDtl.addComponent(hlHdrslap);
 		vlDtl.addComponent(tblRotoPlanDtls);
 		hlarmAndDtl.addComponent(GERPPanelGenerator.createPanel(vl));
@@ -571,25 +588,30 @@ public class RotoPlan extends BaseTransUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<RotoPlanHdrDM> listRotoPlanHdr = new ArrayList<RotoPlanHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + dfRotoPlanDt.getValue());
-		listRotoPlanHdr = serviceRotoplanhdr.getRotoPlanHdrDetails(null, companyid, dfRotoPlanDt.getValue(), cbStatus
-				.getValue().toString());
-		recordCnt = listRotoPlanHdr.size();
-		beanRotoPlanHdrDM = new BeanItemContainer<RotoPlanHdrDM>(RotoPlanHdrDM.class);
-		beanRotoPlanHdrDM.addAll(listRotoPlanHdr);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Roto plan. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanRotoPlanHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "rotoplanid", "rotoplanrefno", "rotoplandt",
-				"rotoplanstatus", "lastupdateddate", "lastupdatedby", });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Plan Ref No", " Roto Plan Date", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("rotoplanid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
-		tblMstScrSrchRslt.setPageLength(13);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<RotoPlanHdrDM> listRotoPlanHdr = new ArrayList<RotoPlanHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + dfRotoPlanDt.getValue());
+			listRotoPlanHdr = serviceRotoplanhdr.getRotoPlanHdrDetails(null, companyid, dfRotoPlanDt.getValue(),
+					cbStatus.getValue().toString());
+			recordCnt = listRotoPlanHdr.size();
+			beanRotoPlanHdrDM = new BeanItemContainer<RotoPlanHdrDM>(RotoPlanHdrDM.class);
+			beanRotoPlanHdrDM.addAll(listRotoPlanHdr);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Roto plan. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanRotoPlanHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "rotoplanid", "rotoplanrefno", "rotoplandt",
+					"rotoplanstatus", "lastupdateddate", "lastupdatedby", });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Plan Ref No", " Roto Plan Date", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("rotoplanid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+			tblMstScrSrchRslt.setPageLength(13);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editRotoPlanHdrDetails() {
@@ -707,9 +729,9 @@ public class RotoPlan extends BaseTransUI {
 	
 	private void editRotoPlanArm() {
 		hlUserInputLayout.setVisible(true);
-		if (tblarm.getValue() != null) {
+		if (tblArmDtls.getValue() != null) {
 			RotoPlanArmDM rotoPlanArmDM = new RotoPlanArmDM();
-			rotoPlanArmDM = beanRotoPlanarmDM.getItem(tblarm.getValue()).getBean();
+			rotoPlanArmDM = beanRotoPlanarmDM.getItem(tblArmDtls.getValue()).getBean();
 			rotoplanId = String.valueOf(rotoPlanArmDM.getRotoplanId());
 			Long uom = rotoPlanArmDM.getProductId();
 			Collection<?> uomid = cbArmProd.getItemIds();
@@ -838,7 +860,7 @@ public class RotoPlan extends BaseTransUI {
 			btnAddShift.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		resetRotoShiftFields();
 	}
@@ -847,8 +869,8 @@ public class RotoPlan extends BaseTransUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			RotoPlanArmDM rotoPlanArmObj = new RotoPlanArmDM();
-			if (tblarm.getValue() != null) {
-				rotoPlanArmObj = beanRotoPlanarmDM.getItem(tblarm.getValue()).getBean();
+			if (tblArmDtls.getValue() != null) {
+				rotoPlanArmObj = beanRotoPlanarmDM.getItem(tblArmDtls.getValue()).getBean();
 				listRotoPlanArm.remove(rotoPlanArmObj);
 			}
 			rotoPlanArmObj.setArmNo(Long.valueOf(tfArmno.getValue()));
@@ -869,7 +891,7 @@ public class RotoPlan extends BaseTransUI {
 			btnAddArm.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		resetRotoArmDetails();
 	}
@@ -905,7 +927,7 @@ public class RotoPlan extends BaseTransUI {
 			btnAddDtls.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		resetRotoDetailsFields();
 	}
@@ -1046,6 +1068,7 @@ public class RotoPlan extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		tblRotoPlanDtls.setVisible(true);
 	}
@@ -1153,7 +1176,7 @@ public class RotoPlan extends BaseTransUI {
 				serviceRotoplanshift.saveDetails(saveShift);
 			}
 			@SuppressWarnings("unchecked")
-			Collection<RotoPlanArmDM> colPlanArm = ((Collection<RotoPlanArmDM>) tblarm.getVisibleItemIds());
+			Collection<RotoPlanArmDM> colPlanArm = ((Collection<RotoPlanArmDM>) tblArmDtls.getVisibleItemIds());
 			for (RotoPlanArmDM save : (Collection<RotoPlanArmDM>) colPlanArm) {
 				save.setRotoplanId(Long.valueOf(rotoPlanHdrDM.getRotoplanid()));
 				serviceRotoplanarm.saveDetails(save);
@@ -1179,7 +1202,7 @@ public class RotoPlan extends BaseTransUI {
 			loadShiftRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1272,7 +1295,7 @@ public class RotoPlan extends BaseTransUI {
 		listRotoPlanArm = new ArrayList<RotoPlanArmDM>();
 		tblRotoPlanDtls.removeAllItems();
 		tblShift.removeAllItems();
-		tblarm.removeAllItems();
+		tblArmDtls.removeAllItems();
 	}
 	
 	/*
@@ -1384,32 +1407,47 @@ public class RotoPlan extends BaseTransUI {
 	}
 	
 	private void deleteShiftDetails() {
-		RotoPlanShiftDM removeShift = new RotoPlanShiftDM();
-		if (tblShift.getValue() != null) {
-			removeShift = beanRotoPlanShiftDM.getItem(tblShift.getValue()).getBean();
-			listRotoPlanShift.remove(removeShift);
-			resetRotoShiftFields();
-			loadShiftRslt();
+		try {
+			RotoPlanShiftDM removeShift = new RotoPlanShiftDM();
+			if (tblShift.getValue() != null) {
+				removeShift = beanRotoPlanShiftDM.getItem(tblShift.getValue()).getBean();
+				listRotoPlanShift.remove(removeShift);
+				resetRotoShiftFields();
+				loadShiftRslt();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void deleteArmDetails() {
-		RotoPlanArmDM removeArm = new RotoPlanArmDM();
-		if (tblarm.getValue() != null) {
-			removeArm = beanRotoPlanarmDM.getItem(tblarm.getValue()).getBean();
-			listRotoPlanArm.remove(removeArm);
-			resetRotoArmDetails();
-			loadRotoArmList();
+		try {
+			RotoPlanArmDM removeArm = new RotoPlanArmDM();
+			if (tblArmDtls.getValue() != null) {
+				removeArm = beanRotoPlanarmDM.getItem(tblArmDtls.getValue()).getBean();
+				listRotoPlanArm.remove(removeArm);
+				resetRotoArmDetails();
+				loadRotoArmList();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void deleteDetails() {
-		RotoPlanDtlDM remove = new RotoPlanDtlDM();
-		if (tblRotoPlanDtls.getValue() != null) {
-			remove = beanRotoPlandtlDM.getItem(tblRotoPlanDtls.getValue()).getBean();
-			listRotoPlanDetail.remove(remove);
-			resetRotoDetailsFields();
-			loadRotoDtlList();
+		try {
+			RotoPlanDtlDM remove = new RotoPlanDtlDM();
+			if (tblRotoPlanDtls.getValue() != null) {
+				remove = beanRotoPlandtlDM.getItem(tblRotoPlanDtls.getValue()).getBean();
+				listRotoPlanDetail.remove(remove);
+				resetRotoDetailsFields();
+				loadRotoDtlList();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

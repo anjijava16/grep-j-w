@@ -337,7 +337,7 @@ public class WorkOrder extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		/* TO DO : Check - Login user is approver or not */
 		if (name.equals("Approver")) {
@@ -397,7 +397,7 @@ public class WorkOrder extends BaseTransUI {
 						}
 					}
 					catch (Exception e) {
-						e.printStackTrace();
+						logger.info(e.getMessage());
 					}
 				}
 			}
@@ -436,7 +436,7 @@ public class WorkOrder extends BaseTransUI {
 						}
 					}
 					catch (Exception e) {
-						e.printStackTrace();
+						logger.info(e.getMessage());
 					}
 				}
 			}
@@ -1079,6 +1079,7 @@ public class WorkOrder extends BaseTransUI {
 					}
 				}
 				catch (Exception e) {
+					logger.info(e.getMessage());
 				}
 			}
 			resetWorkOrdDtl();
@@ -1154,7 +1155,7 @@ public class WorkOrder extends BaseTransUI {
 			btnsaveWrkOdrDtl.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1246,6 +1247,7 @@ public class WorkOrder extends BaseTransUI {
 				}
 			}
 			catch (Exception e) {
+				logger.info(e.getMessage());
 			}
 		} else if (cbwrkOdrType.getValue().equals("Sample Work Order")) {
 			try {
@@ -1259,6 +1261,7 @@ public class WorkOrder extends BaseTransUI {
 				}
 			}
 			catch (Exception e) {
+				logger.info(e.getMessage());
 			}
 		} else if (cbwrkOdrType.getValue().equals("Mold Manufacturing")) {
 			try {
@@ -1272,6 +1275,7 @@ public class WorkOrder extends BaseTransUI {
 				}
 			}
 			catch (Exception e) {
+				logger.info(e.getMessage());
 			}
 		}
 	}

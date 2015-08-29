@@ -121,28 +121,33 @@ public class TransactionType extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + "," + (String) cbStatus.getValue()
-				+ ", " + companyId + "Loading Search...");
-		List<TransactionTypeDM> listTransType = new ArrayList<TransactionTypeDM>();
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + "," + (String) cbStatus.getValue()
-				+ ", " + companyId);
-		listTransType = serviceTransType.getTransactionTypeList(companyId, tfTranstypeName.getValue(),
-				(String) cbStatus.getValue(), (String) cbCreditDebit.getValue(),null);
-		recordCnt = listTransType.size();
-		beanTransactionTypeDM = new BeanItemContainer<TransactionTypeDM>(TransactionTypeDM.class);
-		beanTransactionTypeDM.addAll(listTransType);
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + ",  Active ," + companyId
-				+ "Got the Transaction Type result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanTransactionTypeDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "transtypeid", "transtypename", "crdr", "transtypestatus",
-				"lastupdateddt", "lastupdatedby", });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Transaction Type", "Credit/Debit", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("transtypeid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+					+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + "," + (String) cbStatus.getValue()
+					+ ", " + companyId + "Loading Search...");
+			List<TransactionTypeDM> listTransType = new ArrayList<TransactionTypeDM>();
+			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+					+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + "," + (String) cbStatus.getValue()
+					+ ", " + companyId);
+			listTransType = serviceTransType.getTransactionTypeList(companyId, tfTranstypeName.getValue(),
+					(String) cbStatus.getValue(), (String) cbCreditDebit.getValue(), null);
+			recordCnt = listTransType.size();
+			beanTransactionTypeDM = new BeanItemContainer<TransactionTypeDM>(TransactionTypeDM.class);
+			beanTransactionTypeDM.addAll(listTransType);
+			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+					+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + ",  Active ," + companyId
+					+ "Got the Transaction Type result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanTransactionTypeDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "transtypeid", "transtypename", "crdr",
+					"transtypestatus", "lastupdateddt", "lastupdatedby", });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Transaction Type", "Credit/Debit", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("transtypeid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form

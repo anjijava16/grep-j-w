@@ -93,7 +93,7 @@ public class PurchasePoReceipt extends BaseUI {
 			.getBean("PurchasePODtl");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
-	private List<PurPoReceiptDtlDM> receiptDtlList = null;
+	private List<PurPoReceiptDtlDM> listRecptDtls = null;
 	private VerticalLayout hlevddDoc = new VerticalLayout();
 	private VerticalLayout hlrefDoc = new VerticalLayout();
 	// form layout for input controls
@@ -251,6 +251,7 @@ public class PurchasePoReceipt extends BaseUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		cbHdrStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WO_PLAN_HDR, BASEConstants.APPROVE_LVL);
 		taRejectReason = new TextArea("Reject Reason");
@@ -413,39 +414,44 @@ public class PurchasePoReceipt extends BaseUI {
 	
 	// Load Receipt Header
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<PurPoReceiptsHdrDM> list = new ArrayList<PurPoReceiptsHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + cbBranch.getValue() + ", " + cbPONo.getValue());
-		Long poNo = null;
-		if (cbPONo.getValue() != null) {
-			poNo = (((PurchasePOHdrDM) cbPONo.getValue()).getPoId());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<PurPoReceiptsHdrDM> list = new ArrayList<PurPoReceiptsHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + cbBranch.getValue() + ", " + cbPONo.getValue());
+			Long poNo = null;
+			if (cbPONo.getValue() != null) {
+				poNo = (((PurchasePOHdrDM) cbPONo.getValue()).getPoId());
+			}
+			list = servicePurPoReceiptHdr.getPurPoReceiptsHdrList(companyid, null, poNo, (Long) cbBranch.getValue(),
+					(String) cbHdrStatus.getValue(), tfLotNo.getValue(), "f");
+			recordCnt = list.size();
+			beanPurPoReceiptHdrDM = new BeanItemContainer<PurPoReceiptsHdrDM>(PurPoReceiptsHdrDM.class);
+			beanPurPoReceiptHdrDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the PurchaseEnquiry. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanPurPoReceiptHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "receiptId", "branchName", "lotNo", "projectStatus",
+					"lastUpdtDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setPageLength(15);
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Lot No.", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("receiptId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
-		list = servicePurPoReceiptHdr.getPurPoReceiptsHdrList(companyid, null, poNo, (Long) cbBranch.getValue(),
-				(String) cbHdrStatus.getValue(), tfLotNo.getValue(), "f");
-		recordCnt = list.size();
-		beanPurPoReceiptHdrDM = new BeanItemContainer<PurPoReceiptsHdrDM>(PurPoReceiptsHdrDM.class);
-		beanPurPoReceiptHdrDM.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the PurchaseEnquiry. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanPurPoReceiptHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "receiptId", "branchName", "lotNo", "projectStatus",
-				"lastUpdtDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setPageLength(15);
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Lot No.", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("receiptId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Receipt Detail
 	private void loadReceiptDtl() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			recordCnt = receiptDtlList.size();
+			recordCnt = listRecptDtls.size();
 			beanPurPoReceiptDtlDM = new BeanItemContainer<PurPoReceiptDtlDM>(PurPoReceiptDtlDM.class);
-			beanPurPoReceiptDtlDM.addAll(receiptDtlList);
+			beanPurPoReceiptDtlDM.addAll(listRecptDtls);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the dPurDt. result set");
 			tblReceiptDtl.setContainerDataSource(beanPurPoReceiptDtlDM);
@@ -457,7 +463,7 @@ public class PurchasePoReceipt extends BaseUI {
 			tblReceiptDtl.setPageLength(6);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -505,20 +511,25 @@ public class PurchasePoReceipt extends BaseUI {
 	}
 	
 	private void savePODetails() {
-		receiptDtlList = new ArrayList<PurPoReceiptDtlDM>();
-		for (PurchasePODtlDM purchasePOrecDtlDM : servicePurchasePODtl.getPurchaseOrdDtlList(null,
-				((PurchasePOHdrDM) cbPONo.getValue()).getPoId(), null, null)) {
-			PurPoReceiptDtlDM purchasePODtlDM = new PurPoReceiptDtlDM();
-			purchasePODtlDM.setProductId(purchasePOrecDtlDM.getProductId());
-			purchasePODtlDM.setProductName(purchasePOrecDtlDM.getProductName());
-			purchasePODtlDM.setReceiptQty(purchasePOrecDtlDM.getPoQty());
-			purchasePODtlDM.setProductUom(purchasePOrecDtlDM.getMaterialUom());
-			purchasePODtlDM.setRecpDtlStatus("Active");
-			purchasePODtlDM.setLastupdatedby(username);
-			purchasePODtlDM.setLastupdateddt(DateUtils.getcurrentdate());
-			receiptDtlList.add(purchasePODtlDM);
+		try {
+			listRecptDtls = new ArrayList<PurPoReceiptDtlDM>();
+			for (PurchasePODtlDM purchasePOrecDtlDM : servicePurchasePODtl.getPurchaseOrdDtlList(null,
+					((PurchasePOHdrDM) cbPONo.getValue()).getPoId(), null, null)) {
+				PurPoReceiptDtlDM purchasePODtlDM = new PurPoReceiptDtlDM();
+				purchasePODtlDM.setProductId(purchasePOrecDtlDM.getProductId());
+				purchasePODtlDM.setProductName(purchasePOrecDtlDM.getProductName());
+				purchasePODtlDM.setReceiptQty(purchasePOrecDtlDM.getPoQty());
+				purchasePODtlDM.setProductUom(purchasePOrecDtlDM.getMaterialUom());
+				purchasePODtlDM.setRecpDtlStatus("Active");
+				purchasePODtlDM.setLastupdatedby(username);
+				purchasePODtlDM.setLastupdateddt(DateUtils.getcurrentdate());
+				listRecptDtls.add(purchasePODtlDM);
+			}
+			loadReceiptDtl();
 		}
-		loadReceiptDtl();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadPoNo() {
@@ -590,7 +601,7 @@ public class PurchasePoReceipt extends BaseUI {
 			} else {
 				new UploadDocumentUI(hlrefDoc);
 			}
-			receiptDtlList = servicePurPoReceiptDtl.getsaveReceiptDtlList(null, null, null, receiptId);
+			listRecptDtls = servicePurPoReceiptDtl.getsaveReceiptDtlList(null, null, null, receiptId);
 		}
 		loadReceiptDtl();
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, receiptId, null, null, null, null,
@@ -690,7 +701,7 @@ public class PurchasePoReceipt extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
 				null);
@@ -837,7 +848,7 @@ public class PurchasePoReceipt extends BaseUI {
 			receiptId = 0L;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -870,12 +881,12 @@ public class PurchasePoReceipt extends BaseUI {
 			fio.read(fileContent);
 			fio.close();
 			receiptDtlDM.setReceiptEvd(fileContents);
-			receiptDtlList.add(receiptDtlDM);
+			listRecptDtls.add(receiptDtlDM);
 			loadReceiptDtl();
 			receiptResetFields();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -905,7 +916,7 @@ public class PurchasePoReceipt extends BaseUI {
 	@Override
 	protected void resetFields() {
 		cbBranch.setValue(null);
-		receiptDtlList = new ArrayList<PurPoReceiptDtlDM>();
+		listRecptDtls = new ArrayList<PurPoReceiptDtlDM>();
 		tblReceiptDtl.removeAllItems();
 		cbBranch.setValue(branchId);
 		cbBranch.setComponentError(null);
@@ -929,7 +940,7 @@ public class PurchasePoReceipt extends BaseUI {
 		PurPoReceiptDtlDM save = new PurPoReceiptDtlDM();
 		if (tblReceiptDtl.getValue() != null) {
 			save = beanPurPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
-			receiptDtlList.remove(save);
+			listRecptDtls.remove(save);
 			receiptResetFields();
 			loadReceiptDtl();
 			btndelete.setEnabled(false);

@@ -315,9 +315,14 @@ public class PNCCenters extends BaseUI {
 	 * For Load Active Account Type Details based on Company
 	 */
 	private void loadDepartmentList() {
-		BeanContainer<Long, DepartmentDM> bean = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		bean.setBeanIdProperty("deptid");
-		bean.addAll(serviceDepartment.getDepartmentList(companyId, null, "Active", "P"));
-		lSDeptName.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, DepartmentDM> bean = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			bean.setBeanIdProperty("deptid");
+			bean.addAll(serviceDepartment.getDepartmentList(companyId, null, "Active", "P"));
+			lSDeptName.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

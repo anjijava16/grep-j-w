@@ -430,7 +430,7 @@ public class Assembly extends BaseTransUI {
 			tblAsmDtl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCntDtl);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -450,7 +450,7 @@ public class Assembly extends BaseTransUI {
 			tblAsmShift.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordShiftCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -552,6 +552,7 @@ public class Assembly extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		tblAsmDtl.setVisible(true);
 	}
@@ -802,7 +803,7 @@ public class Assembly extends BaseTransUI {
 			loadShiftRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -831,7 +832,7 @@ public class Assembly extends BaseTransUI {
 			btnAsmDtl.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		asmblDtlResetFields();
 	}
@@ -863,7 +864,7 @@ public class Assembly extends BaseTransUI {
 			btnAsmShift.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		asmblShitResetFields();
 	}

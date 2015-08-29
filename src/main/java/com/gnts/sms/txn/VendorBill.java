@@ -86,7 +86,7 @@ public class VendorBill extends BaseTransUI {
 			.getBean("vendorbillheader");
 	private VendorBillDtlService servicevendorBillDtl = (VendorBillDtlService) SpringContextHelper
 			.getBean("vendorbillDtl");
-	private PurchasePOHdrService servicepurchaePOHdr = (PurchasePOHdrService) SpringContextHelper
+	private PurchasePOHdrService servicePurchasePOHdr = (PurchasePOHdrService) SpringContextHelper
 			.getBean("PurchasePOhdr");
 	private PurchasePODtlService servicePurchasePODtl = (PurchasePODtlService) SpringContextHelper
 			.getBean("PurchasePODtl");
@@ -663,7 +663,7 @@ public class VendorBill extends BaseTransUI {
 		try {
 			BeanItemContainer<PurchasePOHdrDM> beanPurPoDM = new BeanItemContainer<PurchasePOHdrDM>(
 					PurchasePOHdrDM.class);
-			beanPurPoDM.addAll(servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, null, null, null, null));
+			beanPurPoDM.addAll(servicePurchasePOHdr.getPurchaseOrdHdrList(companyid, null, null, null, null));
 			cbpoNo.setContainerDataSource(beanPurPoDM);
 		}
 		catch (Exception e) {

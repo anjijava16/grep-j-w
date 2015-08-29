@@ -124,27 +124,33 @@ public class ProductStock extends BaseUI {
 			cbProduct.setContainerDataSource(beanprod);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Load product stock
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<ProductStockDM> listProductstock = new ArrayList<ProductStockDM>();
-		listProductstock = serviceProdStock.getProductStockList((Long) cbProduct.getValue(),
-				(String) cbStocktype.getValue(), productStockId, (Long) cbBranch.getValue(), "F");
-		recordcnt = listProductstock.size();
-		beanproductstock = new BeanItemContainer<ProductStockDM>(ProductStockDM.class);
-		beanproductstock.addAll(listProductstock);
-		tblMstScrSrchRslt.setContainerDataSource(beanproductstock);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "productStockId", "branchName", "prodname", "stockType",
-				"currentStock", "parkedStock", "effectiveStock", "uom", "lastUpdateddt", "lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch", "Product", "Stock Type", "Current Stock",
-				"Parked Stock", "Effective stock", "UOM", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("productStockId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordcnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<ProductStockDM> listProductstock = new ArrayList<ProductStockDM>();
+			listProductstock = serviceProdStock.getProductStockList((Long) cbProduct.getValue(),
+					(String) cbStocktype.getValue(), productStockId, (Long) cbBranch.getValue(), "F");
+			recordcnt = listProductstock.size();
+			beanproductstock = new BeanItemContainer<ProductStockDM>(ProductStockDM.class);
+			beanproductstock.addAll(listProductstock);
+			tblMstScrSrchRslt.setContainerDataSource(beanproductstock);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "productStockId", "branchName", "prodname", "stockType",
+					"currentStock", "parkedStock", "effectiveStock", "uom", "lastUpdateddt", "lastUpdatedby" });
+			tblMstScrSrchRslt
+					.setColumnHeaders(new String[] { "Ref.Id", "Branch", "Product", "Stock Type", "Current Stock",
+							"Parked Stock", "Effective stock", "UOM", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("productStockId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordcnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -162,7 +168,7 @@ public class ProductStock extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

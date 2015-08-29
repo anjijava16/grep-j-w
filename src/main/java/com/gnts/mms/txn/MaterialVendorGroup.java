@@ -53,7 +53,7 @@ import com.vaadin.ui.UI;
 
 public class MaterialVendorGroup extends BaseUI {
 	// Bean Creation
-	private MaterialVendorGrpService servicegrpmaterialvendor = (MaterialVendorGrpService) SpringContextHelper
+	private MaterialVendorGrpService serviceVendorGrup = (MaterialVendorGrpService) SpringContextHelper
 			.getBean("materialvendorgrp");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
@@ -153,23 +153,28 @@ public class MaterialVendorGroup extends BaseUI {
 	 * loadSrchRslt()-->this function is used for load the search result to table
 	 */
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<MaterialVendorGrpDM> list = new ArrayList<MaterialVendorGrpDM>();
-		list = servicegrpmaterialvendor.getMaterialVendorGrpList(null, (Long) cbMaterial.getValue(), null,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = list.size();
-		beanMaterialVendorGrpDM = new BeanItemContainer<MaterialVendorGrpDM>(MaterialVendorGrpDM.class);
-		beanMaterialVendorGrpDM.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the vendorGrpList. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanMaterialVendorGrpDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialVendorGrpId", "materialName", "vendorName",
-				"vendorGrpStatus", "lastUpdtDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Material Name", "Vendor Name", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("materialVendorGrpId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<MaterialVendorGrpDM> list = new ArrayList<MaterialVendorGrpDM>();
+			list = serviceVendorGrup.getMaterialVendorGrpList(null, (Long) cbMaterial.getValue(), null,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanMaterialVendorGrpDM = new BeanItemContainer<MaterialVendorGrpDM>(MaterialVendorGrpDM.class);
+			beanMaterialVendorGrpDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the vendorGrpList. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanMaterialVendorGrpDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialVendorGrpId", "materialName", "vendorName",
+					"vendorGrpStatus", "lastUpdtDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Material Name", "Vendor Name", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("materialVendorGrpId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to reset the fields
@@ -361,14 +366,14 @@ public class MaterialVendorGroup extends BaseUI {
 					}
 					materialvendorgrpObj.setLastUpdtDate(DateUtils.getcurrentdate());
 					materialvendorgrpObj.setLastUpdatedBy(username);
-					servicegrpmaterialvendor.saveAndUpdate(materialvendorgrpObj);
+					serviceVendorGrup.saveAndUpdate(materialvendorgrpObj);
 				}
 			}
 			resetFields();
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

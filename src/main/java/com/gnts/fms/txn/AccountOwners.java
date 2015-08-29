@@ -57,7 +57,7 @@ public class AccountOwners extends BaseUI {
 	private AccountOwnersService serviceAccountOwner = (AccountOwnersService) SpringContextHelper
 			.getBean("accountowner");
 	private AccountsService serviceAccount = (AccountsService) SpringContextHelper.getBean("accounts");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	// form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3;
 	// Parent layout for all the input controls
@@ -144,32 +144,37 @@ public class AccountOwners extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Account Owners Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading Search...");
-		List<AccountOwnersDM> listACOwners = new ArrayList<AccountOwnersDM>();
-		logger.info("" + "Account Owners : Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Search Parameters are " + companyid + ", " + cbEmpName.getValue() + ", " + cbStatus.getValue());
-		listACOwners = serviceAccountOwner.getAccountOwnerList(null, (Long) cbAccountNo.getValue(),
-				(Long) cbEmpName.getValue(), (String) cbStatus.getValue());
-		recordCnt = listACOwners.size();
-		beanAccountOwnerDM = new BeanItemContainer<AccountOwnersDM>(AccountOwnersDM.class);
-		beanAccountOwnerDM.addAll(listACOwners);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the ParentCategory. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanAccountOwnerDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "accOwnerId", "accountno", "employeename",
-				"acctOwnerstatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Account Number", "Employee Name", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("accOwnerId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Account Owners Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Search...");
+			List<AccountOwnersDM> listACOwners = new ArrayList<AccountOwnersDM>();
+			logger.info("" + "Account Owners : Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Search Parameters are " + companyid + ", " + cbEmpName.getValue() + ", " + cbStatus.getValue());
+			listACOwners = serviceAccountOwner.getAccountOwnerList(null, (Long) cbAccountNo.getValue(),
+					(Long) cbEmpName.getValue(), (String) cbStatus.getValue());
+			recordCnt = listACOwners.size();
+			beanAccountOwnerDM = new BeanItemContainer<AccountOwnersDM>(AccountOwnersDM.class);
+			beanAccountOwnerDM.addAll(listACOwners);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the ParentCategory. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanAccountOwnerDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "accOwnerId", "accountno", "employeename",
+					"acctOwnerstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Account Number", "Employee Name", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("accOwnerId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadEmployeeList() {
 		try {
 			BeanContainer<Long, EmployeeDM> beanAccountNo = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanAccountNo.setBeanIdProperty("employeeid");
-			beanAccountNo.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+			beanAccountNo.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
 					null, null, "P"));
 			cbEmpName.setContainerDataSource(beanAccountNo);
 		}
@@ -191,28 +196,34 @@ public class AccountOwners extends BaseUI {
 	}
 	
 	private void editAccountOwner() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			AccountOwnersDM accountOwnersDM = new AccountOwnersDM();
-			accountOwnersDM = beanAccountOwnerDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			String accno = accountOwnersDM.getAccountno();
-			Collection<?> accnos = cbAccountNo.getItemIds();
-			for (Iterator<?> iteratorclient = accnos.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbAccountNo.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				AccountsDM matObj = (AccountsDM) itemclient.getBean();
-				if (accno != null && accno.equals(matObj.getAccountno())) {
-					cbAccountNo.setValue(itemIdClient);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				AccountOwnersDM accountOwnersDM = new AccountOwnersDM();
+				accountOwnersDM = beanAccountOwnerDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				String accno = accountOwnersDM.getAccountno();
+				Collection<?> accnos = cbAccountNo.getItemIds();
+				for (Iterator<?> iteratorclient = accnos.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbAccountNo.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					AccountsDM matObj = (AccountsDM) itemclient.getBean();
+					if (accno != null && accno.equals(matObj.getAccountno())) {
+						cbAccountNo.setValue(itemIdClient);
+					}
+				}
+				if (accountOwnersDM.getEmpid() != null) {
+					cbEmpName.setValue(accountOwnersDM.getEmpid());
+				}
+				if (accountOwnersDM.getAcctOwnerstatus() != null) {
+					cbStatus.setValue(accountOwnersDM.getAcctOwnerstatus());
 				}
 			}
-			if (accountOwnersDM.getEmpid() != null) {
-				cbEmpName.setValue(accountOwnersDM.getEmpid());
-			}
-			if (accountOwnersDM.getAcctOwnerstatus() != null) {
-				cbStatus.setValue(accountOwnersDM.getAcctOwnerstatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

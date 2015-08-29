@@ -210,6 +210,7 @@ public class AccountPayables extends BaseUI {
 			cbBranchName.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -221,6 +222,7 @@ public class AccountPayables extends BaseUI {
 			cbAccountReference.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -390,8 +392,7 @@ public class AccountPayables extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			logger.info("Save Method------------------------->" + e);
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

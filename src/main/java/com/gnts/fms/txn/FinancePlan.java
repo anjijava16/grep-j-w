@@ -223,25 +223,31 @@ public class FinancePlan extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<FinancePlanDM> listFinPlan = new ArrayList<FinancePlanDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + tfFpDescription.getValue() + ", " + (String) cbStatus.getValue());
-		listFinPlan = serviceFinancePlan.getFinancePlanList(null, companyId, tfFpDescription.getValue(), null,
-				(Long) cbDepartmentName.getValue(), null, (String) cbStatus.getValue());
-		recordCnt = listFinPlan.size();
-		beansFinancePlanDM = new BeanItemContainer<FinancePlanDM>(FinancePlanDM.class);
-		beansFinancePlanDM.addAll(listFinPlan);
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Got the Account List result set");
-		tblMstScrSrchRslt.setContainerDataSource(beansFinancePlanDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "fpid", "fpdesc", "deptname", "fpstatus", "lastupdateddt",
-				"lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Fin.Plan Description", "Department Name",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("fpid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records:" + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<FinancePlanDM> listFinPlan = new ArrayList<FinancePlanDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Search Parameters are " + companyId + ", " + tfFpDescription.getValue() + ", "
+					+ (String) cbStatus.getValue());
+			listFinPlan = serviceFinancePlan.getFinancePlanList(null, companyId, tfFpDescription.getValue(), null,
+					(Long) cbDepartmentName.getValue(), null, (String) cbStatus.getValue());
+			recordCnt = listFinPlan.size();
+			beansFinancePlanDM = new BeanItemContainer<FinancePlanDM>(FinancePlanDM.class);
+			beansFinancePlanDM.addAll(listFinPlan);
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Got the Account List result set");
+			tblMstScrSrchRslt.setContainerDataSource(beansFinancePlanDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "fpid", "fpdesc", "deptname", "fpstatus",
+					"lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Fin.Plan Description", "Department Name",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("fpid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records:" + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// For Load Active Payment mode Details based on Company
@@ -255,6 +261,7 @@ public class FinancePlan extends BaseUI {
 			cbFpCategory.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -267,6 +274,7 @@ public class FinancePlan extends BaseUI {
 			cbDepartmentName.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -280,6 +288,7 @@ public class FinancePlan extends BaseUI {
 			cbOwnerName.setContainerDataSource(employeebeans);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -294,6 +303,7 @@ public class FinancePlan extends BaseUI {
 			cbTransactionType.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -306,6 +316,7 @@ public class FinancePlan extends BaseUI {
 			cbProjectName.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -318,6 +329,7 @@ public class FinancePlan extends BaseUI {
 			cbCurrency.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -330,6 +342,7 @@ public class FinancePlan extends BaseUI {
 			cbBranchName.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -537,8 +550,7 @@ public class FinancePlan extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			logger.info("Save Method------------------------->" + e);
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

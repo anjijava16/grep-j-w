@@ -226,7 +226,7 @@ public class WorkOrderPlan extends BaseTransUI {
 					loadSrchWrkOdrPlnMtrlDtlRslt(false);
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					logger.info(e.getMessage());
 				}
 			}
 		});
@@ -645,6 +645,7 @@ public class WorkOrderPlan extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		btnsaveWrkOdrPlDtl.setCaption("Add");
 		tblWrkOrdPlnDtl.setVisible(true);
@@ -785,6 +786,7 @@ public class WorkOrderPlan extends BaseTransUI {
 					}
 				}
 				catch (Exception e) {
+					logger.info(e.getMessage());
 				}
 			}
 			// comment.s

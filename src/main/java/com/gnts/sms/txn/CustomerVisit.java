@@ -423,23 +423,28 @@ public class CustomerVisit extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		tblMstScrSrchRslt.setPageLength(14);
-		List<CustomerVisitHdrDM> listVisitHdrDM = new ArrayList<CustomerVisitHdrDM>();
-		listVisitHdrDM = serviceCustomerVisitHdr.getCustomerVisitHdrList(null, null, null, null, null, "F");
-		recordCnt = listVisitHdrDM.size();
-		beanCustomerVisitHdrDM = new BeanItemContainer<CustomerVisitHdrDM>(CustomerVisitHdrDM.class);
-		beanCustomerVisitHdrDM.addAll(listVisitHdrDM);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Customer Visit result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanCustomerVisitHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "cusVisId", "cusVisNo", "visitDt", "custName", "custCity",
-				"personNo", "purposeVisit", "custHdrStatus", "lastUpdateddt", "lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Visit Id", "Ref. No", "Visit Date", "Customer", "City",
-				"No of Persons", "Purpose", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("cusVisId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			tblMstScrSrchRslt.setPageLength(14);
+			List<CustomerVisitHdrDM> listVisitHdrDM = new ArrayList<CustomerVisitHdrDM>();
+			listVisitHdrDM = serviceCustomerVisitHdr.getCustomerVisitHdrList(null, null, null, null, null, "F");
+			recordCnt = listVisitHdrDM.size();
+			beanCustomerVisitHdrDM = new BeanItemContainer<CustomerVisitHdrDM>(CustomerVisitHdrDM.class);
+			beanCustomerVisitHdrDM.addAll(listVisitHdrDM);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Customer Visit result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanCustomerVisitHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "cusVisId", "cusVisNo", "visitDt", "custName",
+					"custCity", "personNo", "purposeVisit", "custHdrStatus", "lastUpdateddt", "lastUpdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Visit Id", "Ref. No", "Visit Date", "Customer", "City",
+					"No of Persons", "Purpose", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("cusVisId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editCustVisitHdrDetails() {
@@ -572,6 +577,7 @@ public class CustomerVisit extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -630,7 +636,7 @@ public class CustomerVisit extends BaseTransUI {
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		finally {
 			try {

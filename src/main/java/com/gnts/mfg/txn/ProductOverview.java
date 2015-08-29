@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
+import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.ProductDM;
 import com.gnts.base.service.mst.ProductService;
 import com.gnts.erputil.components.GERPButton;
@@ -183,7 +184,7 @@ public class ProductOverview implements ClickListener {
 	private TextField tfSignOffBy = new TextField("Signoff by");
 	// for Marketing Details
 	private TextField tfQuoteNumber = new TextField();
-	
+	private Logger logger = Logger.getLogger(ProductOverview.class);
 	public ProductOverview() {
 		// TODO Auto-generated constructor stub
 		if (UI.getCurrent().getSession().getAttribute("screenName") != null) {
@@ -732,7 +733,7 @@ public class ProductOverview implements ClickListener {
 					"P").get(0);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		if (rotoCheckDtlDM != null) {
 			ProductDM productDM = null;
@@ -741,7 +742,7 @@ public class ProductOverview implements ClickListener {
 						null, "F").get(0);
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				logger.info(e.getMessage());
 			}
 			if (productDM != null) {
 				if (productDM.getProdimg() != null) {
@@ -750,6 +751,7 @@ public class ProductOverview implements ClickListener {
 								productDM.getProductcode())));
 					}
 					catch (Exception e) {
+						logger.info(e.getMessage());
 					}
 				}
 				tfProductCode.setValue(productDM.getProductcode());
@@ -770,27 +772,27 @@ public class ProductOverview implements ClickListener {
 							getQuoteDetails(workOrderHdrDM.getEnquiryId());
 						}
 						catch (Exception e) {
-							e.printStackTrace();
+							logger.info(e.getMessage());
 						}
 						try {
 							poid = getPODetails(workOrderHdrDM.getEnquiryId());
 						}
 						catch (Exception e) {
-							e.printStackTrace();
+							logger.info(e.getMessage());
 						}
 						try {
 							getInvoiceDetails(poid);
 						}
 						catch (Exception e) {
-							e.printStackTrace();
+							logger.info(e.getMessage());
 						}
 					}
 					catch (Exception e) {
-						e.printStackTrace();
+						logger.info(e.getMessage());
 					}
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					logger.info(e.getMessage());
 				}
 			}
 		} else {
@@ -817,7 +819,7 @@ public class ProductOverview implements ClickListener {
 			loadEnquirySpec(enquiryId, enquiryDtlDM.getEnquirydtlid());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -839,7 +841,7 @@ public class ProductOverview implements ClickListener {
 					"Enquiry Specification Status", "Last Updated Date", "Last Updated By" });
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -863,7 +865,7 @@ public class ProductOverview implements ClickListener {
 			tblEnquiryWorkflow.setColumnFooter("lastUpdatedBy", "No.of Records : " + listWorkflow.size());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -884,6 +886,7 @@ public class ProductOverview implements ClickListener {
 			tblQATestHdr.setColumnAlignment("qatestHdrid", Align.RIGHT);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -901,6 +904,7 @@ public class ProductOverview implements ClickListener {
 			tblQCTestDetails.setColumnAlignment("qctestid", Align.RIGHT);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -913,6 +917,7 @@ public class ProductOverview implements ClickListener {
 			dfQuoteDate.setValue(quoteHdrDM.getQuoteDate());
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -937,6 +942,7 @@ public class ProductOverview implements ClickListener {
 			dfInvoiceDate.setValue(invoiceHdrDM.getInvoiceDate());
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

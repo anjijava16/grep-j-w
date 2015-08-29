@@ -232,26 +232,31 @@ public class AccountReceivables extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<AccountReceivablesDM> listACReceivable = new ArrayList<AccountReceivablesDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbBranchName.getValue() + " , " + tfInvoiceNo.getValue() + ", "
-				+ (String) cbStatus.getValue());
-		listACReceivable = serviceAccountReceivables.getAccountsReceivablesList(companyId, tfInvoiceNo.getValue(),
-				(String) cbStatus.getValue(), (Long) cbBranchName.getValue(), null);
-		recordCnt = listACReceivable.size();
-		beansAccountReceivablesDM = new BeanItemContainer<AccountReceivablesDM>(AccountReceivablesDM.class);
-		beansAccountReceivablesDM.addAll(listACReceivable);
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Got the Account Payables List result set");
-		tblMstScrSrchRslt.setContainerDataSource(beansAccountReceivablesDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "accrcbleId", "branchName", "recbleStatus",
-				"lastUpadatedDt", "lastUpadatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("accrcbleId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpadatedBy", "No.of Records:" + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<AccountReceivablesDM> listACReceivable = new ArrayList<AccountReceivablesDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Search Parameters are " + companyId + ", " + (Long) cbBranchName.getValue() + " , "
+					+ tfInvoiceNo.getValue() + ", " + (String) cbStatus.getValue());
+			listACReceivable = serviceAccountReceivables.getAccountsReceivablesList(companyId, tfInvoiceNo.getValue(),
+					(String) cbStatus.getValue(), (Long) cbBranchName.getValue(), null);
+			recordCnt = listACReceivable.size();
+			beansAccountReceivablesDM = new BeanItemContainer<AccountReceivablesDM>(AccountReceivablesDM.class);
+			beansAccountReceivablesDM.addAll(listACReceivable);
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Got the Account Payables List result set");
+			tblMstScrSrchRslt.setContainerDataSource(beansAccountReceivablesDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "accrcbleId", "branchName", "recbleStatus",
+					"lastUpadatedDt", "lastUpadatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("accrcbleId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpadatedBy", "No.of Records:" + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// For Load Active Branch Details based on Company
@@ -263,6 +268,7 @@ public class AccountReceivables extends BaseUI {
 			cbBranchName.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -274,6 +280,7 @@ public class AccountReceivables extends BaseUI {
 			cbAccountReference.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -440,8 +447,7 @@ public class AccountReceivables extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			logger.info("Save Method------------------------->" + e);
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -493,6 +499,7 @@ public class AccountReceivables extends BaseUI {
 			cbInvoice.setContainerDataSource(beansmsenqHdr);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

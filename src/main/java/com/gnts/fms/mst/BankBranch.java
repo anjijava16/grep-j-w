@@ -255,7 +255,7 @@ public class BankBranch extends BaseUI {
 			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -463,10 +463,8 @@ public class BankBranch extends BaseUI {
 			resetFields();
 			loadSrchRslt();
 		}
-		catch (Exception e1) {
-			logger.error("Company ID : " + companyid + " | User Name : " + username + " > " + "Exception "
-					+ e1.getMessage());
-			e1.printStackTrace();
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -478,7 +476,7 @@ public class BankBranch extends BaseUI {
 			cbBankName.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -490,6 +488,7 @@ public class BankBranch extends BaseUI {
 			cbCountry.setContainerDataSource(beanCountry);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -501,6 +500,7 @@ public class BankBranch extends BaseUI {
 			cbState.setContainerDataSource(beanState);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -512,6 +512,7 @@ public class BankBranch extends BaseUI {
 			cbCity.setContainerDataSource(beanCity);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

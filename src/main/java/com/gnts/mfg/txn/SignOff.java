@@ -179,6 +179,7 @@ public class SignOff extends BaseTransUI {
 					}
 				}
 				catch (Exception e) {
+					logger.info(e.getMessage());
 				}
 			}
 		});
@@ -193,6 +194,7 @@ public class SignOff extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		cbSignOffHdrStatus.setWidth("150");
 		btnDetlIns.setEnabled(false);
@@ -490,7 +492,7 @@ public class SignOff extends BaseTransUI {
 			cbProduct.setContainerDataSource(beanProd);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -534,6 +536,7 @@ public class SignOff extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
@@ -587,7 +590,7 @@ public class SignOff extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -743,7 +746,7 @@ public class SignOff extends BaseTransUI {
 			new TestingDocuments(hlDocumentLayout, signOffHdrId.toString(), "SIGN_OFF");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -767,7 +770,7 @@ public class SignOff extends BaseTransUI {
 			btnAdd.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

@@ -592,29 +592,34 @@ public class PurchaseQuote extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<PurchaseQuotHdrDM> listPurQuoteHdr = new ArrayList<PurchaseQuotHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
-		String eno = null;
-		if (cbEnqNo.getValue() != null) {
-			eno = (((SmsPurEnqHdrDM) cbEnqNo.getValue()).getEnquiryNo());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<PurchaseQuotHdrDM> listPurQuoteHdr = new ArrayList<PurchaseQuotHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
+			String eno = null;
+			if (cbEnqNo.getValue() != null) {
+				eno = (((SmsPurEnqHdrDM) cbEnqNo.getValue()).getEnquiryNo());
+			}
+			listPurQuoteHdr = servicePurQuoteHdr.getPurchaseQuotHdrList(null, companyid, (Long) cbBranch.getValue(),
+					eno, (String) cbStatus.getValue(), (String) tfvendorName.getValue(),
+					(String) tfQuoteRef.getValue(), null, "F");
+			recordCnt = listPurQuoteHdr.size();
+			beanQuoteHdr = new BeanItemContainer<PurchaseQuotHdrDM>(PurchaseQuotHdrDM.class);
+			beanQuoteHdr.addAll(listPurQuoteHdr);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanQuoteHdr);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "quoteId", "branchName", "vendorName", "quoteRef",
+					"enquiryNo", "status", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Vendor Name", "Quote Ref",
+					"Enquiry No", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("quoteId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
-		listPurQuoteHdr = servicePurQuoteHdr.getPurchaseQuotHdrList(null, companyid, (Long) cbBranch.getValue(), eno,
-				(String) cbStatus.getValue(), (String) tfvendorName.getValue(), (String) tfQuoteRef.getValue(), null,
-				"F");
-		recordCnt = listPurQuoteHdr.size();
-		beanQuoteHdr = new BeanItemContainer<PurchaseQuotHdrDM>(PurchaseQuotHdrDM.class);
-		beanQuoteHdr.addAll(listPurQuoteHdr);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanQuoteHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "quoteId", "branchName", "vendorName", "quoteRef",
-				"enquiryNo", "status", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Vendor Name", "Quote Ref",
-				"Enquiry No", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("quoteId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadQuoteDtl() {
@@ -643,7 +648,7 @@ public class PurchaseQuote extends BaseUI {
 			tblPurQuDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -725,7 +730,7 @@ public class PurchaseQuote extends BaseUI {
 			cbVendorName.setContainerDataSource(beanVendor);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1146,7 +1151,7 @@ public class PurchaseQuote extends BaseUI {
 			quoteId = 0L;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1191,7 +1196,7 @@ public class PurchaseQuote extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		quoteDtlresetFields();
 	}
@@ -1402,13 +1407,18 @@ public class PurchaseQuote extends BaseUI {
 	}
 	
 	private void deleteDetails() {
-		PurchaseQuotDtlDM save = new PurchaseQuotDtlDM();
-		if (tblPurQuDtl.getValue() != null) {
-			save = beanQuoteDtl.getItem(tblPurQuDtl.getValue()).getBean();
-			listQuoteDetails.remove(save);
-			quoteDtlresetFields();
-			loadQuoteDtl();
-			btndelete.setEnabled(false);
+		try {
+			PurchaseQuotDtlDM save = new PurchaseQuotDtlDM();
+			if (tblPurQuDtl.getValue() != null) {
+				save = beanQuoteDtl.getItem(tblPurQuDtl.getValue()).getBean();
+				listQuoteDetails.remove(save);
+				quoteDtlresetFields();
+				loadQuoteDtl();
+				btndelete.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

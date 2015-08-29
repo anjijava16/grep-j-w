@@ -472,6 +472,7 @@ public class QCTest extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -673,7 +674,7 @@ public class QCTest extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -721,6 +722,7 @@ public class QCTest extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		hlCmdBtnLayout.setVisible(false);
 		tblMstScrSrchRslt.setVisible(false);
@@ -946,6 +948,7 @@ public class QCTest extends BaseTransUI {
 					}
 				}
 				catch (Exception e) {
+					logger.info(e.getMessage());
 				}
 			}
 			comment.saveqaSignOffId(qcTestHdr.getQctesttypeid());
@@ -954,7 +957,7 @@ public class QCTest extends BaseTransUI {
 			hlDocumentLayout.setEnabled(true);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

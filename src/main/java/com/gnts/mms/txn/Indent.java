@@ -368,24 +368,30 @@ public class Indent extends BaseTransUI {
 	
 	// Load for Indent Search Hdr
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<IndentHdrDM> indentHdrList = new ArrayList<IndentHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfIndNo.getValue() + ", " + cbIndStatus.getValue());
-		indentHdrList = serviceIndentHdr.getMmsIndentHdrList(tfIndNo.getValue(), (String) cbIndType.getValue(), null,
-				null, null, null, null, null, (String) cbIndStatus.getValue(), "F");
-		recordCnt = indentHdrList.size();
-		beanIndentHdrDM = new BeanItemContainer<IndentHdrDM>(IndentHdrDM.class);
-		beanIndentHdrDM.addAll(indentHdrList);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Indent. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanIndentHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "indentId", "indentNo", "indentType", "indentStatus",
-				"last_updated_dt", "last_updated_by" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Indent No", "Indent Type", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("indentId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("last_updated_by", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<IndentHdrDM> list = new ArrayList<IndentHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfIndNo.getValue() + ", " + cbIndStatus.getValue());
+			list = serviceIndentHdr.getMmsIndentHdrList(tfIndNo.getValue(), (String) cbIndType.getValue(),
+					null, null, null, null, null, null, (String) cbIndStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanIndentHdrDM = new BeanItemContainer<IndentHdrDM>(IndentHdrDM.class);
+			beanIndentHdrDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Indent. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanIndentHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "indentId", "indentNo", "indentType", "indentStatus",
+					"last_updated_dt", "last_updated_by" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Indent No", "Indent Type", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("indentId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("last_updated_by", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load for Indent Search Dtl
@@ -574,6 +580,7 @@ public class Indent extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null);
 	}
@@ -766,7 +773,7 @@ public class Indent extends BaseTransUI {
 			resetFields();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -823,7 +830,7 @@ public class Indent extends BaseTransUI {
 			IndentDtlresetField();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -907,7 +914,7 @@ public class Indent extends BaseTransUI {
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		finally {
 			try {

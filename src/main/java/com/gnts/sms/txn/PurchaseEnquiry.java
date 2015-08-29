@@ -93,7 +93,7 @@ public class PurchaseEnquiry extends BaseUI {
 	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
 	private EnquiryVendorDtlService serviceEnquiryVendorDtl = (EnquiryVendorDtlService) SpringContextHelper
 			.getBean("purvendor");
-	private List<SmsPurEnqDtlDM> SmsPurEnqDtList = new ArrayList<SmsPurEnqDtlDM>();
+	private List<SmsPurEnqDtlDM> listEnqDtls = new ArrayList<SmsPurEnqDtlDM>();
 	// form layout for input controls
 	private FormLayout flSmsPurHdr1, flSmsPurHdr2, flSmsPurHdr3, flSmsPurHdr4, flSmsPurDtl1, flSmsPurDtl4,
 			flSmsPurDtl5, flSmsPurDtl6, flSmsPurDtl2, flSmsPurDtl3;
@@ -182,6 +182,7 @@ public class PurchaseEnquiry extends BaseUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		cbEnqStatus.setWidth("120");
 		cbEnqDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
@@ -232,7 +233,7 @@ public class PurchaseEnquiry extends BaseUI {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (DtlValidation()) {
+				if (dtlValidation()) {
 					saveEnqDtl();
 				}
 			}
@@ -370,34 +371,39 @@ public class PurchaseEnquiry extends BaseUI {
 	
 	// Load Purchase Header
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<SmsPurEnqHdrDM> listPurEnq = new ArrayList<SmsPurEnqHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + cbBranch.getValue() + ", " + cbEnqStatus.getValue());
-		listPurEnq = serviceSmsPurEnqHdr.getSmsPurEnqHdrList(companyid, null, tfEnqNo.getValue(),
-				(Long) cbBranch.getValue(), (String) cbEnqStatus.getValue(), username);
-		recordCnt = listPurEnq.size();
-		beanSmsPurEnqHdrDM = new BeanItemContainer<SmsPurEnqHdrDM>(SmsPurEnqHdrDM.class);
-		beanSmsPurEnqHdrDM.addAll(listPurEnq);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the PurchaseEnquiry. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanSmsPurEnqHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "branchName", "enquiryNo", "enquiryStatus",
-				"lastUpdateddt", "lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "EnquiryNo.", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("enquiryId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<SmsPurEnqHdrDM> listPurEnq = new ArrayList<SmsPurEnqHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + cbBranch.getValue() + ", " + cbEnqStatus.getValue());
+			listPurEnq = serviceSmsPurEnqHdr.getSmsPurEnqHdrList(companyid, null, tfEnqNo.getValue(),
+					(Long) cbBranch.getValue(), (String) cbEnqStatus.getValue(), username);
+			recordCnt = listPurEnq.size();
+			beanSmsPurEnqHdrDM = new BeanItemContainer<SmsPurEnqHdrDM>(SmsPurEnqHdrDM.class);
+			beanSmsPurEnqHdrDM.addAll(listPurEnq);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the PurchaseEnquiry. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanSmsPurEnqHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "branchName", "enquiryNo", "enquiryStatus",
+					"lastUpdateddt", "lastUpdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "EnquiryNo.", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("enquiryId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Purchase Detail
 	private void loadPurDtl() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			recordCnt = SmsPurEnqDtList.size();
+			recordCnt = listEnqDtls.size();
 			beanSmsPurEnqDtlDM = new BeanItemContainer<SmsPurEnqDtlDM>(SmsPurEnqDtlDM.class);
-			beanSmsPurEnqDtlDM.addAll(SmsPurEnqDtList);
+			beanSmsPurEnqDtlDM.addAll(listEnqDtls);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the dPurDt. result set");
 			tblSmsEnqDtl.setContainerDataSource(beanSmsPurEnqDtlDM);
@@ -409,7 +415,7 @@ public class PurchaseEnquiry extends BaseUI {
 			tblSmsEnqDtl.setPageLength(7);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -422,7 +428,7 @@ public class PurchaseEnquiry extends BaseUI {
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -436,7 +442,7 @@ public class PurchaseEnquiry extends BaseUI {
 			lsVendorName.setContainerDataSource(beanVendor);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -448,7 +454,7 @@ public class PurchaseEnquiry extends BaseUI {
 			lsProduct.setContainerDataSource(beanVendor);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -458,7 +464,7 @@ public class PurchaseEnquiry extends BaseUI {
 		tfEnqNo.setReadOnly(false);
 		tfEnqNo.setValue("");
 		cbEnqStatus.setValue(null);
-		SmsPurEnqDtList = new ArrayList<SmsPurEnqDtlDM>();
+		listEnqDtls = new ArrayList<SmsPurEnqDtlDM>();
 		tblSmsEnqDtl.removeAllItems();
 		cbBranch.setValue(branchId);
 		cbBranch.setComponentError(null);
@@ -502,7 +508,7 @@ public class PurchaseEnquiry extends BaseUI {
 				if (smsPurEnqHdrDM.getEnqRemark() != null) {
 					taEnqRem.setValue(smsPurEnqHdrDM.getEnqRemark().toString());
 				}
-				SmsPurEnqDtList = serviceSmsPurEnqDtl.getSmsPurEnqDtlList(null, enquiryId, null,
+				listEnqDtls = serviceSmsPurEnqDtl.getSmsPurEnqDtlList(null, enquiryId, null,
 						(String) cbEnqDtlStatus.getValue());
 			}
 			loadPurDtl();
@@ -511,7 +517,7 @@ public class PurchaseEnquiry extends BaseUI {
 			comments.loadsrch(true, null, null, enquiryId, null, null, null, null, null, null, null, null, null);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -609,6 +615,7 @@ public class PurchaseEnquiry extends BaseUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
 				null);
@@ -671,7 +678,7 @@ public class PurchaseEnquiry extends BaseUI {
 		}
 	}
 	
-	private boolean DtlValidation() {
+	private boolean dtlValidation() {
 		boolean isValid = true;
 		if (cbUom.getValue() == null) {
 			cbUom.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_UOM));
@@ -766,7 +773,7 @@ public class PurchaseEnquiry extends BaseUI {
 			enqDtlresetFields();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -777,7 +784,7 @@ public class PurchaseEnquiry extends BaseUI {
 			String[] split = lsProduct.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
 			for (String obj : split) {
 				if (obj.trim().length() > 0) {
-					for (SmsPurEnqDtlDM smsPurEnqDtlDM : SmsPurEnqDtList) {
+					for (SmsPurEnqDtlDM smsPurEnqDtlDM : listEnqDtls) {
 						if (smsPurEnqDtlDM.getProductId().equals(Long.valueOf(obj.trim()))) {
 							count++;
 							break;
@@ -790,7 +797,7 @@ public class PurchaseEnquiry extends BaseUI {
 						SmsPurEnqDtlDM enqDtlObj = new SmsPurEnqDtlDM();
 						if (tblSmsEnqDtl.getValue() != null) {
 							enqDtlObj = beanSmsPurEnqDtlDM.getItem(tblSmsEnqDtl.getValue()).getBean();
-							SmsPurEnqDtList.remove(enqDtlObj);
+							listEnqDtls.remove(enqDtlObj);
 						}
 						if (lsProduct.getValue() != null) {
 							enqDtlObj.setProductId(Long.valueOf(obj.trim()));
@@ -812,7 +819,7 @@ public class PurchaseEnquiry extends BaseUI {
 						}
 						enqDtlObj.setLastUpdateddt(DateUtils.getcurrentdate());
 						enqDtlObj.setLastUpdatedby(username);
-						SmsPurEnqDtList.add(enqDtlObj);
+						listEnqDtls.add(enqDtlObj);
 						loadPurDtl();
 						btnaddSpec.setCaption("Add");
 						count = 0;
@@ -824,7 +831,7 @@ public class PurchaseEnquiry extends BaseUI {
 			enqDtlresetFields();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -871,7 +878,7 @@ public class PurchaseEnquiry extends BaseUI {
 		SmsPurEnqDtlDM save = new SmsPurEnqDtlDM();
 		if (tblSmsEnqDtl.getValue() != null) {
 			save = beanSmsPurEnqDtlDM.getItem(tblSmsEnqDtl.getValue()).getBean();
-			SmsPurEnqDtList.remove(save);
+			listEnqDtls.remove(save);
 			enqDtlresetFields();
 			loadPurDtl();
 			btndelete.setEnabled(false);

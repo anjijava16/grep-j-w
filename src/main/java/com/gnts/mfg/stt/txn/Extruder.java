@@ -356,6 +356,7 @@ public class Extruder extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		btnDeletedtl.addClickListener(new ClickListener() {
 			/**
@@ -826,6 +827,7 @@ public class Extruder extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		tblDtl.setVisible(true);
 		tblMtrl.setVisible(true);
@@ -1139,7 +1141,7 @@ public class Extruder extends BaseTransUI {
 					}
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					logger.info(e.getMessage());
 				}
 				try {
 					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId,
@@ -1149,12 +1151,12 @@ public class Extruder extends BaseTransUI {
 					}
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					logger.info(e.getMessage());
 				}
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1188,7 +1190,7 @@ public class Extruder extends BaseTransUI {
 			btnAddDtls.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		asmblDtlResetFields();
 	}
@@ -1220,7 +1222,7 @@ public class Extruder extends BaseTransUI {
 			btnAddMtrl.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		extMtrlResetFields();
 	}
@@ -1245,7 +1247,7 @@ public class Extruder extends BaseTransUI {
 			btnAddTemp.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		asmblTempResetFields();
 	}

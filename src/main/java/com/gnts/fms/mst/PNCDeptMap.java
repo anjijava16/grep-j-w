@@ -56,7 +56,7 @@ public class PNCDeptMap extends BaseUI {
 	 */
 	private PNCDeptMapService servicePNCDeptMap = (PNCDeptMapService) SpringContextHelper.getBean("pncdeptmap");
 	private DepartmentService serviceDepartment = (DepartmentService) SpringContextHelper.getBean("department");
-	private PNCCentersService servicepnccnter = (PNCCentersService) SpringContextHelper.getBean("pnccenter");
+	private PNCCentersService servicePNCenter = (PNCCentersService) SpringContextHelper.getBean("pnccenter");
 	// form layout for input controls
 	private FormLayout formLayout1, formLayout2, formLayout3;
 	// Parent layout for all the input controls
@@ -168,7 +168,7 @@ public class PNCDeptMap extends BaseUI {
 			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -194,20 +194,30 @@ public class PNCDeptMap extends BaseUI {
 	 * For Load Active Account Type Details based on Company
 	 */
 	private void loadDepartmentList() {
-		BeanContainer<Long, DepartmentDM> bean = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		bean.setBeanIdProperty("deptid");
-		bean.addAll(serviceDepartment.getDepartmentList(companyId, null, "Active", "P"));
-		cbDepartmentName.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, DepartmentDM> bean = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			bean.setBeanIdProperty("deptid");
+			bean.addAll(serviceDepartment.getDepartmentList(companyId, null, "Active", "P"));
+			cbDepartmentName.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * For Load Active Account Type Details based on Company
 	 */
 	private void loadPNCCenterList() {
-		BeanContainer<Long, PNCCentersDM> bean = new BeanContainer<Long, PNCCentersDM>(PNCCentersDM.class);
-		bean.setBeanIdProperty("pncid");
-		bean.addAll(servicepnccnter.getCenterTypeList(null, companyId, (String) cbStatus.getValue(), "T"));
-		cbPNCCenters.setContainerDataSource(bean);
+		try {
+			BeanContainer<Long, PNCCentersDM> bean = new BeanContainer<Long, PNCCentersDM>(PNCCentersDM.class);
+			bean.setBeanIdProperty("pncid");
+			bean.addAll(servicePNCenter.getCenterTypeList(null, companyId, (String) cbStatus.getValue(), "T"));
+			cbPNCCenters.setContainerDataSource(bean);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override

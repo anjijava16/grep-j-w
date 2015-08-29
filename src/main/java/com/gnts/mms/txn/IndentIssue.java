@@ -345,24 +345,30 @@ public class IndentIssue extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<IndentIssueHdrDM> indentIssueList = new ArrayList<IndentIssueHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + cbIntNo.getValue() + ", " + cbIndStatus.getValue());
-		indentIssueList = serviceIndentHdr.getIndentIssueHdrList(null, companyid, (Long) cbIntNo.getValue(),
-				dfIssueDt.getValue(), null, (String) cbIndStatus.getValue(), "F");
-		recordCnt = indentIssueList.size();
-		beanIndentIssueHdrDM = new BeanItemContainer<IndentIssueHdrDM>(IndentIssueHdrDM.class);
-		beanIndentIssueHdrDM.addAll(indentIssueList);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Indent. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanIndentIssueHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "issueId", "indentNo", "issueDate", "issueStatus",
-				"last_updated_dt", "last_updated_by" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Indent No", "Issue Date", "Status",
-				"Updated Date", "Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("issueId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("last_updated_by", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<IndentIssueHdrDM> indentIssueList = new ArrayList<IndentIssueHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + cbIntNo.getValue() + ", " + cbIndStatus.getValue());
+			indentIssueList = serviceIndentHdr.getIndentIssueHdrList(null, companyid, (Long) cbIntNo.getValue(),
+					dfIssueDt.getValue(), null, (String) cbIndStatus.getValue(), "F");
+			recordCnt = indentIssueList.size();
+			beanIndentIssueHdrDM = new BeanItemContainer<IndentIssueHdrDM>(IndentIssueHdrDM.class);
+			beanIndentIssueHdrDM.addAll(indentIssueList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Indent. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanIndentIssueHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "issueId", "indentNo", "issueDate", "issueStatus",
+					"last_updated_dt", "last_updated_by" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Indent No", "Issue Date", "Status",
+					"Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("issueId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("last_updated_by", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadIndentDtl() {
@@ -385,7 +391,7 @@ public class IndentIssue extends BaseTransUI {
 			tblIndtIssueDtl.setPageLength(10);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -904,7 +910,7 @@ public class IndentIssue extends BaseTransUI {
 			tfStockQty.setReadOnly(true);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

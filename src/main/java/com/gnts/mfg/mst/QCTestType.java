@@ -275,14 +275,14 @@ public class QCTestType extends BaseUI {
 	
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
-		List<QCTestTypeDM> testTypeList = new ArrayList<QCTestTypeDM>();
+		List<QCTestTypeDM> listTestType = new ArrayList<QCTestTypeDM>();
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
 				+ companyid);
-		testTypeList = serviceTestType.getQCTestTypeDetails(companyid, null, (String) tftstTyp.getValue(),
+		listTestType = serviceTestType.getQCTestTypeDetails(companyid, null, (String) tftstTyp.getValue(),
 				(String) cbTstTypeStatus.getValue());
-		recordCnt = testTypeList.size();
+		recordCnt = listTestType.size();
 		beanTestType = new BeanItemContainer<QCTestTypeDM>(QCTestTypeDM.class);
-		beanTestType.addAll(testTypeList);
+		beanTestType.addAll(listTestType);
 		tblMstScrSrchRslt.setContainerDataSource(beanTestType);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qcTstTypId", "tstType", "tstMethdlgy", "tstTypStatus",
 				"lastUpdatedDt", "lastUpdatedBy" });
@@ -796,10 +796,10 @@ public class QCTestType extends BaseUI {
 	}
 	
 	private void deleteTstCondtnDetails() {
-		QCTestDefinitionDM qCTestDefinitionDM = new QCTestDefinitionDM();
+		QCTestDefinitionDM qcTestDefinitionDM = new QCTestDefinitionDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			qCTestDefinitionDM = beanTestDef.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			listTstDef.remove(qCTestDefinitionDM);
+			qcTestDefinitionDM = beanTestDef.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			listTstDef.remove(qcTestDefinitionDM);
 			resetTstDefDetails();
 			tblMstScrSrchRslt.setValue("");
 			loadSrchQCTstDefRslt();
@@ -808,10 +808,10 @@ public class QCTestType extends BaseUI {
 	}
 	
 	private void deleteTstSpecDetails() {
-		QCTestSpecificationDM qCTestSpecificationDM = new QCTestSpecificationDM();
+		QCTestSpecificationDM qcTestSpecificationDM = new QCTestSpecificationDM();
 		if (tblTstSpec.getValue() != null) {
-			qCTestSpecificationDM = beanTestSpec.getItem(tblTstSpec.getValue()).getBean();
-			listTstSpec.remove(qCTestSpecificationDM);
+			qcTestSpecificationDM = beanTestSpec.getItem(tblTstSpec.getValue()).getBean();
+			listTstSpec.remove(qcTestSpecificationDM);
 			resetTstSpec();
 			tblTstSpec.setValue("");
 			loadSrchQCTstSpecRslt();

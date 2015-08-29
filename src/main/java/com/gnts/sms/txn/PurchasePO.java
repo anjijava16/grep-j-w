@@ -632,24 +632,29 @@ public class PurchasePO extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<PurchasePOHdrDM> list = new ArrayList<PurchasePOHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
-		list = servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, (Long) cbBranch.getValue(),
-				(String) cbpoType.getValue(), (String) cbStatus.getValue(), tfPONo.getValue());
-		recordCnt = list.size();
-		beanPurchasePOHdr = new BeanItemContainer<PurchasePOHdrDM>(PurchasePOHdrDM.class);
-		beanPurchasePOHdr.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanPurchasePOHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "poId", "branchName", "pono", "poType", "pOStatus",
-				"lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "PO.No ", "Order Type", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("poId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<PurchasePOHdrDM> list = new ArrayList<PurchasePOHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
+			list = servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, (Long) cbBranch.getValue(),
+					(String) cbpoType.getValue(), (String) cbStatus.getValue(), tfPONo.getValue());
+			recordCnt = list.size();
+			beanPurchasePOHdr = new BeanItemContainer<PurchasePOHdrDM>(PurchasePOHdrDM.class);
+			beanPurchasePOHdr.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanPurchasePOHdr);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "poId", "branchName", "pono", "poType", "pOStatus",
+					"lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "PO.No ", "Order Type",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("poId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadPurDtl() {
@@ -678,7 +683,7 @@ public class PurchasePO extends BaseUI {
 			tblPurDetails.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1159,7 +1164,7 @@ public class PurchasePO extends BaseUI {
 			poId = 0L;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1196,7 +1201,7 @@ public class PurchasePO extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		poDtlresetFields();
 	}
@@ -1285,7 +1290,7 @@ public class PurchasePO extends BaseUI {
 		cbProduct.setContainerDataSource(null);
 	}
 	
-	protected void poDtlresetFields() {
+	private void poDtlresetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbProduct.setValue(null);
 		tfPOQnty.setReadOnly(false);

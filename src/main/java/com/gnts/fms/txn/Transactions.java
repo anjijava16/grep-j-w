@@ -218,6 +218,7 @@ public class Transactions extends BaseTransUI {
 			cbApproveManager.setContainerDataSource(employeebeans);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -229,6 +230,7 @@ public class Transactions extends BaseTransUI {
 			cbAccountReference.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -242,6 +244,7 @@ public class Transactions extends BaseTransUI {
 			cbTransactionType.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -258,6 +261,7 @@ public class Transactions extends BaseTransUI {
 			cbPaymentMode.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -564,8 +568,7 @@ public class Transactions extends BaseTransUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			logger.info("Save Method------------------------->" + e);
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

@@ -302,47 +302,57 @@ public class Pulverizer extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.setSelectable(true);
-		tblMstScrSrchRslt.removeAllItems();
-		Long brnchid = null;
-		if (cbBranchName.getValue() != null) {
-			brnchid = ((Long) cbBranchName.getValue());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.setSelectable(true);
+			tblMstScrSrchRslt.removeAllItems();
+			Long brnchid = null;
+			if (cbBranchName.getValue() != null) {
+				brnchid = ((Long) cbBranchName.getValue());
+			}
+			List<PulvizHdrDM> listPulvizHdr = new ArrayList<PulvizHdrDM>();
+			listPulvizHdr = Pulvizhdrservice.getPulvizHdrDetails(null, brnchid, (String) tfPulRefNumber.getValue(),
+					(Date) dfPulvizDate.getValue(), (String) cbHdrStatus.getValue(), "F");
+			recordCnt = listPulvizHdr.size();
+			beanPulvizHdrDM = new BeanItemContainer<PulvizHdrDM>(PulvizHdrDM.class);
+			beanPulvizHdrDM.addAll(listPulvizHdr);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the PulvizerHdr result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanPulvizHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "pulvizid", "branchname", "pulvizreffno", "lotno",
+					"pulvizdate", "pulvizstatus", "lastupdateddate", "lastupdatedby" });
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " >>>>>>>>>>>>>>>>> "
+					+ "Loading Search...");
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.No", "Branch Name", "Pulviz Ref.No", "Lot No",
+					"Pulviz Date", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
-		List<PulvizHdrDM> listPulvizHdr = new ArrayList<PulvizHdrDM>();
-		listPulvizHdr = Pulvizhdrservice.getPulvizHdrDetails(null, brnchid, (String) tfPulRefNumber.getValue(),
-				(Date) dfPulvizDate.getValue(), (String) cbHdrStatus.getValue(), "F");
-		recordCnt = listPulvizHdr.size();
-		beanPulvizHdrDM = new BeanItemContainer<PulvizHdrDM>(PulvizHdrDM.class);
-		beanPulvizHdrDM.addAll(listPulvizHdr);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the PulvizerHdr result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanPulvizHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "pulvizid", "branchname", "pulvizreffno", "lotno",
-				"pulvizdate", "pulvizstatus", "lastupdateddate", "lastupdatedby" });
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " >>>>>>>>>>>>>>>>> "
-				+ "Loading Search...");
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.No", "Branch Name", "Pulviz Ref.No", "Lot No",
-				"Pulviz Date", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadPulverizerDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		logger.info("Company ID : " + companyid + " | savePulvizDetails User Name : " + username + " > "
-				+ "Search Parameters are ");
-		tblPulvizDtl.setFooterVisible(true);
-		recdtl = listPulverDetails.size();
-		beanPulvizDtlDM = new BeanItemContainer<PulvizDtlDM>(PulvizDtlDM.class);
-		beanPulvizDtlDM.addAll(listPulverDetails);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the PulverizerDtl. result set");
-		tblPulvizDtl.setContainerDataSource(beanPulvizDtlDM);
-		tblPulvizDtl.setVisibleColumns(new Object[] { "machineName", "prodndate", "inputqty", "outputqty",
-				"balanceqty", "plvzdtlstatus", "lastupdateddt", "lastupdatedby" });
-		tblPulvizDtl.setColumnHeaders(new String[] { "Machine Ref Name", "Date", "Input Qty.", "Output Qty.",
-				"Bal Qty.", "Status", "Last Updated Date", "Last Updated By" });
-		tblPulvizDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recdtl);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			logger.info("Company ID : " + companyid + " | savePulvizDetails User Name : " + username + " > "
+					+ "Search Parameters are ");
+			tblPulvizDtl.setFooterVisible(true);
+			recdtl = listPulverDetails.size();
+			beanPulvizDtlDM = new BeanItemContainer<PulvizDtlDM>(PulvizDtlDM.class);
+			beanPulvizDtlDM.addAll(listPulverDetails);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the PulverizerDtl. result set");
+			tblPulvizDtl.setContainerDataSource(beanPulvizDtlDM);
+			tblPulvizDtl.setVisibleColumns(new Object[] { "machineName", "prodndate", "inputqty", "outputqty",
+					"balanceqty", "plvzdtlstatus", "lastupdateddt", "lastupdatedby" });
+			tblPulvizDtl.setColumnHeaders(new String[] { "Machine Ref Name", "Date", "Input Qty.", "Output Qty.",
+					"Bal Qty.", "Status", "Last Updated Date", "Last Updated By" });
+			tblPulvizDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recdtl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void savePulverizerDetails() {
@@ -392,7 +402,7 @@ public class Pulverizer extends BaseTransUI {
 			btnAddPulvizDtl.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		resetPulvizerDetails();
 	}
@@ -490,6 +500,7 @@ public class Pulverizer extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		tblPulvizDtl.setVisible(true);
 		lblNotification.setValue("");

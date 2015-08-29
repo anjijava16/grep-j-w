@@ -235,24 +235,30 @@ public class IndentIssueReturn extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<IndentIssueReturnDM> indentIssueRetnList = new ArrayList<IndentIssueReturnDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + cbReturnReason.getValue() + ", " + cbIndStatus.getValue());
-		indentIssueRetnList = serviceIndentHdr.getIndentIssueReturnDMList(null, null, (Long) cbMatName.getValue(),
-				null, (String) cbIndStatus.getValue(), "F");
-		recordCnt = indentIssueRetnList.size();
-		beanIndentIssueReturnDM = new BeanItemContainer<IndentIssueReturnDM>(IndentIssueReturnDM.class);
-		beanIndentIssueReturnDM.addAll(indentIssueRetnList);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Indent. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanIndentIssueReturnDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "issueRtnId", "materialName", "returnQty", "stockType",
-				"status", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Material Name", "Return Qty.", "Stock Type",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("issueRtnId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<IndentIssueReturnDM> indentIssueRetnList = new ArrayList<IndentIssueReturnDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + cbReturnReason.getValue() + ", " + cbIndStatus.getValue());
+			indentIssueRetnList = serviceIndentHdr.getIndentIssueReturnDMList(null, null, (Long) cbMatName.getValue(),
+					null, (String) cbIndStatus.getValue(), "F");
+			recordCnt = indentIssueRetnList.size();
+			beanIndentIssueReturnDM = new BeanItemContainer<IndentIssueReturnDM>(IndentIssueReturnDM.class);
+			beanIndentIssueReturnDM.addAll(indentIssueRetnList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Indent. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanIndentIssueReturnDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "issueRtnId", "materialName", "returnQty", "stockType",
+					"status", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Material Name", "Return Qty.", "Stock Type",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("issueRtnId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to reset the fields

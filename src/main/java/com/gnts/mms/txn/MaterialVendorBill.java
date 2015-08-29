@@ -81,9 +81,9 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class MaterialVendorBill extends BaseTransUI {
-	private MmsVendorBillHdrService servicemmsvendorBillHdr = (MmsVendorBillHdrService) SpringContextHelper
+	private MmsVendorBillHdrService serviceVendorBillHdr = (MmsVendorBillHdrService) SpringContextHelper
 			.getBean("mmsvendorbillheader");
-	private MmsVendorBillDtlService servicemmsvendorBillDtl = (MmsVendorBillDtlService) SpringContextHelper
+	private MmsVendorBillDtlService serviceVendorBillDtl = (MmsVendorBillDtlService) SpringContextHelper
 			.getBean("mmsvendorbilldetail");
 	private MmsPoDtlService servicepodtl = (MmsPoDtlService) SpringContextHelper.getBean("mmspoDtl");
 	private POHdrService servicepoHdr = (POHdrService) SpringContextHelper.getBean("pohdr");
@@ -564,7 +564,7 @@ public class MaterialVendorBill extends BaseTransUI {
 		if (cbpoNo.getValue() != null) {
 			purNo = (((POHdrDM) cbpoNo.getValue()).getPoId());
 		}
-		vendorBillHdrList = servicemmsvendorBillHdr.getMmsVendorBillHdrList(companyid, null, purNo,
+		vendorBillHdrList = serviceVendorBillHdr.getMmsVendorBillHdrList(companyid, null, purNo,
 				(Long) cbBranch.getValue(), (String) tfbillNo.getValue(), (String) cbStatus.getValue(), null, "F");
 		recordCnt = vendorBillHdrList.size();
 		beanVendorBillHdr = new BeanItemContainer<MmsVendorBillHdrDM>(MmsVendorBillHdrDM.class);
@@ -765,7 +765,7 @@ public class MaterialVendorBill extends BaseTransUI {
 			if (vendorBillHdrDM.getStatus() != null) {
 				cbStatus.setValue(vendorBillHdrDM.getStatus().toString());
 			}
-			listVendorBillDtls = servicemmsvendorBillDtl.getMmsVendorBillDtlList(null, billId, null, null);
+			listVendorBillDtls = serviceVendorBillDtl.getMmsVendorBillDtlList(null, billId, null, null);
 		}
 		loadMatDtl();
 		comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, billId, null);
@@ -1099,13 +1099,13 @@ public class MaterialVendorBill extends BaseTransUI {
 			vendorBillHdr.setActionedBy(null);
 			vendorBillHdr.setLastUpdtDate(DateUtils.getcurrentdate());
 			vendorBillHdr.setLastUpdatedBy(username);
-			servicemmsvendorBillHdr.saveOrUpdateMmsVendorBillHdr(vendorBillHdr);
+			serviceVendorBillHdr.saveOrUpdateMmsVendorBillHdr(vendorBillHdr);
 			@SuppressWarnings("unchecked")
 			Collection<MmsVendorBillDtlDM> itemIds = (Collection<MmsVendorBillDtlDM>) tblVendorBillDtl
 					.getVisibleItemIds();
 			for (MmsVendorBillDtlDM save : (Collection<MmsVendorBillDtlDM>) itemIds) {
 				save.setBillId(Long.valueOf(vendorBillHdr.getBillId().toString()));
-				servicemmsvendorBillDtl.saveOrUpdatemmsvendrdtlDetails(save);
+				serviceVendorBillDtl.saveOrUpdatemmsvendrdtlDetails(save);
 			}
 			loadSrchRslt();
 			resetFields();

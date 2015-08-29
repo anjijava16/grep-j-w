@@ -431,61 +431,76 @@ public class AssemblyPlan extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<AsmblyPlanHdrDM> list = new ArrayList<AsmblyPlanHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfPlanRefNo.getValue() + ", " + cbHdrStatus.getValue());
-		list = serviceAsmblyPlanHrd.getAsmblyPlanHdrDetails(null, companyid, null, (String) tfPlnRefNo.getValue(),
-				dfAsmPlanDt.getValue(), (String) cbHdrStatus.getValue(), "F");
-		recordCnt = list.size();
-		beanAsmblyPlanHdrDM = new BeanItemContainer<AsmblyPlanHdrDM>(AsmblyPlanHdrDM.class);
-		beanAsmblyPlanHdrDM.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the AssemblyPlan. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanAsmblyPlanHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "asmplnid", "asmplnreffno", "asmplndate", "asmplnstatus",
-				"lastupdateddate", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Plan Ref.No", "Plan Date", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("asmplnid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<AsmblyPlanHdrDM> list = new ArrayList<AsmblyPlanHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfPlanRefNo.getValue() + ", " + cbHdrStatus.getValue());
+			list = serviceAsmblyPlanHrd.getAsmblyPlanHdrDetails(null, companyid, null, (String) tfPlnRefNo.getValue(),
+					dfAsmPlanDt.getValue(), (String) cbHdrStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanAsmblyPlanHdrDM = new BeanItemContainer<AsmblyPlanHdrDM>(AsmblyPlanHdrDM.class);
+			beanAsmblyPlanHdrDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the AssemblyPlan. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanAsmblyPlanHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "asmplnid", "asmplnreffno", "asmplndate",
+					"asmplnstatus", "lastupdateddate", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Plan Ref.No", "Plan Date", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("asmplnid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadAsmbDtlList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		logger.info("Company ID : " + companyid + " | saveasmblPlnDtlListDetails User Name : " + username + " > "
-				+ "Search Parameters are " + companyid + ", " + cbClientId.getValue() + ", " + tfPlanHdrQty.getValue()
-				+ (String) cbStatus.getValue() + ", " + asmbPlnHdrId);
-		tblAsmbPlanDtl.removeAllItems();
-		recordCnt = asmblPlnDtlList.size();
-		beanAsmblyPlanDtlDM = new BeanItemContainer<AsmblyPlanDtlDM>(AsmblyPlanDtlDM.class);
-		beanAsmblyPlanDtlDM.addAll(asmblPlnDtlList);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the AssemblyPlanslap. result set");
-		tblAsmbPlanDtl.setContainerDataSource(beanAsmblyPlanDtlDM);
-		tblAsmbPlanDtl.setVisibleColumns(new Object[] { "clientName", "woNo", "prodName", "plndQty", "status",
-				"lastupdateddate", "lastupdatedby" });
-		tblAsmbPlanDtl.setColumnHeaders(new String[] { "Client Name", "WO No.", "Prod.Name", "Plan Qty.", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblAsmbPlanDtl.setColumnAlignment("asmPlnDtlId", Align.RIGHT);
-		tblAsmbPlanDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			logger.info("Company ID : " + companyid + " | saveasmblPlnDtlListDetails User Name : " + username + " > "
+					+ "Search Parameters are " + companyid + ", " + cbClientId.getValue() + ", "
+					+ tfPlanHdrQty.getValue() + (String) cbStatus.getValue() + ", " + asmbPlnHdrId);
+			tblAsmbPlanDtl.removeAllItems();
+			recordCnt = asmblPlnDtlList.size();
+			beanAsmblyPlanDtlDM = new BeanItemContainer<AsmblyPlanDtlDM>(AsmblyPlanDtlDM.class);
+			beanAsmblyPlanDtlDM.addAll(asmblPlnDtlList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the AssemblyPlanslap. result set");
+			tblAsmbPlanDtl.setContainerDataSource(beanAsmblyPlanDtlDM);
+			tblAsmbPlanDtl.setVisibleColumns(new Object[] { "clientName", "woNo", "prodName", "plndQty", "status",
+					"lastupdateddate", "lastupdatedby" });
+			tblAsmbPlanDtl.setColumnHeaders(new String[] { "Client Name", "WO No.", "Prod.Name", "Plan Qty.", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblAsmbPlanDtl.setColumnAlignment("asmPlnDtlId", Align.RIGHT);
+			tblAsmbPlanDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadShiftRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		recordShiftCnt = asmblyPlnShitftList.size();
-		beanAsmblyPlanShiftDM = new BeanItemContainer<AsmblyPlanShiftDM>(AsmblyPlanShiftDM.class);
-		beanAsmblyPlanShiftDM.addAll(asmblyPlnShitftList);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the AssemblyPlan. result set");
-		tblShift.setContainerDataSource(beanAsmblyPlanShiftDM);
-		tblShift.setVisibleColumns(new Object[] { "shiftName", "empName", "targetQty", "status", "lastupdateddate",
-				"lastupdatedby" });
-		tblShift.setColumnHeaders(new String[] { "Shift Name", "Employee Name", "Target Qty", "Status",
-				"Last Updated Dt", "Last Updated By" });
-		tblShift.setColumnAlignment("asmPlnShiftId", Align.RIGHT);
-		tblShift.setColumnFooter("lastupdatedby", "No.of Records : " + recordShiftCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			recordShiftCnt = asmblyPlnShitftList.size();
+			beanAsmblyPlanShiftDM = new BeanItemContainer<AsmblyPlanShiftDM>(AsmblyPlanShiftDM.class);
+			beanAsmblyPlanShiftDM.addAll(asmblyPlnShitftList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the AssemblyPlan. result set");
+			tblShift.setContainerDataSource(beanAsmblyPlanShiftDM);
+			tblShift.setVisibleColumns(new Object[] { "shiftName", "empName", "targetQty", "status", "lastupdateddate",
+					"lastupdatedby" });
+			tblShift.setColumnHeaders(new String[] { "Shift Name", "Employee Name", "Target Qty", "Status",
+					"Last Updated Dt", "Last Updated By" });
+			tblShift.setColumnAlignment("asmPlnShiftId", Align.RIGHT);
+			tblShift.setColumnFooter("lastupdatedby", "No.of Records : " + recordShiftCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to reset the fields
@@ -683,6 +698,7 @@ public class AssemblyPlan extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		tblAsmbPlanDtl.setVisible(true);
 	}
@@ -950,7 +966,7 @@ public class AssemblyPlan extends BaseTransUI {
 			loadShiftRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -984,11 +1000,11 @@ public class AssemblyPlan extends BaseTransUI {
 			asmblPlnDtlList.add(assemblyPlanDtlObj);
 			loadAsmbDtlList();
 			btnAddDtls.setCaption("Add");
+			asmblDtlResetFields();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
-		asmblDtlResetFields();
 	}
 	
 	private void saveasmblPlnShiftListDetails() {
@@ -1017,7 +1033,7 @@ public class AssemblyPlan extends BaseTransUI {
 			btnAddShift.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		asmblShiftResetFields();
 	}

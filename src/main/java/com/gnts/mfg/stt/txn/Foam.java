@@ -378,59 +378,75 @@ public class Foam extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<FoamHdrDM> listFoam = new ArrayList<FoamHdrDM>();
-		Long foamPlanId = null;
-		if (cbFoamPlanNo.getValue() != null) {
-			foamPlanId = ((Long.valueOf(cbFoamPlanNo.getValue().toString())));
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<FoamHdrDM> listFoam = new ArrayList<FoamHdrDM>();
+			Long foamPlanId = null;
+			if (cbFoamPlanNo.getValue() != null) {
+				foamPlanId = ((Long.valueOf(cbFoamPlanNo.getValue().toString())));
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfFoamRefNo.getValue() + ", " + cbHdrStatus.getValue());
+			listFoam = serviceAsmblyPlanHrd.getFormHdrDetails(null, foamPlanId, (String) tfPlanRefNo.getValue(),
+					dfFoanDt.getValue(), (String) cbHdrStatus.getValue(), "F");
+			recordCnt = listFoam.size();
+			beanFoamHdrDM = new BeanItemContainer<FoamHdrDM>(FoamHdrDM.class);
+			beanFoamHdrDM.addAll(listFoam);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Foam. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanFoamHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "foamid", "formrefno", "fomdate", "fomstatus",
+					"lastupdateddate", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Plan Ref No", "Assembly Plan Date", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("foamid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfFoamRefNo.getValue() + ", " + cbHdrStatus.getValue());
-		listFoam = serviceAsmblyPlanHrd.getFormHdrDetails(null, foamPlanId, (String) tfPlanRefNo.getValue(),
-				dfFoanDt.getValue(), (String) cbHdrStatus.getValue(), "F");
-		recordCnt = listFoam.size();
-		beanFoamHdrDM = new BeanItemContainer<FoamHdrDM>(FoamHdrDM.class);
-		beanFoamHdrDM.addAll(listFoam);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Foam. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanFoamHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "foamid", "formrefno", "fomdate", "fomstatus",
-				"lastupdateddate", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Plan Ref No", "Assembly Plan Date", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("foamid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadAsmbDtlList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		logger.info("Company ID : " + companyid + " | saveasmblPlnDtlListDetails User Name : " + username + " > "
-				+ "Search Parameters are " + companyid + ", " + ", " + tfProductnQty.getValue()
-				+ (String) cbStatus.getValue() + ", " + asmbPlnHdrId);
-		recordCnt = listFoamDetails.size();
-		beanFoamDtlDM = new BeanItemContainer<FoamDtlDM>(FoamDtlDM.class);
-		beanFoamDtlDM.addAll(listFoamDetails);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Foamslap. result set");
-		tblFoamDetail.setContainerDataSource(beanFoamDtlDM);
-		tblFoamDetail.setVisibleColumns(new Object[] { "prodname", "productQty", "status", "lastupdateddate",
-				"lastupdatedby" });
-		tblFoamDetail.setColumnHeaders(new String[] { "Product Name", "Planned Qty.", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblFoamDetail.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			logger.info("Company ID : " + companyid + " | saveasmblPlnDtlListDetails User Name : " + username + " > "
+					+ "Search Parameters are " + companyid + ", " + ", " + tfProductnQty.getValue()
+					+ (String) cbStatus.getValue() + ", " + asmbPlnHdrId);
+			recordCnt = listFoamDetails.size();
+			beanFoamDtlDM = new BeanItemContainer<FoamDtlDM>(FoamDtlDM.class);
+			beanFoamDtlDM.addAll(listFoamDetails);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Foamslap. result set");
+			tblFoamDetail.setContainerDataSource(beanFoamDtlDM);
+			tblFoamDetail.setVisibleColumns(new Object[] { "prodname", "productQty", "status", "lastupdateddate",
+					"lastupdatedby" });
+			tblFoamDetail.setColumnHeaders(new String[] { "Product Name", "Planned Qty.", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblFoamDetail.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadShiftRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		recordShiftCnt = listFoamShift.size();
-		beanFoamShiftDM = new BeanItemContainer<FoamShiftDM>(FoamShiftDM.class);
-		beanFoamShiftDM.addAll(listFoamShift);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Foam. result set");
-		tblFoamShift.setContainerDataSource(beanFoamShiftDM);
-		tblFoamShift.setVisibleColumns(new Object[] { "shiftName", "empName", "achivedQty", "status",
-				"lastupdateddate", "lastupdatedby" });
-		tblFoamShift.setColumnHeaders(new String[] { "Shift Name", "Emp.Name", "Achieved Qty.", "Status",
-				"Last Updated Dt", "Last Updated By" });
-		tblFoamShift.setColumnFooter("lastupdatedby", "No.of Records : " + recordShiftCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			recordShiftCnt = listFoamShift.size();
+			beanFoamShiftDM = new BeanItemContainer<FoamShiftDM>(FoamShiftDM.class);
+			beanFoamShiftDM.addAll(listFoamShift);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Foam. result set");
+			tblFoamShift.setContainerDataSource(beanFoamShiftDM);
+			tblFoamShift.setVisibleColumns(new Object[] { "shiftName", "empName", "achivedQty", "status",
+					"lastupdateddate", "lastupdatedby" });
+			tblFoamShift.setColumnHeaders(new String[] { "Shift Name", "Emp.Name", "Achieved Qty.", "Status",
+					"Last Updated Dt", "Last Updated By" });
+			tblFoamShift.setColumnFooter("lastupdatedby", "No.of Records : " + recordShiftCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to reset the fields
@@ -863,7 +879,7 @@ public class Foam extends BaseTransUI {
 			loadShiftRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -890,7 +906,7 @@ public class Foam extends BaseTransUI {
 			btnAddDtls.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		asmblDtlResetFields();
 	}
@@ -920,7 +936,7 @@ public class Foam extends BaseTransUI {
 			btnAddShift.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		asmblShiftResetFields();
 	}

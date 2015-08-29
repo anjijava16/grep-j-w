@@ -114,22 +114,27 @@ public class TestGroup extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<TestGroupDM> list = new ArrayList<TestGroupDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid);
-		list = serviceTestGroup.getTestGpDetails(companyid, tfTestGroup.getValue().toString(),
-				(String) cbStatus.getValue(), "F");
-		recordCnt = list.size();
-		beanTestGroup = new BeanItemContainer<TestGroupDM>(TestGroupDM.class);
-		beanTestGroup.addAll(list);
-		tblMstScrSrchRslt.setContainerDataSource(beanTestGroup);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qaTestGpID", "testGroup", "tgroupStatus", "lastUpdatedDt",
-				"lastUpdateBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Test Group", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("qaTestGpID", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdateBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<TestGroupDM> list = new ArrayList<TestGroupDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid);
+			list = serviceTestGroup.getTestGpDetails(companyid, tfTestGroup.getValue().toString(),
+					(String) cbStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanTestGroup = new BeanItemContainer<TestGroupDM>(TestGroupDM.class);
+			beanTestGroup.addAll(list);
+			tblMstScrSrchRslt.setContainerDataSource(beanTestGroup);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qaTestGpID", "testGroup", "tgroupStatus",
+					"lastUpdatedDt", "lastUpdateBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Test Group", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("qaTestGpID", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdateBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -244,21 +249,21 @@ public class TestGroup extends BaseUI {
 	protected void saveDetails() throws ERPException.SaveException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
-			TestGroupDM testGroupObj = new TestGroupDM();
+			TestGroupDM testGroup = new TestGroupDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				testGroupObj = beanTestGroup.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				testGroup = beanTestGroup.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			testGroupObj.setCompanyId(companyid);
-			testGroupObj.setTestGroup(tfTestGroup.getValue());
-			testGroupObj.settgroupStatus((String) cbStatus.getValue());
-			testGroupObj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			testGroupObj.setLastUpdateBy(username);
-			serviceTestGroup.saveTestGpDetails(testGroupObj);
+			testGroup.setCompanyId(companyid);
+			testGroup.setTestGroup(tfTestGroup.getValue());
+			testGroup.settgroupStatus((String) cbStatus.getValue());
+			testGroup.setLastUpdatedDt(DateUtils.getcurrentdate());
+			testGroup.setLastUpdateBy(username);
+			serviceTestGroup.saveTestGpDetails(testGroup);
 			resetFields();
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 }

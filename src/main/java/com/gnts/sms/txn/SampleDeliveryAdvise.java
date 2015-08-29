@@ -356,24 +356,30 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 	
 	// Load Sales Enquiry Header
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<SmsSDAHdrDM> list = new ArrayList<SmsSDAHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + null + "," + tfSDANumber.getValue() + ", " + (String) cbSDAStatus.getValue());
-		list = serviceSDAHeader.getsmsSDRdetails(null, tfSDANumber.getValue(), null, (String) cbSDAStatus.getValue());
-		recordCnt = list.size();
-		beanhdr = new BeanItemContainer<SmsSDAHdrDM>(SmsSDAHdrDM.class);
-		beanhdr.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the SMSENQUIRY. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanhdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "sdaHdrId", "sdaNo", "enqNo", "clientName", "cpmPerson",
-				"tecPerson", "sdaDate", "status", "lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "SDA Number", "Enquiry No.", "Client Name",
-				"Commer. Person", "Tech. Person", "Date", "Status", "Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("sdaHdrId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<SmsSDAHdrDM> list = new ArrayList<SmsSDAHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + null + "," + tfSDANumber.getValue() + ", " + (String) cbSDAStatus.getValue());
+			list = serviceSDAHeader.getsmsSDRdetails(null, tfSDANumber.getValue(), null,
+					(String) cbSDAStatus.getValue());
+			recordCnt = list.size();
+			beanhdr = new BeanItemContainer<SmsSDAHdrDM>(SmsSDAHdrDM.class);
+			beanhdr.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the SMSENQUIRY. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanhdr);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "sdaHdrId", "sdaNo", "enqNo", "clientName", "cpmPerson",
+					"tecPerson", "sdaDate", "status", "lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "SDA Number", "Enquiry No.", "Client Name",
+					"Commer. Person", "Tech. Person", "Date", "Status", "Last Updated date", "Last Updated by" });
+			tblMstScrSrchRslt.setColumnAlignment("sdaHdrId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Sales Enquiry Dateil
@@ -550,7 +556,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -578,7 +584,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			btnDetailAdd.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -624,7 +630,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		tblSDADetails.setVisible(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
@@ -771,7 +777,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		finally {
 			try {

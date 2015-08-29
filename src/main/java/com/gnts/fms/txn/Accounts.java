@@ -311,6 +311,7 @@ public class Accounts extends BaseTransUI {
 			lsAccountOwners.setContainerDataSource(employeebeans2);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -325,6 +326,7 @@ public class Accounts extends BaseTransUI {
 			cbAccountType.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -339,6 +341,7 @@ public class Accounts extends BaseTransUI {
 			cbCurrency.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -353,6 +356,7 @@ public class Accounts extends BaseTransUI {
 			cbBankBranch.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -367,6 +371,7 @@ public class Accounts extends BaseTransUI {
 			cbBankName.setContainerDataSource(beanBank);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -382,6 +387,7 @@ public class Accounts extends BaseTransUI {
 			cbVendorName.setContainerDataSource(beanBank);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -397,6 +403,7 @@ public class Accounts extends BaseTransUI {
 			cbClientName.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -412,30 +419,36 @@ public class Accounts extends BaseTransUI {
 			cbParentAccId.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<AccountsDM> listAccount = new ArrayList<AccountsDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyId + ", " + tfAccountNumber.getValue() + ", " + "Active");
-		listAccount = serviceAccounts.getAccountsList(companyId, null, tfAccountNumber.getValue(),
-				(String) cbStatus.getValue(), tfAccountName.getValue(), null, null);
-		recordCnt = listAccount.size();
-		beanAccountsDM = new BeanItemContainer<AccountsDM>(AccountsDM.class);
-		beanAccountsDM.addAll(listAccount);
-		logger.info("Company ID : " + companyId + " | User Name : " + username + " > "
-				+ "Got the Account List result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanAccountsDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "accountId", "accountno", "accountname", "currentBalance",
-				"acctstatus", "lastupdateddt", "lastupdatedby", });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Account Number", "Account Name",
-				"Account Balance", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("currentBalance", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records:" + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<AccountsDM> listAccount = new ArrayList<AccountsDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyId + ", " + tfAccountNumber.getValue() + ", " + "Active");
+			listAccount = serviceAccounts.getAccountsList(companyId, null, tfAccountNumber.getValue(),
+					(String) cbStatus.getValue(), tfAccountName.getValue(), null, null);
+			recordCnt = listAccount.size();
+			beanAccountsDM = new BeanItemContainer<AccountsDM>(AccountsDM.class);
+			beanAccountsDM.addAll(listAccount);
+			logger.info("Company ID : " + companyId + " | User Name : " + username + " > "
+					+ "Got the Account List result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanAccountsDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "accountId", "accountno", "accountname",
+					"currentBalance", "acctstatus", "lastupdateddt", "lastupdatedby", });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Account Number", "Account Name",
+					"Account Balance", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("currentBalance", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records:" + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editAccounts() {
@@ -646,7 +659,7 @@ public class Accounts extends BaseTransUI {
 					}
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					logger.info(e.getMessage());
 				}
 			}
 		});
@@ -814,7 +827,7 @@ public class Accounts extends BaseTransUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

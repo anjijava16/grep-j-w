@@ -158,7 +158,7 @@ public class POMMSReceipts extends BaseTransUI {
 					cbIndentNo.setValue(((POHdrDM) cbPoNo.getValue()).getIndentId());
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					logger.info(e.getMessage());
 				}
 			}
 		});
@@ -385,30 +385,35 @@ public class POMMSReceipts extends BaseTransUI {
 	
 	// Load Receipt Header
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<PoReceiptHdrDM> listReceiptHdr = new ArrayList<PoReceiptHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + cbBranch.getValue() + ", " + cbPoNo.getValue());
-		Long poNo = null;
-		if (cbPoNo.getValue() != null) {
-			poNo = (((POHdrDM) cbPoNo.getValue()).getPoId());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<PoReceiptHdrDM> listReceiptHdr = new ArrayList<PoReceiptHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + cbBranch.getValue() + ", " + cbPoNo.getValue());
+			Long poNo = null;
+			if (cbPoNo.getValue() != null) {
+				poNo = (((POHdrDM) cbPoNo.getValue()).getPoId());
+			}
+			listReceiptHdr = servicePoReceiptHdr.getPoReceiptsHdrList(companyid, null, poNo,
+					(Long) cbBranch.getValue(), (String) tfLotNo.getValue(), (String) cbHdrStatus.getValue(), "F");
+			recordCnt = listReceiptHdr.size();
+			beanPoReceiptHdrDM = new BeanItemContainer<PoReceiptHdrDM>(PoReceiptHdrDM.class);
+			beanPoReceiptHdrDM.addAll(listReceiptHdr);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the PO Recepit. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanPoReceiptHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "receiptId", "branchName", "lotNo", "projectStatus",
+					"lastUpdtDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setPageLength(15);
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Lot No.", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("receiptId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
-		listReceiptHdr = servicePoReceiptHdr.getPoReceiptsHdrList(companyid, null, poNo, (Long) cbBranch.getValue(),
-				(String) tfLotNo.getValue(), (String) cbHdrStatus.getValue(), "F");
-		recordCnt = listReceiptHdr.size();
-		beanPoReceiptHdrDM = new BeanItemContainer<PoReceiptHdrDM>(PoReceiptHdrDM.class);
-		beanPoReceiptHdrDM.addAll(listReceiptHdr);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the PO Recepit. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanPoReceiptHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "receiptId", "branchName", "lotNo", "projectStatus",
-				"lastUpdtDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setPageLength(15);
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Lot No.", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("receiptId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Receipt Detail
@@ -429,19 +434,24 @@ public class POMMSReceipts extends BaseTransUI {
 			tblReceiptDtl.setPageLength(6);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Delete POMMSReceiptDetail
 	private void deleteDetails() {
-		PoReceiptDtlDM save = new PoReceiptDtlDM();
-		if (tblReceiptDtl.getValue() != null) {
-			save = beanPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
-			listPOReceipts.remove(save);
-			receiptResetFields();
-			loadReceiptDtl();
-			btndelete.setEnabled(false);
+		try {
+			PoReceiptDtlDM save = new PoReceiptDtlDM();
+			if (tblReceiptDtl.getValue() != null) {
+				save = beanPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
+				listPOReceipts.remove(save);
+				receiptResetFields();
+				loadReceiptDtl();
+				btndelete.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -496,7 +506,7 @@ public class POMMSReceipts extends BaseTransUI {
 			cbMaterial.setContainerDataSource(beanProduct);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

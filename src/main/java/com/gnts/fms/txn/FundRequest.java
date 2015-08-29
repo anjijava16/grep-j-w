@@ -168,25 +168,31 @@ public class FundRequest extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<FundRequestDM> listFundReqest = new ArrayList<FundRequestDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbBranchName.getValue() + " , " + (String) cbStatus.getValue());
-		listFundReqest = serviceFundRequest.getFundRequestList(companyId, (Long) cbBranchName.getValue(),
-				(String) cbStatus.getValue());
-		recordCnt = listFundReqest.size();
-		beansFundRequestDM = new BeanItemContainer<FundRequestDM>(FundRequestDM.class);
-		beansFundRequestDM.addAll(listFundReqest);
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Got the Account Payables List result set");
-		tblMstScrSrchRslt.setContainerDataSource(beansFundRequestDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "fundrqstId", "branchName", "rqstStatus", "lastUpdateDt",
-				"lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("fundrqstId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records:" + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<FundRequestDM> listFundReqest = new ArrayList<FundRequestDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Search Parameters are " + companyId + ", " + (Long) cbBranchName.getValue() + " , "
+					+ (String) cbStatus.getValue());
+			listFundReqest = serviceFundRequest.getFundRequestList(companyId, (Long) cbBranchName.getValue(),
+					(String) cbStatus.getValue());
+			recordCnt = listFundReqest.size();
+			beansFundRequestDM = new BeanItemContainer<FundRequestDM>(FundRequestDM.class);
+			beansFundRequestDM.addAll(listFundReqest);
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Got the Account Payables List result set");
+			tblMstScrSrchRslt.setContainerDataSource(beansFundRequestDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "fundrqstId", "branchName", "rqstStatus",
+					"lastUpdateDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("fundrqstId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records:" + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// For Load Active Branch Details based on Company
@@ -198,6 +204,7 @@ public class FundRequest extends BaseUI {
 			cbBranchName.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -209,6 +216,7 @@ public class FundRequest extends BaseUI {
 			cbAccountReference.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -345,8 +353,7 @@ public class FundRequest extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			logger.info("Save Method------------------------->" + e);
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

@@ -267,8 +267,7 @@ public class TransactionApprovel implements ClickListener {
 			tblTransactions.setColumnFooter("appremarks", "No.of Records: " + total);
 		}
 		catch (Exception e) {
-			logger.error("Error on populateAndConfig()---->" + e);
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		getExportTableDetails();
 	}
@@ -316,6 +315,7 @@ public class TransactionApprovel implements ClickListener {
 					openbalance = accountbalance;
 				}
 				catch (Exception e) {
+					logger.info(e.getMessage());
 				}
 			}
 			if (serviceTransType.getTransactionTypeList(null, null, null, null, transOld.getTranstypeid()).get(0)

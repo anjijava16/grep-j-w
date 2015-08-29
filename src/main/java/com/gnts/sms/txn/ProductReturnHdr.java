@@ -365,20 +365,25 @@ public class ProductReturnHdr extends BaseUI {
 	
 	// Load Product Return Hdr
 	private void loadSrchRslt() {
-		tblMstScrSrchRslt.removeAllItems();
-		List<ProductReturnHdrDM> list = new ArrayList<ProductReturnHdrDM>();
-		list = serviceProductReturnHdr.getProductReturnHdrList((Long) cbInvoiceid.getValue(), companyid, null,
-				(Long) cbbranch.getValue(), (String) cbprdstatus.getValue(), "F");
-		recordcnt = list.size();
-		beanProdReturn = new BeanItemContainer<ProductReturnHdrDM>(ProductReturnHdrDM.class);
-		beanProdReturn.addAll(list);
-		tblMstScrSrchRslt.setContainerDataSource(beanProdReturn);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "productreturnId", "branchName", "invoiceAddress",
-				"returnRemarks", "prdrtnStatus", "lastUpdateddt", "lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch", "Invoice Address", "Return Remark",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("productreturnId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordcnt);
+		try {
+			tblMstScrSrchRslt.removeAllItems();
+			List<ProductReturnHdrDM> list = new ArrayList<ProductReturnHdrDM>();
+			list = serviceProductReturnHdr.getProductReturnHdrList((Long) cbInvoiceid.getValue(), companyid, null,
+					(Long) cbbranch.getValue(), (String) cbprdstatus.getValue(), "F");
+			recordcnt = list.size();
+			beanProdReturn = new BeanItemContainer<ProductReturnHdrDM>(ProductReturnHdrDM.class);
+			beanProdReturn.addAll(list);
+			tblMstScrSrchRslt.setContainerDataSource(beanProdReturn);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "productreturnId", "branchName", "invoiceAddress",
+					"returnRemarks", "prdrtnStatus", "lastUpdateddt", "lastUpdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch", "Invoice Address", "Return Remark",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("productreturnId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordcnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load prodcut Return dtl
@@ -433,7 +438,7 @@ public class ProductReturnHdr extends BaseUI {
 			loadreturndtls(false);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -452,7 +457,7 @@ public class ProductReturnHdr extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -513,7 +518,7 @@ public class ProductReturnHdr extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -540,7 +545,7 @@ public class ProductReturnHdr extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -623,7 +628,7 @@ public class ProductReturnHdr extends BaseUI {
 			prodretdtlsResetfields();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

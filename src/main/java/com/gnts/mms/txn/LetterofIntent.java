@@ -237,6 +237,7 @@ public class LetterofIntent extends BaseTransUI {
 					cbUom.setValue(((MmsQuoteDtlDM) cbMatName.getValue()).getMatuom());
 					cbUom.setReadOnly(true);
 					tfIntQty.setValue(((MmsQuoteDtlDM) cbMatName.getValue()).getQuoteqty().toString());
+					tfUnitprice.setValue(((MmsQuoteDtlDM) cbMatName.getValue()).getUnitrate().toString());
 				}
 			}
 		});
@@ -329,7 +330,7 @@ public class LetterofIntent extends BaseTransUI {
 		hlIndentDtl.addComponent(tblLOIDetail);
 		hlIndentDtl.setSpacing(true);
 		hlIndentDtl.setMargin(true);
-		tfLOINumber.setReadOnly(true);
+		tfLOINumber.setReadOnly(false);
 		VerticalLayout vlIndentHdrAndDtl = new VerticalLayout();
 		vlIndentHdrAndDtl = new VerticalLayout();
 		vlIndentHdrAndDtl.addComponent(GERPPanelGenerator.createPanel(hlTax));
@@ -531,17 +532,6 @@ public class LetterofIntent extends BaseTransUI {
 		assembleInputUserLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		// reset the input controls to default value
-		try {
-			tfLOINumber.setReadOnly(false);
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MMS_LOI").get(0);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfLOINumber.setValue(slnoObj.getKeyDesc());
-				tfLOINumber.setReadOnly(true);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		btnAddDtl.setCaption("Add");

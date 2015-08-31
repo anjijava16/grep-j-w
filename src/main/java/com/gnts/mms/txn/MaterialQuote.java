@@ -1401,7 +1401,7 @@ public class MaterialQuote extends BaseTransUI {
 		taFreightTerms.setValue("");
 		cbStatus.setValue(null);
 		dfQuoteDt.setValue(new Date());
-		dfvalidDt.setValue(DateUtils.addDays(new Date(), 7));
+		dfvalidDt.setValue(null);
 		taRemark.setValue("");
 		cbBranch.setComponentError(null);
 		cbEnqNo.setComponentError(null);

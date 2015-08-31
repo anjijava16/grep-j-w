@@ -229,58 +229,69 @@ public class Opportunity extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		tblMstScrSrchRslt.removeAllItems();
-		List<OppertunitiesDM> listOppertunities = new ArrayList<OppertunitiesDM>();
-		listOppertunities = serviceOppertunity.getClientOppertunityDetails(companyId, null, (Long) cbClient.getValue(),
-				null, tfOppertName.getValue(), cbSearchOppertStatus.getValue().toString());
-		total = listOppertunities.size();
-		beanClntOppertunity.addAll(listOppertunities);
-		tblMstScrSrchRslt.setSelectable(true);
-		tblMstScrSrchRslt.setContainerDataSource(beanClntOppertunity);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "oppertunityId", "oppertunityName", "oppertunityType",
-				"closingDate", "oppertunityStatus", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Opportunity Name", "Opportunity Type",
-				"Close Date", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + total);
+		try {
+			tblMstScrSrchRslt.removeAllItems();
+			List<OppertunitiesDM> listOppertunities = new ArrayList<OppertunitiesDM>();
+			listOppertunities = serviceOppertunity.getClientOppertunityDetails(companyId, null, (Long) cbClient
+					.getValue(), null, tfOppertName.getValue(), cbSearchOppertStatus.getValue().toString());
+			total = listOppertunities.size();
+			beanClntOppertunity.addAll(listOppertunities);
+			tblMstScrSrchRslt.setSelectable(true);
+			tblMstScrSrchRslt.setContainerDataSource(beanClntOppertunity);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "oppertunityId", "oppertunityName", "oppertunityType",
+					"closingDate", "oppertunityStatus", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Opportunity Name", "Opportunity Type",
+					"Close Date", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + total);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editClientOpportunityDetails() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Selected opportunuity. Id -> " + oppertunityId);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			OppertunitiesDM oppertunitiesDM = beanClntOppertunity.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			oppertunityId = oppertunitiesDM.getOppertunityId();
-			if (oppertunitiesDM.getBusinessValue() != null && !"null".equals(oppertunitiesDM.getBusinessValue())) {
-				tfBusinessValue.setValue(oppertunitiesDM.getBusinessValue().toString());
-			} else {
-				tfBusinessValue.setValue("0");
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Selected opportunuity. Id -> " + oppertunityId);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				OppertunitiesDM oppertunitiesDM = beanClntOppertunity.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				oppertunityId = oppertunitiesDM.getOppertunityId();
+				if (oppertunitiesDM.getBusinessValue() != null && !"null".equals(oppertunitiesDM.getBusinessValue())) {
+					tfBusinessValue.setValue(oppertunitiesDM.getBusinessValue().toString());
+				} else {
+					tfBusinessValue.setValue("0");
+				}
+				tfOppertName.setValue(oppertunitiesDM.getOppertunityName());
+				if (oppertunitiesDM.getWinProbability() != null && !"null".equals(oppertunitiesDM.getWinProbability())) {
+					tfWinProb.setValue(oppertunitiesDM.getWinProbability().toString());
+				} else {
+					tfWinProb.setValue("0");
+				}
+				cbOppertType.setValue(oppertunitiesDM.getOppertunityType());
+				cbCampaign.setValue(oppertunitiesDM.getCampaingnId());
+				cbEmployee.setValue(oppertunitiesDM.getAssignedTo());
+				cbClient.setValue(oppertunitiesDM.getClientId());
+				if (oppertunitiesDM.getRemarks() != null && !"null".equals(oppertunitiesDM.getRemarks())) {
+					taRemarks.setValue(oppertunitiesDM.getRemarks());
+				}
+				try {
+					closingDt.setValue(oppertunitiesDM.getClosingDate1());
+				}
+				catch (Exception e) {
+					logger.info("convert closing date to date" + e);
+				}
 			}
-			tfOppertName.setValue(oppertunitiesDM.getOppertunityName());
-			if (oppertunitiesDM.getWinProbability() != null && !"null".equals(oppertunitiesDM.getWinProbability())) {
-				tfWinProb.setValue(oppertunitiesDM.getWinProbability().toString());
-			} else {
-				tfWinProb.setValue("0");
-			}
-			cbOppertType.setValue(oppertunitiesDM.getOppertunityType());
-			cbCampaign.setValue(oppertunitiesDM.getCampaingnId());
-			cbEmployee.setValue(oppertunitiesDM.getAssignedTo());
-			cbClient.setValue(oppertunitiesDM.getClientId());
-			if (oppertunitiesDM.getRemarks() != null && !"null".equals(oppertunitiesDM.getRemarks())) {
-				taRemarks.setValue(oppertunitiesDM.getRemarks());
-			}
-			try {
-				closingDt.setValue(oppertunitiesDM.getClosingDate1());
-			}
-			catch (Exception e) {
-				logger.info("convert closing date to date" + e);
-			}
+			comment = new Comments(vlCommetTblLayout, employeeId, oppertunityId, null, null, null, null, null);
+			document = new Documents(vlDocumentLayout, oppertunityId, null, null, null, null, null);
+			comment.loadsrch(true, null, null, null, null, oppertunityId, null);
+			document.loadsrcrslt(true, null, null, null, null, oppertunityId, null);
 		}
-		comment = new Comments(vlCommetTblLayout, employeeId, oppertunityId, null, null, null, null, null);
-		document = new Documents(vlDocumentLayout, oppertunityId, null, null, null, null, null);
-		comment.loadsrch(true, null, null, null, null, oppertunityId, null);
-		document.loadsrcrslt(true, null, null, null, null, oppertunityId, null);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/**
@@ -310,6 +321,7 @@ public class Opportunity extends BaseUI {
 			cbCampaign.setContainerDataSource(beancampaign);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -322,6 +334,7 @@ public class Opportunity extends BaseUI {
 			cbSearchOppertStatus.setContainerDataSource(beanlookup);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -475,7 +488,7 @@ public class Opportunity extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

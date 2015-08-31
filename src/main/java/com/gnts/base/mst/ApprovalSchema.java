@@ -218,49 +218,54 @@ public class ApprovalSchema extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<ApprovalSchemaDM> list = new ArrayList<ApprovalSchemaDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + (Long) cbBranch.getValue() + ", " + (Long) cbRole.getValue());
-		list = serviceApprSchema.getApprovalSchemaList(companyid, (Long) cbBranch.getValue(), (Long) cbRole.getValue(),
-				null, null);
-		recordCnt = list.size();
-		beanApprovalSchema = new BeanItemContainer<ApprovalSchemaDM>(ApprovalSchemaDM.class);
-		beanApprovalSchema.addAll(list);
-		tblApproSchm.setContainerDataSource(beanApprovalSchema);
-		tblApproSchm.setVisibleColumns(new Object[] { "apprSchmId", "screenName", "apprLevel", "apprLimit",
-				"apprStatus", "lastUpdatedDate", "lastUpdatedBy" });
-		tblApproSchm.setColumnHeaders(new String[] { "Ref.Id", "Screen", "Approval Level", "Limit", "Status",
-				"Updated Date", "Updated By" });
-		tblApproSchm.setColumnAlignment("apprSchmId", Align.RIGHT);
-		tblApproSchm.setColumnFooter("apprStatus", "No.of Records : " + recordCnt);
-		tblApproSchm.setEditable(true);
-		tblApproSchm.setTableFieldFactory(new TableFieldFactory() {
-			/**
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<ApprovalSchemaDM> list = new ArrayList<ApprovalSchemaDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + (Long) cbBranch.getValue() + ", " + (Long) cbRole.getValue());
+			list = serviceApprSchema.getApprovalSchemaList(companyid, (Long) cbBranch.getValue(),
+					(Long) cbRole.getValue(), null, null);
+			recordCnt = list.size();
+			beanApprovalSchema = new BeanItemContainer<ApprovalSchemaDM>(ApprovalSchemaDM.class);
+			beanApprovalSchema.addAll(list);
+			tblApproSchm.setContainerDataSource(beanApprovalSchema);
+			tblApproSchm.setVisibleColumns(new Object[] { "apprSchmId", "screenName", "apprLevel", "apprLimit",
+					"apprStatus", "lastUpdatedDate", "lastUpdatedBy" });
+			tblApproSchm.setColumnHeaders(new String[] { "Ref.Id", "Screen", "Approval Level", "Limit", "Status",
+					"Updated Date", "Updated By" });
+			tblApproSchm.setColumnAlignment("apprSchmId", Align.RIGHT);
+			tblApproSchm.setColumnFooter("apprStatus", "No.of Records : " + recordCnt);
+			tblApproSchm.setEditable(true);
+			tblApproSchm.setTableFieldFactory(new TableFieldFactory() {
+				/**
 			 * 
 			 */
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-				if (propertyId.toString().equals("apprStatus")) {
-					cbApproveStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
-							BASEConstants.M_GENERIC_COLUMN);
-					return cbApproveStatus;
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+					if (propertyId.toString().equals("apprStatus")) {
+						cbApproveStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
+								BASEConstants.M_GENERIC_COLUMN);
+						return cbApproveStatus;
+					}
+					if (propertyId.toString().equals("apprLevel")) {
+						cbApprovelvl = new GERPComboBox("Approval Level", BASEConstants.M_BASE_APPROVAL_SCHEMA,
+								BASEConstants.APPROVE_LVL);
+						return cbApprovelvl;
+					}
+					if (propertyId.toString().equals("apprLimit")) {
+						tfApprovalmt = new GERPTextField("");
+						tfApprovalmt.setWidth("100");
+						return tfApprovalmt;
+					}
+					return null;
 				}
-				if (propertyId.toString().equals("apprLevel")) {
-					cbApprovelvl = new GERPComboBox("Approval Level", BASEConstants.M_BASE_APPROVAL_SCHEMA,
-							BASEConstants.APPROVE_LVL);
-					return cbApprovelvl;
-				}
-				if (propertyId.toString().equals("apprLimit")) {
-					tfApprovalmt = new GERPTextField("");
-					tfApprovalmt.setWidth("100");
-					return tfApprovalmt;
-				}
-				return null;
-			}
-		});
+			});
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// loading BranchDM list

@@ -60,7 +60,7 @@ public class Dashboard {
 	private OrgNewsService serviceNews = (OrgNewsService) SpringContextHelper.getBean("news");
 	private CustomerVisitHdrService serviceCustomerVisitHdr = (CustomerVisitHdrService) SpringContextHelper
 			.getBean("customervisithdr");
-	private Logger log = Logger.getLogger(Dashboard.class);
+	private Logger logger = Logger.getLogger(Dashboard.class);
 	private BeanItemContainer<HolidaysDM> beans = null;
 	private VerticalLayout vltable;
 	private HorizontalLayout vlMainLayout;
@@ -149,92 +149,112 @@ public class Dashboard {
 	
 	// Method for show the details in grid table
 	private void populateAndConfigureTableNew() {
-		tblHoliday.removeAllItems();
-		List<HolidaysDM> usertable = new ArrayList<HolidaysDM>();
-		Date endDate = addDays(DateUtils.getcurrentdate(), 30);
-		if (branchId != null && endDate != null) usertable = serviceHoliday.getHolidaysList(null, null, null, "Active",
-				companyId, null, "F");
-		beans = new BeanItemContainer<HolidaysDM>(HolidaysDM.class);
-		beans.addAll(usertable);
-		tblHoliday.setContainerDataSource(beans);
-		tblHoliday.setVisibleColumns(new Object[] { "holidayDate", "holidayName" });
-		tblHoliday.setColumnHeaders(new String[] { " Date", "Holiday " });
-		tblHoliday.setColumnWidth("holidayDate", 100);
-		tblHoliday.setColumnWidth("holidayName", 150);
+		try {
+			tblHoliday.removeAllItems();
+			List<HolidaysDM> usertable = new ArrayList<HolidaysDM>();
+			Date endDate = addDays(DateUtils.getcurrentdate(), 30);
+			if (branchId != null && endDate != null) usertable = serviceHoliday.getHolidaysList(null, null, null,
+					"Active", companyId, null, "F");
+			beans = new BeanItemContainer<HolidaysDM>(HolidaysDM.class);
+			beans.addAll(usertable);
+			tblHoliday.setContainerDataSource(beans);
+			tblHoliday.setVisibleColumns(new Object[] { "holidayDate", "holidayName" });
+			tblHoliday.setColumnHeaders(new String[] { " Date", "Holiday " });
+			tblHoliday.setColumnWidth("holidayDate", 100);
+			tblHoliday.setColumnWidth("holidayName", 150);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadBirthDayDetails() {
-		List<EmployeeDM> list = serviceEmployee.getEmployeeList(null, null, null, null, null, null, null, null, null,
-				"P");
-		if (list != null) {
-			tblBirthday.removeAllItems();
-			BeanItemContainer<EmployeeDM> beansNews = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-			for (EmployeeDM employeeDM : list) {
-				try {
-					if (DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
-							DateUtils.getMonthAndYear(new Date()))
-							|| DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
-									DateUtils.getMonthAndYear(addDays(new Date(), 1)))
-							|| DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
-									DateUtils.getMonthAndYear(addDays(new Date(), 2)))
-							|| DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
-									DateUtils.getMonthAndYear(addDays(new Date(), 3)))) {
-						beansNews.addBean(employeeDM);
+		try {
+			List<EmployeeDM> list = serviceEmployee.getEmployeeList(null, null, null, null, null, null, null, null,
+					null, "P");
+			if (list != null) {
+				tblBirthday.removeAllItems();
+				BeanItemContainer<EmployeeDM> beansNews = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+				for (EmployeeDM employeeDM : list) {
+					try {
+						if (DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
+								DateUtils.getMonthAndYear(new Date()))
+								|| DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
+										DateUtils.getMonthAndYear(addDays(new Date(), 1)))
+								|| DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
+										DateUtils.getMonthAndYear(addDays(new Date(), 2)))
+								|| DateUtils.getMonthAndYear(employeeDM.getDobinDt()).endsWith(
+										DateUtils.getMonthAndYear(addDays(new Date(), 3)))) {
+							beansNews.addBean(employeeDM);
+						}
+					}
+					catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
+				tblBirthday.setContainerDataSource(beansNews);
+				tblBirthday.setVisibleColumns(new Object[] { "dob", "firstlastname" });
+				tblBirthday.setColumnHeaders(new String[] { " Date", "Employee Name " });
 			}
-			tblBirthday.setContainerDataSource(beansNews);
-			tblBirthday.setVisibleColumns(new Object[] { "dob", "firstlastname" });
-			tblBirthday.setColumnHeaders(new String[] { " Date", "Employee Name " });
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadNewsDetails() {
-		List<OrgNewsDM> newsList = serviceNews.getNewsList(null, null, null, "Active", companyId, null, null);
-		if (newsList != null) {
-			tblNews.removeAllItems();
-			BeanItemContainer<OrgNewsDM> beansNews = new BeanItemContainer<OrgNewsDM>(OrgNewsDM.class);
-			beansNews.addAll(newsList);
-			tblNews.setContainerDataSource(beansNews);
-			tblNews.setVisibleColumns(new Object[] { "newsTitle", "newsDesc" });
-			tblNews.setColumnHeaders(new String[] { " Title", "Description " });
-			tblNews.addGeneratedColumn("newsDesc", new ColumnGenerator() {
-				private static final long serialVersionUID = 1L;
-				
-				@Override
-				public Object generateCell(Table source, Object itemId, Object columnId) {
-					@SuppressWarnings("unchecked")
-					BeanItem<OrgNewsDM> item = (BeanItem<OrgNewsDM>) source.getItem(itemId);
-					return new Label((String) item.getItemProperty("newsDesc").getValue(), ContentMode.HTML);
-				}
-			});
+		try {
+			List<OrgNewsDM> newsList = serviceNews.getNewsList(null, null, null, "Active", companyId, null, null);
+			if (newsList != null) {
+				tblNews.removeAllItems();
+				BeanItemContainer<OrgNewsDM> beansNews = new BeanItemContainer<OrgNewsDM>(OrgNewsDM.class);
+				beansNews.addAll(newsList);
+				tblNews.setContainerDataSource(beansNews);
+				tblNews.setVisibleColumns(new Object[] { "newsTitle", "newsDesc" });
+				tblNews.setColumnHeaders(new String[] { " Title", "Description " });
+				tblNews.addGeneratedColumn("newsDesc", new ColumnGenerator() {
+					private static final long serialVersionUID = 1L;
+					
+					@Override
+					public Object generateCell(Table source, Object itemId, Object columnId) {
+						@SuppressWarnings("unchecked")
+						BeanItem<OrgNewsDM> item = (BeanItem<OrgNewsDM>) source.getItem(itemId);
+						return new Label((String) item.getItemProperty("newsDesc").getValue(), ContentMode.HTML);
+					}
+				});
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadClientVistDetails() {
-		List<CustomerVisitHdrDM> newsList = serviceCustomerVisitHdr.getCustomerVisitHdrList(null, null, null, null,
-				null, "F");
-		if (newsList != null) {
-			tblClientVisit.removeAllItems();
-			BeanItemContainer<CustomerVisitHdrDM> beansNews = new BeanItemContainer<CustomerVisitHdrDM>(
-					CustomerVisitHdrDM.class);
-			beansNews.addAll(newsList);
-			tblClientVisit.setContainerDataSource(beansNews);
-			tblClientVisit.setVisibleColumns(new Object[] { "visitDt", "custName" });
-			tblClientVisit.setColumnHeaders(new String[] { " Date", "Client Name" });
-			tblClientVisit.addGeneratedColumn("custName", new ColumnGenerator() {
-				private static final long serialVersionUID = 1L;
-				
-				@Override
-				public Object generateCell(Table source, Object itemId, Object columnId) {
-					@SuppressWarnings("unchecked")
-					BeanItem<CustomerVisitHdrDM> item = (BeanItem<CustomerVisitHdrDM>) source.getItem(itemId);
-					return new Label((String) item.getItemProperty("custName").getValue(), ContentMode.HTML);
-				}
-			});
+		try {
+			List<CustomerVisitHdrDM> newsList = serviceCustomerVisitHdr.getCustomerVisitHdrList(null, null, null, null,
+					null, "F");
+			if (newsList != null) {
+				tblClientVisit.removeAllItems();
+				BeanItemContainer<CustomerVisitHdrDM> beansNews = new BeanItemContainer<CustomerVisitHdrDM>(
+						CustomerVisitHdrDM.class);
+				beansNews.addAll(newsList);
+				tblClientVisit.setContainerDataSource(beansNews);
+				tblClientVisit.setVisibleColumns(new Object[] { "visitDt", "custName" });
+				tblClientVisit.setColumnHeaders(new String[] { " Date", "Client Name" });
+				tblClientVisit.addGeneratedColumn("custName", new ColumnGenerator() {
+					private static final long serialVersionUID = 1L;
+					
+					@Override
+					public Object generateCell(Table source, Object itemId, Object columnId) {
+						@SuppressWarnings("unchecked")
+						BeanItem<CustomerVisitHdrDM> item = (BeanItem<CustomerVisitHdrDM>) source.getItem(itemId);
+						return new Label((String) item.getItemProperty("custName").getValue(), ContentMode.HTML);
+					}
+				});
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -270,7 +290,7 @@ public class Dashboard {
 		}
 		catch (ParseException e) {
 			// TODO Auto-generated catch block
-			log.warn("calculate days" + e);
+			logger.warn("calculate days" + e);
 		}
 		Calendar now = Calendar.getInstance();
 		now.setTime(parsedDate);

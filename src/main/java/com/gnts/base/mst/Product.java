@@ -103,9 +103,9 @@ public class Product extends BaseUI {
 	private HorizontalLayout hlSearchLayout;
 	private HorizontalLayout clrGlry = new HorizontalLayout();
 	// User Input Components
-	private TextField tfProdName, tfprice, tfcode, tfprodcode;
+	private TextField tfProdName, tfPrice, tfcode, tfprodcode;
 	private ComboBox cbprntProdct, cbprodCtgry, cbstatus, cbCurrency, cbbrand, cbBranch, cbuom;
-	private TextArea taprodDesc, tadescription, tasrtDesc;
+	private TextArea taprodDesc, taDescription, tasrtDesc;
 	private CheckBox cbView, cbVisualizer;
 	private Button btnaddSpec = new GERPButton("Add", "addbt", this);
 	private Table tblspec = new Table();
@@ -154,12 +154,12 @@ public class Product extends BaseUI {
 		// TextArea Product Description
 		taprodDesc = new GERPTextArea("Product Desc");
 		// Text area product specification
-		tadescription = new TextArea("Description");
-		tadescription.setHeight("25");
-		tadescription.setWidth("165");
+		taDescription = new TextArea("Description");
+		taDescription.setHeight("25");
+		taDescription.setWidth("165");
 		// Price text field
-		tfprice = new TextField();
-		tfprice.setWidth("75");
+		tfPrice = new TextField();
+		tfPrice.setWidth("75");
 		// Currency Combo box
 		cbCurrency = new ComboBox();
 		cbCurrency.setItemCaptionPropertyId("ccyname");
@@ -295,7 +295,7 @@ public class Product extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling User Input layout");
 		// Add Price and Currency in horizontal layout
 		HorizontalLayout hlpricecurency = new HorizontalLayout();
-		hlpricecurency.addComponent(tfprice);
+		hlpricecurency.addComponent(tfPrice);
 		hlpricecurency.addComponent(cbCurrency);
 		hlpricecurency.setCaption("Price");
 		// Remove all components in Search Layout
@@ -322,7 +322,7 @@ public class Product extends BaseUI {
 		// Formlayout 2 components
 		HorizontalLayout hlcodeDesc = new HorizontalLayout();
 		hlcodeDesc.addComponent(tfcode);
-		hlcodeDesc.addComponent(tadescription);
+		hlcodeDesc.addComponent(taDescription);
 		VerticalLayout vl = new VerticalLayout();
 		vl.addComponent(cbstatus);
 		vl.setSpacing(true);
@@ -385,25 +385,31 @@ public class Product extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Product Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<ProductDM> list = new ArrayList<ProductDM>();
-		logger.info("" + "Product Category : Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Search Parameters are " + companyid + ", " + tfProdName.getValue() + ", " + tfProdName.getValue()
-				+ (String) cbstatus.getValue());
-		list = serviceProduct.getProductList(companyid, null, null, tfProdName.getValue().toString(),
-				(String) cbstatus.getValue(), null, null, "F");
-		recordCnt = list.size();
-		beanProductDM = new BeanItemContainer<ProductDM>(ProductDM.class);
-		beanProductDM.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the ParentCategory. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanProductDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "prodid", "prodname", "cateName", "brandname", "prodstatus",
-				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Product", "Category", "Brand", "Status",
-				"Updated Date", "Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("prodid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Product Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Search...");
+			List<ProductDM> list = new ArrayList<ProductDM>();
+			logger.info("" + "Product Category : Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Search Parameters are " + companyid + ", " + tfProdName.getValue() + ", "
+					+ tfProdName.getValue() + (String) cbstatus.getValue());
+			list = serviceProduct.getProductList(companyid, null, null, tfProdName.getValue().toString(),
+					(String) cbstatus.getValue(), null, null, "F");
+			recordCnt = list.size();
+			beanProductDM = new BeanItemContainer<ProductDM>(ProductDM.class);
+			beanProductDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the ParentCategory. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanProductDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "prodid", "prodname", "cateName", "brandname",
+					"prodstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Product", "Category", "Brand", "Status",
+					"Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("prodid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadSrchspecRslt() {
@@ -437,7 +443,7 @@ public class Product extends BaseUI {
 			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -453,7 +459,7 @@ public class Product extends BaseUI {
 			cbbrand.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -469,7 +475,7 @@ public class Product extends BaseUI {
 			cbuom.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -547,7 +553,7 @@ public class Product extends BaseUI {
 					taprodDesc.setValue(productDM.getProddesc());
 				}
 				if ((productDM.getPrice() != null)) {
-					tfprice.setValue(productDM.getPrice().toString());
+					tfPrice.setValue(productDM.getPrice().toString());
 				}
 				if ((productDM.getShortdesc() != null)) {
 					tasrtDesc.setValue(productDM.getShortdesc().toString());
@@ -601,20 +607,25 @@ public class Product extends BaseUI {
 			loadSrchspecRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editProductspec() {
-		hlUserInputLayout.setVisible(true);
-		Item specrowSelected = tblspec.getItem(tblspec.getValue());
-		if (specrowSelected != null) {
-			tfcode.setValue((String) specrowSelected.getItemProperty("speccode").getValue());
-			if ((specrowSelected.getItemProperty("specdesc").getValue() != null)) {
-				tadescription.setValue(specrowSelected.getItemProperty("specdesc").getValue().toString());
+		try {
+			hlUserInputLayout.setVisible(true);
+			Item specrowSelected = tblspec.getItem(tblspec.getValue());
+			if (specrowSelected != null) {
+				tfcode.setValue((String) specrowSelected.getItemProperty("speccode").getValue());
+				if ((specrowSelected.getItemProperty("specdesc").getValue() != null)) {
+					taDescription.setValue(specrowSelected.getItemProperty("specdesc").getValue().toString());
+				}
+				String stCode = specrowSelected.getItemProperty("specstatus").getValue().toString();
+				cbstatus.setValue(stCode);
 			}
-			String stCode = specrowSelected.getItemProperty("specstatus").getValue().toString();
-			cbstatus.setValue(stCode);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -627,19 +638,19 @@ public class Product extends BaseUI {
 		tfprodcode.setValue("");
 		tasrtDesc.setValue("");
 		taprodDesc.setValue("");
-		tfprice.setValue("0");
+		tfPrice.setValue("0");
 		cbCurrency.setValue(null);
 		cbuom.setValue(null);
 		cbView.setValue(false);
 		cbVisualizer.setValue(false);
-		tadescription.setValue("");
+		taDescription.setValue("");
 		tfProdName.setComponentError(null);
 		tfcode.setComponentError(null);
 		cbbrand.setComponentError(null);
 		cbBranch.setComponentError(null);
 		cbCurrency.setComponentError(null);
 		cbuom.setComponentError(null);
-		tfprice.setComponentError(null);
+		tfPrice.setComponentError(null);
 		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
 		new UploadUI(hlProdCtgryImg);
 		new UploadDocumentUI(hlprodDoc);
@@ -654,7 +665,7 @@ public class Product extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		tfcode.setValue("");
 		tfcode.setComponentError(null);
-		tadescription.setValue("");
+		taDescription.setValue("");
 		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
 		loadSrchspecRslt();
 	}
@@ -809,8 +820,8 @@ public class Product extends BaseUI {
 			}
 			productobj.setCompanyid(companyid);
 			productobj.setProdname(tfProdName.getValue().toString());
-			if (tfprice.getValue() != null) {
-				productobj.setPrice(Long.valueOf(tfprice.getValue().toString()));
+			if (tfPrice.getValue() != null) {
+				productobj.setPrice(Long.valueOf(tfPrice.getValue().toString()));
 			}
 			if (cbCurrency.getValue() != null) {
 				productobj.setCcyid((Long) cbCurrency.getValue());
@@ -878,7 +889,7 @@ public class Product extends BaseUI {
 			loadSrchspecRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -890,7 +901,7 @@ public class Product extends BaseUI {
 				productSpec = beanProdSpecDM.getItem(tblspec.getValue()).getBean();
 			}
 			productSpec.setSpeccode(tfcode.getValue());
-			productSpec.setSpecdesc(tadescription.getValue().toString());
+			productSpec.setSpecdesc(taDescription.getValue().toString());
 			if (cbstatus.getValue() != null) {
 				productSpec.setSpecstatus((String) cbstatus.getValue());
 			}
@@ -900,7 +911,7 @@ public class Product extends BaseUI {
 			loadSrchspecRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		specResetFields();
 	}

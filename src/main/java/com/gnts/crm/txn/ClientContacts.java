@@ -81,7 +81,7 @@ public class ClientContacts extends BaseUI {
 	 * UI Components
 	 */
 	private TextField tfContactName, tfDesignation, tftechperson, tfcommercialper, tfPhoneNo, tfMobileno, tfEmailId,
-			tfCityname,tfCountry;
+			tfCityname, tfCountry;
 	private ComboBox cbClient, cbStatus, cbClienSalut;
 	private BeanItemContainer<ClientsContactsDM> beanclntcontact = null;
 	private OptionGroup ogpersontype = new OptionGroup("");
@@ -180,7 +180,7 @@ public class ClientContacts extends BaseUI {
 										null, "F").get(0).getCityName());
 						tfCountry.setValue(serviceClients
 								.getClientDetails(null, (Long) cbClient.getValue(), null, null, null, null, null, null,
-										null, "F").get(0).getCountryName());						
+										null, "F").get(0).getCountryName());
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -190,18 +190,15 @@ public class ClientContacts extends BaseUI {
 						tfCityname.setReadOnly(true);
 						tfCountry.setValue("");
 						tfCountry.setReadOnly(true);
-
 					}
 					tfCityname.setReadOnly(true);
 				} else {
 					tfCityname.setReadOnly(false);
 					tfCountry.setReadOnly(false);
-
 					tfCityname.setValue("");
 					tfCityname.setReadOnly(true);
 					tfCountry.setValue("");
 					tfCountry.setReadOnly(true);
-
 				}
 			}
 		});
@@ -321,56 +318,67 @@ public class ClientContacts extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		List<ClientsContactsDM> listClientContact = new ArrayList<ClientsContactsDM>();
-		listClientContact = serviceClntContact.getClientContactsDetails(companyId, null, (Long) cbClient.getValue(),
-				(String) tfContactName.getValue(), (String) cbStatus.getValue(), null);
-		recordCnt = listClientContact.size();
-		beanclntcontact = new BeanItemContainer<ClientsContactsDM>(ClientsContactsDM.class);
-		beanclntcontact.addAll(listClientContact);
-		tblMstScrSrchRslt.setContainerDataSource(beanclntcontact);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "contactId", "contactName", "clientName", "designation",
-				"phoneNo", "contactStatus", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Contact person", "Client ", "Designation",
-				"Phone No.", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			List<ClientsContactsDM> listClientContact = new ArrayList<ClientsContactsDM>();
+			listClientContact = serviceClntContact.getClientContactsDetails(companyId, null,
+					(Long) cbClient.getValue(), (String) tfContactName.getValue(), (String) cbStatus.getValue(), null);
+			recordCnt = listClientContact.size();
+			beanclntcontact = new BeanItemContainer<ClientsContactsDM>(ClientsContactsDM.class);
+			beanclntcontact.addAll(listClientContact);
+			tblMstScrSrchRslt.setContainerDataSource(beanclntcontact);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "contactId", "contactName", "clientName", "designation",
+					"phoneNo", "contactStatus", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Contact person", "Client ", "Designation",
+					"Phone No.", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info("load company look up details" + e);
+		}
 	}
 	
 	private void editClientContactDetails() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
-		hlCmdBtnLayout.setVisible(false);
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			ClientsContactsDM clientsContactsDM = beanclntcontact.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Selected Dept. Id -> "
-					+ clientId);
-			clntContactId = clientsContactsDM.getContactId();
-			tfContactName.setValue(clientsContactsDM.getContactName());
-			tfDesignation.setValue(clientsContactsDM.getDesignation());
-			if (clientsContactsDM.getTechPerson() != null) {
-				ogpersontype.setValue(clientsContactsDM.getTechPerson());
-			}
-			cbClient.setValue(clientsContactsDM.getClientId());
-			cbClienSalut.setValue(clientsContactsDM.getContactSalut());
-			tfEmailId.setValue(clientsContactsDM.getEmailId());
-			tfMobileno.setValue(clientsContactsDM.getMobileNo());
-			tfPhoneNo.setValue(clientsContactsDM.getPhoneNo());
-			cbStatus.setValue(clientsContactsDM.getContactStatus());
-			if (clientsContactsDM.getContactphoto() != null) {
-				hlImageLayout.removeAllComponents();
-				byte[] myimage = (byte[]) clientsContactsDM.getContactphoto();
-				UploadUI uploadObject = new UploadUI(hlImageLayout);
-				uploadObject.dispayImage(myimage, clientsContactsDM.getContactName());
-			} else {
-				try {
-					new UploadUI(hlImageLayout);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Editing the selected record");
+			hlCmdBtnLayout.setVisible(false);
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				ClientsContactsDM clientsContactsDM = beanclntcontact.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+						+ "Selected Dept. Id -> " + clientId);
+				clntContactId = clientsContactsDM.getContactId();
+				tfContactName.setValue(clientsContactsDM.getContactName());
+				tfDesignation.setValue(clientsContactsDM.getDesignation());
+				if (clientsContactsDM.getTechPerson() != null) {
+					ogpersontype.setValue(clientsContactsDM.getTechPerson());
 				}
-				catch (Exception e) {
-					e.printStackTrace();
+				cbClient.setValue(clientsContactsDM.getClientId());
+				cbClienSalut.setValue(clientsContactsDM.getContactSalut());
+				tfEmailId.setValue(clientsContactsDM.getEmailId());
+				tfMobileno.setValue(clientsContactsDM.getMobileNo());
+				tfPhoneNo.setValue(clientsContactsDM.getPhoneNo());
+				cbStatus.setValue(clientsContactsDM.getContactStatus());
+				if (clientsContactsDM.getContactphoto() != null) {
+					hlImageLayout.removeAllComponents();
+					byte[] myimage = (byte[]) clientsContactsDM.getContactphoto();
+					UploadUI uploadObject = new UploadUI(hlImageLayout);
+					uploadObject.dispayImage(myimage, clientsContactsDM.getContactName());
+				} else {
+					try {
+						new UploadUI(hlImageLayout);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
+			comment = new Comments(vlCommetTblLayout, employeeid, null, null, null, clntContactId, null, null);
+			comment.loadsrch(true, null, clntContactId, null, null, null, null);
 		}
-		comment = new Comments(vlCommetTblLayout, employeeid, null, null, null, clntContactId, null, null);
-		comment.loadsrch(true, null, clntContactId, null, null, null, null);
+		catch (Exception e) {
+			logger.info("load company look up details" + e);
+		}
 	}
 	
 	@Override
@@ -487,11 +495,10 @@ public class ClientContacts extends BaseUI {
 			resetFields();
 			comment.savecontact(contactobj.getContactId());
 			comment.resetfields();
-		
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info("load company look up details" + e);
 		}
 	}
 	
@@ -535,7 +542,6 @@ public class ClientContacts extends BaseUI {
 		tfPhoneNo.setValue("");
 		tfPhoneNo.setComponentError(null);
 		hllayoutimage.removeAllComponents();
-		
 		ogpersontype.setValue("Technical Person");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		UI.getCurrent().getSession().setAttribute("isFileUploaded", false);

@@ -291,24 +291,30 @@ public class Company extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<CompanyDM> companyList = new ArrayList<CompanyDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid);
-		companyList = serviceCompany
-				.getCompanyList(tfCompanyName.getValue(), cbStatus.getValue().toString(), companyid);
-		recordCnt = companyList.size();
-		beansCompany = new BeanItemContainer<CompanyDM>(CompanyDM.class);
-		beansCompany.addAll(companyList);
-		tblMstScrSrchRslt.setContainerDataSource(beansCompany);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "companyid", "companyname", "companycode", "companyaddress",
-				"cityName", "stateName", "countryName", "phone", "companystatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Company", "Code", "Address", "City", "State",
-				"Country", "Phone Number", "Status", "Updated Date", "Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("companyid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnAlignment("phone", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
-		tblMstScrSrchRslt.setSelectable(true);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<CompanyDM> companyList = new ArrayList<CompanyDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid);
+			companyList = serviceCompany.getCompanyList(tfCompanyName.getValue(), cbStatus.getValue().toString(),
+					companyid);
+			recordCnt = companyList.size();
+			beansCompany = new BeanItemContainer<CompanyDM>(CompanyDM.class);
+			beansCompany.addAll(companyList);
+			tblMstScrSrchRslt.setContainerDataSource(beansCompany);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "companyid", "companyname", "companycode",
+					"companyaddress", "cityName", "stateName", "countryName", "phone", "companystatus",
+					"lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Company", "Code", "Address", "City", "State",
+					"Country", "Phone Number", "Status", "Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("companyid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnAlignment("phone", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+			tblMstScrSrchRslt.setSelectable(true);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// load the Country name list details for form
@@ -407,90 +413,95 @@ public class Company extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editCompanyDetails() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			CompanyDM companyDM = beansCompany.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (companyDM.getCompanylogo() != null) {
-				hlimage.removeAllComponents();
-				byte[] myimage = (byte[]) companyDM.getCompanylogo();
-				UploadUI uploadObject = new UploadUI(hlimage);
-				uploadObject.dispayImage(myimage, companyDM.getCompanyname());
-			} else {
-				try {
-					new UploadUI(hlimage);
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				CompanyDM companyDM = beansCompany.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				if (companyDM.getCompanylogo() != null) {
+					hlimage.removeAllComponents();
+					byte[] myimage = (byte[]) companyDM.getCompanylogo();
+					UploadUI uploadObject = new UploadUI(hlimage);
+					uploadObject.dispayImage(myimage, companyDM.getCompanyname());
+				} else {
+					try {
+						new UploadUI(hlimage);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
-				catch (Exception e) {
-					e.printStackTrace();
+				if (companyDM.getCompanyaddress() != null) {
+					tfComapnyAddress.setValue(companyDM.getCompanyaddress());
 				}
+				tfCompanyName.setReadOnly(false);
+				tfCompanyName.setValue(companyDM.getCompanyname());
+				tfCompanyName.setReadOnly(true);
+				if (companyDM.getCompanycode() != null) {
+					tfCompanyCode.setReadOnly(false);
+					tfCompanyCode.setValue(companyDM.getCompanycode());
+					tfCompanyCode.setReadOnly(true);
+				}
+				if (companyDM.getPostcode() != null) {
+					tfPostCode.setValue(companyDM.getPostcode());
+				}
+				if (companyDM.getCstno() != null) {
+					tfCstNo.setValue(companyDM.getCstno());
+				}
+				if (companyDM.getEccno() != null) {
+					tfEccNo.setValue(companyDM.getEccno());
+				}
+				if (companyDM.getEmailid() != null) {
+					tfEmail.setValue(companyDM.getEmailid());
+				}
+				if (companyDM.getEmployerno() != null) {
+					tfEmpNo.setValue(companyDM.getEmployerno());
+				}
+				if (companyDM.getEsino() != null) {
+					tfEsiNo.setValue(companyDM.getEsino());
+				}
+				if (companyDM.getFaxno() != null) {
+					tfFaxNo.setValue(companyDM.getFaxno());
+				}
+				if (companyDM.getPanno() != null) {
+					tfPanNo.setValue(companyDM.getPanno());
+				}
+				if (companyDM.getPfno() != null) {
+					tfPfNo.setValue(companyDM.getPfno());
+				}
+				if (companyDM.getPhone() != null) {
+					tfPhoneNo.setValue(companyDM.getPhone());
+				}
+				if (companyDM.getEmailid() != null) {
+					tfEmail.setValue(companyDM.getEmailid());
+				}
+				if (companyDM.getRegno() != null) {
+					tfRegNo.setValue(companyDM.getRegno());
+				}
+				if (companyDM.getServicetaxno() != null) {
+					tfServTaxNo.setValue(companyDM.getServicetaxno());
+				}
+				if (companyDM.getStno() != null) {
+					tfStNo.setValue(companyDM.getStno());
+				}
+				if (companyDM.getTanno() != null) {
+					tfTanNo.setValue(companyDM.getTanno());
+				}
+				if (companyDM.getTinno() != null) {
+					tfTinNo.setValue(companyDM.getTinno());
+				}
+				if (companyDM.getWebsite() != null) {
+					tfWebSite.setValue(companyDM.getWebsite());
+				}
+				cbStatus.setReadOnly(false);
+				cbStatus.setValue(companyDM.getCompanystatus());
+				cbStatus.setReadOnly(true);
+				cbCountry.setValue(Long.valueOf(companyDM.getCountryid()));
+				cbState.setValue(Long.valueOf(companyDM.getStateid()).toString());
+				cbCity.setValue(Long.valueOf(companyDM.getCityid()).toString());
+				cbCurrency.setValue(Long.valueOf(companyDM.getCityid()));
 			}
-			if (companyDM.getCompanyaddress() != null) {
-				tfComapnyAddress.setValue(companyDM.getCompanyaddress());
-			}
-			tfCompanyName.setReadOnly(false);
-			tfCompanyName.setValue(companyDM.getCompanyname());
-			tfCompanyName.setReadOnly(true);
-			if (companyDM.getCompanycode() != null) {
-				tfCompanyCode.setReadOnly(false);
-				tfCompanyCode.setValue(companyDM.getCompanycode());
-				tfCompanyCode.setReadOnly(true);
-			}
-			if (companyDM.getPostcode() != null) {
-				tfPostCode.setValue(companyDM.getPostcode());
-			}
-			if (companyDM.getCstno() != null) {
-				tfCstNo.setValue(companyDM.getCstno());
-			}
-			if (companyDM.getEccno() != null) {
-				tfEccNo.setValue(companyDM.getEccno());
-			}
-			if (companyDM.getEmailid() != null) {
-				tfEmail.setValue(companyDM.getEmailid());
-			}
-			if (companyDM.getEmployerno() != null) {
-				tfEmpNo.setValue(companyDM.getEmployerno());
-			}
-			if (companyDM.getEsino() != null) {
-				tfEsiNo.setValue(companyDM.getEsino());
-			}
-			if (companyDM.getFaxno() != null) {
-				tfFaxNo.setValue(companyDM.getFaxno());
-			}
-			if (companyDM.getPanno() != null) {
-				tfPanNo.setValue(companyDM.getPanno());
-			}
-			if (companyDM.getPfno() != null) {
-				tfPfNo.setValue(companyDM.getPfno());
-			}
-			if (companyDM.getPhone() != null) {
-				tfPhoneNo.setValue(companyDM.getPhone());
-			}
-			if (companyDM.getEmailid() != null) {
-				tfEmail.setValue(companyDM.getEmailid());
-			}
-			if (companyDM.getRegno() != null) {
-				tfRegNo.setValue(companyDM.getRegno());
-			}
-			if (companyDM.getServicetaxno() != null) {
-				tfServTaxNo.setValue(companyDM.getServicetaxno());
-			}
-			if (companyDM.getStno() != null) {
-				tfStNo.setValue(companyDM.getStno());
-			}
-			if (companyDM.getTanno() != null) {
-				tfTanNo.setValue(companyDM.getTanno());
-			}
-			if (companyDM.getTinno() != null) {
-				tfTinNo.setValue(companyDM.getTinno());
-			}
-			if (companyDM.getWebsite() != null) {
-				tfWebSite.setValue(companyDM.getWebsite());
-			}
-			cbStatus.setReadOnly(false);
-			cbStatus.setValue(companyDM.getCompanystatus());
-			cbStatus.setReadOnly(true);
-			cbCountry.setValue(Long.valueOf(companyDM.getCountryid()));
-			cbState.setValue(Long.valueOf(companyDM.getStateid()).toString());
-			cbCity.setValue(Long.valueOf(companyDM.getCityid()).toString());
-			cbCurrency.setValue(Long.valueOf(companyDM.getCityid()));
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -660,7 +671,7 @@ public class Company extends BaseUI {
 			serviceCompany.saveorUpdateCompanyDetails(companyObj);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		resetFields();
 		loadSrchRslt();

@@ -139,24 +139,30 @@ public class Region extends BaseUI {
 	
 	// load search result to table
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<RegionDM> list = new ArrayList<RegionDM>();
-		list = serviceRegion.getRegionList(tfRegionName.getValue(), (String) cbRegionStatus.getValue(),
-				(Long) cbCountry.getValue(), companyid, "F");
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfRegionName.getValue() + ", " + cbRegionStatus.getValue() + ",");
-		recordCnt = list.size();
-		beanRegion = new BeanItemContainer<RegionDM>(RegionDM.class);
-		beanRegion.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Region result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanRegion);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "regionId", "regionName", "countryname", "status",
-				"lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Region", "Country", "Status", "Updated Date",
-				"Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("regionId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<RegionDM> list = new ArrayList<RegionDM>();
+			list = serviceRegion.getRegionList(tfRegionName.getValue(), (String) cbRegionStatus.getValue(),
+					(Long) cbCountry.getValue(), companyid, "F");
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfRegionName.getValue() + ", " + cbRegionStatus.getValue() + ",");
+			recordCnt = list.size();
+			beanRegion = new BeanItemContainer<RegionDM>(RegionDM.class);
+			beanRegion.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Region result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanRegion);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "regionId", "regionName", "countryname", "status",
+					"lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Region", "Country", "Status", "Updated Date",
+					"Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("regionId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -173,16 +179,22 @@ public class Region extends BaseUI {
 	// Based on the selected record, the data would be populated into user input
 	// fields in the input form
 	private void editRegion() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			RegionDM regionDM = beanRegion.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			regId = regionDM.getRegionId().toString();
-			if (regionDM.getRegionName() != null) {
-				tfRegionName.setValue(regionDM.getRegionName());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				RegionDM regionDM = beanRegion.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				regId = regionDM.getRegionId().toString();
+				if (regionDM.getRegionName() != null) {
+					tfRegionName.setValue(regionDM.getRegionName());
+				}
+				cbRegionStatus.setValue(regionDM.getStatus());
+				cbCountry.setValue(regionDM.getCountryId());
 			}
-			cbRegionStatus.setValue(regionDM.getStatus());
-			cbCountry.setValue(regionDM.getCountryId());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

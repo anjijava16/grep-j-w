@@ -411,6 +411,7 @@ public class Leads extends BaseUI {
 			cbClientCat.setContainerDataSource(beanClientCat);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -451,65 +452,79 @@ public class Leads extends BaseUI {
 			cbCity.setContainerDataSource(beanCity);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<LeadsDM> listLead = new ArrayList<LeadsDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfCompanyName.getValue() + ", " + (String) cbLeadStatus.getValue());
-		listLead = serviceLead.getLeadsDetailsList(companyid, null, tfCompanyName.getValue().toString(),
-				(String) cbLeadStatus.getValue(), (Long) cbClientCat.getValue(), "F");
-		recordCnt = listLead.size();
-		logger.info("Size undefined" + listLead.size());
-		beanLead = new BeanItemContainer<LeadsDM>(LeadsDM.class);
-		beanLead.addAll(listLead);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the orgNews. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanLead);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "leadId", "firstName", "companyName", "clientCatname",
-				"emailId", "cityName", "phoneNo", "leadStatus", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "First Name", "Company Name", "Client Category",
-				"Email Id", "City", "Phone No.", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("leadId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<LeadsDM> listLead = new ArrayList<LeadsDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfCompanyName.getValue() + ", " + (String) cbLeadStatus.getValue());
+			listLead = serviceLead.getLeadsDetailsList(companyid, null, tfCompanyName.getValue().toString(),
+					(String) cbLeadStatus.getValue(), (Long) cbClientCat.getValue(), "F");
+			recordCnt = listLead.size();
+			logger.info("Size undefined" + listLead.size());
+			beanLead = new BeanItemContainer<LeadsDM>(LeadsDM.class);
+			beanLead.addAll(listLead);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the orgNews. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanLead);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "leadId", "firstName", "companyName", "clientCatname",
+					"emailId", "cityName", "phoneNo", "leadStatus", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "First Name", "Company Name",
+					"Client Category", "Email Id", "City", "Phone No.", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("leadId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editLead() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected news. Id -> "
-				+ leadId);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			LeadsDM leadsDM = beanLead.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			clntLeadId = leadsDM.getLeadId();
-			tfCompanyName.setValue(leadsDM.getCompanyName());
-			tfFirstName.setValue(leadsDM.getFirstName());
-			taAddress.setValue(leadsDM.getAddress());
-			taremarks.setValue(leadsDM.getRemarks());
-			tfLastName.setValue(leadsDM.getLastName());
-			tfDesignation.setValue(leadsDM.getDesignation());
-			if (leadsDM.getNoOfEmployees() != null && !"null".equals(leadsDM.getNoOfEmployees())) {
-				tfNoOfEmp.setValue(leadsDM.getNoOfEmployees().toString());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected news. Id -> "
+					+ leadId);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				LeadsDM leadsDM = beanLead.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				clntLeadId = leadsDM.getLeadId();
+				tfCompanyName.setValue(leadsDM.getCompanyName());
+				tfFirstName.setValue(leadsDM.getFirstName());
+				taAddress.setValue(leadsDM.getAddress());
+				taremarks.setValue(leadsDM.getRemarks());
+				tfLastName.setValue(leadsDM.getLastName());
+				tfDesignation.setValue(leadsDM.getDesignation());
+				if (leadsDM.getNoOfEmployees() != null && !"null".equals(leadsDM.getNoOfEmployees())) {
+					tfNoOfEmp.setValue(leadsDM.getNoOfEmployees().toString());
+				}
+				tfPhoneNo.setValue(leadsDM.getPhoneNo());
+				tfPostalCode.setValue(leadsDM.getPostalCode());
+				cblead.setValue(leadsDM.getLeadSource());
+				tfEmailId.setValue(leadsDM.getEmailId());
+				if (leadsDM.getRevenue() != null) {
+					tfRevenue.setValue(leadsDM.getRevenue().toString());
+				}
+				tfWebsite.setValue(leadsDM.getWebsite());
+				cbcurrency.setValue(leadsDM.getCcyId());
+				cbClientCat.setValue(leadsDM.getClientCatId());
+				cbCampaign.setValue(leadsDM.getCompaignId());
+				cbCountry.setValue((leadsDM.getCountryId()));
+				cbState.setValue(Long.valueOf(leadsDM.getStateId()).toString());
+				cbCity.setValue(Long.valueOf(leadsDM.getCityId()).toString());
 			}
-			tfPhoneNo.setValue(leadsDM.getPhoneNo());
-			tfPostalCode.setValue(leadsDM.getPostalCode());
-			cblead.setValue(leadsDM.getLeadSource());
-			tfEmailId.setValue(leadsDM.getEmailId());
-			if (leadsDM.getRevenue() != null) {
-				tfRevenue.setValue(leadsDM.getRevenue().toString());
-			}
-			tfWebsite.setValue(leadsDM.getWebsite());
-			cbcurrency.setValue(leadsDM.getCcyId());
-			cbClientCat.setValue(leadsDM.getClientCatId());
-			cbCampaign.setValue(leadsDM.getCompaignId());
-			cbCountry.setValue((leadsDM.getCountryId()));
-			cbState.setValue(Long.valueOf(leadsDM.getStateId()).toString());
-			cbCity.setValue(Long.valueOf(leadsDM.getCityId()).toString());
+			comment.loadsrch(true, null, null, null, clntLeadId, null, null);
+			document.loadsrcrslt(true, null, null, null, clntLeadId, null, null);
 		}
-		comment.loadsrch(true, null, null, null, clntLeadId, null, null);
-		document.loadsrcrslt(true, null, null, null, clntLeadId, null, null);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -662,7 +677,7 @@ public class Leads extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

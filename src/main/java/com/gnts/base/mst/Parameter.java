@@ -111,6 +111,7 @@ public class Parameter extends BaseUI {
 		resetFields();
 		loadSrchRslt();
 	}
+	
 	private void assembleSearchLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		// Remove all components in User Input Layout
@@ -125,6 +126,7 @@ public class Parameter extends BaseUI {
 		hlSearchLayout.addComponent(flColumn2);
 		hlSearchLayout.setSizeUndefined();
 	}
+	
 	private void assembleUserInputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling User Input layout");
 		// Remove all components in Search Layout
@@ -151,24 +153,29 @@ public class Parameter extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<ParameterDM> list = new ArrayList<ParameterDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfparameterRef.getValue() + ", " + (String) cbparameterstatus.getValue());
-		list = serviceParameter.getParameterList(null, null, tfparameterRef.getValue(),
-				(String) cbparameterstatus.getValue(), companyid);
-		recordCnt = list.size();
-		beanparameterDM = new BeanItemContainer<ParameterDM>(ParameterDM.class);
-		beanparameterDM.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Parameter. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanparameterDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "paramId", "moduleCode", "paramRef", "paramDesc",
-				"paramValue", "paramStatus", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Module Code", "Reference", "Description", "Value",
-				"Status", "Updated Date", "Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("parameterId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<ParameterDM> list = new ArrayList<ParameterDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfparameterRef.getValue() + ", " + (String) cbparameterstatus.getValue());
+			list = serviceParameter.getParameterList(null, null, tfparameterRef.getValue(),
+					(String) cbparameterstatus.getValue(), companyid);
+			recordCnt = list.size();
+			beanparameterDM = new BeanItemContainer<ParameterDM>(ParameterDM.class);
+			beanparameterDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Parameter. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanparameterDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "paramId", "moduleCode", "paramRef", "paramDesc",
+					"paramValue", "paramStatus", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Module Code", "Reference", "Description",
+					"Value", "Status", "Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("parameterId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -188,27 +195,32 @@ public class Parameter extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editParameter() {
-		hlUserInputLayout.setVisible(true);
-		Item rowSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (rowSelected != null) {
-			String editableMode = rowSelected.getItemProperty("editYn").getValue().toString();
-			parameterId = rowSelected.getItemProperty("paramId").getValue().toString();
-			setReadOnlyFalseFields();
-			tfparameterRef.setValue(rowSelected.getItemProperty("paramRef").getValue().toString());
-			tfparameterdesc.setValue(rowSelected.getItemProperty("paramDesc").getValue().toString());
-			tfparametervalue.setValue(rowSelected.getItemProperty("paramValue").getValue().toString());
-			tfmodulcode.setValue(rowSelected.getItemProperty("moduleCode").getValue().toString());
-			dfParamStartdate.setValue((Date) rowSelected.getItemProperty("paramStDate").getValue());
-			dfParamEndDate.setValue((Date) rowSelected.getItemProperty("paramEndDate").getValue());
-			cbparameterstatus.setValue(rowSelected.getItemProperty("paramStatus").getValue());
-			if (editableMode.equals("N")) {
-				setReadOnlyTrueFields();
-			} else {
-				tfparameterdesc.setReadOnly(true);
-				tfmodulcode.setReadOnly(true);
-				cbparameterstatus.setReadOnly(true);
-				tfparameterRef.setReadOnly(true);
+		try {
+			hlUserInputLayout.setVisible(true);
+			Item rowSelected = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
+			if (rowSelected != null) {
+				String editableMode = rowSelected.getItemProperty("editYn").getValue().toString();
+				parameterId = rowSelected.getItemProperty("paramId").getValue().toString();
+				setReadOnlyFalseFields();
+				tfparameterRef.setValue(rowSelected.getItemProperty("paramRef").getValue().toString());
+				tfparameterdesc.setValue(rowSelected.getItemProperty("paramDesc").getValue().toString());
+				tfparametervalue.setValue(rowSelected.getItemProperty("paramValue").getValue().toString());
+				tfmodulcode.setValue(rowSelected.getItemProperty("moduleCode").getValue().toString());
+				dfParamStartdate.setValue((Date) rowSelected.getItemProperty("paramStDate").getValue());
+				dfParamEndDate.setValue((Date) rowSelected.getItemProperty("paramEndDate").getValue());
+				cbparameterstatus.setValue(rowSelected.getItemProperty("paramStatus").getValue());
+				if (editableMode.equals("N")) {
+					setReadOnlyTrueFields();
+				} else {
+					tfparameterdesc.setReadOnly(true);
+					tfmodulcode.setReadOnly(true);
+					cbparameterstatus.setReadOnly(true);
+					tfparameterRef.setReadOnly(true);
+				}
 			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -248,6 +260,7 @@ public class Parameter extends BaseUI {
 			assembleSearchLayout();
 		}
 	}
+	
 	@Override
 	protected void resetSearchDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -307,7 +320,8 @@ public class Parameter extends BaseUI {
 				+ "Getting audit record for Parameter. ID " + parameterId);
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.M_BASE_PARAMETER);
 		UI.getCurrent().getSession().setAttribute("audittablepk", parameterId);
-	}	
+	}
+	
 	@Override
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
@@ -316,6 +330,7 @@ public class Parameter extends BaseUI {
 		loadSrchRslt();
 		setReadOnlyFalseFields();
 	}
+	
 	@Override
 	protected void saveDetails() throws SaveException {
 		if (tblMstScrSrchRslt.getValue() != null) {

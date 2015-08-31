@@ -210,8 +210,7 @@ public class Branch extends BaseUI {
 			cbCountryName.setContainerDataSource(beanCountry);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.warn("Loading null values in loadCountryList() functions----->>>>>" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -244,25 +243,31 @@ public class Branch extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<BranchDM> listBranch = new ArrayList<BranchDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfBranchName.getValue() + ",");
-		listBranch = serviceBranch.getBranchList(null, tfBranchName.getValue(), null, (String) cbStatus.getValue()
-				.toString(), companyid, "F");
-		recordCnt = listBranch.size();
-		beanBranch = new BeanItemContainer<BranchDM>(BranchDM.class);
-		beanBranch.addAll(listBranch);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Branch. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanBranch);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "branchId", "branchName", "cityName", "stateName",
-				"phoneNo", "status", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch", "City", "State", "Phone Number",
-				"Status", "Updated Date", "Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("branchId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnAlignment("phoneNo", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<BranchDM> listBranch = new ArrayList<BranchDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfBranchName.getValue() + ",");
+			listBranch = serviceBranch.getBranchList(null, tfBranchName.getValue(), null, (String) cbStatus.getValue()
+					.toString(), companyid, "F");
+			recordCnt = listBranch.size();
+			beanBranch = new BeanItemContainer<BranchDM>(BranchDM.class);
+			beanBranch.addAll(listBranch);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Branch. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanBranch);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "branchId", "branchName", "cityName", "stateName",
+					"phoneNo", "status", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch", "City", "State", "Phone Number",
+					"Status", "Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("branchId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnAlignment("phoneNo", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -289,25 +294,31 @@ public class Branch extends BaseUI {
 	
 	// Based on the selected record, the data would be loadSrchRslt into user input fields in the input form
 	private void editBranch() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Branch. Id -> "
-				+ branchId);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			BranchDM branchDM = beanBranch.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			branchId = branchDM.getBranchId().toString();
-			tfBranchName.setValue(branchDM.getBranchName());
-			taBranchAddress.setValue(branchDM.getBranchAddress());
-			cbCountryName.setValue(Long.valueOf(branchDM.getCountryId()));
-			cbStateName.setValue(Long.valueOf(branchDM.getStateId()).toString());
-			cbCityName.setValue(Long.valueOf(branchDM.getCityId()).toString());
-			tfPhoneNo.setValue(branchDM.getPhoneNo());
-			tfEmailId.setValue(branchDM.getEmailId());
-			tfPostCode.setValue(branchDM.getPostCode());
-			tfRegNo.setValue(branchDM.getRegNo());
-			tfStNo.setValue(branchDM.getStNo());
-			tfTanNo.setValue(branchDM.getTanNo());
-			cbStatus.setValue(cbStatus.getValue());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Branch. Id -> "
+					+ branchId);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				BranchDM branchDM = beanBranch.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				branchId = branchDM.getBranchId().toString();
+				tfBranchName.setValue(branchDM.getBranchName());
+				taBranchAddress.setValue(branchDM.getBranchAddress());
+				cbCountryName.setValue(Long.valueOf(branchDM.getCountryId()));
+				cbStateName.setValue(Long.valueOf(branchDM.getStateId()).toString());
+				cbCityName.setValue(Long.valueOf(branchDM.getCityId()).toString());
+				tfPhoneNo.setValue(branchDM.getPhoneNo());
+				tfEmailId.setValue(branchDM.getEmailId());
+				tfPostCode.setValue(branchDM.getPostCode());
+				tfRegNo.setValue(branchDM.getRegNo());
+				tfStNo.setValue(branchDM.getStNo());
+				tfTanNo.setValue(branchDM.getTanNo());
+				cbStatus.setValue(cbStatus.getValue());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

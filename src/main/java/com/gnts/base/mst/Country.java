@@ -53,7 +53,8 @@ public class Country extends BaseUI {
 	private HorizontalLayout hlSearchLayout;
 	// User Input Components
 	private TextField tfCountryname, tfCountrycode;
-	private ComboBox cbCountrystatus = new GERPComboBox("Status",BASEConstants.M_GENERIC_TABLE,BASEConstants.M_GENERIC_COLUMN);
+	private ComboBox cbCountrystatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
+			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<CountryDM> beanCountryDM = null;
 	// local variables declaration
 	private Long companyid;
@@ -115,25 +116,31 @@ public class Country extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<CountryDM> list = new ArrayList<CountryDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + " for search parameters are "
-				+ companyid + ", " + tfCountryname.getValue() + "," + tfCountrycode + "," + (String) cbCountrystatus.getValue());
-		list = serviceCountry.getCountryList(null,null, tfCountrycode.getValue(), tfCountryname.getValue(), (String) cbCountrystatus.getValue(),
-				"F");
-		recordCnt = list.size();
-		beanCountryDM = new BeanItemContainer<CountryDM>(CountryDM.class);
-		beanCountryDM.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Country. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanCountryDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "countryID", "countryName", "countryCode", "isdcode",
-				"primaryLang", "timeZoneDesc", "clockAdjust", "countyStats", "lastupdateddt", "lastUpdateBy" });
-		
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Country Name", "Country Code", "ISD Code",
-				"Primary Lang.", "Time Zone Desc.", "Clock Adjust", "Status", "Last Updated Date", "Last Updated By" });
-		
-		tblMstScrSrchRslt.setColumnAlignment("countryID", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdateBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<CountryDM> list = new ArrayList<CountryDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ " for search parameters are " + companyid + ", " + tfCountryname.getValue() + "," + tfCountrycode
+					+ "," + (String) cbCountrystatus.getValue());
+			list = serviceCountry.getCountryList(null, null, tfCountrycode.getValue(), tfCountryname.getValue(),
+					(String) cbCountrystatus.getValue(), "F");
+			recordCnt = list.size();
+			beanCountryDM = new BeanItemContainer<CountryDM>(CountryDM.class);
+			beanCountryDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Country. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanCountryDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "countryID", "countryName", "countryCode", "isdcode",
+					"primaryLang", "timeZoneDesc", "clockAdjust", "countyStats", "lastupdateddt", "lastUpdateBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Country Name", "Country Code", "ISD Code",
+					"Primary Lang.", "Time Zone Desc.", "Clock Adjust", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("countryID", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdateBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Base class implementations
@@ -164,7 +171,6 @@ public class Country extends BaseUI {
 		loadSrchRslt();
 	}
 	
-
 	@Override
 	protected void addDetails() {
 		// No functionality to implement

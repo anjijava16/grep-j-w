@@ -211,48 +211,53 @@ public class DashboardStoreView implements ClickListener {
 			});
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.info("loadSrchRslt-->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Load Purchase Header
 	private void loadEnquiryList() {
-		tblIndent.removeAllItems();
-		List<IndentHdrDM> indentHdrList = new ArrayList<IndentHdrDM>();
-		indentHdrList = serviceIndentHdr.getMmsIndentHdrList(null, null, null, null, null, null, null, null, null, "F");
-		BeanItemContainer<IndentHdrDM> beanIndentHdrDM = new BeanItemContainer<IndentHdrDM>(IndentHdrDM.class);
-		beanIndentHdrDM.addAll(indentHdrList);
-		tblIndent.setContainerDataSource(beanIndentHdrDM);
-		tblIndent
-				.setVisibleColumns(new Object[] { "indentNo", "indentDate", "indentStatus", "empName", "indentRemarks" });
-		tblIndent.setColumnHeaders(new String[] { "Indent No", "Date", "Status", "Raised by", "Purpose" });
-		tblIndent.setColumnAlignment("indentNo", Align.RIGHT);
-		tblIndent.setColumnWidth("indentRemarks", 175);
-		tblIndent.addGeneratedColumn("indentStatus", new ColumnGenerator() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				@SuppressWarnings("unchecked")
-				BeanItem<IndentHdrDM> item = (BeanItem<IndentHdrDM>) source.getItem(itemId);
-				IndentHdrDM emp = (IndentHdrDM) item.getBean();
-				if (emp.getIndentStatus().equalsIgnoreCase("Pending")
-						|| emp.getIndentStatus().equalsIgnoreCase("Cancelled")) {
-					return new Label(
-							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
-									+ emp.getIndentStatus() + "</h1>", ContentMode.HTML);
-				} else if (emp.getIndentStatus().equalsIgnoreCase("Approved")) {
-					return new Label(
-							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#6CD4BD;font-size:12px'>"
-									+ emp.getIndentStatus() + "</h1>", ContentMode.HTML);
-				} else {
-					return new Label(
-							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
-									+ emp.getIndentStatus() + "</h1>", ContentMode.HTML);
+		try {
+			tblIndent.removeAllItems();
+			List<IndentHdrDM> indentHdrList = new ArrayList<IndentHdrDM>();
+			indentHdrList = serviceIndentHdr.getMmsIndentHdrList(null, null, null, null, null, null, null, null, null,
+					"F");
+			BeanItemContainer<IndentHdrDM> beanIndentHdrDM = new BeanItemContainer<IndentHdrDM>(IndentHdrDM.class);
+			beanIndentHdrDM.addAll(indentHdrList);
+			tblIndent.setContainerDataSource(beanIndentHdrDM);
+			tblIndent.setVisibleColumns(new Object[] { "indentNo", "indentDate", "indentStatus", "empName",
+					"indentRemarks" });
+			tblIndent.setColumnHeaders(new String[] { "Indent No", "Date", "Status", "Raised by", "Purpose" });
+			tblIndent.setColumnAlignment("indentNo", Align.RIGHT);
+			tblIndent.setColumnWidth("indentRemarks", 175);
+			tblIndent.addGeneratedColumn("indentStatus", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<IndentHdrDM> item = (BeanItem<IndentHdrDM>) source.getItem(itemId);
+					IndentHdrDM emp = (IndentHdrDM) item.getBean();
+					if (emp.getIndentStatus().equalsIgnoreCase("Pending")
+							|| emp.getIndentStatus().equalsIgnoreCase("Cancelled")) {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
+										+ emp.getIndentStatus() + "</h1>", ContentMode.HTML);
+					} else if (emp.getIndentStatus().equalsIgnoreCase("Approved")) {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#6CD4BD;font-size:12px'>"
+										+ emp.getIndentStatus() + "</h1>", ContentMode.HTML);
+					} else {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
+										+ emp.getIndentStatus() + "</h1>", ContentMode.HTML);
+					}
 				}
-			}
-		});
+			});
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadMaterialInwardDetails() {
@@ -271,8 +276,7 @@ public class DashboardStoreView implements ClickListener {
 			tblMaterialInward.setColumnWidth("referenceRemark", 130);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.info("loadSrchRslt-->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -292,48 +296,52 @@ public class DashboardStoreView implements ClickListener {
 			tblMaterialOutward.setColumnWidth("referenceRemark", 130);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.info("loadSrchRslt-->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadMaterialGatepass() {
-		tblGatepass.removeAllItems();
-		List<GatepassHdrDM> listGatepass = new ArrayList<GatepassHdrDM>();
-		BeanItemContainer<GatepassHdrDM> beanGatePassHdr = new BeanItemContainer<GatepassHdrDM>(GatepassHdrDM.class);
-		listGatepass = serviceGatepass.getGatepassHdrList(companyId, null, "Returnable", null, null, null, "Pending",
-				null, "F");
-		beanGatePassHdr.addAll(listGatepass);
-		tblGatepass.setContainerDataSource(beanGatePassHdr);
-		tblGatepass.setVisibleColumns(new Object[] { "gatepassId", "gatepassDt", "gatepassType", "returnDate",
-				"gatepassStatus", "lastUpdatedDt", "lastUpdatedBy" });
-		tblGatepass.setColumnHeaders(new String[] { "Ref.No", "Gate Pass Date ", "Gate Pass Type", "Return Date",
-				"Status", "Updated Date", "Updated By" });
-		tblGatepass.setPageLength(13);
-		tblGatepass.setColumnAlignment("gatepassId", Align.RIGHT);
-		tblGatepass.addGeneratedColumn("gatepassStatus", new ColumnGenerator() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				@SuppressWarnings("unchecked")
-				BeanItem<GatepassHdrDM> item = (BeanItem<GatepassHdrDM>) source.getItem(itemId);
-				GatepassHdrDM gatepassHdrDM = (GatepassHdrDM) item.getBean();
-				if (gatepassHdrDM.getReturnDate() != null && gatepassHdrDM.getReturnDate().before(new Date())) {
-					return new Label(
-							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
-									+ gatepassHdrDM.getGatepassStatus() + "</h1>", ContentMode.HTML);
-				} else if (gatepassHdrDM.getReturnDate() != null && gatepassHdrDM.getReturnDate().after(new Date())) {
-					return new Label(
-							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#6CD4BD;font-size:12px'>"
-									+ gatepassHdrDM.getGatepassStatus() + "</h1>", ContentMode.HTML);
-				} else {
-					return new Label(
-							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
-									+ gatepassHdrDM.getGatepassStatus() + "</h1>", ContentMode.HTML);
+		try {
+			tblGatepass.removeAllItems();
+			List<GatepassHdrDM> listGatepass = new ArrayList<GatepassHdrDM>();
+			BeanItemContainer<GatepassHdrDM> beanGatePassHdr = new BeanItemContainer<GatepassHdrDM>(GatepassHdrDM.class);
+			listGatepass = serviceGatepass.getGatepassHdrList(companyId, null, "Returnable", null, null, null,
+					"Pending", null, "F");
+			beanGatePassHdr.addAll(listGatepass);
+			tblGatepass.setContainerDataSource(beanGatePassHdr);
+			tblGatepass.setVisibleColumns(new Object[] { "gatepassId", "gatepassDt", "gatepassType", "returnDate",
+					"gatepassStatus", "lastUpdatedDt", "lastUpdatedBy" });
+			tblGatepass.setColumnHeaders(new String[] { "Ref.No", "Gate Pass Date ", "Gate Pass Type", "Return Date",
+					"Status", "Updated Date", "Updated By" });
+			tblGatepass.setPageLength(13);
+			tblGatepass.setColumnAlignment("gatepassId", Align.RIGHT);
+			tblGatepass.addGeneratedColumn("gatepassStatus", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<GatepassHdrDM> item = (BeanItem<GatepassHdrDM>) source.getItem(itemId);
+					GatepassHdrDM gatepassHdrDM = (GatepassHdrDM) item.getBean();
+					if (gatepassHdrDM.getReturnDate() != null && gatepassHdrDM.getReturnDate().before(new Date())) {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
+										+ gatepassHdrDM.getGatepassStatus() + "</h1>", ContentMode.HTML);
+					} else if (gatepassHdrDM.getReturnDate() != null && gatepassHdrDM.getReturnDate().after(new Date())) {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#6CD4BD;font-size:12px'>"
+										+ gatepassHdrDM.getGatepassStatus() + "</h1>", ContentMode.HTML);
+					} else {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
+										+ gatepassHdrDM.getGatepassStatus() + "</h1>", ContentMode.HTML);
+					}
 				}
-			}
-		});
+			});
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Loading Material List
@@ -346,7 +354,7 @@ public class DashboardStoreView implements ClickListener {
 			cbMaterial.setContainerDataSource(beanmaterial);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

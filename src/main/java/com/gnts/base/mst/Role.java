@@ -113,43 +113,53 @@ public class Role extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfRoleName.getValue() + "," + (String) cbRoleStatus.getValue()
-				+ ", " + companyId + ",F" + "Loading Search...");
-		List<RoleDM> roleList = new ArrayList<RoleDM>();
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfRoleName.getValue() + "," + (String) cbRoleStatus.getValue()
-				+ ", " + companyId + ",F");
-		roleList = serviceRole.getRoleList(tfRoleName.getValue(), (String) cbRoleStatus.getValue(), companyId, "F");
-		recordCnt = roleList.size();
-		beanRoleDM = new BeanItemContainer<RoleDM>(RoleDM.class);
-		beanRoleDM.addAll(roleList);
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfRoleName.getValue() + ",  Active ," + companyId + ",F"
-				+ "Got the Role result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanRoleDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "roleId", "roleName", "roleStatus", "lastUpdatedDt",
-				"lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Role ID", "Role", "Status", "Updated Date",
-				"Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("roleId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+					+ "Search Parameters are " + ":" + tfRoleName.getValue() + "," + (String) cbRoleStatus.getValue()
+					+ ", " + companyId + ",F" + "Loading Search...");
+			List<RoleDM> roleList = new ArrayList<RoleDM>();
+			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+					+ "Search Parameters are " + ":" + tfRoleName.getValue() + "," + (String) cbRoleStatus.getValue()
+					+ ", " + companyId + ",F");
+			roleList = serviceRole.getRoleList(tfRoleName.getValue(), (String) cbRoleStatus.getValue(), companyId, "F");
+			recordCnt = roleList.size();
+			beanRoleDM = new BeanItemContainer<RoleDM>(RoleDM.class);
+			beanRoleDM.addAll(roleList);
+			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+					+ "Search Parameters are " + ":" + tfRoleName.getValue() + ",  Active ," + companyId + ",F"
+					+ "Got the Role result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanRoleDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "roleId", "roleName", "roleStatus", "lastUpdatedDt",
+					"lastupdatedby" });
+			tblMstScrSrchRslt
+					.setColumnHeaders(new String[] { "Role ID", "Role", "Status", "Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("roleId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editRole() {
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfRoleName.getValue() + ",  Active ," + companyId + ",F"
-				+ "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
-			roleid = sltedRcd.getItemProperty("roleId").getValue().toString();
+		try {
 			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 					+ "Search Parameters are " + ":" + tfRoleName.getValue() + ",  Active ," + companyId + ",F"
-					+ "Selected Role Id -> " + roleid);
-			tfRoleName.setValue(sltedRcd.getItemProperty("roleName").getValue().toString());
-			cbRoleStatus.setValue(sltedRcd.getItemProperty("roleStatus").getValue().toString());
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
+			if (sltedRcd != null) {
+				roleid = sltedRcd.getItemProperty("roleId").getValue().toString();
+				logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+						+ "Search Parameters are " + ":" + tfRoleName.getValue() + ",  Active ," + companyId + ",F"
+						+ "Selected Role Id -> " + roleid);
+				tfRoleName.setValue(sltedRcd.getItemProperty("roleName").getValue().toString());
+				cbRoleStatus.setValue(sltedRcd.getItemProperty("roleStatus").getValue().toString());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

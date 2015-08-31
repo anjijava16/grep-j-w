@@ -27,7 +27,7 @@ import com.vaadin.ui.themes.Runo;
 
 /**
  * @author soundar
- *
+ * 
  */
 public class DieDashboardView implements ClickListener {
 	private static final long serialVersionUID = 1L;
@@ -118,63 +118,72 @@ public class DieDashboardView implements ClickListener {
 			});
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.info("loadSrchRslt-->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Load Purchase Header
 	private void loadEnquiryList() {
-		logger.info("Company ID : " + companyId + " | User Name :  > " + "Loading Search...");
-		tblEnquiry.removeAllItems();
-		BeanItemContainer<MmsEnqHdrDM> beanMmsEnqHdrDM = new BeanItemContainer<MmsEnqHdrDM>(MmsEnqHdrDM.class);
-		beanMmsEnqHdrDM.addAll(serviceMmsEnqHdr.getMmsEnqHdrList(companyId, null, null, null, null, "P"));
-		tblEnquiry.setContainerDataSource(beanMmsEnqHdrDM);
-		tblEnquiry.setVisibleColumns(new Object[] { "enquiryNo", "enquiryStatus" });
-		tblEnquiry.setColumnHeaders(new String[] { "Enquiry No", "Status" });
-		tblEnquiry.setColumnWidth("enquiryNo", 160);
-		tblEnquiry.addGeneratedColumn("enquiryStatus", new ColumnGenerator() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				@SuppressWarnings("unchecked")
-				BeanItem<MmsEnqHdrDM> item = (BeanItem<MmsEnqHdrDM>) source.getItem(itemId);
-				MmsEnqHdrDM emp = (MmsEnqHdrDM) item.getBean();
-				System.out.println("emp.getEnquiryStatus()--->" + emp.getEnquiryStatus());
-				if (emp.getEnquiryStatus() == null) {
-					return new Label(
-							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
-									+ "---" + "</h1>", ContentMode.HTML);
-				} else if (emp.getEnquiryStatus().equals("Pending")) {
-					return new Label(
-							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
-									+ emp.getEnquiryStatus() + "</h1>", ContentMode.HTML);
-				} else if (emp.getEnquiryStatus().equals("Approved")) {
-					return new Label(
-							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#6CD4BD;font-size:12px'>"
-									+ emp.getEnquiryStatus() + "</h1>", ContentMode.HTML);
-				} else if (emp.getEnquiryStatus().equals("Progress")) {
-					return new Label(
-							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#A8EDFF;font-size:12px'>"
-									+ emp.getEnquiryStatus() + "</h1>", ContentMode.HTML);
-				} else {
-					return new Label(
-							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
-									+ emp.getEnquiryStatus() + "</h1>", ContentMode.HTML);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name :  > " + "Loading Search...");
+			tblEnquiry.removeAllItems();
+			BeanItemContainer<MmsEnqHdrDM> beanMmsEnqHdrDM = new BeanItemContainer<MmsEnqHdrDM>(MmsEnqHdrDM.class);
+			beanMmsEnqHdrDM.addAll(serviceMmsEnqHdr.getMmsEnqHdrList(companyId, null, null, null, null, "P"));
+			tblEnquiry.setContainerDataSource(beanMmsEnqHdrDM);
+			tblEnquiry.setVisibleColumns(new Object[] { "enquiryNo", "enquiryStatus" });
+			tblEnquiry.setColumnHeaders(new String[] { "Enquiry No", "Status" });
+			tblEnquiry.setColumnWidth("enquiryNo", 160);
+			tblEnquiry.addGeneratedColumn("enquiryStatus", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<MmsEnqHdrDM> item = (BeanItem<MmsEnqHdrDM>) source.getItem(itemId);
+					MmsEnqHdrDM emp = (MmsEnqHdrDM) item.getBean();
+					System.out.println("emp.getEnquiryStatus()--->" + emp.getEnquiryStatus());
+					if (emp.getEnquiryStatus() == null) {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
+										+ "---" + "</h1>", ContentMode.HTML);
+					} else if (emp.getEnquiryStatus().equals("Pending")) {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
+										+ emp.getEnquiryStatus() + "</h1>", ContentMode.HTML);
+					} else if (emp.getEnquiryStatus().equals("Approved")) {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#6CD4BD;font-size:12px'>"
+										+ emp.getEnquiryStatus() + "</h1>", ContentMode.HTML);
+					} else if (emp.getEnquiryStatus().equals("Progress")) {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#A8EDFF;font-size:12px'>"
+										+ emp.getEnquiryStatus() + "</h1>", ContentMode.HTML);
+					} else {
+						return new Label(
+								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
+										+ emp.getEnquiryStatus() + "</h1>", ContentMode.HTML);
+					}
 				}
-			}
-		});
+			});
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadGensetDetails() {
-		vlGensetOilStatus.setSpacing(true);
-		for (GeneratorDM generatorDM : serviceGenerator.getGeneratorDetailList(null, null, null, null, "Y", null)) {
-			Label lbl = new Label(generatorDM.getAssetName()
-					+ " disel closing balance is   <span style='color:red;font-size:15px'>"
-					+ generatorDM.getDiselCloseBalance() + " Ltrs.</span>", ContentMode.HTML);
-			lbl.setStyleName("innerPanel");
-			vlGensetOilStatus.addComponent(lbl);
+		try {
+			vlGensetOilStatus.setSpacing(true);
+			for (GeneratorDM generatorDM : serviceGenerator.getGeneratorDetailList(null, null, null, null, "Y", null)) {
+				Label lbl = new Label(generatorDM.getAssetName()
+						+ " disel closing balance is   <span style='color:red;font-size:15px'>"
+						+ generatorDM.getDiselCloseBalance() + " Ltrs.</span>", ContentMode.HTML);
+				lbl.setStyleName("innerPanel");
+				vlGensetOilStatus.addComponent(lbl);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

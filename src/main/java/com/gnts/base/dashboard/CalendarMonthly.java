@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import org.apache.log4j.Logger;
 import com.gnts.asm.domain.txn.AssetMaintSchedDM;
 import com.gnts.asm.service.txn.AssetMaintSchedService;
 import com.gnts.die.domain.txn.DieRequestDM;
@@ -56,6 +57,8 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 	private Date currentMonthsFirstDate = null;
 	private Label label = new Label("", ContentMode.HTML);
 	private String type;
+	// Initialize the logger
+	private Logger logger = Logger.getLogger(CalendarMonthly.class);
 	
 	public CalendarMonthly(String type) {
 		this.type = type;
@@ -153,103 +156,121 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 		List<CalendarEvent> e = new ArrayList<CalendarEvent>();
 		if (type.equalsIgnoreCase("APPOINMENTS")) {
 		} else if (type.equalsIgnoreCase("MAIN_SCHEDULE")) {
-			for (AssetMaintSchedDM assetMaintSchedDM : serviceMaintSched.getMaintScheduleList(null, fromStartDate,
-					toEndDate, null, null, null)) {
-				calendar.setTime(assetMaintSchedDM.getMaintainDtt());
-				calendar.add(GregorianCalendar.DATE, 2);
-				CalendarTestEvent event = getNewEvent(
-						assetMaintSchedDM.getAssetName() + " - \n" + assetMaintSchedDM.getMaintaindescription(),
-						assetMaintSchedDM.getMaintainDtt(), calendar.getTime());
-				if (calendar.getTime().after(new Date())) {
-					event.setStyleName("color1");
-				} else if (assetMaintSchedDM.getMaintainDtt().equals(new Date())) {
-					event.setStyleName("color4");
-				} else {
-					event.setStyleName("color3");
+			try {
+				for (AssetMaintSchedDM assetMaintSchedDM : serviceMaintSched.getMaintScheduleList(null, fromStartDate,
+						toEndDate, null, null, null)) {
+					calendar.setTime(assetMaintSchedDM.getMaintainDtt());
+					calendar.add(GregorianCalendar.DATE, 2);
+					CalendarTestEvent event = getNewEvent(assetMaintSchedDM.getAssetName() + " - \n"
+							+ assetMaintSchedDM.getMaintaindescription(), assetMaintSchedDM.getMaintainDtt(),
+							calendar.getTime());
+					if (calendar.getTime().after(new Date())) {
+						event.setStyleName("color1");
+					} else if (assetMaintSchedDM.getMaintainDtt().equals(new Date())) {
+						event.setStyleName("color4");
+					} else {
+						event.setStyleName("color3");
+					}
+					event.setDescription(assetMaintSchedDM.getRemarks());
+					e.add(event);
 				}
-				event.setDescription(assetMaintSchedDM.getRemarks());
-				e.add(event);
+			}
+			catch (Exception e1) {
+				logger.info(e1.getMessage());
 			}
 		} else if (type.equalsIgnoreCase("DIE_SCHEDULE")) {
-			for (DieRequestDM dieRequestDM : serviceDieRequest.getDieRequestList(null, null, null, null, null)) {
-				calendar.setTime(dieRequestDM.getRefDate1());
-				calendar.add(GregorianCalendar.DATE, 2);
-				CalendarTestEvent event = getNewEvent("Ref. Number : " + dieRequestDM.getDieRefNumber()
-						+ " - \n Enquiry Number : " + dieRequestDM.getEnquiryNo(), dieRequestDM.getRefDate1(),
-						dieRequestDM.getPlanCompleteDate());
-				if (dieRequestDM.getPlanCompleteDate().after(new Date())) {
-					event.setStyleName("color1");
-				} else if (dieRequestDM.getPlanCompleteDate().equals(new Date())) {
-					event.setStyleName("color4");
-				} else {
-					event.setStyleName("color3");
+			try {
+				for (DieRequestDM dieRequestDM : serviceDieRequest.getDieRequestList(null, null, null, null, null)) {
+					calendar.setTime(dieRequestDM.getRefDate1());
+					calendar.add(GregorianCalendar.DATE, 2);
+					if (dieRequestDM.getPlanCompleteDate() != null) {
+						CalendarTestEvent event = getNewEvent("Ref. Number : " + dieRequestDM.getDieRefNumber()
+								+ " - \n Enquiry Number : " + dieRequestDM.getEnquiryNo(), dieRequestDM.getRefDate1(),
+								dieRequestDM.getPlanCompleteDate());
+						if (dieRequestDM.getPlanCompleteDate().after(new Date())) {
+							event.setStyleName("color1");
+						} else if (dieRequestDM.getPlanCompleteDate().equals(new Date())) {
+							event.setStyleName("color4");
+						} else {
+							event.setStyleName("color3");
+						}
+						event.setDescription("Ref. Number : " + dieRequestDM.getDieRefNumber()
+								+ " - \n Enquiry Number : " + dieRequestDM.getEnquiryNo() + " Change Note : "
+								+ dieRequestDM.getChangeNote());
+						e.add(event);
+					}
 				}
-				event.setDescription("Ref. Number : " + dieRequestDM.getDieRefNumber() + " - \n Enquiry Number : "
-						+ dieRequestDM.getEnquiryNo() + " Change Note : " + dieRequestDM.getChangeNote());
-				e.add(event);
+			}
+			catch (Exception e1) {
+				logger.info(e1.getMessage());
 			}
 		} else if (type.equalsIgnoreCase("WO_SCHEDULE")) {
-			for (WorkOrderHdrDM workOrderHdrDM : serviceWrkOrdHdr.getWorkOrderHDRList(null, null, null, null, null,
-					null, "F", null, null, fromStartDate, toEndDate, null)) {
-				calendar.setTime(workOrderHdrDM.getWorkOrdrDtF());
-				calendar.add(GregorianCalendar.DATE, 2);
-				CalendarTestEvent event = getNewEvent("Ref. Number : " + workOrderHdrDM.getWorkOrdrNo()
-						+ " - \n Enquiry Number : " + workOrderHdrDM.getEnqNo(), workOrderHdrDM.getWorkOrdrDtF(),
-						workOrderHdrDM.getWorkOrdrDtF());
-				if (workOrderHdrDM.getWorkOrdrDtF().after(new Date())) {
-					event.setStyleName("color1");
-				} else if (workOrderHdrDM.getWorkOrdrDtF().equals(new Date())) {
-					event.setStyleName("color4");
-				} else {
-					event.setStyleName("color3");
+			try {
+				for (WorkOrderHdrDM workOrderHdrDM : serviceWrkOrdHdr.getWorkOrderHDRList(null, null, null, null, null,
+						null, "F", null, null, fromStartDate, toEndDate, null)) {
+					calendar.setTime(workOrderHdrDM.getWorkOrdrDtF());
+					calendar.add(GregorianCalendar.DATE, 2);
+					CalendarTestEvent event = getNewEvent("Ref. Number : " + workOrderHdrDM.getWorkOrdrNo()
+							+ " - \n Enquiry Number : " + workOrderHdrDM.getEnqNo(), workOrderHdrDM.getWorkOrdrDtF(),
+							workOrderHdrDM.getWorkOrdrDtF());
+					if (workOrderHdrDM.getWorkOrdrDtF().after(new Date())) {
+						event.setStyleName("color1");
+					} else if (workOrderHdrDM.getWorkOrdrDtF().equals(new Date())) {
+						event.setStyleName("color4");
+					} else {
+						event.setStyleName("color3");
+					}
+					String workordDtl = "";
+					for (WorkOrderDtlDM workOrderDtlDM : serviceWrkOrdDtl.getWorkOrderDtlList(null,
+							workOrderHdrDM.getWorkOrdrId(), null, "F")) {
+						workordDtl += workOrderDtlDM.getProdName() + "(" + workOrderDtlDM.getPlanQty() + " Plan Qty - "
+								+ workOrderDtlDM.getWorkOrdQty() + " Workorder Qty - " + workOrderDtlDM.getBalQty()
+								+ " Balance Qty)\n";
+					}
+					event.setDescription(workordDtl);
+					e.add(event);
 				}
-				String workordDtl = "";
-				for (WorkOrderDtlDM workOrderDtlDM : serviceWrkOrdDtl.getWorkOrderDtlList(null,
-						workOrderHdrDM.getWorkOrdrId(), null, "F")) {
-					workordDtl += workOrderDtlDM.getProdName() + "(" + workOrderDtlDM.getPlanQty() + " P - "
-							+ workOrderDtlDM.getWorkOrdQty() + " W - " + workOrderDtlDM.getBalQty() + " B)\n";
+				// Customer Visit Date On Calender.
+				for (CustomerVisitHdrDM customervisitHdrDM : serviceCustomerVisit.getCustomerVisitHdrList(null, null,
+						null, null, null, "F")) {
+					calendar.setTime(customervisitHdrDM.getVisitDt1());
+					calendar.add(GregorianCalendar.DATE, 2);
+					CalendarTestEvent event2 = getNewEvent(
+							"Visit No: " + customervisitHdrDM.getCusVisNo() + " - \nCustomer Name: "
+									+ customervisitHdrDM.getCustName() + "- \nCustomer City: "
+									+ customervisitHdrDM.getCustCity() + "- \nProject Name: "
+									+ customervisitHdrDM.getProjectName(), customervisitHdrDM.getVisitDt1(),
+							customervisitHdrDM.getVisitDt1());
+					if (customervisitHdrDM.getVisitDt1().after(new Date())) {
+						event2.setStyleName("color1");
+					} else if (customervisitHdrDM.getVisitDt1().equals(new Date())) {
+						event2.setStyleName("color4");
+					} else {
+						event2.setStyleName("color3");
+					}
+					e.add(event2);
 				}
-				event.setDescription(workordDtl);
-				e.add(event);
 			}
-			//Customer Visit Date On Calender.
-			for (CustomerVisitHdrDM customervisitHdrDM : serviceCustomerVisit.getCustomerVisitHdrList(null, null, null,
-					null, null, "F")) {
-				calendar.setTime(customervisitHdrDM.getVisitDt1());
-				calendar.add(GregorianCalendar.DATE, 2);
-				CalendarTestEvent event2 = getNewEvent(
-						"Visit No: " + customervisitHdrDM.getCusVisNo() + " - \nCustomer Name: "
-								+ customervisitHdrDM.getCustName() + "- \nCustomer City: "
-								+ customervisitHdrDM.getCustCity() + "- \nProject Name: "
-								+ customervisitHdrDM.getProjectName(), customervisitHdrDM.getVisitDt1(),
-						customervisitHdrDM.getVisitDt1());
-				if (customervisitHdrDM.getVisitDt1().after(new Date())) {
-					event2.setStyleName("color1");
-				} else if (customervisitHdrDM.getVisitDt1().equals(new Date())) {
-					event2.setStyleName("color4");
-				} else {
-					event2.setStyleName("color3");
-				}
-				/*
-				 * String visitDtl = ""; for (WorkOrderDtlDM workOrderDtlDM : serviceWrkOrdDtl.getWorkOrderDtlList(null,
-				 * workOrderHdrDM.getWorkOrdrId(), null, "F")) { visitDtl += workOrderDtlDM.getProdName() + "(" +
-				 * workOrderDtlDM.getPlanQty() + " P - " + workOrderDtlDM.getWorkOrdQty() + " W - " +
-				 * workOrderDtlDM.getBalQty() + " B)\n"; } event2.setDescription(visitDtl);
-				 */
-				e.add(event2);
+			catch (Exception e1) {
+				logger.info(e1.getMessage());
 			}
 		} else if (type.equalsIgnoreCase("EMP_LEAVE")) {
-			for (EmployeeLeaveDM employeeLeaveDM : serviceEmplLeave.getempleaveList(null, null, null, null,
-					fromStartDate, toEndDate, "F")) {
-				GregorianCalendar calendar = new GregorianCalendar();
-				calendar.setTime(employeeLeaveDM.getDatetoo());
-				calendar.add(GregorianCalendar.DATE, 1);
-				CalendarTestEvent event = getNewEvent(employeeLeaveDM.getEmployeeName(), employeeLeaveDM.getDatefrm(),
-						calendar.getTime());
-				event.setStyleName("color3");
-				event.setDescription("No of day(s) : " + employeeLeaveDM.getNoofdays() + " \n - Reason : "
-						+ employeeLeaveDM.getLeavereason());
-				e.add(event);
+			try {
+				for (EmployeeLeaveDM employeeLeaveDM : serviceEmplLeave.getempleaveList(null, null, null, null,
+						fromStartDate, toEndDate, "F")) {
+					GregorianCalendar calendar = new GregorianCalendar();
+					calendar.setTime(employeeLeaveDM.getDatetoo());
+					calendar.add(GregorianCalendar.DATE, 1);
+					CalendarTestEvent event = getNewEvent(employeeLeaveDM.getEmployeeName(),
+							employeeLeaveDM.getDatefrm(), calendar.getTime());
+					event.setStyleName("color3");
+					event.setDescription("No of day(s) : " + employeeLeaveDM.getNoofdays() + " \n - Reason : "
+							+ employeeLeaveDM.getLeavereason());
+					e.add(event);
+				}
+			}
+			catch (Exception e1) {
+				logger.info(e1.getMessage());
 			}
 		} else if (type.equalsIgnoreCase("DESIGN_VIEW")) {
 			for (EnquiryWorkflowDM enquiryWorkflowDM : serviceWorkflow.getEnqWorkflowList(null, null, null,
@@ -266,6 +287,7 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 					e.add(event);
 				}
 				catch (Exception e1) {
+					logger.info(e1.getMessage());
 				}
 			}
 		} else if (type.equalsIgnoreCase("TEST_QC_SCHEDULE")) {
@@ -274,11 +296,16 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 	}
 	
 	private CalendarTestEvent getNewEvent(String caption, Date start, Date end) {
-		CalendarTestEvent event = new CalendarTestEvent();
-		event.setCaption(caption);
-		event.setStart(start);
-		event.setEnd(end);
-		return event;
+		try {
+			CalendarTestEvent event = new CalendarTestEvent();
+			event.setCaption(caption);
+			event.setStart(start);
+			event.setEnd(end);
+			return event;
+		}
+		catch (Exception e1) {
+			logger.info(e1.getMessage());
+			return null;
+		}
 	}
-
 }

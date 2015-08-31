@@ -121,26 +121,31 @@ public class Currency extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Loading Search...");
-		List<CurrencyDM> list = new ArrayList<CurrencyDM>();
-		logger.info("Company ID :" + companyId + "| Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + "," + tfCurrencyCode.getValue() + ", " + tfCurrencyName.getValue() + ", "
-				+ (String) cbCurrencyStatus.getValue() + ", F");
-		list = serviceCurrency.getCurrencyList(null, tfCurrencyCode.getValue(), tfCurrencyName.getValue(),
-				(String) cbCurrencyStatus.getValue(), "F");
-		recordCnt = list.size();
-		beanCurrencyDM = new BeanItemContainer<CurrencyDM>(CurrencyDM.class);
-		beanCurrencyDM.addAll(list);
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Got the Currency result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanCurrencyDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ccyid", "ccycode", "ccyname", "ccysymbol", "ccystatus",
-				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.ID", "Currency Code", "Currency Name", "Symbol",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("ccyid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+					+ "Loading Search...");
+			List<CurrencyDM> list = new ArrayList<CurrencyDM>();
+			logger.info("Company ID :" + companyId + "| Login User Name : " + strLoginUserName + " > "
+					+ "Search Parameters are " + "," + tfCurrencyCode.getValue() + ", " + tfCurrencyName.getValue()
+					+ ", " + (String) cbCurrencyStatus.getValue() + ", F");
+			list = serviceCurrency.getCurrencyList(null, tfCurrencyCode.getValue(), tfCurrencyName.getValue(),
+					(String) cbCurrencyStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanCurrencyDM = new BeanItemContainer<CurrencyDM>(CurrencyDM.class);
+			beanCurrencyDM.addAll(list);
+			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+					+ "Got the Currency result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanCurrencyDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ccyid", "ccycode", "ccyname", "ccysymbol", "ccystatus",
+					"lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.ID", "Currency Code", "Currency Name", "Symbol",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("ccyid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values

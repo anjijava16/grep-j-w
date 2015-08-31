@@ -232,24 +232,29 @@ public class User extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<UserDM> userList = new ArrayList<UserDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfLoginId.getValue() + ", " + (String) cbUserStatus.getValue());
-		userList = serviceUser.getUserList(null, null, tfLoginId.getValue(), (String) cbUserStatus.getValue()
-				.toString(), null, companyid, null, "F");
-		recordCnt = userList.size();
-		beanUserDM = new BeanItemContainer<UserDM>(UserDM.class);
-		beanUserDM.addAll(userList);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the User. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanUserDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "userid", "loginid", "creationdt", "passwordexpiredt",
-				"lastlogindt", "userstatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Login Id", "Creation Date", "Pswd Exp.Date",
-				"Last Login Date", "Status", "Updated Date", "Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("userid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<UserDM> userList = new ArrayList<UserDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfLoginId.getValue() + ", " + (String) cbUserStatus.getValue());
+			userList = serviceUser.getUserList(null, null, tfLoginId.getValue(), (String) cbUserStatus.getValue()
+					.toString(), null, companyid, null, "F");
+			recordCnt = userList.size();
+			beanUserDM = new BeanItemContainer<UserDM>(UserDM.class);
+			beanUserDM.addAll(userList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the User. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanUserDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "userid", "loginid", "creationdt", "passwordexpiredt",
+					"lastlogindt", "userstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Login Id", "Creation Date", "Pswd Exp.Date",
+					"Last Login Date", "Status", "Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("userid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -322,23 +327,28 @@ public class User extends BaseUI {
 	}
 	
 	private void UserLogs(Long userId) {
-		List<UserLoginDM> userLoginList = null;
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		userId = ((Long) sltedRcd.getItemProperty("userid").getValue());
-		if (userId != null) {
-			tblMstScrSrchRslt.removeAllItems();
-			userLoginList = new ArrayList<UserLoginDM>();
-			userLoginList = serviceUserLogin.getUserLoginList(userId, null);
-			recordCnt = userLoginList.size();
-			beanUserLoginDM = new BeanItemContainer<UserLoginDM>(UserLoginDM.class);
-			beanUserLoginDM.addAll(userLoginList);
-			tblMstScrSrchRslt.setContainerDataSource(beanUserLoginDM);
-			tblMstScrSrchRslt.setSelectable(true);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "loginRefId", "loginDate", "logoutDate", "clientIp",
-					"sessionId" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Login Date", "Logout Date", "clientIp",
-					"SessionId" });
-			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records:" + recordCnt);
+		try {
+			List<UserLoginDM> userLoginList = null;
+			Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
+			userId = ((Long) sltedRcd.getItemProperty("userid").getValue());
+			if (userId != null) {
+				tblMstScrSrchRslt.removeAllItems();
+				userLoginList = new ArrayList<UserLoginDM>();
+				userLoginList = serviceUserLogin.getUserLoginList(userId, null);
+				recordCnt = userLoginList.size();
+				beanUserLoginDM = new BeanItemContainer<UserLoginDM>(UserLoginDM.class);
+				beanUserLoginDM.addAll(userLoginList);
+				tblMstScrSrchRslt.setContainerDataSource(beanUserLoginDM);
+				tblMstScrSrchRslt.setSelectable(true);
+				tblMstScrSrchRslt.setVisibleColumns(new Object[] { "loginRefId", "loginDate", "logoutDate", "clientIp",
+						"sessionId" });
+				tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Login Date", "Logout Date", "clientIp",
+						"SessionId" });
+				tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records:" + recordCnt);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -446,7 +456,7 @@ public class User extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

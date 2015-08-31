@@ -129,28 +129,33 @@ public class State extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<StateDM> stateList = new ArrayList<StateDM>();
-		Long countryid = null;
-		if (cbCountryName.getValue() != null) {
-			countryid = ((Long) cbCountryName.getValue());
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<StateDM> stateList = new ArrayList<StateDM>();
+			Long countryid = null;
+			if (cbCountryName.getValue() != null) {
+				countryid = ((Long) cbCountryName.getValue());
+			}
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyId + ", " + tfStateName.getValue() + ", " + (String) cbStatus.getValue());
+			stateList = serviceState.getStateList(tfStateName.getValue(), (String) cbStatus.getValue(), countryid,
+					companyId, "F");
+			recordCnt = stateList.size();
+			beanStateDM = new BeanItemContainer<StateDM>(StateDM.class);
+			beanStateDM.addAll(stateList);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Got the State result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanStateDM);
+			tblMstScrSrchRslt.setColumnAlignment("stateId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No. of Records:" + recordCnt);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "stateId", "stateName", "stateCode", "countryName",
+					"stateStatus", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "State", "Code", "Country", "Status",
+					"Updated Date", "Updated By" });
 		}
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyId + ", " + tfStateName.getValue() + ", " + (String) cbStatus.getValue());
-		stateList = serviceState.getStateList(tfStateName.getValue(), (String) cbStatus.getValue(), countryid,
-				companyId, "F");
-		recordCnt = stateList.size();
-		beanStateDM = new BeanItemContainer<StateDM>(StateDM.class);
-		beanStateDM.addAll(stateList);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Got the State result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanStateDM);
-		tblMstScrSrchRslt.setColumnAlignment("stateId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No. of Records:" + recordCnt);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "stateId", "stateName", "stateCode", "countryName",
-				"stateStatus", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "State", "Code", "Country",
-				"Status", "Updated Date", "Updated By" });
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input
@@ -174,7 +179,7 @@ public class State extends BaseUI {
 	
 	private void loadCountryList() {
 		try {
-			List<CountryDM> getCountrylist = serviceCountry.getCountryList(null,null, null, null, "Active", "P");
+			List<CountryDM> getCountrylist = serviceCountry.getCountryList(null, null, null, null, "Active", "P");
 			getCountrylist.add(new CountryDM(0L, "All Countries", null));
 			BeanContainer<Long, CountryDM> beanCountryDM = new BeanContainer<Long, CountryDM>(CountryDM.class);
 			beanCountryDM.setBeanIdProperty("countryID");
@@ -224,7 +229,6 @@ public class State extends BaseUI {
 		tfStateName.setComponentError(null);
 		tfStateName.setValue("");
 		cbCountryName.setComponentError(null);
-		
 		cbCountryName.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
@@ -289,7 +293,7 @@ public class State extends BaseUI {
 			logger.warn("Company ID : " + companyId + " | User Name : " + userName + " > "
 					+ "Throwing ValidationException. User data is > " + tfStateName.getValue());
 		}
-		if (cbCountryName.getValue()==null || (Long)cbCountryName.getValue()==0L ) {
+		if (cbCountryName.getValue() == null || (Long) cbCountryName.getValue() == 0L) {
 			cbCountryName.setComponentError(new UserError(GERPErrorCodes.NULL_COMPANY_COUNTRY));
 			errorFlag = true;
 			logger.warn("Company ID : " + cbCountryName + " | User Name : " + cbCountryName + " > "
@@ -299,7 +303,6 @@ public class State extends BaseUI {
 			throw new ERPException.ValidationException();
 		}
 	}
-	
 	
 	/*
 	 * saveDetails()-->this function is used for save/update the records

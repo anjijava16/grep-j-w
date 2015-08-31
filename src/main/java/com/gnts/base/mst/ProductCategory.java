@@ -164,25 +164,31 @@ public class ProductCategory extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Productcat Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<ProductCategoryListDM> listProdCat = new ArrayList<ProductCategoryListDM>();
-		logger.info("" + "Product Category : Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Search Parameters are " + companyid + ", " + tfProdCtgryName.getValue() + ", "
-				+ tfPrntCtgryName.getValue() + (String) cbProdCtgryStatus.getValue());
-		listProdCat = serviceProductCategory.getProdCategoryList(null, null, tfProdCtgryName.getValue(),
-				(String) cbProdCtgryStatus.getValue(), tfPrntCtgryName.getValue(), "F");
-		recordCnt = listProdCat.size();
-		beanProdCtgryListDM = new BeanItemContainer<ProductCategoryListDM>(ProductCategoryListDM.class);
-		beanProdCtgryListDM.addAll(listProdCat);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the ParentCategory. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanProdCtgryListDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "cateid", "catename", "parentCategoryname", "catestatus",
-				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Category", "Parent Category", "Status",
-				"Updated Date", "Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("cateid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Productcat Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Search...");
+			List<ProductCategoryListDM> listProdCat = new ArrayList<ProductCategoryListDM>();
+			logger.info("" + "Product Category : Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Search Parameters are " + companyid + ", " + tfProdCtgryName.getValue() + ", "
+					+ tfPrntCtgryName.getValue() + (String) cbProdCtgryStatus.getValue());
+			listProdCat = serviceProductCategory.getProdCategoryList(null, null, tfProdCtgryName.getValue(),
+					(String) cbProdCtgryStatus.getValue(), tfPrntCtgryName.getValue(), "F");
+			recordCnt = listProdCat.size();
+			beanProdCtgryListDM = new BeanItemContainer<ProductCategoryListDM>(ProductCategoryListDM.class);
+			beanProdCtgryListDM.addAll(listProdCat);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the ParentCategory. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanProdCtgryListDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "cateid", "catename", "parentCategoryname",
+					"catestatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Category", "Parent Category", "Status",
+					"Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("cateid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -203,28 +209,33 @@ public class ProductCategory extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editProductCategory() {
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			ProductCategoryListDM prodCtgryDM = beanProdCtgryListDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfProdCtgryName.setValue(prodCtgryDM.getCatename());
-			if ((prodCtgryDM.getParentcateid() != null)) {
-				cbPrntCtgry.setValue((Long) prodCtgryDM.getParentcateid());
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				ProductCategoryListDM prodCtgryDM = beanProdCtgryListDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				tfProdCtgryName.setValue(prodCtgryDM.getCatename());
+				if ((prodCtgryDM.getParentcateid() != null)) {
+					cbPrntCtgry.setValue((Long) prodCtgryDM.getParentcateid());
+				}
+				cbProdCtgryStatus.setValue(prodCtgryDM.getCatestatus());
+				if ((prodCtgryDM.getShortdesc() != null)) {
+					tfShortDesc.setValue(prodCtgryDM.getShortdesc());
+				}
+				if ((prodCtgryDM.getCatedesc() != null)) {
+					taProdCtgryDesc.setValue(prodCtgryDM.getCatedesc());
+				}
+				if (prodCtgryDM.getCateimage() != null) {
+					hlimage.removeAllComponents();
+					byte[] myimage = (byte[]) prodCtgryDM.getCateimage();
+					UploadUI uploadObject = new UploadUI(hlimage);
+					uploadObject.dispayImage(myimage, prodCtgryDM.getCatename());
+				} else {
+					new UploadUI(hlimage);
+				}
 			}
-			cbProdCtgryStatus.setValue(prodCtgryDM.getCatestatus());
-			if ((prodCtgryDM.getShortdesc() != null)) {
-				tfShortDesc.setValue(prodCtgryDM.getShortdesc());
-			}
-			if ((prodCtgryDM.getCatedesc() != null)) {
-				taProdCtgryDesc.setValue(prodCtgryDM.getCatedesc());
-			}
-			if (prodCtgryDM.getCateimage() != null) {
-				hlimage.removeAllComponents();
-				byte[] myimage = (byte[]) prodCtgryDM.getCateimage();
-				UploadUI uploadObject = new UploadUI(hlimage);
-				uploadObject.dispayImage(myimage, prodCtgryDM.getCatename());
-			} else {
-				new UploadUI(hlimage);
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

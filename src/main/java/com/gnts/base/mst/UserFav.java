@@ -41,8 +41,7 @@ import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.UI;
 
 public class UserFav extends BaseUI {
-	private UserFavService servUserfavBean = (UserFavService) SpringContextHelper
-			.getBean("userfavourites");
+	private UserFavService servUserfavBean = (UserFavService) SpringContextHelper.getBean("userfavourites");
 	private BeanItemContainer<UserFavDM> beanUserfav = null;
 	// local variables declaration
 	private Long companyid;
@@ -55,25 +54,20 @@ public class UserFav extends BaseUI {
 	private static final long serialVersionUID = 1L;
 	private Button btnDelete;
 	private CheckBox chCheckall;
-
+	
 	// Constructor
 	public UserFav() {
 		// Get the logged in user name and company id from the session
-		username = UI.getCurrent().getSession().getAttribute("loginUserName")
-				.toString();
-		companyid = Long.valueOf(UI.getCurrent().getSession()
-				.getAttribute("loginCompanyId").toString());
-		userId = Long.valueOf(UI.getCurrent().getSession()
-				.getAttribute("userId").toString());
-		logger.info("Company ID : " + companyid + " | User Name : " + username
-				+ " > " + "Inside UserFav() constructor");
+		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
+		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		userId = Long.valueOf(UI.getCurrent().getSession().getAttribute("userId").toString());
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside UserFav() constructor");
 		buildview();
 	}
-
+	
 	// Build the UI components
 	private void buildview() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username
-				+ " > " + "Painting UserFav UI");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting UserFav UI");
 		vlSrchRsltContainer.addComponent(tblMstScrSrchRslt);
 		btnSearch.setVisible(false);
 		btnReset.setVisible(false);
@@ -87,11 +81,9 @@ public class UserFav extends BaseUI {
 		btnDelete.setVisible(true);
 		btnDelete.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
-
+			
 			/*
-			 * 
 			 * this function handles button click event
-			 * 
 			 * @param ClickEvent event
 			 */
 			@Override
@@ -99,8 +91,7 @@ public class UserFav extends BaseUI {
 				if (listUserFav != null) {
 					for (UserFavDM obj : listUserFav) {
 						if (obj.isSelected()) {
-							servUserfavBean.deleteUserfavourites(obj
-									.getUserfavId());
+							servUserfavBean.deleteUserfavourites(obj.getUserfavId());
 							new GERPSaveNotification();
 						}
 					}
@@ -118,7 +109,7 @@ public class UserFav extends BaseUI {
 		chCheckall.setImmediate(true);
 		chCheckall.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
-
+			
 			public void valueChange(ValueChangeEvent event) {
 				if (event.getProperty().getValue().equals(true)) {
 					loadSrchRslt();
@@ -130,7 +121,6 @@ public class UserFav extends BaseUI {
 			}
 		});
 		hlCmdBtnLayout.addComponent(chCheckall);
-	
 		hlCmdBtnLayout.setSpacing(true);
 		hlCmdBtnLayout.setComponentAlignment(chCheckall, Alignment.MIDDLE_RIGHT);
 		hlCmdBtnLayout.addComponent(btnDelete);
@@ -140,64 +130,63 @@ public class UserFav extends BaseUI {
 		resetFields();
 		loadSrchRslt();
 	}
-
+	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username
-				+ " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		listUserFav = servUserfavBean.getUserFavouritesList(userId, null, "F");
-		recordCnt = listUserFav.size();
-		if ( chCheckall.getValue().equals(true)) {
-			List<UserFavDM> mylist = new ArrayList<UserFavDM>();
-			for (UserFavDM obj : listUserFav) {
-				obj.setSelected(true);
-				mylist.add(obj);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			listUserFav = servUserfavBean.getUserFavouritesList(userId, null, "F");
+			recordCnt = listUserFav.size();
+			if (chCheckall.getValue().equals(true)) {
+				List<UserFavDM> mylist = new ArrayList<UserFavDM>();
+				for (UserFavDM obj : listUserFav) {
+					obj.setSelected(true);
+					mylist.add(obj);
+				}
+				beanUserfav = new BeanItemContainer<UserFavDM>(UserFavDM.class);
+				beanUserfav.addAll(mylist);
+			} else {
+				List<UserFavDM> mylist = new ArrayList<UserFavDM>();
+				for (UserFavDM obj : listUserFav) {
+					obj.setSelected(false);
+					mylist.add(obj);
+				}
+				beanUserfav = new BeanItemContainer<UserFavDM>(UserFavDM.class);
+				beanUserfav.addAll(mylist);
 			}
-			beanUserfav = new BeanItemContainer<UserFavDM>(UserFavDM.class);
-			beanUserfav.addAll(mylist);
-		} else {
-			List<UserFavDM> mylist = new ArrayList<UserFavDM>();
-			for (UserFavDM obj : listUserFav) {
-				obj.setSelected(false);
-				mylist.add(obj);
-			}
-			beanUserfav = new BeanItemContainer<UserFavDM>(UserFavDM.class);
-			beanUserfav.addAll(mylist);
+			tblMstScrSrchRslt.setContainerDataSource(beanUserfav);
+			tblMstScrSrchRslt.setSelectable(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the UserFav result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanUserfav);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "selected", "userfavId", "userName", "screenName",
+					"lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "", "Ref.Id", "User Name", "Screen Name",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("userfavId", Align.LEFT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
-		tblMstScrSrchRslt.setContainerDataSource(beanUserfav);
-		tblMstScrSrchRslt.setSelectable(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username
-				+ " > " + "Got the UserFav result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanUserfav);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "selected",
-				"userfavId", "userName", "screenName", "lastUpdatedDt",
-				"lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "", "Ref.Id",
-				"User Name", "Screen Name", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("userfavId", Align.LEFT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : "
-				+ recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
-
+	
 	private void setCheckBoxTable() {
 		tblMstScrSrchRslt.addGeneratedColumn("selected", new ColumnGenerator() {
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
-			public Component generateCell(final Table source,
-					final Object itemId, final Object columnId) {
+			public Component generateCell(final Table source, final Object itemId, final Object columnId) {
 				final UserFavDM bean = (UserFavDM) itemId;
 				final CheckBox chbox = new CheckBox();
 				chbox.setImmediate(true);
 				chbox.addValueChangeListener(new Property.ValueChangeListener() {
 					private static final long serialVersionUID = 1L;
-
+					
 					@Override
 					public void valueChange(final ValueChangeEvent event) {
-						bean.setSelected((Boolean) event.getProperty()
-								.getValue());
+						bean.setSelected((Boolean) event.getProperty().getValue());
 						if (event.getProperty().getValue().equals(true)) {
 							btnDelete.setEnabled(true);
 						} else {
@@ -214,40 +203,39 @@ public class UserFav extends BaseUI {
 			}
 		});
 	}
-
 	
 	@Override
 	protected void resetFields() {
 	}
-
+	
 	@Override
 	protected void searchDetails() throws NoDataFoundException {
 	}
-
+	
 	@Override
 	protected void resetSearchDetails() {
 	}
-
+	
 	@Override
 	protected void addDetails() {
 	}
-
+	
 	@Override
 	protected void showAuditDetails() {
 	}
-
+	
 	@Override
 	protected void cancelDetails() {
 	}
-
+	
 	@Override
 	protected void editDetails() {
 	}
-
+	
 	@Override
 	protected void validateDetails() throws ValidationException {
 	}
-
+	
 	@Override
 	protected void saveDetails() throws ERPException.SaveException {
 	}

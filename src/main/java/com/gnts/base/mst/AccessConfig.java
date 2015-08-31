@@ -232,93 +232,104 @@ public class AccessConfig extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		tblScreenAccess.removeAllItems();
-		tblScreenAccess.addContainerProperty("screenname", String.class, "");
-		tblScreenAccess.addContainerProperty("screenid", String.class, "");
-		if (cbRole.getValue() != null && cbBranch.getValue() != null) {
-			appScreenList = appsConfigBean.getMBaseAppscreenUserList(Long.valueOf(cbRole.getValue().toString()),
-					companyid, Long.valueOf(cbBranch.getValue().toString()));
-			recordCnt = appScreenList.size();
-			if (recordCnt == 0) {
-				for (AppScreensDM appScreensDM : appsConfigBean.getMBaseAppScreenListByUserId(null)) {
-					AccessConfigDM accessConfigDM = new AccessConfigDM();
-					accessConfigDM.setScrID(appScreensDM.getScreenId());
-					accessConfigDM.setCompanyid(companyid);
-					accessConfigDM.setBranchid(Long.valueOf(cbBranch.getValue().toString()));
-					accessConfigDM.setRoleId(Long.valueOf(cbRole.getValue().toString()));
-					accessConfigDM.setPublicYN("Y");
-					accessConfigDM.setViewYN("Y");
-					accessConfigDM.setCreateYN("Y");
-					accessConfigDM.setReviewYN("Y");
-					accessConfigDM.setApproYN("Y");
-					accessConfigDM.setRecLVL("Company");
-					accessConfigDM.setStatus("Active");
-					serviceAccessConfig.saveAccessConfig(accessConfigDM);
-				}
+		try {
+			tblScreenAccess.removeAllItems();
+			tblScreenAccess.addContainerProperty("screenname", String.class, "");
+			tblScreenAccess.addContainerProperty("screenid", String.class, "");
+			if (cbRole.getValue() != null && cbBranch.getValue() != null) {
 				appScreenList = appsConfigBean.getMBaseAppscreenUserList(Long.valueOf(cbRole.getValue().toString()),
 						companyid, Long.valueOf(cbBranch.getValue().toString()));
-			}
-			for (AppScreensUserDM mBaseAppObj : appScreenList) {
-				tblScreenAccess.addItem(new Object[] { mBaseAppObj.getScreendesc(),
-						mBaseAppObj.getScreenId().toString() }, mBaseAppObj.getScreenId().intValue());
-				if (mBaseAppObj.getParentId() != null) {
-					tblScreenAccess.setParent(mBaseAppObj.getScreenId().intValue(), mBaseAppObj.getParentId()
-							.intValue());
-					int count = 0;
-					for (AppScreensUserDM obj : appScreenList) {
-						if (obj.getParentId() != null) {
-							if (mBaseAppObj.getScreenId() == obj.getParentId()) {
-								count++;
+				recordCnt = appScreenList.size();
+				if (recordCnt == 0) {
+					for (AppScreensDM appScreensDM : appsConfigBean.getMBaseAppScreenListByUserId(null)) {
+						AccessConfigDM accessConfigDM = new AccessConfigDM();
+						accessConfigDM.setScrID(appScreensDM.getScreenId());
+						accessConfigDM.setCompanyid(companyid);
+						accessConfigDM.setBranchid(Long.valueOf(cbBranch.getValue().toString()));
+						accessConfigDM.setRoleId(Long.valueOf(cbRole.getValue().toString()));
+						accessConfigDM.setPublicYN("Y");
+						accessConfigDM.setViewYN("Y");
+						accessConfigDM.setCreateYN("Y");
+						accessConfigDM.setReviewYN("Y");
+						accessConfigDM.setApproYN("Y");
+						accessConfigDM.setRecLVL("Company");
+						accessConfigDM.setStatus("Active");
+						serviceAccessConfig.saveAccessConfig(accessConfigDM);
+					}
+					appScreenList = appsConfigBean.getMBaseAppscreenUserList(
+							Long.valueOf(cbRole.getValue().toString()), companyid,
+							Long.valueOf(cbBranch.getValue().toString()));
+				}
+				for (AppScreensUserDM mBaseAppObj : appScreenList) {
+					tblScreenAccess.addItem(new Object[] { mBaseAppObj.getScreendesc(),
+							mBaseAppObj.getScreenId().toString() }, mBaseAppObj.getScreenId().intValue());
+					if (mBaseAppObj.getParentId() != null) {
+						tblScreenAccess.setParent(mBaseAppObj.getScreenId().intValue(), mBaseAppObj.getParentId()
+								.intValue());
+						int count = 0;
+						for (AppScreensUserDM obj : appScreenList) {
+							if (obj.getParentId() != null) {
+								if (mBaseAppObj.getScreenId() == obj.getParentId()) {
+									count++;
+								}
 							}
 						}
-					}
-					if (count != 0) {
-						tblScreenAccess.setChildrenAllowed(mBaseAppObj.getScreenId().intValue(), true);
-					} else {
-						tblScreenAccess.setChildrenAllowed(mBaseAppObj.getScreenId().intValue(), false);
+						if (count != 0) {
+							tblScreenAccess.setChildrenAllowed(mBaseAppObj.getScreenId().intValue(), true);
+						} else {
+							tblScreenAccess.setChildrenAllowed(mBaseAppObj.getScreenId().intValue(), false);
+						}
 					}
 				}
 			}
+			tblScreenAccess.setVisibleColumns(new Object[] { "screenname", "screenid" });
+			tblScreenAccess.setColumnHeaders(new String[] { "Screen", "Id" });
+			tblScreenAccess.setColumnFooter("screenid", "No.of Records : " + recordCnt);
 		}
-		tblScreenAccess.setVisibleColumns(new Object[] { "screenname", "screenid" });
-		tblScreenAccess.setColumnHeaders(new String[] { "Screen", "Id" });
-		tblScreenAccess.setColumnFooter("screenid", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadFieldAccessList() {
-		tblFieldAccess.removeAllItems();
-		List<FieldAccessConfigDM> auditConfigList = new ArrayList<FieldAccessConfigDM>();
-		auditConfigList = serviceFieldAccess.getFieldAccessConfigList(Long.valueOf(screenid), null, companyid, null,
-				null, "Active");
-		recordCnt = auditConfigList.size();
-		tblFieldAccess.setEditable(true);
-		BeanItemContainer<FieldAccessConfigDM> auditConfigBean = new BeanItemContainer<FieldAccessConfigDM>(
-				FieldAccessConfigDM.class);
-		for (FieldAccessConfigDM fieldAccessConfigDM : auditConfigList) {
-			if (fieldAccessConfigDM.getViewYN().equals("Y")) {
-				fieldAccessConfigDM.setViewYN("true");
-			} else {
-				fieldAccessConfigDM.setViewYN("false");
-			}
-		}
-		auditConfigBean.addAll(auditConfigList);
-		tblFieldAccess.setTableFieldFactory(new TableFieldFactory() {
-			private static final long serialVersionUID = 1L;
-			
-			public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-				if (propertyId.toString().equals("viewYN")) {
-					CheckBox ckBox = new CheckBox();
-					ckBox.setValue(true);
-					return ckBox;
+		try {
+			tblFieldAccess.removeAllItems();
+			List<FieldAccessConfigDM> auditConfigList = new ArrayList<FieldAccessConfigDM>();
+			auditConfigList = serviceFieldAccess.getFieldAccessConfigList(Long.valueOf(screenid), null, companyid,
+					null, null, "Active");
+			recordCnt = auditConfigList.size();
+			tblFieldAccess.setEditable(true);
+			BeanItemContainer<FieldAccessConfigDM> auditConfigBean = new BeanItemContainer<FieldAccessConfigDM>(
+					FieldAccessConfigDM.class);
+			for (FieldAccessConfigDM fieldAccessConfigDM : auditConfigList) {
+				if (fieldAccessConfigDM.getViewYN().equals("Y")) {
+					fieldAccessConfigDM.setViewYN("true");
+				} else {
+					fieldAccessConfigDM.setViewYN("false");
 				}
-				return null;
 			}
-		});
-		tblFieldAccess.setContainerDataSource(auditConfigBean);
-		tblFieldAccess.setColumnFooter("onOff", "No.of Records:" + recordCnt);
-		tblFieldAccess.setVisibleColumns(new Object[] { "screeFieldDesc", "viewYN" });
-		tblFieldAccess.setColumnHeaders(new String[] { "Field Name", "View?" });
-		tblFieldAccess.setSelectable(true);
+			auditConfigBean.addAll(auditConfigList);
+			tblFieldAccess.setTableFieldFactory(new TableFieldFactory() {
+				private static final long serialVersionUID = 1L;
+				
+				public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+					if (propertyId.toString().equals("viewYN")) {
+						CheckBox ckBox = new CheckBox();
+						ckBox.setValue(true);
+						return ckBox;
+					}
+					return null;
+				}
+			});
+			tblFieldAccess.setContainerDataSource(auditConfigBean);
+			tblFieldAccess.setColumnFooter("onOff", "No.of Records:" + recordCnt);
+			tblFieldAccess.setVisibleColumns(new Object[] { "screeFieldDesc", "viewYN" });
+			tblFieldAccess.setColumnHeaders(new String[] { "Field Name", "View?" });
+			tblFieldAccess.setSelectable(true);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -337,51 +348,57 @@ public class AccessConfig extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editAccessConfig() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		assembleUserInputLayout();
-		hlUserIPContainer.removeAllComponents();
-		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		Item sltedRcd = tblScreenAccess.getItem(tblScreenAccess.getValue());
-		if (sltedRcd != null) {
-			screenid = sltedRcd.getItemProperty("screenid").getValue().toString();
-			List<AccessConfigDM> list = serviceAccessConfig.getAccessConfigList(Long.valueOf(screenid), null,
-					companyid, (Long) cbBranch.getValue(), (Long) cbRole.getValue(), "Active");
-			for (AccessConfigDM obj : list) {
-				if (obj.getPublicYN().equals("Y")) {
-					chkPublic.setValue(true);
-				} else {
-					chkPublic.setValue(false);
-				}
-				if (obj.getViewYN().equals("Y")) {
-					chkView.setValue(true);
-				} else {
-					chkView.setValue(false);
-				}
-				if (obj.getCreateYN().equals("Y")) {
-					chkCreate.setValue(true);
-				} else {
-					chkCreate.setValue(false);
-				}
-				if (obj.getReviewYN() != null) {
-					if (obj.getReviewYN().equals("Y")) {
-						chkReview.setValue(true);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			assembleUserInputLayout();
+			hlUserIPContainer.removeAllComponents();
+			hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
+			Item sltedRcd = tblScreenAccess.getItem(tblScreenAccess.getValue());
+			if (sltedRcd != null) {
+				screenid = sltedRcd.getItemProperty("screenid").getValue().toString();
+				List<AccessConfigDM> list = serviceAccessConfig.getAccessConfigList(Long.valueOf(screenid), null,
+						companyid, (Long) cbBranch.getValue(), (Long) cbRole.getValue(), "Active");
+				for (AccessConfigDM obj : list) {
+					if (obj.getPublicYN().equals("Y")) {
+						chkPublic.setValue(true);
 					} else {
-						chkReview.setValue(false);
+						chkPublic.setValue(false);
 					}
-				}
-				if (obj.getApproYN() != null) {
-					if (obj.getApproYN().equals("Y")) {
-						chkApprove.setValue(true);
+					if (obj.getViewYN().equals("Y")) {
+						chkView.setValue(true);
 					} else {
-						chkApprove.setValue(false);
+						chkView.setValue(false);
 					}
+					if (obj.getCreateYN().equals("Y")) {
+						chkCreate.setValue(true);
+					} else {
+						chkCreate.setValue(false);
+					}
+					if (obj.getReviewYN() != null) {
+						if (obj.getReviewYN().equals("Y")) {
+							chkReview.setValue(true);
+						} else {
+							chkReview.setValue(false);
+						}
+					}
+					if (obj.getApproYN() != null) {
+						if (obj.getApproYN().equals("Y")) {
+							chkApprove.setValue(true);
+						} else {
+							chkApprove.setValue(false);
+						}
+					}
+					cbRecordLevel.setValue(obj.getRecLVL());
 				}
-				cbRecordLevel.setValue(obj.getRecLVL());
+				loadFieldAccessList();
+				logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+						+ "Selected screenid -> " + screenid);
 			}
-			loadFieldAccessList();
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected screenid -> "
-					+ screenid);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -501,15 +518,21 @@ public class AccessConfig extends BaseUI {
 	}
 	
 	private void saveFieldAccessDetails() {
-		@SuppressWarnings("unchecked")
-		Collection<FieldAccessConfigDM> itemIds = (Collection<FieldAccessConfigDM>) tblFieldAccess.getVisibleItemIds();
-		for (FieldAccessConfigDM fieldaccess : (Collection<FieldAccessConfigDM>) itemIds) {
-			if (fieldaccess.getViewYN().equals("true")) {
-				fieldaccess.setViewYN("Y");
-			} else {
-				fieldaccess.setViewYN("N");
+		try {
+			@SuppressWarnings("unchecked")
+			Collection<FieldAccessConfigDM> itemIds = (Collection<FieldAccessConfigDM>) tblFieldAccess
+					.getVisibleItemIds();
+			for (FieldAccessConfigDM fieldaccess : (Collection<FieldAccessConfigDM>) itemIds) {
+				if (fieldaccess.getViewYN().equals("true")) {
+					fieldaccess.setViewYN("Y");
+				} else {
+					fieldaccess.setViewYN("N");
+				}
+				serviceFieldAccess.saveFieldAccessConfigDetails(fieldaccess);
 			}
-			serviceFieldAccess.saveFieldAccessConfigDetails(fieldaccess);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

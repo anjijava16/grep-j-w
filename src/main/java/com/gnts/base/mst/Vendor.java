@@ -300,39 +300,45 @@ public class Vendor extends BaseUI {
 			hlUserInputLayout.setSpacing(true);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<VendorDM> vendorList = new ArrayList<VendorDM>();
-		Long cityId = null;
-		if (cbCity.getValue() != null) {
-			cityId = ((Long.valueOf(cbCity.getValue().toString())));
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<VendorDM> vendorList = new ArrayList<VendorDM>();
+			Long cityId = null;
+			if (cbCity.getValue() != null) {
+				cityId = ((Long.valueOf(cbCity.getValue().toString())));
+			}
+			Long branchId = null;
+			if (cbBranch.getValue() != null) {
+				branchId = ((Long.valueOf(cbBranch.getValue().toString())));
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfVendorName.getValue() + ", " + tfContactName.getValue()
+					+ (String) cbStatus.getValue() + ", " + cityId);
+			vendorList = serviceVendor.getVendorList(branchId, null, companyid, tfVendorName.getValue(), null, null,
+					null, tfContactName.getValue(), (String) cbStatus.getValue(), cityId, "F");
+			recordCnt = vendorList.size();
+			beanVendorDM = new BeanItemContainer<VendorDM>(VendorDM.class);
+			beanVendorDM.addAll(vendorList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Vendor. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanVendorDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "vendorId", "vendorName", "contactName", "branchName",
+					"vendorstatus", "lastUpdatedBy", "lastUpdatedDt" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Vendor", "Contact", "Branch", "Status",
+					"Updated By", "Updated Date" });
+			tblMstScrSrchRslt.setColumnAlignment("vendorId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
-		Long branchId = null;
-		if (cbBranch.getValue() != null) {
-			branchId = ((Long.valueOf(cbBranch.getValue().toString())));
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfVendorName.getValue() + ", " + tfContactName.getValue()
-				+ (String) cbStatus.getValue() + ", " + cityId);
-		vendorList = serviceVendor.getVendorList(branchId, null, companyid, tfVendorName.getValue(), null, null, null,
-				tfContactName.getValue(), (String) cbStatus.getValue(), cityId, "F");
-		recordCnt = vendorList.size();
-		beanVendorDM = new BeanItemContainer<VendorDM>(VendorDM.class);
-		beanVendorDM.addAll(vendorList);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Vendor. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanVendorDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "vendorId", "vendorName", "contactName", "branchName",
-				"vendorstatus", "lastUpdatedBy", "lastUpdatedDt" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Vendor", "Contact", "Branch", "Status",
-				"Updated By", "Updated Date" });
-		tblMstScrSrchRslt.setColumnAlignment("vendorId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
 	
 	// Reset the field values to default values
@@ -393,110 +399,115 @@ public class Vendor extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editVendor() {
-		VendorDM editVendor = beanVendorDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		pkvendorId = editVendor.getVendorId().toString();
-		if (editVendor.getVendorName() != null) {
-			tfVendorName.setValue(editVendor.getVendorName());
-		}
-		if (editVendor.getVendorCode() != null) {
-			tfVendorCode.setValue(editVendor.getVendorCode());
-		}
-		if (editVendor.getVendorrating() != null) {
-			tfVendorRating.setValue(editVendor.getVendorrating());
-		}
-		if (editVendor.getVendorAddress() != null) {
-			taAddress.setValue(editVendor.getVendorAddress());
-		}
-		if (editVendor.getVendorPostcode() != null) {
-			tfPinCode.setValue(editVendor.getVendorPostcode().toString());
-		}
-		if (editVendor.getContactName() != null) {
-			tfContactName.setValue(editVendor.getContactName());
-		}
-		if (editVendor.getContactNo() != null) {
-			tfcontactno.setValue(editVendor.getContactNo());
-		}
-		if (editVendor.getDesidnation() != null) {
-			tfDesignation.setValue(editVendor.getDesidnation());
-		}
-		if (editVendor.getEmailId() != null) {
-			tfEmail.setValue(editVendor.getEmailId());
-		}
-		if (editVendor.getRegNo() != null) {
-			tfRegNo.setValue(editVendor.getRegNo());
-		}
-		if (editVendor.getTanNo() != null) {
-			tfTanNo.setValue(editVendor.getTanNo());
-		}
-		if (editVendor.getStNo() != null) {
-			tfStNo.setValue(editVendor.getStNo());
-		}
-		if (editVendor.getPaymentTerm() != null) {
-			tfPaymentTerm.setValue(editVendor.getPaymentTerm());
-		}
-		if (editVendor.getWarrentyType() != null) {
-			tfwarrantyType.setValue(editVendor.getWarrentyType());
-		}
-		if (editVendor.getDeliveryPeriod() != null) {
-			tfDeliveryPeriod.setValue(editVendor.getDeliveryPeriod());
-		}
-		if (editVendor.getFreightPrnct() != null) {
-			tfFright.setValue(editVendor.getFreightPrnct().toString());
-		}
-		if (editVendor.getEdPrnct() != null) {
-			tfED.setValue(editVendor.getEdPrnct().toString());
-		}
-		if (editVendor.getHedPrnct() != null) {
-			tfHED.setValue(editVendor.getHedPrnct().toString());
-		}
-		if (editVendor.getCessPrnct() != null) {
-			tfCESS.setValue(editVendor.getCessPrnct().toString());
-		}
-		if (editVendor.getCstPrnct() != null) {
-			tfCST.setValue(editVendor.getCstPrnct().toString());
-		}
-		if (editVendor.getVatPrnct() != null) {
-			tfVAT.setValue(editVendor.getVatPrnct().toString());
-		}
-		if (editVendor.getPackingPrnct() != null) {
-			tfPackingPercent.setValue(editVendor.getPackingPrnct().toString());
-		}
-		if (editVendor.getBankName() != null) {
-			tfBankName.setValue(editVendor.getBankName());
-		}
-		if (editVendor.getBankAddress() != null) {
-			taBankAddress.setValue(editVendor.getBankAddress());
-		}
-		if (editVendor.getBankACNO() != null) {
-			tfACNo.setValue(editVendor.getBankACNO().toString());
-		}
-		if (editVendor.getBankACType() != null) {
-			tfACType.setValue(editVendor.getBankACType());
-		}
-		if (ckCForm.getValue().equals(true)) {
-			editVendor.setCformREQD("Y");
-		} else if (ckCForm.getValue().equals(false)) {
-			editVendor.setCformREQD("N");
-		}
-		if (ckDutyExempt.getValue() != null) {
-			if (editVendor.getDutyExempt().equals("Y")) {
-				ckDutyExempt.setValue(true);
-			} else {
-				ckDutyExempt.setValue(false);
+		try {
+			VendorDM editVendor = beanVendorDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			pkvendorId = editVendor.getVendorId().toString();
+			if (editVendor.getVendorName() != null) {
+				tfVendorName.setValue(editVendor.getVendorName());
 			}
+			if (editVendor.getVendorCode() != null) {
+				tfVendorCode.setValue(editVendor.getVendorCode());
+			}
+			if (editVendor.getVendorrating() != null) {
+				tfVendorRating.setValue(editVendor.getVendorrating());
+			}
+			if (editVendor.getVendorAddress() != null) {
+				taAddress.setValue(editVendor.getVendorAddress());
+			}
+			if (editVendor.getVendorPostcode() != null) {
+				tfPinCode.setValue(editVendor.getVendorPostcode().toString());
+			}
+			if (editVendor.getContactName() != null) {
+				tfContactName.setValue(editVendor.getContactName());
+			}
+			if (editVendor.getContactNo() != null) {
+				tfcontactno.setValue(editVendor.getContactNo());
+			}
+			if (editVendor.getDesidnation() != null) {
+				tfDesignation.setValue(editVendor.getDesidnation());
+			}
+			if (editVendor.getEmailId() != null) {
+				tfEmail.setValue(editVendor.getEmailId());
+			}
+			if (editVendor.getRegNo() != null) {
+				tfRegNo.setValue(editVendor.getRegNo());
+			}
+			if (editVendor.getTanNo() != null) {
+				tfTanNo.setValue(editVendor.getTanNo());
+			}
+			if (editVendor.getStNo() != null) {
+				tfStNo.setValue(editVendor.getStNo());
+			}
+			if (editVendor.getPaymentTerm() != null) {
+				tfPaymentTerm.setValue(editVendor.getPaymentTerm());
+			}
+			if (editVendor.getWarrentyType() != null) {
+				tfwarrantyType.setValue(editVendor.getWarrentyType());
+			}
+			if (editVendor.getDeliveryPeriod() != null) {
+				tfDeliveryPeriod.setValue(editVendor.getDeliveryPeriod());
+			}
+			if (editVendor.getFreightPrnct() != null) {
+				tfFright.setValue(editVendor.getFreightPrnct().toString());
+			}
+			if (editVendor.getEdPrnct() != null) {
+				tfED.setValue(editVendor.getEdPrnct().toString());
+			}
+			if (editVendor.getHedPrnct() != null) {
+				tfHED.setValue(editVendor.getHedPrnct().toString());
+			}
+			if (editVendor.getCessPrnct() != null) {
+				tfCESS.setValue(editVendor.getCessPrnct().toString());
+			}
+			if (editVendor.getCstPrnct() != null) {
+				tfCST.setValue(editVendor.getCstPrnct().toString());
+			}
+			if (editVendor.getVatPrnct() != null) {
+				tfVAT.setValue(editVendor.getVatPrnct().toString());
+			}
+			if (editVendor.getPackingPrnct() != null) {
+				tfPackingPercent.setValue(editVendor.getPackingPrnct().toString());
+			}
+			if (editVendor.getBankName() != null) {
+				tfBankName.setValue(editVendor.getBankName());
+			}
+			if (editVendor.getBankAddress() != null) {
+				taBankAddress.setValue(editVendor.getBankAddress());
+			}
+			if (editVendor.getBankACNO() != null) {
+				tfACNo.setValue(editVendor.getBankACNO().toString());
+			}
+			if (editVendor.getBankACType() != null) {
+				tfACType.setValue(editVendor.getBankACType());
+			}
+			if (ckCForm.getValue().equals(true)) {
+				editVendor.setCformREQD("Y");
+			} else if (ckCForm.getValue().equals(false)) {
+				editVendor.setCformREQD("N");
+			}
+			if (ckDutyExempt.getValue() != null) {
+				if (editVendor.getDutyExempt().equals("Y")) {
+					ckDutyExempt.setValue(true);
+				} else {
+					ckDutyExempt.setValue(false);
+				}
+			}
+			if (editVendor.getCformREQD().equals("Y")) {
+				ckCForm.setValue(true);
+			} else {
+				ckCForm.setValue(false);
+			}
+			cbStatus.setValue(editVendor.getVendorstatus());
+			cbCountry.setValue(Long.valueOf(editVendor.getcountryID()));
+			cbBranch.setValue(Long.valueOf(editVendor.getBranchId()));
+			cbState.setValue(Long.valueOf(editVendor.getStateId()).toString());
+			cbVendorTypeName.setValue(Long.valueOf(editVendor.getVendorTypeId()).toString());
+			cbCity.setValue(Long.valueOf(editVendor.getCityId()).toString());
+			tfcontactno.setComponentError(null);
 		}
-		if (editVendor.getCformREQD().equals("Y")) {
-			ckCForm.setValue(true);
-		} else {
-			ckCForm.setValue(false);
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		cbStatus.setValue(editVendor.getVendorstatus());
-		cbCountry.setValue(Long.valueOf(editVendor.getcountryID()));
-		cbBranch.setValue(Long.valueOf(editVendor.getBranchId()));
-		cbState.setValue(Long.valueOf(editVendor.getStateId()).toString());
-		cbVendorTypeName.setValue(Long.valueOf(editVendor.getVendorTypeId()).toString());
-		cbCity.setValue(Long.valueOf(editVendor.getCityId()).toString());
-		tfcontactno.setComponentError(null);
 	}
 	
 	// Base class implementations
@@ -728,7 +739,7 @@ public class Vendor extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

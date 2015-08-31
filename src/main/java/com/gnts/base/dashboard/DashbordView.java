@@ -2,6 +2,7 @@ package com.gnts.base.dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 import com.gnts.base.mst.Product;
 import com.gnts.base.service.mst.ProductService;
 import com.gnts.crm.service.mst.ClientService;
@@ -74,7 +75,7 @@ public class DashbordView implements ClickListener {
 	private VerticalLayout clMainLayout;
 	private HorizontalLayout hlHeader;
 	private Table tblStatus = new Table();
-	
+	private Logger logger = Logger.getLogger(DashbordView.class);
 	public DashbordView() {
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
@@ -262,7 +263,7 @@ public class DashbordView implements ClickListener {
 			});
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

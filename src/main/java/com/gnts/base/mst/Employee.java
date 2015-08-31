@@ -4102,7 +4102,7 @@ public class Employee extends BaseUI {
 		Long earnpercent = serviceDeduction.getMinValueByGradeid(gradeid);
 		minValueByGross = serviceDeduction.getMinValueByGradeidOnGross(gradeid);
 		minValueByBasic = Long.valueOf(Math.round(minValueByGross * earnpercent) / 100);
-		minValueByBasicFTA = Long.valueOf(Math.round((minValueByBasic+minValueByBasicFTA) *earnpercent) /100);
+		minValueByBasicFTA = Long.valueOf(Math.round((minValueByBasic) *earnpercent) /100);
 		
 		for (GradeDeductionDM pojo : list) {
 			Long dednid = pojo.getDednId();

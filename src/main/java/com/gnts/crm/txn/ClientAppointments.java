@@ -547,53 +547,58 @@ public class ClientAppointments extends BaseUI {
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.error("error during populate values on the table, The Error is ----->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editClientAppointmentDetails() {
-		cbVisibleFalse();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Selected Appointement. Id -> " + appointId);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			ClientAppointmentsDM appointmentsDM = beanAppointment.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			appointId = appointmentsDM.getAppointId().toString();
-			taMeetRemarks.setValue(appointmentsDM.getMeetingRemakrs());
-			if (appointmentsDM.getCompaignId() != null) {
-				cbTypeofContact.setValue("Campaign");
-				cbCampaign.setValue(appointmentsDM.getCompaignId());
+		try {
+			cbVisibleFalse();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Selected Appointement. Id -> " + appointId);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				ClientAppointmentsDM appointmentsDM = beanAppointment.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				appointId = appointmentsDM.getAppointId().toString();
+				taMeetRemarks.setValue(appointmentsDM.getMeetingRemakrs());
+				if (appointmentsDM.getCompaignId() != null) {
+					cbTypeofContact.setValue("Campaign");
+					cbCampaign.setValue(appointmentsDM.getCompaignId());
+				}
+				if (appointmentsDM.getClientId() != null) {
+					cbTypeofContact.setValue("Client Name");
+					cbClient.setValue(appointmentsDM.getClientId());
+				}
+				if (appointmentsDM.getLeadId() != null) {
+					cbTypeofContact.setValue("Lead Name");
+					cbLead.setValue(appointmentsDM.getLeadId());
+				}
+				if (appointmentsDM.getContactId() != null) {
+					cbTypeofContact.setValue("Contact Name");
+					cbContact.setValue(appointmentsDM.getContactId());
+				}
+				if (appointmentsDM.getClientCaseId() != null) {
+					cbTypeofContact.setValue("Client Case");
+					cbCase.setValue(appointmentsDM.getClientCaseId());
+				}
+				if (appointmentsDM.getOppertunityid() != null) {
+					cbTypeofContact.setValue("Opportunity Provider");
+					cbOppertunity.setValue(appointmentsDM.getOppertunityid());
+				}
+				taObjectives.setValue(appointmentsDM.getObjective());
+				cbMeetingType.setValue(appointmentsDM.getMeetingType());
+				cbPriority.setValue(appointmentsDM.getPriority());
+				cbPreviewAppoint.setValue(appointmentsDM.getPrevAppointmentId());
+				cbEmployee.setValue(appointmentsDM.getOwnerId());
+				scheduleDt.setValue(appointmentsDM.getScheduleDtInt());
+				dueDate.setValue(appointmentsDM.getDueDateDt());
+				cbMeetingStatus.setValue(appointmentsDM.getMeetingStatus());
 			}
-			if (appointmentsDM.getClientId() != null) {
-				cbTypeofContact.setValue("Client Name");
-				cbClient.setValue(appointmentsDM.getClientId());
-			}
-			if (appointmentsDM.getLeadId() != null) {
-				cbTypeofContact.setValue("Lead Name");
-				cbLead.setValue(appointmentsDM.getLeadId());
-			}
-			if (appointmentsDM.getContactId() != null) {
-				cbTypeofContact.setValue("Contact Name");
-				cbContact.setValue(appointmentsDM.getContactId());
-			}
-			if (appointmentsDM.getClientCaseId() != null) {
-				cbTypeofContact.setValue("Client Case");
-				cbCase.setValue(appointmentsDM.getClientCaseId());
-			}
-			if (appointmentsDM.getOppertunityid() != null) {
-				cbTypeofContact.setValue("Opportunity Provider");
-				cbOppertunity.setValue(appointmentsDM.getOppertunityid());
-			}
-			taObjectives.setValue(appointmentsDM.getObjective());
-			cbMeetingType.setValue(appointmentsDM.getMeetingType());
-			cbPriority.setValue(appointmentsDM.getPriority());
-			cbPreviewAppoint.setValue(appointmentsDM.getPrevAppointmentId());
-			cbEmployee.setValue(appointmentsDM.getOwnerId());
-			scheduleDt.setValue(appointmentsDM.getScheduleDtInt());
-			dueDate.setValue(appointmentsDM.getDueDateDt());
-			cbMeetingStatus.setValue(appointmentsDM.getMeetingStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -609,8 +614,7 @@ public class ClientAppointments extends BaseUI {
 			cbClient.setContainerDataSource(beanClients);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.info("load Clients Details " + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -623,8 +627,7 @@ public class ClientAppointments extends BaseUI {
 			cbCampaign.setContainerDataSource(beanCampaign);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.info("load client Campaign List" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -636,7 +639,7 @@ public class ClientAppointments extends BaseUI {
 			cbLead.setContainerDataSource(beanLead);
 		}
 		catch (Exception e) {
-			logger.info("load leads details" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -651,6 +654,7 @@ public class ClientAppointments extends BaseUI {
 			cbOppertunity.setContainerDataSource(beanClntOppertunity);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -663,7 +667,7 @@ public class ClientAppointments extends BaseUI {
 			cbEmployee.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
-			logger.info("load Employee details" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -719,6 +723,7 @@ public class ClientAppointments extends BaseUI {
 			cbPreviewAppoint.setContainerDataSource(beanAppointment);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -751,8 +756,7 @@ public class ClientAppointments extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.info("load Calendar view Details " + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -917,8 +921,7 @@ public class ClientAppointments extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			logger.info("saveOrUpdateAppointmentdetails" + e);
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

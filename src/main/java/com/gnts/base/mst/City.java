@@ -181,54 +181,64 @@ public class City extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		cbCountry.setVisible(false);
-		cbTimezone.setVisible(false);
-		cbregion.setVisible(false);
-		tftier.setVisible(false);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<CityDM> list = new ArrayList<CityDM>();
-		Long stateid = null;
-		if (cbstate.getValue() != null) {
-			stateid = Long.valueOf(cbstate.getValue().toString());
+		try {
+			cbCountry.setVisible(false);
+			cbTimezone.setVisible(false);
+			cbregion.setVisible(false);
+			tftier.setVisible(false);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<CityDM> list = new ArrayList<CityDM>();
+			Long stateid = null;
+			if (cbstate.getValue() != null) {
+				stateid = Long.valueOf(cbstate.getValue().toString());
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfcityname.getValue() + ", " + cbstate.getValue() + ","
+					+ (String) cbstatus.getValue());
+			list = serviceCity.getCityList(null, tfcityname.getValue(), stateid, (String) cbstatus.getValue(),
+					companyid, "F");
+			recordCnt = list.size();
+			citybean = new BeanItemContainer<CityDM>(CityDM.class);
+			citybean.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the City. result set");
+			tblMstScrSrchRslt.setContainerDataSource(citybean);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "cityid", "cityname", "statename", "status",
+					"lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "City", "State", "Status", "UpdatedDate",
+					"UpdatedBy" });
+			tblMstScrSrchRslt.setColumnAlignment("cityid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfcityname.getValue() + ", " + cbstate.getValue() + ","
-				+ (String) cbstatus.getValue());
-		list = serviceCity.getCityList(null, tfcityname.getValue(), stateid, (String) cbstatus.getValue(), companyid,
-				"F");
-		recordCnt = list.size();
-		citybean = new BeanItemContainer<CityDM>(CityDM.class);
-		citybean.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the City. result set");
-		tblMstScrSrchRslt.setContainerDataSource(citybean);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "cityid", "cityname", "statename", "status",
-				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "City", "State", "Status", "UpdatedDate",
-				"UpdatedBy" });
-		tblMstScrSrchRslt.setColumnAlignment("cityid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editCity() {
-		tfcityname.setRequired(true);
-		cbCountry.setVisible(true);
-		cbTimezone.setVisible(true);
-		cbregion.setVisible(true);
-		tftier.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			CityDM cityDM = citybean.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cityid = cityDM.getCityid().toString();
-			cbstatus.setValue(cityDM.getStatus());
-			cbCountry.setValue(Long.valueOf(cityDM.getCountryid()));
-			loadstateList();
-			cbstate.removeItem("0");
-			cbstate.setValue(Long.valueOf(cityDM.getStateId()).toString());
-			tfcityname.setValue(cityDM.getCityname());
-			cbregion.setValue(Long.valueOf(cityDM.getRegionId()).toString());
-			tftier.setValue(cityDM.getTier());
-			cbTimezone.setValue((Long) cityDM.getTimezoneid());
+		try {
+			tfcityname.setRequired(true);
+			cbCountry.setVisible(true);
+			cbTimezone.setVisible(true);
+			cbregion.setVisible(true);
+			tftier.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				CityDM cityDM = citybean.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				cityid = cityDM.getCityid().toString();
+				cbstatus.setValue(cityDM.getStatus());
+				cbCountry.setValue(Long.valueOf(cityDM.getCountryid()));
+				loadstateList();
+				cbstate.removeItem("0");
+				cbstate.setValue(Long.valueOf(cityDM.getStateId()).toString());
+				tfcityname.setValue(cityDM.getCityname());
+				cbregion.setValue(Long.valueOf(cityDM.getRegionId()).toString());
+				tftier.setValue(cityDM.getTier());
+				cbTimezone.setValue((Long) cityDM.getTimezoneid());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

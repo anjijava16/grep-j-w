@@ -124,39 +124,50 @@ public class VendorType extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<VendorTypeDM> list = new ArrayList<VendorTypeDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ tfvendortypename.getValue() + ", " + (String) cbStatus.getValue());
-		list = serviceVendorType.getVendorTypeList(tfvendortypename.getValue(), (String) cbStatus.getValue(),
-				null, companyId);
-		recordCnt = list.size();
-		beanVendortypeDM = new BeanItemContainer<VendorTypeDM>(VendorTypeDM.class);
-		beanVendortypeDM.addAll(list);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Got the VendorType result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanVendortypeDM);
-		tblMstScrSrchRslt.setColumnAlignment("vendorid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No. of Records:" + recordCnt);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "vendorid", "vendortypename", "vendortypestatus",
-				"lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Vendor Type ", "Status", "Updated Date",
-				"Updated By" });
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<VendorTypeDM> list = new ArrayList<VendorTypeDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ tfvendortypename.getValue() + ", " + (String) cbStatus.getValue());
+			list = serviceVendorType.getVendorTypeList(tfvendortypename.getValue(), (String) cbStatus.getValue(), null,
+					companyId);
+			recordCnt = list.size();
+			beanVendortypeDM = new BeanItemContainer<VendorTypeDM>(VendorTypeDM.class);
+			beanVendortypeDM.addAll(list);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the VendorType result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanVendortypeDM);
+			tblMstScrSrchRslt.setColumnAlignment("vendorid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No. of Records:" + recordCnt);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "vendorid", "vendortypename", "vendortypestatus",
+					"lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Vendor Type ", "Status", "Updated Date",
+					"Updated By" });
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input
 	// fields in the input form
 	private void editVendorTypeDetails() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			VendorTypeDM vendorType = beanVendortypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (vendorType.getVendortypename() != null) {
-				tfvendortypename.setValue(vendorType.getVendortypename());
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Editing the selected record");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				VendorTypeDM vendorType = beanVendortypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				if (vendorType.getVendortypename() != null) {
+					tfvendortypename.setValue(vendorType.getVendortypename());
+				}
+				cbStatus.setValue(vendorType.getVendortypestatus());
+				cbBranchname.setValue(vendorType.getBranchid());
+				vendoreid = vendorType.getVendorid().toString();
 			}
-			cbStatus.setValue(vendorType.getVendortypestatus());
-			cbBranchname.setValue(vendorType.getBranchid());
-			vendoreid = vendorType.getVendorid().toString();
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

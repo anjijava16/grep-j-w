@@ -53,7 +53,7 @@ public class DashboardTestingView implements ClickListener {
 		custom.addComponent(btnserCallForm, "scf");
 		custom.addComponent(btnDieReqCount, "dierequest");
 		custom.addComponent(btnOthers, "others");
-		custom.addComponent(new CalendarMonthly("TEST_QC_SCHEDULE"), "testschedule");
+		custom.addComponent(new CalendarMonthly("WO_SCHEDULE"), "testschedule");
 	}
 	
 	@Override

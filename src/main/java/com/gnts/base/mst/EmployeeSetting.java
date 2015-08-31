@@ -263,43 +263,48 @@ public class EmployeeSetting extends BaseUI {
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	@Override
 	protected void editDetails() {
-		List<EmployeeDM> editEmp = serviceEmployee.getEmployeeList(null, null, null, null, companyid, employeeId,
-				userId, null, null, "F");
-		if (editEmp.size() != 0) {
-			for (EmployeeDM empObj : editEmp) {
-				tfEmailid.setValue(empObj.getPrimaryemail());
-				tfFirstName.setValue(empObj.getFirstname());
-				if (empObj.getLastname() != null) {
-					tfLastName.setValue(empObj.getLastname());
-				}
-				if (empObj.getCountryid() != null) {
-					cbCountry.setValue(empObj.getCountryid());
-				}
-				if (empObj.getPrimaryphone() != null) {
-					tfPhoneNo.setValue(empObj.getPrimaryphone());
-				}
-				if (empObj.getDob() != null) {
-					String dateInString = empObj.getDob();
-					Date dateDob;
-					try {
-						dateDob = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(dateInString);
-						dfDateofBirth.setValue(dateDob);
+		try {
+			List<EmployeeDM> editEmp = serviceEmployee.getEmployeeList(null, null, null, null, companyid, employeeId,
+					userId, null, null, "F");
+			if (editEmp.size() != 0) {
+				for (EmployeeDM empObj : editEmp) {
+					tfEmailid.setValue(empObj.getPrimaryemail());
+					tfFirstName.setValue(empObj.getFirstname());
+					if (empObj.getLastname() != null) {
+						tfLastName.setValue(empObj.getLastname());
 					}
-					catch (ParseException e1) {
+					if (empObj.getCountryid() != null) {
+						cbCountry.setValue(empObj.getCountryid());
 					}
-				}
-				cbDepartment.setValue((Long) empObj.getDeptid());
-				cbBranch.setValue((Long) empObj.getBranchid());
-				cbEmpStatus.setValue(empObj.getEmpstatus());
-				if (empObj.getEmpphoto() != null) {
-					hlimage.removeAllComponents();
-					byte[] myimage = (byte[]) empObj.getEmpphoto();
-					UploadUI test = new UploadUI(hlimage);
-					test.dispayImage(myimage, empObj.getFirstname());
-				} else {
-					new UploadUI(hlimage);
+					if (empObj.getPrimaryphone() != null) {
+						tfPhoneNo.setValue(empObj.getPrimaryphone());
+					}
+					if (empObj.getDob() != null) {
+						String dateInString = empObj.getDob();
+						Date dateDob;
+						try {
+							dateDob = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(dateInString);
+							dfDateofBirth.setValue(dateDob);
+						}
+						catch (ParseException e1) {
+						}
+					}
+					cbDepartment.setValue((Long) empObj.getDeptid());
+					cbBranch.setValue((Long) empObj.getBranchid());
+					cbEmpStatus.setValue(empObj.getEmpstatus());
+					if (empObj.getEmpphoto() != null) {
+						hlimage.removeAllComponents();
+						byte[] myimage = (byte[]) empObj.getEmpphoto();
+						UploadUI test = new UploadUI(hlimage);
+						test.dispayImage(myimage, empObj.getFirstname());
+					} else {
+						new UploadUI(hlimage);
+					}
 				}
 			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

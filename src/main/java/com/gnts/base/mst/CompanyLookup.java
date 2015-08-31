@@ -156,32 +156,38 @@ public class CompanyLookup extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		Long lookupcode = null;
-		Long moduleId = null;
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<CompanyLookupDM> lookuplist = new ArrayList<CompanyLookupDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tflookupname.getValue() + "," + lookupcode + "," + ((String) cbstatus.getValue()));
-		if (cbLookupCode.getValue() != null) {
-			lookupcode = ((Long) cbLookupCode.getValue());
+		try {
+			Long lookupcode = null;
+			Long moduleId = null;
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<CompanyLookupDM> lookuplist = new ArrayList<CompanyLookupDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tflookupname.getValue() + "," + lookupcode + ","
+					+ ((String) cbstatus.getValue()));
+			if (cbLookupCode.getValue() != null) {
+				lookupcode = ((Long) cbLookupCode.getValue());
+			}
+			if (cbModuleCode.getValue() != null) {
+				moduleId = ((Long) cbModuleCode.getValue());
+			}
+			lookuplist = serviceCompanyLookup.getCompanyLookupList(companyid, tflookupname.getValue(), lookupcode,
+					((String) cbstatus.getValue()), moduleId, "F");
+			recordCnt = lookuplist.size();
+			beansCompanyLookup = new BeanItemContainer<CompanyLookupDM>(CompanyLookupDM.class);
+			beansCompanyLookup.addAll(lookuplist);
+			tblMstScrSrchRslt.setContainerDataSource(beansCompanyLookup);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "cmplookupid", "moduleName", "lookupDesc", "lookupname",
+					"lookupstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Code", "Lookup Ref. ", "Value", "Status",
+					"Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("cmplookupid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+			tblMstScrSrchRslt.setSelectable(true);
 		}
-		if (cbModuleCode.getValue() != null) {
-			moduleId = ((Long) cbModuleCode.getValue());
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		lookuplist = serviceCompanyLookup.getCompanyLookupList(companyid, tflookupname.getValue(), lookupcode,
-				((String) cbstatus.getValue()), moduleId, "F");
-		recordCnt = lookuplist.size();
-		beansCompanyLookup = new BeanItemContainer<CompanyLookupDM>(CompanyLookupDM.class);
-		beansCompanyLookup.addAll(lookuplist);
-		tblMstScrSrchRslt.setContainerDataSource(beansCompanyLookup);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "cmplookupid", "moduleName", "lookupDesc", "lookupname",
-				"lookupstatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Code", "Lookup Ref. ", "Value", "Status",
-				"Updated Date", "Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("cmplookupid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
-		tblMstScrSrchRslt.setSelectable(true);
 	}
 	
 	// load the ModuleDeatils List details for form
@@ -241,17 +247,23 @@ public class CompanyLookup extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editCompanyLookUp() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Selected CompanyLookup. Id -> ");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			CompanyLookupDM companyLookupDM = beansCompanyLookup.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			companyLookUpId = companyLookupDM.getCmplookupid().toString();
-			tflookupname.setValue(companyLookupDM.getLookupname());
-			cbModuleCode.setValue((Long) companyLookupDM.getModuleid());
-			cbLookupCode.setValue((Long) companyLookupDM.getLookupid());
-			cbstatus.setValue(companyLookupDM.getLookupstatus());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Selected CompanyLookup. Id -> ");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				CompanyLookupDM companyLookupDM = beansCompanyLookup.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				companyLookUpId = companyLookupDM.getCmplookupid().toString();
+				tflookupname.setValue(companyLookupDM.getLookupname());
+				cbModuleCode.setValue((Long) companyLookupDM.getModuleid());
+				cbLookupCode.setValue((Long) companyLookupDM.getLookupid());
+				cbstatus.setValue(companyLookupDM.getLookupstatus());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -389,7 +401,7 @@ public class CompanyLookup extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 }

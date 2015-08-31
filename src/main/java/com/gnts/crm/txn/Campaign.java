@@ -262,6 +262,7 @@ public class Campaign extends BaseUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		lblspace = new Label();
 		hlSearchLayout = new HorizontalLayout();
@@ -472,8 +473,7 @@ public class Campaign extends BaseUI {
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.error("error during populate values on the table, The Error is ----->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -481,102 +481,107 @@ public class Campaign extends BaseUI {
 	 * this method used for edit the table values
 	 */
 	private void editCampaignDetails() {
-		logger.info("EditCampaignDetails------>+e");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			CampaignDM campaignDM = beanCampaign.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			campaingnId = campaignDM.getCampaingnId();
-			if (campaignDM.getActulRespCount() != null && !"null".equals(campaignDM.getActulRespCount())) {
-				tfActResponseCount.setValue(campaignDM.getActulRespCount().toString());
-			}
-			if (campaignDM.getActulRoi() != null && !"null".equals(campaignDM.getActulRoi())) {
-				tfActRoi.setValue(campaignDM.getActulRoi().toString());
-			}
-			if (campaignDM.getActulSalesCount() != null && !"null".equals(campaignDM.getActulSalesCount())) {
-				tfActSalesCount.setValue(campaignDM.getActulSalesCount().toString());
-			}
-			if (campaignDM.getActulBudget() != null && !"null".equals(campaignDM.getActulBudget())) {
-				tfActualBudget.setValue(campaignDM.getActulBudget().toString());
-			}
-			if (campaignDM.getActulRevenue() != null && !"null".equals(campaignDM.getActulRevenue())) {
-				tfAcualRev.setValue(campaignDM.getActulRevenue().toString());
-			}
-			if (campaignDM.getExptdRespCount() != null && !"null".equals(campaignDM.getExptdRespCount())) {
-				tfExpResepCount.setValue(campaignDM.getExptdRespCount().toString());
-			}
-			if (campaignDM.getExptdRevenue() != null && !"null".equals(campaignDM.getExptdRevenue())) {
-				tfExpRevenue.setValue(campaignDM.getExptdRevenue().toString());
-			}
-			if (campaignDM.getExptdRoi() != null && !"null".equals(campaignDM.getExptdRoi())) {
-				tfExpRoi.setValue(campaignDM.getExptdRoi().toString());
-			}
-			if (campaignDM.getExptdSalesCount() != null && !"null".equals(campaignDM.getExptdSalesCount())) {
-				tfExpSalesCount.setValue(campaignDM.getExptdSalesCount().toString());
-			}
-			if (campaignDM.getExptdBudget() != null && !"null".equals(campaignDM.getExptdBudget())) {
-				tfExptdBudget.setValue(campaignDM.getExptdBudget().toString());
-			}
-			dtCampaignStart.setValue(campaignDM.getCampaignStartDateInt());
-			dtCampaignEnd.setValue(campaignDM.getCampaignEndDateInt());
-			tfcampaign.setValue(campaignDM.getCampaignname());
-			tfProduct.setValue(campaignDM.getProductId().toString());
-			cbCurrencyName.setValue(campaignDM.getCcyid());
-			cbCampaignType.setValue(campaignDM.getCampaignType().toString());
-			cbproduct.setValue(campaignDM.getProductId());
-			Long prodid = campaignDM.getProductId();
-			Collection<?> prodids = cbproduct.getItemIds();
-			for (Iterator<?> iteratorclient = prodids.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbproduct.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				ProductDM prodObj = (ProductDM) itemclient.getBean();
-				if (prodid != null && prodid.equals(prodObj.getProdid())) {
-					cbproduct.setValue(itemIdClient);
+		try {
+			logger.info("EditCampaignDetails------>+e");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				CampaignDM campaignDM = beanCampaign.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				campaingnId = campaignDM.getCampaingnId();
+				if (campaignDM.getActulRespCount() != null && !"null".equals(campaignDM.getActulRespCount())) {
+					tfActResponseCount.setValue(campaignDM.getActulRespCount().toString());
 				}
-			}
-			Collection<?> collEmp = cbReview.getItemIds();
-			for (Iterator<?> iterator = collEmp.iterator(); iterator.hasNext();) {
-				Object itemId4 = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbReview.getItem(itemId4);
-				EmployeeDM editEmployee = (EmployeeDM) item.getBean();
-				if (editEmployee != null && editEmployee.getEmployeeid().equals(editEmployee.getEmployeeid())) {
-					cbReview.setValue(itemId4);
-					break;
-				} else {
-					cbReview.setValue(null);
+				if (campaignDM.getActulRoi() != null && !"null".equals(campaignDM.getActulRoi())) {
+					tfActRoi.setValue(campaignDM.getActulRoi().toString());
 				}
-			}
-			cbEmployee.setValue(campaignDM.getCampaignOwner());
-			Collection<?> actids = cbAction.getItemIds();
-			for (Iterator<?> iterator = actids.iterator(); iterator.hasNext();) {
-				Object itemId4 = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbAction.getItem(itemId4);
-				EmployeeDM editEmployee = (EmployeeDM) item.getBean();
-				if (editEmployee != null && editEmployee.getEmployeeid().equals(editEmployee.getEmployeeid())) {
-					cbAction.setValue(itemId4);
-					break;
-				} else {
-					cbAction.setValue(null);
+				if (campaignDM.getActulSalesCount() != null && !"null".equals(campaignDM.getActulSalesCount())) {
+					tfActSalesCount.setValue(campaignDM.getActulSalesCount().toString());
 				}
+				if (campaignDM.getActulBudget() != null && !"null".equals(campaignDM.getActulBudget())) {
+					tfActualBudget.setValue(campaignDM.getActulBudget().toString());
+				}
+				if (campaignDM.getActulRevenue() != null && !"null".equals(campaignDM.getActulRevenue())) {
+					tfAcualRev.setValue(campaignDM.getActulRevenue().toString());
+				}
+				if (campaignDM.getExptdRespCount() != null && !"null".equals(campaignDM.getExptdRespCount())) {
+					tfExpResepCount.setValue(campaignDM.getExptdRespCount().toString());
+				}
+				if (campaignDM.getExptdRevenue() != null && !"null".equals(campaignDM.getExptdRevenue())) {
+					tfExpRevenue.setValue(campaignDM.getExptdRevenue().toString());
+				}
+				if (campaignDM.getExptdRoi() != null && !"null".equals(campaignDM.getExptdRoi())) {
+					tfExpRoi.setValue(campaignDM.getExptdRoi().toString());
+				}
+				if (campaignDM.getExptdSalesCount() != null && !"null".equals(campaignDM.getExptdSalesCount())) {
+					tfExpSalesCount.setValue(campaignDM.getExptdSalesCount().toString());
+				}
+				if (campaignDM.getExptdBudget() != null && !"null".equals(campaignDM.getExptdBudget())) {
+					tfExptdBudget.setValue(campaignDM.getExptdBudget().toString());
+				}
+				dtCampaignStart.setValue(campaignDM.getCampaignStartDateInt());
+				dtCampaignEnd.setValue(campaignDM.getCampaignEndDateInt());
+				tfcampaign.setValue(campaignDM.getCampaignname());
+				tfProduct.setValue(campaignDM.getProductId().toString());
+				cbCurrencyName.setValue(campaignDM.getCcyid());
+				cbCampaignType.setValue(campaignDM.getCampaignType().toString());
+				cbproduct.setValue(campaignDM.getProductId());
+				Long prodid = campaignDM.getProductId();
+				Collection<?> prodids = cbproduct.getItemIds();
+				for (Iterator<?> iteratorclient = prodids.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbproduct.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					ProductDM prodObj = (ProductDM) itemclient.getBean();
+					if (prodid != null && prodid.equals(prodObj.getProdid())) {
+						cbproduct.setValue(itemIdClient);
+					}
+				}
+				Collection<?> collEmp = cbReview.getItemIds();
+				for (Iterator<?> iterator = collEmp.iterator(); iterator.hasNext();) {
+					Object itemId4 = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbReview.getItem(itemId4);
+					EmployeeDM editEmployee = (EmployeeDM) item.getBean();
+					if (editEmployee != null && editEmployee.getEmployeeid().equals(editEmployee.getEmployeeid())) {
+						cbReview.setValue(itemId4);
+						break;
+					} else {
+						cbReview.setValue(null);
+					}
+				}
+				cbEmployee.setValue(campaignDM.getCampaignOwner());
+				Collection<?> actids = cbAction.getItemIds();
+				for (Iterator<?> iterator = actids.iterator(); iterator.hasNext();) {
+					Object itemId4 = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbAction.getItem(itemId4);
+					EmployeeDM editEmployee = (EmployeeDM) item.getBean();
+					if (editEmployee != null && editEmployee.getEmployeeid().equals(editEmployee.getEmployeeid())) {
+						cbAction.setValue(itemId4);
+						break;
+					} else {
+						cbAction.setValue(null);
+					}
+				}
+				cbAction.setValue(campaignDM.getActionedby());
+				cbReview.setValue(campaignDM.getReviewdby());
+				if (campaignDM.getTargetAudience() != null && !"null".equals(campaignDM.getTargetAudience())) {
+					tfTagetAudieance.setValue(campaignDM.getTargetAudience());
+				}
+				if (campaignDM.getTargetSize() != null && !"null".equals(campaignDM.getTargetSize())) {
+					tfTargetSize.setValue(campaignDM.getTargetSize().toString());
+				}
+				if (campaignDM.getComments() != null && !"null".equals(campaignDM.getComments())) {
+					taComments.setValue(campaignDM.getComments());
+				}
+				cbstatus.setValue(campaignDM.getStatus());
+				if (cbstatus.getValue().equals("Approved") || cbstatus.getValue().equals("Closed")) {
+					hluserInputReadonlyTrue();
+				}
+				comment = new Comments(vlCommetTblLayout, employeeid, null, null, null, null, campaingnId, null);
+				document = new Documents(vlDocumentLayout, null, null, null, null, campaingnId, null);
+				comment.loadsrch(true, null, null, campaingnId, null, null, null);
+				document.loadsrcrslt(true, null, null, campaingnId, null, null, null);
 			}
-			cbAction.setValue(campaignDM.getActionedby());
-			cbReview.setValue(campaignDM.getReviewdby());
-			if (campaignDM.getTargetAudience() != null && !"null".equals(campaignDM.getTargetAudience())) {
-				tfTagetAudieance.setValue(campaignDM.getTargetAudience());
-			}
-			if (campaignDM.getTargetSize() != null && !"null".equals(campaignDM.getTargetSize())) {
-				tfTargetSize.setValue(campaignDM.getTargetSize().toString());
-			}
-			if (campaignDM.getComments() != null && !"null".equals(campaignDM.getComments())) {
-				taComments.setValue(campaignDM.getComments());
-			}
-			cbstatus.setValue(campaignDM.getStatus());
-			if (cbstatus.getValue().equals("Approved") || cbstatus.getValue().equals("Closed")) {
-				hluserInputReadonlyTrue();
-			}
-			comment = new Comments(vlCommetTblLayout, employeeid, null, null, null, null, campaingnId, null);
-			document = new Documents(vlDocumentLayout, null, null, null, null, campaingnId, null);
-			comment.loadsrch(true, null, null, campaingnId, null, null, null);
-			document.loadsrcrslt(true, null, null, campaingnId, null, null, null);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -616,7 +621,7 @@ public class Campaign extends BaseUI {
 			cbCurrencyName.setContainerDataSource(beanCurrency);
 		}
 		catch (Exception e) {
-			logger.info("Loading null values in loadCurrencyList() function------>>>>" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -628,7 +633,7 @@ public class Campaign extends BaseUI {
 			cbproduct.setContainerDataSource(beanproduct);
 		}
 		catch (Exception e) {
-			logger.info("Loading null values in loadCurrencyList() function------>>>>" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -646,6 +651,7 @@ public class Campaign extends BaseUI {
 			cbReview.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -659,7 +665,7 @@ public class Campaign extends BaseUI {
 			cbCampaignType.setContainerDataSource(beanCompLookUp);
 		}
 		catch (Exception e) {
-			logger.info("load company look up details" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -830,8 +836,7 @@ public class Campaign extends BaseUI {
 			document.ResetFields();
 		}
 		catch (Exception e) {
-			logger.info("saveOrUpdateCampaignDetails------>+e");
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

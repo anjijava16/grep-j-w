@@ -372,55 +372,60 @@ public class ClientCases extends BaseTransUI {
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.error("error during populate values on the table, The Error is ----->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editClientCaseDetails() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
-		hlCmdBtnLayout.setVisible(false);
-		hlUserInputLayout.setVisible(true);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Selected Dept. Id -> "
-				+ clientCaseId);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			ClientCasesDM clientCasesDM = beanClntCases.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			clientCaseId = clientCasesDM.getClientCaseId();
-			tfCaseResult.setValue(clientCasesDM.getCaseresltn());
-			cbEnquiryNo.setValue(clientCasesDM.getEnquiryId());
-			cbClient.setValue(clientCasesDM.getClientId());
-			cbPONo.setValue(clientCasesDM.getPoid());
-			cbWONo.setValue(clientCasesDM.getWoId());
-			tfpartNo.setReadOnly(false);
-			tfDrgNo.setReadOnly(false);
-			tfpartNo.setValue(clientCasesDM.getPartno());
-			tfDrgNo.setValue(clientCasesDM.getDrgno());
-			tfpartNo.setReadOnly(true);
-			tfDrgNo.setReadOnly(true);
-			Long prodid = clientCasesDM.getProdid();
-			Collection<?> prodids = cbProduct.getItemIds();
-			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
-				// Get the actual bean and use the data
-				SmsPODtlDM st = (SmsPODtlDM) item.getBean();
-				if (prodid != null && prodid.equals(st.getProductid())) {
-					cbProduct.setValue(itemId);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Editing the selected record");
+			hlCmdBtnLayout.setVisible(false);
+			hlUserInputLayout.setVisible(true);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Selected Dept. Id -> "
+					+ clientCaseId);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				ClientCasesDM clientCasesDM = beanClntCases.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				clientCaseId = clientCasesDM.getClientCaseId();
+				tfCaseResult.setValue(clientCasesDM.getCaseresltn());
+				cbEnquiryNo.setValue(clientCasesDM.getEnquiryId());
+				cbClient.setValue(clientCasesDM.getClientId());
+				cbPONo.setValue(clientCasesDM.getPoid());
+				cbWONo.setValue(clientCasesDM.getWoId());
+				tfpartNo.setReadOnly(false);
+				tfDrgNo.setReadOnly(false);
+				tfpartNo.setValue(clientCasesDM.getPartno());
+				tfDrgNo.setValue(clientCasesDM.getDrgno());
+				tfpartNo.setReadOnly(true);
+				tfDrgNo.setReadOnly(true);
+				Long prodid = clientCasesDM.getProdid();
+				Collection<?> prodids = cbProduct.getItemIds();
+				for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
+					// Get the actual bean and use the data
+					SmsPODtlDM st = (SmsPODtlDM) item.getBean();
+					if (prodid != null && prodid.equals(st.getProductid())) {
+						cbProduct.setValue(itemId);
+					}
 				}
+				tfCaseTitle.setValue(clientCasesDM.getCaseTitle());
+				tfEffortDays.setValue(clientCasesDM.getEffortDays().toString());
+				if (clientCasesDM.getCaseDescription() != null) {
+					taCaseDesc.setValue(clientCasesDM.getCaseDescription().toString());
+				}
+				cbEmployee.setValue(clientCasesDM.getAssignedTo());
+				cbPriority.setValue(clientCasesDM.getCasePriority());
+				cbSevrity.setValue(clientCasesDM.getCaseSevrity());
+				cbCaseCategory.setValue(clientCasesDM.getCaseCategory());
+				cbClntCaseStatus.setValue(clientCasesDM.getCaseStatus());
 			}
-			tfCaseTitle.setValue(clientCasesDM.getCaseTitle());
-			tfEffortDays.setValue(clientCasesDM.getEffortDays().toString());
-			if (clientCasesDM.getCaseDescription() != null) {
-				taCaseDesc.setValue(clientCasesDM.getCaseDescription().toString());
-			}
-			cbEmployee.setValue(clientCasesDM.getAssignedTo());
-			cbPriority.setValue(clientCasesDM.getCasePriority());
-			cbSevrity.setValue(clientCasesDM.getCaseSevrity());
-			cbCaseCategory.setValue(clientCasesDM.getCaseCategory());
-			cbClntCaseStatus.setValue(clientCasesDM.getCaseStatus());
+			comment.loadsrch(true, null, null, null, null, null, clientCaseId);
+			document.loadsrcrslt(true, null, null, null, null, null, clientCaseId);
 		}
-		comment.loadsrch(true, null, null, null, null, null, clientCaseId);
-		document.loadsrcrslt(true, null, null, null, null, null, clientCaseId);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadClientsDetails() {
@@ -436,8 +441,7 @@ public class ClientCases extends BaseTransUI {
 			cbClient.setValue(clientId);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.info("load Clients Details " + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -476,6 +480,7 @@ public class ClientCases extends BaseTransUI {
 			cbPriority.setContainerDataSource(beanCompLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -650,8 +655,7 @@ public class ClientCases extends BaseTransUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			logger.info("saveDetails----->" + e);
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -727,6 +731,7 @@ public class ClientCases extends BaseTransUI {
 			cbEnquiryNo.setContainerDataSource(beansmsenqHdr);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -741,6 +746,7 @@ public class ClientCases extends BaseTransUI {
 			cbWONo.setContainerDataSource(beansmsenqHdr);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -753,6 +759,7 @@ public class ClientCases extends BaseTransUI {
 			cbPONo.setContainerDataSource(beanPurchaseOrdHdr);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -763,6 +770,7 @@ public class ClientCases extends BaseTransUI {
 			cbProduct.setContainerDataSource(beanPurchaseOrdDtl);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

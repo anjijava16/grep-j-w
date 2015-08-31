@@ -184,30 +184,34 @@ public class ModuleControl extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		Long modulecodeid = null;
-		List<ModuleControlDM> list = new ArrayList<ModuleControlDM>();
-		if (cbModuleCode.getValue() != null) {
-			modulecodeid = ((Long) cbModuleCode.getValue());
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			Long modulecodeid = null;
+			List<ModuleControlDM> list = new ArrayList<ModuleControlDM>();
+			if (cbModuleCode.getValue() != null) {
+				modulecodeid = ((Long) cbModuleCode.getValue());
+			}
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ modulecodeid + ", " + (String) cbStatus.getValue() + ", " + companyId);
+			list = serviceModuleCtrl.getModuleControlList(modulecodeid, (String) cbStatus.getValue(), companyId);
+			recordCnt = list.size();
+			beansModuleControlDM = new BeanItemContainer<ModuleControlDM>(ModuleControlDM.class);
+			beansModuleControlDM.addAll(list);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the Module control result set");
+			tblMstScrSrchRslt.setContainerDataSource(beansModuleControlDM);
+			tblMstScrSrchRslt.setColumnAlignment("modulecontrolid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No. of Records:" + recordCnt);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "modulecontrolid", "moduleName", "licensedyn",
+					"ctrlstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Module", "Licensed", "Status", "Updated Date",
+					"Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("modulecontrolid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ modulecodeid + ", " + (String) cbStatus.getValue() + ", " + companyId);
-		list = serviceModuleCtrl.getModuleControlList(modulecodeid, (String) cbStatus.getValue(),
-				companyId);
-		recordCnt = list.size();
-		beansModuleControlDM = new BeanItemContainer<ModuleControlDM>(ModuleControlDM.class);
-		beansModuleControlDM.addAll(list);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Got the Module control result set");
-		tblMstScrSrchRslt.setContainerDataSource(beansModuleControlDM);
-		tblMstScrSrchRslt.setColumnAlignment("modulecontrolid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No. of Records:" + recordCnt);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "modulecontrolid", "moduleName", "licensedyn", "ctrlstatus",
-				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Module", "Licensed", "Status", "Updated Date",
-				"Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("modulecontrolid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input

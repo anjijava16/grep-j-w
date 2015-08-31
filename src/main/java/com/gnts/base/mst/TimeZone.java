@@ -102,20 +102,26 @@ public class TimeZone extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<TimeZoneDM> list = new ArrayList<TimeZoneDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + "," + tfTimeZoneCode.getValue() + "," + tfTimeZoneDesc.getValue());
-		list = timezoneBean.getTimeZoneList(tfTimeZoneCode.getValue(), tfTimeZoneDesc.getValue(),"F");
-		recordCnt = list.size();
-		beans = new BeanItemContainer<TimeZoneDM>(TimeZoneDM.class);
-		beans.addAll(list);
-		tblMstScrSrchRslt.setContainerDataSource(beans);
-		tblMstScrSrchRslt
-				.setVisibleColumns(new Object[] { "timezoneid", "timezonecode", "timezonedesc", "clockadjust" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Time Zone Code", "Time Zone Desc.", "OffSet" });
-		tblMstScrSrchRslt.setColumnAlignment("timezoneid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("clockadjust", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<TimeZoneDM> list = new ArrayList<TimeZoneDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + "," + tfTimeZoneCode.getValue() + "," + tfTimeZoneDesc.getValue());
+			list = timezoneBean.getTimeZoneList(tfTimeZoneCode.getValue(), tfTimeZoneDesc.getValue(), "F");
+			recordCnt = list.size();
+			beans = new BeanItemContainer<TimeZoneDM>(TimeZoneDM.class);
+			beans.addAll(list);
+			tblMstScrSrchRslt.setContainerDataSource(beans);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "timezoneid", "timezonecode", "timezonedesc",
+					"clockadjust" });
+			tblMstScrSrchRslt
+					.setColumnHeaders(new String[] { "Ref.Id", "Time Zone Code", "Time Zone Desc.", "OffSet" });
+			tblMstScrSrchRslt.setColumnAlignment("timezoneid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("clockadjust", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override

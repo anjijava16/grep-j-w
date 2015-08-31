@@ -3,6 +3,7 @@ package com.gnts.base.dashboard;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.apache.log4j.Logger;
 import com.gnts.base.mst.Employee;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
@@ -77,6 +78,8 @@ public class DashboardHCMView implements ClickListener {
 	private Table tblPhoneReg = new Table();
 	private Window notificationsWindow;
 	private JobCandidateService serviceJobCandidate = (JobCandidateService) SpringContextHelper.getBean("JobCandidate");
+	// Initialize the logger
+	private Logger logger = Logger.getLogger(DashboardHCMView.class);
 	
 	public DashboardHCMView() {
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
@@ -163,12 +166,12 @@ public class DashboardHCMView implements ClickListener {
 			notificationsWindow.close();
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadEmplLeave() {
 		try {
-			// logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
 			tblEmplLeave.removeAllItems();
 			BeanItemContainer<EmployeeLeaveDM> beanempleave = new BeanItemContainer<EmployeeLeaveDM>(
 					EmployeeLeaveDM.class);
@@ -186,8 +189,7 @@ public class DashboardHCMView implements ClickListener {
 			tblEmplLeave.setHeightUndefined();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			// logger.info("loadSrchRslt-->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -210,8 +212,7 @@ public class DashboardHCMView implements ClickListener {
 			tblPhoneReg.setHeightUndefined();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			// logger.info("loadSrchRslt-->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -234,8 +235,7 @@ public class DashboardHCMView implements ClickListener {
 			tblOutpass.setHeightUndefined();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			// logger.info("loadSrchRslt-->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -259,8 +259,7 @@ public class DashboardHCMView implements ClickListener {
 			tblVisitpass.setHeightUndefined();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			// logger.info("loadSrchRslt-->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -438,6 +437,7 @@ public class DashboardHCMView implements ClickListener {
 			notificationsWindow.close();
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

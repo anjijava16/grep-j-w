@@ -54,7 +54,8 @@ public class Department extends BaseUI {
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	private TextField tfDeptname;
-	private ComboBox cbDeptStatus = new GERPComboBox("Status",BASEConstants.M_GENERIC_TABLE,BASEConstants.M_GENERIC_COLUMN);
+	private ComboBox cbDeptStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
+			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<DepartmentDM> beanDepartment = null;
 	// local variables declaration
 	private Long companyid;
@@ -113,23 +114,29 @@ public class Department extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<DepartmentDM> list = new ArrayList<DepartmentDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfDeptname.getValue() + ", " + cbDeptStatus.getValue());
-		list = serviceDepartment.getDepartmentList(companyid, tfDeptname.getValue(),(String) cbDeptStatus.getValue(), "F");
-		recordCnt = list.size();
-		beanDepartment = new BeanItemContainer<DepartmentDM>(DepartmentDM.class);
-		beanDepartment.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Dept. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanDepartment);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "deptid", "deptname", "deptstatus", "lastupdateddt",
-				"lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Department", "Status", "Updated Date",
-				"Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("deptid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<DepartmentDM> list = new ArrayList<DepartmentDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfDeptname.getValue() + ", " + cbDeptStatus.getValue());
+			list = serviceDepartment.getDepartmentList(companyid, tfDeptname.getValue(),
+					(String) cbDeptStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanDepartment = new BeanItemContainer<DepartmentDM>(DepartmentDM.class);
+			beanDepartment.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Dept. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanDepartment);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "deptid", "deptname", "deptstatus", "lastupdateddt",
+					"lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Department", "Status", "Updated Date",
+					"Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("deptid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -143,16 +150,22 @@ public class Department extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editDepartment() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		departId = sltedRcd.getItemProperty("deptid").getValue().toString();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Dept. Id -> "
-				+ departId);
-		if (sltedRcd != null) {
-			tfDeptname.setValue(sltedRcd.getItemProperty("deptname").getValue().toString());
-			String stCode = sltedRcd.getItemProperty("deptstatus").getValue().toString();
-			cbDeptStatus.setValue(stCode);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
+			departId = sltedRcd.getItemProperty("deptid").getValue().toString();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Dept. Id -> "
+					+ departId);
+			if (sltedRcd != null) {
+				tfDeptname.setValue(sltedRcd.getItemProperty("deptname").getValue().toString());
+				String stCode = sltedRcd.getItemProperty("deptstatus").getValue().toString();
+				cbDeptStatus.setValue(stCode);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -242,7 +255,7 @@ public class Department extends BaseUI {
 		depertmentobj.setCompanyid(companyid);
 		depertmentobj.setDeptname(tfDeptname.getValue().toString());
 		if (cbDeptStatus.getValue() != null) {
-			depertmentobj.setDeptstatus((String)cbDeptStatus.getValue());
+			depertmentobj.setDeptstatus((String) cbDeptStatus.getValue());
 		}
 		depertmentobj.setLastupdateddt(DateUtils.getcurrentdate());
 		depertmentobj.setLastupdatedby(username);

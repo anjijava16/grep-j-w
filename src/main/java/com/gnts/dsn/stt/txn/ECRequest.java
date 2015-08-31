@@ -188,6 +188,7 @@ public class ECRequest extends BaseTransUI {
 					}
 				}
 				catch (Exception e) {
+					logger.info(e.getMessage());
 				}
 			}
 		});
@@ -258,23 +259,30 @@ public class ECRequest extends BaseTransUI {
 	
 	// Load EC Request
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<ECRequestDM> listECReq = new ArrayList<ECRequestDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + null + "," + tfECRNumber.getValue() + ", " + (String) cbStatus.getValue());
-		listECReq = serviceECRequest.getECRequestList(null, tfECRNumber.getValue(), null, (String) cbStatus.getValue());
-		recordCnt = listECReq.size();
-		beanECReq = new BeanItemContainer<ECRequestDM>(ECRequestDM.class);
-		beanECReq.addAll(listECReq);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the ECReq. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanECReq);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ecrid", "ecrNumber", "ecrDate", "drgNumber", "status",
-				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "ECR Number", "Date", "Drg. Number", "Status",
-				"Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("ecrid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<ECRequestDM> listECReq = new ArrayList<ECRequestDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + null + "," + tfECRNumber.getValue() + ", " + (String) cbStatus.getValue());
+			listECReq = serviceECRequest.getECRequestList(null, tfECRNumber.getValue(), null,
+					(String) cbStatus.getValue());
+			recordCnt = listECReq.size();
+			beanECReq = new BeanItemContainer<ECRequestDM>(ECRequestDM.class);
+			beanECReq.addAll(listECReq);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the ECReq. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanECReq);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ecrid", "ecrNumber", "ecrDate", "drgNumber", "status",
+					"lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "ECR Number", "Date", "Drg. Number", "Status",
+					"Last Updated date", "Last Updated by" });
+			tblMstScrSrchRslt.setColumnAlignment("ecrid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Enquiry List
@@ -300,7 +308,7 @@ public class ECRequest extends BaseTransUI {
 			cbProduct.setContainerDataSource(beanEnqDtl);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -435,6 +443,7 @@ public class ECRequest extends BaseTransUI {
 			serviceEnqDetails.saveOrUpdatesmsenquirydtlDetails(smsEnquiryDtlDM);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		if (tblMstScrSrchRslt.getValue() == null) {
 			try {
@@ -445,7 +454,7 @@ public class ECRequest extends BaseTransUI {
 				}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				logger.info(e.getMessage());
 			}
 		}
 		comments.saveSalesEnqId(ecRequestDM.getEnquiryId(), null);
@@ -485,7 +494,7 @@ public class ECRequest extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
 				null);

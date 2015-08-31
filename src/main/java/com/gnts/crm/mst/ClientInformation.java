@@ -54,7 +54,7 @@ public class ClientInformation implements ClickListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private ClientInformationService serviceinformation = (ClientInformationService) SpringContextHelper
+	private ClientInformationService serviceClientInfo = (ClientInformationService) SpringContextHelper
 			.getBean("clntinform");
 	private Table tblinform = new Table();
 	private ComboBox cbStatus;
@@ -144,7 +144,8 @@ public class ClientInformation implements ClickListener {
 	
 	public void loadsrch(boolean fromdb, Long clientId) {
 		if (fromdb) {
-			listClientInfo = serviceinformation.getClientDetails(null, clientId, null, (String) cbStatus.getValue(), null);
+			listClientInfo = serviceClientInfo.getClientDetails(null, clientId, null, (String) cbStatus.getValue(),
+					null);
 		}
 		try {
 			tblinform.removeAllItems();
@@ -162,7 +163,7 @@ public class ClientInformation implements ClickListener {
 			tblinform.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -176,8 +177,7 @@ public class ClientInformation implements ClickListener {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Edit is not working");
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -201,44 +201,59 @@ public class ClientInformation implements ClickListener {
 	}
 	
 	public void saveClientinformDetails() {
-		validateAll();
-		ClientInformationDM clientInformationDM = new ClientInformationDM();
-		if (tblinform.getValue() != null) {
-			clientInformationDM = beanClntinform.getItem(tblinform.getValue()).getBean();
-			listClientInfo.remove(clientInformationDM);
+		try {
+			validateAll();
+			ClientInformationDM clientInformationDM = new ClientInformationDM();
+			if (tblinform.getValue() != null) {
+				clientInformationDM = beanClntinform.getItem(tblinform.getValue()).getBean();
+				listClientInfo.remove(clientInformationDM);
+			}
+			clientInformationDM.setClntinfodesc(taInfodesc.getValue());
+			clientInformationDM.setClntinfocode(tfInfocode.getValue());
+			clientInformationDM.setClntinfostatus((String) cbStatus.getValue());
+			clientInformationDM.setLastupdateddt(DateUtils.getcurrentdate());
+			clientInformationDM.setLastupdatedby(userName);
+			if (tfInfocode.isValid() && taInfodesc.isValid() && cbStatus.isValid()) {
+				listClientInfo.add(clientInformationDM);
+				resetfields();
+				loadsrch(false, null);
+			}
+			btnadd.setCaption("Add");
 		}
-		clientInformationDM.setClntinfodesc(taInfodesc.getValue());
-		clientInformationDM.setClntinfocode(tfInfocode.getValue());
-		clientInformationDM.setClntinfostatus((String) cbStatus.getValue());
-		clientInformationDM.setLastupdateddt(DateUtils.getcurrentdate());
-		clientInformationDM.setLastupdatedby(userName);
-		if (tfInfocode.isValid() && taInfodesc.isValid() && cbStatus.isValid()) {
-			listClientInfo.add(clientInformationDM);
-			resetfields();
-			loadsrch(false, null);
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		btnadd.setCaption("Add");
 	}
 	
 	private void deleteDetails() {
-		ClientInformationDM saveClntinform = new ClientInformationDM();
-		if (tblinform.getValue() != null) {
-			saveClntinform = beanClntinform.getItem(tblinform.getValue()).getBean();
-			listClientInfo.remove(saveClntinform);
-			tfInfocode.setValue("");
-			cbStatus.setValue(null);
-			taInfodesc.setValue("");
-			btnadd.setCaption("Add");
-			loadsrch(false, null);
+		try {
+			ClientInformationDM saveClntinform = new ClientInformationDM();
+			if (tblinform.getValue() != null) {
+				saveClntinform = beanClntinform.getItem(tblinform.getValue()).getBean();
+				listClientInfo.remove(saveClntinform);
+				tfInfocode.setValue("");
+				cbStatus.setValue(null);
+				taInfodesc.setValue("");
+				btnadd.setCaption("Add");
+				loadsrch(false, null);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	public void saveinformation(Long clientId) {
-		@SuppressWarnings("unchecked")
-		Collection<ClientInformationDM> itemIds = (Collection<ClientInformationDM>) tblinform.getVisibleItemIds();
-		for (ClientInformationDM saveinform : (Collection<ClientInformationDM>) itemIds) {
-			saveinform.setClientid(clientId);
-			serviceinformation.saveOrUpdateClientInformDetails(saveinform);
+		try {
+			@SuppressWarnings("unchecked")
+			Collection<ClientInformationDM> itemIds = (Collection<ClientInformationDM>) tblinform.getVisibleItemIds();
+			for (ClientInformationDM saveinform : (Collection<ClientInformationDM>) itemIds) {
+				saveinform.setClientid(clientId);
+				serviceClientInfo.saveOrUpdateClientInformDetails(saveinform);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

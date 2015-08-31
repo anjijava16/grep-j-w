@@ -274,117 +274,129 @@ public class EBReading extends BaseTransUI {
 	
 	// Load EC Request
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EbReadingDM> list = new ArrayList<EbReadingDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + null + "," + tfMainKwHr.getValue() + ", " + (String) cbStatus.getValue());
-		list = serviceEBReading.getEbReadingDetailList(null, null, null, null, null);
-		recordCnt = list.size();
-		beanECReq = new BeanItemContainer<EbReadingDM>(EbReadingDM.class);
-		beanECReq.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the ECReq. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanECReq);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ebReadingId", "readingDate", "mainKwHr", "kvaHr",
-				"perDayUnit", "status", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Main KW HR", "KVA HR", "Per Day Unit",
-				"Status", "Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("ebReadingId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EbReadingDM> list = new ArrayList<EbReadingDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + null + "," + tfMainKwHr.getValue() + ", " + (String) cbStatus.getValue());
+			list = serviceEBReading.getEbReadingDetailList(null, null, null, null, null);
+			recordCnt = list.size();
+			beanECReq = new BeanItemContainer<EbReadingDM>(EbReadingDM.class);
+			beanECReq.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the ECReq. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanECReq);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ebReadingId", "readingDate", "mainKwHr", "kvaHr",
+					"perDayUnit", "status", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Main KW HR", "KVA HR", "Per Day Unit",
+					"Status", "Last Updated date", "Last Updated by" });
+			tblMstScrSrchRslt.setColumnAlignment("ebReadingId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header
 	private void editEbReading() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hllayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
-				+ ebReadingId);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EbReadingDM ebReadingDM = beanECReq.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			ebReadingId = ebReadingDM.getEbReadingId();
-			dfRefDate.setValue(ebReadingDM.getReadingDate1());
-			if (ebReadingDM.getC1() != null) {
-				tfC1.setValue(ebReadingDM.getC1().toString());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hllayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
+					+ ebReadingId);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EbReadingDM ebReadingDM = beanECReq.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				ebReadingId = ebReadingDM.getEbReadingId();
+				dfRefDate.setValue(ebReadingDM.getReadingDate1());
+				if (ebReadingDM.getC1() != null) {
+					tfC1.setValue(ebReadingDM.getC1().toString());
+				}
+				if (ebReadingDM.getC2() != null) {
+					tfC2.setValue(ebReadingDM.getC2().toString());
+				}
+				if (ebReadingDM.getC3() != null) {
+					tfC3.setValue(ebReadingDM.getC3().toString());
+				}
+				if (ebReadingDM.getC4() != null) {
+					tfC4.setValue(ebReadingDM.getC4().toString());
+				}
+				if (ebReadingDM.getC5() != null) {
+					tfC5.setValue(ebReadingDM.getC5().toString());
+				}
+				if (ebReadingDM.getKvaHr() != null) {
+					tfKvaHr.setValue(ebReadingDM.getKvaHr().toString());
+				}
+				if (ebReadingDM.getR1() != null) {
+					tfR1.setValue(ebReadingDM.getR1().toString());
+				}
+				if (ebReadingDM.getR2() != null) {
+					tfR2.setValue(ebReadingDM.getR2().toString());
+				}
+				if (ebReadingDM.getR3() != null) {
+					tfR3.setValue(ebReadingDM.getR3().toString());
+				}
+				if (ebReadingDM.getR4() != null) {
+					tfR4.setValue(ebReadingDM.getR4().toString());
+				}
+				if (ebReadingDM.getR5() != null) {
+					tfR5.setValue(ebReadingDM.getR5().toString());
+				}
+				if (ebReadingDM.getRkvaHrCag() != null) {
+					tfRkvaHrCag.setValue(ebReadingDM.getRkvaHrCag().toString());
+				}
+				if (ebReadingDM.getLead() != null) {
+					tfLead.setValue(ebReadingDM.getLead().toString());
+				}
+				if (ebReadingDM.getPfc() != null) {
+					tfPfc.setValue(ebReadingDM.getPfc().toString());
+				}
+				if (ebReadingDM.getPerDayUnit() != null) {
+					tfPerDayUnit.setValue(ebReadingDM.getPerDayUnit().toString());
+				}
+				if (ebReadingDM.getPf() != null) {
+					tfPf.setValue(ebReadingDM.getPf().toString());
+				}
+				if (ebReadingDM.getUnitCharge() != null) {
+					tfUnitCharge.setValue(ebReadingDM.getUnitCharge().toString());
+				}
+				if (ebReadingDM.getMainKwHr() != null) {
+					tfMainKwHr.setValue(ebReadingDM.getMainKwHr().toString());
+				}
+				if (ebReadingDM.getAdjustmentCharge() != null) {
+					tfAdjstCharge.setValue(ebReadingDM.getAdjustmentCharge().toString());
+				}
+				if (ebReadingDM.getHalfUnitCharge() != null) {
+					tfHalfUnitCharge.setValue(ebReadingDM.getHalfUnitCharge().toString());
+				}
+				if (ebReadingDM.getMachineRunDetails() != null) {
+					taMachineRunDetails.setValue(ebReadingDM.getMachineRunDetails());
+				}
+				if (ebReadingDM.getRemarks() != null) {
+					taRemarks.setValue(ebReadingDM.getRemarks());
+				}
+				if (ebReadingDM.getConsHours() != null) {
+					tfCHours.setValue(ebReadingDM.getConsHours().toString());
+				}
+				if (ebReadingDM.getKvaMdr() != null) {
+					tfKvaMdr.setValue(ebReadingDM.getKvaMdr().toString());
+				}
+				if (ebReadingDM.getEmployeeId() != null) {
+					cbEmploye.setValue(ebReadingDM.getEmployeeId().toString());
+				}
+				if (ebReadingDM.getOneUnitO() != null) {
+					oneUnitChrO.setValue(ebReadingDM.getOneUnitO().toString());
+				}
+				if (ebReadingDM.getOneUnitP() != null) {
+					oneUnitChrP.setValue(ebReadingDM.getOneUnitP().toString());
+				}
+				cbStatus.setValue(ebReadingDM.getStatus());
 			}
-			if (ebReadingDM.getC2() != null) {
-				tfC2.setValue(ebReadingDM.getC2().toString());
-			}
-			if (ebReadingDM.getC3() != null) {
-				tfC3.setValue(ebReadingDM.getC3().toString());
-			}
-			if (ebReadingDM.getC4() != null) {
-				tfC4.setValue(ebReadingDM.getC4().toString());
-			}
-			if (ebReadingDM.getC5() != null) {
-				tfC5.setValue(ebReadingDM.getC5().toString());
-			}
-			if (ebReadingDM.getKvaHr() != null) {
-				tfKvaHr.setValue(ebReadingDM.getKvaHr().toString());
-			}
-			if (ebReadingDM.getR1() != null) {
-				tfR1.setValue(ebReadingDM.getR1().toString());
-			}
-			if (ebReadingDM.getR2() != null) {
-				tfR2.setValue(ebReadingDM.getR2().toString());
-			}
-			if (ebReadingDM.getR3() != null) {
-				tfR3.setValue(ebReadingDM.getR3().toString());
-			}
-			if (ebReadingDM.getR4() != null) {
-				tfR4.setValue(ebReadingDM.getR4().toString());
-			}
-			if (ebReadingDM.getR5() != null) {
-				tfR5.setValue(ebReadingDM.getR5().toString());
-			}
-			if (ebReadingDM.getRkvaHrCag() != null) {
-				tfRkvaHrCag.setValue(ebReadingDM.getRkvaHrCag().toString());
-			}
-			if (ebReadingDM.getLead() != null) {
-				tfLead.setValue(ebReadingDM.getLead().toString());
-			}
-			if (ebReadingDM.getPfc() != null) {
-				tfPfc.setValue(ebReadingDM.getPfc().toString());
-			}
-			if (ebReadingDM.getPerDayUnit() != null) {
-				tfPerDayUnit.setValue(ebReadingDM.getPerDayUnit().toString());
-			}
-			if (ebReadingDM.getPf() != null) {
-				tfPf.setValue(ebReadingDM.getPf().toString());
-			}
-			if (ebReadingDM.getUnitCharge() != null) {
-				tfUnitCharge.setValue(ebReadingDM.getUnitCharge().toString());
-			}
-			if (ebReadingDM.getMainKwHr() != null) {
-				tfMainKwHr.setValue(ebReadingDM.getMainKwHr().toString());
-			}
-			if (ebReadingDM.getAdjustmentCharge() != null) {
-				tfAdjstCharge.setValue(ebReadingDM.getAdjustmentCharge().toString());
-			}
-			if (ebReadingDM.getHalfUnitCharge() != null) {
-				tfHalfUnitCharge.setValue(ebReadingDM.getHalfUnitCharge().toString());
-			}
-			if (ebReadingDM.getMachineRunDetails() != null) {
-				taMachineRunDetails.setValue(ebReadingDM.getMachineRunDetails());
-			}
-			if (ebReadingDM.getRemarks() != null) {
-				taRemarks.setValue(ebReadingDM.getRemarks());
-			}
-			if (ebReadingDM.getConsHours() != null) {
-				tfCHours.setValue(ebReadingDM.getConsHours().toString());
-			}
-			if (ebReadingDM.getKvaMdr() != null) {
-				tfKvaMdr.setValue(ebReadingDM.getKvaMdr().toString());
-			}
-			if (ebReadingDM.getEmployeeId() != null) {
-				cbEmploye.setValue(ebReadingDM.getEmployeeId().toString());
-			}
-			if (ebReadingDM.getOneUnitO() != null) {
-				oneUnitChrO.setValue(ebReadingDM.getOneUnitO().toString());
-			}
-			if (ebReadingDM.getOneUnitP() != null) {
-				oneUnitChrP.setValue(ebReadingDM.getOneUnitP().toString());
-			}
-			cbStatus.setValue(ebReadingDM.getStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -653,7 +665,7 @@ public class EBReading extends BaseTransUI {
 			ebReadingDM = serviceEBReading.getEbReadingDetailList(null, null, null, null, "Y").get(0);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			tfHalfUnitCharge.setReadOnly(false);
@@ -665,7 +677,7 @@ public class EBReading extends BaseTransUI {
 			tfHalfUnitCharge.setReadOnly(true);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

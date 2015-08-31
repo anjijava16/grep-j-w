@@ -56,6 +56,7 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
+import com.gnts.mfg.txn.TestingDocuments;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -75,9 +76,9 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class Client extends BaseUI {
-	private CityService servicecity = (CityService) SpringContextHelper.getBean("city");
+	private CityService serviceCity = (CityService) SpringContextHelper.getBean("city");
 	private StateService serviceState = (StateService) SpringContextHelper.getBean("mstate");
-	private CountryService servicecountry = (CountryService) SpringContextHelper.getBean("country");
+	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private LeadsService serviceLead = (LeadsService) SpringContextHelper.getBean("clientLeads");
@@ -85,7 +86,7 @@ public class Client extends BaseUI {
 			.getBean("clientCategory");
 	private ClientSubCategoryService serviceClientSubCat = (ClientSubCategoryService) SpringContextHelper
 			.getBean("clientSubCategory");
-	private CompanyLookupService servicecompany = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
+	private CompanyLookupService serviceCompany = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
 	private CampaignService serviceCampaign = (CampaignService) SpringContextHelper.getBean("clientCampaign");
 	// form layout for input controls
 	private FormLayout formLayout1, formLayout2, formLayout3, formLayout4;
@@ -95,7 +96,6 @@ public class Client extends BaseUI {
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private VerticalLayout vlCommetTblLayout = new VerticalLayout();
-	private VerticalLayout vlDocumentLayout = new VerticalLayout();
 	private VerticalLayout vlinformTblLayout = new VerticalLayout();
 	private HorizontalLayout hlInput;
 	private VerticalLayout hlUserInput;
@@ -118,6 +118,8 @@ public class Client extends BaseUI {
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(Client.class);
 	private static final long serialVersionUID = 1L;
+	// for test documents
+	private VerticalLayout hlDocumentLayout = new VerticalLayout();
 	
 	// Constructor
 	public Client() {
@@ -291,6 +293,7 @@ public class Client extends BaseUI {
 		assembleSearchLayout();
 		resetFields();
 		loadSrchRslt();
+		hlDocumentLayout.setEnabled(false);
 	}
 	
 	private void assembleSearchLayout() {
@@ -356,7 +359,7 @@ public class Client extends BaseUI {
 		TabSheet test3 = new TabSheet();
 		test3.addTab(vlinformTblLayout, " Client Information");
 		test3.addTab(vlCommetTblLayout, "Comments");
-		test3.addTab(vlDocumentLayout, "Documents");
+		test3.addTab(hlDocumentLayout, "Documents");
 		test3.setWidth("1370");
 		hlUserInputLayout.addComponent(hlUserInput);
 		hlUserInput.addComponent(test3);
@@ -367,7 +370,7 @@ public class Client extends BaseUI {
 		try {
 			BeanContainer<Long, CountryDM> beanCountry = new BeanContainer<Long, CountryDM>(CountryDM.class);
 			beanCountry.setBeanIdProperty("countryID");
-			beanCountry.addAll(servicecountry.getCountryList(null, null, null, null, "Active", "P"));
+			beanCountry.addAll(serviceCountry.getCountryList(null, null, null, null, "Active", "P"));
 			cbCountry.setContainerDataSource(beanCountry);
 		}
 		catch (Exception e) {
@@ -391,7 +394,7 @@ public class Client extends BaseUI {
 		try {
 			BeanContainer<Long, CityDM> beanCity = new BeanContainer<Long, CityDM>(CityDM.class);
 			beanCity.setBeanIdProperty("cityid");
-			beanCity.addAll(servicecity.getCityList(null, null, Long.valueOf(cbState.getValue().toString()), "Active",
+			beanCity.addAll(serviceCity.getCityList(null, null, Long.valueOf(cbState.getValue().toString()), "Active",
 					companyid, "P"));
 			cbCity.setContainerDataSource(beanCity);
 		}
@@ -474,7 +477,7 @@ public class Client extends BaseUI {
 			BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
 					CompanyLookupDM.class);
 			beanlook.setBeanIdProperty("lookupname");
-			beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyid, moduleid, "Active", "CM_CLNTRTG"));
+			beanlook.addAll(serviceCompany.getCompanyLookUpByLookUp(companyid, moduleid, "Active", "CM_CLNTRTG"));
 			cbClientrate.setContainerDataSource(beanlook);
 		}
 		catch (Exception e) {
@@ -488,7 +491,7 @@ public class Client extends BaseUI {
 			BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
 					CompanyLookupDM.class);
 			beanlook.setBeanIdProperty("lookupname");
-			beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyid, moduleid, "Active", "CM_CLNTIND"));
+			beanlook.addAll(serviceCompany.getCompanyLookUpByLookUp(companyid, moduleid, "Active", "CM_CLNTIND"));
 			cbclntindustry.setContainerDataSource(beanlook);
 		}
 		catch (Exception e) {
@@ -522,7 +525,7 @@ public class Client extends BaseUI {
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -565,45 +568,52 @@ public class Client extends BaseUI {
 	// Based on the selected record, the data would be populated into user input
 	// fields in the input form
 	private void editClient() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlCmdBtnLayout.setVisible(false);
-		hlUserInputLayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Dept. Id -> "
-				+ clientId);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			ClientDM clientDM = beanClnt.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			clientId = clientDM.getClientId();
-			tfClntName.setValue(clientDM.getClientName());
-			taClntAddrss.setValue(clientDM.getClientAddress());
-			cbClntCategory.setValue(clientDM.getClientCatId());
-			cbClntSubCategory.setValue(clientDM.getClientSubCatId());
-			cbCampaign.setValue(clientDM.getCampaignId());
-			cbAssignedto.setValue(clientDM.getAssignedTo());
-			cbClientrate.setValue(clientDM.getClinetRating());
-			if (clientDM.getRevenue() != null && !equals(clientDM.getRevenue())) {
-				tfRevenue.setValue(clientDM.getRevenue().toString());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlCmdBtnLayout.setVisible(false);
+			hlUserInputLayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Dept. Id -> "
+					+ clientId);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				ClientDM clientDM = beanClnt.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				clientId = clientDM.getClientId();
+				tfClntName.setValue(clientDM.getClientName());
+				taClntAddrss.setValue(clientDM.getClientAddress());
+				cbClntCategory.setValue(clientDM.getClientCatId());
+				cbClntSubCategory.setValue(clientDM.getClientSubCatId());
+				cbCampaign.setValue(clientDM.getCampaignId());
+				cbAssignedto.setValue(clientDM.getAssignedTo());
+				cbClientrate.setValue(clientDM.getClinetRating());
+				if (clientDM.getRevenue() != null && !equals(clientDM.getRevenue())) {
+					tfRevenue.setValue(clientDM.getRevenue().toString());
+				}
+				cbclntindustry.setValue(clientDM.getClientIndustry());
+				if (clientDM.getClientCode() != null) {
+					tfClntcode.setValue(clientDM.getClientCode());
+				}
+				cbLeads.setValue(clientDM.getLeadId());
+				tfEmail.setValue(clientDM.getEmailId());
+				tfFax.setValue(clientDM.getFaxNo());
+				tfPhone.setValue(clientDM.getPhoneNo());
+				tfpostcd.setValue(clientDM.getPostalCode());
+				tfWebsite.setValue(clientDM.getWebsite());
+				tfotherDetails.setValue(clientDM.getOtherDetails());
+				cbCountry.setValue((clientDM.getCountryId()));
+				cbState.setValue(clientDM.getStateId().toString());
+				cbCity.setValue(clientDM.getCityId().toString());
 			}
-			cbclntindustry.setValue(clientDM.getClientIndustry());
-			if (clientDM.getClientCode() != null) {
-				tfClntcode.setValue(clientDM.getClientCode());
-			}
-			cbLeads.setValue(clientDM.getLeadId());
-			tfEmail.setValue(clientDM.getEmailId());
-			tfFax.setValue(clientDM.getFaxNo());
-			tfPhone.setValue(clientDM.getPhoneNo());
-			tfpostcd.setValue(clientDM.getPostalCode());
-			tfWebsite.setValue(clientDM.getWebsite());
-			tfotherDetails.setValue(clientDM.getOtherDetails());
-			cbCountry.setValue((clientDM.getCountryId()));
-			cbState.setValue(clientDM.getStateId().toString());
-			cbCity.setValue(clientDM.getCityId().toString());
+			comment = new Comments(vlCommetTblLayout, employeeid, null, null, clientId, null, null, null);
+			new TestingDocuments(hlDocumentLayout, clientId.toString(), "CLIENT");
+			hlDocumentLayout.setEnabled(true);
+			inform = new ClientInformation(vlinformTblLayout, clientId);
+			comment.loadsrch(true, clientId, null, null, null, null, null);
+			document.loadsrcrslt(true, clientId, null, null, null, null, null);
+			inform.loadsrch(true, clientId);
 		}
-		comment = new Comments(vlCommetTblLayout, employeeid, null, null, clientId, null, null, null);
-		document = new Documents(vlDocumentLayout, null, null, clientId, null, null, null);
-		inform = new ClientInformation(vlinformTblLayout, clientId);
-		comment.loadsrch(true, clientId, null, null, null, null, null);
-		document.loadsrcrslt(true, clientId, null, null, null, null, null);
-		inform.loadsrch(true, clientId);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -647,12 +657,12 @@ public class Client extends BaseUI {
 		tblMstScrSrchRslt.setVisible(false);
 		inform = new ClientInformation(vlinformTblLayout, clientId);
 		comment = new Comments(vlCommetTblLayout, employeeid, null, null, clientId, null, null, null);
-		document = new Documents(vlDocumentLayout, null, null, clientId, null, null, null);
 		// reset the input controls to default value
 		resetFields();
 		cbCountry.setRequired(true);
 		cbState.setRequired(true);
 		cbCity.setRequired(true);
+		hlDocumentLayout.setEnabled(false);
 	}
 	
 	@Override
@@ -780,6 +790,9 @@ public class Client extends BaseUI {
 			clientDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 			clientDM.setLastUpdatedBy(username);
 			serviceClients.saveOrUpdateClientsDetails(clientDM);
+			clientId = clientDM.getClientId();
+			new TestingDocuments(hlDocumentLayout, clientId.toString(), "CLIENT");
+			hlDocumentLayout.setEnabled(true);
 			inform.saveinformation(clientDM.getClientId());
 			inform.resetfields();
 			comment.save(clientDM.getClientId());
@@ -789,7 +802,7 @@ public class Client extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 }

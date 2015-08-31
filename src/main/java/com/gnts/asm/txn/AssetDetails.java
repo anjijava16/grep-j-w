@@ -380,6 +380,7 @@ public class AssetDetails extends BaseTransUI {
 			cbBrandId.setContainerDataSource(beanbrand);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -392,6 +393,7 @@ public class AssetDetails extends BaseTransUI {
 			cbDeptId.setContainerDataSource(beandept);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -404,7 +406,7 @@ public class AssetDetails extends BaseTransUI {
 			cbbranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -417,6 +419,7 @@ public class AssetDetails extends BaseTransUI {
 			cbCategory.setContainerDataSource(assetCategorydm);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -435,6 +438,7 @@ public class AssetDetails extends BaseTransUI {
 			cbReview.setContainerDataSource(beanemployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -459,8 +463,7 @@ public class AssetDetails extends BaseTransUI {
 			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.error("error during populate values on the table, The Error is ----->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -513,7 +516,7 @@ public class AssetDetails extends BaseTransUI {
 			owndetails.loadSrchRslt(true, assetId);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -681,7 +684,7 @@ public class AssetDetails extends BaseTransUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

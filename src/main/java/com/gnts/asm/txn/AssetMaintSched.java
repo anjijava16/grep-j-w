@@ -272,8 +272,7 @@ public class AssetMaintSched extends BaseUI {
 			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.error("error during populate values on the table, The Error is ----->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -293,22 +292,27 @@ public class AssetMaintSched extends BaseUI {
 	}
 	
 	private void editMaintSchedule() {
-		hlUserInputLayout.setVisible(true);
-		logger.info("Company ID : " + companyId + " | User Name : " + username + " > " + "Selected Dept. Id -> "
-				+ maintId);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			AssetMaintSchedDM editSched = beanMaintSched.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbAssetName.setValue(editSched.getAssetId());
-			maintenanceDt.setValue(editSched.getMaintainDtt());
-			cbMaintFreq.setValue(editSched.getMaintenanceFreq());
-			if (tfFreqPerDay.getValue() != null) {
-				tfFreqPerDay.setValue(editSched.getDauFreq());
+		try {
+			hlUserInputLayout.setVisible(true);
+			logger.info("Company ID : " + companyId + " | User Name : " + username + " > " + "Selected Dept. Id -> "
+					+ maintId);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				AssetMaintSchedDM editSched = beanMaintSched.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				cbAssetName.setValue(editSched.getAssetId());
+				maintenanceDt.setValue(editSched.getMaintainDtt());
+				cbMaintFreq.setValue(editSched.getMaintenanceFreq());
+				if (tfFreqPerDay.getValue() != null) {
+					tfFreqPerDay.setValue(editSched.getDauFreq());
+				}
+				if (editSched.getRemarks() != null && !"null".equals(editSched.getRemarks())) {
+					taRemarks.setValue(editSched.getRemarks());
+				}
+				tfMaindesc.setValue(editSched.getMaintaindescription());
+				cbAssetStatus.setValue(cbAssetStatus.getItemIds().iterator().hasNext());
 			}
-			if (editSched.getRemarks() != null && !"null".equals(editSched.getRemarks())) {
-				taRemarks.setValue(editSched.getRemarks());
-			}
-			tfMaindesc.setValue(editSched.getMaintaindescription());
-			cbAssetStatus.setValue(cbAssetStatus.getItemIds().iterator().hasNext());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

@@ -235,22 +235,27 @@ public class AssetSpec implements ClickListener {
 	
 	// Method for show the details in grid table while search and normal mode
 	public void loadSrchRslt(boolean fromdb, Long assetId) {
-		if (fromdb) {
-			usertable = serviceSpec.getAssetSpecList(assetId, null, "Active");
+		try {
+			if (fromdb) {
+				usertable = serviceSpec.getAssetSpecList(assetId, null, "Active");
+			}
+			tblMstScrSrchRslt.removeAllItems();
+			total = usertable.size();
+			beans = new BeanItemContainer<AssetSpecDM>(AssetSpecDM.class);
+			beans.addAll(usertable);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the assetspec. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beans);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.Of Records:" + total);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "assetSepcId", "specName", "specValue", "specStatus",
+					"lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Specification Name", "Spec.Value",
+					"Spec. Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("assetSepcId", Align.RIGHT);
 		}
-		tblMstScrSrchRslt.removeAllItems();
-		total = usertable.size();
-		beans = new BeanItemContainer<AssetSpecDM>(AssetSpecDM.class);
-		beans.addAll(usertable);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the assetspec. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beans);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.Of Records:" + total);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "assetSepcId", "specName", "specValue", "specStatus",
-				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Specification Name", "Spec.Value", "Spec. Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("assetSepcId", Align.RIGHT);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method used to display selected row's values in desired text box and combo box for edit the values
@@ -264,7 +269,7 @@ public class AssetSpec implements ClickListener {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -287,19 +292,24 @@ public class AssetSpec implements ClickListener {
 	
 	// Save Method for save and update the Asset Specification details
 	private void saveAssetSpec() {
-		AssetSpecDM savespec = new AssetSpecDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			savespec = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			usertable.remove(savespec);
+		try {
+			AssetSpecDM savespec = new AssetSpecDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				savespec = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				usertable.remove(savespec);
+			}
+			savespec.setSpecName(tfSpecName.getValue());
+			savespec.setSpecValue(tfSpecValue.getValue());
+			savespec.setSpecStatus((String) cbSpecStatus.getValue());
+			savespec.setLastUpdatedBy(username);
+			savespec.setLastUpdatedDate(DateUtils.getcurrentdate());
+			usertable.add(savespec);
+			resetFields();
+			loadSrchRslt(false, assetsId);
 		}
-		savespec.setSpecName(tfSpecName.getValue());
-		savespec.setSpecValue(tfSpecValue.getValue());
-		savespec.setSpecStatus((String) cbSpecStatus.getValue());
-		savespec.setLastUpdatedBy(username);
-		savespec.setLastUpdatedDate(DateUtils.getcurrentdate());
-		usertable.add(savespec);
-		resetFields();
-		loadSrchRslt(false, assetsId);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void deletedetails() {

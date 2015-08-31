@@ -535,49 +535,70 @@ public class DieRequest extends BaseTransUI {
 	
 	// Load EC Request
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<DieRequestDM> list = new ArrayList<DieRequestDM>();
-		list = serviceDieRequest.getDieRequestList(null, null, null, null, null);
-		recordCnt = list.size();
-		beanDieRequest = new BeanItemContainer<DieRequestDM>(DieRequestDM.class);
-		beanDieRequest.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the DieReq. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanDieRequest);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "dieReqId", "enquiryNo", "refDate", "productName",
-				"noOfDie", "status", "lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry", "Date", "Product", "No of Die",
-				"Status", "Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("dieReqId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<DieRequestDM> list = new ArrayList<DieRequestDM>();
+			list = serviceDieRequest.getDieRequestList(null, null, null, null, null);
+			recordCnt = list.size();
+			beanDieRequest = new BeanItemContainer<DieRequestDM>(DieRequestDM.class);
+			beanDieRequest.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the DieReq. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanDieRequest);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "dieReqId", "enquiryNo", "refDate", "productName",
+					"noOfDie", "status", "lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Enquiry", "Date", "Product", "No of Die",
+					"Status", "Last Updated date", "Last Updated by" });
+			tblMstScrSrchRslt.setColumnAlignment("dieReqId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadTrailRequestDetails() {
-		tblTrailRequest.removeAllItems();
-		beanMoldTrailReqDtl = new BeanItemContainer<MoldTrailReqDtlDM>(MoldTrailReqDtlDM.class);
-		beanMoldTrailReqDtl.addAll(listMoldTrailDetail);
-		tblTrailRequest.setContainerDataSource(beanMoldTrailReqDtl);
-		tblTrailRequest.setVisibleColumns(new Object[] { "inputDetail", "description" });
-		tblTrailRequest.setColumnHeaders(new String[] { "Detail of Input", "Description" });
-		tblTrailRequest.setColumnWidth("inputDetail", 350);
+		try {
+			tblTrailRequest.removeAllItems();
+			beanMoldTrailReqDtl = new BeanItemContainer<MoldTrailReqDtlDM>(MoldTrailReqDtlDM.class);
+			beanMoldTrailReqDtl.addAll(listMoldTrailDetail);
+			tblTrailRequest.setContainerDataSource(beanMoldTrailReqDtl);
+			tblTrailRequest.setVisibleColumns(new Object[] { "inputDetail", "description" });
+			tblTrailRequest.setColumnHeaders(new String[] { "Detail of Input", "Description" });
+			tblTrailRequest.setColumnWidth("inputDetail", 350);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadDieCompletion() {
-		tblDieCompletion.removeAllItems();
-		beanDieCompletionDtl = new BeanItemContainer<DieCompletionDtlDM>(DieCompletionDtlDM.class);
-		beanDieCompletionDtl.addAll(listDieComplDetail);
-		tblDieCompletion.setContainerDataSource(beanDieCompletionDtl);
-		tblDieCompletion.setVisibleColumns(new Object[] { "descType", "result", "remarks" });
-		tblDieCompletion.setColumnHeaders(new String[] { "Description", "Results", "Remarks" });
+		try {
+			tblDieCompletion.removeAllItems();
+			beanDieCompletionDtl = new BeanItemContainer<DieCompletionDtlDM>(DieCompletionDtlDM.class);
+			beanDieCompletionDtl.addAll(listDieComplDetail);
+			tblDieCompletion.setContainerDataSource(beanDieCompletionDtl);
+			tblDieCompletion.setVisibleColumns(new Object[] { "descType", "result", "remarks" });
+			tblDieCompletion.setColumnHeaders(new String[] { "Description", "Results", "Remarks" });
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadDieBillofMaterial() {
-		tblDieBillofMaterial.removeAllItems();
-		beanDieBOMDtl = new BeanItemContainer<DieBOMDtlDM>(DieBOMDtlDM.class);
-		beanDieBOMDtl.addAll(listDieBOMDtl);
-		tblDieBillofMaterial.setContainerDataSource(beanDieBOMDtl);
-		tblDieBillofMaterial.setVisibleColumns(new Object[] { "dimension", "size", "qty", "remarks" });
-		tblDieBillofMaterial.setColumnHeaders(new String[] { "Dimensions", "Raw material size", "Qty", "Remarks" });
+		try {
+			tblDieBillofMaterial.removeAllItems();
+			beanDieBOMDtl = new BeanItemContainer<DieBOMDtlDM>(DieBOMDtlDM.class);
+			beanDieBOMDtl.addAll(listDieBOMDtl);
+			tblDieBillofMaterial.setContainerDataSource(beanDieBOMDtl);
+			tblDieBillofMaterial.setVisibleColumns(new Object[] { "dimension", "size", "qty", "remarks" });
+			tblDieBillofMaterial.setColumnHeaders(new String[] { "Dimensions", "Raw material size", "Qty", "Remarks" });
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Enquiry List
@@ -644,6 +665,7 @@ public class DieRequest extends BaseTransUI {
 			cbProduct.setContainerDataSource(beanPlnDtl);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -667,68 +689,89 @@ public class DieRequest extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process for Die Request Header
 	private void editDieRequest() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hllayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			DieRequestDM dieRequestDM = beanDieRequest.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dieRequestId = dieRequestDM.getDieReqId();
-			dfRefDate.setValue(dieRequestDM.getRefDate1());
-			tfDieRefNumber.setReadOnly(false);
-			tfDieRefNumber.setValue(dieRequestDM.getDieRefNumber());
-			tfDieRefNumber.setReadOnly(true);
-			cbNewDie.setValue(dieRequestDM.getNewDie());
-			dfCompletionDate.setValue(dieRequestDM.getPlanCompleteDate());
-			cbEnquiry.setValue(dieRequestDM.getEnquiryId());
-			Long prodid = dieRequestDM.getProductId();
-			Collection<?> prodids = cbProduct.getItemIds();
-			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
-				// Get the actual bean and use the data
-				SmsEnquiryDtlDM st = (SmsEnquiryDtlDM) item.getBean();
-				if (prodid != null && prodid.equals(st.getProductid())) {
-					cbProduct.setValue(itemId);
-					break;
-				} else {
-					cbProduct.setValue(null);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hllayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				DieRequestDM dieRequestDM = beanDieRequest.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				dieRequestId = dieRequestDM.getDieReqId();
+				dfRefDate.setValue(dieRequestDM.getRefDate1());
+				tfDieRefNumber.setReadOnly(false);
+				tfDieRefNumber.setValue(dieRequestDM.getDieRefNumber());
+				tfDieRefNumber.setReadOnly(true);
+				cbNewDie.setValue(dieRequestDM.getNewDie());
+				dfCompletionDate.setValue(dieRequestDM.getPlanCompleteDate());
+				cbEnquiry.setValue(dieRequestDM.getEnquiryId());
+				Long prodid = dieRequestDM.getProductId();
+				Collection<?> prodids = cbProduct.getItemIds();
+				for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
+					// Get the actual bean and use the data
+					SmsEnquiryDtlDM st = (SmsEnquiryDtlDM) item.getBean();
+					if (prodid != null && prodid.equals(st.getProductid())) {
+						cbProduct.setValue(itemId);
+						break;
+					} else {
+						cbProduct.setValue(null);
+					}
+				}
+				if (dieRequestDM.getNoOfDie() != null) {
+					tfNoofDie.setValue(dieRequestDM.getNoOfDie().toString());
+				}
+				tfDrawingNumber.setValue(dieRequestDM.getDieRefNumber());
+				taChangeNote.setValue(dieRequestDM.getChangeNote());
+				cbStatus.setValue(dieRequestDM.getStatus());
+				try {
+					new TestingDocuments(hlDocumentLayout, dieRequestDM.getEnquiryId().toString(), "DR");
+				}
+				catch (Exception e) {
+					logger.info(e.getMessage());
 				}
 			}
-			if (dieRequestDM.getNoOfDie() != null) {
-				tfNoofDie.setValue(dieRequestDM.getNoOfDie().toString());
-			}
-			tfDrawingNumber.setValue(dieRequestDM.getDieRefNumber());
-			taChangeNote.setValue(dieRequestDM.getChangeNote());
-			cbStatus.setValue(dieRequestDM.getStatus());
-			try {
-				new TestingDocuments(hlDocumentLayout, dieRequestDM.getEnquiryId().toString(), "DR");
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editMoldReqDetails() {
-		// TODO Auto-generated method stub
-		MoldTrailReqDtlDM moldTrailReqDtlDM = beanMoldTrailReqDtl.getItem(tblTrailRequest.getValue()).getBean();
-		cbMTInput.setValue(moldTrailReqDtlDM.getInputDetail());
-		tfMTDescription.setValue(moldTrailReqDtlDM.getDescription());
+		try {
+			// TODO Auto-generated method stub
+			MoldTrailReqDtlDM moldTrailReqDtlDM = beanMoldTrailReqDtl.getItem(tblTrailRequest.getValue()).getBean();
+			cbMTInput.setValue(moldTrailReqDtlDM.getInputDetail());
+			tfMTDescription.setValue(moldTrailReqDtlDM.getDescription());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editDieCompleteDetails() {
-		// TODO Auto-generated method stub
-		DieCompletionDtlDM dieCompletionDtlDM = beanDieCompletionDtl.getItem(tblDieCompletion.getValue()).getBean();
-		cbDCDescription.setValue(dieCompletionDtlDM.getDescType());
-		cbDCResult.setValue(dieCompletionDtlDM.getResult());
-		taDCRemarks.setValue(dieCompletionDtlDM.getRemarks());
+		try {
+			// TODO Auto-generated method stub
+			DieCompletionDtlDM dieCompletionDtlDM = beanDieCompletionDtl.getItem(tblDieCompletion.getValue()).getBean();
+			cbDCDescription.setValue(dieCompletionDtlDM.getDescType());
+			cbDCResult.setValue(dieCompletionDtlDM.getResult());
+			taDCRemarks.setValue(dieCompletionDtlDM.getRemarks());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editDieBOMDetails() {
-		DieBOMDtlDM dieBOMDtlDM = beanDieBOMDtl.getItem(tblDieBillofMaterial.getValue()).getBean();
-		tfBOMDimensions.setValue(dieBOMDtlDM.getDimension());
-		tfBOMMatSize.setValue(dieBOMDtlDM.getSize());
-		tfBOMQty.setValue(dieBOMDtlDM.getQty() + "");
-		tfBOMRemarks.setValue(dieBOMDtlDM.getRemarks());
+		try {
+			DieBOMDtlDM dieBOMDtlDM = beanDieBOMDtl.getItem(tblDieBillofMaterial.getValue()).getBean();
+			tfBOMDimensions.setValue(dieBOMDtlDM.getDimension());
+			tfBOMMatSize.setValue(dieBOMDtlDM.getSize());
+			tfBOMQty.setValue(dieBOMDtlDM.getQty() + "");
+			tfBOMRemarks.setValue(dieBOMDtlDM.getRemarks());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -740,8 +783,7 @@ public class DieRequest extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			if (validateMoldTrail()) {
@@ -749,8 +791,7 @@ public class DieRequest extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			if (validateDieCompletion()) {
@@ -758,8 +799,7 @@ public class DieRequest extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			if (validateBillofMaterial()) {
@@ -767,8 +807,7 @@ public class DieRequest extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -963,7 +1002,7 @@ public class DieRequest extends BaseTransUI {
 				}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				logger.info(e.getMessage());
 			}
 		}
 	}
@@ -1030,7 +1069,7 @@ public class DieRequest extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1052,25 +1091,25 @@ public class DieRequest extends BaseTransUI {
 			editDieSection();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			editMoldTrialRequest();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			editDieCompletion();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			editBillofMaterial();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

@@ -52,7 +52,8 @@ public class AssetCategory extends BaseUI {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private AssetCategoryService assetCatgryService = (AssetCategoryService) SpringContextHelper.getBean("assetCategory");
+	private AssetCategoryService assetCatgryService = (AssetCategoryService) SpringContextHelper
+			.getBean("assetCategory");
 	// form layout for input controls
 	private FormLayout flCategoryName, flCategoryStatus;
 	// Parent layout for all the input controls
@@ -119,22 +120,28 @@ public class AssetCategory extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<AssetCategoryDM> list = new ArrayList<AssetCategoryDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfCategoryName.getValue() + ", " + (String) cbCatgryStatus.getValue());
-		list = assetCatgryService.getAssetCategoryList(null,tfCategoryName.getValue(), (String)cbCatgryStatus.getValue(), "P");
-		recordCnt = list.size();
-		beanAssetCatgry = new BeanItemContainer<AssetCategoryDM>(AssetCategoryDM.class);
-		beanAssetCatgry.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Dept. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanAssetCatgry);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "catgryId", "catgryName", "catgryStatus", "lastUpdatedDate",
-				"lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Category Name", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("catgryId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<AssetCategoryDM> list = new ArrayList<AssetCategoryDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfCategoryName.getValue() + ", " + (String) cbCatgryStatus.getValue());
+			list = assetCatgryService.getAssetCategoryList(null, tfCategoryName.getValue(),
+					(String) cbCatgryStatus.getValue(), "P");
+			recordCnt = list.size();
+			beanAssetCatgry = new BeanItemContainer<AssetCategoryDM>(AssetCategoryDM.class);
+			beanAssetCatgry.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Dept. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanAssetCatgry);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "catgryId", "catgryName", "catgryStatus",
+					"lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Category Name", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("catgryId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -144,19 +151,24 @@ public class AssetCategory extends BaseUI {
 		tfCategoryName.setValue("");
 		tfCategoryName.setComponentError(null);
 		cbCatgryStatus.setValue(cbCatgryStatus.getItemIds().iterator().next());
-		
 	}
 	
 	// Based on the selected record, the data would be populated into user input
 	// fields in the input form
 	private void editAssetCatgry() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			AssetCategoryDM assetCategoryDM = beanAssetCatgry.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfCategoryName.setValue(assetCategoryDM.getCatgryName());
-			cbCatgryStatus.setValue((String) cbCatgryStatus.getValue());
-			assetCatgryId = assetCategoryDM.getCatgryId();
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				AssetCategoryDM assetCategoryDM = beanAssetCatgry.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				tfCategoryName.setValue(assetCategoryDM.getCatgryName());
+				cbCatgryStatus.setValue((String) cbCatgryStatus.getValue());
+				assetCatgryId = assetCategoryDM.getCatgryId();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

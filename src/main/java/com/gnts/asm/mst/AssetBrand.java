@@ -130,24 +130,29 @@ public class AssetBrand extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<AssetBrandDM> list = new ArrayList<AssetBrandDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfBrandName.getValue() + ", " + (String) cbBrandStatus.getValue());
-		list = serviceAssetBrand.getAssetBrandList(null, tfBrandName.getValue(),
-				(String) cbBrandStatus.getValue(), "F");
-		recordCnt = list.size();
-		beanAssetbrand = new BeanItemContainer<AssetBrandDM>(AssetBrandDM.class);
-		beanAssetbrand.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the AssetBrand. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanAssetbrand);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "brandid", "brandname", "brandstatus", "lastupdateddate",
-				"lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Brand Name", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("brandid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<AssetBrandDM> list = new ArrayList<AssetBrandDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfBrandName.getValue() + ", " + (String) cbBrandStatus.getValue());
+			list = serviceAssetBrand.getAssetBrandList(null, tfBrandName.getValue(), (String) cbBrandStatus.getValue(),
+					"F");
+			recordCnt = list.size();
+			beanAssetbrand = new BeanItemContainer<AssetBrandDM>(AssetBrandDM.class);
+			beanAssetbrand.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the AssetBrand. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanAssetbrand);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "brandid", "brandname", "brandstatus",
+					"lastupdateddate", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Brand Name", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("brandid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -161,14 +166,20 @@ public class AssetBrand extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input
 	// fields in the input form
-	protected void editAssetBrand() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			AssetBrandDM assetBrandDM = beanAssetbrand.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			tfBrandName.setValue(assetBrandDM.getBrandname());
-			cbBrandStatus.setValue((String) assetBrandDM.getBrandstatus());
-			assetId = assetBrandDM.getBrandid().toString();
+	private void editAssetBrand() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				AssetBrandDM assetBrandDM = beanAssetbrand.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				tfBrandName.setValue(assetBrandDM.getBrandname());
+				cbBrandStatus.setValue((String) assetBrandDM.getBrandstatus());
+				assetId = assetBrandDM.getBrandid().toString();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

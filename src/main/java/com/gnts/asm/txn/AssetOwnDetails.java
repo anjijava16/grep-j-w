@@ -177,26 +177,31 @@ public class AssetOwnDetails implements ClickListener {
 			cbUsedBy.setContainerDataSource(objAsserBrand);
 		}
 		catch (Exception e) {
-			logger.info("fn_load Employee List->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Method for show the details in grid table while search and normal mode
 	public void loadSrchRslt(boolean fromdb, Long assetId) {
-		if (fromdb) {
-			usertable = serviceAssetOwnDetails.getAssetOwnDetailsList(assetId, null, "Active");
+		try {
+			if (fromdb) {
+				usertable = serviceAssetOwnDetails.getAssetOwnDetailsList(assetId, null, "Active");
+			}
+			tblAssetOwnDtls.removeAllItems();
+			total = usertable.size();
+			beanAssetOwner = new BeanItemContainer<AssetOwnDetailsDM>(AssetOwnDetailsDM.class);
+			beanAssetOwner.addAll(usertable);
+			tblAssetOwnDtls.setContainerDataSource(beanAssetOwner);
+			tblAssetOwnDtls.setColumnFooter("lastUpdatedBy", "No.Of Records:" + total);
+			tblAssetOwnDtls.setVisibleColumns(new Object[] { "assetOwnId", "usedBy", "startDate", "endDate",
+					"ownershpStatus", "lastUpdatedDate", "lastUpdatedBy" });
+			tblAssetOwnDtls.setColumnHeaders(new String[] { "Ref.Id", "Used By", "Start Date", "End Date", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblAssetOwnDtls.setColumnAlignment("assetOwnId", Align.RIGHT);
 		}
-		tblAssetOwnDtls.removeAllItems();
-		total = usertable.size();
-		beanAssetOwner = new BeanItemContainer<AssetOwnDetailsDM>(AssetOwnDetailsDM.class);
-		beanAssetOwner.addAll(usertable);
-		tblAssetOwnDtls.setContainerDataSource(beanAssetOwner);
-		tblAssetOwnDtls.setColumnFooter("lastUpdatedBy", "No.Of Records:" + total);
-		tblAssetOwnDtls.setVisibleColumns(new Object[] { "assetOwnId", "usedBy", "startDate", "endDate",
-				"ownershpStatus", "lastUpdatedDate", "lastUpdatedBy" });
-		tblAssetOwnDtls.setColumnHeaders(new String[] { "Ref.Id", "Used By", "Start Date", "End Date", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblAssetOwnDtls.setColumnAlignment("assetOwnId", Align.RIGHT);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editAssetOwnDetails() {
@@ -258,35 +263,45 @@ public class AssetOwnDetails implements ClickListener {
 	
 	// Save Method for save and update the Asset Specification details
 	private void saveAssetOwnerDetail() {
-		AssetOwnDetailsDM asstowner = new AssetOwnDetailsDM();
-		if (tblAssetOwnDtls.getValue() != null) {
-			asstowner = beanAssetOwner.getItem(tblAssetOwnDtls.getValue()).getBean();
+		try {
+			AssetOwnDetailsDM asstowner = new AssetOwnDetailsDM();
+			if (tblAssetOwnDtls.getValue() != null) {
+				asstowner = beanAssetOwner.getItem(tblAssetOwnDtls.getValue()).getBean();
+			}
+			if (tfDesc.getValue().toString().trim().length() > 0) {
+				asstowner.setOwnershpDesc(tfDesc.getValue());
+			}
+			asstowner.setStartDate(dtStartDate.getValue());
+			asstowner.setEndDate(dtEndDate.getValue());
+			if (cbUsedBy.getValue() != null) {
+				asstowner.setUsedBy((Long) cbUsedBy.getValue());
+			}
+			if (cbStatus.getValue() != null) {
+				asstowner.setOwnershpStatus((String) cbStatus.getValue());
+			}
+			asstowner.setLastUpdatedBy(username);
+			asstowner.setLastUpdatedDate(DateUtils.getcurrentdate());
+			usertable.add(asstowner);
+			loadSrchRslt(false, assetOwnId);
 		}
-		if (tfDesc.getValue().toString().trim().length() > 0) {
-			asstowner.setOwnershpDesc(tfDesc.getValue());
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		asstowner.setStartDate(dtStartDate.getValue());
-		asstowner.setEndDate(dtEndDate.getValue());
-		if (cbUsedBy.getValue() != null) {
-			asstowner.setUsedBy((Long) cbUsedBy.getValue());
-		}
-		if (cbStatus.getValue() != null) {
-			asstowner.setOwnershpStatus((String) cbStatus.getValue());
-		}
-		asstowner.setLastUpdatedBy(username);
-		asstowner.setLastUpdatedDate(DateUtils.getcurrentdate());
-		usertable.add(asstowner);
-		loadSrchRslt(false, assetOwnId);
 	}
 	
 	public void saveAssetOwners(Long assetId) {
-		@SuppressWarnings("unchecked")
-		Collection<AssetOwnDetailsDM> itemIds = (Collection<AssetOwnDetailsDM>) tblAssetOwnDtls.getVisibleItemIds();
-		for (AssetOwnDetailsDM saveasset : (Collection<AssetOwnDetailsDM>) itemIds) {
-			saveasset.setAssetId(assetId);
-			serviceAssetOwnDetails.saveAndUpdateAssetOwnDetails(saveasset);
+		try {
+			@SuppressWarnings("unchecked")
+			Collection<AssetOwnDetailsDM> itemIds = (Collection<AssetOwnDetailsDM>) tblAssetOwnDtls.getVisibleItemIds();
+			for (AssetOwnDetailsDM saveasset : (Collection<AssetOwnDetailsDM>) itemIds) {
+				saveasset.setAssetId(assetId);
+				serviceAssetOwnDetails.saveAndUpdateAssetOwnDetails(saveasset);
+			}
+			loadSrchRslt(false, null);
 		}
-		loadSrchRslt(false, null);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	public void resetfields() {

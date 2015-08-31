@@ -29,7 +29,7 @@ public class AssetComplaintRegister extends Window {
 	private static final long serialVersionUID = 1L;
 	private AssetDetailsService serviceAssetDetail = (com.gnts.asm.service.txn.AssetDetailsService) SpringContextHelper
 			.getBean("assetDetails");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private AssetMaintDetailService serviceAssetMaintDetails = (AssetMaintDetailService) SpringContextHelper
 			.getBean("assetMaintDetails");
 	private GERPComboBox cbEmployee = new GERPComboBox("Department");
@@ -157,6 +157,7 @@ public class AssetComplaintRegister extends Window {
 			new EmailTrigger("maintenance@saarccases.com", maintenanceMail, (String) cbMaintType.getValue());
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		close();
 	}
@@ -181,7 +182,7 @@ public class AssetComplaintRegister extends Window {
 		try {
 			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployee.setBeanIdProperty("employeeid");
-			beanEmployee.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
+			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null, null,
 					null, null, "P"));
 			cbEmployee.setContainerDataSource(beanEmployee);
 		}

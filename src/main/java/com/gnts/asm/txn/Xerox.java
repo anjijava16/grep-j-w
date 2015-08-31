@@ -2,7 +2,6 @@ package com.gnts.asm.txn;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -33,8 +32,6 @@ import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;

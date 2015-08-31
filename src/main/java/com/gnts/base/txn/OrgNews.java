@@ -164,7 +164,7 @@ public class OrgNews extends BaseUI {
 			hlUserInputLayout.setSpacing(true);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -202,45 +202,56 @@ public class OrgNews extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<OrgNewsDM> orgList = new ArrayList<OrgNewsDM>();
-		Long branchid = null, deptid = null;
-		if (cbBranch.getValue() != null) {
-			branchid = (Long) cbBranch.getValue();
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<OrgNewsDM> orgList = new ArrayList<OrgNewsDM>();
+			Long branchid = null, deptid = null;
+			if (cbBranch.getValue() != null) {
+				branchid = (Long) cbBranch.getValue();
+			}
+			if (cbDepartment.getValue() != null) {
+				deptid = (Long) cbDepartment.getValue();
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfNewsTitle.getValue() + ", " + (String) cbNewsStatus.getValue());
+			orgList = serviceNews.getNewsList(null, tfNewsTitle.getValue(), rtaNewsDesc.getValue(),
+					(String) cbNewsStatus.getValue(), companyid, branchid, deptid);
+			recordCnt = orgList.size();
+			beanNews = new BeanItemContainer<OrgNewsDM>(OrgNewsDM.class);
+			beanNews.addAll(orgList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the orgNews. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanNews);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "newsId", "newsTitle", "branchName", "departmentName",
+					"validFrom", "validTo", "newsStatus", "lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id ", "News", "Branch", "Department", "Valid From",
+					"Valid Upto", "Status", "Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("newsId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
-		if (cbDepartment.getValue() != null) {
-			deptid = (Long) cbDepartment.getValue();
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfNewsTitle.getValue() + ", " + (String) cbNewsStatus.getValue());
-		orgList = serviceNews.getNewsList(null, tfNewsTitle.getValue(), rtaNewsDesc.getValue(),
-				(String) cbNewsStatus.getValue(), companyid, branchid, deptid);
-		recordCnt = orgList.size();
-		beanNews = new BeanItemContainer<OrgNewsDM>(OrgNewsDM.class);
-		beanNews.addAll(orgList);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the orgNews. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanNews);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "newsId", "newsTitle", "branchName", "departmentName",
-				"validFrom", "validTo", "newsStatus", "lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id ", "News", "Branch", "Department", "Valid From",
-				"Valid Upto", "Status", "Updated Date", "Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("newsId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
 	
-	private void editnews() {
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			OrgNewsDM orgNewsDM = beanNews.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			newsId = orgNewsDM.getnewsId().toString();
-			rtaNewsDesc.setValue(orgNewsDM.getNewsDesc());
-			tfNewsTitle.setValue(orgNewsDM.getNewsTitle());
-			cbBranch.setValue(orgNewsDM.getBranchId());
-			cbDepartment.setValue(orgNewsDM.getDeptId());
-			dfValidFrom.setValue(orgNewsDM.getValidFromInDt());
-			dfValidTo.setValue(orgNewsDM.getValidToInDt());
-			cbNewsStatus.setValue(cbNewsStatus.getItemIds().iterator().next());
+	private void editOrgNews() {
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				OrgNewsDM orgNewsDM = beanNews.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				newsId = orgNewsDM.getnewsId().toString();
+				rtaNewsDesc.setValue(orgNewsDM.getNewsDesc());
+				tfNewsTitle.setValue(orgNewsDM.getNewsTitle());
+				cbBranch.setValue(orgNewsDM.getBranchId());
+				cbDepartment.setValue(orgNewsDM.getDeptId());
+				dfValidFrom.setValue(orgNewsDM.getValidFromInDt());
+				dfValidTo.setValue(orgNewsDM.getValidToInDt());
+				cbNewsStatus.setValue(cbNewsStatus.getItemIds().iterator().next());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -341,7 +352,7 @@ public class OrgNews extends BaseUI {
 		tfNewsTitle.setRequired(true);
 		dfValidFrom.setRequired(true);
 		dfValidTo.setRequired(true);
-		editnews();
+		editOrgNews();
 	}
 	
 	@Override
@@ -409,7 +420,7 @@ public class OrgNews extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 }

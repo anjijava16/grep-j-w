@@ -36,10 +36,10 @@ public class TestingDocuments implements ClickListener {
 	private GERPTable tblDocuments = new GERPTable();
 	private VerticalLayout vlDocument = new VerticalLayout();
 	private BeanItemContainer<DocumentsDM> beanDocuments = null;
-	private String testTypeId, docType;
+	private String docTypeId, docType;
 	
 	public TestingDocuments(VerticalLayout hlPageLayout, String testTypeId, String docType) {
-		this.testTypeId = testTypeId;
+		this.docTypeId = testTypeId;
 		this.docType = docType;
 		hlPageLayout.setWidth("1150");
 		hlPageLayout.removeAllComponents();
@@ -92,21 +92,24 @@ public class TestingDocuments implements ClickListener {
 		loadSearchResult(testTypeId);
 	}
 	
-	private void loadSearchResult(String testTypeId) {
+	private void loadSearchResult(String primaryId) {
 		List<DocumentsDM> documentList = new ArrayList<DocumentsDM>();
 		try {
 			if (docType.equalsIgnoreCase("QC")) {
 				documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null,
-						null, Long.valueOf(testTypeId), null, null);
+						null, Long.valueOf(primaryId), null, null);
 			} else if (docType.equalsIgnoreCase("QA")) {
 				documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null,
-						null, null, Long.valueOf(testTypeId), null);
+						null, null, Long.valueOf(primaryId), null);
 			} else if (docType.equalsIgnoreCase("DR")) {
-				documentList = serviceDocuments.getDocumentDetails(null, null, Long.valueOf(testTypeId), null, null,
+				documentList = serviceDocuments.getDocumentDetails(null, null, Long.valueOf(primaryId), null, null,
 						null, null, null, null, null, null, null);
 			} else if (docType.equalsIgnoreCase("SIGN_OFF")) {
 				documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null,
-						null, null, null, Long.valueOf(testTypeId));
+						null, null, null, Long.valueOf(primaryId));
+			} else if (docType.equalsIgnoreCase("CLIENT")) {
+				documentList = serviceDocuments.getDocumentDetails(null, null, null, Long.valueOf(primaryId), null,
+						null, null, null, null, null, null, null);
 			}
 		}
 		catch (Exception e) {
@@ -137,20 +140,22 @@ public class TestingDocuments implements ClickListener {
 			documentsDM.setComments(taComments.getValue());
 			documentsDM.setFileName(filename);
 			if (docType.equalsIgnoreCase("QC")) {
-				documentsDM.setQcTestId(Long.valueOf(testTypeId));
+				documentsDM.setQcTestId(Long.valueOf(docTypeId));
 			} else if (docType.equalsIgnoreCase("QA")) {
-				documentsDM.setQaTestId(Long.valueOf(testTypeId));
+				documentsDM.setQaTestId(Long.valueOf(docTypeId));
 			} else if (docType.equalsIgnoreCase("DR")) {
-				documentsDM.setEnquiryid(Long.valueOf(testTypeId));
+				documentsDM.setEnquiryid(Long.valueOf(docTypeId));
 			} else if (docType.equalsIgnoreCase("SIGN_OFF")) {
-				documentsDM.setSignOffId(Long.valueOf(testTypeId));
+				documentsDM.setSignOffId(Long.valueOf(docTypeId));
+			} else if (docType.equalsIgnoreCase("CLIENT")) {
+				documentsDM.setClientId(Long.valueOf(docTypeId));
 			}
 			documentsDM.setDocumentType("pdf");
 			documentsDM.setLastUpdatedBy(username);
 			documentsDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 			serviceDocuments.saveOrUpdateDocumentsDetails(documentsDM);
 			resetDetails();
-			loadSearchResult(testTypeId);
+			loadSearchResult(docTypeId);
 		} else {
 			Notification.show("Plz Upload PDF Document");
 		}

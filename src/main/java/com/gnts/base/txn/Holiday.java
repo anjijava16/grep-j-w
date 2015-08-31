@@ -50,7 +50,7 @@ import com.vaadin.ui.UI;
 public class Holiday extends BaseUI {
 	// Creating Bean
 	private HolidayService serviceHoliday = (HolidayService) SpringContextHelper.getBean("holidays");
-	private BranchService branchbean = (BranchService) SpringContextHelper.getBean("mbranch");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3;
 	// Parent layout for all the input controls
@@ -156,30 +156,35 @@ public class Holiday extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<HolidaysDM> holidayList = new ArrayList<HolidaysDM>();
-		Long branchObjId = null;
-		if (cbBranch.getValue() != null) {
-			branchObjId = (Long) cbBranch.getValue();
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<HolidaysDM> holidayList = new ArrayList<HolidaysDM>();
+			Long branchObjId = null;
+			if (cbBranch.getValue() != null) {
+				branchObjId = (Long) cbBranch.getValue();
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfHolidayName.getValue() + ", " + cbstatus.getValue());
+			holidayList = serviceHoliday.getHolidaysList(null, tfHolidayName.getValue(), branchObjId,
+					(String) cbstatus.getValue(), companyid, null, "F");
+			recordCnt = holidayList.size();
+			beanHolidayDM = new BeanItemContainer<HolidaysDM>(HolidaysDM.class);
+			beanHolidayDM.addAll(holidayList);
+			tblMstScrSrchRslt.setSelectable(true);
+			tblMstScrSrchRslt.setContainerDataSource(beanHolidayDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "holidayId", "holidayName", "branchName", "holidayDate",
+					"holidayStatus", "lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref Id", "Holiday", "Branch", "Date", "Status",
+					"Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("holidayId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+			tfHolidayName.setRequired(false);
+			cbBranch.setRequired(false);
+			dtHolidayDate.setRequired(false);
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfHolidayName.getValue() + ", " + cbstatus.getValue());
-		holidayList = serviceHoliday.getHolidaysList(null, tfHolidayName.getValue(), branchObjId,
-				(String) cbstatus.getValue(), companyid, null, "F");
-		recordCnt = holidayList.size();
-		beanHolidayDM = new BeanItemContainer<HolidaysDM>(HolidaysDM.class);
-		beanHolidayDM.addAll(holidayList);
-		tblMstScrSrchRslt.setSelectable(true);
-		tblMstScrSrchRslt.setContainerDataSource(beanHolidayDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "holidayId", "holidayName", "branchName", "holidayDate",
-				"holidayStatus", "lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref Id", "Holiday", "Branch", "Date", "Status",
-				"Updated Date", "Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("holidayId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
-		tfHolidayName.setRequired(false);
-		cbBranch.setRequired(false);
-		dtHolidayDate.setRequired(false);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -198,15 +203,20 @@ public class Holiday extends BaseUI {
 	// Based on the selected record, the data would be populated into user input
 	// fields in the input form
 	private void editHoliday() {
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			HolidaysDM holidaysDM = beanHolidayDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			holidayid = holidaysDM.getHolidayId().toString();
-			tfHolidayName.setValue(holidaysDM.getHolidayName());
-			cbstatus.setValue(holidaysDM.getHolidayStatus());
-			dtHolidayDate.setValue(holidaysDM.getHolidayDateInDt());
-			cbHolidayHrs.setValue(holidaysDM.getHolidaySession());
-			cbBranch.setValue(holidaysDM.getBranchId());
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				HolidaysDM holidaysDM = beanHolidayDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				holidayid = holidaysDM.getHolidayId().toString();
+				tfHolidayName.setValue(holidaysDM.getHolidayName());
+				cbstatus.setValue(holidaysDM.getHolidayStatus());
+				dtHolidayDate.setValue(holidaysDM.getHolidayDateInDt());
+				cbHolidayHrs.setValue(holidaysDM.getHolidaySession());
+				cbBranch.setValue(holidaysDM.getBranchId());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -348,7 +358,7 @@ public class Holiday extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -357,7 +367,7 @@ public class Holiday extends BaseUI {
 		try {
 			List<BranchDM> list = new ArrayList<BranchDM>();
 			list.add(new BranchDM(0L, "All Branchces"));
-			list.addAll(branchbean.getBranchList(null, null, null, "Active", companyid, "P"));
+			list.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
 			BeanContainer<Long, BranchDM> beanState = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanState.setBeanIdProperty("branchId");
 			beanState.addAll(list);

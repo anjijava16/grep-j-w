@@ -290,7 +290,7 @@ public class AssetMaintDetail extends BaseTransUI {
 			logger.error("error during loadsearch on the table, The Error is ----->");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -333,6 +333,7 @@ public class AssetMaintDetail extends BaseTransUI {
 			cbServiceby.setContainerDataSource(beanvendor);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

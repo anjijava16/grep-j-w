@@ -249,24 +249,30 @@ public class ECNote extends BaseTransUI {
 	
 	// Load EC Request
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<ECNoteDM> listECNote = new ArrayList<ECNoteDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + null + "," + tfECNNumber.getValue() + ", " + (String) cbStatus.getValue());
-		listECNote = serviceECNote
-				.getECNoteList(null, tfECNNumber.getValue(), null, null, (String) cbStatus.getValue());
-		recordCnt = listECNote.size();
-		beanECNote = new BeanItemContainer<ECNoteDM>(ECNoteDM.class);
-		beanECNote.addAll(listECNote);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the ECReq. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanECNote);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ecnid", "ecnNumber", "ecnDate", "drgNumber", "status",
-				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "ECN Number", "Date", "Drg. Number", "Status",
-				"Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("ecnid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<ECNoteDM> listECNote = new ArrayList<ECNoteDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + null + "," + tfECNNumber.getValue() + ", " + (String) cbStatus.getValue());
+			listECNote = serviceECNote.getECNoteList(null, tfECNNumber.getValue(), null, null,
+					(String) cbStatus.getValue());
+			recordCnt = listECNote.size();
+			beanECNote = new BeanItemContainer<ECNoteDM>(ECNoteDM.class);
+			beanECNote.addAll(listECNote);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the ECReq. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanECNote);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ecnid", "ecnNumber", "ecnDate", "drgNumber", "status",
+					"lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "ECN Number", "Date", "Drg. Number", "Status",
+					"Last Updated date", "Last Updated by" });
+			tblMstScrSrchRslt.setColumnAlignment("ecnid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Enquiry List
@@ -294,7 +300,7 @@ public class ECNote extends BaseTransUI {
 			cbProduct.setValue(cbProduct.getItemIds().iterator().next());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -321,7 +327,7 @@ public class ECNote extends BaseTransUI {
 			cbECRequest.setContainerDataSource(beanECReq);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

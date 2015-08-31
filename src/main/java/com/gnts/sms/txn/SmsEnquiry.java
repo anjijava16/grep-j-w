@@ -245,7 +245,7 @@ public class SmsEnquiry extends BaseTransUI {
 		cbBranch.setWidth("130");
 		loadBranchList();
 		tfEnquiryNo = new GERPTextField("Enquiry No");
-		tfEnquiryNo.setWidth("130");
+		tfEnquiryNo.setWidth("150");
 		tfEnquiryNo.setReadOnly(false);
 		cbClient = new GERPComboBox();
 		cbClient.setItemCaptionPropertyId("clientCode");
@@ -1477,6 +1477,7 @@ public class SmsEnquiry extends BaseTransUI {
 		cbEnquiryStatus.setValue("Open");
 		dfEnquiryDate.setValue(new Date());
 		dfDueDate.setValue(addDays(new Date(), 7));
+		hlDocumentLayout.removeAllComponents();
 	}
 	
 	private Date addDays(Date d, int days) {

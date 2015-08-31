@@ -67,7 +67,6 @@ public class ClientContacts extends BaseUI {
 	private CompanyLookupService serviceLookup = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
 	private Long companyId;
 	private VerticalLayout vlCommetTblLayout = new VerticalLayout();
-	private VerticalLayout vlDocumentLayout = new VerticalLayout();
 	private HorizontalLayout hlSearchLayout = new HorizontalLayout();
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private HorizontalLayout hlImageLayout = new HorizontalLayout();
@@ -90,7 +89,6 @@ public class ClientContacts extends BaseUI {
 	private int recordCnt = 0;
 	private Logger logger = Logger.getLogger(ClientContacts.class);
 	private Comments comment;
-	private Documents document;
 	
 	// Constructor
 	public ClientContacts() {
@@ -303,7 +301,6 @@ public class ClientContacts extends BaseUI {
 		formLayout2.addComponent(tfEmailId);
 		formLayout2.addComponent(tfMobileno);
 		formLayout2.addComponent(tfPhoneNo);
-		tfPhoneNo.setRequired(true);
 		formLayout2.addComponent(cbStatus);
 		formLayout3.addComponent(hlImageLayout);
 		VerticalLayout hlUserInput = new VerticalLayout();
@@ -316,7 +313,6 @@ public class ClientContacts extends BaseUI {
 		hlUserInput.addComponent(GERPPanelGenerator.createPanel(hlInput));
 		TabSheet test3 = new TabSheet();
 		test3.addTab(vlCommetTblLayout, "Comments");
-		test3.addTab(vlDocumentLayout, "Documents");
 		test3.setWidth("1195");
 		hlUserInput.addComponent(test3);
 		hlUserInputLayout.addComponent(hlUserInput);
@@ -374,9 +370,7 @@ public class ClientContacts extends BaseUI {
 			}
 		}
 		comment = new Comments(vlCommetTblLayout, employeeid, null, null, null, clntContactId, null, null);
-		document = new Documents(vlDocumentLayout, null, null, null, clntContactId, null, null);
 		comment.loadsrch(true, null, clntContactId, null, null, null, null);
-		document.loadsrcrslt(true, null, clntContactId, null, null, null, null);
 	}
 	
 	@Override
@@ -416,7 +410,6 @@ public class ClientContacts extends BaseUI {
 		cbClient.setRequired(true);
 		new UploadUI(hlImageLayout);
 		comment = new Comments(vlCommetTblLayout, employeeid, null, null, null, clntContactId, null, null);
-		document = new Documents(vlDocumentLayout, null, null, null, clntContactId, null, null);
 	}
 	
 	@Override
@@ -494,8 +487,7 @@ public class ClientContacts extends BaseUI {
 			resetFields();
 			comment.savecontact(contactobj.getContactId());
 			comment.resetfields();
-			document.savecontact(contactobj.getContactId());
-			document.ResetFields();
+		
 			loadSrchRslt();
 		}
 		catch (Exception e) {
@@ -543,6 +535,7 @@ public class ClientContacts extends BaseUI {
 		tfPhoneNo.setValue("");
 		tfPhoneNo.setComponentError(null);
 		hllayoutimage.removeAllComponents();
+		
 		ogpersontype.setValue("Technical Person");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		UI.getCurrent().getSession().setAttribute("isFileUploaded", false);

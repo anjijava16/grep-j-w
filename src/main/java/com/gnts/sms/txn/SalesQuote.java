@@ -32,9 +32,11 @@ import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.ApprovalSchemaDM;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
+import com.gnts.base.domain.mst.ProductDM;
 import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.CompanyLookupService;
+import com.gnts.base.service.mst.ProductService;
 import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.crm.domain.txn.ClientsContactsDM;
 import com.gnts.crm.service.txn.ClientContactsService;
@@ -106,6 +108,7 @@ public class SalesQuote extends BaseTransUI {
 	private SmsQuoteHdrService servicesmsQuoteHdr = (SmsQuoteHdrService) SpringContextHelper.getBean("smsquotehdr");
 	private ClientContactsService serviceClntContact = (ClientContactsService) SpringContextHelper
 			.getBean("clientContact");
+	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private SmsQuoteDtlService servicesmseQuoteDtl = (SmsQuoteDtlService) SpringContextHelper.getBean("SmsQuoteDtl");
 	private SmsEnqHdrService serviceEnqHeader = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private SmsEnquiryDtlService serviceEnqDetail = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
@@ -135,7 +138,6 @@ public class SalesQuote extends BaseTransUI {
 	private CheckBox chkDutyExe, ckPdcRqu, chkCformReq;
 	private GERPButton btnsavepurQuote = new GERPButton("Add", "addbt", this);
 	private GERPButton btnprintback = new GERPButton("Print Back", "downloadbt", this);
-
 	private VerticalLayout hlquoteDoc = new VerticalLayout();
 	// Sales QuoteDtl components
 	private ComboBox cbProduct, cbUom, cbdtlstatus;
@@ -228,8 +230,12 @@ public class SalesQuote extends BaseTransUI {
 				Object itemId = event.getProperty().getValue();
 				BeanItem<?> item = (BeanItem<?>) cbEnqNo.getItem(itemId);
 				if (item != null) {
-					loadProductList(false);
-					loadclientCommCont();
+					
+					if (cbQuotationType.getValue() != null && cbQuotationType.getValue() != "Enquiry") {
+						loadfullProduct();
+					} else {
+						loadProductList(false);
+					}					loadclientCommCont();
 					loadclienTecCont();
 				}
 			}
@@ -506,10 +512,11 @@ public class SalesQuote extends BaseTransUI {
 		});
 		hlPageHdrContainter.addComponent(btnprintback);
 		hlPageHdrContainter.setComponentAlignment(btnprintback, Alignment.MIDDLE_RIGHT);
-			btnprintback.addClickListener(new ClickListener() {
+		btnprintback.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-printDetailsback();			}
+				printDetailsback();
+			}
 		});
 		btndelete.setEnabled(false);
 		tblsmsQuoteDtl = new GERPTable();
@@ -556,9 +563,9 @@ printDetailsback();			}
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				if (cbQuotationType.getValue() != null && cbQuotationType.getValue() != "Enquiry") {
-					loadProductList(true);
+					loadfullProduct();
 				} else {
-					cbProduct.setContainerDataSource(null);
+					loadProductList(true);
 				}
 			}
 		});
@@ -1446,7 +1453,6 @@ printDetailsback();			}
 		comments.loadsrch(true, null, null, null, quoteId, null, null, null, null, null, null, null, null);
 		comments.editcommentDetails();
 		btnprintback.setVisible(true);
-
 	}
 	
 	@Override
@@ -1817,7 +1823,10 @@ printDetailsback();			}
 		tblsmsQuoteDtl.removeAllItems();
 		new UploadDocumentUI(hlquoteDoc);
 		btnprintback.setVisible(false);
-
+		listCommercialTerms = new ArrayList<QuoteCommCondDM>();
+		tblCommercialTerms.removeAllItems();
+		listTechnicalTerms = new ArrayList<QuoteTechCondDM>();
+		tblTechnicalTerms.removeAllItems();
 	}
 	
 	@Override
@@ -1831,7 +1840,7 @@ printDetailsback();			}
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
 			parameterMap.put("QTID", quoteId);
-			System.out.println("quote id"+quoteId);
+			System.out.println("quote id" + quoteId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "//WEB-INF//reports//qutationReport"); // productlist is the name of my jasper
 			rpt.callReport(basepath, "Preview");
@@ -1849,6 +1858,7 @@ printDetailsback();			}
 			}
 		}
 	}
+	
 	private void printDetailsback() {
 		// TODO Auto-generated method stub
 		Connection connection = null;
@@ -1859,7 +1869,7 @@ printDetailsback();			}
 			statement = connection.createStatement();
 			HashMap<String, String> parameterMap = new HashMap<String, String>();
 			parameterMap.put("QTID", quoteId.toString());
-			System.out.println("quote id"+quoteId);
+			System.out.println("quote id" + quoteId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "//WEB-INF//reports//quoteback"); // productlist is the name of my jasper
 			rpt.callReport(basepath, "Preview");
@@ -1924,9 +1934,7 @@ printDetailsback();			}
 	}
 	
 	private void addDefaultCommercialTerms() {
-		
-		listCommercialTerms=new ArrayList<QuoteCommCondDM>();
-		
+		listCommercialTerms = new ArrayList<QuoteCommCondDM>();
 		for (CompanyLookupDM companyLookupDM : serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 				"QUOTE_COMM")) {
 			try {
@@ -1947,7 +1955,7 @@ printDetailsback();			}
 	}
 	
 	private void addDefaultTechnicalTerms() {
-		listTechnicalTerms=new ArrayList<QuoteTechCondDM>();
+		listTechnicalTerms = new ArrayList<QuoteTechCondDM>();
 		for (CompanyLookupDM companyLookupDM : serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 				"QUOTE_TECH")) {
 			QuoteTechCondDM quoteTechCondDM = new QuoteTechCondDM();
@@ -2000,5 +2008,17 @@ printDetailsback();			}
 		QuoteCommCondDM quoteCommCondDM = beanQuoteComm.getItem(tblCommercialTerms.getValue()).getBean();
 		tfTermsCode.setValue(quoteCommCondDM.getCode());
 		taTermsDesc.setValue(quoteCommCondDM.getDescription());
+	}
+	
+	// Load Product List
+	private void loadfullProduct() {
+		try {
+			BeanItemContainer<ProductDM> beanProduct = new BeanItemContainer<ProductDM>(ProductDM.class);
+			beanProduct.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "P"));
+			cbProduct.setContainerDataSource(beanProduct);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

@@ -662,6 +662,7 @@ public class Client extends BaseUI {
 		cbCountry.setRequired(true);
 		cbState.setRequired(true);
 		cbCity.setRequired(true);
+		hlDocumentLayout.removeAllComponents();
 		hlDocumentLayout.setEnabled(false);
 	}
 	

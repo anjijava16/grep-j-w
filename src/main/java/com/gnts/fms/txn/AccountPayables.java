@@ -113,6 +113,7 @@ public class AccountPayables extends BaseUI {
 		hlSearchLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		vlSrchRsltContainer.addComponent(tblMstScrSrchRslt);
+		tblMstScrSrchRslt.setPageLength(10);
 		assembleSearchLayout();
 		resetFields();
 		loadSrchRslt();

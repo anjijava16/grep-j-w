@@ -405,6 +405,8 @@ public class DieRequest extends BaseTransUI {
 		vlHeader.setSpacing(true);
 		vlHeader.setMargin(true);
 		tbDieRequest.addTab(GERPPanelGenerator.createPanel(vlHeader), "Die Request");
+		// for die documents
+		tbDieRequest.addTab(hlDocumentLayout, "Design Documents");
 		// for bill of material
 		vlBillofMaterial = new VerticalLayout();
 		vlBillofMaterial.setMargin(true);
@@ -522,7 +524,6 @@ public class DieRequest extends BaseTransUI {
 		hlUserIPContainer.addComponent(tbDieRequest);
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
-		tbDieRequest.addTab(hlDocumentLayout, "Design Documents");
 		// for disable tabs
 		if (UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ") == null
 				|| (Boolean) UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ")) {

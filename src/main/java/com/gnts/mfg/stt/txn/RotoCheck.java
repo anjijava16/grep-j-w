@@ -434,68 +434,85 @@ public class RotoCheck extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		tblMstScrSrchRslt.setPageLength(14);
-		List<RotohdrDM> listRotoHdr = new ArrayList<RotohdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfRotoRef.getValue() + ", " + cbStatus.getValue());
-		listRotoHdr = serviceRotohdr.getRotohdrDetatils(null, tfRotoRef.getValue(), companyid, dfRotoDt.getValue(),
-				cbStatus.getValue().toString(), "F");
-		recordCnt = listRotoHdr.size();
-		beanRotohdrDM = new BeanItemContainer<RotohdrDM>(RotohdrDM.class);
-		beanRotohdrDM.addAll(listRotoHdr);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Roto. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanRotohdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "rotoid", "rotorefno", "rotodate", "rotostatus",
-				"lastupdateddate", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Roto Ref No", "Roto Date", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("rotoid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			tblMstScrSrchRslt.setPageLength(14);
+			List<RotohdrDM> listRotoHdr = new ArrayList<RotohdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfRotoRef.getValue() + ", " + cbStatus.getValue());
+			listRotoHdr = serviceRotohdr.getRotohdrDetatils(null, tfRotoRef.getValue(), companyid, dfRotoDt.getValue(),
+					cbStatus.getValue().toString(), "F");
+			recordCnt = listRotoHdr.size();
+			beanRotohdrDM = new BeanItemContainer<RotohdrDM>(RotohdrDM.class);
+			beanRotohdrDM.addAll(listRotoHdr);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Roto. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanRotohdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "rotoid", "rotorefno", "rotodate", "rotostatus",
+					"lastupdateddate", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Roto Ref No", "Roto Date", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("rotoid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadPlanDtlRslt() {
-		List<RotoPlanDtlDM> rotoplandm = new ArrayList<RotoPlanDtlDM>();
-		rotoplandm = serviceRotoplandtl.getRotoPlanDtlList(null, rotoplanId, null, null, null);
-		List<RotoDtlDM> list = new ArrayList<RotoDtlDM>();
-		for (RotoPlanDtlDM obj : rotoplandm) {
-			RotoDtlDM rotoDtl = new RotoDtlDM();
-			rotoDtl.setClientid(obj.getClientId());
-			rotoDtl.setClientName(obj.getClientname());
-			rotoDtl.setWoid(obj.getWoId());
-			rotoDtl.setWoNo(obj.getWoNo());
-			rotoDtl.setProdName(obj.getProductname());
-			rotoDtl.setProductid(obj.getProductId());
-			rotoDtl.setPlannedqty(obj.getPlannedqty());
-			rotoDtl.setRtodtlstatus(obj.getRtoplndtlstatus());
-			rotoDtl.setLastupdatedby(obj.getLastupdatedBy());
-			rotoDtl.setLastupdateddt(obj.getLastupdatedDt());
-			list.add(rotoDtl);
+		try {
+			List<RotoPlanDtlDM> rotoplandm = new ArrayList<RotoPlanDtlDM>();
+			rotoplandm = serviceRotoplandtl.getRotoPlanDtlList(null, rotoplanId, null, null, null);
+			List<RotoDtlDM> list = new ArrayList<RotoDtlDM>();
+			for (RotoPlanDtlDM obj : rotoplandm) {
+				RotoDtlDM rotoDtl = new RotoDtlDM();
+				rotoDtl.setClientid(obj.getClientId());
+				rotoDtl.setClientName(obj.getClientname());
+				rotoDtl.setWoid(obj.getWoId());
+				rotoDtl.setWoNo(obj.getWoNo());
+				rotoDtl.setProdName(obj.getProductname());
+				rotoDtl.setProductid(obj.getProductId());
+				rotoDtl.setPlannedqty(obj.getPlannedqty());
+				rotoDtl.setRtodtlstatus(obj.getRtoplndtlstatus());
+				rotoDtl.setLastupdatedby(obj.getLastupdatedBy());
+				rotoDtl.setLastupdateddt(obj.getLastupdatedDt());
+				list.add(rotoDtl);
+			}
+			beanRotoDtls = new BeanItemContainer<RotoDtlDM>(RotoDtlDM.class);
+			beanRotoDtls.addAll(list);
+			tblRotoDetails.setContainerDataSource(beanRotoDtls);
+			tblRotoDetails
+					.setVisibleColumns(new Object[] { "clientName", "woNo", "prodName", "plannedqty", "prodtnqty" });
+			tblRotoDetails.setColumnHeaders(new String[] { "Client Name", "WO No.", "Product Name", "Planned Qty.",
+					"Product Qty" });
 		}
-		beanRotoDtls = new BeanItemContainer<RotoDtlDM>(RotoDtlDM.class);
-		beanRotoDtls.addAll(list);
-		tblRotoDetails.setContainerDataSource(beanRotoDtls);
-		tblRotoDetails.setVisibleColumns(new Object[] { "clientName", "woNo", "prodName", "plannedqty", "prodtnqty" });
-		tblRotoDetails.setColumnHeaders(new String[] { "Client Name", "WO No.", "Product Name", "Planned Qty.",
-				"Product Qty" });
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadArmRslt(Boolean fromdb) {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<RotoArmDM> list = new ArrayList<RotoArmDM>();
-		if (fromdb) {
-			list = serviceRotoArm.getRotoArmList(null, rotoid, null, null, null, "F", null);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<RotoArmDM> list = new ArrayList<RotoArmDM>();
+			if (fromdb) {
+				list = serviceRotoArm.getRotoArmList(null, rotoid, null, null, null, "F", null);
+			}
+			recordArmCnt = list.size();
+			beanRotoArmDM = new BeanItemContainer<RotoArmDM>(RotoArmDM.class);
+			beanRotoArmDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Roto. result set");
+			tblRotoArm.setContainerDataSource(beanRotoArmDM);
+			tblRotoArm.setVisibleColumns(new Object[] { "prodname", "empName", "workOrdrNo", "cycleno", "armno" });
+			tblRotoArm
+					.setColumnHeaders(new String[] { "Product Name", "Employee name", "WO No.", "Cycle No", "Arm No" });
+			tblRotoArm.setColumnAlignment("cycleno", Align.RIGHT);
+			tblRotoArm.setColumnFooter("armno", "No.of Records : " + recordArmCnt);
 		}
-		recordArmCnt = list.size();
-		beanRotoArmDM = new BeanItemContainer<RotoArmDM>(RotoArmDM.class);
-		beanRotoArmDM.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Roto. result set");
-		tblRotoArm.setContainerDataSource(beanRotoArmDM);
-		tblRotoArm.setVisibleColumns(new Object[] { "prodname", "empName", "workOrdrNo", "cycleno", "armno" });
-		tblRotoArm.setColumnHeaders(new String[] { "Product Name", "Employee name", "WO No.", "Cycle No", "Arm No" });
-		tblRotoArm.setColumnAlignment("cycleno", Align.RIGHT);
-		tblRotoArm.setColumnFooter("armno", "No.of Records : " + recordArmCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -621,27 +638,33 @@ public class RotoCheck extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editRotoHdrDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			RotohdrDM rotohdr = beanRotohdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			rotoid = rotohdr.getRotoid();
+		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Selected AssemblyPlan. Id -> " + rotodtlid);
-			cbBranch.setValue(rotohdr.getBranchid());
-			tfRotoRef.setReadOnly(false);
-			tfRotoRef.setValue(rotohdr.getRotorefno());
-			tfRotoRef.setReadOnly(true);
-			if (rotohdr.getRotodate() != null) {
-				dfRotoDt.setValue(rotohdr.getRotodate1());
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				RotohdrDM rotohdr = beanRotohdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				rotoid = rotohdr.getRotoid();
+				logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+						+ "Selected AssemblyPlan. Id -> " + rotodtlid);
+				cbBranch.setValue(rotohdr.getBranchid());
+				tfRotoRef.setReadOnly(false);
+				tfRotoRef.setValue(rotohdr.getRotorefno());
+				tfRotoRef.setReadOnly(true);
+				if (rotohdr.getRotodate() != null) {
+					dfRotoDt.setValue(rotohdr.getRotodate1());
+				}
+				if (rotohdr.getRemarks() != null) {
+					tfRemarks.setValue(rotohdr.getRemarks());
+				}
+				cbStatus.setValue(rotohdr.getRotostatus());
 			}
-			if (rotohdr.getRemarks() != null) {
-				tfRemarks.setValue(rotohdr.getRemarks());
-			}
-			cbStatus.setValue(rotohdr.getRotostatus());
+			loadPlanDtlRslt();
+			loadArmRslt(true);
 		}
-		loadPlanDtlRslt();
-		loadArmRslt(true);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editRotoDtls() {
@@ -734,13 +757,18 @@ public class RotoCheck extends BaseTransUI {
 	}
 	
 	private void save() {
-		saverotoArmListDetails();
-		@SuppressWarnings("unchecked")
-		Collection<RotoArmDM> colPlanDtls = ((Collection<RotoArmDM>) tblRotoArm.getVisibleItemIds());
-		for (RotoArmDM savecycle : (Collection<RotoArmDM>) colPlanDtls) {
-			if ((savecycle.getCycleno()).equals(1L) && ((tblRotoArm.size() == 1))) {
-				saveDetails();
+		try {
+			saverotoArmListDetails();
+			@SuppressWarnings("unchecked")
+			Collection<RotoArmDM> colPlanDtls = ((Collection<RotoArmDM>) tblRotoArm.getVisibleItemIds());
+			for (RotoArmDM savecycle : (Collection<RotoArmDM>) colPlanDtls) {
+				if ((savecycle.getCycleno()).equals(1L) && ((tblRotoArm.size() == 1))) {
+					saveDetails();
+				}
 			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

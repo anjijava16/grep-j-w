@@ -523,33 +523,39 @@ public class Pulverizer extends BaseTransUI {
 	}
 	
 	public void editPulvizHdr() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hluserInputlayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			PulvizHdrDM pulvizHdrDM = beanPulvizHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			pulvizid = pulvizHdrDM.getPulvizid();
-			cbBranchName.setValue(pulvizHdrDM.getBranchid());
-			tfPulRefNumber.setReadOnly(false);
-			tfPulRefNumber.setValue(pulvizHdrDM.getPulvizreffno());
-			tfPulRefNumber.setReadOnly(true);
-			if (pulvizHdrDM.getPulvizdate() != null) {
-				dfPulvizDate.setValue(pulvizHdrDM.getPulvizdate1());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hluserInputlayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				PulvizHdrDM pulvizHdrDM = beanPulvizHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				pulvizid = pulvizHdrDM.getPulvizid();
+				cbBranchName.setValue(pulvizHdrDM.getBranchid());
+				tfPulRefNumber.setReadOnly(false);
+				tfPulRefNumber.setValue(pulvizHdrDM.getPulvizreffno());
+				tfPulRefNumber.setReadOnly(true);
+				if (pulvizHdrDM.getPulvizdate() != null) {
+					dfPulvizDate.setValue(pulvizHdrDM.getPulvizdate1());
+				}
+				tfOPMaterial.setValue(pulvizHdrDM.getOpmaterialid().toString());
+				tfLotNumber.setValue(pulvizHdrDM.getLotno());
+				tfLotNumber.setReadOnly(true);
+				if (pulvizHdrDM.getPulvizstatus() != null) {
+					cbHdrStatus.setValue(pulvizHdrDM.getPulvizstatus());
+				}
+				if (pulvizHdrDM.getExtrudid() != null) {
+					cbExtrudRefNo.setValue(pulvizHdrDM.getExtrudid());
+				}
+				taInstruction.setValue(pulvizHdrDM.getInstruction());
+				tblPulvizDtl.removeAllItems();
+				listPulverDetails.addAll(pulvizDtlservice.getPulvizDtlDetails(null, (Long.valueOf(pulvizid)), null,
+						null, "F"));
 			}
-			tfOPMaterial.setValue(pulvizHdrDM.getOpmaterialid().toString());
-			tfLotNumber.setValue(pulvizHdrDM.getLotno());
-			tfLotNumber.setReadOnly(true);
-			if (pulvizHdrDM.getPulvizstatus() != null) {
-				cbHdrStatus.setValue(pulvizHdrDM.getPulvizstatus());
-			}
-			if (pulvizHdrDM.getExtrudid() != null) {
-				cbExtrudRefNo.setValue(pulvizHdrDM.getExtrudid());
-			}
-			taInstruction.setValue(pulvizHdrDM.getInstruction());
-			tblPulvizDtl.removeAllItems();
-			listPulverDetails.addAll(pulvizDtlservice.getPulvizDtlDetails(null, (Long.valueOf(pulvizid)), null, null,
-					"F"));
+			loadPulverizerDetails();
 		}
-		loadPulverizerDetails();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -650,7 +656,7 @@ public class Pulverizer extends BaseTransUI {
 			loadPulverizerDetails();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -714,41 +720,46 @@ public class Pulverizer extends BaseTransUI {
 	}
 	
 	private void editPulvizDetail() {
-		if (tblPulvizDtl.getValue() != null) {
-			PulvizDtlDM pulvizDtlDM = new PulvizDtlDM();
-			pulvizDtlDM = beanPulvizDtlDM.getItem(tblPulvizDtl.getValue()).getBean();
-			Long mch = pulvizDtlDM.getMachid();
-			Collection<?> mchid = cbMachineName.getItemIds();
-			for (Iterator<?> iterator = mchid.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbMachineName.getItem(itemId);
-				AssetDetailsDM add = (AssetDetailsDM) item.getBean();
-				if (mch != null && mch.equals(add.getAssetId())) {
-					cbMachineName.setValue(itemId);
+		try {
+			if (tblPulvizDtl.getValue() != null) {
+				PulvizDtlDM pulvizDtlDM = new PulvizDtlDM();
+				pulvizDtlDM = beanPulvizDtlDM.getItem(tblPulvizDtl.getValue()).getBean();
+				Long mch = pulvizDtlDM.getMachid();
+				Collection<?> mchid = cbMachineName.getItemIds();
+				for (Iterator<?> iterator = mchid.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbMachineName.getItem(itemId);
+					AssetDetailsDM add = (AssetDetailsDM) item.getBean();
+					if (mch != null && mch.equals(add.getAssetId())) {
+						cbMachineName.setValue(itemId);
+					}
+				}
+				if (pulvizDtlDM.getProdndate() != null) {
+					dfRefDate.setValue(pulvizDtlDM.getProdndate1());
+				}
+				tfInput.setValue(pulvizDtlDM.getInputqty().toString());
+				tfOutput.setValue(pulvizDtlDM.getOutputqty().toString());
+				if (pulvizDtlDM.getBalanceqty() != null) {
+					tfBalanceQty.setValue(pulvizDtlDM.getBalanceqty().toString());
+				}
+				if (pulvizDtlDM.getOeeprcnt() != null) {
+					tfOEE.setValue(pulvizDtlDM.getOeeprcnt().toString());
+				}
+				if (pulvizDtlDM.getBalprcnt() != null) {
+					tfBalancePercnt.setValue(pulvizDtlDM.getBalprcnt().toString());
+				}
+				if (pulvizDtlDM.getPlvzdtlstatus() != null) {
+					cbDtlStatus.setValue(pulvizDtlDM.getPlvzdtlstatus());
+				}
+				tfTimeIn.setTime(pulvizDtlDM.getMchnstart());
+				tfTimeOut.setTime(pulvizDtlDM.getMchnend());
+				if (pulvizDtlDM.getRemark() != null) {
+					taDtlRemarks.setValue(pulvizDtlDM.getRemark());
 				}
 			}
-			if (pulvizDtlDM.getProdndate() != null) {
-				dfRefDate.setValue(pulvizDtlDM.getProdndate1());
-			}
-			tfInput.setValue(pulvizDtlDM.getInputqty().toString());
-			tfOutput.setValue(pulvizDtlDM.getOutputqty().toString());
-			if (pulvizDtlDM.getBalanceqty() != null) {
-				tfBalanceQty.setValue(pulvizDtlDM.getBalanceqty().toString());
-			}
-			if (pulvizDtlDM.getOeeprcnt() != null) {
-				tfOEE.setValue(pulvizDtlDM.getOeeprcnt().toString());
-			}
-			if (pulvizDtlDM.getBalprcnt() != null) {
-				tfBalancePercnt.setValue(pulvizDtlDM.getBalprcnt().toString());
-			}
-			if (pulvizDtlDM.getPlvzdtlstatus() != null) {
-				cbDtlStatus.setValue(pulvizDtlDM.getPlvzdtlstatus());
-			}
-			tfTimeIn.setTime(pulvizDtlDM.getMchnstart());
-			tfTimeOut.setTime(pulvizDtlDM.getMchnend());
-			if (pulvizDtlDM.getRemark() != null) {
-				taDtlRemarks.setValue(pulvizDtlDM.getRemark());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -835,12 +846,17 @@ public class Pulverizer extends BaseTransUI {
 	}
 	
 	private void deleteDetails() {
-		PulvizDtlDM pulvizDtlDM = new PulvizDtlDM();
-		if (tblPulvizDtl.getValue() != null) {
-			pulvizDtlDM = beanPulvizDtlDM.getItem(tblPulvizDtl.getValue()).getBean();
-			listPulverDetails.remove(pulvizDtlDM);
-			resetPulvizerDetails();
-			loadPulverizerDetails();
+		try {
+			PulvizDtlDM pulvizDtlDM = new PulvizDtlDM();
+			if (tblPulvizDtl.getValue() != null) {
+				pulvizDtlDM = beanPulvizDtlDM.getItem(tblPulvizDtl.getValue()).getBean();
+				listPulverDetails.remove(pulvizDtlDM);
+				resetPulvizerDetails();
+				loadPulverizerDetails();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

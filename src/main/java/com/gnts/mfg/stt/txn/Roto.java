@@ -888,41 +888,47 @@ public class Roto extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editRotoHdrDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			RotohdrDM editRotohdr = beanRotohdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			rotoid = editRotohdr.getRotoid();
+		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Selected AssemblyPlan. Id -> " + rotodtlid);
-			cbBranch.setValue(editRotohdr.getBranchid());
-			tfrotoplanedqty.setValue(editRotohdr.getProdtntotqty().toString());
-			tfRotoRefno.setReadOnly(false);
-			tfRotoRefno.setValue(editRotohdr.getRotorefno());
-			tfRotoRefno.setReadOnly(true);
-			if (editRotohdr.getRotodate() != null) {
-				dfRotoDate.setValue(editRotohdr.getRotodate1());
-			}
-			Long rotoplanid = editRotohdr.getRotoplanid();
-			Collection<?> uomid = cbRotoPlan.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbRotoPlan.getItem(itemId);
-				// Get the actual bean and use the data
-				RotoPlanHdrDM st = (RotoPlanHdrDM) item.getBean();
-				if (rotoplanid != null && rotoplanid.equals(st.getRotoplanid())) {
-					cbRotoPlan.setValue(itemId);
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				RotohdrDM editRotohdr = beanRotohdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				rotoid = editRotohdr.getRotoid();
+				logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+						+ "Selected AssemblyPlan. Id -> " + rotodtlid);
+				cbBranch.setValue(editRotohdr.getBranchid());
+				tfrotoplanedqty.setValue(editRotohdr.getProdtntotqty().toString());
+				tfRotoRefno.setReadOnly(false);
+				tfRotoRefno.setValue(editRotohdr.getRotorefno());
+				tfRotoRefno.setReadOnly(true);
+				if (editRotohdr.getRotodate() != null) {
+					dfRotoDate.setValue(editRotohdr.getRotodate1());
 				}
+				Long rotoplanid = editRotohdr.getRotoplanid();
+				Collection<?> uomid = cbRotoPlan.getItemIds();
+				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbRotoPlan.getItem(itemId);
+					// Get the actual bean and use the data
+					RotoPlanHdrDM st = (RotoPlanHdrDM) item.getBean();
+					if (rotoplanid != null && rotoplanid.equals(st.getRotoplanid())) {
+						cbRotoPlan.setValue(itemId);
+					}
+				}
+				tfRotoHdrqty.setValue(editRotohdr.getProdtntotqty().toString());
+				taHdrRemarks.setValue(editRotohdr.getRemarks());
+				cbHdrStatus.setValue(editRotohdr.getRotostatus());
+				listRotoShift.addAll(serviceRotoShift.getRotoShiftDtls(null, rotoid, null, null,
+						(String) cbHdrStatus.getValue(), "F"));
 			}
-			tfRotoHdrqty.setValue(editRotohdr.getProdtntotqty().toString());
-			taHdrRemarks.setValue(editRotohdr.getRemarks());
-			cbHdrStatus.setValue(editRotohdr.getRotostatus());
-			listRotoShift.addAll(serviceRotoShift.getRotoShiftDtls(null, rotoid, null, null,
-					(String) cbHdrStatus.getValue(), "F"));
+			loadPlanDtlRslt();
+			loadShiftRslt();
+			loadArmRslt();
 		}
-		loadPlanDtlRslt();
-		loadShiftRslt();
-		loadArmRslt();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
@@ -943,105 +949,120 @@ public class Roto extends BaseTransUI {
 	}
 	
 	private void editRotoDtls() {
-		hlUserInputLayout.setVisible(true);
-		if (tblRotoDetails.getValue() != null) {
-			RotoDtlDM rotoDtlDM = new RotoDtlDM();
-			rotoDtlDM = beanrotodtldm.getItem(tblRotoDetails.getValue()).getBean();
-			Long woId = rotoDtlDM.getWoid();
-			Collection<?> woIdCol = cbArmWorkorder.getItemIds();
-			for (Iterator<?> iteratorWO = woIdCol.iterator(); iteratorWO.hasNext();) {
-				Object itemIdWOObj = (Object) iteratorWO.next();
-				BeanItem<?> itemWoBean = (BeanItem<?>) cbArmWorkorder.getItem(itemIdWOObj);
-				// Get the actual bean and use the data
-				RotoPlanArmDM workOrderDM = (RotoPlanArmDM) itemWoBean.getBean();
-				if (woId != null && woId.equals(workOrderDM.getWoId())) {
-					cbArmWorkorder.setValue(itemIdWOObj);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblRotoDetails.getValue() != null) {
+				RotoDtlDM rotoDtlDM = new RotoDtlDM();
+				rotoDtlDM = beanrotodtldm.getItem(tblRotoDetails.getValue()).getBean();
+				Long woId = rotoDtlDM.getWoid();
+				Collection<?> woIdCol = cbArmWorkorder.getItemIds();
+				for (Iterator<?> iteratorWO = woIdCol.iterator(); iteratorWO.hasNext();) {
+					Object itemIdWOObj = (Object) iteratorWO.next();
+					BeanItem<?> itemWoBean = (BeanItem<?>) cbArmWorkorder.getItem(itemIdWOObj);
+					// Get the actual bean and use the data
+					RotoPlanArmDM workOrderDM = (RotoPlanArmDM) itemWoBean.getBean();
+					if (woId != null && woId.equals(workOrderDM.getWoId())) {
+						cbArmWorkorder.setValue(itemIdWOObj);
+					}
+				}
+				Long prodId = rotoDtlDM.getProductid();
+				Collection<?> prodIdCol = cbArmproduct.getItemIds();
+				for (Iterator<?> iterator = prodIdCol.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbArmproduct.getItem(itemId);
+					// Get the actual bean and use the data
+					RotoPlanArmDM st = (RotoPlanArmDM) item.getBean();
+					if (prodId != null && prodId.equals(st.getProductId())) {
+						cbArmproduct.setValue(itemId);
+					}
 				}
 			}
-			Long prodId = rotoDtlDM.getProductid();
-			Collection<?> prodIdCol = cbArmproduct.getItemIds();
-			for (Iterator<?> iterator = prodIdCol.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbArmproduct.getItem(itemId);
-				// Get the actual bean and use the data
-				RotoPlanArmDM st = (RotoPlanArmDM) item.getBean();
-				if (prodId != null && prodId.equals(st.getProductId())) {
-					cbArmproduct.setValue(itemId);
-				}
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editRotoShiftDetails() {
-		hlUserInputLayout.setVisible(true);
-		if (tblRotoShift.getValue() != null) {
-			RotoShiftDM rotoShiftDM = new RotoShiftDM();
-			rotoShiftDM = beanRotoShiftDM.getItem(tblRotoShift.getValue()).getBean();
-			Long empId = rotoShiftDM.getEmployeeid();
-			Collection<?> empColId = cbEmpname.getItemIds();
-			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbEmpname.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				EmployeeDM empObj = (EmployeeDM) itemclient.getBean();
-				if (empId != null && empId.equals(empObj.getEmployeeid())) {
-					cbEmpname.setValue(itemIdClient);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblRotoShift.getValue() != null) {
+				RotoShiftDM rotoShiftDM = new RotoShiftDM();
+				rotoShiftDM = beanRotoShiftDM.getItem(tblRotoShift.getValue()).getBean();
+				Long empId = rotoShiftDM.getEmployeeid();
+				Collection<?> empColId = cbEmpname.getItemIds();
+				for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbEmpname.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					EmployeeDM empObj = (EmployeeDM) itemclient.getBean();
+					if (empId != null && empId.equals(empObj.getEmployeeid())) {
+						cbEmpname.setValue(itemIdClient);
+					}
+				}
+				if (rotoShiftDM.getShiftname() != null) {
+					tfshiftname.setValue(rotoShiftDM.getShiftname());
+				}
+				if (rotoShiftDM.getAchivedqty() != null) {
+					tfTargetQty.setValue(rotoShiftDM.getAchivedqty().toString());
+				}
+				if (rotoShiftDM.getShiftstatus() != null) {
+					cbSftStatus.setValue(rotoShiftDM.getShiftstatus());
 				}
 			}
-			if (rotoShiftDM.getShiftname() != null) {
-				tfshiftname.setValue(rotoShiftDM.getShiftname());
-			}
-			if (rotoShiftDM.getAchivedqty() != null) {
-				tfTargetQty.setValue(rotoShiftDM.getAchivedqty().toString());
-			}
-			if (rotoShiftDM.getShiftstatus() != null) {
-				cbSftStatus.setValue(rotoShiftDM.getShiftstatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editArmDetails() {
-		hlUserInputLayout.setVisible(true);
-		if (tblRotoArm.getValue() != null) {
-			RotoArmDM rotoArmDM = new RotoArmDM();
-			rotoArmDM = beanRotoArmDM.getItem(tblRotoArm.getValue()).getBean();
-			Long uom = rotoArmDM.getProductid();
-			Collection<?> uomid = cbArmproduct.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbArmproduct.getItem(itemId);
-				// Get the actual bean and use the data
-				RotoPlanArmDM st = (RotoPlanArmDM) item.getBean();
-				if (uom != null && uom.equals(st.getProductId())) {
-					cbArmproduct.setValue(itemId);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblRotoArm.getValue() != null) {
+				RotoArmDM rotoArmDM = new RotoArmDM();
+				rotoArmDM = beanRotoArmDM.getItem(tblRotoArm.getValue()).getBean();
+				Long uom = rotoArmDM.getProductid();
+				Collection<?> uomid = cbArmproduct.getItemIds();
+				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbArmproduct.getItem(itemId);
+					// Get the actual bean and use the data
+					RotoPlanArmDM st = (RotoPlanArmDM) item.getBean();
+					if (uom != null && uom.equals(st.getProductId())) {
+						cbArmproduct.setValue(itemId);
+					}
+				}
+				if (rotoArmDM.getShiftname() != null) {
+					tfArmShiftName.setValue(rotoArmDM.getShiftname());
+				}
+				if (rotoArmDM.getArmno() != null) {
+					tfArmno.setValue(rotoArmDM.getArmno().toString());
+				}
+				if (rotoArmDM.getWorkOrdrNo() != null) {
+					cbArmWorkorder.setValue(rotoArmDM.getWorkOrdrNo());
+				}
+				Long emp = rotoArmDM.getEmployeeid();
+				Collection<?> empid = cbArmEmployee.getItemIds();
+				for (Iterator<?> iterator = empid.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbArmEmployee.getItem(itemId);
+					// Get the actual bean and use the data
+					EmployeeDM st = (EmployeeDM) item.getBean();
+					if (emp != null && emp.equals(st.getEmployeeid())) {
+						cbArmEmployee.setValue(itemId);
+					}
+				}
+				if (rotoArmDM.getCycleno() != null) {
+					tfCycleCount.setValue(rotoArmDM.getCycleno().toString());
+				}
+				if (rotoArmDM.getRtarmstatus() != null) {
+					cbArmstatus.setValue(rotoArmDM.getRtarmstatus());
 				}
 			}
-			if (rotoArmDM.getShiftname() != null) {
-				tfArmShiftName.setValue(rotoArmDM.getShiftname());
-			}
-			if (rotoArmDM.getArmno() != null) {
-				tfArmno.setValue(rotoArmDM.getArmno().toString());
-			}
-			if (rotoArmDM.getWorkOrdrNo() != null) {
-				cbArmWorkorder.setValue(rotoArmDM.getWorkOrdrNo());
-			}
-			Long emp = rotoArmDM.getEmployeeid();
-			Collection<?> empid = cbArmEmployee.getItemIds();
-			for (Iterator<?> iterator = empid.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbArmEmployee.getItem(itemId);
-				// Get the actual bean and use the data
-				EmployeeDM st = (EmployeeDM) item.getBean();
-				if (emp != null && emp.equals(st.getEmployeeid())) {
-					cbArmEmployee.setValue(itemId);
-				}
-			}
-			if (rotoArmDM.getCycleno() != null) {
-				tfCycleCount.setValue(rotoArmDM.getCycleno().toString());
-			}
-			if (rotoArmDM.getRtarmstatus() != null) {
-				cbArmstatus.setValue(rotoArmDM.getRtarmstatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1260,66 +1281,76 @@ public class Roto extends BaseTransUI {
 	}
 	
 	private void save() {
-		saveRotoArmListDetails();
-		@SuppressWarnings("unchecked")
-		Collection<RotoArmDM> colPlanDtls = ((Collection<RotoArmDM>) tblRotoArm.getVisibleItemIds());
-		for (RotoArmDM savecycle : (Collection<RotoArmDM>) colPlanDtls) {
-			if ((savecycle.getCycleno()).equals(1L) && ((tblRotoArm.size() == 1))) {
-				saveDetails();
+		try {
+			saveRotoArmListDetails();
+			@SuppressWarnings("unchecked")
+			Collection<RotoArmDM> colPlanDtls = ((Collection<RotoArmDM>) tblRotoArm.getVisibleItemIds());
+			for (RotoArmDM savecycle : (Collection<RotoArmDM>) colPlanDtls) {
+				if ((savecycle.getCycleno()).equals(1L) && ((tblRotoArm.size() == 1))) {
+					saveDetails();
+				}
 			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void saveRotoArmListDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		RotoArmDM rotoarmobj = new RotoArmDM();
-		if (tblRotoArm.getValue() != null) {
-			rotoarmobj = beanRotoArmDM.getItem(tblRotoArm.getValue()).getBean();
-		}
-		rotoarmobj.setShiftname(tfArmShiftName.getValue());
-		rotoarmobj.setArmno(Long.valueOf(tfArmno.getValue()));
-		if (cbArmWorkorder.getValue() != null) {
-			rotoarmobj.setWoid(((RotoPlanArmDM) cbArmWorkorder.getValue()).getWoId());
-			rotoarmobj.setWorkOrdrNo(((RotoPlanArmDM) cbArmWorkorder.getValue()).getWorkOrdrNo());
-		}
-		rotoarmobj.setRotoid(id);
-		if (cbArmEmployee.getValue() != null) {
-			rotoarmobj.setEmployeeid(((EmployeeDM) cbArmEmployee.getValue()).getEmployeeid());
-			rotoarmobj.setEmpName(((EmployeeDM) cbArmEmployee.getValue()).getFullname());
-		}
-		@SuppressWarnings("unchecked")
-		Collection<RotoArmDM> colPlanDtls = ((Collection<RotoArmDM>) tblRotoArm.getVisibleItemIds());
-		count = 1;
-		for (RotoArmDM savecycle : (Collection<RotoArmDM>) colPlanDtls) {
-			if (savecycle.getProductid().equals(((RotoPlanArmDM) cbArmproduct.getValue()).getProductId())
-					&& (savecycle.getCycleno() != (Long.valueOf(tfCycleNo.getValue())))) {
-				count++;
-				tfCycleCount.setValue(count + "");
-				if (Long.valueOf(tfCycleNo.getValue()).equals(Long.valueOf(tfCycleCount.getValue()))) {
-					qty++;
-					tfRotoHdrqty.setValue(qty + "");
-					serviceRotohdr.updateissueqty(id, qty);
-					serviceRotoDtl.updateissueqty(productid, qty);
-					serviceRotoShift.updateissueqty(employeeid, qty);
-				}
-			} else {
-				Notification.show("cycle complete");
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+			RotoArmDM rotoarmobj = new RotoArmDM();
+			if (tblRotoArm.getValue() != null) {
+				rotoarmobj = beanRotoArmDM.getItem(tblRotoArm.getValue()).getBean();
 			}
+			rotoarmobj.setShiftname(tfArmShiftName.getValue());
+			rotoarmobj.setArmno(Long.valueOf(tfArmno.getValue()));
+			if (cbArmWorkorder.getValue() != null) {
+				rotoarmobj.setWoid(((RotoPlanArmDM) cbArmWorkorder.getValue()).getWoId());
+				rotoarmobj.setWorkOrdrNo(((RotoPlanArmDM) cbArmWorkorder.getValue()).getWorkOrdrNo());
+			}
+			rotoarmobj.setRotoid(id);
+			if (cbArmEmployee.getValue() != null) {
+				rotoarmobj.setEmployeeid(((EmployeeDM) cbArmEmployee.getValue()).getEmployeeid());
+				rotoarmobj.setEmpName(((EmployeeDM) cbArmEmployee.getValue()).getFullname());
+			}
+			@SuppressWarnings("unchecked")
+			Collection<RotoArmDM> colPlanDtls = ((Collection<RotoArmDM>) tblRotoArm.getVisibleItemIds());
+			count = 1;
+			for (RotoArmDM savecycle : (Collection<RotoArmDM>) colPlanDtls) {
+				if (savecycle.getProductid().equals(((RotoPlanArmDM) cbArmproduct.getValue()).getProductId())
+						&& (savecycle.getCycleno() != (Long.valueOf(tfCycleNo.getValue())))) {
+					count++;
+					tfCycleCount.setValue(count + "");
+					if (Long.valueOf(tfCycleNo.getValue()).equals(Long.valueOf(tfCycleCount.getValue()))) {
+						qty++;
+						tfRotoHdrqty.setValue(qty + "");
+						serviceRotohdr.updateissueqty(id, qty);
+						serviceRotoDtl.updateissueqty(productid, qty);
+						serviceRotoShift.updateissueqty(employeeid, qty);
+					}
+				} else {
+					Notification.show("cycle complete");
+				}
+			}
+			rotoarmobj.setCycleno((Long.valueOf(count++)));
+			if (cbArmproduct.getValue() != null) {
+				rotoarmobj.setProductid(((RotoPlanArmDM) cbArmproduct.getValue()).getProductId());
+				rotoarmobj.setProdname(((RotoPlanArmDM) cbArmproduct.getValue()).getProdname());
+			}
+			if (cbArmstatus.getValue() != null) {
+				rotoarmobj.setRtarmstatus((String) cbArmstatus.getValue());
+				rotoarmobj.setLastupdateddt(DateUtils.getcurrentdate());
+				rotoarmobj.setLastupdatedby(username);
+				serviceRotoArm.saveRotoArm(rotoarmobj);
+				loadArmRslt();
+				btnAddArm.setCaption("Add");
+			}
+			rotoArmResetFields();
 		}
-		rotoarmobj.setCycleno((Long.valueOf(count++)));
-		if (cbArmproduct.getValue() != null) {
-			rotoarmobj.setProductid(((RotoPlanArmDM) cbArmproduct.getValue()).getProductId());
-			rotoarmobj.setProdname(((RotoPlanArmDM) cbArmproduct.getValue()).getProdname());
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		if (cbArmstatus.getValue() != null) {
-			rotoarmobj.setRtarmstatus((String) cbArmstatus.getValue());
-			rotoarmobj.setLastupdateddt(DateUtils.getcurrentdate());
-			rotoarmobj.setLastupdatedby(username);
-			serviceRotoArm.saveRotoArm(rotoarmobj);
-			loadArmRslt();
-			btnAddArm.setCaption("Add");
-		}
-		rotoArmResetFields();
 	}
 	
 	/*
@@ -1399,10 +1430,15 @@ public class Roto extends BaseTransUI {
 	
 	// Load Product List
 	private void loadProduct() {
-		if (cbArmWorkorder.getValue() != null) {
-			BeanItemContainer<RotoPlanArmDM> beanPlnDtl = new BeanItemContainer<RotoPlanArmDM>(RotoPlanArmDM.class);
-			beanPlnDtl.addAll(serviceRotoplanarm.getRotoPlanArmList(null, null, null, null));
-			cbArmproduct.setContainerDataSource(beanPlnDtl);
+		try {
+			if (cbArmWorkorder.getValue() != null) {
+				BeanItemContainer<RotoPlanArmDM> beanPlnDtl = new BeanItemContainer<RotoPlanArmDM>(RotoPlanArmDM.class);
+				beanPlnDtl.addAll(serviceRotoplanarm.getRotoPlanArmList(null, null, null, null));
+				cbArmproduct.setContainerDataSource(beanPlnDtl);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1435,12 +1471,17 @@ public class Roto extends BaseTransUI {
 	}
 	
 	private void deleteShiftDetails() {
-		RotoShiftDM removeShift = new RotoShiftDM();
-		if (tblRotoShift.getValue() != null) {
-			removeShift = beanRotoShiftDM.getItem(tblRotoShift.getValue()).getBean();
-			listRotoShift.remove(removeShift);
-			resetRotoShiftDetails();
-			loadShiftRslt();
+		try {
+			RotoShiftDM removeShift = new RotoShiftDM();
+			if (tblRotoShift.getValue() != null) {
+				removeShift = beanRotoShiftDM.getItem(tblRotoShift.getValue()).getBean();
+				listRotoShift.remove(removeShift);
+				resetRotoShiftDetails();
+				loadShiftRslt();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

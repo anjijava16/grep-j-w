@@ -187,25 +187,32 @@ public class Xerox extends BaseTransUI {
 	
 	// Load EC Request
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<XeroxDM> list = new ArrayList<XeroxDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + null + "," + null + ", " + (String) cbStatus.getValue());
-		list = serviceXerox.getXeroxDetailList(null, (Long) cbAssetName.getValue(), (Long) cbDepartment.getValue(),
-				null, null, null);
-		recordCnt = list.size();
-		beanXerox = new BeanItemContainer<XeroxDM>(XeroxDM.class);
-		beanXerox.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Xerox. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanXerox);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "xeroxRefId", "copiesTakenDate", "assetName",
-				"departmentName", "noOfXerox", "noOfPrintout", "noOfPapersUsed", "status", "lastupdateddt",
-				"lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Asset Name", "Department", "No of Xerox",
-				"No of Printout", "No of Papers", "Status", "Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("xeroxRefId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<XeroxDM> list = new ArrayList<XeroxDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + null + "," + null + ", " + (String) cbStatus.getValue());
+			list = serviceXerox.getXeroxDetailList(null, (Long) cbAssetName.getValue(), (Long) cbDepartment.getValue(),
+					null, null, null);
+			recordCnt = list.size();
+			beanXerox = new BeanItemContainer<XeroxDM>(XeroxDM.class);
+			beanXerox.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Xerox. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanXerox);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "xeroxRefId", "copiesTakenDate", "assetName",
+					"departmentName", "noOfXerox", "noOfPrintout", "noOfPapersUsed", "status", "lastupdateddt",
+					"lastupdatedby" });
+			tblMstScrSrchRslt
+					.setColumnHeaders(new String[] { "Ref.Id", "Date", "Asset Name", "Department", "No of Xerox",
+							"No of Printout", "No of Papers", "Status", "Last Updated date", "Last Updated by" });
+			tblMstScrSrchRslt.setColumnAlignment("xeroxRefId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Enquiry List
@@ -256,31 +263,37 @@ public class Xerox extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header
 	private void editXerox() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hllayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
-				+ xeroxRefId);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			XeroxDM xeroxDM = beanXerox.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			xeroxRefId = xeroxDM.getXeroxRefId();
-			cbAssetName.setValue(xeroxDM.getAssetId());
-			cbEmployeeName.setValue(xeroxDM.getEmployeeId());
-			cbAssetAssignee.setValue(xeroxDM.getAssetAssigneeRef());
-			cbDepartment.setValue(xeroxDM.getDepartmentId());
-			dfRefDate.setValue(xeroxDM.getCopiesTakenDate1());
-			if (xeroxDM.getPurpose() != null) {
-				taPurpose.setValue(xeroxDM.getPurpose());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hllayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
+					+ xeroxRefId);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				XeroxDM xeroxDM = beanXerox.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				xeroxRefId = xeroxDM.getXeroxRefId();
+				cbAssetName.setValue(xeroxDM.getAssetId());
+				cbEmployeeName.setValue(xeroxDM.getEmployeeId());
+				cbAssetAssignee.setValue(xeroxDM.getAssetAssigneeRef());
+				cbDepartment.setValue(xeroxDM.getDepartmentId());
+				dfRefDate.setValue(xeroxDM.getCopiesTakenDate1());
+				if (xeroxDM.getPurpose() != null) {
+					taPurpose.setValue(xeroxDM.getPurpose());
+				}
+				if (xeroxDM.getNoOfPapersUsed() != null) {
+					tfNoOfPrintouts.setValue(xeroxDM.getNoOfPapersUsed().toString());
+				}
+				if (xeroxDM.getNoOfXerox() != null) {
+					tfNoOfXerox.setValue(xeroxDM.getNoOfXerox().toString());
+				}
+				if (xeroxDM.getNoOfPapersUsed() != null) {
+					tfNoOfPapers.setValue(xeroxDM.getNoOfPapersUsed().toString());
+				}
+				cbStatus.setValue(xeroxDM.getStatus());
 			}
-			if (xeroxDM.getNoOfPapersUsed() != null) {
-				tfNoOfPrintouts.setValue(xeroxDM.getNoOfPapersUsed().toString());
-			}
-			if (xeroxDM.getNoOfXerox() != null) {
-				tfNoOfXerox.setValue(xeroxDM.getNoOfXerox().toString());
-			}
-			if (xeroxDM.getNoOfPapersUsed() != null) {
-				tfNoOfPapers.setValue(xeroxDM.getNoOfPapersUsed().toString());
-			}
-			cbStatus.setValue(xeroxDM.getStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -469,12 +482,4 @@ public class Xerox extends BaseTransUI {
 			}
 		}
 	}
-	// private void getCalculatedValues() {
-	// BigDecimal printouts = new BigDecimal(tfNoOfPrintouts.getValue());
-	// BigDecimal xerox = new BigDecimal(tfNoOfXerox.getValue());
-	// BigDecimal papers = printouts.add(xerox);
-	// tfNoOfPapers.setReadOnly(false);
-	// tfNoOfPapers.setValue(papers.toString());
-	// tfNoOfPapers.setReadOnly(true);
-	// }
 }

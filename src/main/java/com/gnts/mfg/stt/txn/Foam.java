@@ -489,84 +489,100 @@ public class Foam extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editFoamHdrDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			FoamHdrDM editFoam = beanFoamHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			asmbPlnHdrId = Long.valueOf(editFoam.getFoamid());
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Foam. Id -> "
-					+ asmbPlnHdrId);
-			tfFoamRefNo.setReadOnly(false);
-			tfFoamRefNo.setValue(editFoam.getFormrefno());
-			tfFoamRefNo.setReadOnly(true);
-			if (editFoam.getFomdate() != null) {
-				dfFoanDt.setValue(editFoam.getFomdate1());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				FoamHdrDM editFoam = beanFoamHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				asmbPlnHdrId = Long.valueOf(editFoam.getFoamid());
+				logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+						+ "Selected Foam. Id -> " + asmbPlnHdrId);
+				tfFoamRefNo.setReadOnly(false);
+				tfFoamRefNo.setValue(editFoam.getFormrefno());
+				tfFoamRefNo.setReadOnly(true);
+				if (editFoam.getFomdate() != null) {
+					dfFoanDt.setValue(editFoam.getFomdate1());
+				}
+				tfProductnQty.setValue(editFoam.getProdtntotqty().toString());
+				if (editFoam.getRemarks() != null) {
+					taRemark.setValue(editFoam.getRemarks());
+				}
+				cbHdrStatus.setValue(editFoam.getFomstatus());
+				listFoamDetails.addAll(serviceFoamDtl.getFormDetails(null, asmbPlnHdrId, null,
+						(String) cbStatus.getValue(), "F"));
+				listFoamShift.addAll(serviceFoamShift.getFormShiftDetails(null, asmbPlnHdrId, null, null,
+						(String) cbStatus.getValue(), "F"));
+				cbFoamPlanNo.setValue(editFoam.getFoamplanid().toString());
 			}
-			tfProductnQty.setValue(editFoam.getProdtntotqty().toString());
-			if (editFoam.getRemarks() != null) {
-				taRemark.setValue(editFoam.getRemarks());
-			}
-			cbHdrStatus.setValue(editFoam.getFomstatus());
-			listFoamDetails.addAll(serviceFoamDtl.getFormDetails(null, asmbPlnHdrId, null,
-					(String) cbStatus.getValue(), "F"));
-			listFoamShift.addAll(serviceFoamShift.getFormShiftDetails(null, asmbPlnHdrId, null, null,
-					(String) cbStatus.getValue(), "F"));
-			cbFoamPlanNo.setValue(editFoam.getFoamplanid().toString());
+			loadAsmbDtlList();
+			loadShiftRslt();
 		}
-		loadAsmbDtlList();
-		loadShiftRslt();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editAsmbPlanDtls() {
-		hlUserInputLayout.setVisible(true);
-		if (tblFoamDetail.getValue() != null) {
-			FoamDtlDM foamDtlDM = new FoamDtlDM();
-			foamDtlDM = beanFoamDtlDM.getItem(tblFoamDetail.getValue()).getBean();
-			Long prodId = foamDtlDM.getProductId();
-			Collection<?> prodIdCol = cbProduct.getItemIds();
-			for (Iterator<?> iterator = prodIdCol.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
-				// Get the actual bean and use the data
-				WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
-				if (prodId != null && prodId.equals(st.getProdId())) {
-					cbProduct.setValue(itemId);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblFoamDetail.getValue() != null) {
+				FoamDtlDM foamDtlDM = new FoamDtlDM();
+				foamDtlDM = beanFoamDtlDM.getItem(tblFoamDetail.getValue()).getBean();
+				Long prodId = foamDtlDM.getProductId();
+				Collection<?> prodIdCol = cbProduct.getItemIds();
+				for (Iterator<?> iterator = prodIdCol.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
+					// Get the actual bean and use the data
+					WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
+					if (prodId != null && prodId.equals(st.getProdId())) {
+						cbProduct.setValue(itemId);
+					}
+				}
+				if (foamDtlDM.getProductQty() != null) {
+					tfPlanDtlQty.setValue(foamDtlDM.getProductQty().toString());
+				}
+				if (foamDtlDM.getStatus() != null) {
+					cbDtlStatus.setValue(foamDtlDM.getStatus());
 				}
 			}
-			if (foamDtlDM.getProductQty() != null) {
-				tfPlanDtlQty.setValue(foamDtlDM.getProductQty().toString());
-			}
-			if (foamDtlDM.getStatus() != null) {
-				cbDtlStatus.setValue(foamDtlDM.getStatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editAsmbPlanShift() {
-		hlUserInputLayout.setVisible(true);
-		if (tblFoamShift.getValue() != null) {
-			FoamShiftDM foamShiftDM = new FoamShiftDM();
-			foamShiftDM = beanFoamShiftDM.getItem(tblFoamShift.getValue()).getBean();
-			Long empId = foamShiftDM.getEmpId();
-			Collection<?> empColId = cbEmpName.getItemIds();
-			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbEmpName.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				EmployeeDM empObj = (EmployeeDM) itemclient.getBean();
-				if (empId != null && empId.equals(empObj.getEmployeeid())) {
-					cbEmpName.setValue(itemIdClient);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblFoamShift.getValue() != null) {
+				FoamShiftDM foamShiftDM = new FoamShiftDM();
+				foamShiftDM = beanFoamShiftDM.getItem(tblFoamShift.getValue()).getBean();
+				Long empId = foamShiftDM.getEmpId();
+				Collection<?> empColId = cbEmpName.getItemIds();
+				for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbEmpName.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					EmployeeDM empObj = (EmployeeDM) itemclient.getBean();
+					if (empId != null && empId.equals(empObj.getEmployeeid())) {
+						cbEmpName.setValue(itemIdClient);
+					}
+				}
+				if (foamShiftDM.getShiftName() != null) {
+					tfShiftName.setValue(foamShiftDM.getShiftName());
+				}
+				if (foamShiftDM.getAchivedQty() != null) {
+					tfTargetQty.setValue(foamShiftDM.getAchivedQty().toString());
+				}
+				if (foamShiftDM.getStatus() != null) {
+					cbStatus.setValue(foamShiftDM.getStatus());
 				}
 			}
-			if (foamShiftDM.getShiftName() != null) {
-				tfShiftName.setValue(foamShiftDM.getShiftName());
-			}
-			if (foamShiftDM.getAchivedQty() != null) {
-				tfTargetQty.setValue(foamShiftDM.getAchivedQty().toString());
-			}
-			if (foamShiftDM.getStatus() != null) {
-				cbStatus.setValue(foamShiftDM.getStatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -990,22 +1006,32 @@ public class Foam extends BaseTransUI {
 	}
 	
 	private void deleteShiftDetails() {
-		FoamShiftDM removeShift = new FoamShiftDM();
-		if (tblFoamShift.getValue() != null) {
-			removeShift = beanFoamShiftDM.getItem(tblFoamShift.getValue()).getBean();
-			listFoamShift.remove(removeShift);
-			asmblShiftResetFields();
-			loadShiftRslt();
+		try {
+			FoamShiftDM removeShift = new FoamShiftDM();
+			if (tblFoamShift.getValue() != null) {
+				removeShift = beanFoamShiftDM.getItem(tblFoamShift.getValue()).getBean();
+				listFoamShift.remove(removeShift);
+				asmblShiftResetFields();
+				loadShiftRslt();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void deleteDetails() {
-		FoamDtlDM remove = new FoamDtlDM();
-		if (tblFoamDetail.getValue() != null) {
-			remove = beanFoamDtlDM.getItem(tblFoamDetail.getValue()).getBean();
-			listFoamDetails.remove(remove);
-			asmblDtlResetFields();
-			loadAsmbDtlList();
+		try {
+			FoamDtlDM remove = new FoamDtlDM();
+			if (tblFoamDetail.getValue() != null) {
+				remove = beanFoamDtlDM.getItem(tblFoamDetail.getValue()).getBean();
+				listFoamDetails.remove(remove);
+				asmblDtlResetFields();
+				loadAsmbDtlList();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

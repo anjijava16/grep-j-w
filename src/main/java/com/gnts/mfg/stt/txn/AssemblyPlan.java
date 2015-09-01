@@ -531,106 +531,122 @@ public class AssemblyPlan extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editAssemblyPlanHdrDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			AsmblyPlanHdrDM asmblyPlanHdr = beanAsmblyPlanHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			asmbPlnHdrId = asmblyPlanHdr.getAsmplnid().toString();
+		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Selected AssemblyPlan. Id -> " + asmbPlnHdrId);
-			cbBranch.setValue(asmblyPlanHdr.getBranchid());
-			tfPlanRefNo.setReadOnly(false);
-			tfPlanRefNo.setValue(asmblyPlanHdr.getAsmplnreffno());
-			tfPlanRefNo.setReadOnly(true);
-			if (asmblyPlanHdr.getAsmplndate() != null) {
-				dfAsmPlanDt.setValue(asmblyPlanHdr.getAsmplndate1());
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				AsmblyPlanHdrDM asmblyPlanHdr = beanAsmblyPlanHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				asmbPlnHdrId = asmblyPlanHdr.getAsmplnid().toString();
+				logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+						+ "Selected AssemblyPlan. Id -> " + asmbPlnHdrId);
+				cbBranch.setValue(asmblyPlanHdr.getBranchid());
+				tfPlanRefNo.setReadOnly(false);
+				tfPlanRefNo.setValue(asmblyPlanHdr.getAsmplnreffno());
+				tfPlanRefNo.setReadOnly(true);
+				if (asmblyPlanHdr.getAsmplndate() != null) {
+					dfAsmPlanDt.setValue(asmblyPlanHdr.getAsmplndate1());
+				}
+				tfPlanHdrQty.setValue(asmblyPlanHdr.getPlannedqty().toString());
+				if (asmblyPlanHdr.getRemarks() != null) {
+					taRemark.setValue(asmblyPlanHdr.getRemarks());
+				}
+				cbHdrStatus.setValue(asmblyPlanHdr.getAsmplnstatus());
+				asmblPlnDtlList.addAll(serviceAsmblyPlanDtl.getAsmPlnDtlList(null, Long.valueOf(asmbPlnHdrId), null,
+						null, null, (String) cbStatus.getValue(), "F"));
+				asmblyPlnShitftList.addAll(serviceAsmblyPlanShift.getAsmblyPlanShiftDtls(null,
+						Long.valueOf(asmbPlnHdrId), null, null, (String) cbStatus.getValue(), "F"));
+				loadAsmbDtlList();
+				loadShiftRslt();
 			}
-			tfPlanHdrQty.setValue(asmblyPlanHdr.getPlannedqty().toString());
-			if (asmblyPlanHdr.getRemarks() != null) {
-				taRemark.setValue(asmblyPlanHdr.getRemarks());
-			}
-			cbHdrStatus.setValue(asmblyPlanHdr.getAsmplnstatus());
-			asmblPlnDtlList.addAll(serviceAsmblyPlanDtl.getAsmPlnDtlList(null, Long.valueOf(asmbPlnHdrId), null, null,
-					null, (String) cbStatus.getValue(), "F"));
-			asmblyPlnShitftList.addAll(serviceAsmblyPlanShift.getAsmblyPlanShiftDtls(null, Long.valueOf(asmbPlnHdrId),
-					null, null, (String) cbStatus.getValue(), "F"));
-			loadAsmbDtlList();
-			loadShiftRslt();
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editAsmbPlanDtls() {
-		hlUserInputLayout.setVisible(true);
-		if (tblAsmbPlanDtl.getValue() != null) {
-			AsmblyPlanDtlDM asmblyPlanDtlDM = new AsmblyPlanDtlDM();
-			asmblyPlanDtlDM = beanAsmblyPlanDtlDM.getItem(tblAsmbPlanDtl.getValue()).getBean();
-			Long clientId = asmblyPlanDtlDM.getClientId();
-			Collection<?> clientIdCol = cbClientId.getItemIds();
-			for (Iterator<?> iteratorclient = clientIdCol.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbClientId.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				ClientDM clientObj = (ClientDM) itemclient.getBean();
-				if (clientId != null && clientId.equals(clientObj.getClientId())) {
-					cbClientId.setValue(itemIdClient);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblAsmbPlanDtl.getValue() != null) {
+				AsmblyPlanDtlDM asmblyPlanDtlDM = new AsmblyPlanDtlDM();
+				asmblyPlanDtlDM = beanAsmblyPlanDtlDM.getItem(tblAsmbPlanDtl.getValue()).getBean();
+				Long clientId = asmblyPlanDtlDM.getClientId();
+				Collection<?> clientIdCol = cbClientId.getItemIds();
+				for (Iterator<?> iteratorclient = clientIdCol.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbClientId.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					ClientDM clientObj = (ClientDM) itemclient.getBean();
+					if (clientId != null && clientId.equals(clientObj.getClientId())) {
+						cbClientId.setValue(itemIdClient);
+					}
+				}
+				Long woId = asmblyPlanDtlDM.getWoId();
+				Collection<?> woIdCol = cbWorkOrder.getItemIds();
+				for (Iterator<?> iteratorWO = woIdCol.iterator(); iteratorWO.hasNext();) {
+					Object itemIdWOObj = (Object) iteratorWO.next();
+					BeanItem<?> itemWoBean = (BeanItem<?>) cbWorkOrder.getItem(itemIdWOObj);
+					// Get the actual bean and use the data
+					WorkOrderHdrDM workOrderDM = (WorkOrderHdrDM) itemWoBean.getBean();
+					if (woId != null && woId.equals(workOrderDM.getWorkOrdrId())) {
+						cbWorkOrder.setValue(itemIdWOObj);
+					}
+				}
+				Long prodId = asmblyPlanDtlDM.getProductId();
+				Collection<?> prodIdCol = cbProduct.getItemIds();
+				for (Iterator<?> iterator = prodIdCol.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
+					// Get the actual bean and use the data
+					WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
+					if (prodId != null && prodId.equals(st.getProdId())) {
+						cbProduct.setValue(itemId);
+					}
+				}
+				if (asmblyPlanDtlDM.getPlndQty() != null) {
+					tfPlanDtlQty.setValue(asmblyPlanDtlDM.getPlndQty().toString());
+				}
+				if (asmblyPlanDtlDM.getStatus() != null) {
+					cbDtlStatus.setValue(asmblyPlanDtlDM.getStatus());
 				}
 			}
-			Long woId = asmblyPlanDtlDM.getWoId();
-			Collection<?> woIdCol = cbWorkOrder.getItemIds();
-			for (Iterator<?> iteratorWO = woIdCol.iterator(); iteratorWO.hasNext();) {
-				Object itemIdWOObj = (Object) iteratorWO.next();
-				BeanItem<?> itemWoBean = (BeanItem<?>) cbWorkOrder.getItem(itemIdWOObj);
-				// Get the actual bean and use the data
-				WorkOrderHdrDM workOrderDM = (WorkOrderHdrDM) itemWoBean.getBean();
-				if (woId != null && woId.equals(workOrderDM.getWorkOrdrId())) {
-					cbWorkOrder.setValue(itemIdWOObj);
-				}
-			}
-			Long prodId = asmblyPlanDtlDM.getProductId();
-			Collection<?> prodIdCol = cbProduct.getItemIds();
-			for (Iterator<?> iterator = prodIdCol.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
-				// Get the actual bean and use the data
-				WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
-				if (prodId != null && prodId.equals(st.getProdId())) {
-					cbProduct.setValue(itemId);
-				}
-			}
-			if (asmblyPlanDtlDM.getPlndQty() != null) {
-				tfPlanDtlQty.setValue(asmblyPlanDtlDM.getPlndQty().toString());
-			}
-			if (asmblyPlanDtlDM.getStatus() != null) {
-				cbDtlStatus.setValue(asmblyPlanDtlDM.getStatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editAsmbPlanShift() {
-		hlUserInputLayout.setVisible(true);
-		if (tblShift.getValue() != null) {
-			AsmblyPlanShiftDM asmblyPlanShiftDM = new AsmblyPlanShiftDM();
-			asmblyPlanShiftDM = beanAsmblyPlanShiftDM.getItem(tblShift.getValue()).getBean();
-			Long empId = asmblyPlanShiftDM.getEmpId();
-			Collection<?> empColId = cbEmpName.getItemIds();
-			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbEmpName.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				EmployeeDM empObj = (EmployeeDM) itemclient.getBean();
-				if (empId != null && empId.equals(empObj.getEmployeeid())) {
-					cbEmpName.setValue(itemIdClient);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblShift.getValue() != null) {
+				AsmblyPlanShiftDM asmblyPlanShiftDM = new AsmblyPlanShiftDM();
+				asmblyPlanShiftDM = beanAsmblyPlanShiftDM.getItem(tblShift.getValue()).getBean();
+				Long empId = asmblyPlanShiftDM.getEmpId();
+				Collection<?> empColId = cbEmpName.getItemIds();
+				for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbEmpName.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					EmployeeDM empObj = (EmployeeDM) itemclient.getBean();
+					if (empId != null && empId.equals(empObj.getEmployeeid())) {
+						cbEmpName.setValue(itemIdClient);
+					}
+				}
+				if (asmblyPlanShiftDM.getShiftName() != null) {
+					tfShiftName.setValue(asmblyPlanShiftDM.getShiftName());
+				}
+				if (asmblyPlanShiftDM.getTargetQty() != null) {
+					tfTargetQty.setValue(asmblyPlanShiftDM.getTargetQty().toString());
+				}
+				if (asmblyPlanShiftDM.getStatus() != null) {
+					cbStatus.setValue(asmblyPlanShiftDM.getStatus());
 				}
 			}
-			if (asmblyPlanShiftDM.getShiftName() != null) {
-				tfShiftName.setValue(asmblyPlanShiftDM.getShiftName());
-			}
-			if (asmblyPlanShiftDM.getTargetQty() != null) {
-				tfTargetQty.setValue(asmblyPlanShiftDM.getTargetQty().toString());
-			}
-			if (asmblyPlanShiftDM.getStatus() != null) {
-				cbStatus.setValue(asmblyPlanShiftDM.getStatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1119,22 +1135,32 @@ public class AssemblyPlan extends BaseTransUI {
 	}
 	
 	private void deleteShiftDetails() {
-		AsmblyPlanShiftDM removeShift = new AsmblyPlanShiftDM();
-		if (tblShift.getValue() != null) {
-			removeShift = beanAsmblyPlanShiftDM.getItem(tblShift.getValue()).getBean();
-			asmblyPlnShitftList.remove(removeShift);
-			asmblShiftResetFields();
-			loadShiftRslt();
+		try {
+			AsmblyPlanShiftDM removeShift = new AsmblyPlanShiftDM();
+			if (tblShift.getValue() != null) {
+				removeShift = beanAsmblyPlanShiftDM.getItem(tblShift.getValue()).getBean();
+				asmblyPlnShitftList.remove(removeShift);
+				asmblShiftResetFields();
+				loadShiftRslt();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void deleteDetails() {
-		AsmblyPlanDtlDM removeShift = new AsmblyPlanDtlDM();
-		if (tblAsmbPlanDtl.getValue() != null) {
-			removeShift = beanAsmblyPlanDtlDM.getItem(tblAsmbPlanDtl.getValue()).getBean();
-			asmblPlnDtlList.remove(removeShift);
-			asmblDtlResetFields();
-			loadAsmbDtlList();
+		try {
+			AsmblyPlanDtlDM removeShift = new AsmblyPlanDtlDM();
+			if (tblAsmbPlanDtl.getValue() != null) {
+				removeShift = beanAsmblyPlanDtlDM.getItem(tblAsmbPlanDtl.getValue()).getBean();
+				asmblPlnDtlList.remove(removeShift);
+				asmblDtlResetFields();
+				loadAsmbDtlList();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

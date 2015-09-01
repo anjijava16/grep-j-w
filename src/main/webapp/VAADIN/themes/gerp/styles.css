@@ -6648,7 +6648,7 @@ body .gerp.v-app .v-app-loading {
 	font-variant: inherit;
 	font-weight: inherit;
 	line-height: 1;
-	margin: -2px;
+	margin: 0px;
 }
 
 .gerp .v-button-wrap, .gerp .v-button-caption {

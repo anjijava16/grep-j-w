@@ -172,7 +172,7 @@ public class ProductOverview implements ClickListener {
 	private PopupDateField dfRotoRefDate = new PopupDateField("Ref Date");
 	private TextField tfArmNumber = new TextField("Arm Number");
 	private TextField tfAssemblyRef = new TextField("Assembly Ref.");
-	private PopupDateField dfAssemblyDate = new PopupDateField("Assembly DatTextFielde");
+	private PopupDateField dfAssemblyDate = new PopupDateField("Assemble Dt.");
 	private TextField tfAssembledBy = new TextField("Assembled by");
 	private TextField tfFoamRefNumber = new TextField("Foam Ref No");
 	private TextField tfFoamRefDate = new TextField("Ref Date");
@@ -185,6 +185,7 @@ public class ProductOverview implements ClickListener {
 	// for Marketing Details
 	private TextField tfQuoteNumber = new TextField();
 	private Logger logger = Logger.getLogger(ProductOverview.class);
+	
 	public ProductOverview() {
 		// TODO Auto-generated constructor stub
 		if (UI.getCurrent().getSession().getAttribute("screenName") != null) {
@@ -254,6 +255,7 @@ public class ProductOverview implements ClickListener {
 		hlDieSection.addComponent(buildDieSection());
 		// for production
 		VerticalLayout vlProdLayout = new VerticalLayout();
+		vlProdLayout.setMargin(true);
 		vlProdLayout.addComponent(buildProductionDetails());
 		// for test layout
 		VerticalLayout vlTestLayout = new VerticalLayout();
@@ -449,6 +451,20 @@ public class ProductOverview implements ClickListener {
 	private Component buildProductionDetails() {
 		HorizontalLayout root = new HorizontalLayout();
 		root.setSpacing(true);
+		tfExtMachine.setWidth("125");
+		tfExtRefNumber.setWidth("125");
+		dfExtDate.setWidth("105");
+		tfPulzRefNo.setWidth("125");
+		dfPulzRefDate.setWidth("105");
+		tfRotoRefNo.setWidth("125");
+		dfRotoRefDate.setWidth("105");
+		tfArmNumber.setWidth("125");
+		tfAssemblyRef.setWidth("125");
+		dfAssemblyDate.setWidth("105");
+		tfAssembledBy.setWidth("125");
+		tfFoamRefNumber.setWidth("125");
+		tfFoamRefDate.setWidth("125");
+		tfFoamBy.setWidth("125");
 		root.addComponent(new FormLayout() {
 			private static final long serialVersionUID = 1L;
 			{
@@ -742,6 +758,7 @@ public class ProductOverview implements ClickListener {
 						null, "F").get(0);
 			}
 			catch (Exception e) {
+				e.printStackTrace();
 				logger.info(e.getMessage());
 			}
 			if (productDM != null) {
@@ -751,6 +768,7 @@ public class ProductOverview implements ClickListener {
 								productDM.getProductcode())));
 					}
 					catch (Exception e) {
+						e.printStackTrace();
 						logger.info(e.getMessage());
 					}
 				}
@@ -772,26 +790,31 @@ public class ProductOverview implements ClickListener {
 							getQuoteDetails(workOrderHdrDM.getEnquiryId());
 						}
 						catch (Exception e) {
+							e.printStackTrace();
 							logger.info(e.getMessage());
 						}
 						try {
 							poid = getPODetails(workOrderHdrDM.getEnquiryId());
 						}
 						catch (Exception e) {
+							e.printStackTrace();
 							logger.info(e.getMessage());
 						}
 						try {
 							getInvoiceDetails(poid);
 						}
 						catch (Exception e) {
+							e.printStackTrace();
 							logger.info(e.getMessage());
 						}
 					}
 					catch (Exception e) {
+						e.printStackTrace();
 						logger.info(e.getMessage());
 					}
 				}
 				catch (Exception e) {
+					e.printStackTrace();
 					logger.info(e.getMessage());
 				}
 			}

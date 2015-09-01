@@ -244,46 +244,51 @@ public class EnquiryWorkflow implements ClickListener {
 	}
 	
 	private void saveWorkflowDetails() {
-		EnquiryWorkflowDM enquiryWorkflowDM = new EnquiryWorkflowDM();
-		if (tblEnquiryWorkflow.getValue() != null) {
-			enquiryWorkflowDM = beanWorkflow.getItem(tblEnquiryWorkflow.getValue()).getBean();
-		}
-		enquiryWorkflowDM.setEnquiryId(enquiryId);
-		enquiryWorkflowDM.setInitiatedBy((Long) cbInitiatedBy.getValue());
-		enquiryWorkflowDM.setPendingWith((Long) cbPendingWith.getValue());
-		enquiryWorkflowDM.setFromDept((Long) cbFromDept.getValue());
-		enquiryWorkflowDM.setToDept((Long) cbToDept.getValue());
-		enquiryWorkflowDM.setReworkOn(dfReworkdate.getValue());
-		enquiryWorkflowDM.setExistingCaseModel((String) cbExistingCase.getValue());
-		enquiryWorkflowDM.setFusionedCaseModel(tfFusionedCase.getValue());
-		enquiryWorkflowDM.setNewDieCaseModel(tfNewDieCase.getValue());
-		enquiryWorkflowDM.setBottomTopCaseModel(tfBottomTopCase.getValue());
-		enquiryWorkflowDM.setTargetDate(dfTargetDate.getValue());
-		enquiryWorkflowDM.setCompletedDate(dfCompletedDate.getValue());
-		if (cbDesignAuthBy.getValue() != null) {
-			enquiryWorkflowDM.setDesignAuthorisedBy((Long) cbDesignAuthBy.getValue());
-		}
-		enquiryWorkflowDM.setWorkflowRequest(taWorkflowRequest.getValue());
-		if (tfECNNumber.getValue() != null && tfECNNumber.getValue().trim().length() > 0) {
-			enquiryWorkflowDM.setEcnid(Long.valueOf(tfECNNumber.getValue()));
-		}
-		if (tfECRNumber.getValue() != null && tfECRNumber.getValue().trim().length() > 0) {
-			enquiryWorkflowDM.setEcrid(Long.valueOf(tfECRNumber.getValue()));
-		}
-		enquiryWorkflowDM.setSirNumber(tfSIRNumber.getValue());
-		enquiryWorkflowDM.setStatus((String) cbStatus.getValue());
-		enquiryWorkflowDM.setDesignLocation((String) UI.getCurrent().getSession().getAttribute("uploadedFilePath"));
-		enquiryWorkflowDM.setLastUpdatedDate(new Date());
-		enquiryWorkflowDM.setLastUpdatedBy(username);
-		serviceWorkflow.saveOrUpdateEnqWorkflow(enquiryWorkflowDM);
-		workflowId = enquiryWorkflowDM.getEnqWorkflowId();
-		resetWorkflowFields();
-		getEnqWorkflowDetails();
 		try {
-			new EmailTrigger("soundar@gnts.in", workflowId.toString(), "Enquiry Workflow");
+			EnquiryWorkflowDM enquiryWorkflowDM = new EnquiryWorkflowDM();
+			if (tblEnquiryWorkflow.getValue() != null) {
+				enquiryWorkflowDM = beanWorkflow.getItem(tblEnquiryWorkflow.getValue()).getBean();
+			}
+			enquiryWorkflowDM.setEnquiryId(enquiryId);
+			enquiryWorkflowDM.setInitiatedBy((Long) cbInitiatedBy.getValue());
+			enquiryWorkflowDM.setPendingWith((Long) cbPendingWith.getValue());
+			enquiryWorkflowDM.setFromDept((Long) cbFromDept.getValue());
+			enquiryWorkflowDM.setToDept((Long) cbToDept.getValue());
+			enquiryWorkflowDM.setReworkOn(dfReworkdate.getValue());
+			enquiryWorkflowDM.setExistingCaseModel((String) cbExistingCase.getValue());
+			enquiryWorkflowDM.setFusionedCaseModel(tfFusionedCase.getValue());
+			enquiryWorkflowDM.setNewDieCaseModel(tfNewDieCase.getValue());
+			enquiryWorkflowDM.setBottomTopCaseModel(tfBottomTopCase.getValue());
+			enquiryWorkflowDM.setTargetDate(dfTargetDate.getValue());
+			enquiryWorkflowDM.setCompletedDate(dfCompletedDate.getValue());
+			if (cbDesignAuthBy.getValue() != null) {
+				enquiryWorkflowDM.setDesignAuthorisedBy((Long) cbDesignAuthBy.getValue());
+			}
+			enquiryWorkflowDM.setWorkflowRequest(taWorkflowRequest.getValue());
+			if (tfECNNumber.getValue() != null && tfECNNumber.getValue().trim().length() > 0) {
+				enquiryWorkflowDM.setEcnid(Long.valueOf(tfECNNumber.getValue()));
+			}
+			if (tfECRNumber.getValue() != null && tfECRNumber.getValue().trim().length() > 0) {
+				enquiryWorkflowDM.setEcrid(Long.valueOf(tfECRNumber.getValue()));
+			}
+			enquiryWorkflowDM.setSirNumber(tfSIRNumber.getValue());
+			enquiryWorkflowDM.setStatus((String) cbStatus.getValue());
+			enquiryWorkflowDM.setDesignLocation((String) UI.getCurrent().getSession().getAttribute("uploadedFilePath"));
+			enquiryWorkflowDM.setLastUpdatedDate(new Date());
+			enquiryWorkflowDM.setLastUpdatedBy(username);
+			serviceWorkflow.saveOrUpdateEnqWorkflow(enquiryWorkflowDM);
+			workflowId = enquiryWorkflowDM.getEnqWorkflowId();
+			resetWorkflowFields();
+			getEnqWorkflowDetails();
+			try {
+				new EmailTrigger("soundar@gnts.in", workflowId.toString(), "Enquiry Workflow");
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -313,29 +318,34 @@ public class EnquiryWorkflow implements ClickListener {
 	}
 	
 	private void editWorkflowDetails() {
-		EnquiryWorkflowDM enquiryWorkflowDM = beanWorkflow.getItem(tblEnquiryWorkflow.getValue()).getBean();
-		workflowId = enquiryWorkflowDM.getEnqWorkflowId();
-		cbInitiatedBy.setValue(enquiryWorkflowDM.getInitiatedBy());
-		cbPendingWith.setValue(enquiryWorkflowDM.getPendingWith());
-		cbFromDept.setValue(enquiryWorkflowDM.getFromDept());
-		cbToDept.setValue(enquiryWorkflowDM.getToDept());
-		dfReworkdate.setValue(enquiryWorkflowDM.getReworkOn());
-		cbExistingCase.setValue(enquiryWorkflowDM.getExistingCaseModel());
-		tfFusionedCase.setValue(enquiryWorkflowDM.getFusionedCaseModel());
-		tfNewDieCase.setValue(enquiryWorkflowDM.getNewDieCaseModel());
-		tfBottomTopCase.setValue(enquiryWorkflowDM.getBottomTopCaseModel());
-		taWorkflowRequest.setValue(enquiryWorkflowDM.getWorkflowRequest());
-		dfTargetDate.setValue(enquiryWorkflowDM.getTargetDate());
-		dfCompletedDate.setValue(enquiryWorkflowDM.getCompletedDate());
-		cbDesignAuthBy.setValue(enquiryWorkflowDM.getDesignAuthorisedBy());
-		if (enquiryWorkflowDM.getEcnid() != null) {
-			tfECNNumber.setValue(enquiryWorkflowDM.getEcnid().toString());
+		try {
+			EnquiryWorkflowDM enquiryWorkflowDM = beanWorkflow.getItem(tblEnquiryWorkflow.getValue()).getBean();
+			workflowId = enquiryWorkflowDM.getEnqWorkflowId();
+			cbInitiatedBy.setValue(enquiryWorkflowDM.getInitiatedBy());
+			cbPendingWith.setValue(enquiryWorkflowDM.getPendingWith());
+			cbFromDept.setValue(enquiryWorkflowDM.getFromDept());
+			cbToDept.setValue(enquiryWorkflowDM.getToDept());
+			dfReworkdate.setValue(enquiryWorkflowDM.getReworkOn());
+			cbExistingCase.setValue(enquiryWorkflowDM.getExistingCaseModel());
+			tfFusionedCase.setValue(enquiryWorkflowDM.getFusionedCaseModel());
+			tfNewDieCase.setValue(enquiryWorkflowDM.getNewDieCaseModel());
+			tfBottomTopCase.setValue(enquiryWorkflowDM.getBottomTopCaseModel());
+			taWorkflowRequest.setValue(enquiryWorkflowDM.getWorkflowRequest());
+			dfTargetDate.setValue(enquiryWorkflowDM.getTargetDate());
+			dfCompletedDate.setValue(enquiryWorkflowDM.getCompletedDate());
+			cbDesignAuthBy.setValue(enquiryWorkflowDM.getDesignAuthorisedBy());
+			if (enquiryWorkflowDM.getEcnid() != null) {
+				tfECNNumber.setValue(enquiryWorkflowDM.getEcnid().toString());
+			}
+			if (enquiryWorkflowDM.getEcrid() != null) {
+				tfECRNumber.setValue(enquiryWorkflowDM.getEcrid().toString());
+			}
+			tfSIRNumber.setValue(enquiryWorkflowDM.getSirNumber());
+			cbStatus.setValue(enquiryWorkflowDM.getStatus());
 		}
-		if (enquiryWorkflowDM.getEcrid() != null) {
-			tfECRNumber.setValue(enquiryWorkflowDM.getEcrid().toString());
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		tfSIRNumber.setValue(enquiryWorkflowDM.getSirNumber());
-		cbStatus.setValue(enquiryWorkflowDM.getStatus());
 	}
 	
 	private void deleteWorkflowDetails() {

@@ -104,7 +104,7 @@ public class RotoPlan extends BaseTransUI {
 	private HorizontalLayout hlShift = new HorizontalLayout();
 	private HorizontalLayout hlHdrslap = new HorizontalLayout();
 	private HorizontalLayout hlArm = new HorizontalLayout();
-	private VerticalLayout vl = new VerticalLayout();
+	private VerticalLayout vlArmDetails = new VerticalLayout();
 	private VerticalLayout vlDtl = new VerticalLayout();
 	private HorizontalLayout hlHdrAndShift = new HorizontalLayout();
 	private VerticalLayout vlHrdAndDtlAndShift, vlShift;
@@ -482,7 +482,7 @@ public class RotoPlan extends BaseTransUI {
 	private void assembleInputUserLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling search layout");
 		// Remove all components in search layout
-		vl.removeAllComponents();
+		vlArmDetails.removeAllComponents();
 		vlDtl.removeAllComponents();
 		hlarmAndDtl.removeAllComponents();
 		hlSearchLayout.removeAllComponents();
@@ -563,11 +563,11 @@ public class RotoPlan extends BaseTransUI {
 		hlHdrslap.addComponent(flDtlCol3);
 		hlHdrslap.setSpacing(true);
 		hlHdrslap.setMargin(true);
-		vl.addComponent(hlArm);
-		vl.addComponent(tblArmDtls);
+		vlArmDetails.addComponent(hlArm);
+		vlArmDetails.addComponent(tblArmDtls);
 		vlDtl.addComponent(hlHdrslap);
 		vlDtl.addComponent(tblRotoPlanDtls);
-		hlarmAndDtl.addComponent(GERPPanelGenerator.createPanel(vl));
+		hlarmAndDtl.addComponent(GERPPanelGenerator.createPanel(vlArmDetails));
 		hlarmAndDtl.addComponent(GERPPanelGenerator.createPanel(vlShift));
 		hlarmAndDtl.setSpacing(true);
 		hlarmAndDtl.setHeight("100%");
@@ -615,35 +615,41 @@ public class RotoPlan extends BaseTransUI {
 	}
 	
 	private void editRotoPlanHdrDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			RotoPlanHdrDM rotoPlanHdrDM = beanRotoPlanHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			rotoplanId = rotoPlanHdrDM.getRotoplanid();
+		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Selected rotoplan. Id -> " + rotoplanId);
-			cbBranch.setValue(rotoPlanHdrDM.getBranchid());
-			tfPlanRefNo.setReadOnly(false);
-			tfPlanRefNo.setValue(rotoPlanHdrDM.getRotoplanrefno());
-			tfPlanRefNo.setReadOnly(true);
-			if (rotoPlanHdrDM.getRotoplandt() != null) {
-				dfRotoPlanDt.setValue(rotoPlanHdrDM.getRotoplandt1());
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				RotoPlanHdrDM rotoPlanHdrDM = beanRotoPlanHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				rotoplanId = rotoPlanHdrDM.getRotoplanid();
+				logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+						+ "Selected rotoplan. Id -> " + rotoplanId);
+				cbBranch.setValue(rotoPlanHdrDM.getBranchid());
+				tfPlanRefNo.setReadOnly(false);
+				tfPlanRefNo.setValue(rotoPlanHdrDM.getRotoplanrefno());
+				tfPlanRefNo.setReadOnly(true);
+				if (rotoPlanHdrDM.getRotoplandt() != null) {
+					dfRotoPlanDt.setValue(rotoPlanHdrDM.getRotoplandt1());
+				}
+				tfPlanHdrQty.setValue(rotoPlanHdrDM.getPlannedqty().toString());
+				if (rotoPlanHdrDM.getRemarks() != null) {
+					taRemark.setValue(rotoPlanHdrDM.getRemarks());
+				}
+				cbStatus.setValue(rotoPlanHdrDM.getRotoplanstatus());
+				listRotoPlanDetail.addAll(serviceRotoplandtl.getRotoPlanDtlList(null, Long.valueOf(rotoplanId), null,
+						null, cbDtlStatus.getValue().toString()));
+				listRotoPlanShift.addAll(serviceRotoplanshift.getRotoPlanShiftList(null, Long.valueOf(rotoplanId),
+						null, cbShftStatus.getValue().toString()));
+				listRotoPlanArm.addAll(serviceRotoplanarm.getRotoPlanArmList(null, Long.valueOf(rotoplanId), null,
+						cbArmstatus.getValue().toString()));
 			}
-			tfPlanHdrQty.setValue(rotoPlanHdrDM.getPlannedqty().toString());
-			if (rotoPlanHdrDM.getRemarks() != null) {
-				taRemark.setValue(rotoPlanHdrDM.getRemarks());
-			}
-			cbStatus.setValue(rotoPlanHdrDM.getRotoplanstatus());
-			listRotoPlanDetail.addAll(serviceRotoplandtl.getRotoPlanDtlList(null, Long.valueOf(rotoplanId), null, null,
-					cbDtlStatus.getValue().toString()));
-			listRotoPlanShift.addAll(serviceRotoplanshift.getRotoPlanShiftList(null, Long.valueOf(rotoplanId), null,
-					cbShftStatus.getValue().toString()));
-			listRotoPlanArm.addAll(serviceRotoplanarm.getRotoPlanArmList(null, Long.valueOf(rotoplanId), null,
-					cbArmstatus.getValue().toString()));
+			loadRotoDtlList();
+			loadShiftRslt();
+			loadRotoArmList();
 		}
-		loadRotoDtlList();
-		loadShiftRslt();
-		loadRotoArmList();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private boolean validateDtlDetails() {
@@ -700,117 +706,132 @@ public class RotoPlan extends BaseTransUI {
 	}
 	
 	private void editRotoPlanShift() {
-		hlUserInputLayout.setVisible(true);
-		if (tblShift.getValue() != null) {
-			RotoPlanShiftDM editRtoDtlObj = new RotoPlanShiftDM();
-			editRtoDtlObj = beanRotoPlanShiftDM.getItem(tblShift.getValue()).getBean();
-			Long empId = editRtoDtlObj.getEmployeeid();
-			Collection<?> empColId = cbEmpName.getItemIds();
-			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbEmpName.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				EmployeeDM empObj = (EmployeeDM) itemclient.getBean();
-				if (empId != null && empId.equals(empObj.getEmployeeid())) {
-					cbEmpName.setValue(itemIdClient);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblShift.getValue() != null) {
+				RotoPlanShiftDM editRtoDtlObj = new RotoPlanShiftDM();
+				editRtoDtlObj = beanRotoPlanShiftDM.getItem(tblShift.getValue()).getBean();
+				Long empId = editRtoDtlObj.getEmployeeid();
+				Collection<?> empColId = cbEmpName.getItemIds();
+				for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbEmpName.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					EmployeeDM empObj = (EmployeeDM) itemclient.getBean();
+					if (empId != null && empId.equals(empObj.getEmployeeid())) {
+						cbEmpName.setValue(itemIdClient);
+					}
+				}
+				if (editRtoDtlObj.getShiftname() != null) {
+					tfShiftName.setValue(editRtoDtlObj.getShiftname());
+				}
+				if (editRtoDtlObj.getTargetqty() != null) {
+					tfTargetQty.setValue(editRtoDtlObj.getTargetqty().toString());
+				}
+				if (editRtoDtlObj.getShftstatus() != null) {
+					cbStatus.setValue(editRtoDtlObj.getShftstatus());
 				}
 			}
-			if (editRtoDtlObj.getShiftname() != null) {
-				tfShiftName.setValue(editRtoDtlObj.getShiftname());
-			}
-			if (editRtoDtlObj.getTargetqty() != null) {
-				tfTargetQty.setValue(editRtoDtlObj.getTargetqty().toString());
-			}
-			if (editRtoDtlObj.getShftstatus() != null) {
-				cbStatus.setValue(editRtoDtlObj.getShftstatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editRotoPlanArm() {
-		hlUserInputLayout.setVisible(true);
-		if (tblArmDtls.getValue() != null) {
-			RotoPlanArmDM rotoPlanArmDM = new RotoPlanArmDM();
-			rotoPlanArmDM = beanRotoPlanarmDM.getItem(tblArmDtls.getValue()).getBean();
-			rotoplanId = String.valueOf(rotoPlanArmDM.getRotoplanId());
-			Long uom = rotoPlanArmDM.getProductId();
-			Collection<?> uomid = cbArmProd.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbArmProd.getItem(itemId);
-				// Get the actual bean and use the data
-				WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
-				if (uom != null && uom.equals(st.getProdId())) {
-					cbArmProd.setValue(itemId);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblArmDtls.getValue() != null) {
+				RotoPlanArmDM rotoPlanArmDM = new RotoPlanArmDM();
+				rotoPlanArmDM = beanRotoPlanarmDM.getItem(tblArmDtls.getValue()).getBean();
+				rotoplanId = String.valueOf(rotoPlanArmDM.getRotoplanId());
+				Long uom = rotoPlanArmDM.getProductId();
+				Collection<?> uomid = cbArmProd.getItemIds();
+				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbArmProd.getItem(itemId);
+					// Get the actual bean and use the data
+					WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
+					if (uom != null && uom.equals(st.getProdId())) {
+						cbArmProd.setValue(itemId);
+					}
+				}
+				Long woId = rotoPlanArmDM.getWoId();
+				Collection<?> woIdCol = cbArmWONo.getItemIds();
+				for (Iterator<?> iteratorWO = woIdCol.iterator(); iteratorWO.hasNext();) {
+					Object itemIdWOObj = (Object) iteratorWO.next();
+					BeanItem<?> itemWoBean = (BeanItem<?>) cbArmWONo.getItem(itemIdWOObj);
+					// Get the actual bean and use the data
+					WorkOrderHdrDM workOrderDM = (WorkOrderHdrDM) itemWoBean.getBean();
+					if (woId != null && woId.equals(workOrderDM.getWorkOrdrId())) {
+						cbArmWONo.setValue(itemIdWOObj);
+					}
+				}
+				if (rotoPlanArmDM.getArmNo() != null) {
+					tfArmno.setValue(rotoPlanArmDM.getArmNo().toString());
+				}
+				if (rotoPlanArmDM.getNoOfcycle() != null) {
+					tfNoofcycle.setValue(rotoPlanArmDM.getNoOfcycle().toString());
+				}
+				if (rotoPlanArmDM.getRtarmStatus() != null) {
+					cbArmstatus.setValue(rotoPlanArmDM.getRtarmStatus());
 				}
 			}
-			Long woId = rotoPlanArmDM.getWoId();
-			Collection<?> woIdCol = cbArmWONo.getItemIds();
-			for (Iterator<?> iteratorWO = woIdCol.iterator(); iteratorWO.hasNext();) {
-				Object itemIdWOObj = (Object) iteratorWO.next();
-				BeanItem<?> itemWoBean = (BeanItem<?>) cbArmWONo.getItem(itemIdWOObj);
-				// Get the actual bean and use the data
-				WorkOrderHdrDM workOrderDM = (WorkOrderHdrDM) itemWoBean.getBean();
-				if (woId != null && woId.equals(workOrderDM.getWorkOrdrId())) {
-					cbArmWONo.setValue(itemIdWOObj);
-				}
-			}
-			if (rotoPlanArmDM.getArmNo() != null) {
-				tfArmno.setValue(rotoPlanArmDM.getArmNo().toString());
-			}
-			if (rotoPlanArmDM.getNoOfcycle() != null) {
-				tfNoofcycle.setValue(rotoPlanArmDM.getNoOfcycle().toString());
-			}
-			if (rotoPlanArmDM.getRtarmStatus() != null) {
-				cbArmstatus.setValue(rotoPlanArmDM.getRtarmStatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editRotoPlanDtls() {
-		hlUserInputLayout.setVisible(true);
-		if (tblRotoPlanDtls.getValue() != null) {
-			RotoPlanDtlDM rotoPlanDtlDM = new RotoPlanDtlDM();
-			rotoPlanDtlDM = beanRotoPlandtlDM.getItem(tblRotoPlanDtls.getValue()).getBean();
-			Long clientId = rotoPlanDtlDM.getClientId();
-			Collection<?> clientIdCol = cbClientId.getItemIds();
-			for (Iterator<?> iteratorclient = clientIdCol.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbClientId.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				ClientDM clientObj = (ClientDM) itemclient.getBean();
-				if (clientId != null && clientId.equals(clientObj.getClientId())) {
-					cbClientId.setValue(itemIdClient);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblRotoPlanDtls.getValue() != null) {
+				RotoPlanDtlDM rotoPlanDtlDM = new RotoPlanDtlDM();
+				rotoPlanDtlDM = beanRotoPlandtlDM.getItem(tblRotoPlanDtls.getValue()).getBean();
+				Long clientId = rotoPlanDtlDM.getClientId();
+				Collection<?> clientIdCol = cbClientId.getItemIds();
+				for (Iterator<?> iteratorclient = clientIdCol.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbClientId.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					ClientDM clientObj = (ClientDM) itemclient.getBean();
+					if (clientId != null && clientId.equals(clientObj.getClientId())) {
+						cbClientId.setValue(itemIdClient);
+					}
+				}
+				Long woId = rotoPlanDtlDM.getWoId();
+				Collection<?> woIdCol = cbWO.getItemIds();
+				for (Iterator<?> iteratorWO = woIdCol.iterator(); iteratorWO.hasNext();) {
+					Object itemIdWOObj = (Object) iteratorWO.next();
+					BeanItem<?> itemWoBean = (BeanItem<?>) cbWO.getItem(itemIdWOObj);
+					// Get the actual bean and use the data
+					WorkOrderHdrDM workOrderDM = (WorkOrderHdrDM) itemWoBean.getBean();
+					if (woId != null && woId.equals(workOrderDM.getWorkOrdrId())) {
+						cbWO.setValue(itemIdWOObj);
+					}
+				}
+				Long prodId = rotoPlanDtlDM.getProductId();
+				Collection<?> prodIdCol = cbProd.getItemIds();
+				for (Iterator<?> iterator = prodIdCol.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbProd.getItem(itemId);
+					// Get the actual bean and use the data
+					WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
+					if (prodId != null && prodId.equals(st.getProdId())) {
+						cbProd.setValue(itemId);
+					}
+				}
+				if (rotoPlanDtlDM.getPlannedqty() != null) {
+					tfPlanDtlQty.setValue(rotoPlanDtlDM.getPlannedqty().toString());
+				}
+				if (rotoPlanDtlDM.getRtoplndtlstatus() != null) {
+					cbDtlStatus.setValue(rotoPlanDtlDM.getRtoplndtlstatus());
 				}
 			}
-			Long woId = rotoPlanDtlDM.getWoId();
-			Collection<?> woIdCol = cbWO.getItemIds();
-			for (Iterator<?> iteratorWO = woIdCol.iterator(); iteratorWO.hasNext();) {
-				Object itemIdWOObj = (Object) iteratorWO.next();
-				BeanItem<?> itemWoBean = (BeanItem<?>) cbWO.getItem(itemIdWOObj);
-				// Get the actual bean and use the data
-				WorkOrderHdrDM workOrderDM = (WorkOrderHdrDM) itemWoBean.getBean();
-				if (woId != null && woId.equals(workOrderDM.getWorkOrdrId())) {
-					cbWO.setValue(itemIdWOObj);
-				}
-			}
-			Long prodId = rotoPlanDtlDM.getProductId();
-			Collection<?> prodIdCol = cbProd.getItemIds();
-			for (Iterator<?> iterator = prodIdCol.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbProd.getItem(itemId);
-				// Get the actual bean and use the data
-				WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
-				if (prodId != null && prodId.equals(st.getProdId())) {
-					cbProd.setValue(itemId);
-				}
-			}
-			if (rotoPlanDtlDM.getPlannedqty() != null) {
-				tfPlanDtlQty.setValue(rotoPlanDtlDM.getPlannedqty().toString());
-			}
-			if (rotoPlanDtlDM.getRtoplndtlstatus() != null) {
-				cbDtlStatus.setValue(rotoPlanDtlDM.getRtoplndtlstatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

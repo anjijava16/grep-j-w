@@ -205,13 +205,18 @@ public class AssetOwnDetails implements ClickListener {
 	}
 	
 	private void editAssetOwnDetails() {
-		if (tblAssetOwnDtls.getValue() != null) {
-			AssetOwnDetailsDM enqdtl = beanAssetOwner.getItem(tblAssetOwnDtls.getValue()).getBean();
-			tfDesc.setValue(enqdtl.getOwnershpDesc());
-			dtStartDate.setValue(enqdtl.getStartDate());
-			dtEndDate.setValue(enqdtl.getEndDate());
-			cbUsedBy.setValue(enqdtl.getUsedBy());
-			cbStatus.setValue(enqdtl.getOwnershpStatus());
+		try {
+			if (tblAssetOwnDtls.getValue() != null) {
+				AssetOwnDetailsDM enqdtl = beanAssetOwner.getItem(tblAssetOwnDtls.getValue()).getBean();
+				tfDesc.setValue(enqdtl.getOwnershpDesc());
+				dtStartDate.setValue(enqdtl.getStartDate());
+				dtEndDate.setValue(enqdtl.getEndDate());
+				cbUsedBy.setValue(enqdtl.getUsedBy());
+				cbStatus.setValue(enqdtl.getOwnershpStatus());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -242,15 +247,20 @@ public class AssetOwnDetails implements ClickListener {
 	}
 	
 	private void deletedetails() {
-		AssetOwnDetailsDM delete = new AssetOwnDetailsDM();
-		if (tblAssetOwnDtls.getValue() != null) {
-			delete = beanAssetOwner.getItem(tblAssetOwnDtls.getValue()).getBean();
-			usertable.remove(delete);
-			tfDesc.setValue("");
-			dtStartDate.setValue(null);
-			dtEndDate.setValue(null);
-			cbUsedBy.setValue(null);
-			loadSrchRslt(false, null);
+		try {
+			AssetOwnDetailsDM delete = new AssetOwnDetailsDM();
+			if (tblAssetOwnDtls.getValue() != null) {
+				delete = beanAssetOwner.getItem(tblAssetOwnDtls.getValue()).getBean();
+				usertable.remove(delete);
+				tfDesc.setValue("");
+				dtStartDate.setValue(null);
+				dtEndDate.setValue(null);
+				cbUsedBy.setValue(null);
+				loadSrchRslt(false, null);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

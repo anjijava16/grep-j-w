@@ -239,7 +239,7 @@ public class Transactions extends BaseTransUI {
 		try {
 			BeanItemContainer<TransactionTypeDM> bean = new BeanItemContainer<TransactionTypeDM>(
 					TransactionTypeDM.class);
-			bean.addAll(serviceTransType.getTransactionTypeList(companyId, null, (String) cbStatus.getValue(), null,
+			bean.addAll(serviceTransType.getTransactionTypeList(companyId, null,"Active", null,
 					null));
 			cbTransactionType.setContainerDataSource(bean);
 		}

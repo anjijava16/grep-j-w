@@ -177,9 +177,11 @@ public class DashboardMMSView implements ClickListener {
 			BeanItemContainer<MmsEnqHdrDM> beanMmsEnqHdrDM = new BeanItemContainer<MmsEnqHdrDM>(MmsEnqHdrDM.class);
 			beanMmsEnqHdrDM.addAll(serviceMmsEnqHdr.getMmsEnqHdrList(companyId, null, null, null, null, "P"));
 			tblEnquiry.setContainerDataSource(beanMmsEnqHdrDM);
-			tblEnquiry.setVisibleColumns(new Object[] { "enquiryNo", "enquiryStatus" });
-			tblEnquiry.setColumnHeaders(new String[] { "Enquiry No", "Status" });
+			tblEnquiry.setVisibleColumns(new Object[] { "enquiryNo", "enquiryStatus","enqRemark" });
+			tblEnquiry.setColumnHeaders(new String[] { "Enquiry No", "Status","Remarks" });
 			tblEnquiry.setColumnWidth("enquiryNo", 160);
+			tblEnquiry.setColumnWidth("enquiryStatus", 120);
+			tblEnquiry.setColumnWidth("enqRemark", 160);
 			tblEnquiry.addGeneratedColumn("enquiryStatus", new ColumnGenerator() {
 				private static final long serialVersionUID = 1L;
 				

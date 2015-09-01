@@ -614,11 +614,6 @@ public class CustomerVisit extends BaseTransUI {
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_MFG_WORKORDER_HDR);
 	}
 	
-	// Method to implement about validations to the required input fields
-	@Override
-	protected void saveDetails() {
-		saveCustMainDetails();
-	}
 	
 	@Override
 	protected void printDetails() {
@@ -702,7 +697,8 @@ public class CustomerVisit extends BaseTransUI {
 	 * Save Meathods
 	 */
 	// Customer Visit Main Save
-	private void saveCustMainDetails() {
+	@Override
+	protected void saveDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			CustomerVisitHdrDM customerVisitHdrDM = new CustomerVisitHdrDM();

@@ -96,7 +96,7 @@ public class RotoCheck extends BaseTransUI {
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	// Roto Details
-	private GERPTextField tfOvenTotal, tfCharTot, tfCoolTot, tfBoxModel, tfPwdTop, tfPwdBot, tfPowTotal;
+	private GERPTextField tfOvenTotal, tfCharTot, tfCoolTot, tfBoxModel,tfBoxSerial, tfPwdTop, tfPwdBot, tfPowTotal;
 	private GERPTextField tftempZ1, tftempZ2, tftempZ3, tfBoxWgTop, tfBoxWgBot, tfBoxWgTotal, tfCycles, tfKgCm,
 			tfEmpNo;
 	private GERPTimeField tmOvenOn, tmOvenOff, tmCharOn, tmCharOff, tmCoolOn, tmCoolOff;
@@ -285,6 +285,8 @@ public class RotoCheck extends BaseTransUI {
 		tftempZ3.setWidth("100");
 		tfBoxModel = new GERPTextField("Box Model");
 		tfBoxModel.setWidth("100");
+		tfBoxSerial = new GERPTextField("Box Serial");
+		tfBoxSerial.setWidth("100");
 		tfPwdTop = new GERPTextField("Powder Top");
 		tfPwdTop.setWidth("100");
 		tfPwdBot = new GERPTextField("Powder Bottom");
@@ -296,7 +298,7 @@ public class RotoCheck extends BaseTransUI {
 		tfBoxWgBot = new GERPTextField("Box.Wg Bottom");
 		tfBoxWgBot.setWidth("100");
 		tfBoxWgTotal = new GERPTextField("Box.Wg Total");
-		tfBoxWgTotal.setWidth("100");
+		tfBoxWgTotal.setWidth("130");
 		tfCycles = new GERPTextField("Cycles");
 		tfCycles.setWidth("130");
 		tfKgCm = new GERPTextField("Kg/Cm3");
@@ -305,7 +307,7 @@ public class RotoCheck extends BaseTransUI {
 		tfEmpNo.setWidth("130");
 		tfRemarksDtl = new GERPTextArea("Remarks");
 		tfRemarksDtl.setWidth("130");
-		tfRemarksDtl.setHeight("45px");
+		tfRemarksDtl.setHeight("25px");
 		hlSearchLayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
@@ -378,12 +380,13 @@ public class RotoCheck extends BaseTransUI {
 		flArmCol3.addComponent(tftempZ2);
 		flArmCol3.addComponent(tftempZ3);
 		flArmCol3.addComponent(tfBoxModel);
-		flArmCol3.addComponent(tfPwdTop);
+		flArmCol3.addComponent(tfBoxSerial);
+		flArmCol4.addComponent(tfPwdTop);
 		flArmCol4.addComponent(tfPwdBot);
 		flArmCol4.addComponent(tfPowTotal);
 		flArmCol4.addComponent(tfBoxWgTop);
 		flArmCol4.addComponent(tfBoxWgBot);
-		flArmCol4.addComponent(tfBoxWgTotal);
+		flArmCol5.addComponent(tfBoxWgTotal);
 		flArmCol5.addComponent(tfCycles);
 		flArmCol5.addComponent(tfKgCm);
 		flArmCol5.addComponent(tfEmpNo);

@@ -114,7 +114,7 @@ public class MaterialQuote extends BaseTransUI {
 	private VerticalLayout hlquoteDoc = new VerticalLayout();
 	// QuoteDtl components
 	private ComboBox cbMaterial, cbUom;
-	private TextField tfQuoteQunt, tfUnitRate, tfBasicValue, tfAcceptQty;
+	private TextField tfQuoteQunt, tfUnitRate, tfBasicValue, tfReqdQty;
 	private TextArea taQuoteRemark;
 	private static final long serialVersionUID = 1L;
 	// BeanItem container
@@ -341,10 +341,10 @@ public class MaterialQuote extends BaseTransUI {
 		tfQuoteQunt = new TextField();
 		tfQuoteQunt.setWidth("80");
 		tfQuoteQunt.setValue("0");
-		tfAcceptQty = new TextField();
-		tfAcceptQty.setWidth("80");
-		tfAcceptQty.setValue("0");
-		tfAcceptQty.addValueChangeListener(new ValueChangeListener() {
+		tfReqdQty = new TextField();
+		tfReqdQty.setWidth("80");
+		tfReqdQty.setValue("0");
+		tfReqdQty.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
@@ -431,7 +431,7 @@ public class MaterialQuote extends BaseTransUI {
 		// TODO Auto-generated method stub
 		try {
 			tfBasicValue.setReadOnly(false);
-			tfBasicValue.setValue((new BigDecimal(tfAcceptQty.getValue())).multiply(
+			tfBasicValue.setValue((new BigDecimal(tfReqdQty.getValue())).multiply(
 					new BigDecimal(tfUnitRate.getValue())).toString());
 		}
 		catch (Exception e) {
@@ -573,7 +573,7 @@ public class MaterialQuote extends BaseTransUI {
 		hluom.setCaption("Enquiry Qty");
 		flDtlColumn2.addComponent(hluom);
 		HorizontalLayout hlAvuom = new HorizontalLayout();
-		hlAvuom.addComponent(tfAcceptQty);
+		hlAvuom.addComponent(tfReqdQty);
 		hlAvuom.addComponent(cbUom);
 		hlAvuom.setCaption("Required Qty");
 		flDtlColumn2.addComponent(hlAvuom);
@@ -659,9 +659,9 @@ public class MaterialQuote extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblMatQuDtl.setContainerDataSource(beanQuoteDtl);
-			tblMatQuDtl.setVisibleColumns(new Object[] { "materialname", "quoteqty", "unitrate", "basicvalue",
+			tblMatQuDtl.setVisibleColumns(new Object[] { "materialname", "quoteqty","reqQty", "unitrate", "basicvalue",
 					"lastupdateddt", "lastupdatedby" });
-			tblMatQuDtl.setColumnHeaders(new String[] { "Material Name", "Quote Qty", "UnitRate", "Basic Value",
+			tblMatQuDtl.setColumnHeaders(new String[] { "Material Name", "Quote Qty","Required Qty","UnitRate", "Basic Value",
 					"Last Updated Date", "Last Updated By" });
 			tblMatQuDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
@@ -923,6 +923,11 @@ public class MaterialQuote extends BaseTransUI {
 			if (quoteDtl.getQuoteqty() != null) {
 				tfQuoteQunt.setReadOnly(false);
 				tfQuoteQunt.setValue(quoteDtl.getQuoteqty().toString());
+			}
+			
+			if (quoteDtl.getQuoteqty() != null) {
+				tfReqdQty.setReadOnly(false);
+				tfReqdQty.setValue(quoteDtl.getReqQty().toString());
 			}
 			if (quoteDtl.getUnitrate() != null) {
 				tfUnitRate.setValue(quoteDtl.getUnitrate().toString());
@@ -1255,6 +1260,10 @@ public class MaterialQuote extends BaseTransUI {
 				if (tfQuoteQunt.getValue() != null && tfQuoteQunt.getValue().trim().length() > 0) {
 					quoteDtlDM.setQuoteqty(Long.valueOf(tfQuoteQunt.getValue()));
 				}
+				
+				if (tfReqdQty.getValue() != null && tfReqdQty.getValue().trim().length() > 0) {
+					quoteDtlDM.setReqQty(Long.valueOf(tfReqdQty.getValue()));
+				}
 				if (tfUnitRate.getValue() != null && tfUnitRate.getValue().trim().length() > 0) {
 					quoteDtlDM.setUnitrate((Long.valueOf(tfUnitRate.getValue())));
 				}
@@ -1433,8 +1442,8 @@ public class MaterialQuote extends BaseTransUI {
 		tfQuoteQunt.setReadOnly(false);
 		tfQuoteQunt.setValue("0");
 		tfQuoteQunt.setReadOnly(true);
-		tfAcceptQty.setReadOnly(false);
-		tfAcceptQty.setValue("0");
+		tfReqdQty.setReadOnly(false);
+		tfReqdQty.setValue("0");
 		tfUnitRate.setValue("0");
 		tfUnitRate.setComponentError(null);
 	}

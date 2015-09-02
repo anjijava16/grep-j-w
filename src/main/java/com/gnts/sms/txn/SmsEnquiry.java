@@ -850,7 +850,7 @@ public class SmsEnquiry extends BaseTransUI {
 		Long enquirydtlid = null;
 		if (fromdb) {
 			listEnqSpec = serviceEnqspec.getsmsenquiryspecList(null, enquiryId, enquirydtlid,
-					(String) cbSpecStatus.getValue(), "F");
+					(String) cbSpecStatus.getValue(),prodid, "F");
 		}
 		recordCnt = listEnqSpec.size();
 		beanpec = new BeanItemContainer<SmsEnquirySpecDM>(SmsEnquirySpecDM.class);
@@ -987,10 +987,11 @@ public class SmsEnquiry extends BaseTransUI {
 			enqdtlList = serviceEnqDtls.getsmsenquirydtllist(null, enquiryId, null, null,
 					(String) cbEnquiryStatus.getValue(), "F");
 			listEnqSpec = serviceEnqspec.getsmsenquiryspecList(null, enquiryId, null, (String) cbSpecStatus.getValue(),
-					"F");
+					null,"F");
 		}
 		loadEnquiryDetails(true);
 		loadEnquirySpec(false, null);
+
 		new EnquiryWorkflow(hlEnquiryWorkflow, enquiryId, username);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, enquiryId, null, null,
 				null, status);
@@ -1043,6 +1044,11 @@ public class SmsEnquiry extends BaseTransUI {
 			if (enquiryDtlDM.getCustomField2() != null) {
 				tfCustomField2.setValue(enquiryDtlDM.getCustomField2());
 			}
+			listEnqSpec=new ArrayList<SmsEnquirySpecDM>();
+			tblspec.removeAllItems();
+			listEnqSpec = serviceEnqspec.getsmsenquiryspecList(null, enquiryId, null, (String) cbSpecStatus.getValue(),
+					prodid,"F");
+			loadEnquirySpec(false, null);
 		}
 	}
 	
@@ -1310,8 +1316,9 @@ public class SmsEnquiry extends BaseTransUI {
 			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
 				dtlTab.setSelectedTab(hlEnquiryWorkflow);
 				hlUserIPContainer.setEnabled(false);
-				hlspecadd.setEnabled(false);
+				hldtllayout.setEnabled(false);
 				hlspecadd1.setEnabled(false);
+				
 			}
 		}
 		catch (Exception e) {
@@ -1420,6 +1427,12 @@ public class SmsEnquiry extends BaseTransUI {
 		if ((tfSpeccode.getValue() == "") || ((String) tfSpeccode.getValue()).trim().length() == 0) {
 			tfSpeccode.setComponentError(new UserError(GERPErrorCodes.NULL_SPEC_CODE));
 			errorFlag = false;
+		}
+		if (cdProduct.getValue() == null) {
+			btnaddspec.setComponentError(new UserError("Please select product from Enquiry Detail Table"));
+			errorFlag = false;
+		} else {
+			btnaddspec.setComponentError(null);
 		}
 		logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Throwing ValidationException. User data is > " + tfSpeccode.getValue() + "," + taSpecdesc.getValue()

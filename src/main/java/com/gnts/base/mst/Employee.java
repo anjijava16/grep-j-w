@@ -2870,10 +2870,9 @@ public class Employee extends BaseUI {
 		tfLastName.setComponentError(null);
 		dfDateofBirth.setComponentError(null);
 		dfDateofJoin.setComponentError(null);
-		tfEmailid.setComponentError(null);
 		cbBranch.setComponentError(null);
 		cbCountry.setComponentError(null);
-		tfPhonenumber.setComponentError(null);
+		//tfPhonenumber.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		if ((tfEmployeeCode.getValue() == null) || tfEmployeeCode.getValue().trim().length() == 0) {
@@ -2911,7 +2910,7 @@ public class Employee extends BaseUI {
 			cbCountry.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_COUNTRY));
 			errorFlag = true;
 		}
-		if (tfPhonenumber.getValue().toString() == null) {
+	/*	if (tfPhonenumber.getValue().toString() == null) {
 			tfPhonenumber.setComponentError(new UserError(GERPErrorCodes.NULL_PHONE_NUMBER));
 			// errorFlag = true;
 		} else if (tfPhonenumber.getValue() != null) {
@@ -2919,7 +2918,7 @@ public class Employee extends BaseUI {
 				tfPhonenumber.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
 				errorFlag = true;
 			}
-		}
+		}*/
 		if (dfDateofBirth.getValue() == null) {
 			dfDateofBirth.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_DOB));
 			// errorFlag = true;
@@ -2954,10 +2953,7 @@ public class Employee extends BaseUI {
 		cbempdtlsnationalid.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		if ((cbempdtlscandid.getValue() == null)) {
-			cbempdtlscandid.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_DTLS_CANDIDATE_NAME));
-			errorFlag = true;
-		}
+	
 		if ((cbempdtlsemptypeid.getValue() == null)) {
 			cbempdtlsemptypeid.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_DTLS_TYPE));
 			errorFlag = true;
@@ -3291,7 +3287,8 @@ public class Employee extends BaseUI {
 				empdtlsobj = beanEmployeedtls.getItem(tblempdtls.getValue()).getBean();
 				employeedtlsList.remove(empdtlsobj);
 			}
-			empdtlsobj.setCandidateid(((JobCandidateDM) cbempdtlscandid.getValue()).getCandidateId());
+			if(cbempdtlscandid.getValue()!=null){
+			empdtlsobj.setCandidateid(((JobCandidateDM) cbempdtlscandid.getValue()).getCandidateId());}
 			empdtlsobj.setCandidatename(((JobCandidateDM) cbempdtlscandid.getValue()).getFirstName() + " "
 					+ ((JobCandidateDM) cbempdtlscandid.getValue()).getLastName() + " " + "("
 					+ ((JobCandidateDM) cbempdtlscandid.getValue()).getCandidateId() + ")");
@@ -3551,7 +3548,8 @@ public class Employee extends BaseUI {
 		empObj.setFirstname(tfFirstName.getValue().toString());
 		empObj.setLastname(tfLastName.getValue().toString());
 		empObj.setPrimaryphone(tfPhonenumber.getValue().toString());
-		empObj.setPrimaryemail(tfEmailid.getValue().toString());
+		if(tfEmailid.getValue()!=""){
+		empObj.setPrimaryemail(tfEmailid.getValue().toString());}
 		if (cbGender.getValue() != null) {
 			empObj.setGender(((String) cbGender.getValue()));
 		}
@@ -3970,7 +3968,6 @@ public class Employee extends BaseUI {
 		tfLastName.setComponentError(null);
 		dfDateofBirth.setComponentError(null);
 		dfDateofJoin.setComponentError(null);
-		tfEmailid.setComponentError(null);
 		cbBranch.setComponentError(null);
 		cbCountry.setComponentError(null);
 		tfPhonenumber.setComponentError(null);
@@ -4026,6 +4023,8 @@ public class Employee extends BaseUI {
 			}
 			EmployeeEarningDM staffearnPojo = new EmployeeEarningDM();
 			if (isFlat.equals("Percent") && onBasicGross.equalsIgnoreCase("GROSS")) {
+				
+				System.out.println("Arun Jeyaraj "+minValueByBasic);
 				earningAmount = new BigDecimal(calculateEarnAmount(earnPercent, minValueByBasic));
 				totalGrossAmt = totalGrossAmt.subtract(earningAmount);
 				tatolGrossearnAmount = tatolGrossearnAmount.add(earningAmount);
@@ -4042,7 +4041,10 @@ public class Employee extends BaseUI {
 				serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
 			}
 			if (isFlat.equals("Percent") && onBasicGross.equalsIgnoreCase("BASIC")) {
+				
 				earningAmount = new BigDecimal(calculateEarnAmount(earnPercent, basicAmount));
+				System.out.println("Arun Jeyaraj "+minValueByBasic);
+
 				totalGrossAmt = totalGrossAmt.subtract(earningAmount);
 				tatolGrossearnAmount = tatolGrossearnAmount.add(earningAmount);
 				staffearnPojo.setEmployeeid(employeeid);

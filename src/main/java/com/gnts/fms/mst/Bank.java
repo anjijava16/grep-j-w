@@ -126,23 +126,28 @@ public class Bank extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<BankDM> listBank = new ArrayList<BankDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfBankname.getValue() + ", " + (String) cbBankStatus.getValue());
-		listBank = serviceBank.getBanklist(null, tfBankname.getValue(), companyId, (String) cbBankStatus.getValue(),
-				"F");
-		recordCnt = listBank.size();
-		beanBankDM = new BeanItemContainer<BankDM>(BankDM.class);
-		beanBankDM.addAll(listBank);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Bank. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanBankDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "bankid", "bankname", "bankStatus", "lastupdateddt",
-				"lastupdatedby", });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", " Bank Name", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("bankid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<BankDM> listBank = new ArrayList<BankDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfBankname.getValue() + ", " + (String) cbBankStatus.getValue());
+			listBank = serviceBank.getBanklist(null, tfBankname.getValue(), companyId,
+					(String) cbBankStatus.getValue(), "F");
+			recordCnt = listBank.size();
+			beanBankDM = new BeanItemContainer<BankDM>(BankDM.class);
+			beanBankDM.addAll(listBank);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Bank. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanBankDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "bankid", "bankname", "bankStatus", "lastupdateddt",
+					"lastupdatedby", });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", " Bank Name", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("bankid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -156,16 +161,22 @@ public class Bank extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editBank() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			BankDM bankDM = beanBankDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			pkbankId = bankDM.getBankid().toString();
-			tfBankname.setValue(bankDM.getBankname());
-			if (bankDM.getShortname() != null) {
-				tfShortName.setValue(bankDM.getShortname());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				BankDM bankDM = beanBankDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				pkbankId = bankDM.getBankid().toString();
+				tfBankname.setValue(bankDM.getBankname());
+				if (bankDM.getShortname() != null) {
+					tfShortName.setValue(bankDM.getShortname());
+				}
+				cbBankStatus.setValue(bankDM.getBankStatus());
 			}
-			cbBankStatus.setValue(bankDM.getBankStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

@@ -152,25 +152,30 @@ public class TransactionType extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editTransactionType() {
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + ",  Active ," + companyId
-				+ "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
-			transtypeid = sltedRcd.getItemProperty("transtypeid").getValue().toString();
+		try {
 			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 					+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + ",  Active ," + companyId
-					+ "Selected Transaction Type Id -> " + transtypeid);
-			tfTranstypeName.setValue(sltedRcd.getItemProperty("transtypename").getValue().toString());
-			String credr = sltedRcd.getItemProperty("crdr").getValue().toString();
-			if (credr.equals("Credit")) {
-				credr = "C";
-			} else {
-				credr = "D";
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
+			if (sltedRcd != null) {
+				transtypeid = sltedRcd.getItemProperty("transtypeid").getValue().toString();
+				logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+						+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + ",  Active ," + companyId
+						+ "Selected Transaction Type Id -> " + transtypeid);
+				tfTranstypeName.setValue(sltedRcd.getItemProperty("transtypename").getValue().toString());
+				String credr = sltedRcd.getItemProperty("crdr").getValue().toString();
+				if (credr.equals("Credit")) {
+					credr = "C";
+				} else {
+					credr = "D";
+				}
+				cbCreditDebit.setValue(credr);
+				cbStatus.setValue(sltedRcd.getItemProperty("transtypestatus").getValue().toString());
 			}
-			cbCreditDebit.setValue(credr);
-			cbStatus.setValue(sltedRcd.getItemProperty("transtypestatus").getValue().toString());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

@@ -110,24 +110,29 @@ public class Qualification extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<QualificationDM> listQualification = new ArrayList<QualificationDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfQualificationName.getValue() + ", " + cbStatus.getValue());
-		listQualification = serviceQualification.getQualificationList(null, null, null, null, "F");
-		recordCnt = listQualification.size();
-		beanQualificationDM = new BeanItemContainer<QualificationDM>(QualificationDM.class);
-		beanQualificationDM.addAll(listQualification);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Qualification. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanQualificationDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qualId", "qualName", "qualStatus", "lastUpdatedDate",
-				"lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Qualification Name", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("qualId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<QualificationDM> listQualification = new ArrayList<QualificationDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfQualificationName.getValue() + ", " + cbStatus.getValue());
+			listQualification = serviceQualification.getQualificationList(null, null, null, null, "F");
+			recordCnt = listQualification.size();
+			beanQualificationDM = new BeanItemContainer<QualificationDM>(QualificationDM.class);
+			beanQualificationDM.addAll(listQualification);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Qualification. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanQualificationDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qualId", "qualName", "qualStatus", "lastUpdatedDate",
+					"lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Qualification Name", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("qualId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -141,16 +146,22 @@ public class Qualification extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editQualification() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		qualId = sltedRcd.getItemProperty("qualId").getValue().toString();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Selected Qualification. Id -> " + qualId);
-		if (sltedRcd != null) {
-			tfQualificationName.setValue(sltedRcd.getItemProperty("qualName").getValue().toString());
-			String stCode = sltedRcd.getItemProperty("qualStatus").getValue().toString();
-			cbStatus.setValue(stCode);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
+			qualId = sltedRcd.getItemProperty("qualId").getValue().toString();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Selected Qualification. Id -> " + qualId);
+			if (sltedRcd != null) {
+				tfQualificationName.setValue(sltedRcd.getItemProperty("qualName").getValue().toString());
+				String stCode = sltedRcd.getItemProperty("qualStatus").getValue().toString();
+				cbStatus.setValue(stCode);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

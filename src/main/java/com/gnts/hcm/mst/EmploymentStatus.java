@@ -139,26 +139,31 @@ public class EmploymentStatus extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EmploymentStatusDM> listEmpStatus = new ArrayList<EmploymentStatusDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfStatusCode.getValue() + ", " + tfStatusCode.getValue()
-				+ (String) cbStatus.getValue());
-		listEmpStatus = serviceEmploymentStatus.getEmploymentStatusList(null, tfStatusCode.getValue(), companyid,
-				(String) cbStatus.getValue());
-		recordCnt = listEmpStatus.size();
-		beanEmploymentStatusDM = new BeanItemContainer<EmploymentStatusDM>(EmploymentStatusDM.class);
-		beanEmploymentStatusDM.addAll(listEmpStatus);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the EmploymentStatusList. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanEmploymentStatusDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empstatusid", "empstatuscode","empstatusdesc", "status", "lastupdateddt",
-				"lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Emp. Status Code","Emp. Status Desc", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("empstatusid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EmploymentStatusDM> listEmpStatus = new ArrayList<EmploymentStatusDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfStatusCode.getValue() + ", " + tfStatusCode.getValue()
+					+ (String) cbStatus.getValue());
+			listEmpStatus = serviceEmploymentStatus.getEmploymentStatusList(null, tfStatusCode.getValue(), companyid,
+					(String) cbStatus.getValue());
+			recordCnt = listEmpStatus.size();
+			beanEmploymentStatusDM = new BeanItemContainer<EmploymentStatusDM>(EmploymentStatusDM.class);
+			beanEmploymentStatusDM.addAll(listEmpStatus);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the EmploymentStatusList. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanEmploymentStatusDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empstatusid", "empstatuscode", "empstatusdesc",
+					"status", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Emp. Status Code", "Emp. Status Desc",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("empstatusid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -212,20 +217,25 @@ public class EmploymentStatus extends BaseUI {
 	}
 	
 	private void editEmp() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmploymentStatusDM empsts = beanEmploymentStatusDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (empsts.getEmpstatusdesc() != null) {
-				tfStatusDesc.setValue(empsts.getEmpstatusdesc());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmploymentStatusDM empsts = beanEmploymentStatusDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				if (empsts.getEmpstatusdesc() != null) {
+					tfStatusDesc.setValue(empsts.getEmpstatusdesc());
+				}
+				if (empsts.getEmpstatuscode() != null) {
+					tfStatusCode.setValue(empsts.getEmpstatuscode());
+				}
+				if (empsts.getProcesssalary().equals("Y")) {
+					ckprssalry.setValue(true);
+				} else {
+					ckprssalry.setValue(false);
+				}
+				cbStatus.setValue(empsts.getStatus());
 			}
-			if (empsts.getEmpstatuscode() != null) {
-				tfStatusCode.setValue(empsts.getEmpstatuscode());
-			}
-			if (empsts.getProcesssalary().equals("Y")) {
-				ckprssalry.setValue(true);
-			} else {
-				ckprssalry.setValue(false);
-			}
-			cbStatus.setValue(empsts.getStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -290,7 +300,7 @@ public class EmploymentStatus extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

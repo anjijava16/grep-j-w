@@ -242,25 +242,30 @@ public class TaxSection extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<TaxSectionDM> listTaxSection = new ArrayList<TaxSectionDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfSectionCode.getValue() + ", " + cbSectionStatus.getValue());
-		listTaxSection = serviceTaxSection.getTaxSectionList(null, companyid, (String) tfSectionCode.getValue(), null,
-				null, (String) cbSectionStatus.getValue(), "F");
-		recordCnt = listTaxSection.size();
-		beanTaxSectionDM = new BeanItemContainer<TaxSectionDM>(TaxSectionDM.class);
-		beanTaxSectionDM.addAll(listTaxSection);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Tax Section. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanTaxSectionDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "sectionid", "sectioncode", "sectiondesc", "sectionlimit",
-				"sectionstatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Section Code", "Section Description",
-				"Section Limit", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("sectionid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<TaxSectionDM> listTaxSection = new ArrayList<TaxSectionDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfSectionCode.getValue() + ", " + cbSectionStatus.getValue());
+			listTaxSection = serviceTaxSection.getTaxSectionList(null, companyid, (String) tfSectionCode.getValue(),
+					null, null, (String) cbSectionStatus.getValue(), "F");
+			recordCnt = listTaxSection.size();
+			beanTaxSectionDM = new BeanItemContainer<TaxSectionDM>(TaxSectionDM.class);
+			beanTaxSectionDM.addAll(listTaxSection);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Tax Section. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanTaxSectionDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "sectionid", "sectioncode", "sectiondesc",
+					"sectionlimit", "sectionstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Section Code", "Section Description",
+					"Section Limit", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("sectionid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadTaxsubsectionRslt() {
@@ -282,7 +287,7 @@ public class TaxSection extends BaseUI {
 			tblTaxsubsubsection.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -433,28 +438,34 @@ public class TaxSection extends BaseUI {
 	}
 	
 	private void saveTaxsubsectionListDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		TaxSubSectionDM taxSubSectionDM = new TaxSubSectionDM();
-		if (tblTaxsubsubsection.getValue() != null) {
-			taxSubSectionDM = beanTaxSubSectionDM.getItem(tblTaxsubsubsection.getValue()).getBean();
-			taxSubsectionList.remove(taxSubSectionDM);
-		}
 		try {
-			taxSubSectionDM.setTaxlimit(Long.valueOf(tftaxlimit.getValue()));
-			taxSubSectionDM.setSubsecnstatus((String) cbsubsecnstatus.getValue());
-			taxSubSectionDM.setSubsectndesc(tasubsectndesc.getValue());
-			taxSubSectionDM.setLastupdateddt(DateUtils.getcurrentdate());
-			taxSubSectionDM.setLastupdatedby(username);
-			taxSubsectionList.add(taxSubSectionDM);
-			beanTaxSubSectionDM.addAll(taxSubsectionList);
-			tblTaxsubsubsection.removeAllItems();
-			tblTaxsubsubsection.setColumnAlignment("taxlimit", Align.RIGHT);
-			tblTaxsubsubsection.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
-			taxsubsectionresetfields();
-			loadTaxsubsectionRslt();
-			btnAddTaxsubsection.setCaption("Add");
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+			TaxSubSectionDM taxSubSectionDM = new TaxSubSectionDM();
+			if (tblTaxsubsubsection.getValue() != null) {
+				taxSubSectionDM = beanTaxSubSectionDM.getItem(tblTaxsubsubsection.getValue()).getBean();
+				taxSubsectionList.remove(taxSubSectionDM);
+			}
+			try {
+				taxSubSectionDM.setTaxlimit(Long.valueOf(tftaxlimit.getValue()));
+				taxSubSectionDM.setSubsecnstatus((String) cbsubsecnstatus.getValue());
+				taxSubSectionDM.setSubsectndesc(tasubsectndesc.getValue());
+				taxSubSectionDM.setLastupdateddt(DateUtils.getcurrentdate());
+				taxSubSectionDM.setLastupdatedby(username);
+				taxSubsectionList.add(taxSubSectionDM);
+				beanTaxSubSectionDM.addAll(taxSubsectionList);
+				tblTaxsubsubsection.removeAllItems();
+				tblTaxsubsubsection.setColumnAlignment("taxlimit", Align.RIGHT);
+				tblTaxsubsubsection.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+				taxsubsectionresetfields();
+				loadTaxsubsectionRslt();
+				btnAddTaxsubsection.setCaption("Add");
+			}
+			catch (Exception e) {
+				logger.info(e.getMessage());
+			}
 		}
-		catch (NumberFormatException e) {
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -502,51 +513,67 @@ public class TaxSection extends BaseUI {
 	}
 	
 	private void editTaxSectionDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			TaxSectionDM taxSubSectionDM = beanTaxSectionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			sectionId = taxSubSectionDM.getSectionid();
+		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Selected TaxSection. Id -> " + sectionId);
-			if (taxSubSectionDM.getSectioncode() != null) {
-				tfSectionCode.setValue(taxSubSectionDM.getSectioncode());
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				TaxSectionDM taxSubSectionDM = beanTaxSectionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				sectionId = taxSubSectionDM.getSectionid();
+				logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+						+ "Selected TaxSection. Id -> " + sectionId);
+				if (taxSubSectionDM.getSectioncode() != null) {
+					tfSectionCode.setValue(taxSubSectionDM.getSectioncode());
+				}
+				if (taxSubSectionDM.getSectiondesc() != null) {
+					taSectionDesc.setValue(taxSubSectionDM.getSectiondesc());
+				}
+				if (taxSubSectionDM.getSectionlimit() != null) {
+					tfSectionLimit.setValue(taxSubSectionDM.getSectionlimit().toString());
+				}
+				cbSectionStatus.setValue(taxSubSectionDM.getSectionstatus());
+				taxSubsectionList.addAll(serviceTaxSubSection.getTaxSubSectionList(null, sectionId, null, "F"));
 			}
-			if (taxSubSectionDM.getSectiondesc() != null) {
-				taSectionDesc.setValue(taxSubSectionDM.getSectiondesc());
-			}
-			if (taxSubSectionDM.getSectionlimit() != null) {
-				tfSectionLimit.setValue(taxSubSectionDM.getSectionlimit().toString());
-			}
-			cbSectionStatus.setValue(taxSubSectionDM.getSectionstatus());
-			taxSubsectionList.addAll(serviceTaxSubSection.getTaxSubSectionList(null, sectionId, null, "F"));
+			loadTaxsubsectionRslt();
 		}
-		loadTaxsubsectionRslt();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editTaxSubSectionDetails() {
-		hlUserInputLayout.setVisible(true);
-		Item itselect = tblTaxsubsubsection.getItem(tblTaxsubsubsection.getValue());
-		if (itselect != null) {
-			if (itselect.getItemProperty("taxlimit").getValue() != null) {
-				tftaxlimit.setValue(itselect.getItemProperty("taxlimit").getValue().toString());
+		try {
+			hlUserInputLayout.setVisible(true);
+			Item itselect = tblTaxsubsubsection.getItem(tblTaxsubsubsection.getValue());
+			if (itselect != null) {
+				if (itselect.getItemProperty("taxlimit").getValue() != null) {
+					tftaxlimit.setValue(itselect.getItemProperty("taxlimit").getValue().toString());
+				}
+				if (itselect.getItemProperty("subsectndesc").getValue() != null) {
+					tasubsectndesc.setValue(itselect.getItemProperty("subsectndesc").getValue().toString());
+				}
+				cbsubsecnstatus.setValue(itselect.getItemProperty("subsecnstatus").getValue());
 			}
-			if (itselect.getItemProperty("subsectndesc").getValue() != null) {
-				tasubsectndesc.setValue(itselect.getItemProperty("subsectndesc").getValue().toString());
-			}
-			cbsubsecnstatus.setValue(itselect.getItemProperty("subsecnstatus").getValue());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void deleteDtls() {
-		TaxSubSectionDM taxSubSectionDM = new TaxSubSectionDM();
-		if (tblTaxsubsubsection.getValue() != null) {
-			taxSubSectionDM = beanTaxSubSectionDM.getItem(tblTaxsubsubsection.getValue()).getBean();
-			taxSubsectionList.remove(taxSubSectionDM);
-			taxsubsectionresetfields();
-			tblTaxsubsubsection.setValue("");
-			loadTaxsubsectionRslt();
-			btnDelete.setEnabled(false);
+		try {
+			TaxSubSectionDM taxSubSectionDM = new TaxSubSectionDM();
+			if (tblTaxsubsubsection.getValue() != null) {
+				taxSubSectionDM = beanTaxSubSectionDM.getItem(tblTaxsubsubsection.getValue()).getBean();
+				taxSubsectionList.remove(taxSubSectionDM);
+				taxsubsectionresetfields();
+				tblTaxsubsubsection.setValue("");
+				loadTaxsubsectionRslt();
+				btnDelete.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

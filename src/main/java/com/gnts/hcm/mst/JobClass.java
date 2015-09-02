@@ -110,25 +110,30 @@ public class JobClass extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<JobClassificationDM> jobClsList = new ArrayList<JobClassificationDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfClsFctnName.getValue() + ", " + cbStatus.getValue());
-		jobClsList = serviceJobClassification.getJobClassificationList(null, tfClsFctnName.getValue(), companyid,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = jobClsList.size();
-		beanJobClassificationDM = new BeanItemContainer<JobClassificationDM>(JobClassificationDM.class);
-		beanJobClassificationDM.addAll(jobClsList);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the JobClassification. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanJobClassificationDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "jobClasfnId", "clasficatnName", "status", "lastUpdatedDate",
-				"lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Job Classification Name", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("jobClsId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<JobClassificationDM> jobClsList = new ArrayList<JobClassificationDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfClsFctnName.getValue() + ", " + cbStatus.getValue());
+			jobClsList = serviceJobClassification.getJobClassificationList(null, tfClsFctnName.getValue(), companyid,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = jobClsList.size();
+			beanJobClassificationDM = new BeanItemContainer<JobClassificationDM>(JobClassificationDM.class);
+			beanJobClassificationDM.addAll(jobClsList);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the JobClassification. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanJobClassificationDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "jobClasfnId", "clasficatnName", "status",
+					"lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Job Classification Name", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("jobClsId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -142,16 +147,22 @@ public class JobClass extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editJobClsfctn() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		jobClsId = sltedRcd.getItemProperty("jobClasfnId").getValue().toString();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Selected JobClassification. Id -> " + jobClsId);
-		if (sltedRcd != null) {
-			tfClsFctnName.setValue(sltedRcd.getItemProperty("clasficatnName").getValue().toString());
-			String stCode = sltedRcd.getItemProperty("status").getValue().toString();
-			cbStatus.setValue(stCode);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
+			jobClsId = sltedRcd.getItemProperty("jobClasfnId").getValue().toString();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Selected JobClassification. Id -> " + jobClsId);
+			if (sltedRcd != null) {
+				tfClsFctnName.setValue(sltedRcd.getItemProperty("clasficatnName").getValue().toString());
+				String stCode = sltedRcd.getItemProperty("status").getValue().toString();
+				cbStatus.setValue(stCode);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

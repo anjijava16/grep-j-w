@@ -282,27 +282,33 @@ public class BankBranch extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editBankBranch() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected BankBranch. Id -> "
-				+ bankbrnchid);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			BankBranchDM bankBranchDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			bankbrnchid = bankBranchDM.getBankbrnchid().toString();
-			cbBankName.setValue(bankBranchDM.getBankid());
-			tfIFSCCode.setValue(bankBranchDM.getIfsccode());
-			tfMICRCode.setValue(bankBranchDM.getMicrcode());
-			tfAddress1.setValue(bankBranchDM.getAddress1());
-			tfAddress2.setValue(bankBranchDM.getAddress2());
-			cbCountry.setValue(bankBranchDM.getCountryid());
-			cbState.setValue(bankBranchDM.getStateid().toString());
-			cbCity.setValue(bankBranchDM.getCityid().toString());
-			tfPhoneno.setValue(bankBranchDM.getPhno().toString());
-			tfEmail.setValue(bankBranchDM.getEmailid());
-			cbStatus.setValue(bankBranchDM.getBranchstatus());
-			cbCountry.setValue(bankBranchDM.getCountryid());
-			cbState.setValue(bankBranchDM.getStateid());
-			cbCity.setValue(bankBranchDM.getCityid());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Selected BankBranch. Id -> " + bankbrnchid);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				BankBranchDM bankBranchDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				bankbrnchid = bankBranchDM.getBankbrnchid().toString();
+				cbBankName.setValue(bankBranchDM.getBankid());
+				tfIFSCCode.setValue(bankBranchDM.getIfsccode());
+				tfMICRCode.setValue(bankBranchDM.getMicrcode());
+				tfAddress1.setValue(bankBranchDM.getAddress1());
+				tfAddress2.setValue(bankBranchDM.getAddress2());
+				cbCountry.setValue(bankBranchDM.getCountryid());
+				cbState.setValue(bankBranchDM.getStateid().toString());
+				cbCity.setValue(bankBranchDM.getCityid().toString());
+				tfPhoneno.setValue(bankBranchDM.getPhno().toString());
+				tfEmail.setValue(bankBranchDM.getEmailid());
+				cbStatus.setValue(bankBranchDM.getBranchstatus());
+				cbCountry.setValue(bankBranchDM.getCountryid());
+				cbState.setValue(bankBranchDM.getStateid());
+				cbCity.setValue(bankBranchDM.getCityid());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

@@ -347,49 +347,54 @@ public class FinancePlan extends BaseUI {
 	}
 	
 	private void editFinancePlan() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			FinancePlanDM financePlanDM = beansFinancePlanDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			primaryid = financePlanDM.getFpid().toString();
-			if (financePlanDM.getFpdesc() != null) {
-				tfFpDescription.setValue(financePlanDM.getFpdesc());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				FinancePlanDM financePlanDM = beansFinancePlanDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				primaryid = financePlanDM.getFpid().toString();
+				if (financePlanDM.getFpdesc() != null) {
+					tfFpDescription.setValue(financePlanDM.getFpdesc());
+				}
+				if (financePlanDM.getBranchid() != null) {
+					cbBranchName.setValue(financePlanDM.getBranchid());
+				}
+				if (financePlanDM.getFpcategory() != null) {
+					cbFpCategory.setValue(financePlanDM.getFpcategory());
+				}
+				if (financePlanDM.getFpamount() != null) {
+					tfFpAmount.setValue(financePlanDM.getFpamount().toString());
+				}
+				if (financePlanDM.getCcyid() != null) {
+					cbCurrency.setValue(financePlanDM.getCcyid());
+				}
+				if (financePlanDM.getLastexpensedt() != null) {
+					dfLastExpenseDate.setValue(financePlanDM.getLastexpensedt());
+				}
+				if (financePlanDM.getRecurduration() != null) {
+					tfRegularDuration.setValue(financePlanDM.getRecurduration());
+				}
+				if (financePlanDM.getNextexpensedt() != null) {
+					dfNextExpenseDate.setValue(financePlanDM.getNextexpensedt());
+				}
+				if (financePlanDM.getDeptid() != null) {
+					cbDepartmentName.setValue(financePlanDM.getDeptid());
+				}
+				if (financePlanDM.getOwnerid() != null) {
+					cbOwnerName.setValue(financePlanDM.getOwnerid());
+				}
+				if (financePlanDM.getTranstypeid() != null) {
+					cbTransactionType.setValue(financePlanDM.getTranstypeid());
+				}
+				if (financePlanDM.getProjid() != null) {
+					cbProjectName.setValue(financePlanDM.getProjid());
+				}
+				if (financePlanDM.getRemarks() != null) {
+					tfRemarks.setValue(financePlanDM.getRemarks());
+				}
+				financePlanDM.setFpstatus(((String) cbStatus.getValue()));
 			}
-			if (financePlanDM.getBranchid() != null) {
-				cbBranchName.setValue(financePlanDM.getBranchid());
-			}
-			if (financePlanDM.getFpcategory() != null) {
-				cbFpCategory.setValue(financePlanDM.getFpcategory());
-			}
-			if (financePlanDM.getFpamount() != null) {
-				tfFpAmount.setValue(financePlanDM.getFpamount().toString());
-			}
-			if (financePlanDM.getCcyid() != null) {
-				cbCurrency.setValue(financePlanDM.getCcyid());
-			}
-			if (financePlanDM.getLastexpensedt() != null) {
-				dfLastExpenseDate.setValue(financePlanDM.getLastexpensedt());
-			}
-			if (financePlanDM.getRecurduration() != null) {
-				tfRegularDuration.setValue(financePlanDM.getRecurduration());
-			}
-			if (financePlanDM.getNextexpensedt() != null) {
-				dfNextExpenseDate.setValue(financePlanDM.getNextexpensedt());
-			}
-			if (financePlanDM.getDeptid() != null) {
-				cbDepartmentName.setValue(financePlanDM.getDeptid());
-			}
-			if (financePlanDM.getOwnerid() != null) {
-				cbOwnerName.setValue(financePlanDM.getOwnerid());
-			}
-			if (financePlanDM.getTranstypeid() != null) {
-				cbTransactionType.setValue(financePlanDM.getTranstypeid());
-			}
-			if (financePlanDM.getProjid() != null) {
-				cbProjectName.setValue(financePlanDM.getProjid());
-			}
-			if (financePlanDM.getRemarks() != null) {
-				tfRemarks.setValue(financePlanDM.getRemarks());
-			}
-			financePlanDM.setFpstatus(((String) cbStatus.getValue()));
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

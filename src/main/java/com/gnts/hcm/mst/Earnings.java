@@ -149,25 +149,31 @@ public class Earnings extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EarningsDM> listEarnings = new ArrayList<EarningsDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfEarnDesc.getValue() + ", " + tfEarnDesc.getValue()
-				+ (String) cbStatus.getValue());
-		listEarnings = serviceEarnings.getEarningList(null, tfEarnCode.getValue(), tfEarnDesc.getValue(), null,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listEarnings.size();
-		beanEarningsDM = new BeanItemContainer<EarningsDM>(EarningsDM.class);
-		beanEarningsDM.addAll(listEarnings);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Earnings. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanEarningsDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "earnId", "earnCode", "earnDESCR", "earnType", "status",
-				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Earn Code", "Earn Description", "Earning Type",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("earnId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EarningsDM> listEarnings = new ArrayList<EarningsDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfEarnDesc.getValue() + ", " + tfEarnDesc.getValue()
+					+ (String) cbStatus.getValue());
+			listEarnings = serviceEarnings.getEarningList(null, tfEarnCode.getValue(), tfEarnDesc.getValue(), null,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = listEarnings.size();
+			beanEarningsDM = new BeanItemContainer<EarningsDM>(EarningsDM.class);
+			beanEarningsDM.addAll(listEarnings);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Earnings. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanEarningsDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "earnId", "earnCode", "earnDESCR", "earnType", "status",
+					"lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Earn Code", "Earn Description",
+					"Earning Type", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("earnId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -185,23 +191,28 @@ public class Earnings extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editEarnings() {
-		EarningsDM editEarnings = beanEarningsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		pkEarningsId = editEarnings.getEarnId().toString();
-		if (editEarnings.getEarnCode() != null) {
-			tfEarnCode.setValue(editEarnings.getEarnCode());
+		try {
+			EarningsDM editEarnings = beanEarningsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			pkEarningsId = editEarnings.getEarnId().toString();
+			if (editEarnings.getEarnCode() != null) {
+				tfEarnCode.setValue(editEarnings.getEarnCode());
+			}
+			if (editEarnings.getEarnDESCR() != null) {
+				tfEarnDesc.setValue(editEarnings.getEarnDESCR());
+			}
+			if (editEarnings.getEarnType() != null) {
+				cbEarnType.setValue(editEarnings.getEarnType());
+			}
+			if (editEarnings.getIsTax().equals("Y")) {
+				chkIsTax.setValue(true);
+			} else {
+				chkIsTax.setValue(false);
+			}
+			cbStatus.setValue(editEarnings.getStatus());
 		}
-		if (editEarnings.getEarnDESCR() != null) {
-			tfEarnDesc.setValue(editEarnings.getEarnDESCR());
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		if (editEarnings.getEarnType() != null) {
-			cbEarnType.setValue(editEarnings.getEarnType());
-		}
-		if (editEarnings.getIsTax().equals("Y")) {
-			chkIsTax.setValue(true);
-		} else {
-			chkIsTax.setValue(false);
-		}
-		cbStatus.setValue(editEarnings.getStatus());
 	}
 	
 	// Base class implementations
@@ -355,6 +366,7 @@ public class Earnings extends BaseUI {
 			cbEarnType.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

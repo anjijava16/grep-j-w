@@ -133,29 +133,34 @@ public class Skills extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<SkillsDM> listSkills = new ArrayList<SkillsDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfSkillsName.getValue() + ", " + cbSkillsStatus.getValue());
-		Long jobclsfcnId = null;
-		if (cbJobClsFcn.getValue() != null) {
-			jobclsfcnId = Long.valueOf(cbJobClsFcn.getValue().toString());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<SkillsDM> listSkills = new ArrayList<SkillsDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfSkillsName.getValue() + ", " + cbSkillsStatus.getValue());
+			Long jobclsfcnId = null;
+			if (cbJobClsFcn.getValue() != null) {
+				jobclsfcnId = Long.valueOf(cbJobClsFcn.getValue().toString());
+			}
+			listSkills = serviceSkills.getSkillsList(null, tfSkillsName.getValue(), jobclsfcnId, companyid,
+					(String) cbSkillsStatus.getValue(), "F");
+			recordCnt = listSkills.size();
+			beanSkills = new BeanItemContainer<SkillsDM>(SkillsDM.class);
+			beanSkills.addAll(listSkills);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Leave Type. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanSkills);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "skillId", "skillName", "clasficatnName", "status",
+					"lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Skills Name", "Job Classification", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("skillId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
-		listSkills = serviceSkills.getSkillsList(null, tfSkillsName.getValue(), jobclsfcnId, companyid,
-				(String) cbSkillsStatus.getValue(), "F");
-		recordCnt = listSkills.size();
-		beanSkills = new BeanItemContainer<SkillsDM>(SkillsDM.class);
-		beanSkills.addAll(listSkills);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Leave Type. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanSkills);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "skillId", "skillName", "clasficatnName", "status",
-				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Skills Name", "Job Classification", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("skillId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -171,17 +176,23 @@ public class Skills extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editSkills() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		SkillsDM skillsDM = beanSkills.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		skillsId = skillsDM.getSkillId().toString();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Skills. Id -> "
-				+ skillsId);
-		if (skillsDM.getSkillName() != null) {
-			tfSkillsName.setValue(skillsDM.getSkillName());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			SkillsDM skillsDM = beanSkills.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			skillsId = skillsDM.getSkillId().toString();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Skills. Id -> "
+					+ skillsId);
+			if (skillsDM.getSkillName() != null) {
+				tfSkillsName.setValue(skillsDM.getSkillName());
+			}
+			cbJobClsFcn.setValue(Long.valueOf(skillsDM.getJobClasfcnId()));
+			cbSkillsStatus.setValue(skillsDM.getStatus());
 		}
-		cbJobClsFcn.setValue(Long.valueOf(skillsDM.getJobClasfcnId()));
-		cbSkillsStatus.setValue(skillsDM.getStatus());
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Base class implementations
@@ -302,7 +313,7 @@ public class Skills extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -317,6 +328,7 @@ public class Skills extends BaseUI {
 			cbJobClsFcn.setContainerDataSource(beanJobClsfctnDM);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

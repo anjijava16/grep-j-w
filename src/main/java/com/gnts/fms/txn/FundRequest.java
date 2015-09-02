@@ -221,36 +221,41 @@ public class FundRequest extends BaseUI {
 	}
 	
 	private void editFundReq() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			FundRequestDM fundRequestDM = beansFundRequestDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			primaryid = fundRequestDM.getFundrqstId().toString();
-			if (fundRequestDM.getFundrqsrDt() != null) {
-				dfFundReqDt.setValue(fundRequestDM.getFundrqsrDt());
-			}
-			Long accid = fundRequestDM.getAccountId();
-			Collection<?> accids = cbAccountReference.getItemIds();
-			for (Iterator<?> iterator = accids.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemId);
-				// Get the actual bean and use the data
-				AccountsDM st = (AccountsDM) item.getBean();
-				if (accid != null && accid.equals(st.getAccountId())) {
-					cbAccountReference.setValue(itemId);
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				FundRequestDM fundRequestDM = beansFundRequestDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				primaryid = fundRequestDM.getFundrqstId().toString();
+				if (fundRequestDM.getFundrqsrDt() != null) {
+					dfFundReqDt.setValue(fundRequestDM.getFundrqsrDt());
 				}
+				Long accid = fundRequestDM.getAccountId();
+				Collection<?> accids = cbAccountReference.getItemIds();
+				for (Iterator<?> iterator = accids.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemId);
+					// Get the actual bean and use the data
+					AccountsDM st = (AccountsDM) item.getBean();
+					if (accid != null && accid.equals(st.getAccountId())) {
+						cbAccountReference.setValue(itemId);
+					}
+				}
+				if (fundRequestDM.getBranchId() != null) {
+					cbBranchName.setValue(fundRequestDM.getBranchId());
+				}
+				if (fundRequestDM.getReqdAmt() != null) {
+					tfReqAmt.setValue(fundRequestDM.getReqdAmt().toString());
+				}
+				if (fundRequestDM.getReqDtl() != null) {
+					tfReqDtl.setValue(fundRequestDM.getReqDtl());
+				}
+				if (fundRequestDM.getApprvAmt() != null) {
+					tfApprvAmt.setValue(fundRequestDM.getApprvAmt().toString());
+				}
+				cbStatus.setValue(fundRequestDM.getRqstStatus());
 			}
-			if (fundRequestDM.getBranchId() != null) {
-				cbBranchName.setValue(fundRequestDM.getBranchId());
-			}
-			if (fundRequestDM.getReqdAmt() != null) {
-				tfReqAmt.setValue(fundRequestDM.getReqdAmt().toString());
-			}
-			if (fundRequestDM.getReqDtl() != null) {
-				tfReqDtl.setValue(fundRequestDM.getReqDtl());
-			}
-			if (fundRequestDM.getApprvAmt() != null) {
-				tfApprvAmt.setValue(fundRequestDM.getApprvAmt().toString());
-			}
-			cbStatus.setValue(fundRequestDM.getRqstStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

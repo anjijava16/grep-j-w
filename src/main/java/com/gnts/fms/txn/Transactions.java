@@ -85,7 +85,7 @@ public class Transactions extends BaseTransUI {
 	 * Service Declaration
 	 */
 	private TransactionsService serviceTransactions = (TransactionsService) SpringContextHelper.getBean("transaction");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private AccountsService serviceAccounttype = (AccountsService) SpringContextHelper.getBean("accounts");
 	private TransactionTypeService serviceTransType = (TransactionTypeService) SpringContextHelper.getBean("transtype");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
@@ -213,7 +213,7 @@ public class Transactions extends BaseTransUI {
 		try {
 			BeanContainer<Long, EmployeeDM> employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			employeebeans.setBeanIdProperty("employeeid");
-			employeebeans.addAll(servicebeanEmployee.getEmployeeList(null, null, null, (String) cbStatus.getValue(),
+			employeebeans.addAll(serviceEmployee.getEmployeeList(null, null, null, (String) cbStatus.getValue(),
 					companyId, null, null, null, null, "P"));
 			cbApproveManager.setContainerDataSource(employeebeans);
 		}
@@ -239,8 +239,7 @@ public class Transactions extends BaseTransUI {
 		try {
 			BeanItemContainer<TransactionTypeDM> bean = new BeanItemContainer<TransactionTypeDM>(
 					TransactionTypeDM.class);
-			bean.addAll(serviceTransType.getTransactionTypeList(companyId, null,"Active", null,
-					null));
+			bean.addAll(serviceTransType.getTransactionTypeList(companyId, null, "Active", null, null));
 			cbTransactionType.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
@@ -329,100 +328,111 @@ public class Transactions extends BaseTransUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<TransactionsDM> listTrans = new ArrayList<TransactionsDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + cbAccountReference.getValue() + ", " + (String) cbStatus.getValue());
-		listTrans = serviceTransactions.getTransactionDetails(companyId, null, null, (String) cbStatus.getValue(),
-				null, (String) cbPaymentMode.getValue(), (Long) cbAccountReference.getValue());
-		recordCnt = listTrans.size();
-		beanTransactionDM = new BeanItemContainer<TransactionsDM>(TransactionsDM.class);
-		beanTransactionDM.addAll(listTrans);
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Got the Account List result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanTransactionDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "accTxnId", "accName", "paymentmode", "accountRefName",
-				"transamount", "txnStatus", "lastupdateddt", "lastupdatedby", });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Account Ref.", "Payment Mode", "Account",
-				"Trans. Amount", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("accTxnId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnAlignment("transamount", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records:" + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<TransactionsDM> listTrans = new ArrayList<TransactionsDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Search Parameters are " + companyId + ", " + cbAccountReference.getValue() + ", "
+					+ (String) cbStatus.getValue());
+			listTrans = serviceTransactions.getTransactionDetails(companyId, null, null, (String) cbStatus.getValue(),
+					null, (String) cbPaymentMode.getValue(), (Long) cbAccountReference.getValue());
+			recordCnt = listTrans.size();
+			beanTransactionDM = new BeanItemContainer<TransactionsDM>(TransactionsDM.class);
+			beanTransactionDM.addAll(listTrans);
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Got the Account List result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanTransactionDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "accTxnId", "accName", "paymentmode", "accountRefName",
+					"transamount", "txnStatus", "lastupdateddt", "lastupdatedby", });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Account Ref.", "Payment Mode", "Account",
+					"Trans. Amount", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("accTxnId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnAlignment("transamount", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records:" + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editTransactions() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			TransactionsDM transactionsDM = beanTransactionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			transactionId = transactionsDM.getAccTxnId();
-			if (transactionsDM.getTransdt() != null) {
-				try {
-					dfTransactionDate.setValue(transactionsDM.getTransdt());
-				}
-				catch (Exception e) {
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				TransactionsDM transactionsDM = beanTransactionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				transactionId = transactionsDM.getAccTxnId();
+				if (transactionsDM.getTransdt() != null) {
+					try {
+						dfTransactionDate.setValue(transactionsDM.getTransdt());
+					}
+					catch (Exception e) {
+						dfTransactionDate.setValue(null);
+					}
+				} else {
 					dfTransactionDate.setValue(null);
 				}
-			} else {
-				dfTransactionDate.setValue(null);
-			}
-			if (transactionsDM.getValueDate() == null) {
-				transactionsDM.setValueDate(dfTransactionDate.getValue());
-			}
-			// For select account number
-			if (transactionsDM.getAccountId() != null) {
-				Long editaccount = transactionsDM.getAccountId();
-				Collection<?> coll1 = cbAccountReference.getItemIds();
-				for (Iterator<?> iterator = coll1.iterator(); iterator.hasNext();) {
-					Object itemid = (Object) iterator.next();
-					BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemid);
-					AccountsDM edit = (AccountsDM) item.getBean();
-					if (editaccount != null && editaccount.equals(edit.getAccountId())) {
-						cbAccountReference.setValue(itemid);
-						break;
-					} else {
-						cbAccountReference.setValue(null);
+				if (transactionsDM.getValueDate() == null) {
+					transactionsDM.setValueDate(dfTransactionDate.getValue());
+				}
+				// For select account number
+				if (transactionsDM.getAccountId() != null) {
+					Long editaccount = transactionsDM.getAccountId();
+					Collection<?> coll1 = cbAccountReference.getItemIds();
+					for (Iterator<?> iterator = coll1.iterator(); iterator.hasNext();) {
+						Object itemid = (Object) iterator.next();
+						BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemid);
+						AccountsDM edit = (AccountsDM) item.getBean();
+						if (editaccount != null && editaccount.equals(edit.getAccountId())) {
+							cbAccountReference.setValue(itemid);
+							break;
+						} else {
+							cbAccountReference.setValue(null);
+						}
 					}
 				}
-			}
-			// For select Transaction type
-			if (transactionsDM.getTranstypeid() != null) {
-				Long edittranstype = transactionsDM.getTranstypeid();
-				Collection<?> coll2 = cbTransactionType.getItemIds();
-				for (Iterator<?> iterator = coll2.iterator(); iterator.hasNext();) {
-					Object itemid = (Object) iterator.next();
-					BeanItem<?> item = (BeanItem<?>) cbTransactionType.getItem(itemid);
-					TransactionTypeDM edit = (TransactionTypeDM) item.getBean();
-					if (edittranstype != null && edittranstype.equals(edit.getTranstypeid())) {
-						cbTransactionType.setValue(itemid);
-						break;
-					} else {
-						cbTransactionType.setValue(null);
+				// For select Transaction type
+				if (transactionsDM.getTranstypeid() != null) {
+					Long edittranstype = transactionsDM.getTranstypeid();
+					Collection<?> coll2 = cbTransactionType.getItemIds();
+					for (Iterator<?> iterator = coll2.iterator(); iterator.hasNext();) {
+						Object itemid = (Object) iterator.next();
+						BeanItem<?> item = (BeanItem<?>) cbTransactionType.getItem(itemid);
+						TransactionTypeDM edit = (TransactionTypeDM) item.getBean();
+						if (edittranstype != null && edittranstype.equals(edit.getTranstypeid())) {
+							cbTransactionType.setValue(itemid);
+							break;
+						} else {
+							cbTransactionType.setValue(null);
+						}
 					}
 				}
+				if (transactionsDM.getTransamount() != null) {
+					tfTransactionAmount.setValue(transactionsDM.getTransamount().toString());
+				}
+				if (transactionsDM.getChequedt() != null) {
+					dfChequeDate.setValue(transactionsDM.getChequedt());
+				}
+				if (transactionsDM.getChequeNo() != null) {
+					tfChequeNumber.setValue(transactionsDM.getChequeNo());
+				}
+				if (transactionsDM.getInstruremark() != null) {
+					tfInstrumentRemarks.setValue(transactionsDM.getInstruremark());
+				}
+				if (transactionsDM.getPaymentmode() != null) {
+					cbPaymentMode.setValue(transactionsDM.getPaymentmode());
+				}
+				if (transactionsDM.getAppremarks() != null) {
+					tfApproverRemarks.setValue(transactionsDM.getAppremarks());
+				}
+				tfVoucherNo.setReadOnly(false);
+				tfVoucherNo.setValue(transactionsDM.getVoucherNo());
+				cbStatus.setValue(transactionsDM.getTxnStatus());
+				tfAccount.setValue(transactionsDM.getAccountRefName());
+				tfRefDetails.setValue(transactionsDM.getRefDetails());
 			}
-			if (transactionsDM.getTransamount() != null) {
-				tfTransactionAmount.setValue(transactionsDM.getTransamount().toString());
-			}
-			if (transactionsDM.getChequedt() != null) {
-				dfChequeDate.setValue(transactionsDM.getChequedt());
-			}
-			if (transactionsDM.getChequeNo() != null) {
-				tfChequeNumber.setValue(transactionsDM.getChequeNo());
-			}
-			if (transactionsDM.getInstruremark() != null) {
-				tfInstrumentRemarks.setValue(transactionsDM.getInstruremark());
-			}
-			if (transactionsDM.getPaymentmode() != null) {
-				cbPaymentMode.setValue(transactionsDM.getPaymentmode());
-			}
-			if (transactionsDM.getAppremarks() != null) {
-				tfApproverRemarks.setValue(transactionsDM.getAppremarks());
-			}
-			tfVoucherNo.setReadOnly(false);
-			tfVoucherNo.setValue(transactionsDM.getVoucherNo());
-			cbStatus.setValue(transactionsDM.getTxnStatus());
-			tfAccount.setValue(transactionsDM.getAccountRefName());
-			tfRefDetails.setValue(transactionsDM.getRefDetails());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

@@ -174,7 +174,6 @@ public class TransactionApprovel implements ClickListener {
 		hlAddEdit.setComponentAlignment(hlFileDownload, Alignment.MIDDLE_RIGHT);
 		hlAddEdit.setHeight("28px");
 		// table declaration
-		
 		tblTransactions.setSizeFull();
 		tblTransactions.setSelectable(true);
 		tblTransactions.setColumnCollapsingAllowed(true);
@@ -273,82 +272,46 @@ public class TransactionApprovel implements ClickListener {
 	}
 	
 	private void getEditableTable() {
-		tblTransactions.setEditable(true);
-		tblTransactions.setTableFieldFactory(new TableFieldFactory() {
-			private static final long serialVersionUID = 1L;
-			
-			public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-				if (propertyId.toString().equals("txnStatus")) {
-					ComboBox approvStatus = new GERPComboBox(null, BASEConstants.T_FMS_ACCOUNT_TXNS,
-							BASEConstants.TXN_STATUS);
-					approvStatus.setNullSelectionAllowed(false);
-					return approvStatus;
+		try {
+			tblTransactions.setEditable(true);
+			tblTransactions.setTableFieldFactory(new TableFieldFactory() {
+				private static final long serialVersionUID = 1L;
+				
+				public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+					if (propertyId.toString().equals("txnStatus")) {
+						ComboBox approvStatus = new GERPComboBox(null, BASEConstants.T_FMS_ACCOUNT_TXNS,
+								BASEConstants.TXN_STATUS);
+						approvStatus.setNullSelectionAllowed(false);
+						return approvStatus;
+					}
+					if (propertyId.toString().equals("appremarks")) {
+						TextField tf = new TextField();
+						tf.setWidth("250");
+						tf.setNullRepresentation("");
+						return tf;
+					}
+					return null;
 				}
-				if (propertyId.toString().equals("appremarks")) {
-					TextField tf = new TextField();
-					tf.setWidth("250");
-					tf.setNullRepresentation("");
-					return tf;
-				}
-				return null;
-			}
-		});
+			});
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * saveApproveAll()-->this function is used for save/update the records
 	 */
 	private void saveApproveAll() {
-		@SuppressWarnings("unchecked")
-		Collection<TransactionsDM> itemIds = (Collection<TransactionsDM>) tblTransactions.getVisibleItemIds();
-		for (TransactionsDM transOld : (Collection<TransactionsDM>) itemIds) {
-			BigDecimal openbalance = new BigDecimal("0");
-			BigDecimal transamount = new BigDecimal("0");
-			BigDecimal closebalance = new BigDecimal("0");
-			BigDecimal accountbalance = new BigDecimal("0");
-			if (transOld.getAccountId() != null) {
-				try {
-					transamount = transOld.getTransamount();
-					accountbalance = serviceAccounts
-							.getAccountsList(null, transOld.getAccountId(), null, null, null, null, null).get(0)
-							.getCurrentBalance();
-					openbalance = accountbalance;
-				}
-				catch (Exception e) {
-					logger.info(e.getMessage());
-				}
-			}
-			if (serviceTransType.getTransactionTypeList(null, null, null, null, transOld.getTranstypeid()).get(0)
-					.getCrdr().toUpperCase().equals("C")
-					|| serviceTransType.getTransactionTypeList(null, null, null, null, transOld.getTranstypeid())
-							.get(0).getCrdr().toUpperCase().equals("CREDIT")) {
-				accountbalance = accountbalance.add(transamount);
-				closebalance = accountbalance;
-			} else {
-				accountbalance = accountbalance.subtract(transamount);
-				closebalance = accountbalance;
-			}
-			serviceTransactions.updateTrasactionDetails(transOld.getAccTxnId(), openbalance, closebalance, "",
-					new Date(), loginUserName, transOld.getAppremarks(), null);
-			serviceTransactions.updateAccountBalance(transOld.getAccountId(), closebalance, transamount);
-		}
-		chkApproveAll.setValue(false);
-	}
-	
-	private void saveDetails() {
-		@SuppressWarnings("unchecked")
-		Collection<TransactionsDM> itemIds = (Collection<TransactionsDM>) tblTransactions.getVisibleItemIds();
-		for (TransactionsDM transOld : (Collection<TransactionsDM>) itemIds) {
-			if (transOld.getTxnStatus().equals("Pending") || transOld.getTxnStatus().equals("Rejected")) {
-				serviceTransactions.updateTrasactionDetails(transOld.getAccTxnId(), new BigDecimal("0"),
-						new BigDecimal("0"), transOld.getTxnStatus(), new Date(), loginUserName,
-						transOld.getAppremarks(), null);
-			} else {
+		try {
+			@SuppressWarnings("unchecked")
+			Collection<TransactionsDM> itemIds = (Collection<TransactionsDM>) tblTransactions.getVisibleItemIds();
+			for (TransactionsDM transOld : (Collection<TransactionsDM>) itemIds) {
 				BigDecimal openbalance = new BigDecimal("0");
 				BigDecimal transamount = new BigDecimal("0");
 				BigDecimal closebalance = new BigDecimal("0");
 				BigDecimal accountbalance = new BigDecimal("0");
-				if (transOld.getAccTxnId() != null) {
+				if (transOld.getAccountId() != null) {
 					try {
 						transamount = transOld.getTransamount();
 						accountbalance = serviceAccounts
@@ -357,6 +320,7 @@ public class TransactionApprovel implements ClickListener {
 						openbalance = accountbalance;
 					}
 					catch (Exception e) {
+						logger.info(e.getMessage());
 					}
 				}
 				if (serviceTransType.getTransactionTypeList(null, null, null, null, transOld.getTranstypeid()).get(0)
@@ -369,12 +333,63 @@ public class TransactionApprovel implements ClickListener {
 					accountbalance = accountbalance.subtract(transamount);
 					closebalance = accountbalance;
 				}
-				serviceTransactions.updateTrasactionDetails(transOld.getAccTxnId(), openbalance, closebalance,
-						transOld.getTxnStatus(), new Date(), loginUserName, transOld.getAppremarks(), null);
-				serviceTransactions.updateAccountBalance(transOld.getAccTxnId(), closebalance, transamount);
+				serviceTransactions.updateTrasactionDetails(transOld.getAccTxnId(), openbalance, closebalance, "",
+						new Date(), loginUserName, transOld.getAppremarks(), null);
+				serviceTransactions.updateAccountBalance(transOld.getAccountId(), closebalance, transamount);
 			}
+			chkApproveAll.setValue(false);
 		}
-		chkApproveAll.setValue(false);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void saveDetails() {
+		try {
+			@SuppressWarnings("unchecked")
+			Collection<TransactionsDM> itemIds = (Collection<TransactionsDM>) tblTransactions.getVisibleItemIds();
+			for (TransactionsDM transOld : (Collection<TransactionsDM>) itemIds) {
+				if (transOld.getTxnStatus().equals("Pending") || transOld.getTxnStatus().equals("Rejected")) {
+					serviceTransactions.updateTrasactionDetails(transOld.getAccTxnId(), new BigDecimal("0"),
+							new BigDecimal("0"), transOld.getTxnStatus(), new Date(), loginUserName,
+							transOld.getAppremarks(), null);
+				} else {
+					BigDecimal openbalance = new BigDecimal("0");
+					BigDecimal transamount = new BigDecimal("0");
+					BigDecimal closebalance = new BigDecimal("0");
+					BigDecimal accountbalance = new BigDecimal("0");
+					if (transOld.getAccTxnId() != null) {
+						try {
+							transamount = transOld.getTransamount();
+							accountbalance = serviceAccounts
+									.getAccountsList(null, transOld.getAccountId(), null, null, null, null, null)
+									.get(0).getCurrentBalance();
+							openbalance = accountbalance;
+						}
+						catch (Exception e) {
+						}
+					}
+					if (serviceTransType.getTransactionTypeList(null, null, null, null, transOld.getTranstypeid())
+							.get(0).getCrdr().toUpperCase().equals("C")
+							|| serviceTransType
+									.getTransactionTypeList(null, null, null, null, transOld.getTranstypeid()).get(0)
+									.getCrdr().toUpperCase().equals("CREDIT")) {
+						accountbalance = accountbalance.add(transamount);
+						closebalance = accountbalance;
+					} else {
+						accountbalance = accountbalance.subtract(transamount);
+						closebalance = accountbalance;
+					}
+					serviceTransactions.updateTrasactionDetails(transOld.getAccTxnId(), openbalance, closebalance,
+							transOld.getTxnStatus(), new Date(), loginUserName, transOld.getAppremarks(), null);
+					serviceTransactions.updateAccountBalance(transOld.getAccTxnId(), closebalance, transamount);
+				}
+			}
+			chkApproveAll.setValue(false);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void resetFields() {

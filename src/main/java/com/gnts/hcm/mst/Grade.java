@@ -186,26 +186,33 @@ public class Grade extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<GradeDM> listGrade = new ArrayList<GradeDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfGRDDesc.getValue() + ", " + tfGRDDesc.getValue() + (String) cbStatus.getValue());
-		listGrade = serviceGrade.getGradeList(null, tfGRDDesc.getValue(), (String) cbGRDLvl.getValue(), companyid,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listGrade.size();
-		beanGradeDM = new BeanItemContainer<GradeDM>(GradeDM.class);
-		beanGradeDM.addAll(listGrade);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Grade. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanGradeDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "gradeId", "gradeDESC", "gradeLvl", "minSal", "maxSal",
-				"status", "lastUpdatedBy", "lastUpdatedDate" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Grand Desc.", "Grade Level", "Min Salary",
-				"Max Salary", "Status", "Last Updated By", "Last Updated Date" });
-		tblMstScrSrchRslt.setColumnAlignment("gradeId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnAlignment("minSal", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnAlignment("maxSal", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedDate", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<GradeDM> listGrade = new ArrayList<GradeDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfGRDDesc.getValue() + ", " + tfGRDDesc.getValue()
+					+ (String) cbStatus.getValue());
+			listGrade = serviceGrade.getGradeList(null, tfGRDDesc.getValue(), (String) cbGRDLvl.getValue(), companyid,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = listGrade.size();
+			beanGradeDM = new BeanItemContainer<GradeDM>(GradeDM.class);
+			beanGradeDM.addAll(listGrade);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Grade. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanGradeDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "gradeId", "gradeDESC", "gradeLvl", "minSal", "maxSal",
+					"status", "lastUpdatedBy", "lastUpdatedDate" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Grand Desc.", "Grade Level", "Min Salary",
+					"Max Salary", "Status", "Last Updated By", "Last Updated Date" });
+			tblMstScrSrchRslt.setColumnAlignment("gradeId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnAlignment("minSal", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnAlignment("maxSal", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedDate", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -404,6 +411,7 @@ public class Grade extends BaseUI {
 			cbGRDLvl.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

@@ -142,24 +142,29 @@ public class PNCCenters extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<PNCCentersDM> listPNCCenter = new ArrayList<PNCCentersDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfPNCCode.getValue() + ", " + (String) cbPNCStatus.getValue());
-		listPNCCenter = servicePNCCenter.getCenterTypeList(tfPNCCode.getValue(), companyId,
-				(String) cbPNCStatus.getValue(), "F");
-		recordCnt = listPNCCenter.size();
-		beanPNCCenter = new BeanItemContainer<PNCCentersDM>(PNCCentersDM.class);
-		beanPNCCenter.addAll(listPNCCenter);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the PNCCenter. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanPNCCenter);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "pncid", "pnccode", "status", "lastupdateddt",
-				"lastupdatedby", });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "PNC Code", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("pncid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<PNCCentersDM> listPNCCenter = new ArrayList<PNCCentersDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfPNCCode.getValue() + ", " + (String) cbPNCStatus.getValue());
+			listPNCCenter = servicePNCCenter.getCenterTypeList(tfPNCCode.getValue(), companyId,
+					(String) cbPNCStatus.getValue(), "F");
+			recordCnt = listPNCCenter.size();
+			beanPNCCenter = new BeanItemContainer<PNCCentersDM>(PNCCentersDM.class);
+			beanPNCCenter.addAll(listPNCCenter);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the PNCCenter. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanPNCCenter);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "pncid", "pnccode", "status", "lastupdateddt",
+					"lastupdatedby", });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "PNC Code", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("pncid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -175,21 +180,27 @@ public class PNCCenters extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editPNCCenter() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			PNCCentersDM pncCentersDM = beanPNCCenter.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			pkPNCId = pncCentersDM.getPncid();
-			tfPNCCode.setValue(pncCentersDM.getPnccode());
-			if (pncCentersDM.getPncdesc() != null) {
-				tfPNCDesc.setValue(pncCentersDM.getPncdesc());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				PNCCentersDM pncCentersDM = beanPNCCenter.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				pkPNCId = pncCentersDM.getPncid();
+				tfPNCCode.setValue(pncCentersDM.getPnccode());
+				if (pncCentersDM.getPncdesc() != null) {
+					tfPNCDesc.setValue(pncCentersDM.getPncdesc());
+				}
+				cbPNCStatus.setValue(pncCentersDM.getStatus());
 			}
-			cbPNCStatus.setValue(pncCentersDM.getStatus());
+			lSDeptName.setValue(null);
+			List<PNCDeptMapDM> listPncDept = servicePNCDeptMap.getDeptMapList(pkPNCId, null, companyid, "Active");
+			for (PNCDeptMapDM accOwner : listPncDept) {
+				lSDeptName.select(accOwner.getDeptid());
+			}
 		}
-		lSDeptName.setValue(null);
-		List<PNCDeptMapDM> listPncDept = servicePNCDeptMap.getDeptMapList(pkPNCId, null, companyid, "Active");
-		for (PNCDeptMapDM accOwner : listPncDept) {
-			lSDeptName.select(accOwner.getDeptid());
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

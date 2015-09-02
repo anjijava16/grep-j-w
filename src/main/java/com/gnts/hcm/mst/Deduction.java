@@ -173,27 +173,32 @@ public class Deduction extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<DeductionDM> listDeduction = new ArrayList<DeductionDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfDeduDesc.getValue() + ", " + tfDeduCode.getValue()
-				+ (String) cbStatus.getValue());
-		listDeduction = serviceDeduction.getDuctionList(null, tfDeduCode.getValue(), companyid, tfDeduDesc.getValue(),
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listDeduction.size();
-		beanDeductionDM = new BeanItemContainer<DeductionDM>(DeductionDM.class);
-		beanDeductionDM.addAll(listDeduction);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Deduction. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanDeductionDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "deductionId", "deductionCode", "deducnDesc",
-				"dedcnPercent", "status", "lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Deduction Code", "Deduction Desc",
-				"Percentage (%)", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("deductionId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnAlignment("dedcnPercent", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<DeductionDM> listDeduction = new ArrayList<DeductionDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfDeduDesc.getValue() + ", " + tfDeduCode.getValue()
+					+ (String) cbStatus.getValue());
+			listDeduction = serviceDeduction.getDuctionList(null, tfDeduCode.getValue(), companyid,
+					tfDeduDesc.getValue(), (String) cbStatus.getValue(), "F");
+			recordCnt = listDeduction.size();
+			beanDeductionDM = new BeanItemContainer<DeductionDM>(DeductionDM.class);
+			beanDeductionDM.addAll(listDeduction);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Deduction. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanDeductionDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "deductionId", "deductionCode", "deducnDesc",
+					"dedcnPercent", "status", "lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Deduction Code", "Deduction Desc",
+					"Percentage (%)", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("deductionId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnAlignment("dedcnPercent", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -211,23 +216,28 @@ public class Deduction extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editDeduction() {
-		DeductionDM editDeduction = beanDeductionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		pkDeductionId = editDeduction.getDeductionId().toString();
-		if (editDeduction.getDeducnDesc() != null) {
-			tfDeduDesc.setValue(editDeduction.getDeducnDesc());
+		try {
+			DeductionDM editDeduction = beanDeductionDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			pkDeductionId = editDeduction.getDeductionId().toString();
+			if (editDeduction.getDeducnDesc() != null) {
+				tfDeduDesc.setValue(editDeduction.getDeducnDesc());
+			}
+			if (editDeduction.getDeductionCode() != null) {
+				tfDeduCode.setValue(editDeduction.getDeductionCode());
+			}
+			if (editDeduction.getDedcnPercent() != null) {
+				tfDeduPercent.setValue(editDeduction.getDedcnPercent().toString());
+			}
+			if (editDeduction.getAppAllGRD().equals("Y")) {
+				chkAppAllGRD.setValue(true);
+			} else {
+				chkAppAllGRD.setValue(false);
+			}
+			cbStatus.setValue(editDeduction.getStatus());
 		}
-		if (editDeduction.getDeductionCode() != null) {
-			tfDeduCode.setValue(editDeduction.getDeductionCode());
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		if (editDeduction.getDedcnPercent() != null) {
-			tfDeduPercent.setValue(editDeduction.getDedcnPercent().toString());
-		}
-		if (editDeduction.getAppAllGRD().equals("Y")) {
-			chkAppAllGRD.setValue(true);
-		} else {
-			chkAppAllGRD.setValue(false);
-		}
-		cbStatus.setValue(editDeduction.getStatus());
 	}
 	
 	// Base class implementations

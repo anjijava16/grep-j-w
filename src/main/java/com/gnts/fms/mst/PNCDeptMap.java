@@ -174,19 +174,24 @@ public class PNCDeptMap extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editPNCDeptMap() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			PNCDeptMapDM pncDeptMapDM = beanPNCDeptMapDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			pncDeptMap = pncDeptMapDM.getPncmapid().toString();
-			if (pncDeptMapDM.getPncid() != null) {
-				cbPNCCenters.setValue(pncDeptMapDM.getPncid());
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				PNCDeptMapDM pncDeptMapDM = beanPNCDeptMapDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				pncDeptMap = pncDeptMapDM.getPncmapid().toString();
+				if (pncDeptMapDM.getPncid() != null) {
+					cbPNCCenters.setValue(pncDeptMapDM.getPncid());
+				}
+				if (pncDeptMapDM.getDeptid() != null) {
+					cbDepartmentName.setValue(pncDeptMapDM.getDeptid());
+				}
+				cbStatus.setValue(pncDeptMapDM.getStatus());
 			}
-			if (pncDeptMapDM.getDeptid() != null) {
-				cbDepartmentName.setValue(pncDeptMapDM.getDeptid());
-			}
-			cbStatus.setValue(pncDeptMapDM.getStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

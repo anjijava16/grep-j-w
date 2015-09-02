@@ -84,7 +84,7 @@ public class Accounts extends BaseTransUI {
 	private AccountsService serviceAccounts = (AccountsService) SpringContextHelper.getBean("accounts");
 	private BankService serviceBank = (BankService) SpringContextHelper.getBean("fmsbank");
 	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private AccountTypeService serviceAccounttype = (AccountTypeService) SpringContextHelper.getBean("accounttype");
 	private CurrencyService serviceCurrency = (CurrencyService) SpringContextHelper.getBean("currency");
 	private BankBranchService serviceBankBranch = (BankBranchService) SpringContextHelper.getBean("bankbranch");
@@ -295,8 +295,8 @@ public class Accounts extends BaseTransUI {
 	 */
 	private void loadEmployeeList() {
 		try {
-			List<EmployeeDM> list = servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyId, null,
-					null, null, null, "P");
+			List<EmployeeDM> list = serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null,
+					null, null, "P");
 			BeanContainer<Long, EmployeeDM> employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			employeebeans.setBeanIdProperty("employeeid");
 			employeebeans.addAll(list);
@@ -452,99 +452,105 @@ public class Accounts extends BaseTransUI {
 	}
 	
 	private void editAccounts() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			AccountsDM accountsDM = beanAccountsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			accId = accountsDM.getAccountId();
-			if (accountsDM.getAccGroup() != null) {
-				cbAccountGrp.setValue(accountsDM.getAccGroup());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				AccountsDM accountsDM = beanAccountsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				accId = accountsDM.getAccountId();
+				if (accountsDM.getAccGroup() != null) {
+					cbAccountGrp.setValue(accountsDM.getAccGroup());
+				}
+				if (accountsDM.getAccountname() != null) {
+					tfAccountName.setValue(accountsDM.getAccountname());
+				}
+				if (accountsDM.getAccountdt() != null) {
+					dfAccountDate.setValue(accountsDM.getAccountdt());
+				}
+				tffinanceYr.setReadOnly(false);
+				if (accountsDM.getFinanceyear() != null) {
+					tffinanceYr.setValue(accountsDM.getFinanceyear());
+					tffinanceYr.setReadOnly(true);
+				}
+				if (accountsDM.getGenerateVoucherYN().equals("Y")) {
+					ckGenerateVoucheryn.setValue(true);
+				} else {
+					ckGenerateVoucheryn.setValue(false);
+				}
+				if (accountsDM.getEmployeeId() != null) {
+					cbOwnerName.setValue(accountsDM.getEmployeeId());
+				}
+				if (accountsDM.getBankId() != null) {
+					cbBankName.setValue(accountsDM.getBankId());
+				}
+				if (accountsDM.getBankbranchId() != null) {
+					cbBankBranch.setValue(accountsDM.getBankbranchId());
+				}
+				if (accountsDM.getVendorId() != null) {
+					cbVendorName.setValue(accountsDM.getVendorId());
+				}
+				if (accountsDM.getClientId() != null) {
+					cbClientName.setValue(accountsDM.getClientId());
+				}
+				if (accountsDM.getAccttypeid() != null) {
+					cbAccountType.setValue(accountsDM.getAccttypeid().toString());
+				}
+				if (accountsDM.getCcyid() != null) {
+					cbCurrency.setValue(accountsDM.getCcyid());
+				}
+				if (accountsDM.getOpenbalance() != null) {
+					tfOpenBalance.setReadOnly(false);
+					tfOpenBalance.setValue(accountsDM.getOpenbalance().toString());
+					tfOpenBalance.setReadOnly(true);
+				}
+				if (accountsDM.getParkedAmt() != null) {
+					tfParkedAmt.setReadOnly(false);
+					tfParkedAmt.setValue(accountsDM.getParkedAmt().toString());
+					tfParkedAmt.setReadOnly(true);
+				}
+				if (accountsDM.getCurrentBalance() != null) {
+					tfCurrentBalance.setReadOnly(false);
+					tfCurrentBalance.setValue(accountsDM.getCurrentBalance().toString());
+					tfCurrentBalance.setReadOnly(true);
+				}
+				String amrm = accountsDM.getApproveauthRMAM();
+				if (amrm.equals("Account Mgr.")) {
+					amrm = "AM";
+				} else {
+					amrm = "RM";
+				}
+				cbApprovelAuth.setValue(amrm);
+				if (accountsDM.getSelfapproveyn().equals("Y")) {
+					ckSelfApprovel.setValue(true);
+				} else {
+					ckSelfApprovel.setValue(false);
+				}
+				if (accountsDM.getApprovemanager() != null) {
+					cbApproveManager.setValue(accountsDM.getApprovemanager());
+				}
+				if (accountsDM.getRemarks() != null) {
+					tfRemarks.setValue(accountsDM.getRemarks());
+				}
+				if (accountsDM.getParentAccId() != null) {
+					cbParentAccId.setValue(accountsDM.getParentAccId());
+				}
+				if (accountsDM.getSelfapproveyn().equals("Y")) {
+					ckSelfApprovel.setValue(true);
+				} else {
+					ckSelfApprovel.setValue(false);
+				}
+				tfAccountNumber.setReadOnly(false);
+				tfAccountNumber.setValue(accountsDM.getAccountno());
+				tfAccountNumber.setReadOnly(true);
+				cbStatus.setValue(accountsDM.getAcctstatus());
+				lsAccountOwners.setValue(null);
+				List<AccountOwnersDM> listAccOwner = serviceAccountOwner.getAccountOwnerList(null, accId, null,
+						"Active");
+				for (AccountOwnersDM accOwner : listAccOwner) {
+					lsAccountOwners.select(accOwner.getEmpid());
+				}
 			}
-			if (accountsDM.getAccountname() != null) {
-				tfAccountName.setValue(accountsDM.getAccountname());
-			}
-			if (accountsDM.getAccountdt() != null) {
-				dfAccountDate.setValue(accountsDM.getAccountdt());
-			}
-			tffinanceYr.setReadOnly(false);
-			if (accountsDM.getFinanceyear() != null) {
-				tffinanceYr.setValue(accountsDM.getFinanceyear());
-				tffinanceYr.setReadOnly(true);
-			}
-			if (accountsDM.getGenerateVoucherYN().equals("Y")) {
-				ckGenerateVoucheryn.setValue(true);
-			} else {
-				ckGenerateVoucheryn.setValue(false);
-			}
-			if (accountsDM.getEmployeeId() != null) {
-				cbOwnerName.setValue(accountsDM.getEmployeeId());
-			}
-			if (accountsDM.getBankId() != null) {
-				cbBankName.setValue(accountsDM.getBankId());
-			}
-			if (accountsDM.getBankbranchId() != null) {
-				cbBankBranch.setValue(accountsDM.getBankbranchId());
-			}
-			if (accountsDM.getVendorId() != null) {
-				cbVendorName.setValue(accountsDM.getVendorId());
-			}
-			if (accountsDM.getClientId() != null) {
-				cbClientName.setValue(accountsDM.getClientId());
-			}
-			if (accountsDM.getAccttypeid() != null) {
-				cbAccountType.setValue(accountsDM.getAccttypeid().toString());
-			}
-			if (accountsDM.getCcyid() != null) {
-				cbCurrency.setValue(accountsDM.getCcyid());
-			}
-			if (accountsDM.getOpenbalance() != null) {
-				tfOpenBalance.setReadOnly(false);
-				tfOpenBalance.setValue(accountsDM.getOpenbalance().toString());
-				tfOpenBalance.setReadOnly(true);
-			}
-			if (accountsDM.getParkedAmt() != null) {
-				tfParkedAmt.setReadOnly(false);
-				tfParkedAmt.setValue(accountsDM.getParkedAmt().toString());
-				tfParkedAmt.setReadOnly(true);
-			}
-			if (accountsDM.getCurrentBalance() != null) {
-				tfCurrentBalance.setReadOnly(false);
-				tfCurrentBalance.setValue(accountsDM.getCurrentBalance().toString());
-				tfCurrentBalance.setReadOnly(true);
-			}
-			String amrm = accountsDM.getApproveauthRMAM();
-			if (amrm.equals("Account Mgr.")) {
-				amrm = "AM";
-			} else {
-				amrm = "RM";
-			}
-			cbApprovelAuth.setValue(amrm);
-			if (accountsDM.getSelfapproveyn().equals("Y")) {
-				ckSelfApprovel.setValue(true);
-			} else {
-				ckSelfApprovel.setValue(false);
-			}
-			if (accountsDM.getApprovemanager() != null) {
-				cbApproveManager.setValue(accountsDM.getApprovemanager());
-			}
-			if (accountsDM.getRemarks() != null) {
-				tfRemarks.setValue(accountsDM.getRemarks());
-			}
-			if (accountsDM.getParentAccId() != null) {
-				cbParentAccId.setValue(accountsDM.getParentAccId());
-			}
-			if (accountsDM.getSelfapproveyn().equals("Y")) {
-				ckSelfApprovel.setValue(true);
-			} else {
-				ckSelfApprovel.setValue(false);
-			}
-			tfAccountNumber.setReadOnly(false);
-			tfAccountNumber.setValue(accountsDM.getAccountno());
-			tfAccountNumber.setReadOnly(true);
-			cbStatus.setValue(accountsDM.getAcctstatus());
-			lsAccountOwners.setValue(null);
-			List<AccountOwnersDM> listAccOwner = serviceAccountOwner.getAccountOwnerList(null, accId, null, "Active");
-			for (AccountOwnersDM accOwner : listAccOwner) {
-				lsAccountOwners.select(accOwner.getEmpid());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -820,7 +826,7 @@ public class Accounts extends BaseTransUI {
 				}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				logger.info(e.getMessage());
 			}
 			resetSearchDetails();
 			resetFields();

@@ -138,26 +138,31 @@ public class Allowance extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<AllowanceDM> listAllowance = new ArrayList<AllowanceDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfAlowncDesc.getValue() + ", " + tfAlownceCode.getValue()
-				+ (String) cbStatus.getValue());
-		listAllowance = serviceAllowance.getalowanceList(null, (String) tfAlownceCode.getValue(), companyid,
-				(String) tfAlowncDesc.getValue(), (String) cbStatus.getValue(), "F");
-		recordCnt = listAllowance.size();
-		beanAllowanceDM = new BeanItemContainer<AllowanceDM>(AllowanceDM.class);
-		beanAllowanceDM.addAll(listAllowance);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Allowance. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanAllowanceDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "alowncId", "alowncDesc", "alowncCode", "status",
-				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Allowance Desc", "Allowance Code", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("alowncId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<AllowanceDM> listAllowance = new ArrayList<AllowanceDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfAlowncDesc.getValue() + ", " + tfAlownceCode.getValue()
+					+ (String) cbStatus.getValue());
+			listAllowance = serviceAllowance.getalowanceList(null, (String) tfAlownceCode.getValue(), companyid,
+					(String) tfAlowncDesc.getValue(), (String) cbStatus.getValue(), "F");
+			recordCnt = listAllowance.size();
+			beanAllowanceDM = new BeanItemContainer<AllowanceDM>(AllowanceDM.class);
+			beanAllowanceDM.addAll(listAllowance);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Allowance. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanAllowanceDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "alowncId", "alowncDesc", "alowncCode", "status",
+					"lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Allowance Desc", "Allowance Code", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("alowncId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -174,20 +179,25 @@ public class Allowance extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editAllowance() {
-		AllowanceDM allowance = beanAllowanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		pkAllowanceId = allowance.getAlowncId().toString();
-		if (allowance.getAlowncDesc() != null) {
-			tfAlowncDesc.setValue(allowance.getAlowncDesc());
+		try {
+			AllowanceDM allowance = beanAllowanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			pkAllowanceId = allowance.getAlowncId().toString();
+			if (allowance.getAlowncDesc() != null) {
+				tfAlowncDesc.setValue(allowance.getAlowncDesc());
+			}
+			if (allowance.getAlowncCode() != null) {
+				tfAlownceCode.setValue(allowance.getAlowncCode());
+			}
+			if (allowance.getAddToGross().equals("Y")) {
+				chkAddToGros.setValue(true);
+			} else {
+				chkAddToGros.setValue(false);
+			}
+			cbStatus.setValue(allowance.getStatus());
 		}
-		if (allowance.getAlowncCode() != null) {
-			tfAlownceCode.setValue(allowance.getAlowncCode());
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		if (allowance.getAddToGross().equals("Y")) {
-			chkAddToGros.setValue(true);
-		} else {
-			chkAddToGros.setValue(false);
-		}
-		cbStatus.setValue(allowance.getStatus());
 	}
 	
 	// Base class implementations

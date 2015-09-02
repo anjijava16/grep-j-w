@@ -109,25 +109,30 @@ public class EmploymentType extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EmploymentTypeDM> listEmpType = new ArrayList<EmploymentTypeDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfEmpName.getValue() + ", " + cbStatus.getValue());
-		listEmpType = serviceEmpType.getEmpTypeList(null, tfEmpName.getValue(), companyid,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listEmpType.size();
-		beanEmploymentTypeDM = new BeanItemContainer<EmploymentTypeDM>(EmploymentTypeDM.class);
-		beanEmploymentTypeDM.addAll(listEmpType);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the EmploymentType. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanEmploymentTypeDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empTypeId", "empTypeName", "empStatus", "lastUpdatedDate",
-				"lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employment Type", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("empTypeId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EmploymentTypeDM> listEmpType = new ArrayList<EmploymentTypeDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfEmpName.getValue() + ", " + cbStatus.getValue());
+			listEmpType = serviceEmpType.getEmpTypeList(null, tfEmpName.getValue(), companyid,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = listEmpType.size();
+			beanEmploymentTypeDM = new BeanItemContainer<EmploymentTypeDM>(EmploymentTypeDM.class);
+			beanEmploymentTypeDM.addAll(listEmpType);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the EmploymentType. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanEmploymentTypeDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empTypeId", "empTypeName", "empStatus",
+					"lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employment Type", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("empTypeId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -141,16 +146,22 @@ public class EmploymentType extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editEmploymentType() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		empTypeId = sltedRcd.getItemProperty("empTypeId").getValue().toString();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Selected EmploymentType. Id -> " + empTypeId);
-		if (sltedRcd != null) {
-			tfEmpName.setValue(sltedRcd.getItemProperty("empTypeName").getValue().toString());
-			String stCode = sltedRcd.getItemProperty("empStatus").getValue().toString();
-			cbStatus.setValue(stCode);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
+			empTypeId = sltedRcd.getItemProperty("empTypeId").getValue().toString();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Selected EmploymentType. Id -> " + empTypeId);
+			if (sltedRcd != null) {
+				tfEmpName.setValue(sltedRcd.getItemProperty("empTypeName").getValue().toString());
+				String stCode = sltedRcd.getItemProperty("empStatus").getValue().toString();
+				cbStatus.setValue(stCode);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

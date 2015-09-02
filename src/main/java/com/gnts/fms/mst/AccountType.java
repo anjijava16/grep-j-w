@@ -86,7 +86,6 @@ public class AccountType extends BaseUI {
 				+ "Inside Build View");
 		// add fields to panel
 		tfAccountType = new GERPTextField("Account Type");
-		
 		tfAccountType.setMaxLength(30);
 		formLayout1 = new FormLayout();
 		formLayout2 = new FormLayout();
@@ -119,44 +118,54 @@ public class AccountType extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfAccountType.getValue() + "," + (String) cbStatus.getValue() + ", "
-				+ companyId + ",F" + "Loading Search...");
-		List<AccountTypeDM> listAccountype = new ArrayList<AccountTypeDM>();
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfAccountType.getValue() + "," + (String) cbStatus.getValue() + ", "
-				+ companyId + ",F");
-		listAccountype = serviceAccountType.getAccountTypeList(companyId, tfAccountType.getValue(),
-				(String) cbStatus.getValue());
-		recordCnt = listAccountype.size();
-		beanAcountTypeDM = new BeanItemContainer<AccountTypeDM>(AccountTypeDM.class);
-		beanAcountTypeDM.addAll(listAccountype);
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfAccountType.getValue() + ",  Active ," + companyId + ",F"
-				+ "Got the AccountType result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanAcountTypeDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "accttypeid", "accttype", "accttypestatus", "lastupdateddt",
-				"lastupdatedby", });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Account Type", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("accttypeid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+					+ "Search Parameters are " + ":" + tfAccountType.getValue() + "," + (String) cbStatus.getValue()
+					+ ", " + companyId + ",F" + "Loading Search...");
+			List<AccountTypeDM> listAccountype = new ArrayList<AccountTypeDM>();
+			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+					+ "Search Parameters are " + ":" + tfAccountType.getValue() + "," + (String) cbStatus.getValue()
+					+ ", " + companyId + ",F");
+			listAccountype = serviceAccountType.getAccountTypeList(companyId, tfAccountType.getValue(),
+					(String) cbStatus.getValue());
+			recordCnt = listAccountype.size();
+			beanAcountTypeDM = new BeanItemContainer<AccountTypeDM>(AccountTypeDM.class);
+			beanAcountTypeDM.addAll(listAccountype);
+			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+					+ "Search Parameters are " + ":" + tfAccountType.getValue() + ",  Active ," + companyId + ",F"
+					+ "Got the AccountType result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanAcountTypeDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "accttypeid", "accttype", "accttypestatus",
+					"lastupdateddt", "lastupdatedby", });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Account Type", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("accttypeid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editAccountType() {
-		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
-				+ "Search Parameters are " + ":" + tfAccountType.getValue() + ",  Active ," + companyId + ",F"
-				+ "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (sltedRcd != null) {
-			accttypeid = sltedRcd.getItemProperty("accttypeid").getValue().toString();
+		try {
 			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 					+ "Search Parameters are " + ":" + tfAccountType.getValue() + ",  Active ," + companyId + ",F"
-					+ "Selected Account Type Id -> " + accttypeid);
-			tfAccountType.setValue(sltedRcd.getItemProperty("accttype").getValue().toString());
-			cbStatus.setValue(sltedRcd.getItemProperty("accttypestatus").getValue().toString());
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			Item sltedRcd = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
+			if (sltedRcd != null) {
+				accttypeid = sltedRcd.getItemProperty("accttypeid").getValue().toString();
+				logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
+						+ "Search Parameters are " + ":" + tfAccountType.getValue() + ",  Active ," + companyId + ",F"
+						+ "Selected Account Type Id -> " + accttypeid);
+				tfAccountType.setValue(sltedRcd.getItemProperty("accttype").getValue().toString());
+				cbStatus.setValue(sltedRcd.getItemProperty("accttypestatus").getValue().toString());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

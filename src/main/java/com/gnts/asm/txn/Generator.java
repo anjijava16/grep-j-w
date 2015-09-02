@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -197,10 +201,26 @@ public class Generator extends BaseTransUI {
 					tfRpmHz.setValue("0");
 					e.printStackTrace();
 				}
+				try {
+					getGenSetTotalTime();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					logger.info(e.getMessage());
+				}
 			}
 		});
 		loadAssetList();
 		dfRefDate = new GERPPopupDateField(" Start Date");
+		dfRefDate.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				getGenSetTotalTime();
+			}
+		});
 		dfRefEndDate = new GERPPopupDateField("End Date");
 		cbStatus.setWidth("150");
 		hlsearchlayout = new GERPAddEditHLayout();
@@ -209,6 +229,20 @@ public class Generator extends BaseTransUI {
 		resetFields();
 		loadSrchRslt();
 		btnPrint.setVisible(true);
+	}
+	
+	private void getGenSetTotalTime() {
+		// TODO Auto-generated method stub
+		try {
+			for (GeneratorDM generatorDM : serviceGenerator.getGeneratorDetailList(null, (Long) cbAssetName.getValue(),
+					dfRefDate.getValue(), null, null, addDays(dfRefDate.getValue(), 1))) {
+				tfGenTotalTime.setValue(generatorDM.getGenTotalTime().toString());
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadGenTotalTime() {
@@ -679,6 +713,23 @@ public class Generator extends BaseTransUI {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private Date addDays(Date d, int days) {
+		DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		String strDate = sdf.format(d);
+		Date parsedDate = null;
+		try {
+			parsedDate = sdf.parse(strDate);
+		}
+		catch (ParseException e) {
+			// TODO Auto-generated catch block
+			logger.warn("calculate days" + e);
+		}
+		Calendar now = Calendar.getInstance();
+		now.setTime(parsedDate);
+		now.add(Calendar.DAY_OF_MONTH, days);
+		return now.getTime();
 	}
 	
 	// Load Last Unit Values.

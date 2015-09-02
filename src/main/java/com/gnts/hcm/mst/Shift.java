@@ -213,25 +213,30 @@ public class Shift extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<ShiftDM> listShift = new ArrayList<ShiftDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + txtShiftName.getValue() + ", " + cbStatus.getValue());
-		listShift = serviceShift.getShiftList(null, txtShiftName.getValue(), companyid, (String) cbStatus.getValue(),
-				"F");
-		recordCnt = listShift.size();
-		beanShift = new BeanItemContainer<ShiftDM>(ShiftDM.class);
-		beanShift.addAll(listShift);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Shift Type. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanShift);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "shiftId", "shiftName", "status", "lastUpdatedDate",
-				"lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Shift Name", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("shiftId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<ShiftDM> listShift = new ArrayList<ShiftDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + txtShiftName.getValue() + ", " + cbStatus.getValue());
+			listShift = serviceShift.getShiftList(null, txtShiftName.getValue(), companyid,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = listShift.size();
+			beanShift = new BeanItemContainer<ShiftDM>(ShiftDM.class);
+			beanShift.addAll(listShift);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Shift Type. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanShift);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "shiftId", "shiftName", "status", "lastUpdatedDate",
+					"lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Shift Name", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("shiftId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -286,7 +291,7 @@ public class Shift extends BaseUI {
 			cbStatus.setValue(shiftDM.getStatus());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -423,7 +428,7 @@ public class Shift extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 }

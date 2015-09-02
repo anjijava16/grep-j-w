@@ -252,36 +252,41 @@ public class GradeAllowance extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		cbAlwncDesc.setRequired(false);
-		cbGradeDesc.setRequired(false);
-		List<GradeAllowanceDM> listGradeAllowance = new ArrayList<GradeAllowanceDM>();
-		Long gradeId = null;
-		if (cbGradeDesc.getValue() != null) {
-			gradeId = ((Long.valueOf(cbGradeDesc.getValue().toString())));
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			cbAlwncDesc.setRequired(false);
+			cbGradeDesc.setRequired(false);
+			List<GradeAllowanceDM> listGradeAllowance = new ArrayList<GradeAllowanceDM>();
+			Long gradeId = null;
+			if (cbGradeDesc.getValue() != null) {
+				gradeId = ((Long.valueOf(cbGradeDesc.getValue().toString())));
+			}
+			Long alwncId = null;
+			if (cbAlwncDesc.getValue() != null) {
+				alwncId = ((Long.valueOf(cbAlwncDesc.getValue().toString())));
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfMinValue.getValue() + ", " + tfMaxValue.getValue()
+					+ (String) cbStatus.getValue() + ", " + gradeId + "," + alwncId);
+			listGradeAllowance = serviceGradeAllowance.getGradeAllowanceList(null, gradeId, alwncId,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = listGradeAllowance.size();
+			beanGradeEarningDM = new BeanItemContainer<GradeAllowanceDM>(GradeAllowanceDM.class);
+			beanGradeEarningDM.addAll(listGradeAllowance);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the GradeEarning. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanGradeEarningDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "grdAlwncId", "gradeDESC", "alowncDesc", "status",
+					"lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Grand Name", "Allowance Name", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("grdAlwncId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
-		Long alwncId = null;
-		if (cbAlwncDesc.getValue() != null) {
-			alwncId = ((Long.valueOf(cbAlwncDesc.getValue().toString())));
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfMinValue.getValue() + ", " + tfMaxValue.getValue()
-				+ (String) cbStatus.getValue() + ", " + gradeId + "," + alwncId);
-		listGradeAllowance = serviceGradeAllowance.getGradeAllowanceList(null, gradeId, alwncId,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listGradeAllowance.size();
-		beanGradeEarningDM = new BeanItemContainer<GradeAllowanceDM>(GradeAllowanceDM.class);
-		beanGradeEarningDM.addAll(listGradeAllowance);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the GradeEarning. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanGradeEarningDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "grdAlwncId", "gradeDESC", "alowncDesc", "status",
-				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Grand Name", "Allowance Name", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("grdAlwncId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
 	
 	// Reset the field values to default values
@@ -309,28 +314,33 @@ public class GradeAllowance extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editGradeEarning() {
-		cbAlwncDesc.setComponentError(null);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			GradeAllowanceDM editGradeEarning = beanGradeEarningDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			pkGradeAllowanceId = editGradeEarning.getAlwnceId().toString();
-			if (editGradeEarning.getMinVal() != null) {
-				tfMinValue.setValue(editGradeEarning.getMinVal().toString());
+		try {
+			cbAlwncDesc.setComponentError(null);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				GradeAllowanceDM editGradeEarning = beanGradeEarningDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				pkGradeAllowanceId = editGradeEarning.getAlwnceId().toString();
+				if (editGradeEarning.getMinVal() != null) {
+					tfMinValue.setValue(editGradeEarning.getMinVal().toString());
+				}
+				if (editGradeEarning.getMaxVal() != null) {
+					tfMaxValue.setValue(editGradeEarning.getMaxVal().toString());
+				}
+				if (editGradeEarning.getMaxPer() != null) {
+					tfMaxPer.setValue(editGradeEarning.getMaxPer().toString());
+				}
+				if (editGradeEarning.getMinPer() != null) {
+					tfMinPer.setValue(editGradeEarning.getMinPer().toString());
+				}
+				cbStatus.setValue(editGradeEarning.getStatus());
+				cbGradeDesc.setValue(editGradeEarning.getGradeId());
+				cbAlwncDesc.setValue(editGradeEarning.getAlwnceId());
+				cbAlwncPercent.setValue(editGradeEarning.getIsFlatPer());
+				cbOnBasicGros.setValue(editGradeEarning.getOnBasicGros());
+				cbPayBasic.setValue(editGradeEarning.getPayBasis());
 			}
-			if (editGradeEarning.getMaxVal() != null) {
-				tfMaxValue.setValue(editGradeEarning.getMaxVal().toString());
-			}
-			if (editGradeEarning.getMaxPer() != null) {
-				tfMaxPer.setValue(editGradeEarning.getMaxPer().toString());
-			}
-			if (editGradeEarning.getMinPer() != null) {
-				tfMinPer.setValue(editGradeEarning.getMinPer().toString());
-			}
-			cbStatus.setValue(editGradeEarning.getStatus());
-			cbGradeDesc.setValue(editGradeEarning.getGradeId());
-			cbAlwncDesc.setValue(editGradeEarning.getAlwnceId());
-			cbAlwncPercent.setValue(editGradeEarning.getIsFlatPer());
-			cbOnBasicGros.setValue(editGradeEarning.getOnBasicGros());
-			cbPayBasic.setValue(editGradeEarning.getPayBasis());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -528,6 +538,7 @@ public class GradeAllowance extends BaseUI {
 			cbGradeDesc.setContainerDataSource(beanGradeDM);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -540,7 +551,7 @@ public class GradeAllowance extends BaseUI {
 			cbAlwncDesc.setContainerDataSource(beanAlwncDM);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 }

@@ -167,6 +167,7 @@ public class WorkDays extends BaseUI {
 			cbBranch.setContainerDataSource(auditConfigbean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -227,8 +228,7 @@ public class WorkDays extends BaseUI {
 			});
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.error("error on loadSrchRslt(), The Error is ----->" + e);
+			logger.info(e.getMessage());
 		}
 	}
 	

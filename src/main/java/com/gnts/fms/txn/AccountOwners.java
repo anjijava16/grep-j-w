@@ -314,7 +314,7 @@ public class AccountOwners extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			throw new ERPException.ValidationException();
 		}
 	}
 	

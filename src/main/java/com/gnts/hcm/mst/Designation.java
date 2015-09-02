@@ -154,33 +154,39 @@ public class Designation extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<DesignationDM> listDesignation = new ArrayList<DesignationDM>();
-		Long clsfcnId = null;
-		if (cbJobClsName.getValue() != null) {
-			clsfcnId = (Long.valueOf(cbJobClsName.getValue().toString()));
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<DesignationDM> listDesignation = new ArrayList<DesignationDM>();
+			Long clsfcnId = null;
+			if (cbJobClsName.getValue() != null) {
+				clsfcnId = (Long.valueOf(cbJobClsName.getValue().toString()));
+			}
+			Long gradeId = null;
+			if (cbGRDDesc.getValue() != null) {
+				gradeId = (Long.valueOf(cbGRDDesc.getValue().toString()));
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfDescName.getValue() + ", " + tfDescName.getValue()
+					+ (String) cbStatus.getValue() + ", " + clsfcnId);
+			listDesignation = serviceDesignation.getDesignationList(null, gradeId, tfDescName.getValue(), clsfcnId,
+					companyid, (String) cbStatus.getValue(), "F");
+			recordCnt = listDesignation.size();
+			beanDesignationDM = new BeanItemContainer<DesignationDM>(DesignationDM.class);
+			beanDesignationDM.addAll(listDesignation);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Grade. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanDesignationDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "designationId", "designationName", "gradeDesc",
+					"jobClasfnName", "status", "lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Designation Name", "Grade Desc.",
+					"Job classification Name", "Status", "Last Updated Date", "Last Updated By", });
+			tblMstScrSrchRslt.setColumnAlignment("designationId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
-		Long gradeId = null;
-		if (cbGRDDesc.getValue() != null) {
-			gradeId = (Long.valueOf(cbGRDDesc.getValue().toString()));
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfDescName.getValue() + ", " + tfDescName.getValue()
-				+ (String) cbStatus.getValue() + ", " + clsfcnId);
-		listDesignation = serviceDesignation.getDesignationList(null, gradeId, tfDescName.getValue(), clsfcnId,
-				companyid, (String) cbStatus.getValue(), "F");
-		recordCnt = listDesignation.size();
-		beanDesignationDM = new BeanItemContainer<DesignationDM>(DesignationDM.class);
-		beanDesignationDM.addAll(listDesignation);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Grade. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanDesignationDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "designationId", "designationName", "gradeDesc",
-				"jobClasfnName", "status", "lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Designation Name", "Grade Desc.",
-				"Job classification Name", "Status", "Last Updated Date", "Last Updated By", });
-		tblMstScrSrchRslt.setColumnAlignment("designationId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
 	
 	// Reset the field values to default values
@@ -200,27 +206,32 @@ public class Designation extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editDesignation() {
-		DesignationDM editDesignation = beanDesignationDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		pkDesigId = editDesignation.getDesignationId().toString();
-		if (editDesignation.getDesignationName() != null) {
-			tfDescName.setValue(editDesignation.getDesignationName());
-		}
-		if (editDesignation.getJobSpec() != null) {
-			hlimage.removeAllComponents();
-			byte[] myimage = (byte[]) editDesignation.getJobSpec();
-			UploadUI uploadObject = new UploadUI(hlimage);
-			uploadObject.dispayImage(myimage, editDesignation.getDesignationName());
-		} else {
-			try {
-				new UploadUI(hlimage);
+		try {
+			DesignationDM editDesignation = beanDesignationDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			pkDesigId = editDesignation.getDesignationId().toString();
+			if (editDesignation.getDesignationName() != null) {
+				tfDescName.setValue(editDesignation.getDesignationName());
 			}
-			catch (Exception e) {
-				e.printStackTrace();
+			if (editDesignation.getJobSpec() != null) {
+				hlimage.removeAllComponents();
+				byte[] myimage = (byte[]) editDesignation.getJobSpec();
+				UploadUI uploadObject = new UploadUI(hlimage);
+				uploadObject.dispayImage(myimage, editDesignation.getDesignationName());
+			} else {
+				try {
+					new UploadUI(hlimage);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
+			cbStatus.setValue(editDesignation.getStatus());
+			cbGRDDesc.setValue(Long.valueOf(editDesignation.getGradeId()));
+			cbJobClsName.setValue(Long.valueOf(editDesignation.getJobClasfnId().toString()));
 		}
-		cbStatus.setValue(editDesignation.getStatus());
-		cbGRDDesc.setValue(Long.valueOf(editDesignation.getGradeId()));
-		cbJobClsName.setValue(Long.valueOf(editDesignation.getJobClasfnId().toString()));
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Base class implementations
@@ -361,7 +372,7 @@ public class Designation extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -374,6 +385,7 @@ public class Designation extends BaseUI {
 			cbGRDDesc.setContainerDataSource(beanGradeDM);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -387,6 +399,7 @@ public class Designation extends BaseUI {
 			cbJobClsName.setContainerDataSource(beanClsFcnDM);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

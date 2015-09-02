@@ -285,49 +285,54 @@ public class AccountReceivables extends BaseUI {
 	}
 	
 	private void editActReceivables() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			AccountReceivablesDM accountReceivablesDM = beansAccountReceivablesDM.getItem(tblMstScrSrchRslt.getValue())
-					.getBean();
-			primaryid = accountReceivablesDM.getAccrcbleId().toString();
-			if (accountReceivablesDM.getBranchId() != null) {
-				cbBranchName.setValue(accountReceivablesDM.getBranchId());
-			}
-			if (accountReceivablesDM.getEntryDate() != null) {
-				dfEntryDate.setValue(accountReceivablesDM.getEntryDate());
-			}
-			if (accountReceivablesDM.getAccountId() != null) {
-				Long accid = accountReceivablesDM.getAccountId();
-				Collection<?> accids = cbAccountReference.getItemIds();
-				for (Iterator<?> iterator = accids.iterator(); iterator.hasNext();) {
-					Object itemid = (Object) iterator.next();
-					BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemid);
-					AccountsDM edit = (AccountsDM) item.getBean();
-					if (accid != null && accid.equals(edit.getAccountId())) {
-						cbAccountReference.setValue(itemid);
-						break;
-					} else {
-						cbAccountReference.setValue(null);
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				AccountReceivablesDM accountReceivablesDM = beansAccountReceivablesDM.getItem(
+						tblMstScrSrchRslt.getValue()).getBean();
+				primaryid = accountReceivablesDM.getAccrcbleId().toString();
+				if (accountReceivablesDM.getBranchId() != null) {
+					cbBranchName.setValue(accountReceivablesDM.getBranchId());
+				}
+				if (accountReceivablesDM.getEntryDate() != null) {
+					dfEntryDate.setValue(accountReceivablesDM.getEntryDate());
+				}
+				if (accountReceivablesDM.getAccountId() != null) {
+					Long accid = accountReceivablesDM.getAccountId();
+					Collection<?> accids = cbAccountReference.getItemIds();
+					for (Iterator<?> iterator = accids.iterator(); iterator.hasNext();) {
+						Object itemid = (Object) iterator.next();
+						BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemid);
+						AccountsDM edit = (AccountsDM) item.getBean();
+						if (accid != null && accid.equals(edit.getAccountId())) {
+							cbAccountReference.setValue(itemid);
+							break;
+						} else {
+							cbAccountReference.setValue(null);
+						}
 					}
 				}
+				if (accountReceivablesDM.getInvoiceNo() != null) {
+					tfInvoiceNo.setValue(accountReceivablesDM.getInvoiceNo().toString());
+				}
+				if (accountReceivablesDM.getInvoiceDate() != null) {
+					dfInvoiceDate.setValue(accountReceivablesDM.getInvoiceDate());
+				}
+				if (accountReceivablesDM.getInvoiceAmt() != null) {
+					tfInvoiceAmt.setValue(accountReceivablesDM.getInvoiceAmt().toString());
+				}
+				if (accountReceivablesDM.getBalanceAmt() != null) {
+					tfBalanceAmt.setValue(accountReceivablesDM.getBalanceAmt().toString());
+				}
+				if (accountReceivablesDM.getPaidAmt() != null) {
+					tfPaidAmt.setValue(accountReceivablesDM.getPaidAmt().toString());
+				}
+				if (accountReceivablesDM.getRemarks() != null) {
+					tfRemarks.setValue(accountReceivablesDM.getRemarks());
+				}
 			}
-			if (accountReceivablesDM.getInvoiceNo() != null) {
-				tfInvoiceNo.setValue(accountReceivablesDM.getInvoiceNo().toString());
-			}
-			if (accountReceivablesDM.getInvoiceDate() != null) {
-				dfInvoiceDate.setValue(accountReceivablesDM.getInvoiceDate());
-			}
-			if (accountReceivablesDM.getInvoiceAmt() != null) {
-				tfInvoiceAmt.setValue(accountReceivablesDM.getInvoiceAmt().toString());
-			}
-			if (accountReceivablesDM.getBalanceAmt() != null) {
-				tfBalanceAmt.setValue(accountReceivablesDM.getBalanceAmt().toString());
-			}
-			if (accountReceivablesDM.getPaidAmt() != null) {
-				tfPaidAmt.setValue(accountReceivablesDM.getPaidAmt().toString());
-			}
-			if (accountReceivablesDM.getRemarks() != null) {
-				tfRemarks.setValue(accountReceivablesDM.getRemarks());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

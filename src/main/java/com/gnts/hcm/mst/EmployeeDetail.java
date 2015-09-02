@@ -418,7 +418,7 @@ public class EmployeeDetail implements ClickListener {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			EmployeeDtlsDM employeeDtlsDM = new EmployeeDtlsDM();
@@ -480,25 +480,25 @@ public class EmployeeDetail implements ClickListener {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			loadTimeoffDetails();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			loadEmpAddress();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			loadEudcation();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -507,61 +507,68 @@ public class EmployeeDetail implements ClickListener {
 			loadOndutyDetails();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			loadPermissionDetails();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			loadAbsentDetails();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			loadLateDetails();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			loadLeaveList();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			loadEarnings();
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 		try {
 			loadDeductions();
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadOndutyDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "loading SearchResult Details...");
-		List<EmployeeOndutyDM> list = new ArrayList<EmployeeOndutyDM>();
-		tblOnduty.removeAllItems();
-		if (((EmployeeDM) cbEmployee.getValue()).getEmployeeid() != null) {
-			list = serviceOnduty.getempondutylist(null, ((EmployeeDM) cbEmployee.getValue()).getEmployeeid(), "Active",
-					"F");
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "loading SearchResult Details...");
+			List<EmployeeOndutyDM> list = new ArrayList<EmployeeOndutyDM>();
+			tblOnduty.removeAllItems();
+			if (((EmployeeDM) cbEmployee.getValue()).getEmployeeid() != null) {
+				list = serviceOnduty.getempondutylist(null, ((EmployeeDM) cbEmployee.getValue()).getEmployeeid(),
+						"Active", "F");
+			}
+			BeanItemContainer<EmployeeOndutyDM> beans = new BeanItemContainer<EmployeeOndutyDM>(EmployeeOndutyDM.class);
+			beans.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Employee Onduty. result set");
+			tblOnduty.setContainerDataSource(beans);
+			tblOnduty.setVisibleColumns(new Object[] { "datefrm", "dateto", "noofdays", "ondutyrks" });
+			tblOnduty.setColumnHeaders(new String[] { "From Date", "To Date", "No of Days", "Remarks" });
+			tblOnduty.setColumnFooter("ondutyrks", "No.of Records : " + list.size());
 		}
-		BeanItemContainer<EmployeeOndutyDM> beans = new BeanItemContainer<EmployeeOndutyDM>(EmployeeOndutyDM.class);
-		beans.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Employee Onduty. result set");
-		tblOnduty.setContainerDataSource(beans);
-		tblOnduty.setVisibleColumns(new Object[] { "datefrm", "dateto", "noofdays", "ondutyrks" });
-		tblOnduty.setColumnHeaders(new String[] { "From Date", "To Date", "No of Days", "Remarks" });
-		tblOnduty.setColumnFooter("ondutyrks", "No.of Records : " + list.size());
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadPermissionDetails() {
@@ -724,6 +731,7 @@ public class EmployeeDetail implements ClickListener {
 			cbEmployee.setContainerDataSource(beanLoadEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -740,6 +748,7 @@ public class EmployeeDetail implements ClickListener {
 			cbBranch.setContainerDataSource(beanBranch);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -756,6 +765,7 @@ public class EmployeeDetail implements ClickListener {
 			cbDepartment.setContainerDataSource(beanDepartment);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -773,6 +783,7 @@ public class EmployeeDetail implements ClickListener {
 			cbEmpType.setContainerDataSource(benemptype);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -788,6 +799,7 @@ public class EmployeeDetail implements ClickListener {
 			cbGrade.setContainerDataSource(beangrad);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -804,6 +816,7 @@ public class EmployeeDetail implements ClickListener {
 			cbPayperiod.setContainerDataSource(beanpayperiod);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -822,6 +835,7 @@ public class EmployeeDetail implements ClickListener {
 			cbDesignation.setContainerDataSource(beandesignation);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

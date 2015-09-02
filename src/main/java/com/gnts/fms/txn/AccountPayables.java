@@ -180,26 +180,31 @@ public class AccountPayables extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<AccountPayablesDM> listACPayable = new ArrayList<AccountPayablesDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbBranchName.getValue() + " , " + tfBillNo.getValue() + ", "
-				+ (String) cbStatus.getValue());
-		listACPayable = serviceAccountPayables.getAccountpayablesList(companyId, (Long) cbBranchName.getValue(),
-				tfBillNo.getValue(), (String) cbStatus.getValue(), null);
-		recordCnt = listACPayable.size();
-		beansAccountPayablesDM = new BeanItemContainer<AccountPayablesDM>(AccountPayablesDM.class);
-		beansAccountPayablesDM.addAll(listACPayable);
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Got the Account Payables List result set");
-		tblMstScrSrchRslt.setContainerDataSource(beansAccountPayablesDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "accPayableId", "branchName", "payStatus", "lastUpdatedDt",
-				"lastUpadatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("accPayableId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpadatedBy", "No.of Records:" + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<AccountPayablesDM> listACPayable = new ArrayList<AccountPayablesDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Search Parameters are " + companyId + ", " + (Long) cbBranchName.getValue() + " , "
+					+ tfBillNo.getValue() + ", " + (String) cbStatus.getValue());
+			listACPayable = serviceAccountPayables.getAccountpayablesList(companyId, (Long) cbBranchName.getValue(),
+					tfBillNo.getValue(), (String) cbStatus.getValue(), null);
+			recordCnt = listACPayable.size();
+			beansAccountPayablesDM = new BeanItemContainer<AccountPayablesDM>(AccountPayablesDM.class);
+			beansAccountPayablesDM.addAll(listACPayable);
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Got the Account Payables List result set");
+			tblMstScrSrchRslt.setContainerDataSource(beansAccountPayablesDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "accPayableId", "branchName", "payStatus",
+					"lastUpdatedDt", "lastUpadatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("accPayableId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpadatedBy", "No.of Records:" + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// For Load Active Branch Details based on Company
@@ -228,55 +233,60 @@ public class AccountPayables extends BaseUI {
 	}
 	
 	private void editActPayables() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			AccountPayablesDM accountPayablesDM = beansAccountPayablesDM.getItem(tblMstScrSrchRslt.getValue())
-					.getBean();
-			primaryid = accountPayablesDM.getAccPayableId().toString();
-			if (accountPayablesDM.getBranchId() != null) {
-				cbBranchName.setValue(accountPayablesDM.getBranchId());
-			}
-			if (accountPayablesDM.getEntryDate() != null) {
-				dfEntryDate.setValue(accountPayablesDM.getEntryDate());
-			}
-			// For select account number
-			if (accountPayablesDM.getAccountId() != null) {
-				Long accid = accountPayablesDM.getAccountId();
-				Collection<?> accids = cbAccountReference.getItemIds();
-				for (Iterator<?> iterator = accids.iterator(); iterator.hasNext();) {
-					Object itemid = (Object) iterator.next();
-					BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemid);
-					AccountsDM edit = (AccountsDM) item.getBean();
-					if (accid != null && accid.equals(edit.getAccountId())) {
-						cbAccountReference.setValue(itemid);
-						break;
-					} else {
-						cbAccountReference.setValue(null);
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				AccountPayablesDM accountPayablesDM = beansAccountPayablesDM.getItem(tblMstScrSrchRslt.getValue())
+						.getBean();
+				primaryid = accountPayablesDM.getAccPayableId().toString();
+				if (accountPayablesDM.getBranchId() != null) {
+					cbBranchName.setValue(accountPayablesDM.getBranchId());
+				}
+				if (accountPayablesDM.getEntryDate() != null) {
+					dfEntryDate.setValue(accountPayablesDM.getEntryDate());
+				}
+				// For select account number
+				if (accountPayablesDM.getAccountId() != null) {
+					Long accid = accountPayablesDM.getAccountId();
+					Collection<?> accids = cbAccountReference.getItemIds();
+					for (Iterator<?> iterator = accids.iterator(); iterator.hasNext();) {
+						Object itemid = (Object) iterator.next();
+						BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemid);
+						AccountsDM edit = (AccountsDM) item.getBean();
+						if (accid != null && accid.equals(edit.getAccountId())) {
+							cbAccountReference.setValue(itemid);
+							break;
+						} else {
+							cbAccountReference.setValue(null);
+						}
 					}
 				}
+				if (accountPayablesDM.getBillNo() != null) {
+					tfBillNo.setValue(accountPayablesDM.getBillNo().toString());
+				}
+				if (accountPayablesDM.getBillDate() != null) {
+					dfBillDate.setValue(accountPayablesDM.getBillDate());
+				}
+				if (accountPayablesDM.getInvoiceAmt() != null) {
+					tfInvoiceAmt.setValue(accountPayablesDM.getInvoiceAmt().toString());
+				}
+				tfBalanceAmt.setReadOnly(false);
+				if (accountPayablesDM.getBalanceAmt() != null) {
+					tfBalanceAmt.setValue(accountPayablesDM.getBalanceAmt().toString());
+				}
+				tfBalanceAmt.setReadOnly(true);
+				tfPaidAmt.setReadOnly(false);
+				if (accountPayablesDM.getPaidAmt() != null) {
+					tfPaidAmt.setValue(accountPayablesDM.getPaidAmt().toString());
+				}
+				tfPaidAmt.setReadOnly(true);
+				if (accountPayablesDM.getRemarks() != null) {
+					tfRemarks.setValue(accountPayablesDM.getRemarks());
+				}
+				cbStatus.setValue(accountPayablesDM.getPayStatus());
 			}
-			if (accountPayablesDM.getBillNo() != null) {
-				tfBillNo.setValue(accountPayablesDM.getBillNo().toString());
-			}
-			if (accountPayablesDM.getBillDate() != null) {
-				dfBillDate.setValue(accountPayablesDM.getBillDate());
-			}
-			if (accountPayablesDM.getInvoiceAmt() != null) {
-				tfInvoiceAmt.setValue(accountPayablesDM.getInvoiceAmt().toString());
-			}
-			tfBalanceAmt.setReadOnly(false);
-			if (accountPayablesDM.getBalanceAmt() != null) {
-				tfBalanceAmt.setValue(accountPayablesDM.getBalanceAmt().toString());
-			}
-			tfBalanceAmt.setReadOnly(true);
-			tfPaidAmt.setReadOnly(false);
-			if (accountPayablesDM.getPaidAmt() != null) {
-				tfPaidAmt.setValue(accountPayablesDM.getPaidAmt().toString());
-			}
-			tfPaidAmt.setReadOnly(true);
-			if (accountPayablesDM.getRemarks() != null) {
-				tfRemarks.setValue(accountPayablesDM.getRemarks());
-			}
-			cbStatus.setValue(accountPayablesDM.getPayStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

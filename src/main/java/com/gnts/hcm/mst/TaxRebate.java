@@ -154,25 +154,30 @@ public class TaxRebate extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<TaxRebateDM> listTaxRebate = new ArrayList<TaxRebateDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + cbSectionCode.getValue() + ", " + cbTaxRebateStatus.getValue());
-		listTaxRebate = serviceTaxRebate.getTaxRebateList(null, (String) cbSectionCode.getValue(), companyid,
-				(String) cbTaxRebateStatus.getValue(), "F");
-		recordCnt = listTaxRebate.size();
-		beanTaxRebateDM = new BeanItemContainer<TaxRebateDM>(TaxRebateDM.class);
-		beanTaxRebateDM.addAll(listTaxRebate);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Tax Rebate. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanTaxRebateDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "taxrebateid", "sectioncode", "rebateamount", "earnamtfrom",
-				"earnamtto", "rebatestatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Section Code", "Rebate Amount", "Earn Amt From",
-				"Earn Amt To", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("taxrebateid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<TaxRebateDM> listTaxRebate = new ArrayList<TaxRebateDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + cbSectionCode.getValue() + ", " + cbTaxRebateStatus.getValue());
+			listTaxRebate = serviceTaxRebate.getTaxRebateList(null, (String) cbSectionCode.getValue(), companyid,
+					(String) cbTaxRebateStatus.getValue(), "F");
+			recordCnt = listTaxRebate.size();
+			beanTaxRebateDM = new BeanItemContainer<TaxRebateDM>(TaxRebateDM.class);
+			beanTaxRebateDM.addAll(listTaxRebate);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Tax Rebate. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanTaxRebateDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "taxrebateid", "sectioncode", "rebateamount",
+					"earnamtfrom", "earnamtto", "rebatestatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Section Code", "Rebate Amount",
+					"Earn Amt From", "Earn Amt To", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("taxrebateid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -194,27 +199,33 @@ public class TaxRebate extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editTaxRebate() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		TaxRebateDM taxRebateDM = beanTaxRebateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		taxrebateid = taxRebateDM.getTaxrebateid().toString();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Tax Rebate. Id -> "
-				+ taxrebateid);
-		if (taxRebateDM != null) {
-			// Object editTaxRebate;
-			if (taxRebateDM.getSectioncode() != null) {
-				cbSectionCode.setValue(taxRebateDM.getSectioncode());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			TaxRebateDM taxRebateDM = beanTaxRebateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			taxrebateid = taxRebateDM.getTaxrebateid().toString();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Selected Tax Rebate. Id -> " + taxrebateid);
+			if (taxRebateDM != null) {
+				// Object editTaxRebate;
+				if (taxRebateDM.getSectioncode() != null) {
+					cbSectionCode.setValue(taxRebateDM.getSectioncode());
+				}
+				if (taxRebateDM.getFinyear() != null) {
+					tfFinalYr.setReadOnly(false);
+					tfFinalYr.setValue(taxRebateDM.getFinyear());
+					tfFinalYr.setReadOnly(true);
+				}
+				cbTaxRebateStatus.setValue(taxRebateDM.getRebatestatus());
+				cbGender.setValue(taxRebateDM.getGender());
+				tfRebateAmt.setValue(taxRebateDM.getRebateamount().toString());
+				tfEarnAmtFrom.setValue(taxRebateDM.getEarnamtfrom().toString());
+				tfEarnAmtTo.setValue(taxRebateDM.getEarnamtto().toString());
 			}
-			if (taxRebateDM.getFinyear() != null) {
-				tfFinalYr.setReadOnly(false);
-				tfFinalYr.setValue(taxRebateDM.getFinyear());
-				tfFinalYr.setReadOnly(true);
-			}
-			cbTaxRebateStatus.setValue(taxRebateDM.getRebatestatus());
-			cbGender.setValue(taxRebateDM.getGender());
-			tfRebateAmt.setValue(taxRebateDM.getRebateamount().toString());
-			tfEarnAmtFrom.setValue(taxRebateDM.getEarnamtfrom().toString());
-			tfEarnAmtTo.setValue(taxRebateDM.getEarnamtto().toString());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -351,7 +362,7 @@ public class TaxRebate extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -366,6 +377,7 @@ public class TaxRebate extends BaseUI {
 			cbSectionCode.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -382,6 +394,7 @@ public class TaxRebate extends BaseUI {
 			cbGender.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

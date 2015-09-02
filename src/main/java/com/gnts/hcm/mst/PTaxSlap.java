@@ -140,33 +140,38 @@ public class PTaxSlap extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<PTaxSlapDM> listTaxSlap = new ArrayList<PTaxSlapDM>();
-		Long countryId = null;
-		if (cbCountry.getValue() != null) {
-			countryId = ((Long.valueOf(cbCountry.getValue().toString())));
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<PTaxSlapDM> listTaxSlap = new ArrayList<PTaxSlapDM>();
+			Long countryId = null;
+			if (cbCountry.getValue() != null) {
+				countryId = ((Long.valueOf(cbCountry.getValue().toString())));
+			}
+			Long stateId = null;
+			if (cbStateName.getValue() != null) {
+				stateId = ((Long.valueOf(cbStateName.getValue().toString())));
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + cbStateName.getValue() + ", " + cbStatus.getValue());
+			listTaxSlap = servicePTaxSlap.getPTaxSlapList(null, companyid, countryId, stateId,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = listTaxSlap.size();
+			beanPTaxSlapDM = new BeanItemContainer<PTaxSlapDM>(PTaxSlapDM.class);
+			beanPTaxSlapDM.addAll(listTaxSlap);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Tax Rebate. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanPTaxSlapDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ptaxSlapId", "countryName", "stateName", "status",
+					"lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Country Name", "State Name", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("ptaxSlapId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
-		Long stateId = null;
-		if (cbStateName.getValue() != null) {
-			stateId = ((Long.valueOf(cbStateName.getValue().toString())));
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + cbStateName.getValue() + ", " + cbStatus.getValue());
-		listTaxSlap = servicePTaxSlap.getPTaxSlapList(null, companyid, countryId, stateId,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listTaxSlap.size();
-		beanPTaxSlapDM = new BeanItemContainer<PTaxSlapDM>(PTaxSlapDM.class);
-		beanPTaxSlapDM.addAll(listTaxSlap);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Tax Rebate. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanPTaxSlapDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "ptaxSlapId", "countryName", "stateName", "status",
-				"lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Country Name", "State Name", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("ptaxSlapId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
 	
 	// Reset the field values to default values
@@ -186,27 +191,33 @@ public class PTaxSlap extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editPTaxSlap() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		PTaxSlapDM taxSlapDM = beanPTaxSlapDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		taxrebateid = taxSlapDM.getPtaxSlapId().toString();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Tax Rebate. Id -> "
-				+ taxrebateid);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			cbCountry.setValue(taxSlapDM.getCountryId());
-			cbStatus.setValue(taxSlapDM.getStatus());
-			if (taxSlapDM.getPtaxAmt() != null) {
-				tfPTaxAmt.setValue(taxSlapDM.getPtaxAmt().toString());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			PTaxSlapDM taxSlapDM = beanPTaxSlapDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			taxrebateid = taxSlapDM.getPtaxSlapId().toString();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Selected Tax Rebate. Id -> " + taxrebateid);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				cbCountry.setValue(taxSlapDM.getCountryId());
+				cbStatus.setValue(taxSlapDM.getStatus());
+				if (taxSlapDM.getPtaxAmt() != null) {
+					tfPTaxAmt.setValue(taxSlapDM.getPtaxAmt().toString());
+				}
+				if (taxSlapDM.getAmtFrm() != null) {
+					tfAmtFrm.setValue(taxSlapDM.getAmtFrm().toString());
+				}
+				if (taxSlapDM.getAmtTo() != null) {
+					tfAmtTo.setValue(taxSlapDM.getAmtTo().toString());
+				}
+				if (taxSlapDM.getStateId() != null) {
+					cbStateName.setValue(taxSlapDM.getStateId().toString());
+				}
 			}
-			if (taxSlapDM.getAmtFrm() != null) {
-				tfAmtFrm.setValue(taxSlapDM.getAmtFrm().toString());
-			}
-			if (taxSlapDM.getAmtTo() != null) {
-				tfAmtTo.setValue(taxSlapDM.getAmtTo().toString());
-			}
-			if (taxSlapDM.getStateId() != null) {
-				cbStateName.setValue(taxSlapDM.getStateId().toString());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -360,6 +371,7 @@ public class PTaxSlap extends BaseUI {
 			cbCountry.setContainerDataSource(beanCountry);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -372,6 +384,7 @@ public class PTaxSlap extends BaseUI {
 			cbStateName.setContainerDataSource(beanState);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

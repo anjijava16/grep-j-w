@@ -171,25 +171,30 @@ public class PayPeriod extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<PayPeriodDM> listPayPeriod = new ArrayList<PayPeriodDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfPayPeriodName.getValue() + ", " + cbStatus.getValue());
-		listPayPeriod = servicePayPeriod.getPayList(null, tfPayPeriodName.getValue(), null, null, companyid,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listPayPeriod.size();
-		beanPayPeriodDM = new BeanItemContainer<PayPeriodDM>(PayPeriodDM.class);
-		beanPayPeriodDM.addAll(listPayPeriod);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the PayPeriod Type. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanPayPeriodDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "payPeriodId", "periodName", "status", "lastUpdatedDate",
-				"lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Pay Period Name", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("payPeriodId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<PayPeriodDM> listPayPeriod = new ArrayList<PayPeriodDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfPayPeriodName.getValue() + ", " + cbStatus.getValue());
+			listPayPeriod = servicePayPeriod.getPayList(null, tfPayPeriodName.getValue(), null, null, companyid,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = listPayPeriod.size();
+			beanPayPeriodDM = new BeanItemContainer<PayPeriodDM>(PayPeriodDM.class);
+			beanPayPeriodDM.addAll(listPayPeriod);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the PayPeriod Type. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanPayPeriodDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "payPeriodId", "periodName", "status",
+					"lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Pay Period Name", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("payPeriodId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -230,7 +235,7 @@ public class PayPeriod extends BaseUI {
 			cbPayEdDay.select(end);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -363,7 +368,7 @@ public class PayPeriod extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

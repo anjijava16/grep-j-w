@@ -54,7 +54,7 @@ public class AppraisalEmpIncident extends BaseUI {
 			.getBean("companyLookUp");
 	private AppraisalEmpIncidentService serviceEmpIncident = (AppraisalEmpIncidentService) SpringContextHelper
 			.getBean("AppraisalEmpIncident");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private KpiGroupService serviceKpiGroup = (KpiGroupService) SpringContextHelper.getBean("KpiGroup");
 	// Form layout for input controls
 	private FormLayout flcol1, flcol2, flcol3, flcol4;
@@ -154,11 +154,12 @@ public class AppraisalEmpIncident extends BaseUI {
 		try {
 			BeanContainer<Long, EmployeeDM> bean = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			bean.setBeanIdProperty("employeeid");
-			bean.addAll(servicebeanEmployee.getEmployeeList((String) cbEmployee.getValue(), null, null, null, null,
-					null, null, null, null, "P"));
+			bean.addAll(serviceEmployee.getEmployeeList((String) cbEmployee.getValue(), null, null, null, null, null,
+					null, null, null, "P"));
 			cbEmployee.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -171,6 +172,7 @@ public class AppraisalEmpIncident extends BaseUI {
 			cbKPIGroup.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -187,7 +189,7 @@ public class AppraisalEmpIncident extends BaseUI {
 			cbSeverity.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -249,25 +251,31 @@ public class AppraisalEmpIncident extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		tblMstScrSrchRslt.setPageLength(15);
-		List<AppraisalEmpIncidentDM> listEmpIncident = new ArrayList<AppraisalEmpIncidentDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbEmployee.getValue() + ", " + (String) cbIncidentstatus.getValue());
-		listEmpIncident = serviceEmpIncident.getAppEmpIncidentList(null, (Long) cbEmployee.getValue(), null, null,
-				null, null, null, (String) cbIncidentstatus.getValue(), "F");
-		recordCnt = listEmpIncident.size();
-		beanAppraisalEmpIncidentDM = new BeanItemContainer<AppraisalEmpIncidentDM>(AppraisalEmpIncidentDM.class);
-		beanAppraisalEmpIncidentDM.addAll(listEmpIncident);
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Got the IT Other Income List result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanAppraisalEmpIncidentDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "attProcId", "empName", "incidentType", "incidentSeverity",
-				"incidentTitle", "status", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Incident Type",
-				"Incident Severity", "Incident Title", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records:" + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			tblMstScrSrchRslt.setPageLength(15);
+			List<AppraisalEmpIncidentDM> listEmpIncident = new ArrayList<AppraisalEmpIncidentDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Search Parameters are " + companyId + ", " + (Long) cbEmployee.getValue() + ", "
+					+ (String) cbIncidentstatus.getValue());
+			listEmpIncident = serviceEmpIncident.getAppEmpIncidentList(null, (Long) cbEmployee.getValue(), null, null,
+					null, null, null, (String) cbIncidentstatus.getValue(), "F");
+			recordCnt = listEmpIncident.size();
+			beanAppraisalEmpIncidentDM = new BeanItemContainer<AppraisalEmpIncidentDM>(AppraisalEmpIncidentDM.class);
+			beanAppraisalEmpIncidentDM.addAll(listEmpIncident);
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Got the IT Other Income List result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanAppraisalEmpIncidentDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "attProcId", "empName", "incidentType",
+					"incidentSeverity", "incidentTitle", "status", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Incident Type",
+					"Incident Severity", "Incident Title", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records:" + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -315,44 +323,49 @@ public class AppraisalEmpIncident extends BaseUI {
 	}
 	
 	private void editappempincident() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Editing the selected record");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			AppraisalEmpIncidentDM editappempinObj = beanAppraisalEmpIncidentDM.getItem(tblMstScrSrchRslt.getValue())
-					.getBean();
-			if (editappempinObj.getEmpid() != null) {
-				cbEmployee.setValue(editappempinObj.getEmpid());
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Editing the selected record");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				AppraisalEmpIncidentDM editappempinObj = beanAppraisalEmpIncidentDM.getItem(
+						tblMstScrSrchRslt.getValue()).getBean();
+				if (editappempinObj.getEmpid() != null) {
+					cbEmployee.setValue(editappempinObj.getEmpid());
+				}
+				if (editappempinObj.getKpiGrpId() != null) {
+					cbKPIGroup.setValue(editappempinObj.getKpiGrpId());
+				}
+				if (editappempinObj.getStatus() != null) {
+					cbIncidentstatus.setValue(editappempinObj.getStatus());
+				}
+				if (editappempinObj.getIncidentSeverity() != null) {
+					cbSeverity.setValue(editappempinObj.getIncidentSeverity());
+				}
+				if (editappempinObj.getIncidentType() != null) {
+					cbIncidenttype.setValue(editappempinObj.getIncidentType());
+				}
+				if (editappempinObj.getBusValue() != null) {
+					tfBusinessValue.setValue(editappempinObj.getBusValue().toString());
+				}
+				if (editappempinObj.getEmpAgreed() != null) {
+					tfempagreed.setValue(editappempinObj.getEmpAgreed().toString());
+				}
+				if (editappempinObj.getEmpResponse() != null) {
+					tfResponse.setValue(editappempinObj.getEmpResponse());
+				}
+				if (editappempinObj.getIncidentTitle() != null) {
+					tfTitle.setValue(editappempinObj.getIncidentTitle());
+				}
+				if (editappempinObj.getIncidentDes() != null) {
+					taDescription.setValue(editappempinObj.getIncidentDes().toString());
+				}
+				if (editappempinObj.getRevCmnts() != null) {
+					taComments.setValue(editappempinObj.getRevCmnts().toString());
+				}
 			}
-			if (editappempinObj.getKpiGrpId() != null) {
-				cbKPIGroup.setValue(editappempinObj.getKpiGrpId());
-			}
-			if (editappempinObj.getStatus() != null) {
-				cbIncidentstatus.setValue(editappempinObj.getStatus());
-			}
-			if (editappempinObj.getIncidentSeverity() != null) {
-				cbSeverity.setValue(editappempinObj.getIncidentSeverity());
-			}
-			if (editappempinObj.getIncidentType() != null) {
-				cbIncidenttype.setValue(editappempinObj.getIncidentType());
-			}
-			if (editappempinObj.getBusValue() != null) {
-				tfBusinessValue.setValue(editappempinObj.getBusValue().toString());
-			}
-			if (editappempinObj.getEmpAgreed() != null) {
-				tfempagreed.setValue(editappempinObj.getEmpAgreed().toString());
-			}
-			if (editappempinObj.getEmpResponse() != null) {
-				tfResponse.setValue(editappempinObj.getEmpResponse());
-			}
-			if (editappempinObj.getIncidentTitle() != null) {
-				tfTitle.setValue(editappempinObj.getIncidentTitle());
-			}
-			if (editappempinObj.getIncidentDes() != null) {
-				taDescription.setValue(editappempinObj.getIncidentDes().toString());
-			}
-			if (editappempinObj.getRevCmnts() != null) {
-				taComments.setValue(editappempinObj.getRevCmnts().toString());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

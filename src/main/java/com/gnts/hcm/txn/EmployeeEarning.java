@@ -282,26 +282,31 @@ public class EmployeeEarning extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeEarningDM> listEmployeeEarning = new ArrayList<EmployeeEarningDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (Long) cbEarnCode.getValue()
-				+ (String) cbStatus.getValue());
-		listEmployeeEarning = serviceEmployeeEarning.getempearningList(null, (Long) cbSearchEmpName.getValue(),
-				(Long) cbSearchEarnCode.getValue(), (String) cbStatus.getValue(), "F");
-		recordCnt = listEmployeeEarning.size();
-		beanEmployeeEarn = new BeanItemContainer<EmployeeEarningDM>(EmployeeEarningDM.class);
-		beanEmployeeEarn.addAll(listEmployeeEarning);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Got the EmployeeEarning. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanEmployeeEarn);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empearnid", "employeeName", "earnCode", "isflatpercent",
-				"earnpercent", "earnamt", "empearnstatus", "lastpdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Earn Code", "Flat/Percent",
-				"Earn Percent", "Earn Amount", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("empearnid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EmployeeEarningDM> listEmployeeEarning = new ArrayList<EmployeeEarningDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (Long) cbEarnCode.getValue()
+					+ (String) cbStatus.getValue());
+			listEmployeeEarning = serviceEmployeeEarning.getempearningList(null, (Long) cbSearchEmpName.getValue(),
+					(Long) cbSearchEarnCode.getValue(), (String) cbStatus.getValue(), "F");
+			recordCnt = listEmployeeEarning.size();
+			beanEmployeeEarn = new BeanItemContainer<EmployeeEarningDM>(EmployeeEarningDM.class);
+			beanEmployeeEarn.addAll(listEmployeeEarning);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the EmployeeEarning. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanEmployeeEarn);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empearnid", "employeeName", "earnCode",
+					"isflatpercent", "earnpercent", "earnamt", "empearnstatus", "lastpdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Earn Code", "Flat/Percent",
+					"Earn Percent", "Earn Amount", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("empearnid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -395,47 +400,52 @@ public class EmployeeEarning extends BaseUI {
 	}
 	
 	private void editEmpEarning() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeEarningDM empEarning = beanEmployeeEarn.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbEmpName.setReadOnly(false);
-			cbEmpName.setValue(empEarning.getEmployeeid());
-			cbEmpName.setReadOnly(true);
-			cbFlatPercnt.setReadOnly(false);
-			cbFlatPercnt.setValue(empEarning.getIsflatpercent());
-			cbFlatPercnt.setReadOnly(true);
-			cbEarnCode.setReadOnly(false);
-			cbEarnCode.setValue(empEarning.getEarnid());
-			cbEarnCode.setReadOnly(true);
-			if (empEarning.getEarnpercent() != null) {
-				tfEarnPerct.setReadOnly(false);
-				tfEarnPerct.setValue(empEarning.getEarnpercent().toString());
-			}
-			if (empEarning.getEarnamt() != null) {
-				tfEarnAmt.setValue(empEarning.getEarnamt().toString());
-				if (empEarning.getEffdt() != null) {
-					dfEffDt.setValue(empEarning.getEffdt());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeEarningDM empEarning = beanEmployeeEarn.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				cbEmpName.setReadOnly(false);
+				cbEmpName.setValue(empEarning.getEmployeeid());
+				cbEmpName.setReadOnly(true);
+				cbFlatPercnt.setReadOnly(false);
+				cbFlatPercnt.setValue(empEarning.getIsflatpercent());
+				cbFlatPercnt.setReadOnly(true);
+				cbEarnCode.setReadOnly(false);
+				cbEarnCode.setValue(empEarning.getEarnid());
+				cbEarnCode.setReadOnly(true);
+				if (empEarning.getEarnpercent() != null) {
+					tfEarnPerct.setReadOnly(false);
+					tfEarnPerct.setValue(empEarning.getEarnpercent().toString());
 				}
-				if (empEarning.getPrevamt() != null) {
-					tfPreAmt.setValue(empEarning.getPrevamt().toString());
-				}
-				if (empEarning.getPrevpercent() != null) {
-					tfPrePercnt.setValue(empEarning.getPrevpercent().toString());
-				}
-				if (empEarning.getLastpaidt() != null) {
-					dfLastPaidDt.setValue(empEarning.getLastpaidt());
-				}
-				if (empEarning.getNxtpytdt() != null) {
-					dfNextPayDt.setValue(empEarning.getNxtpytdt());
-				}
-				if (empEarning.getArrearflag() != null) {
-					if (empEarning.getArrearflag().equals("Y")) {
-						ckFlag.setValue(true);
-					} else {
-						ckFlag.setValue(false);
+				if (empEarning.getEarnamt() != null) {
+					tfEarnAmt.setValue(empEarning.getEarnamt().toString());
+					if (empEarning.getEffdt() != null) {
+						dfEffDt.setValue(empEarning.getEffdt());
 					}
+					if (empEarning.getPrevamt() != null) {
+						tfPreAmt.setValue(empEarning.getPrevamt().toString());
+					}
+					if (empEarning.getPrevpercent() != null) {
+						tfPrePercnt.setValue(empEarning.getPrevpercent().toString());
+					}
+					if (empEarning.getLastpaidt() != null) {
+						dfLastPaidDt.setValue(empEarning.getLastpaidt());
+					}
+					if (empEarning.getNxtpytdt() != null) {
+						dfNextPayDt.setValue(empEarning.getNxtpytdt());
+					}
+					if (empEarning.getArrearflag() != null) {
+						if (empEarning.getArrearflag().equals("Y")) {
+							ckFlag.setValue(true);
+						} else {
+							ckFlag.setValue(false);
+						}
+					}
+					cbStatus.setValue(empEarning.getEmpearnstatus());
 				}
-				cbStatus.setValue(empEarning.getEmpearnstatus());
 			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

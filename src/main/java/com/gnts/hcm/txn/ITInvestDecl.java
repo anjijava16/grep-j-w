@@ -190,27 +190,33 @@ public class ITInvestDecl extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		tblMstScrSrchRslt.setPageLength(13);
-		List<ITInvestDecDM> listITInvestDec = new ArrayList<ITInvestDecDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbEmployeeName.getValue() + ", " + (String) tfSectnCode.getValue()
-				+ (String) cbStatus.getValue());
-		listITInvestDec = serviceITInvestDec.getITInvestList(null, (Long) cbEmployeeName.getValue(),
-				(String) tfSectnCode.getValue(), (String) cbStatus.getValue(), "P");
-		recordCnt = listITInvestDec.size();
-		beanITInvestDecDM = new BeanItemContainer<ITInvestDecDM>(ITInvestDecDM.class);
-		beanITInvestDecDM.addAll(listITInvestDec);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Got the ITInvestDec. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanITInvestDecDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "itDeclId", "fulName", "secCode", "investAmt", "appAmt",
-				"verifiedBy", "status", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Section Code", "Invested Amount",
-				"Approved Amount", "Verified By", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("itDeclId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			tblMstScrSrchRslt.setPageLength(13);
+			List<ITInvestDecDM> list = new ArrayList<ITInvestDecDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyId + ", " + (Long) cbEmployeeName.getValue() + ", " + (String) tfSectnCode.getValue()
+					+ (String) cbStatus.getValue());
+			list = serviceITInvestDec.getITInvestList(null, (Long) cbEmployeeName.getValue(),
+					(String) tfSectnCode.getValue(), (String) cbStatus.getValue(), "P");
+			recordCnt = list.size();
+			beanITInvestDecDM = new BeanItemContainer<ITInvestDecDM>(ITInvestDecDM.class);
+			beanITInvestDecDM.addAll(list);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the ITInvestDec. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanITInvestDecDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "itDeclId", "fulName", "secCode", "investAmt", "appAmt",
+					"verifiedBy", "status", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Section Code",
+					"Invested Amount", "Approved Amount", "Verified By", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("itDeclId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -280,44 +286,49 @@ public class ITInvestDecl extends BaseUI {
 	}
 	
 	private void editItInvestDeclDetails() {
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			ITInvestDecDM itinvestDecDM = beanITInvestDecDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if ((itinvestDecDM.getEmpId() != null)) {
-				cbEmployeeName.setValue(itinvestDecDM.getEmpId());
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				ITInvestDecDM itinvestDecDM = beanITInvestDecDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				if ((itinvestDecDM.getEmpId() != null)) {
+					cbEmployeeName.setValue(itinvestDecDM.getEmpId());
+				}
+				if ((itinvestDecDM.getFinYear() != null)) {
+					tfFinYear.setReadOnly(false);
+					tfFinYear.setValue(itinvestDecDM.getFinYear());
+				}
+				if ((itinvestDecDM.getSecCode() != null)) {
+					tfSectnCode.setValue(itinvestDecDM.getSecCode());
+				}
+				if (itinvestDecDM.getInvestDate() != null) {
+					dfInvstedDt.setValue(itinvestDecDM.getInvestDate());
+				}
+				if ((itinvestDecDM.getInvestAmt() != null)) {
+					tfInvstdAmt.setValue(itinvestDecDM.getInvestAmt().toString());
+				}
+				if ((itinvestDecDM.getAppAmt() != null)) {
+					tfApprvdAmt.setValue(itinvestDecDM.getAppAmt().toString());
+				}
+				if ((itinvestDecDM.getVerifiedBy() != null)) {
+					tfVerifdBy.setValue(itinvestDecDM.getVerifiedBy().toString());
+				}
+				if (itinvestDecDM.getVerifiedDt() != null) {
+					dfVerifdDt.setValue(itinvestDecDM.getVerifiedDt());
+				}
+				if (itinvestDecDM.getStatus() != null) {
+					cbStatus.setValue(itinvestDecDM.getStatus());
+				}
+				if (itinvestDecDM.getProofDoc() != null) {
+					byte[] certificate = itinvestDecDM.getProofDoc();
+					UploadDocumentUI test = new UploadDocumentUI(vlappdoc);
+					test.displaycertificate(certificate);
+				} else {
+					new UploadDocumentUI(vlappdoc);
+				}
 			}
-			if ((itinvestDecDM.getFinYear() != null)) {
-				tfFinYear.setReadOnly(false);
-				tfFinYear.setValue(itinvestDecDM.getFinYear());
-			}
-			if ((itinvestDecDM.getSecCode() != null)) {
-				tfSectnCode.setValue(itinvestDecDM.getSecCode());
-			}
-			if (itinvestDecDM.getInvestDate() != null) {
-				dfInvstedDt.setValue(itinvestDecDM.getInvestDate());
-			}
-			if ((itinvestDecDM.getInvestAmt() != null)) {
-				tfInvstdAmt.setValue(itinvestDecDM.getInvestAmt().toString());
-			}
-			if ((itinvestDecDM.getAppAmt() != null)) {
-				tfApprvdAmt.setValue(itinvestDecDM.getAppAmt().toString());
-			}
-			if ((itinvestDecDM.getVerifiedBy() != null)) {
-				tfVerifdBy.setValue(itinvestDecDM.getVerifiedBy().toString());
-			}
-			if (itinvestDecDM.getVerifiedDt() != null) {
-				dfVerifdDt.setValue(itinvestDecDM.getVerifiedDt());
-			}
-			if (itinvestDecDM.getStatus() != null) {
-				cbStatus.setValue(itinvestDecDM.getStatus());
-			}
-			if (itinvestDecDM.getProofDoc() != null) {
-				byte[] certificate = itinvestDecDM.getProofDoc();
-				UploadDocumentUI test = new UploadDocumentUI(vlappdoc);
-				test.displaycertificate(certificate);
-			} else {
-				new UploadDocumentUI(vlappdoc);
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -349,50 +360,45 @@ public class ITInvestDecl extends BaseUI {
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
-		try {
-			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
-			ITInvestDecDM itInvestobj = new ITInvestDecDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				itInvestobj = beanITInvestDecDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			}
-			itInvestobj.setEmpId((Long) cbEmployeeName.getValue());
-			itInvestobj.setFinYear(tfFinYear.getValue().toString());
-			if (tfSectnCode.getValue() != null) {
-				itInvestobj.setSecCode(tfSectnCode.getValue().toString());
-			}
-			if (dfInvstedDt.getValue() != null) {
-				itInvestobj.setInvestDate(dfInvstedDt.getValue());
-			}
-			if (tfInvstdAmt.getValue() != null) {
-				itInvestobj.setInvestAmt(new BigDecimal(tfInvstdAmt.getValue()));
-			}
-			if (tfApprvdAmt.getValue() != null) {
-				itInvestobj.setAppAmt(new BigDecimal(tfApprvdAmt.getValue()));
-			}
-			if (tfVerifdBy.getValue() != null) {
-				itInvestobj.setVerifiedBy(tfVerifdBy.getValue().toString());
-			}
-			if (dfVerifdDt.getValue() != null) {
-				itInvestobj.setVerifiedDt(dfVerifdDt.getValue());
-			}
-			if (cbStatus.getValue() != null) {
-				itInvestobj.setStatus((String) cbStatus.getValue());
-			}
-			File file = new File(GERPConstants.DOCUMENT_PATH);
-			FileInputStream fio = new FileInputStream(file);
-			byte fileContent[] = new byte[(int) file.length()];
-			fio.read(fileContent);
-			fio.close();
-			itInvestobj.setProofDoc(fileContent);
-			itInvestobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			itInvestobj.setLastUpdatedBy(userName);
-			serviceITInvestDec.saveItInvest(itInvestobj);
-			resetFields();
-			loadSrchRslt();
+		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
+		ITInvestDecDM itInvestobj = new ITInvestDecDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			itInvestobj = beanITInvestDecDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		itInvestobj.setEmpId((Long) cbEmployeeName.getValue());
+		itInvestobj.setFinYear(tfFinYear.getValue().toString());
+		if (tfSectnCode.getValue() != null) {
+			itInvestobj.setSecCode(tfSectnCode.getValue().toString());
 		}
+		if (dfInvstedDt.getValue() != null) {
+			itInvestobj.setInvestDate(dfInvstedDt.getValue());
+		}
+		if (tfInvstdAmt.getValue() != null) {
+			itInvestobj.setInvestAmt(new BigDecimal(tfInvstdAmt.getValue()));
+		}
+		if (tfApprvdAmt.getValue() != null) {
+			itInvestobj.setAppAmt(new BigDecimal(tfApprvdAmt.getValue()));
+		}
+		if (tfVerifdBy.getValue() != null) {
+			itInvestobj.setVerifiedBy(tfVerifdBy.getValue().toString());
+		}
+		if (dfVerifdDt.getValue() != null) {
+			itInvestobj.setVerifiedDt(dfVerifdDt.getValue());
+		}
+		if (cbStatus.getValue() != null) {
+			itInvestobj.setStatus((String) cbStatus.getValue());
+		}
+		File file = new File(GERPConstants.DOCUMENT_PATH);
+		FileInputStream fio = new FileInputStream(file);
+		byte fileContent[] = new byte[(int) file.length()];
+		fio.read(fileContent);
+		fio.close();
+		itInvestobj.setProofDoc(fileContent);
+		itInvestobj.setLastUpdatedDt(DateUtils.getcurrentdate());
+		itInvestobj.setLastUpdatedBy(userName);
+		serviceITInvestDec.saveItInvest(itInvestobj);
+		resetFields();
+		loadSrchRslt();
 	}
 	
 	@Override

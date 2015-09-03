@@ -94,7 +94,7 @@ public class EmployeeLeave extends BaseUI {
 	// Vertical Control Layout
 	private PopupDateField dfdatefrom, dfdateto;
 	private TextField tfnoofdays;
-	private ComboBox cbappmanager, cbLeavetype, cbempstatus;
+	private ComboBox cbappmanager, cbLeavetype, cbEmpStatus;
 	private TextArea taLeaveReason;
 	private CheckBox cbhalfday;
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
@@ -105,12 +105,12 @@ public class EmployeeLeave extends BaseUI {
 	private HorizontalLayout hlsavecancel = new HorizontalLayout();
 	// To add Bean Item Container
 	private List<EmployeeLeaveDM> usertable = new ArrayList<EmployeeLeaveDM>();
-	private List<EmployeeLeaveBalanceDM> empLeaveBal = new ArrayList<EmployeeLeaveBalanceDM>();
+	private List<EmployeeLeaveBalanceDM> listLeaveBal = new ArrayList<EmployeeLeaveBalanceDM>();
 	private BeanItemContainer<EmployeeLeaveDM> beanLeave = null;
 	private BeanItemContainer<EmployeeLeaveBalanceDM> beanEmpLeaveBalance = null;
-	private EmployeeLeaveService serviceleave = (EmployeeLeaveService) SpringContextHelper.getBean("EmployeeLeave");
-	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private DepartmentService servicedepartment = (DepartmentService) SpringContextHelper.getBean("department");
+	private EmployeeLeaveService serviceLeave = (EmployeeLeaveService) SpringContextHelper.getBean("EmployeeLeave");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private DepartmentService serviceDepartment = (DepartmentService) SpringContextHelper.getBean("department");
 	private LeaveTypeService serviceLeaveType = (LeaveTypeService) SpringContextHelper.getBean("LeaveType");
 	private EmployeeLeaveBalanceService serviceLeaveBalance = (EmployeeLeaveBalanceService) SpringContextHelper
 			.getBean("EmployeeLeaveBalance");
@@ -163,8 +163,8 @@ public class EmployeeLeave extends BaseUI {
 			public void valueChange(ValueChangeEvent event) {
 				Object obj = event.getProperty().getValue();
 				if (obj != null) {
-					usertable = serviceleave.getempleaveList(leaveid, (Long) cbEmployeeName.getValue(), leavetypeid,
-							(String) cbempstatus.getValue(), null, null, "F");
+					usertable = serviceLeave.getempleaveList(leaveid, (Long) cbEmployeeName.getValue(), leavetypeid,
+							(String) cbEmpStatus.getValue(), null, null, "F");
 					loadSrchRslt();
 					loadLeaveBalance();
 				}
@@ -174,10 +174,10 @@ public class EmployeeLeave extends BaseUI {
 			ApprovalSchemaDM obj = serviceWrkOrdHdr.getReviewerId(companyid, appScreenId, branchID, roleId).get(0);
 			name = obj.getApprLevel();
 			if (name.equals("Approver")) {
-				cbempstatus = new GERPComboBox("Status", BASEConstants.T_HCM_LEAVE_STATUS,
+				cbEmpStatus = new GERPComboBox("Status", BASEConstants.T_HCM_LEAVE_STATUS,
 						BASEConstants.AP_LEAVE_STATUS);
 			} else {
-				cbempstatus = new GERPComboBox("Status", BASEConstants.T_HCM_LEAVE_STATUS,
+				cbEmpStatus = new GERPComboBox("Status", BASEConstants.T_HCM_LEAVE_STATUS,
 						BASEConstants.RV_LEAVE_STATUS);
 			}
 			if (name.equals("Approver")) {
@@ -391,7 +391,7 @@ public class EmployeeLeave extends BaseUI {
 		flColumn2.addComponent(cbhalfday);
 		flColumn2.addComponent(cbappmanager);
 		flColumn3.addComponent(taLeaveReason);
-		flColumn4.addComponent(cbempstatus);
+		flColumn4.addComponent(cbEmpStatus);
 		flColumn4.addComponent(btnadd);
 		// add the form layouts into user input layout
 		HorizontalLayout hlLeaveForm = new HorizontalLayout();
@@ -415,45 +415,58 @@ public class EmployeeLeave extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading Search Result....");
-		tblMstScrSrchRslt.removeAllItems();
-		total = 0;
-		total = usertable.size();
-		beanLeave = new BeanItemContainer<EmployeeLeaveDM>(EmployeeLeaveDM.class);
-		beanLeave.addAll(usertable);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Employee Leave. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanLeave);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "datefrom", "dateto", "noofdays", "empleavestatus",
-				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Date From", "Date To", "No of Days", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("leaveid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + total);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "loading Search Result....");
+			tblMstScrSrchRslt.removeAllItems();
+			total = 0;
+			total = usertable.size();
+			beanLeave = new BeanItemContainer<EmployeeLeaveDM>(EmployeeLeaveDM.class);
+			beanLeave.addAll(usertable);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Employee Leave. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanLeave);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "datefrom", "dateto", "noofdays", "empleavestatus",
+					"lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Date From", "Date To", "No of Days", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("leaveid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + total);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadLeaveBalance() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading Search Result....");
-		tblLeaveBalnce.removeAllItems();
-		if (cbEmployeeName.getValue() != null) {
-			empLeaveBal = serviceLeaveBalance.getemplveballist(null, (Long) cbEmployeeName.getValue(), null, null, "F");
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "loading Search Result....");
+			tblLeaveBalnce.removeAllItems();
+			if (cbEmployeeName.getValue() != null) {
+				listLeaveBal = serviceLeaveBalance.getemplveballist(null, (Long) cbEmployeeName.getValue(), null, null,
+						"F");
+			}
+			beanEmpLeaveBalance = new BeanItemContainer<EmployeeLeaveBalanceDM>(EmployeeLeaveBalanceDM.class);
+			beanEmpLeaveBalance.addAll(listLeaveBal);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Employee Leave. result set");
+			tblLeaveBalnce.setContainerDataSource(beanEmpLeaveBalance);
+			tblLeaveBalnce.setColumnAlignment("opnbal", Align.RIGHT);
+			tblLeaveBalnce.setColumnAlignment("lvebal", Align.RIGHT);
+			tblLeaveBalnce.setVisibleColumns(new Object[] { "leaveType", "opnbal", "lvebal" });
+			tblLeaveBalnce.setColumnHeaders(new String[] { "Leave Type", "Total Leaves", "Leave Balance" });
 		}
-		beanEmpLeaveBalance = new BeanItemContainer<EmployeeLeaveBalanceDM>(EmployeeLeaveBalanceDM.class);
-		beanEmpLeaveBalance.addAll(empLeaveBal);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Employee Leave. result set");
-		tblLeaveBalnce.setContainerDataSource(beanEmpLeaveBalance);
-		tblLeaveBalnce.setColumnAlignment("opnbal", Align.RIGHT);
-		tblLeaveBalnce.setColumnAlignment("lvebal", Align.RIGHT);
-		tblLeaveBalnce.setVisibleColumns(new Object[] { "leaveType", "opnbal", "lvebal" });
-		tblLeaveBalnce.setColumnHeaders(new String[] { "Leave Type", "Total Leaves", "Leave Balance" });
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void loadDepartmentList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading DepartmentList");
-			List<DepartmentDM> departmentlist = servicedepartment.getDepartmentList(companyid, null, "Active", "F");
+			List<DepartmentDM> departmentlist = serviceDepartment.getDepartmentList(companyid, null, "Active", "F");
 			departmentlist.add(new DepartmentDM(0L, "All Departments"));
 			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 			beanDepartment.setBeanIdProperty("deptid");
@@ -461,6 +474,7 @@ public class EmployeeLeave extends BaseUI {
 			cbDepartmentName.setContainerDataSource(beanDepartment);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -468,7 +482,7 @@ public class EmployeeLeave extends BaseUI {
 	private void loadEmployeeList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
-			List<EmployeeDM> listEmpl = serviceemployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(),
+			List<EmployeeDM> listEmpl = serviceEmployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(),
 					"Active", companyid, null, null, null, null, "P");
 			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployee.setBeanIdProperty("employeeid");
@@ -480,6 +494,7 @@ public class EmployeeLeave extends BaseUI {
 			cbappmanager.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -493,30 +508,37 @@ public class EmployeeLeave extends BaseUI {
 			cbLeavetype.setContainerDataSource(beanLeave);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Method used to display selected row's values in desired text box and combo box for edit the values
 	private void editleave() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Leave details.......");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeLeaveDM leave = beanLeave.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfdatefrom.setValue(leave.getDatefrm());
-			dfdateto.setValue(leave.getDatetoo());
-			tfnoofdays.setReadOnly(false);
-			tfnoofdays.setValue(leave.getNoofdays().toString());
-			tfnoofdays.setReadOnly(true);
-			cbappmanager.setValue(leave.getAppmgr());
-			cbLeavetype.setValue(leave.getLeavetypeid());
-			if (leave.getHalfday().equals("Y")) {
-				cbhalfday.setValue(true);
-			} else {
-				cbhalfday.setValue(false);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing Leave details.......");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeLeaveDM leave = beanLeave.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				dfdatefrom.setValue(leave.getDatefrm());
+				dfdateto.setValue(leave.getDatetoo());
+				tfnoofdays.setReadOnly(false);
+				tfnoofdays.setValue(leave.getNoofdays().toString());
+				tfnoofdays.setReadOnly(true);
+				cbappmanager.setValue(leave.getAppmgr());
+				cbLeavetype.setValue(leave.getLeavetypeid());
+				if (leave.getHalfday().equals("Y")) {
+					cbhalfday.setValue(true);
+				} else {
+					cbhalfday.setValue(false);
+				}
+				if (leave.getLeavereason() != null) {
+					taLeaveReason.setValue(leave.getLeavereason());
+				}
+				cbEmpStatus.setValue(leave.getEmpleavestatus());
 			}
-			if (leave.getLeavereason() != null) {
-				taLeaveReason.setValue(leave.getLeavereason());
-			}
-			cbempstatus.setValue(leave.getEmpleavestatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -551,8 +573,8 @@ public class EmployeeLeave extends BaseUI {
 			} else {
 				employeeLeaveDM.setHalfday("Y");
 			}
-			if (cbempstatus.getValue() != null) {
-				employeeLeaveDM.setEmpleavestatus(cbempstatus.getValue().toString());
+			if (cbEmpStatus.getValue() != null) {
+				employeeLeaveDM.setEmpleavestatus(cbEmpStatus.getValue().toString());
 			}
 			employeeLeaveDM.setLastupdatedby(username);
 			employeeLeaveDM.setLastupdateddt(DateUtils.getcurrentdate());
@@ -560,22 +582,27 @@ public class EmployeeLeave extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		resetField();
 	}
 	
 	public void leavesave(Long employeeid) {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Employeeleave Save details......");
-		@SuppressWarnings("unchecked")
-		Collection<EmployeeLeaveDM> itemIds = (Collection<EmployeeLeaveDM>) tblMstScrSrchRslt.getVisibleItemIds();
-		for (EmployeeLeaveDM saveleave : (Collection<EmployeeLeaveDM>) itemIds) {
-			saveleave.setEmployeeid(employeeid);
-			serviceleave.saveAndUpdate(saveleave);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Employeeleave Save details......");
+			@SuppressWarnings("unchecked")
+			Collection<EmployeeLeaveDM> itemIds = (Collection<EmployeeLeaveDM>) tblMstScrSrchRslt.getVisibleItemIds();
+			for (EmployeeLeaveDM saveleave : (Collection<EmployeeLeaveDM>) itemIds) {
+				saveleave.setEmployeeid(employeeid);
+				serviceLeave.saveAndUpdate(saveleave);
+			}
+			loadSrchRslt();
+			tblMstScrSrchRslt.removeAllItems();
 		}
-		loadSrchRslt();
-		tblMstScrSrchRslt.removeAllItems();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	public Boolean validateDetail() {
@@ -627,7 +654,7 @@ public class EmployeeLeave extends BaseUI {
 		cbLeavetype.setValue(null);
 		taLeaveReason.setValue("");
 		cbhalfday.setValue(null);
-		cbempstatus.setValue(cbempstatus.getItemIds().iterator().next());
+		cbEmpStatus.setValue(cbEmpStatus.getItemIds().iterator().next());
 		btnadd.setCaption("Add");
 		btnadd.setStyleName("add");
 		lblNotification.setIcon(null);

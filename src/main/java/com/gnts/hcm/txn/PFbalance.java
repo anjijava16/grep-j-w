@@ -120,32 +120,37 @@ public class PFbalance extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<PFbalanceDM> listPFBalance = new ArrayList<PFbalanceDM>();
-		Long employeeid = null;
-		if (cbEmployee.getValue() != null) {
-			employeeid = ((Long) cbEmployee.getValue());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<PFbalanceDM> list = new ArrayList<PFbalanceDM>();
+			Long employeeid = null;
+			if (cbEmployee.getValue() != null) {
+				employeeid = ((Long) cbEmployee.getValue());
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ tfFinyear.getValue());
+			recordCnt = 0;
+			if (cbEmployee.getValue() != null || tfFinyear.getValue().trim().length() > 0) {
+				list = servicePFBalance.getPfBalanceList(null, null, employeeid, null, null, tfFinyear.getValue());
+				recordCnt = list.size();
+			}
+			beanPFbalanceDM = new BeanItemContainer<PFbalanceDM>(PFbalanceDM.class);
+			beanPFbalanceDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
+					+ "Got the PF Balance result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanPFbalanceDM);
+			tblMstScrSrchRslt.setColumnAlignment("pd_id", Align.RIGHT);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "pfid", "firstname", "pfdate", "employeecontrib",
+					"employercontrib", "pfopening", "pfwithdrawal", "pfclosing", "islatest" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "PF Date",
+					"Employee Contribution", "Employer Contribution", "PF Opening", "PF Withdrawal", "PF Closing",
+					"Is Latest?" });
+			tblMstScrSrchRslt.setColumnFooter("islatest", "No.of Records : " + recordCnt);
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ tfFinyear.getValue());
-		recordCnt = 0;
-		if (cbEmployee.getValue() != null || tfFinyear.getValue().trim().length() > 0) {
-			listPFBalance = servicePFBalance.getPfBalanceList(null, null, employeeid, null, null, tfFinyear.getValue());
-			recordCnt = listPFBalance.size();
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		beanPFbalanceDM = new BeanItemContainer<PFbalanceDM>(PFbalanceDM.class);
-		beanPFbalanceDM.addAll(listPFBalance);
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
-				+ "Got the PF Balance result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanPFbalanceDM);
-		tblMstScrSrchRslt.setColumnAlignment("pd_id", Align.RIGHT);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "pfid", "firstname", "pfdate", "employeecontrib",
-				"employercontrib", "pfopening", "pfwithdrawal", "pfclosing", "islatest" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "PF Date",
-				"Employee Contribution", "Employer Contribution", "PF Opening", "PF Withdrawal", "PF Closing",
-				"Is Latest?" });
-		tblMstScrSrchRslt.setColumnFooter("islatest", "No.of Records : " + recordCnt);
 	}
 	
 	// load employee names
@@ -158,6 +163,7 @@ public class PFbalance extends BaseUI {
 			cbEmployee.setContainerDataSource(beanLoadEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

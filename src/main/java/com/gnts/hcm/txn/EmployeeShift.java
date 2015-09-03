@@ -182,27 +182,32 @@ public class EmployeeShift extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		tblMstScrSrchRslt.removeAllItems();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeShiftDM> listEmployeeShift = new ArrayList<EmployeeShiftDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbShiftName.getValue() + ", " + (Long) cbEmployeeName.getValue()
-				+ (String) cbStatus.getValue());
-		listEmployeeShift = serviceEmployeeShift.getempshiftlist(null, (Long) cbEmployeeName.getValue(),
-				(Long) cbShiftName.getValue(), (String) cbStatus.getValue(), "F");
-		recordCnt = listEmployeeShift.size();
-		beanEmployeeShift = new BeanItemContainer<EmployeeShiftDM>(EmployeeShiftDM.class);
-		beanEmployeeShift.addAll(listEmployeeShift);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Got the EmployeeShift. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanEmployeeShift);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empshiftid", "employeeName", "shiftdt", "shiftname",
-				"shiftstatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Date", "Shift", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("empshiftid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			tblMstScrSrchRslt.removeAllItems();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EmployeeShiftDM> listEmployeeShift = new ArrayList<EmployeeShiftDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyId + ", " + (Long) cbShiftName.getValue() + ", " + (Long) cbEmployeeName.getValue()
+					+ (String) cbStatus.getValue());
+			listEmployeeShift = serviceEmployeeShift.getempshiftlist(null, (Long) cbEmployeeName.getValue(),
+					(Long) cbShiftName.getValue(), (String) cbStatus.getValue(), "F");
+			recordCnt = listEmployeeShift.size();
+			beanEmployeeShift = new BeanItemContainer<EmployeeShiftDM>(EmployeeShiftDM.class);
+			beanEmployeeShift.addAll(listEmployeeShift);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the EmployeeShift. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanEmployeeShift);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empshiftid", "employeeName", "shiftdt", "shiftname",
+					"shiftstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Date", "Shift", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("empshiftid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -297,16 +302,21 @@ public class EmployeeShift extends BaseUI {
 	}
 	
 	private void editEmpShift() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeShiftDM empShift = beanEmployeeShift.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			empShift.getEmpshiftid();
-			cbEmployeeName.setValue(empShift.getEmployeeid());
-			cbShiftName.setValue(empShift.getShiftid());
-			if (empShift.getShiftdt() != null) {
-				dfShiftEnd.setValue(empShift.getShiftdt());
-				dfShiftStart.setValue(empShift.getShiftdt());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeShiftDM empShift = beanEmployeeShift.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				empShift.getEmpshiftid();
+				cbEmployeeName.setValue(empShift.getEmployeeid());
+				cbShiftName.setValue(empShift.getShiftid());
+				if (empShift.getShiftdt() != null) {
+					dfShiftEnd.setValue(empShift.getShiftdt());
+					dfShiftStart.setValue(empShift.getShiftdt());
+				}
+				cbStatus.setValue(empShift.getShiftstatus());
 			}
-			cbStatus.setValue(empShift.getShiftstatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

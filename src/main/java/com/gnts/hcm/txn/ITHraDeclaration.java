@@ -194,30 +194,37 @@ public class ITHraDeclaration extends BaseUI {
 			cbEmpName.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<ITHraDeclDM> listITHraDecl = new ArrayList<ITHraDeclDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (String) cbStatus.getValue());
-		listITHraDecl = serviceITHraDecl.getITHRAList(null, (Long) cbEmpName.getValue(), null,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listITHraDecl.size();
-		beanITHraDeclDM = new BeanItemContainer<ITHraDeclDM>(ITHraDeclDM.class);
-		beanITHraDeclDM.addAll(listITHraDecl);
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Got the IT Other HRA declaration List result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanITHraDeclDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "itHRAId", "empName", "hraAmt", "appAmt", "status",
-				"lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "HRA Amount", "Approved Amount",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("itHRAId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records:" + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<ITHraDeclDM> listITHraDecl = new ArrayList<ITHraDeclDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Search Parameters are " + companyId + ", " + (Long) cbEmpName.getValue() + ", "
+					+ (String) cbStatus.getValue());
+			listITHraDecl = serviceITHraDecl.getITHRAList(null, (Long) cbEmpName.getValue(), null,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = listITHraDecl.size();
+			beanITHraDeclDM = new BeanItemContainer<ITHraDeclDM>(ITHraDeclDM.class);
+			beanITHraDeclDM.addAll(listITHraDecl);
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Got the IT Other HRA declaration List result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanITHraDeclDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "itHRAId", "empName", "hraAmt", "appAmt", "status",
+					"lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "HRA Amount",
+					"Approved Amount", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("itHRAId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records:" + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -260,39 +267,44 @@ public class ITHraDeclaration extends BaseUI {
 	}
 	
 	private void editItHraDecl() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Editing the selected record");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			ITHraDeclDM editHraDeclObj = beanITHraDeclDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (editHraDeclObj.getEmpId() != null) {
-				cbEmpName.setValue(editHraDeclObj.getEmpId());
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Editing the selected record");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				ITHraDeclDM editHraDeclObj = beanITHraDeclDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				if (editHraDeclObj.getEmpId() != null) {
+					cbEmpName.setValue(editHraDeclObj.getEmpId());
+				}
+				if (editHraDeclObj.getFinYear() != null) {
+					tfFinYear.setReadOnly(false);
+					tfFinYear.setValue(editHraDeclObj.getFinYear());
+				}
+				if (editHraDeclObj.getFinMonth() != null) {
+					cbFinMonth.setValue(editHraDeclObj.getFinMonth().toString());
+				}
+				if (editHraDeclObj.getHraAmt() != null) {
+					tfHraAmt.setValue(editHraDeclObj.getHraAmt().toString());
+				}
+				if (editHraDeclObj.getAppAmt() != null) {
+					tfApprovedAmt.setValue(editHraDeclObj.getAppAmt().toString());
+				}
+				if (editHraDeclObj.getVerifiedDt() != null) {
+					dfVerifiedDt.setValue(editHraDeclObj.getVerifiedDt());
+				}
+				if (editHraDeclObj.getStatus() != null) {
+					cbStatus.setValue(editHraDeclObj.getStatus());
+				}
+				if (editHraDeclObj.getProofDoc() != null) {
+					byte[] certificate = editHraDeclObj.getProofDoc();
+					UploadDocumentUI test = new UploadDocumentUI(hlithradDoc);
+					test.displaycertificate(certificate);
+				} else {
+					new UploadDocumentUI(hlithradDoc);
+				}
 			}
-			if (editHraDeclObj.getFinYear() != null) {
-				tfFinYear.setReadOnly(false);
-				tfFinYear.setValue(editHraDeclObj.getFinYear());
-			}
-			if (editHraDeclObj.getFinMonth() != null) {
-				cbFinMonth.setValue(editHraDeclObj.getFinMonth().toString());
-			}
-			if (editHraDeclObj.getHraAmt() != null) {
-				tfHraAmt.setValue(editHraDeclObj.getHraAmt().toString());
-			}
-			if (editHraDeclObj.getAppAmt() != null) {
-				tfApprovedAmt.setValue(editHraDeclObj.getAppAmt().toString());
-			}
-			if (editHraDeclObj.getVerifiedDt() != null) {
-				dfVerifiedDt.setValue(editHraDeclObj.getVerifiedDt());
-			}
-			if (editHraDeclObj.getStatus() != null) {
-				cbStatus.setValue(editHraDeclObj.getStatus());
-			}
-			if (editHraDeclObj.getProofDoc() != null) {
-				byte[] certificate = editHraDeclObj.getProofDoc();
-				UploadDocumentUI test = new UploadDocumentUI(hlithradDoc);
-				test.displaycertificate(certificate);
-			} else {
-				new UploadDocumentUI(hlithradDoc);
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -369,8 +381,7 @@ public class ITHraDeclaration extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			logger.info("saveDetails---------------_>");
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

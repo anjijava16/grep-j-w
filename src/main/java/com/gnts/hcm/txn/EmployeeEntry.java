@@ -51,8 +51,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class EmployeeEntry extends BaseUI {
-	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private DepartmentService servicedepartment = (DepartmentService) SpringContextHelper.getBean("department");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private DepartmentService serviceDepartment = (DepartmentService) SpringContextHelper.getBean("department");
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
@@ -214,11 +214,12 @@ public class EmployeeEntry extends BaseUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
 			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployee.setBeanIdProperty("employeeid");
-			beanEmployee.addAll(serviceemployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(),
+			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, (Long) cbDepartmentName.getValue(),
 					"Active", companyid, employeeId, null, null, null, "P"));
 			cbEmployeeName.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -226,7 +227,7 @@ public class EmployeeEntry extends BaseUI {
 	private void loadDepartmentList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading DepartmentList");
-			List<DepartmentDM> listDepartment = servicedepartment.getDepartmentList(companyid, null, "Active", "F");
+			List<DepartmentDM> listDepartment = serviceDepartment.getDepartmentList(companyid, null, "Active", "F");
 			listDepartment.add(new DepartmentDM(0L, "All Departments"));
 			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 			beanDepartment.setBeanIdProperty("deptid");
@@ -234,6 +235,7 @@ public class EmployeeEntry extends BaseUI {
 			cbDepartmentName.setContainerDataSource(beanDepartment);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

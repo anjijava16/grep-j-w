@@ -179,33 +179,39 @@ public class EmployeeAllowanceCliam extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeAllowanceClaimDM> listAllClaim = new ArrayList<EmployeeAllowanceClaimDM>();
-		Long empId = null;
-		if (cbEmpName.getValue() != null) {
-			empId = ((Long.valueOf(cbEmpName.getValue().toString())));
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EmployeeAllowanceClaimDM> listAllClaim = new ArrayList<EmployeeAllowanceClaimDM>();
+			Long empId = null;
+			if (cbEmpName.getValue() != null) {
+				empId = ((Long.valueOf(cbEmpName.getValue().toString())));
+			}
+			Long alwncId = null;
+			if (cbEmpAlwncName.getValue() != null) {
+				alwncId = ((Long.valueOf(cbEmpAlwncName.getValue().toString())));
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + dtPaidDt.getValue() + (String) cbStatus.getValue() + ", " + empId + ","
+					+ alwncId);
+			listAllClaim = serviceEmpAllowanceCliam.getempawclaimlist(null, (Long) cbEmpName.getValue(),
+					(Date) dfAlowncClaimDt.getValue(), (Long) cbEmpAlwncName.getValue(), "Approved", "F");
+			recordCnt = listAllClaim.size();
+			beanEmpAllowanceDM = new BeanItemContainer<EmployeeAllowanceClaimDM>(EmployeeAllowanceClaimDM.class);
+			beanEmpAllowanceDM.addAll(listAllClaim);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the EmpAllowanceCliam. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanEmpAllowanceDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "allwclaimid", "empName", "alwanceName", "awclmdt",
+					"awclmamt", "allwclmstatus", "lastupdt", "lastupby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Employee Allowance",
+					"Claim Date", "Claim Amount", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("allwclaimid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupby", "No.of Records : " + recordCnt);
 		}
-		Long alwncId = null;
-		if (cbEmpAlwncName.getValue() != null) {
-			alwncId = ((Long.valueOf(cbEmpAlwncName.getValue().toString())));
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + dtPaidDt.getValue() + (String) cbStatus.getValue() + ", " + empId + "," + alwncId);
-		listAllClaim = serviceEmpAllowanceCliam.getempawclaimlist(null, (Long) cbEmpName.getValue(),
-				(Date) dfAlowncClaimDt.getValue(), (Long) cbEmpAlwncName.getValue(), "Approved", "F");
-		recordCnt = listAllClaim.size();
-		beanEmpAllowanceDM = new BeanItemContainer<EmployeeAllowanceClaimDM>(EmployeeAllowanceClaimDM.class);
-		beanEmpAllowanceDM.addAll(listAllClaim);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the EmpAllowanceCliam. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanEmpAllowanceDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "allwclaimid", "empName", "alwanceName", "awclmdt",
-				"awclmamt", "allwclmstatus", "lastupdt", "lastupby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Employee Allowance",
-				"Claim Date", "Claim Amount", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("allwclaimid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupby", "No.of Records : " + recordCnt);
 	}
 	
 	// Reset the field values to default values
@@ -229,24 +235,29 @@ public class EmployeeAllowanceCliam extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editEmpAlownce() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeAllowanceClaimDM editEmpAlownce = beanEmpAllowanceDM.getItem(tblMstScrSrchRslt.getValue())
-					.getBean();
-			pkEmpAlwncClaim = editEmpAlownce.getEmpawid().toString();
-			cbEmpName.setValue(editEmpAlownce.getEmpid());
-			if (editEmpAlownce.getAwclmdt() != null) {
-				dfAlowncClaimDt.setValue(editEmpAlownce.getAwclmdt1());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeAllowanceClaimDM editEmpAlownce = beanEmpAllowanceDM.getItem(tblMstScrSrchRslt.getValue())
+						.getBean();
+				pkEmpAlwncClaim = editEmpAlownce.getEmpawid().toString();
+				cbEmpName.setValue(editEmpAlownce.getEmpid());
+				if (editEmpAlownce.getAwclmdt() != null) {
+					dfAlowncClaimDt.setValue(editEmpAlownce.getAwclmdt1());
+				}
+				dtPaidDt.setValue(editEmpAlownce.getPaiddt());
+				cbEmpAlwncName.setValue(editEmpAlownce.getEmpawid());
+				tfAlwncClaimAmt.setValue(editEmpAlownce.getAwclmamt().toString());
+				if (editEmpAlownce.getPaidpayrollid() != null) {
+					tfPaidPayrollId.setValue(editEmpAlownce.getPaidpayrollid().toString());
+				}
+				cbStatus.setValue(editEmpAlownce.getAllwclmstatus());
+				if (editEmpAlownce.getClaimremarks() != null) {
+					tfClaimRemark.setValue(editEmpAlownce.getClaimremarks());
+				}
 			}
-			dtPaidDt.setValue(editEmpAlownce.getPaiddt());
-			cbEmpAlwncName.setValue(editEmpAlownce.getEmpawid());
-			tfAlwncClaimAmt.setValue(editEmpAlownce.getAwclmamt().toString());
-			if (editEmpAlownce.getPaidpayrollid() != null) {
-				tfPaidPayrollId.setValue(editEmpAlownce.getPaidpayrollid().toString());
-			}
-			cbStatus.setValue(editEmpAlownce.getAllwclmstatus());
-			if (editEmpAlownce.getClaimremarks() != null) {
-				tfClaimRemark.setValue(editEmpAlownce.getClaimremarks());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

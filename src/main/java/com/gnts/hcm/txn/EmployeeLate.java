@@ -213,37 +213,47 @@ public class EmployeeLate extends VerticalLayout implements ClickListener {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "loading SearchResult Details...");
-		total = 0;
-		if (employeeid != null) {
-			listEmpLate = serviceLate.getemplatelist(null, employeeid, null, "Active", "F");
-			total = listEmpLate.size();
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "loading SearchResult Details...");
+			total = 0;
+			if (employeeid != null) {
+				listEmpLate = serviceLate.getemplatelist(null, employeeid, null, "Active", "F");
+				total = listEmpLate.size();
+			}
+			tblMstScrSrchRslt.setPageLength(10);
+			beans = new BeanItemContainer<EmployeeLateDetailDM>(EmployeeLateDetailDM.class);
+			beans.addAll(listEmpLate);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Employee Late. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beans);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + total);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "latedate", "intime", "latehrs", "laterks",
+					"latestatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Late Date", "In Time", "Late Hours", "Remarks",
+					"Status", "Last Updated Date", "Last Updates By" });
+			tblMstScrSrchRslt.setColumnAlignment("lateid", Align.RIGHT);
 		}
-		tblMstScrSrchRslt.setPageLength(10);
-		beans = new BeanItemContainer<EmployeeLateDetailDM>(EmployeeLateDetailDM.class);
-		beans.addAll(listEmpLate);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Employee Late. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beans);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + total);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "latedate", "intime", "latehrs", "laterks", "latestatus",
-				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Late Date", "In Time", "Late Hours", "Remarks", "Status",
-				"Last Updated Date", "Last Updates By" });
-		tblMstScrSrchRslt.setColumnAlignment("lateid", Align.RIGHT);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method used to display selected row's values in desired text box and combo box for edit the values
 	private void editLate() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Late.......");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeLateDetailDM lateDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfLatedate.setValue(lateDM.getLatedat());
-			tfLateintime.setTime(lateDM.getIntime());
-			tfLatehrs.setValue(lateDM.getLatehrs().toString());
-			taLateRemarks.setValue(lateDM.getLaterks());
-			cbLatestatus.setValue(lateDM.getLatestatus());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Late.......");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeLateDetailDM lateDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				dfLatedate.setValue(lateDM.getLatedat());
+				tfLateintime.setTime(lateDM.getIntime());
+				tfLatehrs.setValue(lateDM.getLatehrs().toString());
+				taLateRemarks.setValue(lateDM.getLaterks());
+				cbLatestatus.setValue(lateDM.getLatestatus());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -279,22 +289,27 @@ public class EmployeeLate extends VerticalLayout implements ClickListener {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	public void latesave(Long employeeid) {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "EmployeeLate Save details......");
-		@SuppressWarnings("unchecked")
-		Collection<EmployeeLateDetailDM> itemIds = (Collection<EmployeeLateDetailDM>) tblMstScrSrchRslt
-				.getVisibleItemIds();
-		for (EmployeeLateDetailDM saveLate : (Collection<EmployeeLateDetailDM>) itemIds) {
-			saveLate.setEmployeeid(employeeid);
-			serviceLate.saveAndUpdate(saveLate);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "EmployeeLate Save details......");
+			@SuppressWarnings("unchecked")
+			Collection<EmployeeLateDetailDM> itemIds = (Collection<EmployeeLateDetailDM>) tblMstScrSrchRslt
+					.getVisibleItemIds();
+			for (EmployeeLateDetailDM saveLate : (Collection<EmployeeLateDetailDM>) itemIds) {
+				saveLate.setEmployeeid(employeeid);
+				serviceLate.saveAndUpdate(saveLate);
+			}
+			loadSrchRslt();
+			tblMstScrSrchRslt.removeAllItems();
 		}
-		loadSrchRslt();
-		tblMstScrSrchRslt.removeAllItems();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private boolean validateDetails() {

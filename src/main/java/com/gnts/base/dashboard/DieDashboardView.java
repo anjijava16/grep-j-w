@@ -193,6 +193,7 @@ public class DieDashboardView implements ClickListener {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Die Request");
+			UI.getCurrent().getSession().setAttribute("IS_DIE_ENQ", false);
 			UI.getCurrent().getSession().setAttribute("moduleId", 17L);
 			new DieRequest();
 		}

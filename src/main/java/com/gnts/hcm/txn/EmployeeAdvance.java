@@ -188,34 +188,39 @@ public class EmployeeAdvance extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeAdvanceDM> listEmpAdvance = new ArrayList<EmployeeAdvanceDM>();
-		Long empId = null;
-		if (cbEmpName.getValue() != null) {
-			empId = ((Long.valueOf(cbEmpName.getValue().toString())));
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EmployeeAdvanceDM> listEmpAdvance = new ArrayList<EmployeeAdvanceDM>();
+			Long empId = null;
+			if (cbEmpName.getValue() != null) {
+				empId = ((Long.valueOf(cbEmpName.getValue().toString())));
+			}
+			Long deductionId = null;
+			if (cbDeductionName.getValue() != null) {
+				deductionId = ((Long.valueOf(cbDeductionName.getValue().toString())));
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfAdvncAmt.getValue() + ", " + dfEffective.getValue()
+					+ (String) cbStatus.getValue() + ", " + empId + "," + deductionId);
+			listEmpAdvance = serviceEmpAdvance.getempadvancelist(null, empId, deductionId, null, null,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = listEmpAdvance.size();
+			beanAdvanceDM = new BeanItemContainer<EmployeeAdvanceDM>(EmployeeAdvanceDM.class);
+			beanAdvanceDM.addAll(listEmpAdvance);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the EmployeeAdvance. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanAdvanceDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empadvanceid", "empName", "deductnName", "advnceamt",
+					"aprvMngr", "advstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Deduction Name",
+					"Advance Amount", "Approve Manager", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("empadvanceid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
-		Long deductionId = null;
-		if (cbDeductionName.getValue() != null) {
-			deductionId = ((Long.valueOf(cbDeductionName.getValue().toString())));
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfAdvncAmt.getValue() + ", " + dfEffective.getValue()
-				+ (String) cbStatus.getValue() + ", " + empId + "," + deductionId);
-		listEmpAdvance = serviceEmpAdvance.getempadvancelist(null, empId, deductionId, null, null,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listEmpAdvance.size();
-		beanAdvanceDM = new BeanItemContainer<EmployeeAdvanceDM>(EmployeeAdvanceDM.class);
-		beanAdvanceDM.addAll(listEmpAdvance);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the EmployeeAdvance. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanAdvanceDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empadvanceid", "empName", "deductnName", "advnceamt",
-				"aprvMngr", "advstatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Deduction Name",
-				"Advance Amount", "Approve Manager", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("empadvanceid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
 	
 	// Reset the field values to default values
@@ -243,20 +248,25 @@ public class EmployeeAdvance extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editEmpAdvance() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeAdvanceDM editEmpAdvance = beanAdvanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			pkEmpAdvncId = editEmpAdvance.getEmpadvanceid().toString();
-			cbEmpName.setValue(editEmpAdvance.getEmpid());
-			cbAprveMngr.setValue(editEmpAdvance.getApprovemgr());
-			cbDeductionName.setValue(editEmpAdvance.getDednid());
-			dfEffective.setValue(editEmpAdvance.getAdvncedt());
-			tfAdvncAmt.setValue(editEmpAdvance.getAdvnceamt().toString());
-			tfAdvncInterest.setValue(editEmpAdvance.getAdvnceiterst().toString());
-			tfNoOfRepay.setValue(editEmpAdvance.getNoofpayment().toString());
-			tfEMIAmt.setValue(editEmpAdvance.getEmiamount().toString());
-			tfAdvanceReason.setValue(editEmpAdvance.getAdvanceReason());
-			dfDeductnStDt.setValue(editEmpAdvance.getDednstartdt());
-			cbStatus.setValue(editEmpAdvance.getAdvstatus());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeAdvanceDM editEmpAdvance = beanAdvanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				pkEmpAdvncId = editEmpAdvance.getEmpadvanceid().toString();
+				cbEmpName.setValue(editEmpAdvance.getEmpid());
+				cbAprveMngr.setValue(editEmpAdvance.getApprovemgr());
+				cbDeductionName.setValue(editEmpAdvance.getDednid());
+				dfEffective.setValue(editEmpAdvance.getAdvncedt());
+				tfAdvncAmt.setValue(editEmpAdvance.getAdvnceamt().toString());
+				tfAdvncInterest.setValue(editEmpAdvance.getAdvnceiterst().toString());
+				tfNoOfRepay.setValue(editEmpAdvance.getNoofpayment().toString());
+				tfEMIAmt.setValue(editEmpAdvance.getEmiamount().toString());
+				tfAdvanceReason.setValue(editEmpAdvance.getAdvanceReason());
+				dfDeductnStDt.setValue(editEmpAdvance.getDednstartdt());
+				cbStatus.setValue(editEmpAdvance.getAdvstatus());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -383,58 +393,53 @@ public class EmployeeAdvance extends BaseUI {
 	
 	@Override
 	protected void saveDetails() {
-		try {
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-			EmployeeAdvanceDM empAdvncObj = new EmployeeAdvanceDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				empAdvncObj = beanAdvanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			}
-			if (cbEmpName.getValue() != null) {
-				empAdvncObj.setEmpid((Long.valueOf(cbEmpName.getValue().toString())));
-			}
-			if (cbDeductionName.getValue() != null) {
-				empAdvncObj.setDednid((Long.valueOf(cbDeductionName.getValue().toString())));
-			}
-			if (dfEffective.getValue() != null) {
-				empAdvncObj.setAdvncedt((dfEffective.getValue()));
-			}
-			if (tfAdvncAmt.getValue() != null && tfAdvncAmt.getValue().trim().length() > 0) {
-				empAdvncObj.setAdvnceamt(Long.valueOf(tfAdvncAmt.getValue()));
-			} else {
-				empAdvncObj.setAdvnceamt(new Long("0"));
-			}
-			if (tfAdvncInterest.getValue() != null && tfAdvncInterest.getValue().trim().length() > 0) {
-				empAdvncObj.setAdvnceiterst(Long.valueOf(tfAdvncInterest.getValue()));
-			} else {
-				empAdvncObj.setAdvnceiterst(new Long("0"));
-			}
-			if (cbAprveMngr.getValue() != null) {
-				empAdvncObj.setApprovemgr((Long.valueOf(cbAprveMngr.getValue().toString())));
-			}
-			if (tfAdvanceReason.getValue() != null) {
-				empAdvncObj.setAdvanceReason(tfAdvanceReason.getValue());
-			}
-			if (tfNoOfRepay.getValue() != null) {
-				empAdvncObj.setNoofpayment(Long.valueOf((tfNoOfRepay.getValue())));
-			}
-			if (tfEMIAmt.getValue() != null) {
-				empAdvncObj.setEmiamount((Long.valueOf((tfEMIAmt.getValue()))));
-			}
-			if (dfDeductnStDt.getValue() != null) {
-				empAdvncObj.setDednstartdt(dfDeductnStDt.getValue());
-			}
-			if (cbStatus.getValue() != null) {
-				empAdvncObj.setAdvstatus((String) cbStatus.getValue());
-			}
-			empAdvncObj.setLastupdateddt(DateUtils.getcurrentdate());
-			empAdvncObj.setLastupdatedby(username);
-			serviceEmpAdvance.saveAndUpdate(empAdvncObj);
-			resetFields();
-			loadSrchRslt();
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+		EmployeeAdvanceDM empAdvncObj = new EmployeeAdvanceDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			empAdvncObj = beanAdvanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		if (cbEmpName.getValue() != null) {
+			empAdvncObj.setEmpid((Long.valueOf(cbEmpName.getValue().toString())));
 		}
+		if (cbDeductionName.getValue() != null) {
+			empAdvncObj.setDednid((Long.valueOf(cbDeductionName.getValue().toString())));
+		}
+		if (dfEffective.getValue() != null) {
+			empAdvncObj.setAdvncedt((dfEffective.getValue()));
+		}
+		if (tfAdvncAmt.getValue() != null && tfAdvncAmt.getValue().trim().length() > 0) {
+			empAdvncObj.setAdvnceamt(Long.valueOf(tfAdvncAmt.getValue()));
+		} else {
+			empAdvncObj.setAdvnceamt(new Long("0"));
+		}
+		if (tfAdvncInterest.getValue() != null && tfAdvncInterest.getValue().trim().length() > 0) {
+			empAdvncObj.setAdvnceiterst(Long.valueOf(tfAdvncInterest.getValue()));
+		} else {
+			empAdvncObj.setAdvnceiterst(new Long("0"));
+		}
+		if (cbAprveMngr.getValue() != null) {
+			empAdvncObj.setApprovemgr((Long.valueOf(cbAprveMngr.getValue().toString())));
+		}
+		if (tfAdvanceReason.getValue() != null) {
+			empAdvncObj.setAdvanceReason(tfAdvanceReason.getValue());
+		}
+		if (tfNoOfRepay.getValue() != null) {
+			empAdvncObj.setNoofpayment(Long.valueOf((tfNoOfRepay.getValue())));
+		}
+		if (tfEMIAmt.getValue() != null) {
+			empAdvncObj.setEmiamount((Long.valueOf((tfEMIAmt.getValue()))));
+		}
+		if (dfDeductnStDt.getValue() != null) {
+			empAdvncObj.setDednstartdt(dfDeductnStDt.getValue());
+		}
+		if (cbStatus.getValue() != null) {
+			empAdvncObj.setAdvstatus((String) cbStatus.getValue());
+		}
+		empAdvncObj.setLastupdateddt(DateUtils.getcurrentdate());
+		empAdvncObj.setLastupdatedby(username);
+		serviceEmpAdvance.saveAndUpdate(empAdvncObj);
+		resetFields();
+		loadSrchRslt();
 	}
 	
 	private void loadEmpList() {
@@ -453,6 +458,7 @@ public class EmployeeAdvance extends BaseUI {
 			cbAprveMngr.setContainerDataSource(beanEmpDM);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -467,6 +473,7 @@ public class EmployeeAdvance extends BaseUI {
 			cbDeductionName.setContainerDataSource(beanDeductnDM);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

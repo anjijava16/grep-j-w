@@ -230,6 +230,7 @@ public class AttendenceApprove extends BaseUI {
 			cbBranch.setContainerDataSource(beanBranch);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -249,6 +250,7 @@ public class AttendenceApprove extends BaseUI {
 			cbEmployeeName.setContainerDataSource(beanLoadEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -449,7 +451,7 @@ public class AttendenceApprove extends BaseUI {
 			tblMstScrSrchRslt.setColumnFooter("processedDt", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -480,7 +482,7 @@ public class AttendenceApprove extends BaseUI {
 			serviceAttendanceProcess.procAttendenceApprove(companyId, (String) attProcId.toString(), userName);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		loadSrchRslt();
 	}

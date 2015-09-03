@@ -66,7 +66,7 @@ import com.vaadin.ui.VerticalLayout;
 public class JobVaccancy extends BaseUI {
 	// Bean creation
 	private JobVaccancyService serviceJobVaccancy = (JobVaccancyService) SpringContextHelper.getBean("JobVaccancy");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private JobClassificationService serviceJobClassification = (JobClassificationService) SpringContextHelper
 			.getBean("JobClassification");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
@@ -234,28 +234,33 @@ public class JobVaccancy extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		tblMstScrSrchRslt.setPageLength(13);
-		List<JobVaccancyDM> listJobvacncy = new ArrayList<JobVaccancyDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + (String) tfJobtitle.getValue() + ", " + (Long) cbJobClsName.getValue()
-				+ (String) cbJbStatus.getValue() + ", " + (Long) cbDesgntnName.getValue());
-		listJobvacncy = serviceJobVaccancy.getJobVaccancyList(vaccancyId, (String) tfJobtitle.getValue(),
-				(Long) cbJobClsName.getValue(), (Long) cbDesgntnName.getValue(), null, null,
-				(String) cbJbStatus.getValue(), "F");
-		recordCnt = listJobvacncy.size();
-		beanJobVaccancyDM = new BeanItemContainer<JobVaccancyDM>(JobVaccancyDM.class);
-		beanJobVaccancyDM.addAll(listJobvacncy);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the JobVaccancy. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanJobVaccancyDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "vaccancyId", "jobtitle", "jobClasfnName", "desgntnName",
-				"branchName", "jobstatus", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Job Title", "Job Classification", "Designation",
-				"Branch", "Job Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("vaccancyId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			tblMstScrSrchRslt.setPageLength(13);
+			List<JobVaccancyDM> listJobvacncy = new ArrayList<JobVaccancyDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + (String) tfJobtitle.getValue() + ", " + (Long) cbJobClsName.getValue()
+					+ (String) cbJbStatus.getValue() + ", " + (Long) cbDesgntnName.getValue());
+			listJobvacncy = serviceJobVaccancy.getJobVaccancyList(vaccancyId, (String) tfJobtitle.getValue(),
+					(Long) cbJobClsName.getValue(), (Long) cbDesgntnName.getValue(), null, null,
+					(String) cbJbStatus.getValue(), "F");
+			recordCnt = listJobvacncy.size();
+			beanJobVaccancyDM = new BeanItemContainer<JobVaccancyDM>(JobVaccancyDM.class);
+			beanJobVaccancyDM.addAll(listJobvacncy);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the JobVaccancy. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanJobVaccancyDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "vaccancyId", "jobtitle", "jobClasfnName",
+					"desgntnName", "branchName", "jobstatus", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Job Title", "Job Classification",
+					"Designation", "Branch", "Job Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("vaccancyId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadBranchList() {
@@ -268,6 +273,7 @@ public class JobVaccancy extends BaseUI {
 			cbBrnchName.setContainerDataSource(beanBranchDM);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -283,6 +289,7 @@ public class JobVaccancy extends BaseUI {
 			cbJobClsName.setContainerDataSource(beanClsFcnDM);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -290,8 +297,8 @@ public class JobVaccancy extends BaseUI {
 		try {
 			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid,
-					employeeId, null, null, null, "P"));
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeId,
+					null, null, null, "P"));
 			cbHirgMgr.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
@@ -314,6 +321,7 @@ public class JobVaccancy extends BaseUI {
 			cbWrkExp.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -333,7 +341,7 @@ public class JobVaccancy extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -341,8 +349,8 @@ public class JobVaccancy extends BaseUI {
 		try {
 			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid,
-					employeeId, null, null, null, "P"));
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeId,
+					null, null, null, "P"));
 			cbReqstdName.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
@@ -354,8 +362,8 @@ public class JobVaccancy extends BaseUI {
 		try {
 			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(servicebeanEmployee.getEmployeeList(null, null, null, "Active", companyid,
-					employeeId, null, null, null, "P"));
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeId,
+					null, null, null, "P"));
 			cbApvdName.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
@@ -364,14 +372,19 @@ public class JobVaccancy extends BaseUI {
 	}
 	
 	private void loadDesignation() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading Designation Search...");
-		BeanContainer<Long, DesignationDM> beanDesignationDM = new BeanContainer<Long, DesignationDM>(
-				DesignationDM.class);
-		beanDesignationDM.setBeanIdProperty("designationId");
-		beanDesignationDM.addAll(serviceDesignation
-				.getDesignationList(null, null, null, null, companyid, "Active", "F"));
-		cbDesgntnName.setContainerDataSource(beanDesignationDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading Designation Search...");
+			BeanContainer<Long, DesignationDM> beanDesignationDM = new BeanContainer<Long, DesignationDM>(
+					DesignationDM.class);
+			beanDesignationDM.setBeanIdProperty("designationId");
+			beanDesignationDM.addAll(serviceDesignation.getDesignationList(null, null, null, null, companyid, "Active",
+					"F"));
+			cbDesgntnName.setContainerDataSource(beanDesignationDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -447,53 +460,58 @@ public class JobVaccancy extends BaseUI {
 	}
 	
 	private void editJobvacncyDetails() {
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			JobVaccancyDM jobVaccancyDM = beanJobVaccancyDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			vaccancyId = jobVaccancyDM.getVaccancyId();
-			if ((jobVaccancyDM.getJobtitle() != null)) {
-				tfJobtitle.setValue(jobVaccancyDM.getJobtitle());
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				JobVaccancyDM jobVaccancyDM = beanJobVaccancyDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				vaccancyId = jobVaccancyDM.getVaccancyId();
+				if ((jobVaccancyDM.getJobtitle() != null)) {
+					tfJobtitle.setValue(jobVaccancyDM.getJobtitle());
+				}
+				if ((jobVaccancyDM.getHiringmgr() != null)) {
+					cbHirgMgr.setValue(jobVaccancyDM.getHiringmgr());
+				}
+				cbJobClsName.setValue(jobVaccancyDM.getJobclasfnid());
+				cbBrnchName.setValue(jobVaccancyDM.getBranchid());
+				cbDesgntnName.setValue(jobVaccancyDM.getDesignatnid());
+				if ((jobVaccancyDM.getJobdetails() != null)) {
+					taJobDetails.setValue(jobVaccancyDM.getJobdetails().toString());
+				}
+				if ((jobVaccancyDM.getRequestdby() != null)) {
+					cbReqstdName.setValue(jobVaccancyDM.getRequestdby());
+				}
+				if ((jobVaccancyDM.getApprovedby() != null)) {
+					cbApvdName.setValue(jobVaccancyDM.getApprovedby());
+				}
+				if (jobVaccancyDM.getApprovedDt() != null) {
+					dfApvdDate.setValue(jobVaccancyDM.getApprovedDt());
+				}
+				if (jobVaccancyDM.getApprovedstatus() != null) {
+					cbApStatus.setValue(jobVaccancyDM.getApprovedstatus());
+				}
+				if (jobVaccancyDM.getJobstatus() != null) {
+					cbJbStatus.setValue(jobVaccancyDM.getJobstatus());
+				}
+				if (jobVaccancyDM.getWorkExp() != null) {
+					cbWrkExp.setValue(jobVaccancyDM.getWorkExp());
+				}
+				if (jobVaccancyDM.getExpYear() != null) {
+					tfWrkExpYr.setValue(jobVaccancyDM.getExpYear());
+				}
+				if (jobVaccancyDM.getExpDesc() != null) {
+					tfWrkExpDesc.setValue(jobVaccancyDM.getExpDesc());
+				}
+				if (jobVaccancyDM.getApplctnform() != null) {
+					byte[] certificate = jobVaccancyDM.getApplctnform();
+					UploadDocumentUI test = new UploadDocumentUI(vlappdoc);
+					test.displaycertificate(certificate);
+				} else {
+					new UploadDocumentUI(vlappdoc);
+				}
 			}
-			if ((jobVaccancyDM.getHiringmgr() != null)) {
-				cbHirgMgr.setValue(jobVaccancyDM.getHiringmgr());
-			}
-			cbJobClsName.setValue(jobVaccancyDM.getJobclasfnid());
-			cbBrnchName.setValue(jobVaccancyDM.getBranchid());
-			cbDesgntnName.setValue(jobVaccancyDM.getDesignatnid());
-			if ((jobVaccancyDM.getJobdetails() != null)) {
-				taJobDetails.setValue(jobVaccancyDM.getJobdetails().toString());
-			}
-			if ((jobVaccancyDM.getRequestdby() != null)) {
-				cbReqstdName.setValue(jobVaccancyDM.getRequestdby());
-			}
-			if ((jobVaccancyDM.getApprovedby() != null)) {
-				cbApvdName.setValue(jobVaccancyDM.getApprovedby());
-			}
-			if (jobVaccancyDM.getApprovedDt() != null) {
-				dfApvdDate.setValue(jobVaccancyDM.getApprovedDt());
-			}
-			if (jobVaccancyDM.getApprovedstatus() != null) {
-				cbApStatus.setValue(jobVaccancyDM.getApprovedstatus());
-			}
-			if (jobVaccancyDM.getJobstatus() != null) {
-				cbJbStatus.setValue(jobVaccancyDM.getJobstatus());
-			}
-			if (jobVaccancyDM.getWorkExp() != null) {
-				cbWrkExp.setValue(jobVaccancyDM.getWorkExp());
-			}
-			if (jobVaccancyDM.getExpYear() != null) {
-				tfWrkExpYr.setValue(jobVaccancyDM.getExpYear());
-			}
-			if (jobVaccancyDM.getExpDesc() != null) {
-				tfWrkExpDesc.setValue(jobVaccancyDM.getExpDesc());
-			}
-			if (jobVaccancyDM.getApplctnform() != null) {
-				byte[] certificate = jobVaccancyDM.getApplctnform();
-				UploadDocumentUI test = new UploadDocumentUI(vlappdoc);
-				test.displaycertificate(certificate);
-			} else {
-				new UploadDocumentUI(vlappdoc);
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -623,7 +641,7 @@ public class JobVaccancy extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

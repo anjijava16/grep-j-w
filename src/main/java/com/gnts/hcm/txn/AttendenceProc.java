@@ -267,6 +267,7 @@ public class AttendenceProc extends BaseUI {
 			cbBranch.setContainerDataSource(beanBranch);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -286,6 +287,7 @@ public class AttendenceProc extends BaseUI {
 			cbEmployeeName.setContainerDataSource(beanLoadEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -484,27 +486,33 @@ public class AttendenceProc extends BaseUI {
 			tblMstScrSrchRslt.setColumnFooter("processedDt", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editAttenProc() {
-		hlCmdBtnLayout.setVisible(false);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			AttendenceProcDM attendenceProcDM = beanAttendenceProcDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (attendenceProcDM.getPayPeriodId() != null) {
-				cbPayPeried.setValue(attendenceProcDM.getPayPeriodId());
+		try {
+			hlCmdBtnLayout.setVisible(false);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				AttendenceProcDM attendenceProcDM = beanAttendenceProcDM.getItem(tblMstScrSrchRslt.getValue())
+						.getBean();
+				if (attendenceProcDM.getPayPeriodId() != null) {
+					cbPayPeried.setValue(attendenceProcDM.getPayPeriodId());
+				}
+				attProcId = attendenceProcDM.getAttProcId();
+				String startsdt = DateUtils.datetostringsimple(attendenceProcDM.getAllStDt());
+				String enddst = DateUtils.datetostringsimple(attendenceProcDM.getAllEndDt());
+				tfProcessPeriod.setReadOnly(false);
+				tfProcessPeriod.setValue(startsdt + " to " + enddst);
+				tfProcessPeriod.setReadOnly(true);
+				if (attendenceProcDM.getBranchId() != null) {
+					cbBranch.setValue(attendenceProcDM.getBranchId());
+				}
+				cbEmployeeName.setValue(attendenceProcDM.getEmpid());
 			}
-			attProcId = attendenceProcDM.getAttProcId();
-			String startsdt = DateUtils.datetostringsimple(attendenceProcDM.getAllStDt());
-			String enddst = DateUtils.datetostringsimple(attendenceProcDM.getAllEndDt());
-			tfProcessPeriod.setReadOnly(false);
-			tfProcessPeriod.setValue(startsdt + " to " + enddst);
-			tfProcessPeriod.setReadOnly(true);
-			if (attendenceProcDM.getBranchId() != null) {
-				cbBranch.setValue(attendenceProcDM.getBranchId());
-			}
-			cbEmployeeName.setValue(attendenceProcDM.getEmpid());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

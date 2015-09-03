@@ -69,13 +69,13 @@ import com.vaadin.ui.VerticalLayout;
 
 public class EmployeeAppraisal extends BaseUI {
 	// Bean Creation
-	private EmpAppraisalHdrService serviceappraisalhdr = (EmpAppraisalHdrService) SpringContextHelper
+	private EmpAppraisalHdrService serviceAppraisalhdr = (EmpAppraisalHdrService) SpringContextHelper
 			.getBean("EmployeeAppraisalHdr");
 	private EmpAppraisalDtlService serviceAppraisaldtl = (EmpAppraisalDtlService) SpringContextHelper
 			.getBean("EmpAppraisalDtl");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private KpiGroupService serviceKPIGroup = (KpiGroupService) SpringContextHelper.getBean("KpiGroup");
-	private KpiService servicekpi = (KpiService) SpringContextHelper.getBean("Kpi");
+	private KpiService serviceKPI = (KpiService) SpringContextHelper.getBean("Kpi");
 	private AppraisalLevelsService serviceAppraisalLevel = (AppraisalLevelsService) SpringContextHelper
 			.getBean("AppraisalLevels");
 	private List<EmpAppraisalDtlDM> listEmpApprDtls = new ArrayList<EmpAppraisalDtlDM>();
@@ -323,43 +323,53 @@ public class EmployeeAppraisal extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EmpAppraisalHdrDM> listHdr = new ArrayList<EmpAppraisalHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are ");
-		listHdr = serviceappraisalhdr.getempappraisalhdrlist(null, (Long) cbEmployee.getValue(),
-				(Long) cbKPIGrpName.getValue(), null, (String) cbstatus.getValue(), "F");
-		recordCnt = listHdr.size();
-		beanEmpAppraisalHdrDM = new BeanItemContainer<EmpAppraisalHdrDM>(EmpAppraisalHdrDM.class);
-		beanEmpAppraisalHdrDM.addAll(listHdr);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the EmpAppraisalHdr. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanEmpAppraisalHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "appraisalid", "empfirstlastname", "kpigroupname",
-				"apprstatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "KPI Group Name", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("appraisalid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EmpAppraisalHdrDM> listHdr = new ArrayList<EmpAppraisalHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are ");
+			listHdr = serviceAppraisalhdr.getempappraisalhdrlist(null, (Long) cbEmployee.getValue(),
+					(Long) cbKPIGrpName.getValue(), null, (String) cbstatus.getValue(), "F");
+			recordCnt = listHdr.size();
+			beanEmpAppraisalHdrDM = new BeanItemContainer<EmpAppraisalHdrDM>(EmpAppraisalHdrDM.class);
+			beanEmpAppraisalHdrDM.addAll(listHdr);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the EmpAppraisalHdr. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanEmpAppraisalHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "appraisalid", "empfirstlastname", "kpigroupname",
+					"apprstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "KPI Group Name", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("appraisalid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loaddtlRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		logger.info("Company ID : " + companyid + " | saveempAppraisalDtlListDetails User Name : " + username + " > "
-				+ "Search Parameters are ");
-		recordCnt = listEmpApprDtls.size();
-		tblEmpAprisalDtl.setPageLength(10);
-		beanEmpAppraisalDtlDM = new BeanItemContainer<EmpAppraisalDtlDM>(EmpAppraisalDtlDM.class);
-		beanEmpAppraisalDtlDM.addAll(listEmpApprDtls);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the EmpAppraisalDtl. result set");
-		tblEmpAprisalDtl.setContainerDataSource(beanEmpAppraisalDtlDM);
-		tblEmpAprisalDtl.setVisibleColumns(new Object[] { "firstlastname", "kpiName", "levelname", "kpirating",
-				"comments", "lastupdatedby", "lastupdateddt" });
-		tblEmpAprisalDtl.setColumnHeaders(new String[] { "Appraisal Name", "KPI Name", "Level ", "KPI Rating",
-				"Comments", "Last Updated By", "Last Updated Date" });
-		tblEmpAprisalDtl.setColumnAlignment("appraisaldtlid", Align.RIGHT);
-		tblEmpAprisalDtl.setColumnFooter("lastupdateddt", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			logger.info("Company ID : " + companyid + " | saveempAppraisalDtlListDetails User Name : " + username
+					+ " > " + "Search Parameters are ");
+			recordCnt = listEmpApprDtls.size();
+			tblEmpAprisalDtl.setPageLength(10);
+			beanEmpAppraisalDtlDM = new BeanItemContainer<EmpAppraisalDtlDM>(EmpAppraisalDtlDM.class);
+			beanEmpAppraisalDtlDM.addAll(listEmpApprDtls);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the EmpAppraisalDtl. result set");
+			tblEmpAprisalDtl.setContainerDataSource(beanEmpAppraisalDtlDM);
+			tblEmpAprisalDtl.setVisibleColumns(new Object[] { "firstlastname", "kpiName", "levelname", "kpirating",
+					"comments", "lastupdatedby", "lastupdateddt" });
+			tblEmpAprisalDtl.setColumnHeaders(new String[] { "Appraisal Name", "KPI Name", "Level ", "KPI Rating",
+					"Comments", "Last Updated By", "Last Updated Date" });
+			tblEmpAprisalDtl.setColumnAlignment("appraisaldtlid", Align.RIGHT);
+			tblEmpAprisalDtl.setColumnFooter("lastupdateddt", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to reset the fields
@@ -394,78 +404,91 @@ public class EmployeeAppraisal extends BaseUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editEmpAppraisalHdrDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmpAppraisalHdrDM empAppraisalHdr = beanEmpAppraisalHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			aprisalId = empAppraisalHdr.getAppraisalid().toString();
-			cbEmployee.setReadOnly(false);
-			cbEmployee.setValue(empAppraisalHdr.getEmployeeid());
-			cbAppYear.setValue(empAppraisalHdr.getApryear());
-			pdfappdate.setValue(empAppraisalHdr.getAprdate());
-			cbKPIGrpName.setReadOnly(false);
-			cbKPIGrpName.setValue(empAppraisalHdr.getKpigrpid());
-			if (empAppraisalHdr.getPromotionflag().equals("Y")) {
-				chkpromflag.setValue(true);
-			} else {
-				chkpromflag.setValue(false);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmpAppraisalHdrDM empAppraisalHdr = beanEmpAppraisalHdrDM.getItem(tblMstScrSrchRslt.getValue())
+						.getBean();
+				aprisalId = empAppraisalHdr.getAppraisalid().toString();
+				cbEmployee.setReadOnly(false);
+				cbEmployee.setValue(empAppraisalHdr.getEmployeeid());
+				cbAppYear.setValue(empAppraisalHdr.getApryear());
+				pdfappdate.setValue(empAppraisalHdr.getAprdate());
+				cbKPIGrpName.setReadOnly(false);
+				cbKPIGrpName.setValue(empAppraisalHdr.getKpigrpid());
+				if (empAppraisalHdr.getPromotionflag().equals("Y")) {
+					chkpromflag.setValue(true);
+				} else {
+					chkpromflag.setValue(false);
+				}
+				if (empAppraisalHdr.getEmpagreed().equals("Y")) {
+					chkempagd.setValue(true);
+				} else {
+					chkempagd.setValue(false);
+				}
+				tfoverrtng.setValue(empAppraisalHdr.getOverallrating());
+				taComments.setValue(empAppraisalHdr.getHrcomments());
+				pdfempsgndate.setValue(empAppraisalHdr.getEmpsignoffdate());
+				pdfclsddate.setValue(empAppraisalHdr.getCloseddate());
+				taRemarks.setValue(empAppraisalHdr.getEmpremarks());
+				cbstatus.setValue(empAppraisalHdr.getApprstatus());
+				listEmpApprDtls.addAll(serviceAppraisaldtl.getEmpAppraisalDtl(null, (Long.valueOf(aprisalId)), null,
+						null, null, "F"));
 			}
-			if (empAppraisalHdr.getEmpagreed().equals("Y")) {
-				chkempagd.setValue(true);
-			} else {
-				chkempagd.setValue(false);
-			}
-			tfoverrtng.setValue(empAppraisalHdr.getOverallrating());
-			taComments.setValue(empAppraisalHdr.getHrcomments());
-			pdfempsgndate.setValue(empAppraisalHdr.getEmpsignoffdate());
-			pdfclsddate.setValue(empAppraisalHdr.getCloseddate());
-			taRemarks.setValue(empAppraisalHdr.getEmpremarks());
-			cbstatus.setValue(empAppraisalHdr.getApprstatus());
-			listEmpApprDtls.addAll(serviceAppraisaldtl.getEmpAppraisalDtl(null, (Long.valueOf(aprisalId)), null, null,
-					null, "F"));
+			loaddtlRslt();
 		}
-		loaddtlRslt();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editEmpAppraisalDtlDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected appraisaldtl.Id ");
-		if (tblEmpAprisalDtl.getValue() != null) {
-			EmpAppraisalDtlDM empAppraisalDtlDM = new EmpAppraisalDtlDM();
-			empAppraisalDtlDM = beanEmpAppraisalDtlDM.getItem(tblEmpAprisalDtl.getValue()).getBean();
-			Long uom = empAppraisalDtlDM.getAppraiseeid();
-			Collection<?> uomid = cbapprsename.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbapprsename.getItem(itemId);
-				// Get the actual bean and use the data
-				EmployeeDM st = (EmployeeDM) item.getBean();
-				if (uom != null && uom.equals(st.getEmployeeid())) {
-					cbapprsename.setValue(itemId);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Selected appraisaldtl.Id ");
+			if (tblEmpAprisalDtl.getValue() != null) {
+				EmpAppraisalDtlDM empAppraisalDtlDM = new EmpAppraisalDtlDM();
+				empAppraisalDtlDM = beanEmpAppraisalDtlDM.getItem(tblEmpAprisalDtl.getValue()).getBean();
+				Long uom = empAppraisalDtlDM.getAppraiseeid();
+				Collection<?> uomid = cbapprsename.getItemIds();
+				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbapprsename.getItem(itemId);
+					// Get the actual bean and use the data
+					EmployeeDM st = (EmployeeDM) item.getBean();
+					if (uom != null && uom.equals(st.getEmployeeid())) {
+						cbapprsename.setValue(itemId);
+					}
 				}
-			}
-			Long som = empAppraisalDtlDM.getKpiid();
-			Collection<?> somid = cbkpiname.getItemIds();
-			for (Iterator<?> iterator = somid.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbkpiname.getItem(itemId);
-				// Get the actual bean and use the data
-				KpiDM kt = (KpiDM) item.getBean();
-				if (som != null && som.equals(kt.getKpiId())) {
-					cbkpiname.setValue(itemId);
+				Long som = empAppraisalDtlDM.getKpiid();
+				Collection<?> somid = cbkpiname.getItemIds();
+				for (Iterator<?> iterator = somid.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbkpiname.getItem(itemId);
+					// Get the actual bean and use the data
+					KpiDM kt = (KpiDM) item.getBean();
+					if (som != null && som.equals(kt.getKpiId())) {
+						cbkpiname.setValue(itemId);
+					}
 				}
-			}
-			Long pom = empAppraisalDtlDM.getApprlevelid();
-			Collection<?> pomid = cvApprlevelname.getItemIds();
-			for (Iterator<?> iterator = pomid.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cvApprlevelname.getItem(itemId);
-				// Get the actual bean and use the data
-				AppraisalLevelsDM pt = (AppraisalLevelsDM) item.getBean();
-				if (pom != null && pom.equals(pt.getApprlevelid())) {
-					cvApprlevelname.setValue(itemId);
+				Long pom = empAppraisalDtlDM.getApprlevelid();
+				Collection<?> pomid = cvApprlevelname.getItemIds();
+				for (Iterator<?> iterator = pomid.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cvApprlevelname.getItem(itemId);
+					// Get the actual bean and use the data
+					AppraisalLevelsDM pt = (AppraisalLevelsDM) item.getBean();
+					if (pom != null && pom.equals(pt.getApprlevelid())) {
+						cvApprlevelname.setValue(itemId);
+					}
 				}
+				tfkpiRating.setValue(empAppraisalDtlDM.getKpirating().toString());
+				comments.setValue(empAppraisalDtlDM.getComments());
 			}
-			tfkpiRating.setValue(empAppraisalDtlDM.getKpirating().toString());
-			comments.setValue(empAppraisalDtlDM.getComments());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -666,64 +689,58 @@ public class EmployeeAppraisal extends BaseUI {
 	@Override
 	protected void saveDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		try {
-			EmpAppraisalHdrDM empAppHdrObj = new EmpAppraisalHdrDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				empAppHdrObj = beanEmpAppraisalHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			}
-			if (cbEmployee.getValue() != null) {
-				empAppHdrObj.setEmployeeid(Long.valueOf(cbEmployee.getValue().toString()));
-			}
-			if (cbAppYear.getValue() != null) {
-				empAppHdrObj.setApryear((String) cbAppYear.getValue());
-			}
-			empAppHdrObj.setAprdt((Date) pdfappdate.getValue());
-			empAppHdrObj.setCloseddt((Date) pdfclsddate.getValue());
-			empAppHdrObj.setEmpsignoffdt((Date) pdfempsgndate.getValue());
-			if (tfoverrtng.getValue() != null) {
-				empAppHdrObj.setOverallrating((String) tfoverrtng.getValue());
-			}
-			if (cbKPIGrpName.getValue() != null) {
-				empAppHdrObj.setKpigrpid(Long.valueOf(cbKPIGrpName.getValue().toString()));
-			}
-			if (taComments.getValue() != null) {
-				empAppHdrObj.setHrcomments((String) taComments.getValue());
-			}
-			if (taRemarks.getValue() != null) {
-				empAppHdrObj.setEmpremarks((String) taRemarks.getValue());
-			}
-			if (cbstatus.getValue() != null) {
-				empAppHdrObj.setApprstatus((String) cbstatus.getValue());
-			}
-			if (chkpromflag.getValue().equals(true)) {
-				empAppHdrObj.setPromotionflag("Y");
-			} else {
-				empAppHdrObj.setPromotionflag("N");
-			}
-			if (chkempagd.getValue().equals(true)) {
-				empAppHdrObj.setEmpagreed("Y");
-			} else {
-				empAppHdrObj.setEmpagreed("N");
-			}
-			empAppHdrObj.setLastupdateddt(DateUtils.getcurrentdate());
-			empAppHdrObj.setLastupdatedby(username);
-			serviceappraisalhdr.saveAndUpdate(empAppHdrObj);
-			@SuppressWarnings("unchecked")
-			Collection<EmpAppraisalDtlDM> itemIds = (Collection<EmpAppraisalDtlDM>) tblEmpAprisalDtl
-					.getVisibleItemIds();
-			for (EmpAppraisalDtlDM save : (Collection<EmpAppraisalDtlDM>) itemIds) {
-				save.setAppraisalid(Long.valueOf(empAppHdrObj.getAppraisalid().toString()));
-				serviceAppraisaldtl.saveAndUpdate(save);
-			}
-			empAppraisalDtlresetFields();
-			resetFields();
-			loadSrchRslt();
-			aprisalId = null;
-			loaddtlRslt();
+		EmpAppraisalHdrDM empAppHdrObj = new EmpAppraisalHdrDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			empAppHdrObj = beanEmpAppraisalHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		if (cbEmployee.getValue() != null) {
+			empAppHdrObj.setEmployeeid(Long.valueOf(cbEmployee.getValue().toString()));
 		}
+		if (cbAppYear.getValue() != null) {
+			empAppHdrObj.setApryear((String) cbAppYear.getValue());
+		}
+		empAppHdrObj.setAprdt((Date) pdfappdate.getValue());
+		empAppHdrObj.setCloseddt((Date) pdfclsddate.getValue());
+		empAppHdrObj.setEmpsignoffdt((Date) pdfempsgndate.getValue());
+		if (tfoverrtng.getValue() != null) {
+			empAppHdrObj.setOverallrating((String) tfoverrtng.getValue());
+		}
+		if (cbKPIGrpName.getValue() != null) {
+			empAppHdrObj.setKpigrpid(Long.valueOf(cbKPIGrpName.getValue().toString()));
+		}
+		if (taComments.getValue() != null) {
+			empAppHdrObj.setHrcomments((String) taComments.getValue());
+		}
+		if (taRemarks.getValue() != null) {
+			empAppHdrObj.setEmpremarks((String) taRemarks.getValue());
+		}
+		if (cbstatus.getValue() != null) {
+			empAppHdrObj.setApprstatus((String) cbstatus.getValue());
+		}
+		if (chkpromflag.getValue().equals(true)) {
+			empAppHdrObj.setPromotionflag("Y");
+		} else {
+			empAppHdrObj.setPromotionflag("N");
+		}
+		if (chkempagd.getValue().equals(true)) {
+			empAppHdrObj.setEmpagreed("Y");
+		} else {
+			empAppHdrObj.setEmpagreed("N");
+		}
+		empAppHdrObj.setLastupdateddt(DateUtils.getcurrentdate());
+		empAppHdrObj.setLastupdatedby(username);
+		serviceAppraisalhdr.saveAndUpdate(empAppHdrObj);
+		@SuppressWarnings("unchecked")
+		Collection<EmpAppraisalDtlDM> itemIds = (Collection<EmpAppraisalDtlDM>) tblEmpAprisalDtl.getVisibleItemIds();
+		for (EmpAppraisalDtlDM save : (Collection<EmpAppraisalDtlDM>) itemIds) {
+			save.setAppraisalid(Long.valueOf(empAppHdrObj.getAppraisalid().toString()));
+			serviceAppraisaldtl.saveAndUpdate(save);
+		}
+		empAppraisalDtlresetFields();
+		resetFields();
+		loadSrchRslt();
+		aprisalId = null;
+		loaddtlRslt();
 	}
 	
 	private void saveempAppraisalDtlListDetails() {
@@ -759,7 +776,7 @@ public class EmployeeAppraisal extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -776,6 +793,7 @@ public class EmployeeAppraisal extends BaseUI {
 			cbEmployee.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -804,6 +822,7 @@ public class EmployeeAppraisal extends BaseUI {
 			cbKPIGrpName.setContainerDataSource(beankpigroup);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -820,6 +839,7 @@ public class EmployeeAppraisal extends BaseUI {
 			cbapprsename.setContainerDataSource(beanappraiseename);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -830,10 +850,11 @@ public class EmployeeAppraisal extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading KpiNameList");
 			BeanItemContainer<KpiDM> beankpi = new BeanItemContainer<KpiDM>(KpiDM.class);
-			beankpi.addAll(servicekpi.getKpiList(null, null, null, null, "Active", "F"));
+			beankpi.addAll(serviceKPI.getKpiList(null, null, null, null, "Active", "F"));
 			cbkpiname.setContainerDataSource(beankpi);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -850,18 +871,24 @@ public class EmployeeAppraisal extends BaseUI {
 			cvApprlevelname.setContainerDataSource(beanlevels);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void deleteDtls() {
-		EmpAppraisalDtlDM empAppraisalObj = new EmpAppraisalDtlDM();
-		if (tblEmpAprisalDtl.getValue() != null) {
-			empAppraisalObj = beanEmpAppraisalDtlDM.getItem(tblEmpAprisalDtl.getValue()).getBean();
-			listEmpApprDtls.remove(empAppraisalObj);
-			empAppraisalDtlresetFields();
-			tblEmpAprisalDtl.setValue("");
-			loaddtlRslt();
-			btnDelete.setEnabled(false);
+		try {
+			EmpAppraisalDtlDM empAppraisalObj = new EmpAppraisalDtlDM();
+			if (tblEmpAprisalDtl.getValue() != null) {
+				empAppraisalObj = beanEmpAppraisalDtlDM.getItem(tblEmpAprisalDtl.getValue()).getBean();
+				listEmpApprDtls.remove(empAppraisalObj);
+				empAppraisalDtlresetFields();
+				tblEmpAprisalDtl.setValue("");
+				loaddtlRslt();
+				btnDelete.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

@@ -172,24 +172,29 @@ public class EmployeeWarning extends BaseTransUI {
 	
 	// Load EC Request
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeWarningDM> list = new ArrayList<EmployeeWarningDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + null + "," + tfFrom.getValue() + ", " + (String) cbStatus.getValue());
-		list = serviceEmplyeeWarning.getEmployeeWarningList(null, null, null, (String) cbStatus.getValue());
-		recordCnt = list.size();
-		beanEmpWarning = new BeanItemContainer<EmployeeWarningDM>(EmployeeWarningDM.class);
-		beanEmpWarning.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the VisitorPass. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanEmpWarning);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empwarningId", "refDate", "fromName", "toName",
-				"deductAmt", "status", "lastUpdatedDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "From Name", "To Name", "Amount", "Status",
-				"Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("empwarningId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EmployeeWarningDM> list = new ArrayList<EmployeeWarningDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + null + "," + tfFrom.getValue() + ", " + (String) cbStatus.getValue());
+			list = serviceEmplyeeWarning.getEmployeeWarningList(null, null, null, (String) cbStatus.getValue());
+			recordCnt = list.size();
+			beanEmpWarning = new BeanItemContainer<EmployeeWarningDM>(EmployeeWarningDM.class);
+			beanEmpWarning.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the VisitorPass. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanEmpWarning);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empwarningId", "refDate", "fromName", "toName",
+					"deductAmt", "status", "lastUpdatedDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "From Name", "To Name", "Amount",
+					"Status", "Last Updated date", "Last Updated by" });
+			tblMstScrSrchRslt.setColumnAlignment("empwarningId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
@@ -207,7 +212,7 @@ public class EmployeeWarning extends BaseTransUI {
 			cbWarLevel.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -221,29 +226,36 @@ public class EmployeeWarning extends BaseTransUI {
 			cbEmployee.setContainerDataSource(beanInitiatedBy);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Method to edit the values from table into fields to update process for VisitorPass
 	private void ediVisitorpass() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hllayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
-				+ visitorid);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeWarningDM employeewarningDM = beanEmpWarning.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			visitorid = employeewarningDM.getEmpwarningId();
-			dfRefDate.setValue(employeewarningDM.getRefDate());
-			cbEmployee.setValue(employeewarningDM.getEmployeeID());
-			cbStatus.setValue(employeewarningDM.getStatus());
-			tfFrom.setValue(employeewarningDM.getFromName());
-			tfFineAmount.setValue(employeewarningDM.getDeductAmt());
-			tfTo.setValue(employeewarningDM.getToName());
-			taRemarks.setValue(employeewarningDM.getReason());
-			tfDeductMonth.setValue(employeewarningDM.getDeductFrom());
-			cbWarLevel.setValue(employeewarningDM.getWarLevel());
-			dfDateTo.setValue(employeewarningDM.getDateTo());
-			tfTimeOut.setTime(employeewarningDM.getTimeOut());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hllayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
+					+ visitorid);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeWarningDM employeewarningDM = beanEmpWarning.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				visitorid = employeewarningDM.getEmpwarningId();
+				dfRefDate.setValue(employeewarningDM.getRefDate());
+				cbEmployee.setValue(employeewarningDM.getEmployeeID());
+				cbStatus.setValue(employeewarningDM.getStatus());
+				tfFrom.setValue(employeewarningDM.getFromName());
+				tfFineAmount.setValue(employeewarningDM.getDeductAmt());
+				tfTo.setValue(employeewarningDM.getToName());
+				taRemarks.setValue(employeewarningDM.getReason());
+				tfDeductMonth.setValue(employeewarningDM.getDeductFrom());
+				cbWarLevel.setValue(employeewarningDM.getWarLevel());
+				dfDateTo.setValue(employeewarningDM.getDateTo());
+				tfTimeOut.setTime(employeewarningDM.getTimeOut());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

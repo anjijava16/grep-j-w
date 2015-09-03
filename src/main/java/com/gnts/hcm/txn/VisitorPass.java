@@ -255,25 +255,30 @@ public class VisitorPass extends BaseTransUI {
 	
 	// Load EC Request
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<VisitPassDM> list = new ArrayList<VisitPassDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + null + "," + tfVisitorsName.getValue() + ", " + (String) cbStatus.getValue());
-		list = serviceVisitorPass.getVisitPasList(null, tfVisitorsName.getValue(), null, null,
-				(String) cbStatus.getValue());
-		recordCnt = list.size();
-		beanVisitpass = new BeanItemContainer<VisitPassDM>(VisitPassDM.class);
-		beanVisitpass.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the VisitorPass. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanVisitpass);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "visitorId", "visitDate", "visitorName", "companyName",
-				"inTime", "outTime", "lastUpdatedDt", "lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Visitor Name", "Company Name", "In Time",
-				"Out Time", "Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("visitorId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<VisitPassDM> list = new ArrayList<VisitPassDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + null + "," + tfVisitorsName.getValue() + ", " + (String) cbStatus.getValue());
+			list = serviceVisitorPass.getVisitPasList(null, tfVisitorsName.getValue(), null, null,
+					(String) cbStatus.getValue());
+			recordCnt = list.size();
+			beanVisitpass = new BeanItemContainer<VisitPassDM>(VisitPassDM.class);
+			beanVisitpass.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the VisitorPass. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanVisitpass);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "visitorId", "visitDate", "visitorName", "companyName",
+					"inTime", "outTime", "lastUpdatedDt", "lastUpdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Visitor Name", "Company Name",
+					"In Time", "Out Time", "Last Updated date", "Last Updated by" });
+			tblMstScrSrchRslt.setColumnAlignment("visitorId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Employee List
@@ -292,26 +297,32 @@ public class VisitorPass extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process for VisitorPass
 	private void ediVisitorpass() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hllayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
-				+ visitorid);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			VisitPassDM visitPassDM = beanVisitpass.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			visitorid = visitPassDM.getVisitorId();
-			dfPassDate.setValue(visitPassDM.getVisitDateD());
-			cbEmployee.setValue(visitPassDM.getEmployeeId());
-			cbStatus.setValue(visitPassDM.getStatus());
-			tfVisitorsName.setValue(visitPassDM.getVisitorName());
-			tfTimeOut.setTime(visitPassDM.getOutTime());
-			tfTimeIn.setTime(visitPassDM.getInTime());
-			taRemarks.setValue(visitPassDM.getRemarks());
-			tfVehicleNo.setValue(visitPassDM.getVehicleNo());
-			tfContactNumber.setValue(visitPassDM.getContactNo());
-			tfCompanyName.setValue(visitPassDM.getCompanyName());
-			tfTotalTime.setValue(visitPassDM.getTotalTime().toString());
-			cbMaterialFlw.setValue(visitPassDM.getMateFLow());
-			taMaterialDesc.setValue(visitPassDM.getMateDesc());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hllayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
+					+ visitorid);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				VisitPassDM visitPassDM = beanVisitpass.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				visitorid = visitPassDM.getVisitorId();
+				dfPassDate.setValue(visitPassDM.getVisitDateD());
+				cbEmployee.setValue(visitPassDM.getEmployeeId());
+				cbStatus.setValue(visitPassDM.getStatus());
+				tfVisitorsName.setValue(visitPassDM.getVisitorName());
+				tfTimeOut.setTime(visitPassDM.getOutTime());
+				tfTimeIn.setTime(visitPassDM.getInTime());
+				taRemarks.setValue(visitPassDM.getRemarks());
+				tfVehicleNo.setValue(visitPassDM.getVehicleNo());
+				tfContactNumber.setValue(visitPassDM.getContactNo());
+				tfCompanyName.setValue(visitPassDM.getCompanyName());
+				tfTotalTime.setValue(visitPassDM.getTotalTime().toString());
+				cbMaterialFlw.setValue(visitPassDM.getMateFLow());
+				taMaterialDesc.setValue(visitPassDM.getMateDesc());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

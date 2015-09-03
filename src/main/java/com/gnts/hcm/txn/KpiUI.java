@@ -164,25 +164,31 @@ public class KpiUI extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<KpiDM> kpiList = new ArrayList<KpiDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbKpiGrp.getValue() + ", " + (String) cbStatus.getValue());
-		kpiList = serviceKpi.getKpiList(null, (Long) cbKpiGrp.getValue(), (String) tfKpiName.getValue(), null,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = kpiList.size();
-		beanKpiDM = new BeanItemContainer<KpiDM>(KpiDM.class);
-		beanKpiDM.addAll(kpiList);
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Got the KPI List result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanKpiDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "kpiId", "kpiName", "minRate", "maxRate", "status",
-				"lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "KPI Name", "Minimum Rating", "Maximum Rating",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("kpigrpid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records:" + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<KpiDM> kpiList = new ArrayList<KpiDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Search Parameters are " + companyId + ", " + (Long) cbKpiGrp.getValue() + ", "
+					+ (String) cbStatus.getValue());
+			kpiList = serviceKpi.getKpiList(null, (Long) cbKpiGrp.getValue(), (String) tfKpiName.getValue(), null,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = kpiList.size();
+			beanKpiDM = new BeanItemContainer<KpiDM>(KpiDM.class);
+			beanKpiDM.addAll(kpiList);
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Got the KPI List result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanKpiDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "kpiId", "kpiName", "minRate", "maxRate", "status",
+					"lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "KPI Name", "Minimum Rating", "Maximum Rating",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("kpigrpid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records:" + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadKpiGroup() {
@@ -193,6 +199,7 @@ public class KpiUI extends BaseUI {
 			cbKpiGrp.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -204,6 +211,7 @@ public class KpiUI extends BaseUI {
 			cbDesignnation.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -247,24 +255,29 @@ public class KpiUI extends BaseUI {
 	}
 	
 	private void editKpi() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Editing the selected record");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			KpiDM editKpiObj = beanKpiDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (editKpiObj.getKpiName() != null) {
-				tfKpiName.setValue(editKpiObj.getKpiName());
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Editing the selected record");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				KpiDM editKpiObj = beanKpiDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				if (editKpiObj.getKpiName() != null) {
+					tfKpiName.setValue(editKpiObj.getKpiName());
+				}
+				cbKpiGrp.setValue(editKpiObj.getKpiGrpId());
+				if (editKpiObj.getMaxRate() != null) {
+					tfMaxRating.setValue(Double.valueOf(editKpiObj.getMaxRate()).toString());
+				}
+				if (editKpiObj.getMinRate() != null) {
+					tfMinRating.setValue(Double.valueOf(editKpiObj.getMinRate()).toString());
+				}
+				if (editKpiObj.getStatus() != null) {
+					cbStatus.setValue(editKpiObj.getStatus());
+				}
+				cbDesignnation.setValue(editKpiObj.getDesigId());
 			}
-			cbKpiGrp.setValue(editKpiObj.getKpiGrpId());
-			if (editKpiObj.getMaxRate() != null) {
-				tfMaxRating.setValue(Double.valueOf(editKpiObj.getMaxRate()).toString());
-			}
-			if (editKpiObj.getMinRate() != null) {
-				tfMinRating.setValue(Double.valueOf(editKpiObj.getMinRate()).toString());
-			}
-			if (editKpiObj.getStatus() != null) {
-				cbStatus.setValue(editKpiObj.getStatus());
-			}
-			cbDesignnation.setValue(editKpiObj.getDesigId());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -352,29 +365,24 @@ public class KpiUI extends BaseUI {
 	
 	@Override
 	protected void saveDetails() throws SaveException {
-		try {
-			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Saving Data... ");
-			KpiDM kpiobj = new KpiDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				kpiobj = beanKpiDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			}
-			kpiobj.setKpiName(tfKpiName.getValue());
-			kpiobj.setKpiGrpId((Long) cbKpiGrp.getValue());
-			kpiobj.setDesigId((Long) cbDesignnation.getValue());
-			kpiobj.setMaxRate(Double.valueOf(tfMaxRating.getValue()));
-			kpiobj.setMinRate(Double.valueOf(tfMinRating.getValue()));
-			if (cbStatus.getValue() != null) {
-				kpiobj.setStatus((String) cbStatus.getValue());
-			}
-			kpiobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			kpiobj.setLastUpdatedBy(loginUserName);
-			serviceKpi.saveItInvest(kpiobj);
-			resetFields();
-			loadSrchRslt();
+		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Saving Data... ");
+		KpiDM kpiobj = new KpiDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			kpiobj = beanKpiDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		kpiobj.setKpiName(tfKpiName.getValue());
+		kpiobj.setKpiGrpId((Long) cbKpiGrp.getValue());
+		kpiobj.setDesigId((Long) cbDesignnation.getValue());
+		kpiobj.setMaxRate(Double.valueOf(tfMaxRating.getValue()));
+		kpiobj.setMinRate(Double.valueOf(tfMinRating.getValue()));
+		if (cbStatus.getValue() != null) {
+			kpiobj.setStatus((String) cbStatus.getValue());
 		}
+		kpiobj.setLastUpdatedDt(DateUtils.getcurrentdate());
+		kpiobj.setLastUpdatedBy(loginUserName);
+		serviceKpi.saveItInvest(kpiobj);
+		resetFields();
+		loadSrchRslt();
 	}
 	
 	@Override

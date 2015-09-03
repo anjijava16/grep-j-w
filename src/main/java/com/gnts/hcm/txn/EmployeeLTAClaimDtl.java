@@ -174,32 +174,36 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.setSelectable(true);
-		tblMstScrSrchRslt.removeAllItems();
-		List<EmpltaclaimdtlsDM> claimDtlList = new ArrayList<EmpltaclaimdtlsDM>();
-		Long empId = null;
-		if (cbEmpName.getValue() != null) {
-			empId = ((Long.valueOf(cbEmpName.getValue().toString())));
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.setSelectable(true);
+			tblMstScrSrchRslt.removeAllItems();
+			List<EmpltaclaimdtlsDM> list = new ArrayList<EmpltaclaimdtlsDM>();
+			Long empId = null;
+			if (cbEmpName.getValue() != null) {
+				empId = ((Long.valueOf(cbEmpName.getValue().toString())));
+			}
+			Long alwncId = null;
+			if (cbAllowanceName.getValue() != null) {
+				alwncId = ((Long.valueOf(cbAllowanceName.getValue().toString())));
+			}
+			list = serviceEmpClaimDtls.getempltaclaimdtlsList(null, empId, alwncId, null, null, null,
+					(String) cbstatus.getValue(), "F");
+			recordCnt = list.size();
+			beanEmpltaclaimdtlsDM = new BeanItemContainer<EmpltaclaimdtlsDM>(EmpltaclaimdtlsDM.class);
+			beanEmpltaclaimdtlsDM.addAll(list);
+			tblMstScrSrchRslt.setContainerDataSource(beanEmpltaclaimdtlsDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empltaid", "empName", "alwncName", "claimblkperiod",
+					"curblkperiod", "allwamt", "claimamt", "claimstatus", "lastupdtdate", "lastupdtby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Emp.Name", "Allowance Name",
+					"Claim Block Period", "Current Block Period", "Allowance Amt.", "Claim Amt.", "Status",
+					"LastUpDated Date", "LastUpDated By" });
+			tblMstScrSrchRslt.setColumnAlignment("empltaid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdtby", "No.of Records : " + recordCnt);
 		}
-		Long alwncId = null;
-		if (cbAllowanceName.getValue() != null) {
-			alwncId = ((Long.valueOf(cbAllowanceName.getValue().toString())));
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		claimDtlList = serviceEmpClaimDtls.getempltaclaimdtlsList(null, empId, alwncId, null, null, null,
-				(String) cbstatus.getValue(), "F");
-		recordCnt = claimDtlList.size();
-		beanEmpltaclaimdtlsDM = new BeanItemContainer<EmpltaclaimdtlsDM>(EmpltaclaimdtlsDM.class);
-		beanEmpltaclaimdtlsDM.addAll(claimDtlList);
-		tblMstScrSrchRslt.setContainerDataSource(beanEmpltaclaimdtlsDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empltaid", "empName", "alwncName", "claimblkperiod",
-				"curblkperiod", "allwamt", "claimamt", "claimstatus", "lastupdtdate", "lastupdtby" });
-		tblMstScrSrchRslt
-				.setColumnHeaders(new String[] { "Ref.Id", "Emp.Name", "Allowance Name", "Claim Block Period",
-						"Current Block Period", "Allowance Amt.", "Claim Amt.", "Status", "LastUpDated Date",
-						"LastUpDated By" });
-		tblMstScrSrchRslt.setColumnAlignment("empltaid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdtby", "No.of Records : " + recordCnt);
 	}
 	
 	@Override
@@ -259,38 +263,45 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 	
 	// Based on the selected record, the data would be included into user input fields in the input form
 	private void editClaimDtls() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		tblMstScrSrchRslt.setVisible(true);
-		hlCmdBtnLayout.setVisible(true);
-		hluserInputlayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmpltaclaimdtlsDM empltaclaimdtlsDM = beanEmpltaclaimdtlsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbstatus.setValue(empltaclaimdtlsDM.getClaimstatus());
-			cbEmpName.setValue(empltaclaimdtlsDM.getEmpid());
-			cbAllowanceName.setValue(empltaclaimdtlsDM.getAllowanceid());
-			dfClaimDt.setValue(empltaclaimdtlsDM.getClaimdt());
-			if (empltaclaimdtlsDM.getCurblkperiod() != null) {
-				tfCurntBlkPeriod.setValue(empltaclaimdtlsDM.getCurblkperiod());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			tblMstScrSrchRslt.setVisible(true);
+			hlCmdBtnLayout.setVisible(true);
+			hluserInputlayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmpltaclaimdtlsDM empltaclaimdtlsDM = beanEmpltaclaimdtlsDM.getItem(tblMstScrSrchRslt.getValue())
+						.getBean();
+				cbstatus.setValue(empltaclaimdtlsDM.getClaimstatus());
+				cbEmpName.setValue(empltaclaimdtlsDM.getEmpid());
+				cbAllowanceName.setValue(empltaclaimdtlsDM.getAllowanceid());
+				dfClaimDt.setValue(empltaclaimdtlsDM.getClaimdt());
+				if (empltaclaimdtlsDM.getCurblkperiod() != null) {
+					tfCurntBlkPeriod.setValue(empltaclaimdtlsDM.getCurblkperiod());
+				}
+				if (empltaclaimdtlsDM.getClaimblkperiod() != null) {
+					tfClaimBlkPeriod.setValue(empltaclaimdtlsDM.getClaimblkperiod());
+				}
+				if (empltaclaimdtlsDM.getAllwamt() != null) {
+					tfAlwncAmt.setValue(empltaclaimdtlsDM.getAllwamt().toString());
+				}
+				cbModeOfTravel.setValue(empltaclaimdtlsDM.getModeoftravel());
+				if (empltaclaimdtlsDM.getClaimamt() != null) {
+					tfClaimAmt.setValue(empltaclaimdtlsDM.getClaimamt().toString());
+				}
+				if (empltaclaimdtlsDM.getPaidpayrollid() != null) {
+					tfPaidPayroll.setValue(empltaclaimdtlsDM.getPaidpayrollid().toString());
+				}
+				cbApprovedBy.setValue(empltaclaimdtlsDM.getApprby());
+				dfPaidDt.setValue(empltaclaimdtlsDM.getPaiddt());
+				dfAprvDt.setValue(empltaclaimdtlsDM.getApprdt());
+				if (empltaclaimdtlsDM.getAppramt() != null) {
+					tfAprvAmt.setValue(empltaclaimdtlsDM.getAppramt().toString());
+				}
 			}
-			if (empltaclaimdtlsDM.getClaimblkperiod() != null) {
-				tfClaimBlkPeriod.setValue(empltaclaimdtlsDM.getClaimblkperiod());
-			}
-			if (empltaclaimdtlsDM.getAllwamt() != null) {
-				tfAlwncAmt.setValue(empltaclaimdtlsDM.getAllwamt().toString());
-			}
-			cbModeOfTravel.setValue(empltaclaimdtlsDM.getModeoftravel());
-			if (empltaclaimdtlsDM.getClaimamt() != null) {
-				tfClaimAmt.setValue(empltaclaimdtlsDM.getClaimamt().toString());
-			}
-			if (empltaclaimdtlsDM.getPaidpayrollid() != null) {
-				tfPaidPayroll.setValue(empltaclaimdtlsDM.getPaidpayrollid().toString());
-			}
-			cbApprovedBy.setValue(empltaclaimdtlsDM.getApprby());
-			dfPaidDt.setValue(empltaclaimdtlsDM.getPaiddt());
-			dfAprvDt.setValue(empltaclaimdtlsDM.getApprdt());
-			if (empltaclaimdtlsDM.getAppramt() != null) {
-				tfAprvAmt.setValue(empltaclaimdtlsDM.getAppramt().toString());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -439,7 +450,7 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -501,27 +512,37 @@ public class EmployeeLTAClaimDtl extends BaseUI {
 	}
 	
 	private void loadEmpList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading employee name list...");
-		List<EmployeeDM> listEmp = serviceEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, "Active",
-				null, null, null, null, null, "P");
-		BeanContainer<Long, EmployeeDM> beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmpDM.setBeanIdProperty("employeeid");
-		beanEmpDM.addAll(listEmp);
-		cbEmpName.setContainerDataSource(beanEmpDM);
-		beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmpDM.setBeanIdProperty("employeeid");
-		beanEmpDM.addAll(listEmp);
-		cbApprovedBy.setContainerDataSource(beanEmpDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading employee name list...");
+			List<EmployeeDM> listEmp = serviceEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null,
+					"Active", null, null, null, null, null, "P");
+			BeanContainer<Long, EmployeeDM> beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmpDM.setBeanIdProperty("employeeid");
+			beanEmpDM.addAll(listEmp);
+			cbEmpName.setContainerDataSource(beanEmpDM);
+			beanEmpDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmpDM.setBeanIdProperty("employeeid");
+			beanEmpDM.addAll(listEmp);
+			cbApprovedBy.setContainerDataSource(beanEmpDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadAllowanceList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Loading allowance name list...");
-		BeanContainer<Long, AllowanceDM> beanAlwncDM = new BeanContainer<Long, AllowanceDM>(AllowanceDM.class);
-		beanAlwncDM.setBeanIdProperty("alowncId");
-		beanAlwncDM.addAll(serviceAllowance.getalowanceList(null, null, null, (String) cbAllowanceName.getValue(),
-				"Active", "P"));
-		cbAllowanceName.setContainerDataSource(beanAlwncDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Loading allowance name list...");
+			BeanContainer<Long, AllowanceDM> beanAlwncDM = new BeanContainer<Long, AllowanceDM>(AllowanceDM.class);
+			beanAlwncDM.setBeanIdProperty("alowncId");
+			beanAlwncDM.addAll(serviceAllowance.getalowanceList(null, null, null, (String) cbAllowanceName.getValue(),
+					"Active", "P"));
+			cbAllowanceName.setContainerDataSource(beanAlwncDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

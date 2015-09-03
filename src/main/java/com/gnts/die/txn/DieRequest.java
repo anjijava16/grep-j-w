@@ -372,6 +372,12 @@ public class DieRequest extends BaseTransUI {
 				saveBOMDetails();
 			}
 		});
+		if (UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ") != null
+				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ")) {
+			btnAdd.setVisible(false);
+		} else {
+			btnAdd.setVisible(true);
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -525,12 +531,14 @@ public class DieRequest extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		// for disable tabs
-		if (UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ") == null
-				|| (Boolean) UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ")) {
+		if (UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ") != null
+				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ")) {
 			vlDieSection.setEnabled(false);
 			vlMoldTrialRequest.setEnabled(false);
 			vlDieCompletion.setEnabled(false);
 			hlDocumentLayout.setEnabled(false);
+		} else {
+			vlHeader.setEnabled(false);
 		}
 	}
 	
@@ -722,7 +730,9 @@ public class DieRequest extends BaseTransUI {
 					tfNoofDie.setValue(dieRequestDM.getNoOfDie().toString());
 				}
 				tfDrawingNumber.setValue(dieRequestDM.getDieRefNumber());
-				taChangeNote.setValue(dieRequestDM.getChangeNote());
+				if (dieRequestDM.getChangeNote() != null) {
+					taChangeNote.setValue(dieRequestDM.getChangeNote());
+				}
 				cbStatus.setValue(dieRequestDM.getStatus());
 				try {
 					new TestingDocuments(hlDocumentLayout, dieRequestDM.getEnquiryId().toString(), "DR");
@@ -1162,8 +1172,12 @@ public class DieRequest extends BaseTransUI {
 		tfWorkNature.setValue(dieSectionDM.getWorkNature());
 		cbRegisterby.setValue(dieSectionDM.getRegisterBy());
 		cbReceivedby.setValue(dieSectionDM.getReceiveBy());
-		taTrailComments.setValue(dieSectionDM.getTrailComments());
-		taCmtsRectified.setValue(dieSectionDM.getCommentsRectified());
+		if (dieSectionDM.getTrailComments() != null) {
+			taTrailComments.setValue(dieSectionDM.getTrailComments());
+		}
+		if (dieSectionDM.getCommentsRectified() != null) {
+			taCmtsRectified.setValue(dieSectionDM.getCommentsRectified());
+		}
 	}
 	
 	@Override
@@ -1272,7 +1286,6 @@ public class DieRequest extends BaseTransUI {
 		try {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
-			System.out.println("tbDieRequest.getSelectedTab().getCaption()--->" + tbDieRequest.getSelectedTab());
 			if (tbDieRequest.getSelectedTab().equals(vlDieSection)) {
 				HashMap<String, Long> parameterMap = new HashMap<String, Long>();
 				parameterMap.put("diesecid", dieSectionId);

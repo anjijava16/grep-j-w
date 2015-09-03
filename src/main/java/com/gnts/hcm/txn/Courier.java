@@ -168,24 +168,30 @@ public class Courier extends BaseTransUI {
 	
 	// Load EC Request
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<CourierDM> list = new ArrayList<CourierDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + null + "," + dfRefDate.getValue() + ", " + (String) cbStatus.getValue());
-		list = serviceCourier.getCourierList(null, null, (String) cbCourierType.getValue(), null, null,
-				(String) cbStatus.getValue());
-		recordCnt = list.size();
-		beanCourier = new BeanItemContainer<CourierDM>(CourierDM.class);
-		beanCourier.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Courier. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanCourier);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "courierId", "refDate", "courierType", "noOfDocuments",
-				"modeofPost", "status", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Type", "No of Documents", "Mode of Post",
-				"Status", "Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("courierId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<CourierDM> list = new ArrayList<CourierDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + null + "," + dfRefDate.getValue() + ", " + (String) cbStatus.getValue());
+			list = serviceCourier.getCourierList(null, null, (String) cbCourierType.getValue(), null, null,
+					(String) cbStatus.getValue());
+			recordCnt = list.size();
+			beanCourier = new BeanItemContainer<CourierDM>(CourierDM.class);
+			beanCourier.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Courier. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanCourier);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "courierId", "refDate", "courierType", "noOfDocuments",
+					"modeofPost", "status", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Type", "No of Documents",
+					"Mode of Post", "Status", "Last Updated date", "Last Updated by" });
+			tblMstScrSrchRslt.setColumnAlignment("courierId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Employee List
@@ -198,6 +204,7 @@ public class Courier extends BaseTransUI {
 			cbFromOrTo.setContainerDataSource(beanInitiatedBy);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -374,6 +381,7 @@ public class Courier extends BaseTransUI {
 			cbDepartment.setContainerDataSource(beanDepartment);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

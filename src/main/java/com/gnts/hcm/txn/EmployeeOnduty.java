@@ -288,46 +288,57 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 			cbOndutyApprmgr.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "loading SearchResult Details...");
-		tblMstScrSrchRslt.removeAllItems();
-		total = 0;
-		if (employeeid != null) {
-			usertable = serviceOnduty.getempondutylist(ondutyid, employeeid, "Active", "F");
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "loading SearchResult Details...");
+			tblMstScrSrchRslt.removeAllItems();
+			total = 0;
+			if (employeeid != null) {
+				usertable = serviceOnduty.getempondutylist(ondutyid, employeeid, "Active", "F");
+			}
+			total = usertable.size();
+			tblMstScrSrchRslt.setPageLength(10);
+			beans = new BeanItemContainer<EmployeeOndutyDM>(EmployeeOndutyDM.class);
+			beans.addAll(usertable);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Employee Onduty. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beans);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "datefrm", "dateto", "noofdays", "ondutyrks",
+					"odstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "From Date", "To Date", "No of Days", "Remarks",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("ondutyid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + total);
 		}
-		total = usertable.size();
-		tblMstScrSrchRslt.setPageLength(10);
-		beans = new BeanItemContainer<EmployeeOndutyDM>(EmployeeOndutyDM.class);
-		beans.addAll(usertable);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Employee Onduty. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beans);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "datefrm", "dateto", "noofdays", "ondutyrks", "odstatus",
-				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "From Date", "To Date", "No of Days", "Remarks", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("ondutyid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + total);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method used to display selected row's values in desired text box and combo box for edit the values
 	private void editOnduty() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Onduty.......");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeOndutyDM empOnduty = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfOndutyDatefrom.setValue(empOnduty.getDatefrm1());
-			dfOndutyDateto.setValue(empOnduty.getDatetoo());
-			tfOndutyNoOfDays.setReadOnly(false);
-			tfOndutyNoOfDays.setValue((empOnduty.getNoofdays()).toString());
-			tfOndutyNoOfDays.setReadOnly(true);
-			tfOndutyTothrs.setValue((empOnduty.getTothrs()).toString());
-			cbOndutyApprmgr.setValue(empOnduty.getApprmgr());
-			taOndutyrks.setValue(empOnduty.getOndutyrks());
-			cbOndutyStatus.setValue(empOnduty.getOdstatus());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Onduty.......");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeOndutyDM empOnduty = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				dfOndutyDatefrom.setValue(empOnduty.getDatefrm1());
+				dfOndutyDateto.setValue(empOnduty.getDatetoo());
+				tfOndutyNoOfDays.setReadOnly(false);
+				tfOndutyNoOfDays.setValue((empOnduty.getNoofdays()).toString());
+				tfOndutyNoOfDays.setReadOnly(true);
+				tfOndutyTothrs.setValue((empOnduty.getTothrs()).toString());
+				cbOndutyApprmgr.setValue(empOnduty.getApprmgr());
+				taOndutyrks.setValue(empOnduty.getOndutyrks());
+				cbOndutyStatus.setValue(empOnduty.getOdstatus());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -369,22 +380,27 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 			btnadd.setCaption("Add");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		resetFields();
 	}
 	
 	public void ondutysave(Long employeeid) {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "EmployeeOnduty Save details......");
-		@SuppressWarnings("unchecked")
-		Collection<EmployeeOndutyDM> itemIds = (Collection<EmployeeOndutyDM>) tblMstScrSrchRslt.getVisibleItemIds();
-		for (EmployeeOndutyDM saveduty : (Collection<EmployeeOndutyDM>) itemIds) {
-			saveduty.setEmployeeid(employeeid);
-			serviceOnduty.saveAndUpdate(saveduty);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "EmployeeOnduty Save details......");
+			@SuppressWarnings("unchecked")
+			Collection<EmployeeOndutyDM> itemIds = (Collection<EmployeeOndutyDM>) tblMstScrSrchRslt.getVisibleItemIds();
+			for (EmployeeOndutyDM saveduty : (Collection<EmployeeOndutyDM>) itemIds) {
+				saveduty.setEmployeeid(employeeid);
+				serviceOnduty.saveAndUpdate(saveduty);
+			}
+			loadSrchRslt();
+			tblMstScrSrchRslt.removeAllItems();
 		}
-		loadSrchRslt();
-		tblMstScrSrchRslt.removeAllItems();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private boolean validateDetails() {
@@ -451,6 +467,7 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 			dfOndutyDatefrom.setComponentError(null);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

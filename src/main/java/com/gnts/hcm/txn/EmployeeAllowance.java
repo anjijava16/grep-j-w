@@ -315,34 +315,40 @@ public class EmployeeAllowance extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeAllowanceDM> listEmpAllowance = new ArrayList<EmployeeAllowanceDM>();
-		Long empAlwnId = null;
-		if (cbEmpName.getValue() != null) {
-			empAlwnId = ((Long.valueOf(cbEmpName.getValue().toString())));
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EmployeeAllowanceDM> listEmpAllowance = new ArrayList<EmployeeAllowanceDM>();
+			Long empAlwnId = null;
+			if (cbEmpName.getValue() != null) {
+				empAlwnId = ((Long.valueOf(cbEmpName.getValue().toString())));
+			}
+			Long alwncId = null;
+			if (cbAlwncDesc.getValue() != null) {
+				alwncId = ((Long.valueOf(cbAlwncDesc.getValue().toString())));
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfAllownceAmt.getValue() + ", " + dtEffectiveDt.getValue()
+					+ (String) cbStatus.getValue() + ", " + empAlwnId + "," + alwncId);
+			listEmpAllowance = serviceEmpAllowance.getempallowanceList(null, empAlwnId, alwncId,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = listEmpAllowance.size();
+			beanEmpAllowanceDM = new BeanItemContainer<EmployeeAllowanceDM>(EmployeeAllowanceDM.class);
+			beanEmpAllowanceDM.addAll(listEmpAllowance);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the EmployeeAllowance. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanEmpAllowanceDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empallwnid", "empName", "allownceDesc", "isflpt",
+					"allowpt", "allowamt", "empawstatus", "lastupdt", "lastupby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Allowance Name",
+					"Flat/Percent", "Allowance Percentage", "Allowance Amt.", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("empallwnid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupby", "No.of Records : " + recordCnt);
 		}
-		Long alwncId = null;
-		if (cbAlwncDesc.getValue() != null) {
-			alwncId = ((Long.valueOf(cbAlwncDesc.getValue().toString())));
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfAllownceAmt.getValue() + ", " + dtEffectiveDt.getValue()
-				+ (String) cbStatus.getValue() + ", " + empAlwnId + "," + alwncId);
-		listEmpAllowance = serviceEmpAllowance.getempallowanceList(null, empAlwnId, alwncId,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listEmpAllowance.size();
-		beanEmpAllowanceDM = new BeanItemContainer<EmployeeAllowanceDM>(EmployeeAllowanceDM.class);
-		beanEmpAllowanceDM.addAll(listEmpAllowance);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the EmployeeAllowance. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanEmpAllowanceDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empallwnid", "empName", "allownceDesc", "isflpt",
-				"allowpt", "allowamt", "empawstatus", "lastupdt", "lastupby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Allowance Name", "Flat/Percent",
-				"Allowance Percentage", "Allowance Amt.", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("empallwnid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupby", "No.of Records : " + recordCnt);
 	}
 	
 	// Reset the field values to default values
@@ -374,33 +380,38 @@ public class EmployeeAllowance extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editEmpAlownce() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeAllowanceDM editEmpAlownce = beanEmpAllowanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			pkEmpAlwncId = editEmpAlownce.getEmpallwnid().toString();
-			if (editEmpAlownce.getAllowamt() != null) {
-				tfAllownceAmt.setValue(editEmpAlownce.getAllowamt().toString());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeAllowanceDM editEmpAlownce = beanEmpAllowanceDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				pkEmpAlwncId = editEmpAlownce.getEmpallwnid().toString();
+				if (editEmpAlownce.getAllowamt() != null) {
+					tfAllownceAmt.setValue(editEmpAlownce.getAllowamt().toString());
+				}
+				dtEffectiveDt.setValue(editEmpAlownce.getEffdt());
+				if (editEmpAlownce.getAllowbal() != null) {
+					tfAllBal.setValue(editEmpAlownce.getAllowbal().toString());
+				}
+				if (editEmpAlownce.getAutopay().equals("Y")) {
+					chAutoPay.setValue(true);
+				} else {
+					chAutoPay.setValue(false);
+				}
+				if (editEmpAlownce.getArrglag() != null && editEmpAlownce.getArrglag().equals("Y")) {
+					chArrearFlag.setValue(true);
+				} else {
+					chArrearFlag.setValue(false);
+				}
+				cbStatus.setValue(editEmpAlownce.getEmpawstatus());
+				cbEmpName.setValue(editEmpAlownce.getEmpid());
+				cbAlwncDesc.setValue(editEmpAlownce.getAllowid());
+				cbFlatPercent.setValue(editEmpAlownce.getIsflpt());
+				if (editEmpAlownce.getAllowpt() != null) {
+					tfAlwncPercent.setValue(editEmpAlownce.getAllowpt().toString());
+				}
 			}
-			dtEffectiveDt.setValue(editEmpAlownce.getEffdt());
-			if (editEmpAlownce.getAllowbal() != null) {
-				tfAllBal.setValue(editEmpAlownce.getAllowbal().toString());
-			}
-			if (editEmpAlownce.getAutopay().equals("Y")) {
-				chAutoPay.setValue(true);
-			} else {
-				chAutoPay.setValue(false);
-			}
-			if (editEmpAlownce.getArrglag() != null && editEmpAlownce.getArrglag().equals("Y")) {
-				chArrearFlag.setValue(true);
-			} else {
-				chArrearFlag.setValue(false);
-			}
-			cbStatus.setValue(editEmpAlownce.getEmpawstatus());
-			cbEmpName.setValue(editEmpAlownce.getEmpid());
-			cbAlwncDesc.setValue(editEmpAlownce.getAllowid());
-			cbFlatPercent.setValue(editEmpAlownce.getIsflpt());
-			if (editEmpAlownce.getAllowpt() != null) {
-				tfAlwncPercent.setValue(editEmpAlownce.getAllowpt().toString());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

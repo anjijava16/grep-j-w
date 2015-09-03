@@ -90,7 +90,8 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 	private String username;
 	private Long companyid;
 	private Long employeeid;
-	private EmployeeAbsentService serviceEmpAbsent = (EmployeeAbsentService) SpringContextHelper.getBean("EmployeeAbsent");
+	private EmployeeAbsentService serviceEmpAbsent = (EmployeeAbsentService) SpringContextHelper
+			.getBean("EmployeeAbsent");
 	private Logger logger = Logger.getLogger(EmployeeAbsentDM.class);
 	private int total = 0;
 	
@@ -262,43 +263,53 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "loading SearchResult Details...");
-		total = 0;
-		if (employeeid != null) {
-			listEmpAbsent = serviceEmpAbsent.getempabslist(null, employeeid, "Active", "F");
-			total = listEmpAbsent.size();
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "loading SearchResult Details...");
+			total = 0;
+			if (employeeid != null) {
+				listEmpAbsent = serviceEmpAbsent.getempabslist(null, employeeid, "Active", "F");
+				total = listEmpAbsent.size();
+			}
+			tblMstScrSrchRslt.setPageLength(10);
+			beans = new BeanItemContainer<EmployeeAbsentDM>(EmployeeAbsentDM.class);
+			beans.addAll(listEmpAbsent);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Employee Absent. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beans);
+			tblMstScrSrchRslt.setVisibleColumns("absentdate", "starthours", "endhours", "totalhours", "absentremarks",
+					"absentstatus", "lastupdatedtd", "lastupdatedby");
+			tblMstScrSrchRslt.setColumnHeaders("Absent Date", "Start Hour", "End Hour", "Total Hours", "Remarks",
+					"Status", "Last Updated Date", "Last Updated By");
+			tblMstScrSrchRslt.setColumnAlignment("absentid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + total);
 		}
-		tblMstScrSrchRslt.setPageLength(10);
-		beans = new BeanItemContainer<EmployeeAbsentDM>(EmployeeAbsentDM.class);
-		beans.addAll(listEmpAbsent);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Employee Absent. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beans);
-		tblMstScrSrchRslt.setVisibleColumns("absentdate", "starthours", "endhours", "totalhours", "absentremarks",
-				"absentstatus", "lastupdatedtd", "lastupdatedby");
-		tblMstScrSrchRslt.setColumnHeaders("Absent Date", "Start Hour", "End Hour", "Total Hours", "Remarks", "Status",
-				"Last Updated Date", "Last Updated By");
-		tblMstScrSrchRslt.setColumnAlignment("absentid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + total);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method used to display selected row's values in desired text box and combo box for edit the values
 	private void editAbsent() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Absent.......");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeAbsentDM absent = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfAbsentdate.setValue(absent.getAbsentdte());
-			tfAbsentstarthours.setTime(absent.getStarthours());
-			tfAbsentendhours.setTime(absent.getEndhours());
-			tfAbsenttotalhours.setValue(absent.getTotalhours().toString());
-			if (absent.getLwpmark().equals("Y")) {
-				cbAbsentlwpmark.setValue(true);
-			} else {
-				cbAbsentlwpmark.setValue(false);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Absent.......");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeAbsentDM absent = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				dfAbsentdate.setValue(absent.getAbsentdte());
+				tfAbsentstarthours.setTime(absent.getStarthours());
+				tfAbsentendhours.setTime(absent.getEndhours());
+				tfAbsenttotalhours.setValue(absent.getTotalhours().toString());
+				if (absent.getLwpmark().equals("Y")) {
+					cbAbsentlwpmark.setValue(true);
+				} else {
+					cbAbsentlwpmark.setValue(false);
+				}
+				taAbsentremarks.setValue(absent.getAbsentremarks());
+				cbAbsentstatus.setValue(absent.getAbsentstatus());
 			}
-			taAbsentremarks.setValue(absent.getAbsentremarks());
-			cbAbsentstatus.setValue(absent.getAbsentstatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -341,21 +352,26 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	public void saveAbsentDetails(Long employeeid) {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "EmployeeAbsent Save details......");
-		@SuppressWarnings("unchecked")
-		Collection<EmployeeAbsentDM> itemIds = (Collection<EmployeeAbsentDM>) tblMstScrSrchRslt.getVisibleItemIds();
-		for (EmployeeAbsentDM saveAbsent : (Collection<EmployeeAbsentDM>) itemIds) {
-			saveAbsent.setEmployeeid(employeeid);
-			serviceEmpAbsent.saveORUpdate(saveAbsent);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "EmployeeAbsent Save details......");
+			@SuppressWarnings("unchecked")
+			Collection<EmployeeAbsentDM> itemIds = (Collection<EmployeeAbsentDM>) tblMstScrSrchRslt.getVisibleItemIds();
+			for (EmployeeAbsentDM saveAbsent : (Collection<EmployeeAbsentDM>) itemIds) {
+				saveAbsent.setEmployeeid(employeeid);
+				serviceEmpAbsent.saveORUpdate(saveAbsent);
+			}
+			loadSrchRslt();
+			tblMstScrSrchRslt.removeAllItems();
 		}
-		loadSrchRslt();
-		tblMstScrSrchRslt.removeAllItems();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	public boolean validateDetails() {

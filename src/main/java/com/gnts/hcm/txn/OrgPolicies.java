@@ -123,31 +123,36 @@ public class OrgPolicies extends BaseUI {
 	 * loadSrchRslt()-->this function is used for load the search result to table
 	 */
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.setPageLength(14);
-		tblMstScrSrchRslt.setWidth("100%");
-		tblMstScrSrchRslt.setSelectable(true);
-		tblMstScrSrchRslt.removeAllItems();
-		List<OrgPoliciesDM> listOrgPolicies = new ArrayList<OrgPoliciesDM>();
-		String orgPolName = tfPolicyName.getValue().toString();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Search Org Policies Parameters are " + orgPolName + "," + (String) cbPolicyStatus.getValue() + ","
-				+ companyId);
-		listOrgPolicies = serviceOrgPolicies.getOrgPoliciesList(null, companyId, null, orgPolName,
-				(String) cbPolicyStatus.getValue(), "F");
-		recordCnt = listOrgPolicies.size();
-		beanOrgPolicies = new BeanItemContainer<OrgPoliciesDM>(OrgPoliciesDM.class);
-		beanOrgPolicies.addAll(listOrgPolicies);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Got the OrgPolicies result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanOrgPolicies);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "policyid", "policyname", "policyGroupName", "policydesc",
-				"policystatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Policy Name", "Policy Group",
-				"Policy Description", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("policyid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnWidth("policydesc", 180);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.setPageLength(14);
+			tblMstScrSrchRslt.setWidth("100%");
+			tblMstScrSrchRslt.setSelectable(true);
+			tblMstScrSrchRslt.removeAllItems();
+			List<OrgPoliciesDM> list = new ArrayList<OrgPoliciesDM>();
+			String orgPolName = tfPolicyName.getValue().toString();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Search Org Policies Parameters are " + orgPolName + "," + (String) cbPolicyStatus.getValue()
+					+ "," + companyId);
+			list = serviceOrgPolicies.getOrgPoliciesList(null, companyId, null, orgPolName,
+					(String) cbPolicyStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanOrgPolicies = new BeanItemContainer<OrgPoliciesDM>(OrgPoliciesDM.class);
+			beanOrgPolicies.addAll(list);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the OrgPolicies result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanOrgPolicies);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "policyid", "policyname", "policyGroupName",
+					"policydesc", "policystatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Policy Name", "Policy Group",
+					"Policy Description", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("policyid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnWidth("policydesc", 180);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -227,6 +232,7 @@ public class OrgPolicies extends BaseUI {
 			cbPolicyGroup.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -261,27 +267,32 @@ public class OrgPolicies extends BaseUI {
 	
 	// Reset the selected row's data into OrgPolycies input components
 	private void editOrgPolyci() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			OrgPoliciesDM orgPoliciesDM = beanOrgPolicies.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if ((orgPoliciesDM.getPolicyname()) != null) {
-				tfPolicyName.setValue(orgPoliciesDM.getPolicyname().toString());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				OrgPoliciesDM orgPoliciesDM = beanOrgPolicies.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				if ((orgPoliciesDM.getPolicyname()) != null) {
+					tfPolicyName.setValue(orgPoliciesDM.getPolicyname().toString());
+				}
+				if ((orgPoliciesDM.getPolicygroup()) != null) {
+					cbPolicyGroup.setValue((String) orgPoliciesDM.getPolicygroup());
+				}
+				if ((orgPoliciesDM.getPolicydesc()) != null) {
+					taPolicyDesc.setValue(orgPoliciesDM.getPolicydesc().toString());
+				}
+				if ((orgPoliciesDM.getPolicystatus()) != null) {
+					cbPolicyStatus.setValue(orgPoliciesDM.getPolicystatus());
+				}
+				if (orgPoliciesDM.getPolicydoc() != null) {
+					byte[] certificate = orgPoliciesDM.getPolicydoc();
+					UploadDocumentUI test = new UploadDocumentUI(vlDocument);
+					test.displaycertificate(certificate);
+				} else {
+					new UploadDocumentUI(vlDocument);
+				}
 			}
-			if ((orgPoliciesDM.getPolicygroup()) != null) {
-				cbPolicyGroup.setValue((String) orgPoliciesDM.getPolicygroup());
-			}
-			if ((orgPoliciesDM.getPolicydesc()) != null) {
-				taPolicyDesc.setValue(orgPoliciesDM.getPolicydesc().toString());
-			}
-			if ((orgPoliciesDM.getPolicystatus()) != null) {
-				cbPolicyStatus.setValue(orgPoliciesDM.getPolicystatus());
-			}
-			if (orgPoliciesDM.getPolicydoc() != null) {
-				byte[] certificate = orgPoliciesDM.getPolicydoc();
-				UploadDocumentUI test = new UploadDocumentUI(vlDocument);
-				test.displaycertificate(certificate);
-			} else {
-				new UploadDocumentUI(vlDocument);
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

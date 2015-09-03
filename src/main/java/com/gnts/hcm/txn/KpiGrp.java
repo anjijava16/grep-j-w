@@ -156,30 +156,37 @@ public class KpiGrp extends BaseUI {
 			cbJobClasfn.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<KpiGroupDM> listKPIGroup = new ArrayList<KpiGroupDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbJobClasfn.getValue() + ", " + (String) cbStatus.getValue());
-		listKPIGroup = serviceKpiGroup.getkpigrouplist(tfKpigrpName.getValue(), null, companyId, null,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listKPIGroup.size();
-		beanKpiGroupDM = new BeanItemContainer<KpiGroupDM>(KpiGroupDM.class);
-		beanKpiGroupDM.addAll(listKPIGroup);
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Got the KPI Group List result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanKpiGroupDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "kpigrpid", "kpigroupname", "weightage", "grpstatus",
-				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "KPI Group Name", "Weightage", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("kpigrpid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records:" + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<KpiGroupDM> listKPIGroup = new ArrayList<KpiGroupDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Search Parameters are " + companyId + ", " + (Long) cbJobClasfn.getValue() + ", "
+					+ (String) cbStatus.getValue());
+			listKPIGroup = serviceKpiGroup.getkpigrouplist(tfKpigrpName.getValue(), null, companyId, null,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = listKPIGroup.size();
+			beanKpiGroupDM = new BeanItemContainer<KpiGroupDM>(KpiGroupDM.class);
+			beanKpiGroupDM.addAll(listKPIGroup);
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Got the KPI Group List result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanKpiGroupDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "kpigrpid", "kpigroupname", "weightage", "grpstatus",
+					"lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "KPI Group Name", "Weightage", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("kpigrpid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records:" + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -219,20 +226,25 @@ public class KpiGrp extends BaseUI {
 	}
 	
 	private void editKpiGroup() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Editing the selected record");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			KpiGroupDM kpiGroupDM = beanKpiGroupDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (kpiGroupDM.getKpigroupname() != null) {
-				tfKpigrpName.setValue(kpiGroupDM.getKpigroupname());
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Editing the selected record");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				KpiGroupDM kpiGroupDM = beanKpiGroupDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				if (kpiGroupDM.getKpigroupname() != null) {
+					tfKpigrpName.setValue(kpiGroupDM.getKpigroupname());
+				}
+				if (kpiGroupDM.getWeightage() != null) {
+					tfWeightage.setValue((kpiGroupDM.getWeightage()).toString());
+				}
+				if (kpiGroupDM.getGrpstatus() != null) {
+					cbStatus.setValue(kpiGroupDM.getGrpstatus());
+				}
+				cbJobClasfn.setValue(kpiGroupDM.getJobclasfnid());
 			}
-			if (kpiGroupDM.getWeightage() != null) {
-				tfWeightage.setValue((kpiGroupDM.getWeightage()).toString());
-			}
-			if (kpiGroupDM.getGrpstatus() != null) {
-				cbStatus.setValue(kpiGroupDM.getGrpstatus());
-			}
-			cbJobClasfn.setValue(kpiGroupDM.getJobclasfnid());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -280,28 +292,23 @@ public class KpiGrp extends BaseUI {
 	
 	@Override
 	protected void saveDetails() throws SaveException {
-		try {
-			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Saving Data... ");
-			KpiGroupDM kpiGrpobj = new KpiGroupDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				kpiGrpobj = beanKpiGroupDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			}
-			kpiGrpobj.setCompanyid(companyId);
-			kpiGrpobj.setKpigroupname(tfKpigrpName.getValue());
-			kpiGrpobj.setJobclasfnid((Long) cbJobClasfn.getValue());
-			kpiGrpobj.setWeightage(new BigDecimal(tfWeightage.getValue()));
-			if (cbStatus.getValue() != null) {
-				kpiGrpobj.setGrpstatus((String) cbStatus.getValue());
-			}
-			kpiGrpobj.setLastupdateddt(DateUtils.getcurrentdate());
-			kpiGrpobj.setLastupdatedby(loginUserName);
-			serviceKpiGroup.saveAndUpdate(kpiGrpobj);
-			resetFields();
-			loadSrchRslt();
+		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Saving Data... ");
+		KpiGroupDM kpiGrpobj = new KpiGroupDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			kpiGrpobj = beanKpiGroupDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		kpiGrpobj.setCompanyid(companyId);
+		kpiGrpobj.setKpigroupname(tfKpigrpName.getValue());
+		kpiGrpobj.setJobclasfnid((Long) cbJobClasfn.getValue());
+		kpiGrpobj.setWeightage(new BigDecimal(tfWeightage.getValue()));
+		if (cbStatus.getValue() != null) {
+			kpiGrpobj.setGrpstatus((String) cbStatus.getValue());
 		}
+		kpiGrpobj.setLastupdateddt(DateUtils.getcurrentdate());
+		kpiGrpobj.setLastupdatedby(loginUserName);
+		serviceKpiGroup.saveAndUpdate(kpiGrpobj);
+		resetFields();
+		loadSrchRslt();
 	}
 	
 	@Override

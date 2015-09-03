@@ -230,26 +230,31 @@ public class EmployeeAttendence extends BaseUI {
 	}
 	
 	private void staffAttendancePapulateAndConfig(boolean search) {
-		tblMstScrSrchRslt.removeAllItems();
-		tblMstScrSrchRslt.setSelectable(true);
-		List<EmpAttendenceDM> list = null;
-		if (search) {
-			list = new ArrayList<EmpAttendenceDM>();
-			if ((Long) cbEmpName.getValue() != null) {
-				list = serviceEmpAtndnc.getByStaffAttendenceList((Long) cbEmpName.getValue());
+		try {
+			tblMstScrSrchRslt.removeAllItems();
+			tblMstScrSrchRslt.setSelectable(true);
+			List<EmpAttendenceDM> list = null;
+			if (search) {
+				list = new ArrayList<EmpAttendenceDM>();
+				if ((Long) cbEmpName.getValue() != null) {
+					list = serviceEmpAtndnc.getByStaffAttendenceList((Long) cbEmpName.getValue());
+				}
+			} else {
+				list = serviceAttendenceProce.loadStaffAttendanceList(processId);
 			}
-		} else {
-			list = serviceAttendenceProce.loadStaffAttendanceList(processId);
+			recordCnt = list.size();
+			beanEmpAtndncDM = new BeanItemContainer<EmpAttendenceDM>(EmpAttendenceDM.class);
+			beanEmpAtndncDM.addAll(list);
+			tblMstScrSrchRslt.setContainerDataSource(beanEmpAtndncDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "attDt", "presentHr", "otHrs", "lateHr", "absentHr",
+					"leaveHr", "ondutyHr", "permissionHr", "status", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Atten. Date", "Present(Hrs)", "OT(Hrs)", "Late(Hrs)",
+					"Absent(Hrs)", "Leave(Hrs)", "OnDuty(Hrs)", "Permission(Hrs)", "Status", "Updated Date",
+					"Updated By" });
 		}
-		recordCnt = list.size();
-		beanEmpAtndncDM = new BeanItemContainer<EmpAttendenceDM>(EmpAttendenceDM.class);
-		beanEmpAtndncDM.addAll(list);
-		tblMstScrSrchRslt.setContainerDataSource(beanEmpAtndncDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "attDt", "presentHr", "otHrs", "lateHr", "absentHr",
-				"leaveHr", "ondutyHr", "permissionHr", "status", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt
-				.setColumnHeaders(new String[] { "Atten. Date", "Present(Hrs)", "OT(Hrs)", "Late(Hrs)", "Absent(Hrs)",
-						"Leave(Hrs)", "OnDuty(Hrs)", "Permission(Hrs)", "Status", "Updated Date", "Updated By" });
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -273,25 +278,30 @@ public class EmployeeAttendence extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editEmpAtndnc() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmpAttendenceDM empAttendence = beanEmpAtndncDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			pkEmpAdvncId = empAttendence.getAttendenceId().toString();
-			cbEmpName.setValue(empAttendence.getEmpId());
-			dfAtndence.setValue(empAttendence.getAttDt1());
-			tfPresentHr.setTime(empAttendence.getPresentHr());
-			tfOTHrs.setTime(empAttendence.getOtHrs());
-			tflateHrs.setTime(empAttendence.getLateHr());
-			tfAbsentHr.setTime(empAttendence.getAbsentHr());
-			tfLeaveHr.setTime(empAttendence.getLeaveHr());
-			tfOnDutyHr.setTime(empAttendence.getOndutyHr());
-			tfPermisnHr.setTime(empAttendence.getPermissionHr());
-			if (empAttendence.getLwpHr() != null) {
-				tfLWPHrs.setValue(empAttendence.getLwpHr().toString());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmpAttendenceDM empAttendence = beanEmpAtndncDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				pkEmpAdvncId = empAttendence.getAttendenceId().toString();
+				cbEmpName.setValue(empAttendence.getEmpId());
+				dfAtndence.setValue(empAttendence.getAttDt1());
+				tfPresentHr.setTime(empAttendence.getPresentHr());
+				tfOTHrs.setTime(empAttendence.getOtHrs());
+				tflateHrs.setTime(empAttendence.getLateHr());
+				tfAbsentHr.setTime(empAttendence.getAbsentHr());
+				tfLeaveHr.setTime(empAttendence.getLeaveHr());
+				tfOnDutyHr.setTime(empAttendence.getOndutyHr());
+				tfPermisnHr.setTime(empAttendence.getPermissionHr());
+				if (empAttendence.getLwpHr() != null) {
+					tfLWPHrs.setValue(empAttendence.getLwpHr().toString());
+				}
+				if (empAttendence.getReturnCount() != null) {
+					tfReturnCount.setValue(empAttendence.getReturnCount().toString());
+				}
+				cbStatus.setValue(empAttendence.getStatus());
 			}
-			if (empAttendence.getReturnCount() != null) {
-				tfReturnCount.setValue(empAttendence.getReturnCount().toString());
-			}
-			cbStatus.setValue(empAttendence.getStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -448,6 +458,7 @@ public class EmployeeAttendence extends BaseUI {
 			cbEmpName.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

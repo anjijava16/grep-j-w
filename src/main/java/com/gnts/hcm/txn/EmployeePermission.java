@@ -86,9 +86,9 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 	private HorizontalLayout hlTableTitleandCaptionLayout;
 	private String username;
 	private Long companyid;
-	private EmployeePermissionService servicepermission = (EmployeePermissionService) SpringContextHelper
+	private EmployeePermissionService servicePermission = (EmployeePermissionService) SpringContextHelper
 			.getBean("EmployeePermission");
-	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private Logger logger = Logger.getLogger(EmployeePermissionDM.class);
 	private int recordCnt = 0;
 	private Long employeeid;
@@ -228,47 +228,63 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 	}
 	
 	private void loadAppMgrList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "loading Approve Manager List...");
-		BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanEmployee.setBeanIdProperty("employeeid");
-		beanEmployee.addAll(serviceemployee.getEmployeeList(null, null, null,/* department */
-				"Active", companyid, null, null, null, null, "P"));
-		cbPermissionApprmgr.setContainerDataSource(beanEmployee);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "loading Approve Manager List...");
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null,/* department */
+					"Active", companyid, null, null, null, null, "P"));
+			cbPermissionApprmgr.setContainerDataSource(beanEmployee);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "loading SearchResult Details...");
-		tblMstScrSrchRslt.removeAllItems();
-		if (employeeid != null) {
-			listEmpPer = servicepermission.getemppermissionList(null, employeeid, "Active", "F");
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "loading SearchResult Details...");
+			tblMstScrSrchRslt.removeAllItems();
+			if (employeeid != null) {
+				listEmpPer = servicePermission.getemppermissionList(null, employeeid, "Active", "F");
+			}
+			recordCnt = listEmpPer.size();
+			tblMstScrSrchRslt.setPageLength(10);
+			beans = new BeanItemContainer<EmployeePermissionDM>(EmployeePermissionDM.class);
+			beans.addAll(listEmpPer);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Employee Permission. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beans);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "permissiondt", "intime", "permissionhrs", "remarks",
+					"emppermstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Permission Date", "In Time", "Permission Hours",
+					"Remarks", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
-		recordCnt = listEmpPer.size();
-		tblMstScrSrchRslt.setPageLength(10);
-		beans = new BeanItemContainer<EmployeePermissionDM>(EmployeePermissionDM.class);
-		beans.addAll(listEmpPer);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Employee Permission. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beans);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "permissiondt", "intime", "permissionhrs", "remarks",
-				"emppermstatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Permission Date", "In Time", "Permission Hours", "Remarks",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method used to display selected row's values in desired text box and combo box for edit the values
 	private void editPermission() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Permission.......");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeePermissionDM employeePermissionDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfPermissiondate.setValue(employeePermissionDM.getPermissiondate());
-			tfPermissionprmhrs.setValue((employeePermissionDM.getPermissionhrs().toString()));
-			tfintime.setTime(employeePermissionDM.getIntime());
-			taPermissionremarks.setValue(employeePermissionDM.getRemarks());
-			cbPermissionApprmgr.setValue(employeePermissionDM.getApprovemgr());
-			cbPermissionStatus.setValue(employeePermissionDM.getEmppermstatus());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing Permission.......");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeePermissionDM employeePermissionDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				dfPermissiondate.setValue(employeePermissionDM.getPermissiondate());
+				tfPermissionprmhrs.setValue((employeePermissionDM.getPermissionhrs().toString()));
+				tfintime.setTime(employeePermissionDM.getIntime());
+				taPermissionremarks.setValue(employeePermissionDM.getRemarks());
+				cbPermissionApprmgr.setValue(employeePermissionDM.getApprovemgr());
+				cbPermissionStatus.setValue(employeePermissionDM.getEmppermstatus());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -303,28 +319,33 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 			savePermission.setEmployeeid(employeeid);
 			savePermission.setLastupdatedby(username);
 			savePermission.setLastupdateddt(DateUtils.getcurrentdate());
-			servicepermission.saveAndUpdate(savePermission);
+			servicePermission.saveAndUpdate(savePermission);
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		resetFields();
 		btnadd.setCaption("Add");
 	}
 	
 	public void permissionsave(Long employeeid) {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "EmployeeOPermission Save details......");
-		@SuppressWarnings("unchecked")
-		Collection<EmployeePermissionDM> itemIds = (Collection<EmployeePermissionDM>) tblMstScrSrchRslt
-				.getVisibleItemIds();
-		for (EmployeePermissionDM savepermission : (Collection<EmployeePermissionDM>) itemIds) {
-			savepermission.setEmployeeid(employeeid);
-			servicepermission.saveAndUpdate(savepermission);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "EmployeeOPermission Save details......");
+			@SuppressWarnings("unchecked")
+			Collection<EmployeePermissionDM> itemIds = (Collection<EmployeePermissionDM>) tblMstScrSrchRslt
+					.getVisibleItemIds();
+			for (EmployeePermissionDM savepermission : (Collection<EmployeePermissionDM>) itemIds) {
+				savepermission.setEmployeeid(employeeid);
+				servicePermission.saveAndUpdate(savepermission);
+			}
+			loadSrchRslt();
+			tblMstScrSrchRslt.removeAllItems();
 		}
-		loadSrchRslt();
-		tblMstScrSrchRslt.removeAllItems();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private boolean validateDetails() {

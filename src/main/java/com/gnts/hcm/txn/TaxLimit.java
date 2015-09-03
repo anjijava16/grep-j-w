@@ -172,29 +172,35 @@ public class TaxLimit extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<TaxLimitDM> listTaxLimit = new ArrayList<TaxLimitDM>();
-		Long TaxId = null;
-		if (cbTaxId.getValue() != null) {
-			TaxId = ((Long.valueOf(cbTaxId.getValue().toString())));
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<TaxLimitDM> list = new ArrayList<TaxLimitDM>();
+			Long TaxId = null;
+			if (cbTaxId.getValue() != null) {
+				TaxId = ((Long.valueOf(cbTaxId.getValue().toString())));
+			}
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfExemptLimit.getValue() + ", " + cbTaxId.getValue()
+					+ (String) cbStatus.getValue() + ", " + TaxId);
+			list = serviceTaxLimit.getTaxLimitList(null, TaxId, (String) cbSectnCode.getValue(),
+					(String) cbStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanTaxLimitDM = new BeanItemContainer<TaxLimitDM>(TaxLimitDM.class);
+			beanTaxLimitDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the TaxLimit. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanTaxLimitDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "taxLimitId", "taxName", "sctnCode", "exemptLimit",
+					"status", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Tax Name", "Section code", "Exempt Limit",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("taxLimitId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfExemptLimit.getValue() + ", " + cbTaxId.getValue()
-				+ (String) cbStatus.getValue() + ", " + TaxId);
-		listTaxLimit = serviceTaxLimit.getTaxLimitList(null, TaxId, (String) cbSectnCode.getValue(),
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listTaxLimit.size();
-		beanTaxLimitDM = new BeanItemContainer<TaxLimitDM>(TaxLimitDM.class);
-		beanTaxLimitDM.addAll(listTaxLimit);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the TaxLimit. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanTaxLimitDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "taxLimitId", "taxName", "sctnCode", "exemptLimit",
-				"status", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Tax Name", "Section code", "Exempt Limit",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("taxLimitId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset the field values to default values
@@ -213,18 +219,23 @@ public class TaxLimit extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editTaxLimit() {
-		TaxLimitDM taxLimitDM = beanTaxLimitDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		pkTaxLimitId = taxLimitDM.getTaxLimitId().toString();
-		if (taxLimitDM.getExemptLimit() != null && !"null".equals(taxLimitDM.getExemptLimit())) {
-			tfExemptLimit.setValue(taxLimitDM.getExemptLimit().toString());
+		try {
+			TaxLimitDM taxLimitDM = beanTaxLimitDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			pkTaxLimitId = taxLimitDM.getTaxLimitId().toString();
+			if (taxLimitDM.getExemptLimit() != null && !"null".equals(taxLimitDM.getExemptLimit())) {
+				tfExemptLimit.setValue(taxLimitDM.getExemptLimit().toString());
+			}
+			cbTaxId.setReadOnly(false);
+			cbTaxId.setValue(Long.valueOf(taxLimitDM.getTaxId()));
+			cbTaxId.setReadOnly(true);
+			cbStatus.setValue(taxLimitDM.getStatus());
+			cbSectnCode.setReadOnly(false);
+			cbSectnCode.setValue(taxLimitDM.getSctnCode());
+			cbSectnCode.setReadOnly(true);
 		}
-		cbTaxId.setReadOnly(false);
-		cbTaxId.setValue(Long.valueOf(taxLimitDM.getTaxId()));
-		cbTaxId.setReadOnly(true);
-		cbStatus.setValue(taxLimitDM.getStatus());
-		cbSectnCode.setReadOnly(false);
-		cbSectnCode.setValue(taxLimitDM.getSctnCode());
-		cbSectnCode.setReadOnly(true);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Base class implementations
@@ -352,7 +363,7 @@ public class TaxLimit extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

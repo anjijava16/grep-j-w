@@ -288,45 +288,56 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 			cbOvertimeapprovemgr.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "loading SearchResult Details...");
-		total = 0;
-		if (employeeid != null) {
-			usertable = serviceOvertime.geempovrlist(null, employeeid, null, "Active", "F");
-			total = usertable.size();
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "loading SearchResult Details...");
+			total = 0;
+			if (employeeid != null) {
+				usertable = serviceOvertime.geempovrlist(null, employeeid, null, "Active", "F");
+				total = usertable.size();
+			}
+			tblMstScrSrchRslt.setPageLength(10);
+			beans = new BeanItemContainer<EmployeeOvertimeDM>(EmployeeOvertimeDM.class);
+			beans.addAll(usertable);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Employee Overtime. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beans);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "overtimedt", "starthour", "endhour", "totalhours",
+					"otremarks", "empotstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "OverTime Date", "Start hour", "End Hour", "Total Hours",
+					"Remarks", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("overtimeid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + total);
 		}
-		tblMstScrSrchRslt.setPageLength(10);
-		beans = new BeanItemContainer<EmployeeOvertimeDM>(EmployeeOvertimeDM.class);
-		beans.addAll(usertable);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the Employee Overtime. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beans);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "overtimedt", "starthour", "endhour", "totalhours",
-				"otremarks", "empotstatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "OverTime Date", "Start hour", "End Hour", "Total Hours",
-				"Remarks", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("overtimeid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + total);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method used to display selected row's values in desired text box and combo box for edit the values
 	private void editOvertime() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Overtime.......");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeOvertimeDM employeeOvertimeDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfOvertimedt.setValue(employeeOvertimeDM.getOvertimedate());
-			tfStarthour.setTime(employeeOvertimeDM.getStarthour());
-			tfEndhour.setTime(employeeOvertimeDM.getEndhour());
-			tfOvertimetotalhours.setReadOnly(false);
-			tfOvertimetotalhours.setValue(employeeOvertimeDM.getTotalhours().toString());
-			tfOvertimetotalhours.setReadOnly(true);
-			taOvertimeremarks.setValue(employeeOvertimeDM.getOtremarks());
-			cbOvertimeapprovemgr.setValue(employeeOvertimeDM.getApprovemgr());
-			cbOvertimestatus.setValue(employeeOvertimeDM.getEmpotstatus());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing Overtime.......");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeOvertimeDM employeeOvertimeDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				dfOvertimedt.setValue(employeeOvertimeDM.getOvertimedate());
+				tfStarthour.setTime(employeeOvertimeDM.getStarthour());
+				tfEndhour.setTime(employeeOvertimeDM.getEndhour());
+				tfOvertimetotalhours.setReadOnly(false);
+				tfOvertimetotalhours.setValue(employeeOvertimeDM.getTotalhours().toString());
+				tfOvertimetotalhours.setReadOnly(true);
+				taOvertimeremarks.setValue(employeeOvertimeDM.getOtremarks());
+				cbOvertimeapprovemgr.setValue(employeeOvertimeDM.getApprovemgr());
+				cbOvertimestatus.setValue(employeeOvertimeDM.getEmpotstatus());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -368,21 +379,27 @@ public class EmployeeOvertime extends VerticalLayout implements ClickListener {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	public void overtimesave(Long employeeid) {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "EmployeeOvertime Save details......");
-		@SuppressWarnings("unchecked")
-		Collection<EmployeeOvertimeDM> itemIds = (Collection<EmployeeOvertimeDM>) tblMstScrSrchRslt.getVisibleItemIds();
-		for (EmployeeOvertimeDM saveovertime : (Collection<EmployeeOvertimeDM>) itemIds) {
-			saveovertime.setEmployeeid(employeeid);
-			serviceOvertime.saveAndUpdate(saveovertime);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "EmployeeOvertime Save details......");
+			@SuppressWarnings("unchecked")
+			Collection<EmployeeOvertimeDM> itemIds = (Collection<EmployeeOvertimeDM>) tblMstScrSrchRslt
+					.getVisibleItemIds();
+			for (EmployeeOvertimeDM saveovertime : (Collection<EmployeeOvertimeDM>) itemIds) {
+				saveovertime.setEmployeeid(employeeid);
+				serviceOvertime.saveAndUpdate(saveovertime);
+			}
+			loadSrchRslt();
+			tblMstScrSrchRslt.removeAllItems();
 		}
-		loadSrchRslt();
-		tblMstScrSrchRslt.removeAllItems();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private boolean validateDetails() {

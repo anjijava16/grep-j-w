@@ -175,26 +175,31 @@ public class JobInterview extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<JobInterviewDM> listJobInterview = new ArrayList<JobInterviewDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + (Long) cbCandidateName.getValue() + ", " + (Long) cbJobTitle.getValue()
-				+ (String) cbStatus.getValue());
-		listJobInterview = serviceJobInterview.getJobInterviewyList(null, (Long) cbCandidateName.getValue(),
-				(Long) cbJobTitle.getValue(), null, (String) cbStatus.getValue());
-		recordCnt = listJobInterview.size();
-		beanJobInterviewDM = new BeanItemContainer<JobInterviewDM>(JobInterviewDM.class);
-		beanJobInterviewDM.addAll(listJobInterview);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the JobInterview. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanJobInterviewDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "interviewId", "candidateName", "jobtitle", "status",
-				"lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Candidate Name", "Job Title", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("interviewId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<JobInterviewDM> list = new ArrayList<JobInterviewDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + (Long) cbCandidateName.getValue() + ", " + (Long) cbJobTitle.getValue()
+					+ (String) cbStatus.getValue());
+			list = serviceJobInterview.getJobInterviewyList(null, (Long) cbCandidateName.getValue(),
+					(Long) cbJobTitle.getValue(), null, (String) cbStatus.getValue());
+			recordCnt = list.size();
+			beanJobInterviewDM = new BeanItemContainer<JobInterviewDM>(JobInterviewDM.class);
+			beanJobInterviewDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the JobInterview. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanJobInterviewDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "interviewId", "candidateName", "jobtitle", "status",
+					"lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Candidate Name", "Job Title", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("interviewId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadJobCandidate() {
@@ -209,6 +214,7 @@ public class JobInterview extends BaseUI {
 			cbCandidateName.setContainerDataSource(beanJobCandidateDM);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -224,6 +230,7 @@ public class JobInterview extends BaseUI {
 			cbJobTitle.setContainerDataSource(beanJobVaccancyDM);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -291,27 +298,32 @@ public class JobInterview extends BaseUI {
 	}
 	
 	private void editJobIntervwdetails() {
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			JobInterviewDM jobInterviewDM = beanJobInterviewDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if ((jobInterviewDM.getCandidateid() != null)) {
-				cbCandidateName.setValue(jobInterviewDM.getCandidateid());
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				JobInterviewDM jobInterviewDM = beanJobInterviewDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				if ((jobInterviewDM.getCandidateid() != null)) {
+					cbCandidateName.setValue(jobInterviewDM.getCandidateid());
+				}
+				if ((jobInterviewDM.getVacancyid() != null)) {
+					cbJobTitle.setValue(jobInterviewDM.getVacancyid());
+				}
+				if (jobInterviewDM.getInterviewDt() != null) {
+					dfIntrvwDate.setValue(jobInterviewDM.getInterviewDt());
+				}
+				if ((jobInterviewDM.getIntervwdesc() != null)) {
+					taIntrvwDesc.setValue(jobInterviewDM.getIntervwdesc().toString());
+				}
+				if ((jobInterviewDM.getIntervwlevel() != null)) {
+					cbIntrvwLevel.setValue(jobInterviewDM.getIntervwlevel().toString());
+				}
+				tfIntrvwTime.setTime(jobInterviewDM.getIntervwtime());
+				cbStatus.setValue(jobInterviewDM.getStatus());
+				cbinterviewerid.setValue(jobInterviewDM.getInterviewerid());
 			}
-			if ((jobInterviewDM.getVacancyid() != null)) {
-				cbJobTitle.setValue(jobInterviewDM.getVacancyid());
-			}
-			if (jobInterviewDM.getInterviewDt() != null) {
-				dfIntrvwDate.setValue(jobInterviewDM.getInterviewDt());
-			}
-			if ((jobInterviewDM.getIntervwdesc() != null)) {
-				taIntrvwDesc.setValue(jobInterviewDM.getIntervwdesc().toString());
-			}
-			if ((jobInterviewDM.getIntervwlevel() != null)) {
-				cbIntrvwLevel.setValue(jobInterviewDM.getIntervwlevel().toString());
-			}
-			tfIntrvwTime.setTime(jobInterviewDM.getIntervwtime());
-			cbStatus.setValue(jobInterviewDM.getStatus());
-			cbinterviewerid.setValue(jobInterviewDM.getInterviewerid());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -388,7 +400,7 @@ public class JobInterview extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -447,6 +459,7 @@ public class JobInterview extends BaseUI {
 			cbIntrvwLevel.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -462,6 +475,7 @@ public class JobInterview extends BaseUI {
 			cbStatus.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

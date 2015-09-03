@@ -125,27 +125,32 @@ public class EmployeeProximity extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		tblMstScrSrchRslt.setPageLength(14);
-		List<EmployeeProximityDM> listEmployeeProximity = new ArrayList<EmployeeProximityDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyId + ", " + (String) tfProximityNo.getValue() + ", " + (Long) cbEmployeeName.getValue()
-				+ (String) cbStatus.getValue());
-		listEmployeeProximity = serviceEmployeeProximity.getempproxmtyList(null, (String) tfProximityNo.getValue(),
-				(Long) cbEmployeeName.getValue(), (String) cbStatus.getValue(), "F");
-		recordCnt = listEmployeeProximity.size();
-		beanEmployeeProximityDM = new BeanItemContainer<EmployeeProximityDM>(EmployeeProximityDM.class);
-		beanEmployeeProximityDM.addAll(listEmployeeProximity);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Got the EmployeeProximity. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanEmployeeProximityDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empproxmtyid", "proxmtyno", "employeename", "remarks",
-				"proxmtystatus", "lastupdateddt", "lastupdatdby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Proximity No.", "Employee Name", "Remarks",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("empproxmtyid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatdby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			tblMstScrSrchRslt.setPageLength(14);
+			List<EmployeeProximityDM> listEmployeeProximity = new ArrayList<EmployeeProximityDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyId + ", " + (String) tfProximityNo.getValue() + ", " + (Long) cbEmployeeName.getValue()
+					+ (String) cbStatus.getValue());
+			listEmployeeProximity = serviceEmployeeProximity.getempproxmtyList(null, (String) tfProximityNo.getValue(),
+					(Long) cbEmployeeName.getValue(), (String) cbStatus.getValue(), "F");
+			recordCnt = listEmployeeProximity.size();
+			beanEmployeeProximityDM = new BeanItemContainer<EmployeeProximityDM>(EmployeeProximityDM.class);
+			beanEmployeeProximityDM.addAll(listEmployeeProximity);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the EmployeeProximity. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanEmployeeProximityDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empproxmtyid", "proxmtyno", "employeename", "remarks",
+					"proxmtystatus", "lastupdateddt", "lastupdatdby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Proximity No.", "Employee Name", "Remarks",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("empproxmtyid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatdby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -246,24 +251,29 @@ public class EmployeeProximity extends BaseUI {
 	}
 	
 	private void editProximity() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeProximityDM employeeProximityDM = beanEmployeeProximityDM.getItem(tblMstScrSrchRslt.getValue())
-					.getBean();
-			employeeProximityDM.getEmpproxmtyid();
-			if (employeeProximityDM.getProxmtyno() != null) {
-				tfProximityNo.setValue(employeeProximityDM.getProxmtyno().toString());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeProximityDM employeeProximityDM = beanEmployeeProximityDM.getItem(tblMstScrSrchRslt.getValue())
+						.getBean();
+				employeeProximityDM.getEmpproxmtyid();
+				if (employeeProximityDM.getProxmtyno() != null) {
+					tfProximityNo.setValue(employeeProximityDM.getProxmtyno().toString());
+				}
+				cbEmployeeName.setValue(employeeProximityDM.getEmployeeid());
+				if (employeeProximityDM.getValidfrom() != null) {
+					dfValidFrm.setValue(employeeProximityDM.getValidfrom());
+				}
+				if (employeeProximityDM.getValiduntil() != null) {
+					dfValidUntil.setValue(employeeProximityDM.getValiduntil());
+				}
+				if (employeeProximityDM.getRemarks() != null) {
+					taRemarks.setValue(employeeProximityDM.getRemarks().toString());
+				}
+				cbStatus.setValue(employeeProximityDM.getProxmtystatus());
 			}
-			cbEmployeeName.setValue(employeeProximityDM.getEmployeeid());
-			if (employeeProximityDM.getValidfrom() != null) {
-				dfValidFrm.setValue(employeeProximityDM.getValidfrom());
-			}
-			if (employeeProximityDM.getValiduntil() != null) {
-				dfValidUntil.setValue(employeeProximityDM.getValiduntil());
-			}
-			if (employeeProximityDM.getRemarks() != null) {
-				taRemarks.setValue(employeeProximityDM.getRemarks().toString());
-			}
-			cbStatus.setValue(employeeProximityDM.getProxmtystatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -335,8 +345,8 @@ public class EmployeeProximity extends BaseUI {
 		try {
 			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId,
-					employeeId, null, null, null, "P"));
+			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, employeeId,
+					null, null, null, "P"));
 			cbEmployeeName.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
@@ -346,7 +356,6 @@ public class EmployeeProximity extends BaseUI {
 	
 	@Override
 	protected void saveDetails() {
-		
 		try {
 			validateDetails();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
@@ -371,8 +380,7 @@ public class EmployeeProximity extends BaseUI {
 			serviceEmployeeProximity.saveAndUpdate(employeeProximity);
 		}
 		catch (Exception e) {
-			logger.info("SUCCESSS");
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		resetFields();
 		loadSrchRslt();

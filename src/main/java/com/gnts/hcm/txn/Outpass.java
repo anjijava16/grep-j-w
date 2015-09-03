@@ -232,24 +232,30 @@ public class Outpass extends BaseTransUI {
 	
 	// Load EC Request
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<OutpassDM> list = new ArrayList<OutpassDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + null + "," + tfPlace.getValue() + ", " + (String) cbStatus.getValue());
-		list = serviceOutpass.getOutpassList(null, (Long) cbEmployee.getValue(), null, null,
-				(String) cbStatus.getValue());
-		recordCnt = list.size();
-		beanOutpass = new BeanItemContainer<OutpassDM>(OutpassDM.class);
-		beanOutpass.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Outpass. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanOutpass);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "outpassId", "passDate", "place", "vehicleNo", "outTime",
-				"inTime", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Place", "Vehicle No", "Out Time",
-				"In Time", "Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("outpassId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<OutpassDM> list = new ArrayList<OutpassDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + null + "," + tfPlace.getValue() + ", " + (String) cbStatus.getValue());
+			list = serviceOutpass.getOutpassList(null, (Long) cbEmployee.getValue(), null, null,
+					(String) cbStatus.getValue());
+			recordCnt = list.size();
+			beanOutpass = new BeanItemContainer<OutpassDM>(OutpassDM.class);
+			beanOutpass.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Outpass. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanOutpass);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "outpassId", "passDate", "place", "vehicleNo",
+					"outTime", "inTime", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Place", "Vehicle No", "Out Time",
+					"In Time", "Last Updated date", "Last Updated by" });
+			tblMstScrSrchRslt.setColumnAlignment("outpassId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Employee List
@@ -262,6 +268,7 @@ public class Outpass extends BaseTransUI {
 			cbEmployee.setContainerDataSource(beanInitiatedBy);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -312,6 +319,7 @@ public class Outpass extends BaseTransUI {
 			cbVehicleName.setContainerDataSource(beanDepartment);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -329,6 +337,7 @@ public class Outpass extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -345,32 +354,39 @@ public class Outpass extends BaseTransUI {
 			cbDepartment.setContainerDataSource(beanDepartment);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header
 	private void editOutpass() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hllayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
-				+ outpassid);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			OutpassDM outpassDM = beanOutpass.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfPassDate.setValue(outpassDM.getPassDateD());
-			cbEmployee.setValue(outpassDM.getEmployeeId());
-			cbDepartment.setValue(outpassDM.getDeptId());
-			cbStatus.setValue(outpassDM.getStatus());
-			tfPlace.setValue(outpassDM.getPlace());
-			tfTimeOut.setTime(outpassDM.getOutTime());
-			tfTimeIn.setTime(outpassDM.getInTime());
-			taPurpose.setValue(outpassDM.getPurpose());
-			cbVehicle.setValue(outpassDM.getVehicle());
-			// cbVehicleName
-			tfVehicleNo.setValue(outpassDM.getVehicleNo());
-			tfKMOut.setValue(outpassDM.getKmOut().toString());
-			tfKMIn.setValue(outpassDM.getKmIn().toString());
-			tfTotalKM.setValue(outpassDM.getTotalKM().toString());
-			tfTotalTime.setValue(outpassDM.getTotalTime().toString());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hllayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
+					+ outpassid);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				OutpassDM outpassDM = beanOutpass.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				dfPassDate.setValue(outpassDM.getPassDateD());
+				cbEmployee.setValue(outpassDM.getEmployeeId());
+				cbDepartment.setValue(outpassDM.getDeptId());
+				cbStatus.setValue(outpassDM.getStatus());
+				tfPlace.setValue(outpassDM.getPlace());
+				tfTimeOut.setTime(outpassDM.getOutTime());
+				tfTimeIn.setTime(outpassDM.getInTime());
+				taPurpose.setValue(outpassDM.getPurpose());
+				cbVehicle.setValue(outpassDM.getVehicle());
+				// cbVehicleName
+				tfVehicleNo.setValue(outpassDM.getVehicleNo());
+				tfKMOut.setValue(outpassDM.getKmOut().toString());
+				tfKMIn.setValue(outpassDM.getKmIn().toString());
+				tfTotalKM.setValue(outpassDM.getTotalKM().toString());
+				tfTotalTime.setValue(outpassDM.getTotalTime().toString());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

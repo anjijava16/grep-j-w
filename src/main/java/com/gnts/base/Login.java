@@ -50,6 +50,7 @@ import com.gnts.base.service.rpt.AuditRecordsService;
 import com.gnts.base.service.txn.UserLoginService;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
+import com.gnts.mms.txn.Indent;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -129,7 +130,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 	private HorizontalLayout hlCollapse, hlExpand, collandexpndhl, hlLine, hlScreenName, hlHeader, hlTreeMenu;
 	private VerticalLayout vlLine, vlPasswordLayout;
 	private Image imgExpand, imgCollapse, imgPin, imgUnpin, imgGlob, imgProfile, imgHelp, imgCustomer, imgSingOut,
-			imgMonitor, imgFavorite, imgAssetIssue;
+			imgMonitor, imgFavorite, imgAssetIssue, imgIndent;
 	private Tree treeMenu;
 	private String versionVar = "BS_APPVER";
 	private String copyrightVar = "BS_APPCPR";
@@ -321,6 +322,11 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 		imgAssetIssue.setWidth("36px");
 		imgAssetIssue.setHeight("36px");
 		imgAssetIssue.addClickListener(this);
+		imgIndent = new Image(null, new ThemeResource("img/icon_orders.png"));
+		imgIndent.setDescription("Raise Indent");
+		imgIndent.setWidth("22px");
+		imgIndent.setHeight("22px");
+		imgIndent.addClickListener(this);
 		Label userName = new Label(loginuserName);
 		imgSingOut = new Image(null, new ThemeResource("img/signout.png"));
 		imgSingOut.setDescription("Sign Out");
@@ -341,6 +347,8 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 		userLayout.setComponentAlignment(imgFavorite, Alignment.MIDDLE_CENTER);
 		userLayout.addComponent(imgAssetIssue);
 		userLayout.setComponentAlignment(imgAssetIssue, Alignment.MIDDLE_CENTER);
+		userLayout.addComponent(imgIndent);
+		userLayout.setComponentAlignment(imgIndent, Alignment.MIDDLE_CENTER);
 		userLayout.addComponent(imgSingOut);
 		userLayout.setComponentAlignment(imgSingOut, Alignment.MIDDLE_CENTER);
 		hlHeader.setComponentAlignment(userLayout, Alignment.MIDDLE_RIGHT);
@@ -769,6 +777,13 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 		}
 		if (imgAssetIssue == event.getComponent()) {
 			UI.getCurrent().addWindow(new AssetComplaintRegister());
+		}
+		if (imgIndent == event.getComponent()) {
+			clArgumentLayout.removeAllComponents();
+			hlScreenName.removeAllComponents();
+			UI.getCurrent().getSession().setAttribute("screenName", "Indent");
+			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
+			new Indent();
 		}
 		if (imgHelp == event.getComponent()) {
 			/*

@@ -173,24 +173,30 @@ public class PhoneCallRegister extends BaseTransUI {
 	
 	// Load EC Request
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<PhoneRegDM> list = new ArrayList<PhoneRegDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + null + "," + tfPhoneNumber.getValue() + ", " + (String) cbStatus.getValue());
-		list = servicePhoneReg.getPhoneRegList(null, (Long) cbEmployee.getValue(), null, null,
-				(String) cbStatus.getValue(), null, null);
-		recordCnt = list.size();
-		beanPhoneReg = new BeanItemContainer<PhoneRegDM>(PhoneRegDM.class);
-		beanPhoneReg.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Outpass. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanPhoneReg);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "phoneRegId", "callDate", "companyName", "interNo",
-				"phoneTime", "status", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Company/Customer", "Intercom", "Duration",
-				"Status", "Last Updated date", "Last Updated by" });
-		tblMstScrSrchRslt.setColumnAlignment("phoneRegId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<PhoneRegDM> list = new ArrayList<PhoneRegDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + null + "," + tfPhoneNumber.getValue() + ", " + (String) cbStatus.getValue());
+			list = servicePhoneReg.getPhoneRegList(null, (Long) cbEmployee.getValue(), null, null,
+					(String) cbStatus.getValue(), null, null);
+			recordCnt = list.size();
+			beanPhoneReg = new BeanItemContainer<PhoneRegDM>(PhoneRegDM.class);
+			beanPhoneReg.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the Outpass. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanPhoneReg);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "phoneRegId", "callDate", "companyName", "interNo",
+					"phoneTime", "status", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Date", "Company/Customer", "Intercom",
+					"Duration", "Status", "Last Updated date", "Last Updated by" });
+			tblMstScrSrchRslt.setColumnAlignment("phoneRegId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
@@ -208,7 +214,7 @@ public class PhoneCallRegister extends BaseTransUI {
 			cbCallType.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -245,22 +251,28 @@ public class PhoneCallRegister extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Header
 	private void editOutpass() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hllayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
-				+ phoneRegid);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			PhoneRegDM phoneRegDM = beanPhoneReg.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dfCallDate.setValue(phoneRegDM.getCallDateD());
-			cbEmployee.setValue(phoneRegDM.getEmployeeId());
-			cbDepartment.setValue(phoneRegDM.getDeptId());
-			cbStatus.setValue(phoneRegDM.getStatus());
-			tfPhoneNumber.setValue(phoneRegDM.getPhoneNumber());
-			tfIntercom.setValue(phoneRegDM.getInterNo());
-			tfCompany.setValue(phoneRegDM.getCompanyName());
-			taPurpose.setValue(phoneRegDM.getPurpose());
-			tfTime.setValue(phoneRegDM.getPhoneTime());
-			cbCallType.setValue(phoneRegDM.getCallType());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hllayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
+					+ phoneRegid);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				PhoneRegDM phoneRegDM = beanPhoneReg.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				dfCallDate.setValue(phoneRegDM.getCallDateD());
+				cbEmployee.setValue(phoneRegDM.getEmployeeId());
+				cbDepartment.setValue(phoneRegDM.getDeptId());
+				cbStatus.setValue(phoneRegDM.getStatus());
+				tfPhoneNumber.setValue(phoneRegDM.getPhoneNumber());
+				tfIntercom.setValue(phoneRegDM.getInterNo());
+				tfCompany.setValue(phoneRegDM.getCompanyName());
+				taPurpose.setValue(phoneRegDM.getPurpose());
+				tfTime.setValue(phoneRegDM.getPhoneTime());
+				cbCallType.setValue(phoneRegDM.getCallType());
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

@@ -852,7 +852,7 @@ public class ProductOverview implements ClickListener {
 			tblEnquirySpec.removeAllItems();
 			List<SmsEnquirySpecDM> listEnqSepec = new ArrayList<SmsEnquirySpecDM>();
 			if (enquiryId != null && enqDtlId != null) {
-				listEnqSepec = serviceEnqSpec.getsmsenquiryspecList(null, enquiryId, enqDtlId, null, null);
+				listEnqSepec = serviceEnqSpec.getsmsenquiryspecList(null, enquiryId, enqDtlId, null, null,null);
 			}
 			BeanItemContainer<SmsEnquirySpecDM> beanpec = new BeanItemContainer<SmsEnquirySpecDM>(
 					SmsEnquirySpecDM.class);

@@ -176,30 +176,37 @@ public class ITOtherIncome extends BaseUI {
 			cbEmpName.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<ITOtherIncomeDM> listOtherIncome = new ArrayList<ITOtherIncomeDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (String) cbStatus.getValue());
-		listOtherIncome = serviceITOtherIncomeService.getItOtherIncomeList(null, (Long) cbEmpName.getValue(), null,
-				(String) cbStatus.getValue(), "F");
-		recordCnt = listOtherIncome.size();
-		beanITOtherIncomeDM = new BeanItemContainer<ITOtherIncomeDM>(ITOtherIncomeDM.class);
-		beanITOtherIncomeDM.addAll(listOtherIncome);
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Got the IT Other Income List result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanITOtherIncomeDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "incDeclId", "empName", "incomeAmt", "appAmt", "status",
-				"verifiedDt", "verifiedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Income Amount",
-				"Approved Amount", "Status", "Verified Date", "Verified By" });
-		tblMstScrSrchRslt.setColumnAlignment("incDeclId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("verifiedBy", "No.of Records:" + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<ITOtherIncomeDM> list = new ArrayList<ITOtherIncomeDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Search Parameters are " + companyId + ", " + (Long) cbEmpName.getValue() + ", "
+					+ (String) cbStatus.getValue());
+			list = serviceITOtherIncomeService.getItOtherIncomeList(null, (Long) cbEmpName.getValue(), null,
+					(String) cbStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanITOtherIncomeDM = new BeanItemContainer<ITOtherIncomeDM>(ITOtherIncomeDM.class);
+			beanITOtherIncomeDM.addAll(list);
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Got the IT Other Income List result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanITOtherIncomeDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "incDeclId", "empName", "incomeAmt", "appAmt", "status",
+					"verifiedDt", "verifiedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Income Amount",
+					"Approved Amount", "Status", "Verified Date", "Verified By" });
+			tblMstScrSrchRslt.setColumnAlignment("incDeclId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("verifiedBy", "No.of Records:" + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -242,29 +249,34 @@ public class ITOtherIncome extends BaseUI {
 	}
 	
 	private void editItOtherIncome() {
-		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
-				+ "Editing the selected record");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			ITOtherIncomeDM editItInComeObj = beanITOtherIncomeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (editItInComeObj.getEmpId() != null) {
-				cbEmpName.setValue(editItInComeObj.getEmpId());
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
+					+ "Editing the selected record");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				ITOtherIncomeDM editItInComeObj = beanITOtherIncomeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				if (editItInComeObj.getEmpId() != null) {
+					cbEmpName.setValue(editItInComeObj.getEmpId());
+				}
+				if (editItInComeObj.getFinYear() != null) {
+					tfFinYear.setReadOnly(false);
+					tfFinYear.setValue(editItInComeObj.getFinYear());
+				}
+				if (editItInComeObj.getIncomeAmt() != null) {
+					tfIncomeAmt.setValue(editItInComeObj.getIncomeAmt().toString());
+				}
+				if (editItInComeObj.getAppAmt() != null) {
+					tfApprovedAmt.setValue(editItInComeObj.getAppAmt().toString());
+				}
+				if (editItInComeObj.getIncomeDesc() != null) {
+					taIncomeDesc.setValue(editItInComeObj.getIncomeDesc());
+				}
+				if (editItInComeObj.getStatus() != null) {
+					cbStatus.setValue(editItInComeObj.getStatus());
+				}
 			}
-			if (editItInComeObj.getFinYear() != null) {
-				tfFinYear.setReadOnly(false);
-				tfFinYear.setValue(editItInComeObj.getFinYear());
-			}
-			if (editItInComeObj.getIncomeAmt() != null) {
-				tfIncomeAmt.setValue(editItInComeObj.getIncomeAmt().toString());
-			}
-			if (editItInComeObj.getAppAmt() != null) {
-				tfApprovedAmt.setValue(editItInComeObj.getAppAmt().toString());
-			}
-			if (editItInComeObj.getIncomeDesc() != null) {
-				taIncomeDesc.setValue(editItInComeObj.getIncomeDesc());
-			}
-			if (editItInComeObj.getStatus() != null) {
-				cbStatus.setValue(editItInComeObj.getStatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -337,29 +349,24 @@ public class ITOtherIncome extends BaseUI {
 	
 	@Override
 	protected void saveDetails() throws ERPException.SaveException, FileNotFoundException, IOException {
-		try {
-			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Saving Data... ");
-			ITOtherIncomeDM itOtherIncomeObj = new ITOtherIncomeDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				itOtherIncomeObj = beanITOtherIncomeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			}
-			itOtherIncomeObj.setEmpId((Long) cbEmpName.getValue());
-			itOtherIncomeObj.setFinYear(tfFinYear.getValue());
-			itOtherIncomeObj.setAppAmt(new BigDecimal(tfApprovedAmt.getValue()));
-			itOtherIncomeObj.setIncomeAmt(new BigDecimal(tfIncomeAmt.getValue()));
-			itOtherIncomeObj.setIncomeDesc(taIncomeDesc.getValue());
-			if (cbStatus.getValue() != null) {
-				itOtherIncomeObj.setStatus((String) cbStatus.getValue());
-			}
-			itOtherIncomeObj.setVerifiedDt(DateUtils.getcurrentdate());
-			itOtherIncomeObj.setVerifiedBy(loginUserName);
-			serviceITOtherIncomeService.saveItInvest(itOtherIncomeObj);
-			resetFields();
-			loadSrchRslt();
+		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Saving Data... ");
+		ITOtherIncomeDM itOtherIncomeObj = new ITOtherIncomeDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			itOtherIncomeObj = beanITOtherIncomeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		itOtherIncomeObj.setEmpId((Long) cbEmpName.getValue());
+		itOtherIncomeObj.setFinYear(tfFinYear.getValue());
+		itOtherIncomeObj.setAppAmt(new BigDecimal(tfApprovedAmt.getValue()));
+		itOtherIncomeObj.setIncomeAmt(new BigDecimal(tfIncomeAmt.getValue()));
+		itOtherIncomeObj.setIncomeDesc(taIncomeDesc.getValue());
+		if (cbStatus.getValue() != null) {
+			itOtherIncomeObj.setStatus((String) cbStatus.getValue());
 		}
+		itOtherIncomeObj.setVerifiedDt(DateUtils.getcurrentdate());
+		itOtherIncomeObj.setVerifiedBy(loginUserName);
+		serviceITOtherIncomeService.saveItInvest(itOtherIncomeObj);
+		resetFields();
+		loadSrchRslt();
 	}
 	
 	@Override

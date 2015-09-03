@@ -150,22 +150,27 @@ public class AppraisalLevels extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.setSelectable(true);
-		tblMstScrSrchRslt.removeAllItems();
-		List<AppraisalLevelsDM> listAppraisalLvl = new ArrayList<AppraisalLevelsDM>();
-		String levelname = tfLevelName.getValue().toString();
-		listAppraisalLvl = serviceAppraisalLevel.getAppraisalLevelsList(null, (String) cbapprasallvl.getValue(),
-				levelname, (String) cbStatus.getValue(), "F");
-		recordCnt = listAppraisalLvl.size();
-		beanAppraisalLevelsDM = new BeanItemContainer<AppraisalLevelsDM>(AppraisalLevelsDM.class);
-		beanAppraisalLevelsDM.addAll(listAppraisalLvl);
-		tblMstScrSrchRslt.setContainerDataSource(beanAppraisalLevelsDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "apprlevelid", "levelname", "appraisallevel",
-				"appraisaldetails", "levelstatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Level Name", "Appraisal Level", "Comment",
-				"Level Status", "LastUpDated Date", "LastUpDated By" });
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.setSelectable(true);
+			tblMstScrSrchRslt.removeAllItems();
+			List<AppraisalLevelsDM> listAppraisalLvl = new ArrayList<AppraisalLevelsDM>();
+			String levelname = tfLevelName.getValue().toString();
+			listAppraisalLvl = serviceAppraisalLevel.getAppraisalLevelsList(null, (String) cbapprasallvl.getValue(),
+					levelname, (String) cbStatus.getValue(), "F");
+			recordCnt = listAppraisalLvl.size();
+			beanAppraisalLevelsDM = new BeanItemContainer<AppraisalLevelsDM>(AppraisalLevelsDM.class);
+			beanAppraisalLevelsDM.addAll(listAppraisalLvl);
+			tblMstScrSrchRslt.setContainerDataSource(beanAppraisalLevelsDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "apprlevelid", "levelname", "appraisallevel",
+					"appraisaldetails", "levelstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Level Name", "Appraisal Level", "Comment",
+					"Level Status", "LastUpDated Date", "LastUpDated By" });
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -213,25 +218,32 @@ public class AppraisalLevels extends BaseUI {
 	
 	// Based on the selected record, the data would be included into user input fields in the input form
 	private void editAppraisalLevel() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		tblMstScrSrchRslt.setVisible(true);
-		hlCmdBtnLayout.setVisible(true);
-		hluserInputlayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			AppraisalLevelsDM appraisalLevel = beanAppraisalLevelsDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbStatus.setValue(appraisalLevel.getLevelstatus());
-			tfLevelName.setValue(appraisalLevel.getLevelname());
-			cbapprasallvl.setValue(appraisalLevel.getAppraisallevel());
-			cbapprsalyr.setValue(appraisalLevel.getAppraisalyear());
-			if (appraisalLevel.getStartdate() != null) {
-				dfStartDate.setValue(appraisalLevel.getStartdate());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			tblMstScrSrchRslt.setVisible(true);
+			hlCmdBtnLayout.setVisible(true);
+			hluserInputlayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				AppraisalLevelsDM appraisalLevel = beanAppraisalLevelsDM.getItem(tblMstScrSrchRslt.getValue())
+						.getBean();
+				cbStatus.setValue(appraisalLevel.getLevelstatus());
+				tfLevelName.setValue(appraisalLevel.getLevelname());
+				cbapprasallvl.setValue(appraisalLevel.getAppraisallevel());
+				cbapprsalyr.setValue(appraisalLevel.getAppraisalyear());
+				if (appraisalLevel.getStartdate() != null) {
+					dfStartDate.setValue(appraisalLevel.getStartdate());
+				}
+				if (appraisalLevel.getEnddate() != null) {
+					dfEndDate.setValue(appraisalLevel.getEnddate());
+				}
+				if (appraisalLevel.getAppraisaldetails() != null) {
+					taApprasialDtls.setValue(appraisalLevel.getAppraisaldetails());
+				}
 			}
-			if (appraisalLevel.getEnddate() != null) {
-				dfEndDate.setValue(appraisalLevel.getEnddate());
-			}
-			if (appraisalLevel.getAppraisaldetails() != null) {
-				taApprasialDtls.setValue(appraisalLevel.getAppraisaldetails());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -292,7 +304,7 @@ public class AppraisalLevels extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -350,6 +362,7 @@ public class AppraisalLevels extends BaseUI {
 			cbapprasallvl.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

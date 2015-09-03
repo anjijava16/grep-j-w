@@ -149,30 +149,34 @@ public class PayAdhocEntry extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search result...");
-		tblMstScrSrchRslt.setSelectable(true);
-		tblMstScrSrchRslt.removeAllItems();
-		Long empid = null;
-		if (cbEmployeeName.getValue() != null) {
-			empid = ((Long) cbEmployeeName.getValue());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search result...");
+			tblMstScrSrchRslt.setSelectable(true);
+			tblMstScrSrchRslt.removeAllItems();
+			Long empid = null;
+			if (cbEmployeeName.getValue() != null) {
+				empid = ((Long) cbEmployeeName.getValue());
+			}
+			List<PayAdhocEntryDM> list = new ArrayList<PayAdhocEntryDM>();
+			Date payrolldt = (Date) pdfPayDate.getValue();
+			list = servicePayadhocentry.getPayAdhocEntry(null, empid, payrolldt, (String) cbStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanPayAdhocEntryDM = new BeanItemContainer<PayAdhocEntryDM>(PayAdhocEntryDM.class);
+			beanPayAdhocEntryDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the PayAdhocEntry result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanPayAdhocEntryDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "entIdry", "empfirstlast", "payrollDt", "paytollAmt",
+					"status", "lastUpdatedDt", "lastUpdatedBy" });
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " >>>>>>>>>>>>>>>>> "
+					+ "Loading Search...");
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Payroll Date",
+					"Payroll Amount", "Status", "LastUpdated Date", "LastUpdated By" });
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
-		List<PayAdhocEntryDM> listPayAdhocEntry = new ArrayList<PayAdhocEntryDM>();
-		Date payrolldt = (Date) pdfPayDate.getValue();
-		listPayAdhocEntry = servicePayadhocentry.getPayAdhocEntry(null, empid, payrolldt, (String) cbStatus.getValue(),
-				"F");
-		recordCnt = listPayAdhocEntry.size();
-		beanPayAdhocEntryDM = new BeanItemContainer<PayAdhocEntryDM>(PayAdhocEntryDM.class);
-		beanPayAdhocEntryDM.addAll(listPayAdhocEntry);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the PayAdhocEntry result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanPayAdhocEntryDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "entIdry", "empfirstlast", "payrollDt", "paytollAmt",
-				"status", "lastUpdatedDt", "lastUpdatedBy" });
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " >>>>>>>>>>>>>>>>> "
-				+ "Loading Search...");
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Payroll Date", "Payroll Amount",
-				"Status", "LastUpdated Date", "LastUpdated By" });
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
@@ -186,6 +190,7 @@ public class PayAdhocEntry extends BaseUI {
 			cbEmployeeName.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -220,39 +225,34 @@ public class PayAdhocEntry extends BaseUI {
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
-		try {
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data.....");
-			PayAdhocEntryDM payadhocobj = new PayAdhocEntryDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				payadhocobj = beanPayAdhocEntryDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			}
-			if (cbEmployeeName.getValue() != null) {
-				payadhocobj.setEmpid((Long) cbEmployeeName.getValue());
-			}
-			if (chkentry.getValue().equals(true)) {
-				payadhocobj.setEntryType("Y");
-			} else {
-				payadhocobj.setEntryType("N");
-			}
-			if (Long.valueOf(tfPayAmount.getValue()) != null) {
-				payadhocobj.setPaytollAmt(Long.valueOf(tfPayAmount.getValue()));
-			}
-			if (pdfPayDate.getValue() != null) {
-				payadhocobj.setPayrollDt(pdfPayDate.getValue());
-			}
-			if (cbStatus.getValue() != null) {
-				payadhocobj.setStatus(cbStatus.getValue().toString());
-			}
-			payadhocobj.setEntryRemarks(taRemarks.getValue());
-			payadhocobj.setLastUpdatedDt(DateUtils.getcurrentdate());
-			payadhocobj.setLastUpdatedBy(username);
-			servicePayadhocentry.saveAndUpdate(payadhocobj);
-			resetFields();
-			loadSrchRslt();
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data.....");
+		PayAdhocEntryDM payadhocobj = new PayAdhocEntryDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			payadhocobj = beanPayAdhocEntryDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		if (cbEmployeeName.getValue() != null) {
+			payadhocobj.setEmpid((Long) cbEmployeeName.getValue());
 		}
+		if (chkentry.getValue().equals(true)) {
+			payadhocobj.setEntryType("Y");
+		} else {
+			payadhocobj.setEntryType("N");
+		}
+		if (Long.valueOf(tfPayAmount.getValue()) != null) {
+			payadhocobj.setPaytollAmt(Long.valueOf(tfPayAmount.getValue()));
+		}
+		if (pdfPayDate.getValue() != null) {
+			payadhocobj.setPayrollDt(pdfPayDate.getValue());
+		}
+		if (cbStatus.getValue() != null) {
+			payadhocobj.setStatus(cbStatus.getValue().toString());
+		}
+		payadhocobj.setEntryRemarks(taRemarks.getValue());
+		payadhocobj.setLastUpdatedDt(DateUtils.getcurrentdate());
+		payadhocobj.setLastUpdatedBy(username);
+		servicePayadhocentry.saveAndUpdate(payadhocobj);
+		resetFields();
+		loadSrchRslt();
 	}
 	
 	@Override
@@ -306,26 +306,32 @@ public class PayAdhocEntry extends BaseUI {
 	}
 	
 	private void editpayadoc() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing PayAdhocEntry.......");
-		tblMstScrSrchRslt.setVisible(true);
-		hlCmdBtnLayout.setVisible(true);
-		hluserInputlayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			PayAdhocEntryDM payadhocentry = beanPayAdhocEntryDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbEmployeeName.setValue(payadhocentry.getEmpid());
-			tfPayAmount.setValue(payadhocentry.getPaytollAmt().toString());
-			cbStatus.setValue(payadhocentry.getStatus());
-			if (payadhocentry.getEntryType().equals("Y")) {
-				chkentry.setValue(true);
-			} else {
-				chkentry.setValue(false);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing PayAdhocEntry.......");
+			tblMstScrSrchRslt.setVisible(true);
+			hlCmdBtnLayout.setVisible(true);
+			hluserInputlayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				PayAdhocEntryDM payadhocentry = beanPayAdhocEntryDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				cbEmployeeName.setValue(payadhocentry.getEmpid());
+				tfPayAmount.setValue(payadhocentry.getPaytollAmt().toString());
+				cbStatus.setValue(payadhocentry.getStatus());
+				if (payadhocentry.getEntryType().equals("Y")) {
+					chkentry.setValue(true);
+				} else {
+					chkentry.setValue(false);
+				}
+				if (payadhocentry.getPayrollDt() != null) {
+					pdfPayDate.setValue(payadhocentry.getPayrollDt1());
+				}
+				if ((payadhocentry.getEntryRemarks() != null)) {
+					taRemarks.setValue(payadhocentry.getEntryRemarks());
+				}
 			}
-			if (payadhocentry.getPayrollDt() != null) {
-				pdfPayDate.setValue(payadhocentry.getPayrollDt1());
-			}
-			if ((payadhocentry.getEntryRemarks() != null)) {
-				taRemarks.setValue(payadhocentry.getEntryRemarks());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

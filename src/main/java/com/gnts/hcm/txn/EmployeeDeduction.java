@@ -230,26 +230,32 @@ public class EmployeeDeduction extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeDeductionDM> loadEmpDedcnList = new ArrayList<EmployeeDeductionDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (Long) cbDedcnCode.getValue()
-				+ (String) cbStatus.getValue());
-		loadEmpDedcnList = serviceEmployeeDeduction.getempdeductionlist(null, (Long) cbEmpName.getValue(),
-				(Long) cbDedcnCode.getValue(), (String) cbStatus.getValue(), "F");
-		recordCnt = loadEmpDedcnList.size();
-		beanEmployeeDecn = new BeanItemContainer<EmployeeDeductionDM>(EmployeeDeductionDM.class);
-		beanEmployeeDecn.addAll(loadEmpDedcnList);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Got the EmployeeDeduction. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanEmployeeDecn);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empdednid", "empName", "dedcnCode", "isflatpt", "dednamt",
-				"dednpt", "empdednstatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Deduction Code", "Flat/Percent",
-				"Deduction Amount", "Deduction Percent", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("empdednid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EmployeeDeductionDM> loadEmpDedcnList = new ArrayList<EmployeeDeductionDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (Long) cbDedcnCode.getValue()
+					+ (String) cbStatus.getValue());
+			loadEmpDedcnList = serviceEmployeeDeduction.getempdeductionlist(null, (Long) cbEmpName.getValue(),
+					(Long) cbDedcnCode.getValue(), (String) cbStatus.getValue(), "F");
+			recordCnt = loadEmpDedcnList.size();
+			beanEmployeeDecn = new BeanItemContainer<EmployeeDeductionDM>(EmployeeDeductionDM.class);
+			beanEmployeeDecn.addAll(loadEmpDedcnList);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the EmployeeDeduction. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanEmployeeDecn);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empdednid", "empName", "dedcnCode", "isflatpt",
+					"dednamt", "dednpt", "empdednstatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Deduction Code",
+					"Flat/Percent", "Deduction Amount", "Deduction Percent", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("empdednid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -359,40 +365,46 @@ public class EmployeeDeduction extends BaseUI {
 	}
 	
 	private void editEmpDeduction() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeDeductionDM employeeDeduction = beanEmployeeDecn.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbEmpName.setValue(employeeDeduction.getEmployeeid());
-			cbDedcnCode.setValue(employeeDeduction.getDednid());
-			cbFlatPercnt.setValue(employeeDeduction.getIsflatpt());
-			if (employeeDeduction.getDednpt() != null) {
-				tfDecnPerct.setValue(employeeDeduction.getDednpt().toString());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeDeductionDM employeeDeduction = beanEmployeeDecn.getItem(tblMstScrSrchRslt.getValue())
+						.getBean();
+				cbEmpName.setValue(employeeDeduction.getEmployeeid());
+				cbDedcnCode.setValue(employeeDeduction.getDednid());
+				cbFlatPercnt.setValue(employeeDeduction.getIsflatpt());
+				if (employeeDeduction.getDednpt() != null) {
+					tfDecnPerct.setValue(employeeDeduction.getDednpt().toString());
+				}
+				prevspt = (new BigDecimal(tfDecnPerct.getValue()));
+				if (employeeDeduction.getDednamt() != null) {
+					tfDecnAmt.setValue(employeeDeduction.getDednamt().toString());
+					prevsamt = (new BigDecimal(tfDecnAmt.getValue()));
+					if (employeeDeduction.getEffdt() != null) {
+						dfEffDt.setValue(employeeDeduction.getEffdt());
+					}
+					if (employeeDeduction.getPreamt() != null) {
+						tfPreAmt.setValue(employeeDeduction.getPreamt().toString());
+					}
+					if (employeeDeduction.getPrevpt() != null) {
+						tfPrePercnt.setValue(employeeDeduction.getPrevpt().toString());
+					}
+					if (employeeDeduction.getLastpaiddt() != null) {
+						dfLastPaidDt.setValue(employeeDeduction.getLastpaiddt());
+					}
+					if (employeeDeduction.getNxtpymtdt() != null) {
+						dfNextPayDt.setValue(employeeDeduction.getNxtpymtdt());
+					}
+					if (employeeDeduction.getArrearflag().equals("Y")) {
+						ckFlag.setValue(true);
+					} else {
+						ckFlag.setValue(false);
+					}
+					cbStatus.setValue(employeeDeduction.getEmpdednstatus());
+				}
 			}
-			prevspt = (new BigDecimal(tfDecnPerct.getValue()));
-			if (employeeDeduction.getDednamt() != null) {
-				tfDecnAmt.setValue(employeeDeduction.getDednamt().toString());
-				prevsamt = (new BigDecimal(tfDecnAmt.getValue()));
-				if (employeeDeduction.getEffdt() != null) {
-					dfEffDt.setValue(employeeDeduction.getEffdt());
-				}
-				if (employeeDeduction.getPreamt() != null) {
-					tfPreAmt.setValue(employeeDeduction.getPreamt().toString());
-				}
-				if (employeeDeduction.getPrevpt() != null) {
-					tfPrePercnt.setValue(employeeDeduction.getPrevpt().toString());
-				}
-				if (employeeDeduction.getLastpaiddt() != null) {
-					dfLastPaidDt.setValue(employeeDeduction.getLastpaiddt());
-				}
-				if (employeeDeduction.getNxtpymtdt() != null) {
-					dfNextPayDt.setValue(employeeDeduction.getNxtpymtdt());
-				}
-				if (employeeDeduction.getArrearflag().equals("Y")) {
-					ckFlag.setValue(true);
-				} else {
-					ckFlag.setValue(false);
-				}
-				cbStatus.setValue(employeeDeduction.getEmpdednstatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -425,52 +437,46 @@ public class EmployeeDeduction extends BaseUI {
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
-		try {
-			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
-			EmployeeDeductionDM employeeDeduction = new EmployeeDeductionDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				employeeDeduction = beanEmployeeDecn.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				employeeDeduction.setPreamt(prevsamt);
-				employeeDeduction.setPrevpt(prevspt);
-			} else {
-				employeeDeduction.setPreamt(new BigDecimal("0"));
-				employeeDeduction.setPrevpt(new BigDecimal("0"));
-			}
-			employeeDeduction.setEmployeeid((Long) cbEmpName.getValue());
-			employeeDeduction.setDednid((Long) cbDedcnCode.getValue());
-			employeeDeduction.setIsflatpt(cbFlatPercnt.getValue().toString());
-			employeeDeduction.setDednpt(new BigDecimal(tfDecnPerct.getValue()));
-			employeeDeduction.setDednamt(new BigDecimal(tfDecnAmt.getValue()));
-			if (dfEffDt.getValue() != null) {
-				employeeDeduction.setEffdt(dfEffDt.getValue());
-			}
-			if (dfLastPaidDt.getValue() != null) {
-				employeeDeduction.setLastpaiddt(dfLastPaidDt.getValue());
-			}
-			if (dfNextPayDt.getValue() != null) {
-				employeeDeduction.setNxtpymtdt(dfNextPayDt.getValue());
-			}
-			if (ckFlag.getValue().equals(true)) {
-				employeeDeduction.setArrearflag("Y");
-			} else {
-				employeeDeduction.setArrearflag("N");
-			}
-			if (ckFlag.getValue().equals(true)) {
-				employeeDeduction.setArrearflag("Y");
-			} else if (ckFlag.getValue().equals(false)) {
-				employeeDeduction.setArrearflag("N");
-			}
-			if (cbStatus.getValue() != null) {
-				employeeDeduction.setEmpdednstatus((String) cbStatus.getValue());
-			}
-			employeeDeduction.setLastupdateddt(DateUtils.getcurrentdate());
-			employeeDeduction.setLastupdatedby(userName);
-			serviceEmployeeDeduction.saveAndUpdate(employeeDeduction);
+		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
+		EmployeeDeductionDM employeeDeduction = new EmployeeDeductionDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			employeeDeduction = beanEmployeeDecn.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			employeeDeduction.setPreamt(prevsamt);
+			employeeDeduction.setPrevpt(prevspt);
+		} else {
+			employeeDeduction.setPreamt(new BigDecimal("0"));
+			employeeDeduction.setPrevpt(new BigDecimal("0"));
 		}
-		catch (Exception e) {
-			logger.info("SUCCESSS");
-			e.printStackTrace();
+		employeeDeduction.setEmployeeid((Long) cbEmpName.getValue());
+		employeeDeduction.setDednid((Long) cbDedcnCode.getValue());
+		employeeDeduction.setIsflatpt(cbFlatPercnt.getValue().toString());
+		employeeDeduction.setDednpt(new BigDecimal(tfDecnPerct.getValue()));
+		employeeDeduction.setDednamt(new BigDecimal(tfDecnAmt.getValue()));
+		if (dfEffDt.getValue() != null) {
+			employeeDeduction.setEffdt(dfEffDt.getValue());
 		}
+		if (dfLastPaidDt.getValue() != null) {
+			employeeDeduction.setLastpaiddt(dfLastPaidDt.getValue());
+		}
+		if (dfNextPayDt.getValue() != null) {
+			employeeDeduction.setNxtpymtdt(dfNextPayDt.getValue());
+		}
+		if (ckFlag.getValue().equals(true)) {
+			employeeDeduction.setArrearflag("Y");
+		} else {
+			employeeDeduction.setArrearflag("N");
+		}
+		if (ckFlag.getValue().equals(true)) {
+			employeeDeduction.setArrearflag("Y");
+		} else if (ckFlag.getValue().equals(false)) {
+			employeeDeduction.setArrearflag("N");
+		}
+		if (cbStatus.getValue() != null) {
+			employeeDeduction.setEmpdednstatus((String) cbStatus.getValue());
+		}
+		employeeDeduction.setLastupdateddt(DateUtils.getcurrentdate());
+		employeeDeduction.setLastupdatedby(userName);
+		serviceEmployeeDeduction.saveAndUpdate(employeeDeduction);
 		resetFields();
 		loadSrchRslt();
 	}

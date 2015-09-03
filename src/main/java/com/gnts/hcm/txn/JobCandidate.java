@@ -73,7 +73,7 @@ public class JobCandidate extends BaseUI {
 	private TextField tfFirstname, tfLastname, tfEMailid, tfContactno;
 	private PopupDateField dfDOA;
 	private TextArea taresumkywrd;
-	private ComboBox cbStatus, cbjobtitle;
+	private ComboBox cbStatus, cbJobtitle;
 	private VerticalLayout vlresumdoc = new VerticalLayout();
 	// BeanItemContainer
 	private BeanItemContainer<JobCandidateDM> beanJobCandidateDM = null;
@@ -137,9 +137,9 @@ public class JobCandidate extends BaseUI {
 		dfDOA = new GERPPopupDateField("DOA");
 		dfDOA.setWidth("130");
 		// Job Title combobox
-		cbjobtitle = new GERPComboBox("Job Title");
-		cbjobtitle.setItemCaptionPropertyId("jobtitle");
-		cbjobtitle.setWidth("150");
+		cbJobtitle = new GERPComboBox("Job Title");
+		cbJobtitle.setItemCaptionPropertyId("jobtitle");
+		cbJobtitle.setWidth("150");
 		loadJobVaccancy();
 		// // build search layout
 		hlSearchLayout = new GERPAddEditHLayout();
@@ -158,7 +158,7 @@ public class JobCandidate extends BaseUI {
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
-		flColumn1.addComponent(cbjobtitle);
+		flColumn1.addComponent(cbJobtitle);
 		flColumn2.addComponent(tfFirstname);
 		flColumn3.addComponent(tfContactno);
 		flColumn4.addComponent(cbStatus);
@@ -181,7 +181,7 @@ public class JobCandidate extends BaseUI {
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
-		flColumn1.addComponent(cbjobtitle);
+		flColumn1.addComponent(cbJobtitle);
 		flColumn1.addComponent(tfFirstname);
 		flColumn1.addComponent(tfLastname);
 		flColumn1.addComponent(tfEMailid);
@@ -205,27 +205,32 @@ public class JobCandidate extends BaseUI {
 	
 	// get the search result from DB based on the search parameters
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<JobCandidateDM> listJobCandidate = new ArrayList<JobCandidateDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + tfFirstname.getValue() + ", " + tfContactno.getValue()
-				+ (String) cbStatus.getValue());
-		listJobCandidate = serviceJobCandidate.getJobCandidateList(null, (Long) cbjobtitle.getValue(),
-				tfFirstname.getValue(), tfContactno.getValue(), (String) cbStatus.getValue());
-		recordCnt = listJobCandidate.size();
-		logger.info("size" + listJobCandidate.size());
-		beanJobCandidateDM = new BeanItemContainer<JobCandidateDM>(JobCandidateDM.class);
-		beanJobCandidateDM.addAll(listJobCandidate);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the jobcandidatelist. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanJobCandidateDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "candidateId", "jobtitle", "firstName", "email",
-				"contactNo", "status", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Job Title", "First Name", "E-mail", "Contact No.",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("candidateid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<JobCandidateDM> list = new ArrayList<JobCandidateDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + tfFirstname.getValue() + ", " + tfContactno.getValue()
+					+ (String) cbStatus.getValue());
+			list = serviceJobCandidate.getJobCandidateList(null, (Long) cbJobtitle.getValue(), tfFirstname.getValue(),
+					tfContactno.getValue(), (String) cbStatus.getValue());
+			recordCnt = list.size();
+			logger.info("size" + list.size());
+			beanJobCandidateDM = new BeanItemContainer<JobCandidateDM>(JobCandidateDM.class);
+			beanJobCandidateDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the jobcandidatelist. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanJobCandidateDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "candidateId", "jobtitle", "firstName", "email",
+					"contactNo", "status", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Job Title", "First Name", "E-mail",
+					"Contact No.", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("candidateid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadJobVaccancy() {
@@ -235,12 +240,12 @@ public class JobCandidate extends BaseUI {
 			BeanContainer<Long, JobVaccancyDM> beanJobVaccancyDM = new BeanContainer<Long, JobVaccancyDM>(
 					JobVaccancyDM.class);
 			beanJobVaccancyDM.setBeanIdProperty("vaccancyId");
-			beanJobVaccancyDM.addAll(serviceJobVaccancy.getJobVaccancyList(null, (String) cbjobtitle.getValue(), null,
+			beanJobVaccancyDM.addAll(serviceJobVaccancy.getJobVaccancyList(null, (String) cbJobtitle.getValue(), null,
 					null, null, null, null, null));
-			cbjobtitle.setContainerDataSource(beanJobVaccancyDM);
+			cbJobtitle.setContainerDataSource(beanJobVaccancyDM);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -273,6 +278,7 @@ public class JobCandidate extends BaseUI {
 			cbWrkExp.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -295,7 +301,7 @@ public class JobCandidate extends BaseUI {
 	protected void resetSearchDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting search fields and reloading the result");
-		cbjobtitle.setValue(null);
+		cbJobtitle.setValue(null);
 		tfFirstname.setValue("");
 		tfContactno.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
@@ -312,54 +318,59 @@ public class JobCandidate extends BaseUI {
 		new UploadDocumentUI(vlresumdoc);
 		assembleUserInputLayout();
 		resetFields();
-		cbjobtitle.setRequired(true);
+		cbJobtitle.setRequired(true);
 		tfEMailid.setRequired(true);
 	}
 	
 	private void editCandidate() {
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			JobCandidateDM jobCandidateDM = beanJobCandidateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			if (jobCandidateDM.getJobtitle() != null) {
-				cbjobtitle.setValue(jobCandidateDM.getJobtitle());
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				JobCandidateDM jobCandidateDM = beanJobCandidateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				if (jobCandidateDM.getJobtitle() != null) {
+					cbJobtitle.setValue(jobCandidateDM.getJobtitle());
+				}
+				if ((jobCandidateDM.getFirstName() != null)) {
+					tfFirstname.setValue(jobCandidateDM.getFirstName().toString());
+				}
+				if ((jobCandidateDM.getLastName() != null)) {
+					tfLastname.setValue(jobCandidateDM.getLastName());
+				}
+				if ((jobCandidateDM.getEmail() != null)) {
+					tfEMailid.setValue(jobCandidateDM.getEmail().toString());
+				}
+				if ((jobCandidateDM.getContactNo() != null)) {
+					tfContactno.setValue(jobCandidateDM.getContactNo());
+				}
+				if ((jobCandidateDM.getDoa() != null)) {
+					dfDOA.setValue(jobCandidateDM.getDoa());
+				}
+				if ((jobCandidateDM.getResumKeywrds() != null)) {
+					taresumkywrd.setValue(jobCandidateDM.getResumKeywrds());
+				}
+				if ((jobCandidateDM.getStatus() != null)) {
+					cbStatus.setValue(jobCandidateDM.getStatus());
+				}
+				if (jobCandidateDM.getWorkExp() != null) {
+					tfWrkExpDesc.setValue(jobCandidateDM.getWorkExp());
+				}
+				if (jobCandidateDM.getExpYear() != null) {
+					tfWrkExpYr.setValue(jobCandidateDM.getExpYear());
+				}
+				if (jobCandidateDM.getExpDesc() != null) {
+					cbWrkExp.setValue(jobCandidateDM.getExpDesc());
+				}
+				if (jobCandidateDM.getResume() != null) {
+					byte[] certificate = jobCandidateDM.getResume();
+					UploadDocumentUI test = new UploadDocumentUI(vlresumdoc);
+					test.displaycertificate(certificate);
+				} else {
+					new UploadDocumentUI(vlresumdoc);
+				}
 			}
-			if ((jobCandidateDM.getFirstName() != null)) {
-				tfFirstname.setValue(jobCandidateDM.getFirstName().toString());
-			}
-			if ((jobCandidateDM.getLastName() != null)) {
-				tfLastname.setValue(jobCandidateDM.getLastName());
-			}
-			if ((jobCandidateDM.getEmail() != null)) {
-				tfEMailid.setValue(jobCandidateDM.getEmail().toString());
-			}
-			if ((jobCandidateDM.getContactNo() != null)) {
-				tfContactno.setValue(jobCandidateDM.getContactNo());
-			}
-			if ((jobCandidateDM.getDoa() != null)) {
-				dfDOA.setValue(jobCandidateDM.getDoa());
-			}
-			if ((jobCandidateDM.getResumKeywrds() != null)) {
-				taresumkywrd.setValue(jobCandidateDM.getResumKeywrds());
-			}
-			if ((jobCandidateDM.getStatus() != null)) {
-				cbStatus.setValue(jobCandidateDM.getStatus());
-			}
-			if (jobCandidateDM.getWorkExp() != null) {
-				tfWrkExpDesc.setValue(jobCandidateDM.getWorkExp());
-			}
-			if (jobCandidateDM.getExpYear() != null) {
-				tfWrkExpYr.setValue(jobCandidateDM.getExpYear());
-			}
-			if (jobCandidateDM.getExpDesc() != null) {
-				cbWrkExp.setValue(jobCandidateDM.getExpDesc());
-			}
-			if (jobCandidateDM.getResume() != null) {
-				byte[] certificate = jobCandidateDM.getResume();
-				UploadDocumentUI test = new UploadDocumentUI(vlresumdoc);
-				test.displaycertificate(certificate);
-			} else {
-				new UploadDocumentUI(vlresumdoc);
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -370,7 +381,7 @@ public class JobCandidate extends BaseUI {
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		assembleUserInputLayout();
 		resetFields();
-		cbjobtitle.setRequired(true);
+		cbJobtitle.setRequired(true);
 		tfEMailid.setRequired(true);
 		editCandidate();
 	}
@@ -379,10 +390,10 @@ public class JobCandidate extends BaseUI {
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		boolean errorFlag = false;
-		cbjobtitle.setComponentError(null);
+		cbJobtitle.setComponentError(null);
 		tfEMailid.setComponentError(null);
-		if ((cbjobtitle.getValue() == null)) {
-			cbjobtitle.setComponentError(new UserError(GERPErrorCodes.NULL_JOB_CANDIDATE));
+		if ((cbJobtitle.getValue() == null)) {
+			cbJobtitle.setComponentError(new UserError(GERPErrorCodes.NULL_JOB_CANDIDATE));
 			errorFlag = true;
 		}
 		String emailSeq = tfEMailid.getValue().toString();
@@ -403,7 +414,7 @@ public class JobCandidate extends BaseUI {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				jobcandidateobj = beanJobCandidateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
-			jobcandidateobj.setVaccancyid((Long) cbjobtitle.getValue());
+			jobcandidateobj.setVaccancyid((Long) cbJobtitle.getValue());
 			jobcandidateobj.setFirstName(tfFirstname.getValue().toString());
 			jobcandidateobj.setLastName(tfLastname.getValue().toString());
 			jobcandidateobj.setEmail(tfEMailid.getValue().toString());
@@ -431,7 +442,7 @@ public class JobCandidate extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -448,7 +459,7 @@ public class JobCandidate extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assembleSearchLayout();
 		tblMstScrSrchRslt.setValue(null);
-		cbjobtitle.setRequired(false);
+		cbJobtitle.setRequired(false);
 		tfEMailid.setRequired(false);
 		resetFields();
 		loadSrchRslt();
@@ -464,8 +475,8 @@ public class JobCandidate extends BaseUI {
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		tfFirstname.setComponentError(null);
 		tfFirstname.setValue("");
-		cbjobtitle.setComponentError(null);
-		cbjobtitle.setValue(null);
+		cbJobtitle.setComponentError(null);
+		cbJobtitle.setValue(null);
 		tfLastname.setComponentError(null);
 		tfLastname.setValue("");
 		tfEMailid.setComponentError(null);

@@ -1422,9 +1422,9 @@ public class Employee extends BaseUI {
 		beanEmployeedtls.addAll(employeedtlsList);
 		tblempdtls.setSelectable(true);
 		tblempdtls.setContainerDataSource(beanEmployeedtls);
-		tblempdtls.setVisibleColumns(new Object[] { "candidatename", "birthplace", "maritalstatus", "statusreason",
+		tblempdtls.setVisibleColumns(new Object[] { "birthplace", "maritalstatus", "statusreason",
 				"lastupdateddate", "lastupdatedby" });
-		tblempdtls.setColumnHeaders(new String[] { "Candidate", "Birth Place", "Marital Status", "Reason",
+		tblempdtls.setColumnHeaders(new String[] { "Birth Place", "Marital Status", "Reason",
 				"Last Updated Date", "Last Updated By" });
 		tblempdtls.setColumnAlignment("employeedtsid", Align.RIGHT);
 		tblempdtls.setColumnFooter("lastupdatedby", "No.of Records : " + recordcntempdtls);
@@ -2420,6 +2420,7 @@ public class Employee extends BaseUI {
 					+ tfLastName.getValue() + "," + tfPhonenumber.getValue() + "," + tfEmailid.getValue() + ","
 					+ cbEmpStatus.getValue() + "," + cbGender.getValue() + "," + cbDepartment.getValue() + ","
 					+ cbBranch.getValue() + "," + cbManager.getValue());
+			tfEmployeeCode.setReadOnly(false);
 			tfEmployeeCode.setValue(employeeDM.getEmployeecode());
 			tfEmployeeCode.setReadOnly(true);
 			tfFirstName.setValue(employeeDM.getFirstname());
@@ -2730,6 +2731,7 @@ public class Employee extends BaseUI {
 	
 	@Override
 	protected void resetSearchDetails() {
+		tfEmployeeCode.setReadOnly(false);
 		tfEmployeeCode.setValue("");
 		tfFirstName.setValue("");
 		cbEmpStatus.setValue(cbEmpStatus.getItemIds().iterator().next());
@@ -2798,7 +2800,7 @@ public class Employee extends BaseUI {
 		loadsrcidentities(false);
 		loadsrchEmpdtls(false);
 		// reset the input controls to default value
-		// cbDepartment.removeItem(0L);
+		 cbDepartment.removeItem(0L);
 	}
 	
 	@Override
@@ -2820,6 +2822,7 @@ public class Employee extends BaseUI {
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		assembleUserInputLayout();
 		// Add Blur Listener for Edit Layout
+		
 		tfEmployeeCode.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -3288,10 +3291,11 @@ public class Employee extends BaseUI {
 				employeedtlsList.remove(empdtlsobj);
 			}
 			if(cbempdtlscandid.getValue()!=null){
-			empdtlsobj.setCandidateid(((JobCandidateDM) cbempdtlscandid.getValue()).getCandidateId());}
+			empdtlsobj.setCandidateid(((JobCandidateDM) cbempdtlscandid.getValue()).getCandidateId());
 			empdtlsobj.setCandidatename(((JobCandidateDM) cbempdtlscandid.getValue()).getFirstName() + " "
 					+ ((JobCandidateDM) cbempdtlscandid.getValue()).getLastName() + " " + "("
-					+ ((JobCandidateDM) cbempdtlscandid.getValue()).getCandidateId() + ")");
+					+ ((JobCandidateDM) cbempdtlscandid.getValue()).getCandidateId() + ")");}
+			
 			empdtlsobj.setBirthplace((String) tfempdtlsbirthplace.getValue().toString());
 			empdtlsobj.setPfno((String) tfempdtlsPFno.getValue().toString());
 			empdtlsobj.setEsino((String) tfempdtlsESIno.getValue().toString());
@@ -3547,7 +3551,8 @@ public class Employee extends BaseUI {
 		// empObj.setEmployeecode(tfEmployeeCode.getValue().toString());
 		empObj.setFirstname(tfFirstName.getValue().toString());
 		empObj.setLastname(tfLastName.getValue().toString());
-		empObj.setPrimaryphone(tfPhonenumber.getValue().toString());
+		if(tfPhonenumber.getValue()!=""){
+		empObj.setPrimaryphone(tfPhonenumber.getValue().toString());}
 		if(tfEmailid.getValue()!=""){
 		empObj.setPrimaryemail(tfEmailid.getValue().toString());}
 		if (cbGender.getValue() != null) {
@@ -3994,6 +3999,8 @@ public class Employee extends BaseUI {
 		tblempdepn.removeAllItems();
 		tblempiden.removeAllItems();
 		UI.getCurrent().getSession().setAttribute("isFileUploaded", false);
+		tfEmployeeCode.setReadOnly(true);
+
 	}
 	
 	@SuppressWarnings("unused")
@@ -4100,11 +4107,18 @@ public class Employee extends BaseUI {
 		List<GradeDeductionDM> list = serviceDeduction.getGradeDeductionByGradeId(gradeid);
 		Long minValueByBasic = null;
 		Long minValueByGross = null;
+		Long minBypercentFTA = null;
+		Long minByVAluesFTA = null;
+
 		Long minValueByBasicFTA = null;
-		Long earnpercent = serviceDeduction.getMinValueByGradeid(gradeid);
+		
+		Long earnpercentBASIC = serviceDeduction.getMinValueByGradeid(gradeid);
+		minBypercentFTA=serviceDeduction.getMinValueByGradeidfta(gradeid);
+
 		minValueByGross = serviceDeduction.getMinValueByGradeidOnGross(gradeid);
-		minValueByBasic = Long.valueOf(Math.round(minValueByGross * earnpercent) / 100);
-		minValueByBasicFTA = Long.valueOf(Math.round((minValueByBasic) *earnpercent) /100);
+		minValueByBasic = Long.valueOf(Math.round(minValueByGross * earnpercentBASIC) / 100);
+		minByVAluesFTA=Long.valueOf(Math.round(minValueByGross * minBypercentFTA) / 100);
+		minValueByBasicFTA = minValueByBasic+minByVAluesFTA;
 		
 		for (GradeDeductionDM pojo : list) {
 			Long dednid = pojo.getDednId();

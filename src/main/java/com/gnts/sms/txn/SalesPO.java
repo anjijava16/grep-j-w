@@ -1165,15 +1165,7 @@ public class SalesPO extends BaseTransUI {
 			tfSubTaxTotal.setReadOnly(false);
 			tfSubTaxTotal.setValue(poHdrDM.getSubtaxtotal().toString());
 			tfSubTaxTotal.setReadOnly(true);
-			Notification.show(""+poHdrDM.getFreightvalue().toString());
-			Notification.show(""+poHdrDM.getOthersvalue().toString());
-
-			tfFreightValue.setValue(poHdrDM.getFreightvalue().toString());
-			tfOtherValue.setValue((poHdrDM.getOthersvalue().toString()));
-			
-
-			
-			tfGrandtotal.setReadOnly(false);
+				tfGrandtotal.setReadOnly(false);
 			tfGrandtotal.setValue(poHdrDM.getGrandtotal().toString());
 			tfGrandtotal.setReadOnly(true);
 			if (poHdrDM.getPaymentterms() != null) {
@@ -1234,8 +1226,12 @@ public class SalesPO extends BaseTransUI {
 				taInvoiceAddr.setValue(poHdrDM.getInvoiceaddr());
 			}
 			cbStatus.setValue(poHdrDM.getPostatus());
-			listPODetails = servicesmspodtl.getsmspodtllist(null, poid, null, null, null, null, null);
+			tfFreightValue.setValue(poHdrDM.getFreightvalue().toString());
+			tfOtherValue.setValue((poHdrDM.getOthersvalue().toString()));
+	
 		}
+		listPODetails = servicesmspodtl.getsmspodtllist(null, poid, null, null, null, null, null);
+
 		loadPODetails();
 		loadPOAcceptParamDetails(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, poid, null,
@@ -1396,7 +1392,6 @@ public class SalesPO extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(false);
 		assembleInputUserLayout();
 		resetFields();
-		editPODtl();
 		editPOHdr();
 		getCalculatedValues();
 		comments.loadsrch(true, null, null, null, null, null, null, null, null, null, poid, null, null);
@@ -1914,7 +1909,6 @@ public class SalesPO extends BaseTransUI {
 		
 			frgval = new BigDecimal(tfFreightValue.getValue());
 			tfFreightValue.setValue(frgval.toString());
-			Notification.show("hgesdhsdh"+frgval);
 			otherval = new BigDecimal(tfOtherValue.getValue());
 			tfOtherValue.setValue(otherval.toString());
 		

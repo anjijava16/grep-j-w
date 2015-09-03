@@ -58,6 +58,7 @@ import com.gnts.mfg.domain.txn.CommentDM;
 import com.gnts.mfg.domain.txn.QATestCndtnResltDM;
 import com.gnts.mfg.domain.txn.QATestDtlDM;
 import com.gnts.mfg.domain.txn.QATestHdrDM;
+import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.mst.QCTestType;
 import com.gnts.mfg.service.mst.ProductDrawingService;
@@ -68,7 +69,11 @@ import com.gnts.mfg.service.mst.TestTypeService;
 import com.gnts.mfg.service.txn.QATestCndRsltService;
 import com.gnts.mfg.service.txn.QATestDtlService;
 import com.gnts.mfg.service.txn.QATestHdrService;
+import com.gnts.mfg.service.txn.WorkOrderDtlService;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
+import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -100,7 +105,7 @@ public class QATest extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	private TextField tfInspectionNo, tfPrdSlNo, tfTstReslt;
 	private ComboBox cbClient, cbProduct, cbProdDrg, cbWorkOrderNo, cbTestGrp, cbTesType, cbTestCondition,
-			cbQThdrStatus;
+			cbQThdrStatus,cbProductsearch;
 	private PopupDateField pdInspectionDt;
 	private TextArea taTstObservation;
 	private FormLayout flTstHdr1, flTstHdr2, flTstHdr3, flTstHdr4;
@@ -120,6 +125,8 @@ public class QATest extends BaseTransUI {
 	//
 	private QATestDtlService serviceQATstDtl = (QATestDtlService) SpringContextHelper.getBean("qatestDetls");
 	private QATestHdrService serviceQATstHdr = (QATestHdrService) SpringContextHelper.getBean("qatesthdr");
+	private WorkOrderDtlService serviceWrkOrdDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
+
 	private QATestCndRsltService serviceQATestCndRslt = (QATestCndRsltService) SpringContextHelper
 			.getBean("qatestCndnRslt");
 	private BeanItemContainer<QATestHdrDM> beanQATstHdr = null;
@@ -176,16 +183,34 @@ public class QATest extends BaseTransUI {
 		tfTstReslt = new GERPTextField("Result");
 		cbClient = new GERPComboBox("Client Name");
 		cbClient.setItemCaptionPropertyId("clientName");
-		loadClientList();
 		cbProduct = new GERPComboBox("Product Name");
-		cbProduct.setItemCaptionPropertyId("prodname");
-		loadProductList();
+		cbProduct.setItemCaptionPropertyId("prodName");
+		cbProductsearch = new GERPComboBox("Product Name");
+		cbProductsearch.setItemCaptionPropertyId("prodname");
+		
 		cbProdDrg = new GERPComboBox("Product Drawing No.");
 		cbProdDrg.setItemCaptionPropertyId("drawingCode");
-		loadProductDrgCodeList();
 		cbWorkOrderNo = new GERPComboBox("Work Order No.");
 		cbWorkOrderNo.setItemCaptionPropertyId("workOrdrNo");
 		loadWorkOrdNo();
+		cbProduct.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				loadProductDrgCodeList();
+				cbProdDrg.setImmediate(true);
+
+			}
+		});
+		cbWorkOrderNo.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				loadClientList();
+				cbClient.setImmediate(true);
+
+				loadProductList();
+
+			}
+		});
 		cbTestGrp = new GERPComboBox("Test Group");
 		cbTestGrp.setItemCaptionPropertyId("testGroup");
 		loadTestGroup();
@@ -393,7 +418,7 @@ public class QATest extends BaseTransUI {
 		flTstHdr4 = new FormLayout();
 		flTstHdr1.addComponent(tfInspectionNo);
 		flTstHdr2.addComponent(cbClient);
-		flTstHdr3.addComponent(cbProduct);
+		flTstHdr3.addComponent(cbProductsearch);
 		flTstHdr4.addComponent(cbQThdrStatus);
 		hlSearchLayout.addComponent(flTstHdr1);
 		hlSearchLayout.addComponent(flTstHdr2);
@@ -435,9 +460,10 @@ public class QATest extends BaseTransUI {
 		flTstHdr4 = new FormLayout();
 		flTstHdr1.addComponent(tfInspectionNo);
 		flTstHdr1.addComponent(pdInspectionDt);
+	
+		flTstHdr1.addComponent(cbWorkOrderNo);
 		flTstHdr1.addComponent(cbClient);
-		flTstHdr1.addComponent(cbProduct);
-		flTstHdr2.addComponent(cbWorkOrderNo);
+		flTstHdr2.addComponent(cbProduct);
 		flTstHdr2.addComponent(cbProdDrg);
 		flTstHdr2.addComponent(tfPrdSlNo);
 		flTstHdr2.addComponent(cbTestGrp);
@@ -538,6 +564,7 @@ public class QATest extends BaseTransUI {
 		tfTstReslt.setComponentError(null);
 		cbClient.setValue(null);
 		cbClient.setComponentError(null);
+		cbClient.setContainerDataSource(null);
 		cbProduct.setValue(null);
 		cbProduct.setComponentError(null);
 		cbProdDrg.setValue(null);
@@ -558,6 +585,9 @@ public class QATest extends BaseTransUI {
 		listQATestCndtnReslt = new ArrayList<QATestCndtnResltDM>();
 		tblCndnRslt.removeAllItems();
 		tblQATstDtl.removeAllItems();
+		loadProductListfull();
+		loadClientListfull();
+
 	}
 	
 	private void resetQATstCndnRslt() {
@@ -597,6 +627,8 @@ public class QATest extends BaseTransUI {
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		assembleInputUserLayout();
 		resetFields();
+		cbProduct.setContainerDataSource(null);
+		cbProdDrg.setContainerDataSource(null);
 		resetQATestDefDtl();
 		try {
 			tfInspectionNo.setReadOnly(false);
@@ -625,7 +657,7 @@ public class QATest extends BaseTransUI {
 			BeanContainer<Long, ProductDrawingDM> beanProdDrg = new BeanContainer<Long, ProductDrawingDM>(
 					ProductDrawingDM.class);
 			beanProdDrg.setBeanIdProperty("productDrgId");
-			beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, null, null, "Active"));
+			beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, (Long)cbProduct.getValue(), null, "Active"));
 			cbProdDrg.setContainerDataSource(beanProdDrg);
 		}
 		catch (Exception e) {
@@ -648,24 +680,29 @@ public class QATest extends BaseTransUI {
 	}
 	
 	private void loadProductList() {
+		
 		try {
-			BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
-			beanProd.setBeanIdProperty("prodid");
-			beanProd.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "F"));
-			cbProduct.setContainerDataSource(beanProd);
+			BeanContainer<Long, WorkOrderDtlDM> beanEnqDtl = new BeanContainer<Long, WorkOrderDtlDM>(
+					WorkOrderDtlDM.class);
+			beanEnqDtl.setBeanIdProperty("prodId");
+			beanEnqDtl.addAll(serviceWrkOrdDtl.getWorkOrderDtlList(null, (Long)cbWorkOrderNo.getValue(), null, "F"));
+			cbProduct.setContainerDataSource(beanEnqDtl);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
 		}
+	
 	}
 	
 	private void loadClientList() {
 		try {
+			Long clientid=serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F", (Long)cbWorkOrderNo.getValue(), null, null, null, null).get(0).getClientId();
 			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClient.setBeanIdProperty("clientId");
-			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
+			beanClient.addAll(serviceClient.getClientDetails(companyid, clientid, null, null, null, null, null, null,
 					"Active", "P"));
 			cbClient.setContainerDataSource(beanClient);
+			cbClient.setValue(beanClient);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -763,10 +800,10 @@ public class QATest extends BaseTransUI {
 			tfInspectionNo.setReadOnly(true);
 			tfPrdSlNo.setValue(qaTestHdrDM.getProdslno());
 			tfTstReslt.setValue(qaTestHdrDM.getTestresult());
+			cbWorkOrderNo.setValue(qaTestHdrDM.getWoid());
+
 			cbClient.setValue(qaTestHdrDM.getClientid());
 			cbProduct.setValue(qaTestHdrDM.getProductid());
-			cbWorkOrderNo.setValue(qaTestHdrDM.getWoid().toString());
-			cbProdDrg.setValue(qaTestHdrDM.getProddwgid().toString());
 			cbTestGrp.setValue((Long) qaTestHdrDM.getQatestgroupid());
 			cbTesType.setValue((Long) qaTestHdrDM.getQattesttypeid());
 			cbTestCondition.setValue(qaTestHdrDM.getQatestcondid());
@@ -775,13 +812,15 @@ public class QATest extends BaseTransUI {
 			if (qaTestHdrDM.getObservation() != null) {
 				taTstObservation.setValue(qaTestHdrDM.getObservation());
 			}
-			cbWorkOrderNo.setValue(qaTestHdrDM.getWoid());
 			listQATestDtl = serviceQATstDtl.getQATestDtlDetails(null, qaTestHdrId, null, null, "Active");
 			listQATestCndtnReslt = serviceQATestCndRslt.getQATestCndtnResltDetails(null, qaTestHdrId, "Active");
 			comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
 			comment.loadsrch(true, null, companyid, null, null, null, qaTestHdrId);
 			new TestingDocuments(hlDocumentLayout, qaTestHdrId.toString(), "QA");
 			hlDocumentLayout.setEnabled(true);
+			cbProdDrg.setValue(qaTestHdrDM.getProddwgid().toString());
+			cbProdDrg.setImmediate(true);
+		
 		}
 	}
 	
@@ -1083,6 +1122,7 @@ public class QATest extends BaseTransUI {
 		resetQATstCndnRslt();
 		assembleSearchLayout();
 		loadSrchRslt();
+		
 	}
 	
 	private void deleteDetails() {
@@ -1135,4 +1175,28 @@ public class QATest extends BaseTransUI {
 			}
 		}
 	}
+	private void loadProductListfull() {
+		try {
+			BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
+			beanProd.setBeanIdProperty("prodid");
+			beanProd.addAll(serviceProduct.getProductList(companyid, null, null, null, "Active", null, null, "P"));
+			cbProductsearch.setContainerDataSource(beanProd);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	private void loadClientListfull() {
+		try {
+			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
+			beanClient.setBeanIdProperty("clientId");
+			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
+					"Active", "P"));
+			cbClient.setContainerDataSource(beanClient);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
 }

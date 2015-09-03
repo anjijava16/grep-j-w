@@ -519,5 +519,7 @@ public class EmployeeDeduction extends BaseUI {
 		ckFlag.setValue(false);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		cbEmpName.setComponentError(null);
+		cbStatus.addItem("Revised");
+
 	}
 }

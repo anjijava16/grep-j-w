@@ -242,7 +242,13 @@ public class QCTest extends BaseTransUI {
 		loadProductList();
 		cbProductDrg = new GERPComboBox("Product Drg.Code");
 		cbProductDrg.setItemCaptionPropertyId("drawingCode");
-		loadProductDrgCodeList();
+		cbProduct.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				loadProductDrgCodeList();
+				cbProductDrg.setImmediate(true);
+			}
+		});
 		cbQcHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbQcHdrStatus.setValue(cbQcHdrStatus.getItemIds().iterator().next());
 		chVisl = new CheckBox("Visual OK");
@@ -493,7 +499,8 @@ public class QCTest extends BaseTransUI {
 			BeanContainer<Long, ProductDrawingDM> beanProdDrg = new BeanContainer<Long, ProductDrawingDM>(
 					ProductDrawingDM.class);
 			beanProdDrg.setBeanIdProperty("productDrgId");
-			beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, null, null, "Active"));
+			beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, (Long) cbProduct.getValue(),
+					null, "Active"));
 			cbProductDrg.setContainerDataSource(beanProdDrg);
 		}
 		catch (Exception e) {
@@ -633,9 +640,8 @@ public class QCTest extends BaseTransUI {
 				tfInSpecNo.setValue(qcTestHdrDM.getInspectionno());
 				tfInSpecNo.setReadOnly(true);
 				cbReceipt.setValue(qcTestHdrDM.getReceiptid());
+				cbTestType.setValue(qcTestHdrDM.getQctesttypeid().toString());
 				cbProduct.setValue(qcTestHdrDM.getProductid());
-				cbProductDrg.setValue(qcTestHdrDM.getProddrawgid());
-				cbTestType.setValue(qcTestHdrDM.getQctesttypeid());
 				if (qcTestHdrDM.getProdserlno() != null) {
 					tfPrdSlNo.setValue(qcTestHdrDM.getProdserlno());
 				}
@@ -664,6 +670,7 @@ public class QCTest extends BaseTransUI {
 				if (qcTestHdrDM.getQcobervations() != null) {
 					taObserv.setValue(qcTestHdrDM.getQcobervations());
 				}
+				cbProductDrg.setValue(qcTestHdrDM.getProddrawgid().toString());
 				cbQcHdrStatus.setValue(qcTestHdrDM.getQcteststatus());
 				listQcTstDtl = serviceQcTstDtl
 						.getQcTestDtlDetails(null, Long.valueOf(testTypeId), null, null, "Active");
@@ -905,7 +912,7 @@ public class QCTest extends BaseTransUI {
 			qcTestHdr.setInspectiondate(pdInspectionDt.getValue());
 			qcTestHdr.setMaterialid((Long) cbMaterial.getValue());
 			qcTestHdr.setTestedby((Long) cbTestedBy.getValue());
-			qcTestHdr.setQctesttypeid( Long.valueOf((String) cbTestType.getValue()));
+			qcTestHdr.setQctesttypeid(Long.valueOf((String) cbTestType.getValue()));
 			qcTestHdr.setProductid(Long.valueOf(cbProduct.getValue().toString()));
 			qcTestHdr.setProddrawgid(Long.valueOf(cbProductDrg.getValue().toString()));
 			qcTestHdr.setProdserlno((String) tfPrdSlNo.getValue());

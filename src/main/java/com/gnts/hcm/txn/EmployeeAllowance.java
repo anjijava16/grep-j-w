@@ -368,6 +368,8 @@ public class EmployeeAllowance extends BaseUI {
 		cbAlwncDesc.setComponentError(null);
 		dtEffectiveDt.setComponentError(null);
 		tfAllBal.setComponentError(null);
+		cbStatus.addItem("Revised");
+
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form

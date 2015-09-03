@@ -431,8 +431,8 @@ public class MaterialQuote extends BaseTransUI {
 		// TODO Auto-generated method stub
 		try {
 			tfBasicValue.setReadOnly(false);
-			tfBasicValue.setValue((new BigDecimal(tfReqdQty.getValue())).multiply(
-					new BigDecimal(tfUnitRate.getValue())).toString());
+			tfBasicValue.setValue((new BigDecimal(tfReqdQty.getValue()))
+					.multiply(new BigDecimal(tfUnitRate.getValue())).toString());
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -659,10 +659,10 @@ public class MaterialQuote extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblMatQuDtl.setContainerDataSource(beanQuoteDtl);
-			tblMatQuDtl.setVisibleColumns(new Object[] { "materialname", "quoteqty","reqQty", "unitrate", "basicvalue",
-					"lastupdateddt", "lastupdatedby" });
-			tblMatQuDtl.setColumnHeaders(new String[] { "Material Name", "Quote Qty","Required Qty","UnitRate", "Basic Value",
-					"Last Updated Date", "Last Updated By" });
+			tblMatQuDtl.setVisibleColumns(new Object[] { "materialname", "quoteqty", "reqQty", "unitrate",
+					"basicvalue", "lastupdateddt", "lastupdatedby" });
+			tblMatQuDtl.setColumnHeaders(new String[] { "Material Name", "Quote Qty", "Required Qty", "UnitRate",
+					"Basic Value", "Last Updated Date", "Last Updated By" });
 			tblMatQuDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
@@ -924,7 +924,6 @@ public class MaterialQuote extends BaseTransUI {
 				tfQuoteQunt.setReadOnly(false);
 				tfQuoteQunt.setValue(quoteDtl.getQuoteqty().toString());
 			}
-			
 			if (quoteDtl.getQuoteqty() != null) {
 				tfReqdQty.setReadOnly(false);
 				tfReqdQty.setValue(quoteDtl.getReqQty().toString());
@@ -1109,22 +1108,7 @@ public class MaterialQuote extends BaseTransUI {
 			dtlValidation();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			MmsQuoteHdrDM quoteHdr = new MmsQuoteHdrDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				quoteHdr = beanQuoteHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				if (tfQuoteRef.getValue() != null) {
-					quoteHdr.setQuoteRef(tfQuoteRef.getValue());
-				}
-			} else {
-				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_QN").get(0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						quoteHdr.setQuoteRef(slnoObj.getKeyDesc());
-					}
-				}
-				catch (Exception e) {
-					logger.info(e.getMessage());
-				}
-			}
+			quoteHdr.setQuoteRef(tfQuoteRef.getValue());
 			quoteHdr.setVendorid((Long) cbVendorname.getValue());
 			quoteHdr.setBranchId((Long) cbBranch.getValue());
 			quoteHdr.setCompanyId(companyid);
@@ -1260,7 +1244,6 @@ public class MaterialQuote extends BaseTransUI {
 				if (tfQuoteQunt.getValue() != null && tfQuoteQunt.getValue().trim().length() > 0) {
 					quoteDtlDM.setQuoteqty(Long.valueOf(tfQuoteQunt.getValue()));
 				}
-				
 				if (tfReqdQty.getValue() != null && tfReqdQty.getValue().trim().length() > 0) {
 					quoteDtlDM.setReqQty(Long.valueOf(tfReqdQty.getValue()));
 				}

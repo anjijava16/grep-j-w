@@ -97,7 +97,7 @@ public class SerialNumberGenerator {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "MM_NPONO").get(0);
 			logger.info("Serial No Generation  Data...===>" + companyid + "," + branchid + "," + moduleid);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
-				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + "EQ-" + slnoObj.getCurrSeqNo()
+				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + "PO-" + slnoObj.getCurrSeqNo()
 						+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey();
 			}
 		}

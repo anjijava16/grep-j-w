@@ -3999,7 +3999,7 @@ public class Employee extends BaseUI {
 		tblempdepn.removeAllItems();
 		tblempiden.removeAllItems();
 		UI.getCurrent().getSession().setAttribute("isFileUploaded", false);
-		tfEmployeeCode.setReadOnly(true);
+		tfEmployeeCode.setReadOnly(false);
 
 	}
 	

@@ -1371,6 +1371,8 @@ public class SalesPO extends BaseTransUI {
 		cbBranch.setValue(branchId);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
 				null);
+		loadPOAcceptParamDetails(false);
+
 	}
 	
 	@Override

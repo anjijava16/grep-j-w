@@ -137,7 +137,7 @@ public class ProductBomHdr extends BaseTransUI {
 		cbProduct = new GERPComboBox("Product Name");
 		cbProduct.setWidth("200");
 		cbProduct.setRequired(true);
-		cbProduct.setItemCaptionPropertyId("prodname");
+		cbProduct.setItemCaptionPropertyId("customField1");
 		cbBranch = new GERPComboBox("Branch Name");
 		cbBranch.setWidth("200");
 		cbBranch.setRequired(true);

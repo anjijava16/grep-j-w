@@ -374,7 +374,6 @@ public class EmployeeAllowance extends BaseUI {
 		cbAlwncDesc.setComponentError(null);
 		dtEffectiveDt.setComponentError(null);
 		tfAllBal.setComponentError(null);
-		cbStatus.addItem("Revised");
 
 	}
 	

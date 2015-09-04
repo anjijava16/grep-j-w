@@ -351,7 +351,6 @@ public class WorkOrder extends BaseTransUI {
 		cbBranchName.setItemCaptionPropertyId("branchName");
 		loadBranchList();
 		cbEnquiryNumber = new ComboBox("Enquiry No.");
-		cbEnquiryNumber = new ComboBox("Enquiry No");
 		cbEnquiryNumber.setItemCaptionPropertyId("enquiryNo");
 		cbEnquiryNumber.setRequired(true);
 		loadEnquiryNo();

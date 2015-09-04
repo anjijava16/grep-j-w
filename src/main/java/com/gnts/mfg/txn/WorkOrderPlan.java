@@ -52,6 +52,9 @@ import com.gnts.mfg.service.txn.WorkOrderPlanHdrService;
 import com.gnts.mfg.service.txn.WorkOrderPlanMtrlDtlService;
 import com.gnts.mfg.service.txn.WorkOrderPlanProdDtlService;
 import com.gnts.mms.domain.mst.ProductBomDtlDM;
+import com.gnts.mms.service.txn.MaterialStockService;
+import com.gnts.sms.domain.txn.SmsEnqHdrDM;
+import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -74,6 +77,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
@@ -91,6 +95,9 @@ public class WorkOrderPlan extends BaseTransUI {
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private WorkOrderPlanMtrlDtlService serviceWorkOrderPlanMtrlDtl = (WorkOrderPlanMtrlDtlService) SpringContextHelper
 			.getBean("workOrderPlnMtrl");
+	private MaterialStockService serviceMaterialStock = (MaterialStockService) SpringContextHelper
+			.getBean("materialstock");
+	private SmsEnqHdrService serviceEnquiryHdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private WorkOrderPlanProdDtlService serviceWorkOrderPlanProdDtl = (WorkOrderPlanProdDtlService) SpringContextHelper
 			.getBean("workOrderPlnPrd");
 	private WorkOrderPlanHdrService serviceWorkOrderPlanHdr = (WorkOrderPlanHdrService) SpringContextHelper
@@ -106,7 +113,7 @@ public class WorkOrderPlan extends BaseTransUI {
 	private TextField tfPlanNo;
 	private TextArea taPlanRemrks;
 	private PopupDateField dfPlanDate;
-	private ComboBox cbBranchName, cbPlanStatus, cbWorkOrderNo;
+	private ComboBox cbBranchName, cbPlanStatus, cbWorkOrderNo, cbEnquiryNumber;
 	// User Input Components for WO.Plan Detail
 	private ComboBox cbProductName, cbPlanDtlStatus;
 	private CheckBox chIsRequired;
@@ -185,6 +192,24 @@ public class WorkOrderPlan extends BaseTransUI {
 				}
 			}
 		});
+		cbEnquiryNumber = new ComboBox("Enquiry No.");
+		cbEnquiryNumber.setItemCaptionPropertyId("enquiryNo");
+		cbEnquiryNumber.setRequired(true);
+		loadEnquiryNo();
+		cbEnquiryNumber.setImmediate(true);
+		cbEnquiryNumber.setWidth("150px");
+		cbEnquiryNumber.setImmediate(true);
+		cbEnquiryNumber.addValueChangeListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			public void valueChange(ValueChangeEvent event) {
+				Object itemId = event.getProperty().getValue();
+				BeanItem<?> item = (BeanItem<?>) cbEnquiryNumber.getItem(itemId);
+				if (item != null) {
+					loadWorkOrderNo();
+				}
+			}
+		});
 		btnDtleWrkDtl.setEnabled(false);
 		btnDtleWrkDtl.addClickListener(new ClickListener() {
 			/**
@@ -207,9 +232,9 @@ public class WorkOrderPlan extends BaseTransUI {
 		cbBranchName.setItemCaptionPropertyId("branchName");
 		cbBranchName.setWidth("140");
 		loadBranchlist();
-		cbProductName = new GERPComboBox("Product Name");
+		cbProductName = new GERPComboBox("Part No");
 		cbProductName.setWidth("130");
-		cbProductName.setItemCaptionPropertyId("prodName");
+		cbProductName.setItemCaptionPropertyId("customField1");
 		cbProductName.addValueChangeListener(new ValueChangeListener() {
 			/**
 			 * 
@@ -223,6 +248,9 @@ public class WorkOrderPlan extends BaseTransUI {
 					WorkOrderDtlDM workOrderDtlDM = (WorkOrderDtlDM) cbProductName.getValue();
 					tfProductName.setValue(workOrderDtlDM.getProductName());
 					tfWrkOdrPlnQty.setValue(workOrderDtlDM.getPlanQty().toString());
+					if (cbProductName == null) {
+						tblWOPlanMaterials.removeAllItems();
+					}
 					loadSrchWrkOdrPlnMtrlDtlRslt(false);
 				}
 				catch (Exception e) {
@@ -233,7 +261,6 @@ public class WorkOrderPlan extends BaseTransUI {
 		cbWorkOrderNo = new GERPComboBox("WO.No");
 		cbWorkOrderNo.setItemCaptionPropertyId("workOrdrNo");
 		cbWorkOrderNo.setWidth("140");
-		loadWorkOrderNo();
 		cbWorkOrderNo.addValueChangeListener(new Property.ValueChangeListener() {
 			/**
 		 * 
@@ -358,8 +385,9 @@ public class WorkOrderPlan extends BaseTransUI {
 		flOdrHdrColumn1.addComponent(tfPlanNo);
 		flOdrHdrColumn1.addComponent(cbBranchName);
 		// adding components into second column in form layout2
+		flOdrHdrColumn1.addComponent(cbEnquiryNumber);
 		flOdrHdrColumn1.addComponent(cbWorkOrderNo);
-		flOdrHdrColumn1.addComponent(dfPlanDate);
+		flOdrHdrColumn2.addComponent(dfPlanDate);
 		flOdrHdrColumn2.addComponent(taPlanRemrks);
 		flOdrHdrColumn2.addComponent(cbPlanStatus);
 		//
@@ -458,6 +486,9 @@ public class WorkOrderPlan extends BaseTransUI {
 				list.setMtrlId(obj.getMaterialId());
 				list.setMtrlName(obj.getMaterialName());
 				list.setRequiredQty(obj.getMaterialQty());
+					list.setCurrentStock(serviceMaterialStock
+						.getMaterialStockList(obj.getMaterialId(), companyid, null, null, null, null, "F").get(0)
+						.getEffectiveStock());
 				workOrdMtrllList.add(list);
 			}
 			recordCntmrl = wrkOrdPlnMtrlList.size();
@@ -478,8 +509,10 @@ public class WorkOrderPlan extends BaseTransUI {
 			}
 			tblWOPlanMaterials.setContainerDataSource(beanWrkOdrPlnMtrlDtl);
 		}
-		tblWOPlanMaterials.setVisibleColumns(new Object[] { "mtrlName", "requiredQty", "woMtrlStatus" });
-		tblWOPlanMaterials.setColumnHeaders(new String[] { "Material Name", "Required Quantity", "IsRequired" });
+		tblWOPlanMaterials
+				.setVisibleColumns(new Object[] { "mtrlName", "requiredQty", "currentStock", "woMtrlStatus" });
+		tblWOPlanMaterials.setColumnHeaders(new String[] { "Material Name", "Required Quantity", "Store Stock",
+				"IsRequired" });
 		tblWOPlanMaterials.setColumnAlignment("mtrlName", Align.LEFT);
 		tblWOPlanMaterials.setColumnFooter("woMtrlStatus", "No.of Records : " + recordCntmrl);
 		tblWOPlanMaterials.setEditable(true);
@@ -519,6 +552,9 @@ public class WorkOrderPlan extends BaseTransUI {
 			tfPlanNo.setValue(workOrderPlanHdr.getWrkPlanNo());
 			tfPlanNo.setReadOnly(true);
 			Long workordNo = workOrderPlanHdr.getWrkOrderNoID();
+			cbEnquiryNumber.setValue(serviceWorkOrderHdr
+					.getWorkOrderHDRList(companyid, null, null, null, null, null, "F", workordNo, null, null, null,
+							null).get(0).getEnquiryId());
 			Collection<?> woids = cbWorkOrderNo.getItemIds();
 			for (Iterator<?> iterator = woids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -567,7 +603,7 @@ public class WorkOrderPlan extends BaseTransUI {
 			BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(
 					WorkOrderHdrDM.class);
 			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
-					null, null, null, null, null));
+					null, (Long) cbEnquiryNumber.getValue(), null, null, null));
 			cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
 		}
 		catch (Exception e) {
@@ -631,6 +667,7 @@ public class WorkOrderPlan extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
 		// remove the components in the search layout and input controls in the same container
 		resetFields();
+		tblWOPlanMaterials.removeAllItems();
 		hlUserInputLayout.removeAllComponents();
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		assembleInputUserLayout();
@@ -847,6 +884,9 @@ public class WorkOrderPlan extends BaseTransUI {
 		workOdrPlnMtrlDtlList = new ArrayList<WorkOrderPlanMtrlDtlDM>();
 		tblWOPlanMaterials.removeAllItems();
 		tblWrkOrdPlnDtl.removeAllItems();
+		cbEnquiryNumber.setValue(null);
+		cbWorkOrderNo.setContainerDataSource(null);
+		cbProductName.setContainerDataSource(null);
 	}
 	
 	private boolean validateWOPrddtl() {
@@ -903,5 +943,19 @@ public class WorkOrderPlan extends BaseTransUI {
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
+	}
+	
+	// Load EnquiryNo
+	private void loadEnquiryNo() {
+		try {
+			BeanContainer<Long, SmsEnqHdrDM> beansmsenqHdr = new BeanContainer<Long, SmsEnqHdrDM>(SmsEnqHdrDM.class);
+			beansmsenqHdr.setBeanIdProperty("enquiryId");
+			beansmsenqHdr
+					.addAll(serviceEnquiryHdr.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
+			cbEnquiryNumber.setContainerDataSource(beansmsenqHdr);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

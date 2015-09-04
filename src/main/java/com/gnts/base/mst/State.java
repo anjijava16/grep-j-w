@@ -201,7 +201,7 @@ public class State extends BaseUI {
 		tfStateName.setComponentError(null);
 		tfStateCode.setComponentError(null);
 		cbCountryName.setComponentError(null);
-		cbCountryName.setValue(0L);
+		cbCountryName.setValue(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	

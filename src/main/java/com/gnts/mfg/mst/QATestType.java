@@ -449,7 +449,7 @@ public class QATestType extends BaseUI {
 		cbTestGroup.setWidth("150");
 		loadTestGrpList();
 		tfTestType = new GERPTextField("Type");
-		tfTestMethdlgy = new GERPTextField("Test Methodology");
+		tfTestMethdlgy = new GERPTextField("Standard");
 		taTypeDesc = new GERPTextArea("Description");
 		taTypeDesc.setWidth("250");
 		taTypeDesc.setHeight("55");
@@ -1096,7 +1096,7 @@ public class QATestType extends BaseUI {
 		objTstSpec.setCompanyId(companyid);
 		objTstSpec.setTestRqrmt(tfTstRecr.getValue());
 		objTstSpec.setTestSpec(tfTstSpec.getValue());
-		objTstSpec.setTestCycl(Long.valueOf(tfTestCycle.getValue()));
+		objTstSpec.setTestCycl(tfTestCycle.getValue());
 		objTstSpec.setTstPrmStatus(cbTstSpecStatus.getValue().toString());
 		objTstSpec.setLastUpdatedDt(DateUtils.getcurrentdate());
 		objTstSpec.setLastUpdatedBy(userName);

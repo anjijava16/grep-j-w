@@ -1,5 +1,6 @@
 package com.gnts.mfg.stt.txn;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -29,7 +30,10 @@ import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
+import com.gnts.mms.domain.txn.MmsPoDtlDM;
+import com.gnts.mms.domain.txn.MmsQuoteDtlDM;
 import com.gnts.stt.mfg.domain.txn.RotoArmDM;
+import com.gnts.stt.mfg.domain.txn.RotoCheckDtlDM;
 import com.gnts.stt.mfg.domain.txn.RotoDtlDM;
 import com.gnts.stt.mfg.domain.txn.RotoPlanDtlDM;
 import com.gnts.stt.mfg.domain.txn.RotoPlanHdrDM;
@@ -72,6 +76,7 @@ public class RotoCheck extends BaseTransUI {
 	private BeanItemContainer<RotohdrDM> beanRotohdrDM = null;
 	private BeanItemContainer<RotoDtlDM> beanRotoDtls = null;
 	private BeanItemContainer<RotoArmDM> beanRotoArmDM = null;
+	private List<RotoCheckDtlDM> listRotoCheckDtlDetails = new ArrayList<RotoCheckDtlDM>();
 	private Table tblRotoDetails, tblRotoArm;
 	// Search Control Layout
 	private HorizontalLayout hlHdr = new HorizontalLayout();
@@ -89,14 +94,17 @@ public class RotoCheck extends BaseTransUI {
 	private Button btnAddArm = new GERPButton("Add", "Addbt", this);
 	private Button btndelete = new GERPButton("Delete", "delete", this);
 	private Button btnArmDelete = new GERPButton("Delete", "delete", this);
+	private Button btnsavepurQuote = new GERPButton("Add", "addbt", this);
 	private GERPPopupDateField dfRotoDt;
 	private GERPTextField tfRotoRef, tfPlanedQty, tfProdQty;
 	private GERPComboBox cbBranch, cbPlanRef;
 	private TextArea tfRemarks;
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
+	private GERPComboBox cbDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
+			BASEConstants.M_GENERIC_COLUMN);
 	// Roto Details
-	private GERPTextField tfOvenTotal, tfCharTot, tfCoolTot, tfBoxModel,tfBoxSerial, tfPwdTop, tfPwdBot, tfPowTotal;
+	private GERPTextField tfOvenTotal, tfCharTot, tfCoolTot, tfBoxModel, tfBoxSerial, tfPwdTop, tfPwdBot, tfPowTotal;
 	private GERPTextField tftempZ1, tftempZ2, tftempZ3, tfBoxWgTop, tfBoxWgBot, tfBoxWgTotal, tfCycles, tfKgCm,
 			tfEmpNo;
 	private GERPTimeField tmOvenOn, tmOvenOff, tmCharOn, tmCharOff, tmCoolOn, tmCoolOff;
@@ -175,12 +183,10 @@ public class RotoCheck extends BaseTransUI {
 					tblRotoArm.setImmediate(true);
 					btnAddArm.setCaption("Add");
 					btnAddArm.setStyleName("savebt");
-					rotoArmResetFields();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnAddArm.setCaption("Update");
 					btnAddArm.setStyleName("savebt");
-					editArmDetails();
 				}
 			}
 		});
@@ -252,6 +258,7 @@ public class RotoCheck extends BaseTransUI {
 		dfRotoDt.setInputPrompt("Select Date");
 		dfRotoDt.setWidth("130px");
 		cbStatus.setWidth("150");
+		cbDtlStatus.setWidth("100");
 		cbArmNo = new GERPComboBox("Arm No.");
 		cbArmNo.addItem("1");
 		cbArmNo.addItem("2");
@@ -308,10 +315,20 @@ public class RotoCheck extends BaseTransUI {
 		tfRemarksDtl = new GERPTextArea("Remarks");
 		tfRemarksDtl.setWidth("130");
 		tfRemarksDtl.setHeight("25px");
+		btnsavepurQuote.addClickListener(new ClickListener() {
+			// Click Listener for Add and Update
+			private static final long serialVersionUID = 6551953728534136363L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				saveRotoCheckDetais();
+			}
+		});
 		hlSearchLayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		resetFields();
+		resetDetailsFields();
 		loadSrchRslt();
 		loadArmRslt(false);
 		loadPlanDtlRslt();
@@ -391,6 +408,8 @@ public class RotoCheck extends BaseTransUI {
 		flArmCol5.addComponent(tfKgCm);
 		flArmCol5.addComponent(tfEmpNo);
 		flArmCol5.addComponent(tfRemarksDtl);
+		flArmCol5.addComponent(cbDtlStatus);
+		flArmCol5.addComponent(btnsavepurQuote);
 		hlArm = new HorizontalLayout();
 		hlArm.setSpacing(true);
 		hlArm.addComponent(flArmCol1);
@@ -592,8 +611,6 @@ public class RotoCheck extends BaseTransUI {
 		assembleInputUserLayout();
 		resetFields();
 		editRotoHdrDetails();
-		editRotoDtls();
-		editArmDetails();
 	}
 	
 	// Method to cancel and get back to the home page from edit mode
@@ -607,7 +624,7 @@ public class RotoCheck extends BaseTransUI {
 		tfRotoRef.setComponentError(null);
 		cbBranch.setRequired(true);
 		dfRotoDt.setRequired(true);
-		resetRotoDetails();
+		resetDetailsFields();
 		hlCmdBtnLayout.setVisible(true);
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
@@ -668,21 +685,6 @@ public class RotoCheck extends BaseTransUI {
 		catch (Exception e) {
 			logger.info(e.getMessage());
 		}
-	}
-	
-	private void editRotoDtls() {
-		hlUserInputLayout.setVisible(true);
-	}
-	
-	private void editArmDetails() {
-	}
-	
-	private void resetRotoDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-	}
-	
-	private void rotoArmResetFields() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 	}
 	
 	// Method to implement about validations to the required input fields
@@ -751,7 +753,6 @@ public class RotoCheck extends BaseTransUI {
 					logger.info(e.getMessage());
 				}
 			}
-			resetRotoDetails();
 			loadSrchRslt();
 		}
 		catch (Exception e) {
@@ -834,5 +835,76 @@ public class RotoCheck extends BaseTransUI {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private void saveRotoCheckDetais() {
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+		try {
+			RotoCheckDtlDM rotocheckdtlDM = new RotoCheckDtlDM();
+			rotocheckdtlDM.setArmNo((Long) cbArmNo.getValue());
+			rotocheckdtlDM.setBoxModel(tfBoxModel.getValue());
+			rotocheckdtlDM.setBoxSerial(tfBoxSerial.getValue());
+			rotocheckdtlDM.setChrtimeFrm(tmCharOn.getValue().toString());
+			rotocheckdtlDM.setChrtimeTo(tmCharOff.getValue().toString());
+			rotocheckdtlDM.setChrtimeTotal(tfCharTot.getValue());
+			rotocheckdtlDM.setColtimFrm(tmCoolOn.getValue().toString());
+			rotocheckdtlDM.setColtimTo(tmCoolOff.getValue().toString());
+			rotocheckdtlDM.setColtimTotal(tfCoolTot.getValue());
+			rotocheckdtlDM.setEmpNo(Long.valueOf(tfEmpNo.getValue()));
+			rotocheckdtlDM.setOvenOff(tmOvenOff.getValue().toString());
+			rotocheckdtlDM.setOvenOn(tmOvenOn.getValue().toString());
+			rotocheckdtlDM.setOvenTotal(tfOvenTotal.getValue());
+			rotocheckdtlDM.setPowBot(tfPwdBot.getValue());
+			rotocheckdtlDM.setPowTop(tfPwdTop.getValue());
+			rotocheckdtlDM.setPowtotal(tfPowTotal.getValue());
+			rotocheckdtlDM.setPresCycle(tfCycles.getValue());
+			rotocheckdtlDM.setPresKgCm(tfKgCm.getValue());
+			rotocheckdtlDM.setRotoid(rotoid);
+			rotocheckdtlDM.setTempZ1(tftempZ1.getValue());
+			rotocheckdtlDM.setTempZ2(tftempZ2.getValue());
+			rotocheckdtlDM.setTempZ3(tftempZ3.getValue());
+			rotocheckdtlDM.setWegBot(tfBoxWgBot.getValue());
+			rotocheckdtlDM.setWegTop(tfBoxWgTop.getValue());
+			rotocheckdtlDM.setWegTotal(tfBoxWgTotal.getValue());
+			rotocheckdtlDM.setDtlRemarks(tfRemarksDtl.getValue());
+			// rotocheckdtlDM.setRotoChkId(rotoChkId);
+			rotocheckdtlDM.setLastupdatedby(username);
+			rotocheckdtlDM.setLastupdateddate(DateUtils.getcurrentdate());
+			rotocheckdtlDM.setRotoChkDtlStatus(cbDtlStatus.getValue().toString());
+			listRotoCheckDtlDetails.add(rotocheckdtlDM);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		// loadPODetails();
+		resetDetailsFields();
+	}
+	
+	private void resetDetailsFields() {
+		cbArmNo.setValue(null);
+		tmOvenOff.setValue(null);
+		tmOvenOn.setValue(null);
+		tfOvenTotal.setValue("");
+		tmCharOn.setValue(null);
+		tmCharOff.setValue(null);
+		tfCharTot.setValue("");
+		tmCoolOn.setValue(null);
+		tmCoolOff.setValue(null);
+		tfCoolTot.setValue("");
+		tftempZ1.setValue("");
+		tftempZ2.setValue("");
+		tftempZ3.setValue("");
+		tfBoxModel.setValue("");
+		tfBoxSerial.setValue("");
+		tfPwdBot.setValue("");
+		tfPwdTop.setValue("");
+		tfPowTotal.setValue("");
+		tfBoxWgBot.setValue("");
+		tfBoxWgTop.setValue("");
+		tfBoxWgTotal.setValue("");
+		tfCycles.setValue("");
+		tfKgCm.setValue("");
+		tfEmpNo.setValue("");
+		tfRemarksDtl.setValue("");
 	}
 }

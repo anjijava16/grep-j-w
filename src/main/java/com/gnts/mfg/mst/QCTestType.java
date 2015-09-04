@@ -125,7 +125,7 @@ public class QCTestType extends BaseUI {
 	
 	private void buildView() {
 		tftstTyp = new TextField("Test Type");
-		tfTstMethdgly = new TextField("Methodology");
+		tfTstMethdgly = new TextField("Standard");
 		taTstDesc = new TextArea("Description");
 		taTstDesc.setWidth("250");
 		taTstDesc.setHeight("55");
@@ -712,7 +712,7 @@ public class QCTestType extends BaseUI {
 		qcTstSpec.setTstRecrmt(tfTstRecrt.getValue());
 		qcTstSpec.setTstSpec(tfTstSpec.getValue());
 		try {
-			qcTstSpec.setTstCycles(Long.valueOf(tfTstCycle.getValue()));
+			qcTstSpec.setTstCycles(tfTstCycle.getValue().toString());
 			qcTstSpec.setTstStatus((String) cbTstSpecStatus.getValue());
 			qcTstSpec.setLastUpdatedDt(DateUtils.getcurrentdate());
 			qcTstSpec.setLastUpdatedBy(userName);

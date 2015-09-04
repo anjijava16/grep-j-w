@@ -422,50 +422,62 @@ public class IndentIssue extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editHdrIndentDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			IndentIssueHdrDM editHdrIndent = beanIndentIssueHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			issueId = editHdrIndent.getIssueId();
-			System.out.println("issueId-->" + issueId);
+		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Selected IndentIssue. Id -> " + issueId);
-			cbIntNo.setValue(editHdrIndent.getIndentId());
-			if (editHdrIndent.getIssueDate() != null) {
-				dfIssueDt.setValue(editHdrIndent.getIssueDate1());
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				IndentIssueHdrDM editHdrIndent = beanIndentIssueHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				issueId = editHdrIndent.getIssueId();
+				System.out.println("issueId-->" + issueId);
+				logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+						+ "Selected IndentIssue. Id -> " + issueId);
+				cbIntNo.setValue(editHdrIndent.getIndentId());
+				if (editHdrIndent.getIssueDate() != null) {
+					dfIssueDt.setValue(editHdrIndent.getIssueDate1());
+				}
+				taRemarks.setValue(editHdrIndent.getIssueRemarks());
+				cbIssuedTo.setValue(editHdrIndent.getIssuedTo());
+				cbIndStatus.setValue(editHdrIndent.getIssueStatus());
+				listIssueDetails.addAll(serviceIndentDtl.getIndentIssueDtlDMList(null, issueId, null, null, "Active",
+						"F"));
 			}
-			taRemarks.setValue(editHdrIndent.getIssueRemarks());
-			cbIssuedTo.setValue(editHdrIndent.getIssuedTo());
-			cbIndStatus.setValue(editHdrIndent.getIssueStatus());
-			listIssueDetails.addAll(serviceIndentDtl.getIndentIssueDtlDMList(null, issueId, null, null, "Active", "F"));
+			loadIndentDtl();
 		}
-		loadIndentDtl();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editDtls() {
-		hlUserInputLayout.setVisible(true);
-		if (tblIndtIssueDtl.getValue() != null) {
-			IndentIssueDtlDM indentIssueDtlDM = beanIndentIssueDtlDM.getItem(tblIndtIssueDtl.getValue()).getBean();
-			Long matId = indentIssueDtlDM.getMaterialId();
-			Collection<?> matids = cbMatName.getItemIds();
-			for (Iterator<?> iteratorclient = matids.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbMatName.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				IndentDtlDM matObj = (IndentDtlDM) itemclient.getBean();
-				if (matId != null && matId.equals(matObj.getMaterialId())) {
-					cbMatName.setValue(itemIdClient);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblIndtIssueDtl.getValue() != null) {
+				IndentIssueDtlDM indentIssueDtlDM = beanIndentIssueDtlDM.getItem(tblIndtIssueDtl.getValue()).getBean();
+				Long matId = indentIssueDtlDM.getMaterialId();
+				Collection<?> matids = cbMatName.getItemIds();
+				for (Iterator<?> iteratorclient = matids.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbMatName.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					IndentDtlDM matObj = (IndentDtlDM) itemclient.getBean();
+					if (matId != null && matId.equals(matObj.getMaterialId())) {
+						cbMatName.setValue(itemIdClient);
+					}
 				}
+				if (indentIssueDtlDM.getIssueQty() != null) {
+					tfIssueQty.setValue(indentIssueDtlDM.getIssueQty().toString());
+				}
+				if (indentIssueDtlDM.getStockQty() != null) {
+					tfStockQty.setReadOnly(false);
+					tfStockQty.setValue(indentIssueDtlDM.getStockQty().toString());
+					tfStockQty.setReadOnly(true);
+				}
+				cbDtlStatus.setValue(indentIssueDtlDM.getStatus());
 			}
-			if (indentIssueDtlDM.getIssueQty() != null) {
-				tfIssueQty.setValue(indentIssueDtlDM.getIssueQty().toString());
-			}
-			if (indentIssueDtlDM.getStockQty() != null) {
-				tfStockQty.setReadOnly(false);
-				tfStockQty.setValue(indentIssueDtlDM.getStockQty().toString());
-				tfStockQty.setReadOnly(true);
-			}
-			cbDtlStatus.setValue(indentIssueDtlDM.getStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -892,11 +904,16 @@ public class IndentIssue extends BaseTransUI {
 	
 	// Load Stock of Selected Material.
 	private void loadMaterial() {
-		tfStockQty.setReadOnly(false);
-		tfStockQty.setValue(serviceMaterialStock
-				.getMaterialStockList(((IndentDtlDM) cbMatName.getValue()).getMaterialId(), null, null, null, null,
-						null, "F").get(0).getCurrentStock().toString());
-		tfStockQty.setReadOnly(true);
+		try {
+			tfStockQty.setReadOnly(false);
+			tfStockQty.setValue(serviceMaterialStock
+					.getMaterialStockList(((IndentDtlDM) cbMatName.getValue()).getMaterialId(), null, null, null, null,
+							null, "F").get(0).getCurrentStock().toString());
+			tfStockQty.setReadOnly(true);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadCalc() {
@@ -915,13 +932,18 @@ public class IndentIssue extends BaseTransUI {
 	}
 	
 	private void deleteDetails() {
-		IndentIssueDtlDM save = new IndentIssueDtlDM();
-		if (tblIndtIssueDtl.getValue() != null) {
-			save = beanIndentIssueDtlDM.getItem(tblIndtIssueDtl.getValue()).getBean();
-			listIssueDetails.remove(save);
-			IndentDtlresetField();
-			loadIndentDtl();
-			btndelete.setEnabled(false);
+		try {
+			IndentIssueDtlDM save = new IndentIssueDtlDM();
+			if (tblIndtIssueDtl.getValue() != null) {
+				save = beanIndentIssueDtlDM.getItem(tblIndtIssueDtl.getValue()).getBean();
+				listIssueDetails.remove(save);
+				IndentDtlresetField();
+				loadIndentDtl();
+				btndelete.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

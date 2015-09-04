@@ -170,25 +170,31 @@ public class MaterialStock extends BaseUI {
 	}
 	
 	private void editMaterialStock() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Editing the selected record");
-		if (tblMstScrSrchRslt.getValue() != null) {
-			MaterialStockDM materialStockDM = beanMaterialStock.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			stockId = materialStockDM.getStockid();
-			cbBranch.setValue(materialStockDM.getBranchId());
-			cbMaterial.setValue(materialStockDM.getMaterialId());
-			cbStockType.setValue(materialStockDM.getStockType());
-			tfLotno.setValue(materialStockDM.getLotNo());
-			if (materialStockDM.getCurrentStock() != null) {
-				tfCurrentStock.setValue(materialStockDM.getCurrentStock().toString());
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Editing the selected record");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				MaterialStockDM materialStockDM = beanMaterialStock.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				stockId = materialStockDM.getStockid();
+				cbBranch.setValue(materialStockDM.getBranchId());
+				cbMaterial.setValue(materialStockDM.getMaterialId());
+				cbStockType.setValue(materialStockDM.getStockType());
+				tfLotno.setValue(materialStockDM.getLotNo());
+				if (materialStockDM.getCurrentStock() != null) {
+					tfCurrentStock.setValue(materialStockDM.getCurrentStock().toString());
+				}
+				if (materialStockDM.getParkedStock() != null) {
+					tfParkedStock.setValue(materialStockDM.getParkedStock().toString());
+				}
+				if (materialStockDM.getEffectiveStock() != null) {
+					tfEffectiveStock.setValue(materialStockDM.getEffectiveStock().toString());
+				}
 			}
-			if (materialStockDM.getParkedStock() != null) {
-				tfParkedStock.setValue(materialStockDM.getParkedStock().toString());
-			}
-			if (materialStockDM.getEffectiveStock() != null) {
-				tfEffectiveStock.setValue(materialStockDM.getEffectiveStock().toString());
-			}
+			readonlytrue();
 		}
-		readonlytrue();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadBranchdetails() {
@@ -305,33 +311,28 @@ public class MaterialStock extends BaseUI {
 	@Override
 	protected void saveDetails() throws SaveException {
 		logger.info("saveDetails---------->");
-		try {
-			MaterialStockDM materialStockDM = new MaterialStockDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				materialStockDM = beanMaterialStock.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			}
-			materialStockDM.setCompanyId(companyId);
-			materialStockDM.setBranchId((Long) cbBranch.getValue());
-			materialStockDM.setMaterialId((Long) cbMaterial.getValue());
-			materialStockDM.setLotNo(tfLotno.getValue());
-			if (tfCurrentStock.getValue().trim().length() > 0) {
-				materialStockDM.setCurrentStock(Long.valueOf(tfCurrentStock.getValue()));
-			}
-			if (tfParkedStock.getValue().trim().length() > 0) {
-				materialStockDM.setParkedStock(Long.valueOf(tfParkedStock.getValue()));
-			}
-			if (tfEffectiveStock.getValue().trim().length() > 0) {
-				materialStockDM.setEffectiveStock(Long.valueOf(tfEffectiveStock.getValue()));
-			}
-			materialStockDM.setStockType((String) cbStockType.getValue());
-			materialStockDM.setLastUpdateddt(DateUtils.getcurrentdate());
-			materialStockDM.setLastUpdatedby(userName);
-			serviceMaterialStock.saveorupdatematerialstock(materialStockDM);
-			loadSrchRslt();
+		MaterialStockDM materialStockDM = new MaterialStockDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			materialStockDM = beanMaterialStock.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
+		materialStockDM.setCompanyId(companyId);
+		materialStockDM.setBranchId((Long) cbBranch.getValue());
+		materialStockDM.setMaterialId((Long) cbMaterial.getValue());
+		materialStockDM.setLotNo(tfLotno.getValue());
+		if (tfCurrentStock.getValue().trim().length() > 0) {
+			materialStockDM.setCurrentStock(Long.valueOf(tfCurrentStock.getValue()));
 		}
+		if (tfParkedStock.getValue().trim().length() > 0) {
+			materialStockDM.setParkedStock(Long.valueOf(tfParkedStock.getValue()));
+		}
+		if (tfEffectiveStock.getValue().trim().length() > 0) {
+			materialStockDM.setEffectiveStock(Long.valueOf(tfEffectiveStock.getValue()));
+		}
+		materialStockDM.setStockType((String) cbStockType.getValue());
+		materialStockDM.setLastUpdateddt(DateUtils.getcurrentdate());
+		materialStockDM.setLastUpdatedby(userName);
+		serviceMaterialStock.saveorupdatematerialstock(materialStockDM);
+		loadSrchRslt();
 	}
 	
 	@Override

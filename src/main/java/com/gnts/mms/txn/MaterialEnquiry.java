@@ -187,7 +187,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		cbEnqStatus.setWidth("150");
 		cbEnqStatus.setRequired(true);
@@ -379,26 +379,31 @@ public class MaterialEnquiry extends BaseTransUI {
 	
 	// Load Purchase Header
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<MmsEnqHdrDM> list = new ArrayList<MmsEnqHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + cbBranch.getValue() + ", " + cbEnqStatus.getValue());
-		list = serviceMmsEnqHdr.getMmsEnqHdrList(companyid, null, tfEnqNo.getValue(), (Long) cbBranch.getValue(),
-				(String) cbEnqStatus.getValue(), username);
-		recordCnt = list.size();
-		beanMmsEnqHdrDM = new BeanItemContainer<MmsEnqHdrDM>(MmsEnqHdrDM.class);
-		beanMmsEnqHdrDM.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the MaterialEnquiry. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanMmsEnqHdrDM);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "branchName", "enquiryNo", "enquiryStatus",
-				"lastUpdateddt", "lastUpdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Enquiry No", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("enquiryId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
-		tblMstScrSrchRslt.setPageLength(13);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<MmsEnqHdrDM> list = new ArrayList<MmsEnqHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + cbBranch.getValue() + ", " + cbEnqStatus.getValue());
+			list = serviceMmsEnqHdr.getMmsEnqHdrList(companyid, null, tfEnqNo.getValue(), (Long) cbBranch.getValue(),
+					(String) cbEnqStatus.getValue(), username);
+			recordCnt = list.size();
+			beanMmsEnqHdrDM = new BeanItemContainer<MmsEnqHdrDM>(MmsEnqHdrDM.class);
+			beanMmsEnqHdrDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the MaterialEnquiry. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanMmsEnqHdrDM);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "branchName", "enquiryNo", "enquiryStatus",
+					"lastUpdateddt", "lastUpdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Enquiry No", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("enquiryId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
+			tblMstScrSrchRslt.setPageLength(13);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Load Purchase Detail
@@ -419,7 +424,7 @@ public class MaterialEnquiry extends BaseTransUI {
 			tblMmsEnqDtl.setPageLength(4);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -488,63 +493,76 @@ public class MaterialEnquiry extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editPurHdr() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			MmsEnqHdrDM enqHdrDM = beanMmsEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			enquiryId = enqHdrDM.getEnquiryId();
-			cbBranch.setValue(enqHdrDM.getBranchId());
-			tfEnqNo.setReadOnly(false);
-			tfEnqNo.setValue(enqHdrDM.getEnquiryNo());
-			dfEnqDate.setValue(enqHdrDM.getEnquiryDate());
-			dfDueDate.setValue(enqHdrDM.getDueDate());
-			for (MMSVendorDtlDM enquiryVendorDtlDM : serviceMMSVendordtl.getmaterialvdrdtl(null, enquiryId, null)) {
-				lsVendorName.select(enquiryVendorDtlDM.getVendorid());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				MmsEnqHdrDM enqHdrDM = beanMmsEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				enquiryId = enqHdrDM.getEnquiryId();
+				cbBranch.setValue(enqHdrDM.getBranchId());
+				tfEnqNo.setReadOnly(false);
+				tfEnqNo.setValue(enqHdrDM.getEnquiryNo());
+				dfEnqDate.setValue(enqHdrDM.getEnquiryDate());
+				dfDueDate.setValue(enqHdrDM.getDueDate());
+				for (MMSVendorDtlDM enquiryVendorDtlDM : serviceMMSVendordtl.getmaterialvdrdtl(null, enquiryId, null)) {
+					lsVendorName.select(enquiryVendorDtlDM.getVendorid());
+				}
+				cbindentno.setValue(enqHdrDM.getIndentId());
+				if (enqHdrDM.getEnquiryStatus() != null) {
+					cbEnqStatus.setValue(enqHdrDM.getEnquiryStatus());
+				}
+				if (enqHdrDM.getEnqRemark() != null) {
+					taEnqRem.setValue(enqHdrDM.getEnqRemark().toString());
+				}
+				listEnqDetails = serviceMmsEnqDtl.getMmsEnqDtlList(null, enquiryId, null, null,
+						(String) cbEnqDtlStatus.getValue());
 			}
-			cbindentno.setValue(enqHdrDM.getIndentId());
-			if (enqHdrDM.getEnquiryStatus() != null) {
-				cbEnqStatus.setValue(enqHdrDM.getEnquiryStatus());
-			}
-			if (enqHdrDM.getEnqRemark() != null) {
-				taEnqRem.setValue(enqHdrDM.getEnqRemark().toString());
-			}
-			listEnqDetails = serviceMmsEnqDtl.getMmsEnqDtlList(null, enquiryId, null, null,
-					(String) cbEnqDtlStatus.getValue());
+			loadMatDtl();
+			comments = new MmsComments(vlTableForm, null, companyid, null, enquiryId, null, null, null, null, null,
+					status);
+			comments.loadsrch(true, null, null, null, enquiryId, null, null, null, null, null);
 		}
-		loadMatDtl();
-		comments = new MmsComments(vlTableForm, null, companyid, null, enquiryId, null, null, null, null, null, status);
-		comments.loadsrch(true, null, null, null, enquiryId, null, null, null, null, null);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editmmsPurDetail() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMmsEnqDtl.getValue() != null) {
-			MmsEnqDtlDM enqDtlDM = beanMmsEnqDtlDM.getItem(tblMmsEnqDtl.getValue()).getBean();
-			lsMaterial.setValue(null);
-			Long matid = enqDtlDM.getMaterialid();
-			Collection<?> matids = lsMaterial.getItemIds();
-			for (Iterator<?> iterator = matids.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) lsMaterial.getItem(itemId);
-				// Get the actual bean and use the data
-				MaterialDM st = (MaterialDM) item.getBean();
-				if (matid != null && matid.equals(st.getMaterialId())) {
-					lsMaterial.select(itemId);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMmsEnqDtl.getValue() != null) {
+				MmsEnqDtlDM enqDtlDM = beanMmsEnqDtlDM.getItem(tblMmsEnqDtl.getValue()).getBean();
+				lsMaterial.setValue(null);
+				Long matid = enqDtlDM.getMaterialid();
+				Collection<?> matids = lsMaterial.getItemIds();
+				for (Iterator<?> iterator = matids.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) lsMaterial.getItem(itemId);
+					// Get the actual bean and use the data
+					MaterialDM st = (MaterialDM) item.getBean();
+					if (matid != null && matid.equals(st.getMaterialId())) {
+						lsMaterial.select(itemId);
+					}
+				}
+				if (enqDtlDM.getMatuom() != null) {
+					cbUom.setValue(enqDtlDM.getMatuom());
+				}
+				if (enqDtlDM.getEnquiryQty() != null) {
+					tfEnqQty.setValue(enqDtlDM.getEnquiryQty().toString());
+				}
+				if (enqDtlDM.getRemarks() != null) {
+					taEnqDtlRem.setValue(enqDtlDM.getRemarks().toString());
+				}
+				if (enqDtlDM.getEnqdtlsts() != null) {
+					cbEnqDtlStatus.setValue(enqDtlDM.getEnqdtlsts());
 				}
 			}
-			if (enqDtlDM.getMatuom() != null) {
-				cbUom.setValue(enqDtlDM.getMatuom());
-			}
-			if (enqDtlDM.getEnquiryQty() != null) {
-				tfEnqQty.setValue(enqDtlDM.getEnquiryQty().toString());
-			}
-			if (enqDtlDM.getRemarks() != null) {
-				taEnqDtlRem.setValue(enqDtlDM.getRemarks().toString());
-			}
-			if (enqDtlDM.getEnqdtlsts() != null) {
-				cbEnqDtlStatus.setValue(enqDtlDM.getEnqdtlsts());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -686,63 +704,58 @@ public class MaterialEnquiry extends BaseTransUI {
 	@Override
 	protected void saveDetails() throws IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		try {
-			// DtlValidation();
-			MmsEnqHdrDM matEnqobj = new MmsEnqHdrDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				matEnqobj = beanMmsEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			}
-			matEnqobj.setEnquiryNo(tfEnqNo.getValue());
-			matEnqobj.setCompanyId(companyid);
-			matEnqobj.setEnqRemark(taEnqRem.getValue().toString());
-			matEnqobj.setBranchId((Long) cbBranch.getValue());
-			matEnqobj.setDueDate((Date) dfDueDate.getValue());
-			matEnqobj.setEnquiryDate((Date) dfEnqDate.getValue());
-			matEnqobj.setIndentId((Long) cbindentno.getValue());
-			matEnqobj.setEnquiryStatus(((String) cbEnqStatus.getValue()));
-			matEnqobj.setPreparedBy(employeeId);
-			matEnqobj.setLastUpdateddt(DateUtils.getcurrentdate());
-			matEnqobj.setLastUpdatedby(username);
-			serviceMmsEnqHdr.saveorUpdateMmsEnqHdrDetails(matEnqobj);
-			enquiryId = matEnqobj.getEnquiryId();
-			String[] split = lsVendorName.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
-			for (String obj : split) {
-				if (obj.trim().length() > 0) {
-					MMSVendorDtlDM enqvendtl = new MMSVendorDtlDM();
-					enqvendtl.setEnqid(matEnqobj.getEnquiryId());
-					enqvendtl.setVendorid(Long.valueOf(obj.trim()));
-					serviceMMSVendordtl.save(enqvendtl);
-				}
-			}
-			@SuppressWarnings("unchecked")
-			Collection<MmsEnqDtlDM> itemIds = (Collection<MmsEnqDtlDM>) tblMmsEnqDtl.getVisibleItemIds();
-			for (MmsEnqDtlDM save : (Collection<MmsEnqDtlDM>) itemIds) {
-				save.setEnquiryId(Long.valueOf(matEnqobj.getEnquiryId().toString()));
-				serviceMmsEnqDtl.save(save);
-			}
-			comments.resetfields();
-			if (tblMstScrSrchRslt.getValue() == null) {
-				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO")
-							.get(0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO");
-					}
-				}
-				catch (Exception e) {
-				}
-			}
-			tfEnqNo.setReadOnly(false);
-			tfEnqNo.setValue(matEnqobj.getEnquiryNo());
-			comments.saveEnquiry(matEnqobj.getEnquiryId(), matEnqobj.getEnquiryStatus());
-			comments.resetfields();
-			enqDtlresetFields();
-			loadSrchRslt();
-			resetFields();
+		// DtlValidation();
+		MmsEnqHdrDM matEnqobj = new MmsEnqHdrDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			matEnqobj = beanMmsEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
+		matEnqobj.setEnquiryNo(tfEnqNo.getValue());
+		matEnqobj.setCompanyId(companyid);
+		matEnqobj.setEnqRemark(taEnqRem.getValue().toString());
+		matEnqobj.setBranchId((Long) cbBranch.getValue());
+		matEnqobj.setDueDate((Date) dfDueDate.getValue());
+		matEnqobj.setEnquiryDate((Date) dfEnqDate.getValue());
+		matEnqobj.setIndentId((Long) cbindentno.getValue());
+		matEnqobj.setEnquiryStatus(((String) cbEnqStatus.getValue()));
+		matEnqobj.setPreparedBy(employeeId);
+		matEnqobj.setLastUpdateddt(DateUtils.getcurrentdate());
+		matEnqobj.setLastUpdatedby(username);
+		serviceMmsEnqHdr.saveorUpdateMmsEnqHdrDetails(matEnqobj);
+		enquiryId = matEnqobj.getEnquiryId();
+		String[] split = lsVendorName.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+		for (String obj : split) {
+			if (obj.trim().length() > 0) {
+				MMSVendorDtlDM enqvendtl = new MMSVendorDtlDM();
+				enqvendtl.setEnqid(matEnqobj.getEnquiryId());
+				enqvendtl.setVendorid(Long.valueOf(obj.trim()));
+				serviceMMSVendordtl.save(enqvendtl);
+			}
 		}
+		@SuppressWarnings("unchecked")
+		Collection<MmsEnqDtlDM> itemIds = (Collection<MmsEnqDtlDM>) tblMmsEnqDtl.getVisibleItemIds();
+		for (MmsEnqDtlDM save : (Collection<MmsEnqDtlDM>) itemIds) {
+			save.setEnquiryId(Long.valueOf(matEnqobj.getEnquiryId().toString()));
+			serviceMmsEnqDtl.save(save);
+		}
+		comments.resetfields();
+		if (tblMstScrSrchRslt.getValue() == null) {
+			try {
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO")
+						.get(0);
+				if (slnoObj.getAutoGenYN().equals("Y")) {
+					serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO");
+				}
+			}
+			catch (Exception e) {
+			}
+		}
+		tfEnqNo.setReadOnly(false);
+		tfEnqNo.setValue(matEnqobj.getEnquiryNo());
+		comments.saveEnquiry(matEnqobj.getEnquiryId(), matEnqobj.getEnquiryStatus());
+		comments.resetfields();
+		enqDtlresetFields();
+		loadSrchRslt();
+		resetFields();
 	}
 	
 	private void saveEnqDtl() {
@@ -860,13 +873,18 @@ public class MaterialEnquiry extends BaseTransUI {
 	}
 	
 	private void deleteDetails() {
-		MmsEnqDtlDM save = new MmsEnqDtlDM();
-		if (tblMmsEnqDtl.getValue() != null) {
-			save = beanMmsEnqDtlDM.getItem(tblMmsEnqDtl.getValue()).getBean();
-			listEnqDetails.remove(save);
-			enqDtlresetFields();
-			loadMatDtl();
-			btndelete.setEnabled(false);
+		try {
+			MmsEnqDtlDM save = new MmsEnqDtlDM();
+			if (tblMmsEnqDtl.getValue() != null) {
+				save = beanMmsEnqDtlDM.getItem(tblMmsEnqDtl.getValue()).getBean();
+				listEnqDetails.remove(save);
+				enqDtlresetFields();
+				loadMatDtl();
+				btndelete.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

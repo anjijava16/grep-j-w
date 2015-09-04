@@ -63,7 +63,7 @@ public class MaterialParkedStock extends BaseUI {
 	private TextField tfparkedQty, tfusedQty, tfbalanceQty, tfLotNO, tfrefNo;
 	private TextArea taRefRemarks;
 	private HorizontalLayout hlsearch;
-	private BeanItemContainer<MaterialParkedStockDM> beanmaterialparkedstock;
+	private BeanItemContainer<MaterialParkedStockDM> beanMaterialParkedstock;
 	private FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4;
 	private Logger logger = Logger.getLogger(MaterialParkedStock.class);
 	// Parent layout for all the input controls
@@ -202,22 +202,27 @@ public class MaterialParkedStock extends BaseUI {
 	}
 	
 	private void viewLogger() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			MaterialParkedStockDM parkedStockDM = beanmaterialparkedstock.getItem(tblMstScrSrchRslt.getValue())
-					.getBean();
-			readonlyfalse();
-			cbMaterial.setValue(parkedStockDM.getMaterialId());
-			cbBranch.setValue(parkedStockDM.getBranchId());
-			dfParkedDate.setValue(parkedStockDM.getParkedDate());
-			cbStocktype.setValue(parkedStockDM.getStockType().toString());
-			tfparkedQty.setValue(parkedStockDM.getParkedQty().toString());
-			tfusedQty.setValue(parkedStockDM.getUsedQty().toString());
-			tfbalanceQty.setValue(parkedStockDM.getBalanceQty().toString());
-			tfLotNO.setValue(parkedStockDM.getLotNo());
-			tfrefNo.setValue(parkedStockDM.getReferenceNo());
-			dfRefDate.setValue(parkedStockDM.getReferenceDate());
-			taRefRemarks.setValue(parkedStockDM.getReferenceRemark());
-			readonlytrue();
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				MaterialParkedStockDM parkedStockDM = beanMaterialParkedstock.getItem(tblMstScrSrchRslt.getValue())
+						.getBean();
+				readonlyfalse();
+				cbMaterial.setValue(parkedStockDM.getMaterialId());
+				cbBranch.setValue(parkedStockDM.getBranchId());
+				dfParkedDate.setValue(parkedStockDM.getParkedDate());
+				cbStocktype.setValue(parkedStockDM.getStockType().toString());
+				tfparkedQty.setValue(parkedStockDM.getParkedQty().toString());
+				tfusedQty.setValue(parkedStockDM.getUsedQty().toString());
+				tfbalanceQty.setValue(parkedStockDM.getBalanceQty().toString());
+				tfLotNO.setValue(parkedStockDM.getLotNo());
+				tfrefNo.setValue(parkedStockDM.getReferenceNo());
+				dfRefDate.setValue(parkedStockDM.getReferenceDate());
+				taRefRemarks.setValue(parkedStockDM.getReferenceRemark());
+				readonlytrue();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -230,9 +235,9 @@ public class MaterialParkedStock extends BaseUI {
 					(Long) cbMaterial.getValue(), null, (String) cbStocktype.getValue(), parkedDate,
 					(Long) cbBranch.getValue(), "F");
 			recordCnt = materiallist.size();
-			beanmaterialparkedstock = new BeanItemContainer<MaterialParkedStockDM>(MaterialParkedStockDM.class);
-			beanmaterialparkedstock.addAll(materiallist);
-			tblMstScrSrchRslt.setContainerDataSource(beanmaterialparkedstock);
+			beanMaterialParkedstock = new BeanItemContainer<MaterialParkedStockDM>(MaterialParkedStockDM.class);
+			beanMaterialParkedstock.addAll(materiallist);
+			tblMstScrSrchRslt.setContainerDataSource(beanMaterialParkedstock);
 			tblMstScrSrchRslt.setSelectable(true);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "parkStockId", "branchName", "materialName",
 					"parkedDate", "stockType", "lastUpdateddt", "lastUpdatedby" });
@@ -290,7 +295,7 @@ public class MaterialParkedStock extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

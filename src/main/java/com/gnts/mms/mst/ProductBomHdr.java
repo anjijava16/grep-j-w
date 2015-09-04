@@ -106,7 +106,7 @@ public class ProductBomHdr extends BaseTransUI {
 	private ComboBox cbMaterialStatus = new GERPComboBox("Status", BASEConstants.M_BASE_USER, BASEConstants.USER_STATUS);
 	private TextField tfMaterialQty;
 	private Button btnAddBomDtl = new GERPButton("Add", "addbt", this);
-	private Table tblBomDtl = new GERPTable();
+	private Table tblBOMDetails = new GERPTable();
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// Parent layout for all the input controls
@@ -210,13 +210,13 @@ public class ProductBomHdr extends BaseTransUI {
 			}
 		});
 		// ClickListener for Product BOM Dtl Tale
-		tblBomDtl.addItemClickListener(new ItemClickListener() {
+		tblBOMDetails.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblBomDtl.isSelected(event.getItemId())) {
-					tblBomDtl.setImmediate(true);
+				if (tblBOMDetails.isSelected(event.getItemId())) {
+					tblBOMDetails.setImmediate(true);
 					btnAddBomDtl.setCaption("Add");
 					btnAddBomDtl.setStyleName("savebt");
 					btndelete.setEnabled(false);
@@ -243,48 +243,58 @@ public class ProductBomHdr extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.setSelectable(true);
-		tblMstScrSrchRslt.removeAllItems();
-		tblMstScrSrchRslt.setPageLength(13);
-		List<ProductBomHdrDM> list = new ArrayList<ProductBomHdrDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ cbProduct.getValue() + "," + cbBranch.getValue() + "," + cbBomStatus.getValue() + "," + companyId);
-		list = serviceProductBomHdr.getProductBomHdrList(null, companyId, (Long) cbBranch.getValue(),
-				(Long) cbProduct.getValue(), null, null, null, null, null, (String) cbBomStatus.getValue(), "F");
-		recordCnt = list.size();
-		beanProductBomHdr = new BeanItemContainer<ProductBomHdrDM>(ProductBomHdrDM.class);
-		beanProductBomHdr.addAll(list);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Got the Product Bom Hdr result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanProductBomHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "bomId", "branchName", "productName", "bomVersion",
-				"bomStatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Product Name", "BOM Version",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("bomId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.setSelectable(true);
+			tblMstScrSrchRslt.removeAllItems();
+			tblMstScrSrchRslt.setPageLength(13);
+			List<ProductBomHdrDM> list = new ArrayList<ProductBomHdrDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ cbProduct.getValue() + "," + cbBranch.getValue() + "," + cbBomStatus.getValue() + "," + companyId);
+			list = serviceProductBomHdr.getProductBomHdrList(null, companyId, (Long) cbBranch.getValue(),
+					(Long) cbProduct.getValue(), null, null, null, null, null, (String) cbBomStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanProductBomHdr = new BeanItemContainer<ProductBomHdrDM>(ProductBomHdrDM.class);
+			beanProductBomHdr.addAll(list);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the Product Bom Hdr result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanProductBomHdr);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "bomId", "branchName", "productName", "bomVersion",
+					"bomStatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Product Name", "BOM Version",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("bomId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadProductBomDtlRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblBomDtl.setSelectable(true);
-		tblBomDtl.removeAllItems();
-		tblBomDtl.setPageLength(5);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are " + ","
-				+ bomId + "," + companyId);
-		recordCntBomDtl = listBOMDtls.size();
-		beanProductBomDtl = new BeanItemContainer<ProductBomDtlDM>(ProductBomDtlDM.class);
-		beanProductBomDtl.addAll(listBOMDtls);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Got the Product Bom Dtl result set");
-		tblBomDtl.setContainerDataSource(beanProductBomDtl);
-		tblBomDtl.setVisibleColumns(new Object[] { "bomDtlId", "materialName", "materialQty", "materialUom",
-				"materialStatus", "lastupdateddt", "lastupdatedby" });
-		tblBomDtl.setColumnHeaders(new String[] { "Ref.Id", "Material Name", "Quantity", "UOM", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblBomDtl.setColumnAlignment("bomDtlId", Align.RIGHT);
-		tblBomDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCntBomDtl);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblBOMDetails.setSelectable(true);
+			tblBOMDetails.removeAllItems();
+			tblBOMDetails.setPageLength(5);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ "," + bomId + "," + companyId);
+			recordCntBomDtl = listBOMDtls.size();
+			beanProductBomDtl = new BeanItemContainer<ProductBomDtlDM>(ProductBomDtlDM.class);
+			beanProductBomDtl.addAll(listBOMDtls);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the Product Bom Dtl result set");
+			tblBOMDetails.setContainerDataSource(beanProductBomDtl);
+			tblBOMDetails.setVisibleColumns(new Object[] { "bomDtlId", "materialName", "materialQty", "materialUom",
+					"materialStatus", "lastupdateddt", "lastupdatedby" });
+			tblBOMDetails.setColumnHeaders(new String[] { "Ref.Id", "Material Name", "Quantity", "UOM", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblBOMDetails.setColumnAlignment("bomDtlId", Align.RIGHT);
+			tblBOMDetails.setColumnFooter("lastupdatedby", "No.of Records : " + recordCntBomDtl);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -364,7 +374,7 @@ public class ProductBomHdr extends BaseTransUI {
 		lblBomDtl.setStyleName("h4");
 		VerticalLayout vlBomDtlComponent = new VerticalLayout();
 		vlBomDtlComponent.addComponent(hlBomDtl);
-		vlBomDtlComponent.addComponent(tblBomDtl);
+		vlBomDtlComponent.addComponent(tblBOMDetails);
 		vlBomDtlComponent.setSpacing(true);
 		TabSheet dtlTab = new TabSheet();
 		dtlTab.addTab(vlBomDtlComponent, "BOM Detail");
@@ -509,26 +519,31 @@ public class ProductBomHdr extends BaseTransUI {
 	
 	// Reset the selected row's data into Product BOM Hdr input components
 	private void editProductBomHdr() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			ProductBomHdrDM productBomHdr = beanProductBomHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			bomId = productBomHdr.getBomId();
-			if ((productBomHdr.getProductId() != null)) {
-				cbProduct.setValue(productBomHdr.getProductId());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				ProductBomHdrDM productBomHdr = beanProductBomHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				bomId = productBomHdr.getBomId();
+				if ((productBomHdr.getProductId() != null)) {
+					cbProduct.setValue(productBomHdr.getProductId());
+				}
+				if ((productBomHdr.getBranchId() != null)) {
+					cbBranch.setValue(productBomHdr.getBranchId());
+				}
+				if ((productBomHdr.getBomVersion() != null)) {
+					tfBomVersion.setValue(productBomHdr.getBomVersion().toString());
+				}
+				if ((productBomHdr.getBomStatus() != null)) {
+					cbBomStatus.setValue(productBomHdr.getBomStatus());
+				}
+				listBOMDtls.addAll(serviceProductBomDtl.getProductBomDtlList(null, bomId, null, null, "F"));
 			}
-			if ((productBomHdr.getBranchId() != null)) {
-				cbBranch.setValue(productBomHdr.getBranchId());
-			}
-			if ((productBomHdr.getBomVersion() != null)) {
-				tfBomVersion.setValue(productBomHdr.getBomVersion().toString());
-			}
-			if ((productBomHdr.getBomStatus() != null)) {
-				cbBomStatus.setValue(productBomHdr.getBomStatus());
-			}
-			listBOMDtls.addAll(serviceProductBomDtl.getProductBomDtlList(null, bomId, null, null, "F"));
+			loadProductBomDtlRslt();
+			comments = new MmsComments(vlTableForm, null, companyId, bomId, null, null, null, null, null, null, null);
+			comments.loadsrch(true, null, null, bomId, null, null, null, null, null, null);
 		}
-		loadProductBomDtlRslt();
-		comments = new MmsComments(vlTableForm, null, companyId, bomId, null, null, null, null, null, null, null);
-		comments.loadsrch(true, null, null, bomId, null, null, null, null, null, null);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -544,7 +559,7 @@ public class ProductBomHdr extends BaseTransUI {
 			cbBranch.setComponentError(new UserError(GERPErrorCodes.NULL_PRODUCT_BOM_BRANCH));
 			errorFlag = true;
 		}
-		if (tblBomDtl.size() == 0) {
+		if (tblBOMDetails.size() == 0) {
 			cbMaterialUOM.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_QTY));
 			errorFlag = true;
 		}
@@ -580,7 +595,7 @@ public class ProductBomHdr extends BaseTransUI {
 		productBOMObj.setLastupdatedby(userName);
 		serviceProductBomHdr.saveOrUpdateProductBomHdr(productBOMObj);
 		@SuppressWarnings("unchecked")
-		Collection<ProductBomDtlDM> prodBOMDtlItemIds = (Collection<ProductBomDtlDM>) tblBomDtl.getVisibleItemIds();
+		Collection<ProductBomDtlDM> prodBOMDtlItemIds = (Collection<ProductBomDtlDM>) tblBOMDetails.getVisibleItemIds();
 		for (ProductBomDtlDM saveProdBOMDtl : (Collection<ProductBomDtlDM>) prodBOMDtlItemIds) {
 			saveProdBOMDtl.setBomId(Long.valueOf(productBOMObj.getBomId()));
 			serviceProductBomDtl.saveOrUpdateProductBomDtl(saveProdBOMDtl);
@@ -603,7 +618,7 @@ public class ProductBomHdr extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(true);
 		tblMstScrSrchRslt.setVisible(true);
 		assembleSearchLayout();
-		tblBomDtl.removeAllItems();
+		tblBOMDetails.removeAllItems();
 		resetBOMDetailFields();
 		resetFields();
 		loadSrchRslt();
@@ -652,13 +667,13 @@ public class ProductBomHdr extends BaseTransUI {
 						}
 					}
 					System.out.println("count--->" + count);
-					if (tblBomDtl.getValue() != null) {
+					if (tblBOMDetails.getValue() != null) {
 						count = 0;
 					}
 					if (count == 0) {
 						ProductBomDtlDM productBomDtlObj = new ProductBomDtlDM();
-						if (tblBomDtl.getValue() != null) {
-							productBomDtlObj = beanProductBomDtl.getItem(tblBomDtl.getValue()).getBean();
+						if (tblBOMDetails.getValue() != null) {
+							productBomDtlObj = beanProductBomDtl.getItem(tblBOMDetails.getValue()).getBean();
 						}
 						if (cbMaterialName.getValue() != null) {
 							productBomDtlObj.setMaterialId(Long.valueOf(obj.trim()));
@@ -685,7 +700,7 @@ public class ProductBomHdr extends BaseTransUI {
 			resetBOMDetailFields();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -709,28 +724,33 @@ public class ProductBomHdr extends BaseTransUI {
 	 * editBomDtl()-->this function is used for restore the selected row's data to product bom dtl components
 	 */
 	private void editBomDtl() {
-		if (tblBomDtl.getValue() != null) {
-			ProductBomDtlDM productBomDtlDM = new ProductBomDtlDM();
-			productBomDtlDM = beanProductBomDtl.getItem(tblBomDtl.getValue()).getBean();
-			cbMaterialName.setValue(null);
-			Long matId = productBomDtlDM.getMaterialId();
-			Collection<?> empColId = cbMaterialName.getItemIds();
-			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbMaterialName.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				MaterialDM matObj = (MaterialDM) itemclient.getBean();
-				if (matId != null && matId.equals(matObj.getMaterialId())) {
-					cbMaterialName.select(itemIdClient);
+		try {
+			if (tblBOMDetails.getValue() != null) {
+				ProductBomDtlDM productBomDtlDM = new ProductBomDtlDM();
+				productBomDtlDM = beanProductBomDtl.getItem(tblBOMDetails.getValue()).getBean();
+				cbMaterialName.setValue(null);
+				Long matId = productBomDtlDM.getMaterialId();
+				Collection<?> empColId = cbMaterialName.getItemIds();
+				for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbMaterialName.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					MaterialDM matObj = (MaterialDM) itemclient.getBean();
+					if (matId != null && matId.equals(matObj.getMaterialId())) {
+						cbMaterialName.select(itemIdClient);
+					}
 				}
+				if (productBomDtlDM.getMaterialQty() != null) {
+					tfMaterialQty.setValue(productBomDtlDM.getMaterialQty().toString());
+				}
+				cbMaterialStatus.setValue(productBomDtlDM.getMaterialStatus());
+				cbMaterialUOM.setReadOnly(false);
+				cbMaterialUOM.setValue(productBomDtlDM.getMaterialUom());
+				cbMaterialUOM.setReadOnly(true);
 			}
-			if (productBomDtlDM.getMaterialQty() != null) {
-				tfMaterialQty.setValue(productBomDtlDM.getMaterialQty().toString());
-			}
-			cbMaterialStatus.setValue(productBomDtlDM.getMaterialStatus());
-			cbMaterialUOM.setReadOnly(false);
-			cbMaterialUOM.setValue(productBomDtlDM.getMaterialUom());
-			cbMaterialUOM.setReadOnly(true);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -753,17 +773,22 @@ public class ProductBomHdr extends BaseTransUI {
 		cbMaterialUOM.setComponentError(null);
 		cbMaterialStatus.setValue(cbMaterialStatus.getItemIds().iterator().next());
 		listBOMDtls = new ArrayList<ProductBomDtlDM>();
-		tblBomDtl.removeAllItems();
+		tblBOMDetails.removeAllItems();
 	}
 	
 	private void deleteDetails() {
-		ProductBomDtlDM save = new ProductBomDtlDM();
-		if (tblBomDtl.getValue() != null) {
-			save = beanProductBomDtl.getItem(tblBomDtl.getValue()).getBean();
-			listBOMDtls.remove(save);
-			resetBOMDetailFields();
-			loadProductBomDtlRslt();
-			btndelete.setEnabled(false);
+		try {
+			ProductBomDtlDM save = new ProductBomDtlDM();
+			if (tblBOMDetails.getValue() != null) {
+				save = beanProductBomDtl.getItem(tblBOMDetails.getValue()).getBean();
+				listBOMDtls.remove(save);
+				resetBOMDetailFields();
+				loadProductBomDtlRslt();
+				btndelete.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

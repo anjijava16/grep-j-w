@@ -374,8 +374,8 @@ public class Indent extends BaseTransUI {
 			List<IndentHdrDM> list = new ArrayList<IndentHdrDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfIndNo.getValue() + ", " + cbIndStatus.getValue());
-			list = serviceIndentHdr.getMmsIndentHdrList(tfIndNo.getValue(), (String) cbIndType.getValue(),
-					null, null, null, null, null, null, (String) cbIndStatus.getValue(), "F");
+			list = serviceIndentHdr.getMmsIndentHdrList(tfIndNo.getValue(), (String) cbIndType.getValue(), null, null,
+					null, null, null, null, (String) cbIndStatus.getValue(), "F");
 			recordCnt = list.size();
 			beanIndentHdrDM = new BeanItemContainer<IndentHdrDM>(IndentHdrDM.class);
 			beanIndentHdrDM.addAll(list);
@@ -459,62 +459,73 @@ public class Indent extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editHdrIndentDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			IndentHdrDM editHdrIndent = beanIndentHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			indentHdrId = editHdrIndent.getIndentId();
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Tax. Id -> "
-					+ indentHdrId);
-			tfIndNo.setReadOnly(false);
-			tfIndNo.setValue(editHdrIndent.getIndentNo());
-			tfIndNo.setReadOnly(true);
-			cbIndType.setValue(editHdrIndent.getIndentType());
-			if (editHdrIndent.getIndentDate() != null) {
-				dfIndDate.setValue(editHdrIndent.getIndentDate1());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				IndentHdrDM editHdrIndent = beanIndentHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				indentHdrId = editHdrIndent.getIndentId();
+				logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Tax. Id -> "
+						+ indentHdrId);
+				tfIndNo.setReadOnly(false);
+				tfIndNo.setValue(editHdrIndent.getIndentNo());
+				tfIndNo.setReadOnly(true);
+				cbIndType.setValue(editHdrIndent.getIndentType());
+				if (editHdrIndent.getIndentDate() != null) {
+					dfIndDate.setValue(editHdrIndent.getIndentDate1());
+				}
+				cbBranchId.setValue(editHdrIndent.getBranchId());
+				cbDepartment.setValue(editHdrIndent.getDeptid());
+				dfExpDt.setValue(editHdrIndent.getExpectedDate());
+				taRemarks.setValue(editHdrIndent.getIndentRemarks());
+				cbIndStatus.setValue(editHdrIndent.getIndentStatus());
+				indentDtlList.addAll(serviceIndentDtl.getIndentDtlDMList(null, indentHdrId, null, null, "F"));
 			}
-			cbBranchId.setValue(editHdrIndent.getBranchId());
-			cbDepartment.setValue(editHdrIndent.getDeptid());
-			dfExpDt.setValue(editHdrIndent.getExpectedDate());
-			taRemarks.setValue(editHdrIndent.getIndentRemarks());
-			cbIndStatus.setValue(editHdrIndent.getIndentStatus());
-			indentDtlList.addAll(serviceIndentDtl.getIndentDtlDMList(null, indentHdrId, null, null, "F"));
+			loadIndentDtl();
+			comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, indentHdrId, null, null,
+					status);
+			comments.loadsrch(true, null, null, null, null, null, null, indentHdrId, null, null);
 		}
-		loadIndentDtl();
-		comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, indentHdrId, null, null,
-				status);
-		comments.loadsrch(true, null, null, null, null, null, null, indentHdrId, null, null);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to edit the values from table into fields to update process
 	private void editIntentDtls() {
-		hlUserInputLayout.setVisible(true);
-		if (tblIndentDtl.getValue() != null) {
-			IndentDtlDM indentDtlDM = new IndentDtlDM();
-			indentDtlDM = beanIndentDtlDM.getItem(tblIndentDtl.getValue()).getBean();
-			cbMatName.setValue(null);
-			Long matId = indentDtlDM.getMaterialId();
-			Collection<?> empColId = cbMatName.getItemIds();
-			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbMatName.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				MaterialDM matObj = (MaterialDM) itemclient.getBean();
-				if (matId != null && matId.equals(matObj.getMaterialId())) {
-					cbMatName.select(itemIdClient);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblIndentDtl.getValue() != null) {
+				IndentDtlDM indentDtlDM = new IndentDtlDM();
+				indentDtlDM = beanIndentDtlDM.getItem(tblIndentDtl.getValue()).getBean();
+				cbMatName.setValue(null);
+				Long matId = indentDtlDM.getMaterialId();
+				Collection<?> empColId = cbMatName.getItemIds();
+				for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbMatName.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					MaterialDM matObj = (MaterialDM) itemclient.getBean();
+					if (matId != null && matId.equals(matObj.getMaterialId())) {
+						cbMatName.select(itemIdClient);
+					}
+				}
+				if (indentDtlDM.getIndentQty() != null) {
+					tfIndQty.setValue(indentDtlDM.getIndentQty().toString());
+				}
+				if (indentDtlDM.getMaterialUOM() != null) {
+					cbUom.setReadOnly(false);
+					cbUom.setValue(indentDtlDM.getMaterialUOM());
+					cbUom.setReadOnly(true);
+				}
+				if (indentDtlDM.getStatus() != null) {
+					cbDtlStatus.setValue(indentDtlDM.getStatus());
 				}
 			}
-			if (indentDtlDM.getIndentQty() != null) {
-				tfIndQty.setValue(indentDtlDM.getIndentQty().toString());
-			}
-			if (indentDtlDM.getMaterialUOM() != null) {
-				cbUom.setReadOnly(false);
-				cbUom.setValue(indentDtlDM.getMaterialUOM());
-				cbUom.setReadOnly(true);
-			}
-			if (indentDtlDM.getStatus() != null) {
-				cbDtlStatus.setValue(indentDtlDM.getStatus());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -887,13 +898,18 @@ public class Indent extends BaseTransUI {
 	
 	// delete row in temporary table
 	private void deleteDetails() {
-		IndentDtlDM save = new IndentDtlDM();
-		if (tblIndentDtl.getValue() != null) {
-			save = beanIndentDtlDM.getItem(tblIndentDtl.getValue()).getBean();
-			indentDtlList.remove(save);
-			IndentDtlresetField();
-			loadIndentDtl();
-			btndelete.setEnabled(false);
+		try {
+			IndentDtlDM save = new IndentDtlDM();
+			if (tblIndentDtl.getValue() != null) {
+				save = beanIndentDtlDM.getItem(tblIndentDtl.getValue()).getBean();
+				indentDtlList.remove(save);
+				IndentDtlresetField();
+				loadIndentDtl();
+				btndelete.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

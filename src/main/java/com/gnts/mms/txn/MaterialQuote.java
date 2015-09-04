@@ -615,27 +615,32 @@ public class MaterialQuote extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<MmsQuoteHdrDM> list = new ArrayList<MmsQuoteHdrDM>();
-		String eno = null;
-		if (cbEnqNo.getValue() != null) {
-			eno = (((MmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryNo());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<MmsQuoteHdrDM> list = new ArrayList<MmsQuoteHdrDM>();
+			String eno = null;
+			if (cbEnqNo.getValue() != null) {
+				eno = (((MmsEnqHdrDM) cbEnqNo.getValue()).getEnquiryNo());
+			}
+			list = serviceQuoteHdr.getMmsQuoteHdrList(companyid, null, null, (Long) cbBranch.getValue(), eno,
+					(String) tfQuoteRef.getValue(), (String) cbStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanQuoteHdr = new BeanItemContainer<MmsQuoteHdrDM>(MmsQuoteHdrDM.class);
+			beanQuoteHdr.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanQuoteHdr);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "quoteId", "branchName", "quoteRef", "enquiryNo",
+					"status", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Quote Ref", "Enquiry No",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("quoteId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+			tblMstScrSrchRslt.setPageLength(12);
 		}
-		list = serviceQuoteHdr.getMmsQuoteHdrList(companyid, null, null, (Long) cbBranch.getValue(), eno,
-				(String) tfQuoteRef.getValue(), (String) cbStatus.getValue(), "F");
-		recordCnt = list.size();
-		beanQuoteHdr = new BeanItemContainer<MmsQuoteHdrDM>(MmsQuoteHdrDM.class);
-		beanQuoteHdr.addAll(list);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanQuoteHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "quoteId", "branchName", "quoteRef", "enquiryNo", "status",
-				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Quote Ref", "Enquiry No", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("quoteId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
-		tblMstScrSrchRslt.setPageLength(12);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadMatDtl() {
@@ -666,7 +671,7 @@ public class MaterialQuote extends BaseTransUI {
 			tblMatQuDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -700,7 +705,7 @@ public class MaterialQuote extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -721,7 +726,7 @@ public class MaterialQuote extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -779,171 +784,184 @@ public class MaterialQuote extends BaseTransUI {
 	}
 	
 	private void editQuoteHdr() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlCmdBtnLayout.setVisible(false);
-		hlUserInputLayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected QuoteId -> "
-				+ QuoteId);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			MmsQuoteHdrDM quoteHdr = beanQuoteHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			QuoteId = quoteHdr.getQuoteId();
-			cbBranch.setValue(quoteHdr.getBranchId());
-			cbEnqNo.setValue(quoteHdr.getEnquiryNo());
-			tfQuoteRef.setReadOnly(false);
-			tfQuoteRef.setValue(quoteHdr.getQuoteRef());
-			tfQuoteRef.setReadOnly(true);
-			dfQuoteDt.setValue(quoteHdr.getQuoteDate());
-			dfvalidDt.setValue(quoteHdr.getQuoteValDate());
-			if (quoteHdr.getRemarks() != null) {
-				taRemark.setValue(quoteHdr.getRemarks());
-			}
-			tfQuoteVersion.setReadOnly(false);
-			tfQuoteVersion.setValue(quoteHdr.getQuoteVersion());
-			tfQuoteVersion.setReadOnly(true);
-			tfBasictotal.setReadOnly(false);
-			tfBasictotal.setValue(quoteHdr.getBasicTotal().toString());
-			tfBasictotal.setReadOnly(true);
-			tfpackingPer.setValue(quoteHdr.getPackingPrcnt().toString());
-			tfPackingValue.setReadOnly(false);
-			tfPackingValue.setValue(quoteHdr.getPackingValue().toString());
-			tfPackingValue.setReadOnly(true);
-			tfSubTotal.setReadOnly(false);
-			tfSubTotal.setValue(quoteHdr.getSubTotal().toString());
-			tfSubTotal.setReadOnly(true);
-			tfVatPer.setValue(quoteHdr.getVatPrcnt().toString());
-			tfVatValue.setReadOnly(false);
-			tfVatValue.setValue(quoteHdr.getVatValue().toString());
-			tfVatValue.setReadOnly(true);
-			tfEDPer.setValue(quoteHdr.getEdPrcnt().toString());
-			tfEDValue.setReadOnly(false);
-			tfEDValue.setValue(quoteHdr.getEdValue().toString());
-			tfEDValue.setReadOnly(true);
-			tfHEDPer.setValue(quoteHdr.getHedPrcnt().toString());
-			tfHEDValue.setReadOnly(false);
-			tfHEDValue.setValue(quoteHdr.getHedValue().toString());
-			tfHEDValue.setReadOnly(true);
-			tfCessPer.setValue(quoteHdr.getCessPrcnt().toString());
-			tfCessValue.setReadOnly(false);
-			tfCessValue.setValue(quoteHdr.getCessValue().toString());
-			tfCessValue.setReadOnly(true);
-			tfCstPer.setValue(quoteHdr.getCstPrcnt().toString());
-			tfCstValue.setReadOnly(false);
-			tfCstValue.setValue(quoteHdr.getCstValue().toString());
-			tfCstValue.setReadOnly(true);
-			tfSubTaxTotal.setReadOnly(false);
-			tfSubTaxTotal.setValue(quoteHdr.getSubTaxTotal().toString());
-			tfSubTaxTotal.setReadOnly(true);
-			tfFreightPer.setValue(quoteHdr.getFreightPrcnt().toString());
-			tfFreightValue.setReadOnly(false);
-			tfFreightValue.setValue(quoteHdr.getFreightValue().toString());
-			tfFreightValue.setReadOnly(true);
-			tfOtherPer.setValue((quoteHdr.getOthersPrcnt().toString()));
-			tfOtherValue.setReadOnly(false);
-			tfOtherValue.setValue((quoteHdr.getOthersValue().toString()));
-			tfOtherValue.setReadOnly(true);
-			tfGrandtotal.setReadOnly(false);
-			tfGrandtotal.setValue(quoteHdr.getGrandTotal().toString());
-			tfGrandtotal.setReadOnly(true);
-			if (quoteHdr.getPaymentTerms() != null) {
-				tapaymetTerms.setValue(quoteHdr.getPaymentTerms().toString());
-			}
-			if (quoteHdr.getFreightTerms() != null) {
-				taFreightTerms.setValue(quoteHdr.getFreightTerms());
-			}
-			if (quoteHdr.getWarrantyTerms() != null) {
-				taWarrentyTerms.setValue(quoteHdr.getWarrantyTerms());
-			}
-			if (quoteHdr.getDeliveryTerms() != null) {
-				taDelTerms.setValue(quoteHdr.getDeliveryTerms());
-			}
-			if (quoteHdr.getStatus() != null) {
-				cbStatus.setValue(quoteHdr.getStatus().toString());
-			}
-			if (quoteHdr.getDutyExempted().equals("Y")) {
-				ckdutyexm.setValue(true);
-			} else {
-				ckdutyexm.setValue(false);
-			}
-			if (quoteHdr.getCformReqd().equals("Y")) {
-				ckCformRqu.setValue(true);
-			} else {
-				ckCformRqu.setValue(false);
-			}
-			if (quoteHdr.getPdcReqd().equals("Y")) {
-				ckPdcRqu.setValue(true);
-			} else {
-				ckPdcRqu.setValue(false);
-			}
-			if (quoteHdr.getVendorid() != null) {
-				cbVendorname.setValue(quoteHdr.getVendorid());
-			}
-			Long uom = quoteHdr.getEnquiryId();
-			Collection<?> uomid = cbEnqNo.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbEnqNo.getItem(itemId);
-				// Get the actual bean and use the data
-				MmsEnqHdrDM st = (MmsEnqHdrDM) item.getBean();
-				if (uom != null && uom.equals(st.getEnquiryId())) {
-					cbEnqNo.setValue(itemId);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlCmdBtnLayout.setVisible(false);
+			hlUserInputLayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected QuoteId -> "
+					+ QuoteId);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				MmsQuoteHdrDM quoteHdr = beanQuoteHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				QuoteId = quoteHdr.getQuoteId();
+				cbBranch.setValue(quoteHdr.getBranchId());
+				cbEnqNo.setValue(quoteHdr.getEnquiryNo());
+				tfQuoteRef.setReadOnly(false);
+				tfQuoteRef.setValue(quoteHdr.getQuoteRef());
+				tfQuoteRef.setReadOnly(true);
+				dfQuoteDt.setValue(quoteHdr.getQuoteDate());
+				dfvalidDt.setValue(quoteHdr.getQuoteValDate());
+				if (quoteHdr.getRemarks() != null) {
+					taRemark.setValue(quoteHdr.getRemarks());
 				}
+				tfQuoteVersion.setReadOnly(false);
+				tfQuoteVersion.setValue(quoteHdr.getQuoteVersion());
+				tfQuoteVersion.setReadOnly(true);
+				tfBasictotal.setReadOnly(false);
+				tfBasictotal.setValue(quoteHdr.getBasicTotal().toString());
+				tfBasictotal.setReadOnly(true);
+				tfpackingPer.setValue(quoteHdr.getPackingPrcnt().toString());
+				tfPackingValue.setReadOnly(false);
+				tfPackingValue.setValue(quoteHdr.getPackingValue().toString());
+				tfPackingValue.setReadOnly(true);
+				tfSubTotal.setReadOnly(false);
+				tfSubTotal.setValue(quoteHdr.getSubTotal().toString());
+				tfSubTotal.setReadOnly(true);
+				tfVatPer.setValue(quoteHdr.getVatPrcnt().toString());
+				tfVatValue.setReadOnly(false);
+				tfVatValue.setValue(quoteHdr.getVatValue().toString());
+				tfVatValue.setReadOnly(true);
+				tfEDPer.setValue(quoteHdr.getEdPrcnt().toString());
+				tfEDValue.setReadOnly(false);
+				tfEDValue.setValue(quoteHdr.getEdValue().toString());
+				tfEDValue.setReadOnly(true);
+				tfHEDPer.setValue(quoteHdr.getHedPrcnt().toString());
+				tfHEDValue.setReadOnly(false);
+				tfHEDValue.setValue(quoteHdr.getHedValue().toString());
+				tfHEDValue.setReadOnly(true);
+				tfCessPer.setValue(quoteHdr.getCessPrcnt().toString());
+				tfCessValue.setReadOnly(false);
+				tfCessValue.setValue(quoteHdr.getCessValue().toString());
+				tfCessValue.setReadOnly(true);
+				tfCstPer.setValue(quoteHdr.getCstPrcnt().toString());
+				tfCstValue.setReadOnly(false);
+				tfCstValue.setValue(quoteHdr.getCstValue().toString());
+				tfCstValue.setReadOnly(true);
+				tfSubTaxTotal.setReadOnly(false);
+				tfSubTaxTotal.setValue(quoteHdr.getSubTaxTotal().toString());
+				tfSubTaxTotal.setReadOnly(true);
+				tfFreightPer.setValue(quoteHdr.getFreightPrcnt().toString());
+				tfFreightValue.setReadOnly(false);
+				tfFreightValue.setValue(quoteHdr.getFreightValue().toString());
+				tfFreightValue.setReadOnly(true);
+				tfOtherPer.setValue((quoteHdr.getOthersPrcnt().toString()));
+				tfOtherValue.setReadOnly(false);
+				tfOtherValue.setValue((quoteHdr.getOthersValue().toString()));
+				tfOtherValue.setReadOnly(true);
+				tfGrandtotal.setReadOnly(false);
+				tfGrandtotal.setValue(quoteHdr.getGrandTotal().toString());
+				tfGrandtotal.setReadOnly(true);
+				if (quoteHdr.getPaymentTerms() != null) {
+					tapaymetTerms.setValue(quoteHdr.getPaymentTerms().toString());
+				}
+				if (quoteHdr.getFreightTerms() != null) {
+					taFreightTerms.setValue(quoteHdr.getFreightTerms());
+				}
+				if (quoteHdr.getWarrantyTerms() != null) {
+					taWarrentyTerms.setValue(quoteHdr.getWarrantyTerms());
+				}
+				if (quoteHdr.getDeliveryTerms() != null) {
+					taDelTerms.setValue(quoteHdr.getDeliveryTerms());
+				}
+				if (quoteHdr.getStatus() != null) {
+					cbStatus.setValue(quoteHdr.getStatus().toString());
+				}
+				if (quoteHdr.getDutyExempted().equals("Y")) {
+					ckdutyexm.setValue(true);
+				} else {
+					ckdutyexm.setValue(false);
+				}
+				if (quoteHdr.getCformReqd().equals("Y")) {
+					ckCformRqu.setValue(true);
+				} else {
+					ckCformRqu.setValue(false);
+				}
+				if (quoteHdr.getPdcReqd().equals("Y")) {
+					ckPdcRqu.setValue(true);
+				} else {
+					ckPdcRqu.setValue(false);
+				}
+				if (quoteHdr.getVendorid() != null) {
+					cbVendorname.setValue(quoteHdr.getVendorid());
+				}
+				Long uom = quoteHdr.getEnquiryId();
+				Collection<?> uomid = cbEnqNo.getItemIds();
+				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbEnqNo.getItem(itemId);
+					// Get the actual bean and use the data
+					MmsEnqHdrDM st = (MmsEnqHdrDM) item.getBean();
+					if (uom != null && uom.equals(st.getEnquiryId())) {
+						cbEnqNo.setValue(itemId);
+					}
+				}
+				if (quoteHdr.getQuoteDoc() != null) {
+					byte[] certificate = quoteHdr.getQuoteDoc();
+					UploadDocumentUI test = new UploadDocumentUI(hlquoteDoc);
+					test.displaycertificate(certificate);
+				} else {
+					new UploadDocumentUI(hlquoteDoc);
+				}
+				listQuoteDtls = serviceQuoteDtls.getmmsquotedtllist(null, QuoteId, null, null, null);
 			}
-			if (quoteHdr.getQuoteDoc() != null) {
-				byte[] certificate = quoteHdr.getQuoteDoc();
-				UploadDocumentUI test = new UploadDocumentUI(hlquoteDoc);
-				test.displaycertificate(certificate);
-			} else {
-				new UploadDocumentUI(hlquoteDoc);
-			}
-			listQuoteDtls = serviceQuoteDtls.getmmsquotedtllist(null, QuoteId, null, null, null);
+			loadMatDtl();
+			comments = new MmsComments(vlTableForm, null, companyid, null, null, QuoteId, null, null, null, null,
+					status);
+			comments.loadsrch(true, null, null, null, null, QuoteId, null, null, null, null);
 		}
-		loadMatDtl();
-		comments = new MmsComments(vlTableForm, null, companyid, null, null, QuoteId, null, null, null, null, status);
-		comments.loadsrch(true, null, null, null, null, QuoteId, null, null, null, null);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editQuoteDtl() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		if (tblMatQuDtl.getValue() != null) {
-			MmsQuoteDtlDM quoteDtl = beanQuoteDtl.getItem(tblMatQuDtl.getValue()).getBean();
-			Long uom = quoteDtl.getMaterialid();
-			Collection<?> uomid = cbMaterial.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbMaterial.getItem(itemId);
-				// Get the actual bean and use the data
-				MmsEnqDtlDM st = (MmsEnqDtlDM) item.getBean();
-				if (uom != null && uom.equals(st.getMaterialid())) {
-					cbMaterial.setValue(itemId);
-					break;
-				} else {
-					cbMaterial.setValue(null);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			if (tblMatQuDtl.getValue() != null) {
+				MmsQuoteDtlDM quoteDtl = beanQuoteDtl.getItem(tblMatQuDtl.getValue()).getBean();
+				Long uom = quoteDtl.getMaterialid();
+				Collection<?> uomid = cbMaterial.getItemIds();
+				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbMaterial.getItem(itemId);
+					// Get the actual bean and use the data
+					MmsEnqDtlDM st = (MmsEnqDtlDM) item.getBean();
+					if (uom != null && uom.equals(st.getMaterialid())) {
+						cbMaterial.setValue(itemId);
+						break;
+					} else {
+						cbMaterial.setValue(null);
+					}
+				}
+				if (quoteDtl.getQuoteqty() != null) {
+					tfQuoteQunt.setReadOnly(false);
+					tfQuoteQunt.setValue(quoteDtl.getQuoteqty().toString());
+				}
+				if (quoteDtl.getQuoteqty() != null) {
+					tfReqdQty.setReadOnly(false);
+					tfReqdQty.setValue(quoteDtl.getReqQty().toString());
+				}
+				if (quoteDtl.getUnitrate() != null) {
+					tfUnitRate.setValue(quoteDtl.getUnitrate().toString());
+				}
+				if (quoteDtl.getMatuom() != null) {
+					cbUom.setReadOnly(false);
+					cbUom.setValue(quoteDtl.getMatuom().toString());
+					cbUom.setReadOnly(true);
+				}
+				if (quoteDtl.getBasicvalue() != null) {
+					tfBasicValue.setReadOnly(false);
+					tfBasicValue.setValue(quoteDtl.getBasicvalue().toString());
+					tfBasicValue.setReadOnly(true);
+				}
+				if (quoteDtl.getRemarks() != null) {
+					taQuoteRemark.setValue(quoteDtl.getRemarks());
 				}
 			}
-			if (quoteDtl.getQuoteqty() != null) {
-				tfQuoteQunt.setReadOnly(false);
-				tfQuoteQunt.setValue(quoteDtl.getQuoteqty().toString());
-			}
-			if (quoteDtl.getQuoteqty() != null) {
-				tfReqdQty.setReadOnly(false);
-				tfReqdQty.setValue(quoteDtl.getReqQty().toString());
-			}
-			if (quoteDtl.getUnitrate() != null) {
-				tfUnitRate.setValue(quoteDtl.getUnitrate().toString());
-			}
-			if (quoteDtl.getMatuom() != null) {
-				cbUom.setReadOnly(false);
-				cbUom.setValue(quoteDtl.getMatuom().toString());
-				cbUom.setReadOnly(true);
-			}
-			if (quoteDtl.getBasicvalue() != null) {
-				tfBasicValue.setReadOnly(false);
-				tfBasicValue.setValue(quoteDtl.getBasicvalue().toString());
-				tfBasicValue.setReadOnly(true);
-			}
-			if (quoteDtl.getRemarks() != null) {
-				taQuoteRemark.setValue(quoteDtl.getRemarks());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1216,7 +1234,7 @@ public class MaterialQuote extends BaseTransUI {
 			quoteid = 0L;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1267,7 +1285,7 @@ public class MaterialQuote extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1483,18 +1501,29 @@ public class MaterialQuote extends BaseTransUI {
 	}
 	
 	private void deleteDetails() {
-		MmsQuoteDtlDM save = new MmsQuoteDtlDM();
-		if (tblMatQuDtl.getValue() != null) {
-			save = beanQuoteDtl.getItem(tblMatQuDtl.getValue()).getBean();
-			listQuoteDtls.remove(save);
-			resetDetailsFields();
-			loadMatDtl();
-			btndelete.setEnabled(false);
+		try {
+			MmsQuoteDtlDM save = new MmsQuoteDtlDM();
+			if (tblMatQuDtl.getValue() != null) {
+				save = beanQuoteDtl.getItem(tblMatQuDtl.getValue()).getBean();
+				listQuoteDtls.remove(save);
+				resetDetailsFields();
+				loadMatDtl();
+				btndelete.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private BigDecimal gerPercentageValue(BigDecimal percent, BigDecimal value) {
-		return (percent.multiply(value).divide(new BigDecimal("100"))).setScale(2, RoundingMode.CEILING);
+		try {
+			return (percent.multiply(value).divide(new BigDecimal("100"))).setScale(2, RoundingMode.CEILING);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+			return new BigDecimal("0");
+		}
 	}
 	
 	// to set percentage fields zero

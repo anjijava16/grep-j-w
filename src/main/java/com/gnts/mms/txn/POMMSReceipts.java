@@ -87,7 +87,7 @@ public class POMMSReceipts extends BaseTransUI {
 	private PoReceiptDtlService servicePoReceiptDtl = (PoReceiptDtlService) SpringContextHelper.getBean("poRecepitDtl");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
+	private MaterialLedgerService serviceLedger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
 	private MaterialStockService serviceMaterialStock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
 	private IndentHdrService serviceIndent = (IndentHdrService) SpringContextHelper.getBean("IndentHdr");
@@ -525,94 +525,106 @@ public class POMMSReceipts extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editReceiptHdr() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected receiptId. Id -> "
-				+ enquiryId);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			PoReceiptHdrDM poReceiptHdrDM = beanPoReceiptHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			receiptId = poReceiptHdrDM.getReceiptId();
-			cbBranch.setValue(poReceiptHdrDM.getBranchId());
-			tfLotNo.setReadOnly(false);
-			tfLotNo.setValue(poReceiptHdrDM.getLotNo());
-			tfLotNo.setReadOnly(true);
-			cbPoNo.setValue(poReceiptHdrDM.getPoId());
-			if (poReceiptHdrDM.getReceiptDate() != null) {
-				dfReceiptDate.setValue(poReceiptHdrDM.getReceiptDate());
-			}
-			if (poReceiptHdrDM.getVendordcNo() != null) {
-				tfVendorDcNo.setValue(poReceiptHdrDM.getVendordcNo());
-			}
-			if (poReceiptHdrDM.getVendorDate() != null) {
-				dfvendorDt.setValue(poReceiptHdrDM.getVendorDate());
-			}
-			if (poReceiptHdrDM.getReceiptdocType() != null) {
-				cbDocType.setValue(poReceiptHdrDM.getReceiptdocType());
-			}
-			if (poReceiptHdrDM.getIndentId() != null) {
-				cbIndentNo.setValue(poReceiptHdrDM.getIndentId());
-			}
-			if (poReceiptHdrDM.getVendorinvoiceNo() != null) {
-				tfVenInvNo.setValue(poReceiptHdrDM.getVendorinvoiceNo());
-			}
-			if (poReceiptHdrDM.getVendorinvoiceDate() != null) {
-				dfvendorInvDt.setValue(poReceiptHdrDM.getVendorinvoiceDate());
-			}
-			if (poReceiptHdrDM.getReceiptRemark() != null) {
-				taRecepitRemark.setValue(poReceiptHdrDM.getReceiptRemark());
-			}
-			if (poReceiptHdrDM.getBillraisedYN().equals("Y")) {
-				chkBillRaised.setValue(true);
-			} else {
-				chkBillRaised.setValue(false);
-			}
-			Long poid = poReceiptHdrDM.getPoId();
-			Collection<?> poids = cbPoNo.getItemIds();
-			for (Iterator<?> iterator = poids.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbPoNo.getItem(itemId);
-				// Get the actual bean and use the data
-				POHdrDM st = (POHdrDM) item.getBean();
-				if (poid != null && poid.equals(st.getPoId())) {
-					cbPoNo.setValue(itemId);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Selected receiptId. Id -> " + enquiryId);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				PoReceiptHdrDM poReceiptHdrDM = beanPoReceiptHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				receiptId = poReceiptHdrDM.getReceiptId();
+				cbBranch.setValue(poReceiptHdrDM.getBranchId());
+				tfLotNo.setReadOnly(false);
+				tfLotNo.setValue(poReceiptHdrDM.getLotNo());
+				tfLotNo.setReadOnly(true);
+				cbPoNo.setValue(poReceiptHdrDM.getPoId());
+				if (poReceiptHdrDM.getReceiptDate() != null) {
+					dfReceiptDate.setValue(poReceiptHdrDM.getReceiptDate());
 				}
+				if (poReceiptHdrDM.getVendordcNo() != null) {
+					tfVendorDcNo.setValue(poReceiptHdrDM.getVendordcNo());
+				}
+				if (poReceiptHdrDM.getVendorDate() != null) {
+					dfvendorDt.setValue(poReceiptHdrDM.getVendorDate());
+				}
+				if (poReceiptHdrDM.getReceiptdocType() != null) {
+					cbDocType.setValue(poReceiptHdrDM.getReceiptdocType());
+				}
+				if (poReceiptHdrDM.getIndentId() != null) {
+					cbIndentNo.setValue(poReceiptHdrDM.getIndentId());
+				}
+				if (poReceiptHdrDM.getVendorinvoiceNo() != null) {
+					tfVenInvNo.setValue(poReceiptHdrDM.getVendorinvoiceNo());
+				}
+				if (poReceiptHdrDM.getVendorinvoiceDate() != null) {
+					dfvendorInvDt.setValue(poReceiptHdrDM.getVendorinvoiceDate());
+				}
+				if (poReceiptHdrDM.getReceiptRemark() != null) {
+					taRecepitRemark.setValue(poReceiptHdrDM.getReceiptRemark());
+				}
+				if (poReceiptHdrDM.getBillraisedYN().equals("Y")) {
+					chkBillRaised.setValue(true);
+				} else {
+					chkBillRaised.setValue(false);
+				}
+				Long poid = poReceiptHdrDM.getPoId();
+				Collection<?> poids = cbPoNo.getItemIds();
+				for (Iterator<?> iterator = poids.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbPoNo.getItem(itemId);
+					// Get the actual bean and use the data
+					POHdrDM st = (POHdrDM) item.getBean();
+					if (poid != null && poid.equals(st.getPoId())) {
+						cbPoNo.setValue(itemId);
+					}
+				}
+				cbHdrStatus.setValue(poReceiptHdrDM.getProjectStatus());
+				listPOReceipts = servicePoReceiptDtl.getPoReceiptDtlList(null, receiptId, null, null, null);
+				loadReceiptDtl();
 			}
-			cbHdrStatus.setValue(poReceiptHdrDM.getProjectStatus());
-			listPOReceipts = servicePoReceiptDtl.getPoReceiptDtlList(null, receiptId, null, null, null);
-			loadReceiptDtl();
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Edit Recepit Details
 	private void editReceiptDetail() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Receipt.Id -> "
-				+ enquiryId);
-		if (tblReceiptDtl.getValue() != null) {
-			PoReceiptDtlDM receiptDtlDM = beanPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
-			Long matid = receiptDtlDM.getMaterialid();
-			Collection<?> matids = cbMaterial.getItemIds();
-			for (Iterator<?> iterator = matids.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbMaterial.getItem(itemId);
-				// Get the actual bean and use the data
-				MmsPoDtlDM st = (MmsPoDtlDM) item.getBean();
-				if (matid != null && matid.equals(st.getMaterialid())) {
-					cbMaterial.setValue(itemId);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected Receipt.Id -> "
+					+ enquiryId);
+			if (tblReceiptDtl.getValue() != null) {
+				PoReceiptDtlDM receiptDtlDM = beanPoReceiptDtlDM.getItem(tblReceiptDtl.getValue()).getBean();
+				Long matid = receiptDtlDM.getMaterialid();
+				Collection<?> matids = cbMaterial.getItemIds();
+				for (Iterator<?> iterator = matids.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbMaterial.getItem(itemId);
+					// Get the actual bean and use the data
+					MmsPoDtlDM st = (MmsPoDtlDM) item.getBean();
+					if (matid != null && matid.equals(st.getMaterialid())) {
+						cbMaterial.setValue(itemId);
+					}
 				}
+				cbMaterialUOM.setValue(receiptDtlDM.getMaterialUOM());
+				if (receiptDtlDM.getReceiptqty() != null) {
+					tfReceiptqty.setValue(receiptDtlDM.getReceiptqty().toString());
+				}
+				if (receiptDtlDM.getRejectqty() != null) {
+					tfRejectqty.setValue(receiptDtlDM.getRejectqty().toString());
+				}
+				if (receiptDtlDM.getRejectreason() != null) {
+					taRejectReason.setValue(receiptDtlDM.getRejectreason().toString());
+				}
+				cbDtlStatus.setValue(receiptDtlDM.getReceiptstatus());
 			}
-			cbMaterialUOM.setValue(receiptDtlDM.getMaterialUOM());
-			if (receiptDtlDM.getReceiptqty() != null) {
-				tfReceiptqty.setValue(receiptDtlDM.getReceiptqty().toString());
-			}
-			if (receiptDtlDM.getRejectqty() != null) {
-				tfRejectqty.setValue(receiptDtlDM.getRejectqty().toString());
-			}
-			if (receiptDtlDM.getRejectreason() != null) {
-				taRejectReason.setValue(receiptDtlDM.getRejectreason().toString());
-			}
-			cbDtlStatus.setValue(receiptDtlDM.getReceiptstatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -817,7 +829,7 @@ public class POMMSReceipts extends BaseTransUI {
 				try {
 					MaterialLedgerDM materialLedgerDM = null;
 					try {
-						materialLedgerDM = serviceledger.getMaterialLedgerList(save.getMaterialid(), null, null, null,
+						materialLedgerDM = serviceLedger.getMaterialLedgerList(save.getMaterialid(), null, null, null,
 								"New", null, "Y", "F").get(0);
 					}
 					catch (Exception e) {
@@ -840,7 +852,7 @@ public class POMMSReceipts extends BaseTransUI {
 						ledgerDM.setReferenceRemark(save.getRejectreason());
 						ledgerDM.setLastUpdatedby(username);
 						ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
-						serviceledger.saveOrUpdateLedger(ledgerDM);
+						serviceLedger.saveOrUpdateLedger(ledgerDM);
 					} else {
 						MaterialLedgerDM ledgerDM = new MaterialLedgerDM();
 						ledgerDM.setStockledgeDate(new Date());
@@ -858,7 +870,7 @@ public class POMMSReceipts extends BaseTransUI {
 						ledgerDM.setReferenceRemark(save.getRejectreason());
 						ledgerDM.setLastUpdatedby(username);
 						ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
-						serviceledger.saveOrUpdateLedger(ledgerDM);
+						serviceLedger.saveOrUpdateLedger(ledgerDM);
 					}
 					try {
 						// for material stock

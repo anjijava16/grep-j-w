@@ -85,8 +85,8 @@ public class MaterialVendorBill extends BaseTransUI {
 			.getBean("mmsvendorbillheader");
 	private MmsVendorBillDtlService serviceVendorBillDtl = (MmsVendorBillDtlService) SpringContextHelper
 			.getBean("mmsvendorbilldetail");
-	private MmsPoDtlService servicepodtl = (MmsPoDtlService) SpringContextHelper.getBean("mmspoDtl");
-	private POHdrService servicepoHdr = (POHdrService) SpringContextHelper.getBean("pohdr");
+	private MmsPoDtlService servicePODtls = (MmsPoDtlService) SpringContextHelper.getBean("mmspoDtl");
+	private POHdrService servicePOHdr = (POHdrService) SpringContextHelper.getBean("pohdr");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
@@ -555,29 +555,34 @@ public class MaterialVendorBill extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<MmsVendorBillHdrDM> vendorBillHdrList = new ArrayList<MmsVendorBillHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
-		Long purNo = null;
-		if (cbpoNo.getValue() != null) {
-			purNo = (((POHdrDM) cbpoNo.getValue()).getPoId());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<MmsVendorBillHdrDM> list = new ArrayList<MmsVendorBillHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
+			Long purNo = null;
+			if (cbpoNo.getValue() != null) {
+				purNo = (((POHdrDM) cbpoNo.getValue()).getPoId());
+			}
+			list = serviceVendorBillHdr.getMmsVendorBillHdrList(companyid, null, purNo, (Long) cbBranch.getValue(),
+					(String) tfbillNo.getValue(), (String) cbStatus.getValue(), null, "F");
+			recordCnt = list.size();
+			beanVendorBillHdr = new BeanItemContainer<MmsVendorBillHdrDM>(MmsVendorBillHdrDM.class);
+			beanVendorBillHdr.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanVendorBillHdr);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "billId", "branchName", "billNo", "purchaseOrderNo",
+					"status", "lastUpdtDate", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch", "Bill No", "PO No", "Status",
+					"Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("poId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+			tblMstScrSrchRslt.setPageLength(15);
 		}
-		vendorBillHdrList = serviceVendorBillHdr.getMmsVendorBillHdrList(companyid, null, purNo,
-				(Long) cbBranch.getValue(), (String) tfbillNo.getValue(), (String) cbStatus.getValue(), null, "F");
-		recordCnt = vendorBillHdrList.size();
-		beanVendorBillHdr = new BeanItemContainer<MmsVendorBillHdrDM>(MmsVendorBillHdrDM.class);
-		beanVendorBillHdr.addAll(vendorBillHdrList);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Tax. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanVendorBillHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "billId", "branchName", "billNo", "purchaseOrderNo",
-				"status", "lastUpdtDate", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch", "Bill No", "PO No", "Status",
-				"Updated Date", "Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("poId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
-		tblMstScrSrchRslt.setPageLength(15);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadMatDtl() {
@@ -607,7 +612,7 @@ public class MaterialVendorBill extends BaseTransUI {
 			tblVendorBillDtl.setColumnFooter("lastupdateddt", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -615,11 +620,11 @@ public class MaterialVendorBill extends BaseTransUI {
 		try {
 			Long poid = ((POHdrDM) cbpoNo.getValue()).getPoId();
 			BeanItemContainer<MmsPoDtlDM> beanPlnDtl = new BeanItemContainer<MmsPoDtlDM>(MmsPoDtlDM.class);
-			beanPlnDtl.addAll(servicepodtl.getpodtllist(poid, null, null, null, null, "F"));
+			beanPlnDtl.addAll(servicePODtls.getpodtllist(poid, null, null, null, null, "F"));
 			cbMaterial.setContainerDataSource(beanPlnDtl);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -657,7 +662,7 @@ public class MaterialVendorBill extends BaseTransUI {
 	private void loadPoNo() {
 		try {
 			BeanItemContainer<POHdrDM> beanPurPoDM = new BeanItemContainer<POHdrDM>(POHdrDM.class);
-			beanPurPoDM.addAll(servicepoHdr.getPOHdrList(companyid, null, null, null, null, null, null, "F"));
+			beanPurPoDM.addAll(servicePOHdr.getPOHdrList(companyid, null, null, null, null, null, null, "F"));
 			cbpoNo.setContainerDataSource(beanPurPoDM);
 		}
 		catch (Exception e) {
@@ -666,169 +671,181 @@ public class MaterialVendorBill extends BaseTransUI {
 	}
 	
 	private void editVendorBillHdr() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlCmdBtnLayout.setVisible(false);
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			MmsVendorBillHdrDM vendorBillHdrDM = beanVendorBillHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			billId = vendorBillHdrDM.getBillId();
-			cbBranch.setValue(vendorBillHdrDM.getBranchId());
-			dfbillDt.setValue(vendorBillHdrDM.getBillDate());
-			if (vendorBillHdrDM.getBillNo() != null) {
-				tfbillNo.setValue(vendorBillHdrDM.getBillNo());
-			}
-			if (vendorBillHdrDM.getBillRemark() != null) {
-				taRemark.setValue(vendorBillHdrDM.getBillRemark().toString());
-			}
-			tfBasictotal.setReadOnly(false);
-			tfBasictotal.setValue(vendorBillHdrDM.getBasicTotal().toString());
-			tfBasictotal.setReadOnly(true);
-			tfpackingPer.setValue(vendorBillHdrDM.getPackingPrcnt().toString());
-			tfPaclingValue.setReadOnly(false);
-			tfPaclingValue.setValue(vendorBillHdrDM.getPackingPrcnt().toString());
-			tfPaclingValue.setReadOnly(true);
-			tfSubTotal.setReadOnly(false);
-			tfSubTotal.setValue(vendorBillHdrDM.getSubTotal().toString());
-			tfSubTotal.setReadOnly(true);
-			tfVatPer.setValue(vendorBillHdrDM.getVatPrcnt().toString());
-			tfVatValue.setReadOnly(false);
-			tfVatValue.setValue(vendorBillHdrDM.getVatValue().toString());
-			tfVatValue.setReadOnly(true);
-			tfEDPer.setValue(vendorBillHdrDM.getEdPrcnt().toString());
-			tfEDValue.setReadOnly(false);
-			tfEDValue.setValue(vendorBillHdrDM.getEdValue().toString());
-			tfEDValue.setReadOnly(true);
-			tfHEDPer.setValue(vendorBillHdrDM.getHedPrcnt().toString());
-			tfHEDValue.setReadOnly(false);
-			tfHEDValue.setValue(vendorBillHdrDM.getHedValue().toString());
-			tfHEDValue.setReadOnly(true);
-			tfCessPer.setValue(vendorBillHdrDM.getCessPrcnt().toString());
-			tfCessValue.setReadOnly(false);
-			tfCessValue.setValue(vendorBillHdrDM.getCessValue().toString());
-			tfCessValue.setReadOnly(true);
-			tfCstPer.setValue(vendorBillHdrDM.getCstPrcnt().toString());
-			tfCstValue.setReadOnly(false);
-			tfCstValue.setValue(vendorBillHdrDM.getCstValue().toString());
-			tfCstValue.setReadOnly(true);
-			tfSubTaxTotal.setReadOnly(false);
-			tfSubTaxTotal.setValue(vendorBillHdrDM.getSubTaxTotal().toString());
-			tfSubTaxTotal.setReadOnly(true);
-			tfFreightPer.setValue(vendorBillHdrDM.getFreightPrcnt().toString());
-			tfFreightValue.setReadOnly(false);
-			tfFreightValue.setValue(vendorBillHdrDM.getFreightValue().toString());
-			tfFreightValue.setReadOnly(true);
-			tfOtherPer.setValue((vendorBillHdrDM.getOtherPrcnt().toString()));
-			tfOtherValue.setReadOnly(false);
-			tfOtherValue.setValue((vendorBillHdrDM.getOtherValue().toString()));
-			tfOtherValue.setReadOnly(true);
-			tfGrandtotal.setReadOnly(false);
-			tfGrandtotal.setValue(vendorBillHdrDM.getGrantTotal().toString());
-			tfGrandtotal.setReadOnly(true);
-			if (vendorBillHdrDM.getPaymentTerms() != null) {
-				tfpaymetTerms.setValue(vendorBillHdrDM.getPaymentTerms());
-			}
-			if (vendorBillHdrDM.getFrightTerms() != null) {
-				tfFreightTerms.setValue(vendorBillHdrDM.getFrightTerms());
-			}
-			if (vendorBillHdrDM.getWarrantyTerms() != null) {
-				tfWarrentyTerms.setValue(vendorBillHdrDM.getWarrantyTerms());
-			}
-			if (vendorBillHdrDM.getDeliveryTerms() != null) {
-				tfDelTerms.setValue(vendorBillHdrDM.getDeliveryTerms());
-			}
-			Long uom = vendorBillHdrDM.getPoId();
-			Collection<?> uomid = cbpoNo.getItemIds();
-			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbpoNo.getItem(itemId);
-				// Get the actual bean and use the data
-				POHdrDM st = (POHdrDM) item.getBean();
-				if (uom != null && uom.equals(st.getPoId())) {
-					cbpoNo.setValue(itemId);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlCmdBtnLayout.setVisible(false);
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				MmsVendorBillHdrDM vendorBillHdrDM = beanVendorBillHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				billId = vendorBillHdrDM.getBillId();
+				cbBranch.setValue(vendorBillHdrDM.getBranchId());
+				dfbillDt.setValue(vendorBillHdrDM.getBillDate());
+				if (vendorBillHdrDM.getBillNo() != null) {
+					tfbillNo.setValue(vendorBillHdrDM.getBillNo());
 				}
+				if (vendorBillHdrDM.getBillRemark() != null) {
+					taRemark.setValue(vendorBillHdrDM.getBillRemark().toString());
+				}
+				tfBasictotal.setReadOnly(false);
+				tfBasictotal.setValue(vendorBillHdrDM.getBasicTotal().toString());
+				tfBasictotal.setReadOnly(true);
+				tfpackingPer.setValue(vendorBillHdrDM.getPackingPrcnt().toString());
+				tfPaclingValue.setReadOnly(false);
+				tfPaclingValue.setValue(vendorBillHdrDM.getPackingPrcnt().toString());
+				tfPaclingValue.setReadOnly(true);
+				tfSubTotal.setReadOnly(false);
+				tfSubTotal.setValue(vendorBillHdrDM.getSubTotal().toString());
+				tfSubTotal.setReadOnly(true);
+				tfVatPer.setValue(vendorBillHdrDM.getVatPrcnt().toString());
+				tfVatValue.setReadOnly(false);
+				tfVatValue.setValue(vendorBillHdrDM.getVatValue().toString());
+				tfVatValue.setReadOnly(true);
+				tfEDPer.setValue(vendorBillHdrDM.getEdPrcnt().toString());
+				tfEDValue.setReadOnly(false);
+				tfEDValue.setValue(vendorBillHdrDM.getEdValue().toString());
+				tfEDValue.setReadOnly(true);
+				tfHEDPer.setValue(vendorBillHdrDM.getHedPrcnt().toString());
+				tfHEDValue.setReadOnly(false);
+				tfHEDValue.setValue(vendorBillHdrDM.getHedValue().toString());
+				tfHEDValue.setReadOnly(true);
+				tfCessPer.setValue(vendorBillHdrDM.getCessPrcnt().toString());
+				tfCessValue.setReadOnly(false);
+				tfCessValue.setValue(vendorBillHdrDM.getCessValue().toString());
+				tfCessValue.setReadOnly(true);
+				tfCstPer.setValue(vendorBillHdrDM.getCstPrcnt().toString());
+				tfCstValue.setReadOnly(false);
+				tfCstValue.setValue(vendorBillHdrDM.getCstValue().toString());
+				tfCstValue.setReadOnly(true);
+				tfSubTaxTotal.setReadOnly(false);
+				tfSubTaxTotal.setValue(vendorBillHdrDM.getSubTaxTotal().toString());
+				tfSubTaxTotal.setReadOnly(true);
+				tfFreightPer.setValue(vendorBillHdrDM.getFreightPrcnt().toString());
+				tfFreightValue.setReadOnly(false);
+				tfFreightValue.setValue(vendorBillHdrDM.getFreightValue().toString());
+				tfFreightValue.setReadOnly(true);
+				tfOtherPer.setValue((vendorBillHdrDM.getOtherPrcnt().toString()));
+				tfOtherValue.setReadOnly(false);
+				tfOtherValue.setValue((vendorBillHdrDM.getOtherValue().toString()));
+				tfOtherValue.setReadOnly(true);
+				tfGrandtotal.setReadOnly(false);
+				tfGrandtotal.setValue(vendorBillHdrDM.getGrantTotal().toString());
+				tfGrandtotal.setReadOnly(true);
+				if (vendorBillHdrDM.getPaymentTerms() != null) {
+					tfpaymetTerms.setValue(vendorBillHdrDM.getPaymentTerms());
+				}
+				if (vendorBillHdrDM.getFrightTerms() != null) {
+					tfFreightTerms.setValue(vendorBillHdrDM.getFrightTerms());
+				}
+				if (vendorBillHdrDM.getWarrantyTerms() != null) {
+					tfWarrentyTerms.setValue(vendorBillHdrDM.getWarrantyTerms());
+				}
+				if (vendorBillHdrDM.getDeliveryTerms() != null) {
+					tfDelTerms.setValue(vendorBillHdrDM.getDeliveryTerms());
+				}
+				Long uom = vendorBillHdrDM.getPoId();
+				Collection<?> uomid = cbpoNo.getItemIds();
+				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbpoNo.getItem(itemId);
+					// Get the actual bean and use the data
+					POHdrDM st = (POHdrDM) item.getBean();
+					if (uom != null && uom.equals(st.getPoId())) {
+						cbpoNo.setValue(itemId);
+					}
+				}
+				if (vendorBillHdrDM.getDutyExempted().equals("Y")) {
+					ckDutyexm.setValue(true);
+				} else {
+					ckDutyexm.setValue(false);
+				}
+				if (vendorBillHdrDM.getCformReqd().equals("Y")) {
+					ckCformRqu.setValue(true);
+				} else {
+					ckCformRqu.setValue(false);
+				}
+				if (vendorBillHdrDM.getPdcReqd().equals("Y")) {
+					ckPdcRqu.setValue(true);
+				} else {
+					ckPdcRqu.setValue(false);
+				}
+				if (vendorBillHdrDM.getStatus() != null) {
+					cbStatus.setValue(vendorBillHdrDM.getStatus().toString());
+				}
+				listVendorBillDtls = serviceVendorBillDtl.getMmsVendorBillDtlList(null, billId, null, null);
 			}
-			if (vendorBillHdrDM.getDutyExempted().equals("Y")) {
-				ckDutyexm.setValue(true);
-			} else {
-				ckDutyexm.setValue(false);
-			}
-			if (vendorBillHdrDM.getCformReqd().equals("Y")) {
-				ckCformRqu.setValue(true);
-			} else {
-				ckCformRqu.setValue(false);
-			}
-			if (vendorBillHdrDM.getPdcReqd().equals("Y")) {
-				ckPdcRqu.setValue(true);
-			} else {
-				ckPdcRqu.setValue(false);
-			}
-			if (vendorBillHdrDM.getStatus() != null) {
-				cbStatus.setValue(vendorBillHdrDM.getStatus().toString());
-			}
-			listVendorBillDtls = serviceVendorBillDtl.getMmsVendorBillDtlList(null, billId, null, null);
+			loadMatDtl();
+			comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, billId, null);
+			comments.loadsrch(true, null, null, null, null, null, null, null, null, billId);
 		}
-		loadMatDtl();
-		comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, billId, null);
-		comments.loadsrch(true, null, null, null, null, null, null, null, null, billId);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editVendorBillDtl() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		if (tblVendorBillDtl.getValue() != null) {
-			MmsVendorBillDtlDM vendorBillDtlDM = beanVendorBillDtl.getItem(tblVendorBillDtl.getValue()).getBean();
-			Long matid = vendorBillDtlDM.getMaterialid();
-			Collection<?> matids = cbMaterial.getItemIds();
-			for (Iterator<?> iterator = matids.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbMaterial.getItem(itemId);
-				// Get the actual bean and use the data
-				MmsPoDtlDM st = (MmsPoDtlDM) item.getBean();
-				if (matid != null && matid.equals(st.getMaterialid())) {
-					cbMaterial.setValue(itemId);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			if (tblVendorBillDtl.getValue() != null) {
+				MmsVendorBillDtlDM vendorBillDtlDM = beanVendorBillDtl.getItem(tblVendorBillDtl.getValue()).getBean();
+				Long matid = vendorBillDtlDM.getMaterialid();
+				Collection<?> matids = cbMaterial.getItemIds();
+				for (Iterator<?> iterator = matids.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbMaterial.getItem(itemId);
+					// Get the actual bean and use the data
+					MmsPoDtlDM st = (MmsPoDtlDM) item.getBean();
+					if (matid != null && matid.equals(st.getMaterialid())) {
+						cbMaterial.setValue(itemId);
+					}
+				}
+				if (vendorBillDtlDM.getReceiptQty() != null) {
+					tfreceiptQnty.setReadOnly(false);
+					tfreceiptQnty.setValue(vendorBillDtlDM.getReceiptQty().toString());
+					tfreceiptQnty.setReadOnly(true);
+				}
+				if (vendorBillDtlDM.getRejectQty() != null) {
+					tfrejectQty.setValue(vendorBillDtlDM.getRejectQty().toString());
+				}
+				tfUnitRate.setReadOnly(false);
+				tfUnitRate.setValue(vendorBillDtlDM.getUnitRate().toString());
+				tfUnitRate.setReadOnly(true);
+				tfBasicValue.setReadOnly(false);
+				tfBasicValue.setValue(vendorBillDtlDM.getBasicValue().toString());
+				tfBasicValue.setReadOnly(true);
+				cbMatUom.setReadOnly(false);
+				cbMatUom.setValue(vendorBillDtlDM.getMaterialUom());
+				cbMatUom.setReadOnly(true);
+				if (vendorBillDtlDM.getRecpDtlStatus() != null) {
+					cbDtlStatus.setValue(vendorBillDtlDM.getRecpDtlStatus());
+				}
+				if (vendorBillDtlDM.getRejectReason() != null) {
+					taRejectReason.setValue(vendorBillDtlDM.getRejectReason());
+				}
+				if (vendorBillDtlDM.getDebitNoteVal() != null) {
+					tfDebitValue.setValue(vendorBillDtlDM.getDebitNoteVal().toString());
+				}
+				if (vendorBillDtlDM.getDebitNoteYn() != null) {
+					if (vendorBillDtlDM.getDebitNoteYn().equals("Y")) {
+						ckdebitNote.setValue(true);
+					} else {
+						ckdebitNote.setValue(false);
+					}
+				}
+				if (hldtlDoc != null) {
+					if (vendorBillDtlDM.getReceiptEvd() != null) {
+						byte[] certificate = vendorBillDtlDM.getReceiptEvd();
+						UploadDocumentUI test = new UploadDocumentUI(hldtlDoc);
+						test.displaycertificate(certificate);
+					} else {
+						new UploadDocumentUI(hldtlDoc);
+					}
 				}
 			}
-			if (vendorBillDtlDM.getReceiptQty() != null) {
-				tfreceiptQnty.setReadOnly(false);
-				tfreceiptQnty.setValue(vendorBillDtlDM.getReceiptQty().toString());
-				tfreceiptQnty.setReadOnly(true);
-			}
-			if (vendorBillDtlDM.getRejectQty() != null) {
-				tfrejectQty.setValue(vendorBillDtlDM.getRejectQty().toString());
-			}
-			tfUnitRate.setReadOnly(false);
-			tfUnitRate.setValue(vendorBillDtlDM.getUnitRate().toString());
-			tfUnitRate.setReadOnly(true);
-			tfBasicValue.setReadOnly(false);
-			tfBasicValue.setValue(vendorBillDtlDM.getBasicValue().toString());
-			tfBasicValue.setReadOnly(true);
-			cbMatUom.setReadOnly(false);
-			cbMatUom.setValue(vendorBillDtlDM.getMaterialUom());
-			cbMatUom.setReadOnly(true);
-			if (vendorBillDtlDM.getRecpDtlStatus() != null) {
-				cbDtlStatus.setValue(vendorBillDtlDM.getRecpDtlStatus());
-			}
-			if (vendorBillDtlDM.getRejectReason() != null) {
-				taRejectReason.setValue(vendorBillDtlDM.getRejectReason());
-			}
-			if (vendorBillDtlDM.getDebitNoteVal() != null) {
-				tfDebitValue.setValue(vendorBillDtlDM.getDebitNoteVal().toString());
-			}
-			if (vendorBillDtlDM.getDebitNoteYn() != null) {
-				if (vendorBillDtlDM.getDebitNoteYn().equals("Y")) {
-					ckdebitNote.setValue(true);
-				} else {
-					ckdebitNote.setValue(false);
-				}
-			}
-			if (hldtlDoc != null) {
-				if (vendorBillDtlDM.getReceiptEvd() != null) {
-					byte[] certificate = vendorBillDtlDM.getReceiptEvd();
-					UploadDocumentUI test = new UploadDocumentUI(hldtlDoc);
-					test.displaycertificate(certificate);
-				} else {
-					new UploadDocumentUI(hldtlDoc);
-				}
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1111,11 +1128,11 @@ public class MaterialVendorBill extends BaseTransUI {
 			resetFields();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
-	protected void saveBillDetails() {
+	private void saveBillDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			int count = 0;
@@ -1168,7 +1185,7 @@ public class MaterialVendorBill extends BaseTransUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		vendorBillResetFields();
 	}
@@ -1392,13 +1409,18 @@ public class MaterialVendorBill extends BaseTransUI {
 	}
 	
 	private void deleteDetails() {
-		MmsVendorBillDtlDM save = new MmsVendorBillDtlDM();
-		if (tblVendorBillDtl.getValue() != null) {
-			save = beanVendorBillDtl.getItem(tblVendorBillDtl.getValue()).getBean();
-			listVendorBillDtls.remove(save);
-			vendorBillResetFields();
-			loadMatDtl();
-			btndelete.setEnabled(false);
+		try {
+			MmsVendorBillDtlDM save = new MmsVendorBillDtlDM();
+			if (tblVendorBillDtl.getValue() != null) {
+				save = beanVendorBillDtl.getItem(tblVendorBillDtl.getValue()).getBean();
+				listVendorBillDtls.remove(save);
+				vendorBillResetFields();
+				loadMatDtl();
+				btndelete.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

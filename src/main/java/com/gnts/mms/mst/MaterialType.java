@@ -89,27 +89,32 @@ public class MaterialType extends BaseUI {
 	 * loadSrchRslt()-->this function is used for load the search result to table
 	 */
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.setSelectable(true);
-		tblMstScrSrchRslt.setPageLength(15);
-		tblMstScrSrchRslt.removeAllItems();
-		List<MaterialTypeDM> listMatType = new ArrayList<MaterialTypeDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ tfMatTypeName.getValue() + "," + cbMatTypeStatus.getValue() + "," + companyId);
-		listMatType = serviceMaterialType.getMaterialTypeList(null, tfMatTypeName.getValue(),
-				(String) cbMatTypeStatus.getValue(), "F");
-		recordCnt = listMatType.size();
-		beanMaterialType = new BeanItemContainer<MaterialTypeDM>(MaterialTypeDM.class);
-		beanMaterialType.addAll(listMatType);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Got the Material Type result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanMaterialType);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialTypeId", "materialTypeName", "materialTypeStatus",
-				"lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Material Type Name", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("materialTypeId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.setSelectable(true);
+			tblMstScrSrchRslt.setPageLength(15);
+			tblMstScrSrchRslt.removeAllItems();
+			List<MaterialTypeDM> listMatType = new ArrayList<MaterialTypeDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ tfMatTypeName.getValue() + "," + cbMatTypeStatus.getValue() + "," + companyId);
+			listMatType = serviceMaterialType.getMaterialTypeList(null, tfMatTypeName.getValue(),
+					(String) cbMatTypeStatus.getValue(), "F");
+			recordCnt = listMatType.size();
+			beanMaterialType = new BeanItemContainer<MaterialTypeDM>(MaterialTypeDM.class);
+			beanMaterialType.addAll(listMatType);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the Material Type result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanMaterialType);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialTypeId", "materialTypeName",
+					"materialTypeStatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Material Type Name", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("materialTypeId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -172,13 +177,18 @@ public class MaterialType extends BaseUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editMaterialTypeName() {
-		hlUserInputLayout.setVisible(true);
-		MaterialTypeDM materialTypeDM = beanMaterialType.getItem(tblMstScrSrchRslt.getValue()).getBean();
-		if (materialTypeDM.getMaterialTypeName() != null) {
-			logger.info("editMaterialTypeName : " + tfMatTypeName.getValue() + "," + cbMatTypeStatus.getValue());
-			tfMatTypeName.setValue(materialTypeDM.getMaterialTypeName());
+		try {
+			hlUserInputLayout.setVisible(true);
+			MaterialTypeDM materialTypeDM = beanMaterialType.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			if (materialTypeDM.getMaterialTypeName() != null) {
+				logger.info("editMaterialTypeName : " + tfMatTypeName.getValue() + "," + cbMatTypeStatus.getValue());
+				tfMatTypeName.setValue(materialTypeDM.getMaterialTypeName());
+			}
+			cbMatTypeStatus.setValue(materialTypeDM.getMaterialTypeStatus());
 		}
-		cbMatTypeStatus.setValue(materialTypeDM.getMaterialTypeStatus());
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override

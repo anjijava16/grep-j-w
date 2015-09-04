@@ -278,41 +278,48 @@ public class IndentIssueReturn extends BaseUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editHdrIndentDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			IndentIssueReturnDM editHdrIndent = beanIndentIssueReturnDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			indentId = editHdrIndent.getIssueRtnId();
+		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Selected Indent Return. Id -> " + indentId);
-			Long indentId = editHdrIndent.getIssueeId();
-			Collection<?> empColId1 = cbIssueName.getItemIds();
-			for (Iterator<?> iteratorclient = empColId1.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbIssueName.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				IndentIssueHdrDM matObj = (IndentIssueHdrDM) itemclient.getBean();
-				if (indentId != null && indentId.equals(matObj.getIssueId())) {
-					cbIssueName.setValue(itemIdClient);
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				IndentIssueReturnDM editHdrIndent = beanIndentIssueReturnDM.getItem(tblMstScrSrchRslt.getValue())
+						.getBean();
+				indentId = editHdrIndent.getIssueRtnId();
+				logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+						+ "Selected Indent Return. Id -> " + indentId);
+				Long indentId = editHdrIndent.getIssueeId();
+				Collection<?> empColId1 = cbIssueName.getItemIds();
+				for (Iterator<?> iteratorclient = empColId1.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbIssueName.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					IndentIssueHdrDM matObj = (IndentIssueHdrDM) itemclient.getBean();
+					if (indentId != null && indentId.equals(matObj.getIssueId())) {
+						cbIssueName.setValue(itemIdClient);
+					}
 				}
-			}
-			// cbMatName//cbIssueName.setValue(editHdrIndent.getIssueeId());
-			Long matId = editHdrIndent.getMaterialId();
-			Collection<?> empColId = cbMatName.getItemIds();
-			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbMatName.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				IndentDtlDM matObj = (IndentDtlDM) itemclient.getBean();
-				if (matId != null && matId.equals(matObj.getMaterialId())) {
-					cbMatName.setValue(itemIdClient);
+				// cbMatName//cbIssueName.setValue(editHdrIndent.getIssueeId());
+				Long matId = editHdrIndent.getMaterialId();
+				Collection<?> empColId = cbMatName.getItemIds();
+				for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbMatName.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					IndentDtlDM matObj = (IndentDtlDM) itemclient.getBean();
+					if (matId != null && matId.equals(matObj.getMaterialId())) {
+						cbMatName.setValue(itemIdClient);
+					}
 				}
+				cbReturnReason.setValue(editHdrIndent.getReturnResn().toString());
+				tfReturnQty.setValue(editHdrIndent.getReturnQty().toString());
+				taRemarks.setValue(editHdrIndent.getRemarks());
+				cbStockType.setValue(editHdrIndent.getStockType());
+				cbIndStatus.setValue(editHdrIndent.getStatus());
 			}
-			cbReturnReason.setValue(editHdrIndent.getReturnResn().toString());
-			tfReturnQty.setValue(editHdrIndent.getReturnQty().toString());
-			taRemarks.setValue(editHdrIndent.getRemarks());
-			cbStockType.setValue(editHdrIndent.getStockType());
-			cbIndStatus.setValue(editHdrIndent.getStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -458,7 +465,7 @@ public class IndentIssueReturn extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -532,7 +539,7 @@ public class IndentIssueReturn extends BaseUI {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			MaterialLedgerDM materialledgerDM = null;

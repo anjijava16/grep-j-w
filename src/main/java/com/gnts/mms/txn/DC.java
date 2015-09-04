@@ -105,7 +105,7 @@ public class DC extends BaseTransUI {
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private ClientContactsService serviceClntContact = (ClientContactsService) SpringContextHelper
 			.getBean("clientContact");
-	private List<DCDtlDM> DCDtlList = null;
+	private List<DCDtlDM> listDCDetails = null;
 	// form layout for input controls
 	private FormLayout flDCCol1, flDCCol2, flDCCol3, flColumn4, flDCIssueDtlCol1, flDCIssueDtlCol2, flDCIssueDtlCol3,
 			flDCIssueDtlCol4, flDCIssueDtlCol5;
@@ -559,9 +559,9 @@ public class DC extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | saveDCDtlListDetails User Name : " + username + " > "
 					+ "Search Parameters are " + companyid + ", " + tfDCQty.getValue() + ", "
 					+ (String) cbGoodsStatus.getValue() + ", " + issueId);
-			recordCntDtl = DCDtlList.size();
+			recordCntDtl = listDCDetails.size();
 			beanDcDtlDM = new BeanItemContainer<DCDtlDM>(DCDtlDM.class);
-			beanDcDtlDM.addAll(DCDtlList);
+			beanDcDtlDM.addAll(listDCDetails);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the DCslap. result set");
 			tblDCDetails.setContainerDataSource(beanDcDtlDM);
@@ -609,87 +609,99 @@ public class DC extends BaseTransUI {
 		cbEnquiry.setComponentError(null);
 		cbEnquiry.setValue(null);
 		cbEnquiry.setRequired(true);
-		DCDtlList = new ArrayList<DCDtlDM>();
+		listDCDetails = new ArrayList<DCDtlDM>();
 		tblDCDetails.removeAllItems();
 	}
 	
 	// Method to edit the values from table into fields to update process
 	private void editHdrDCDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hlUserInputLayout.setVisible(true);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			DcHdrDM editHdrDC = beanDcHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			dcHdrId = editHdrDC.getDcId();
-			if (editHdrDC.getDcDate() != null) {
-				dfDcDt.setValue(editHdrDC.getDcDate1());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hlUserInputLayout.setVisible(true);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				DcHdrDM editHdrDC = beanDcHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				dcHdrId = editHdrDC.getDcId();
+				if (editHdrDC.getDcDate() != null) {
+					dfDcDt.setValue(editHdrDC.getDcDate1());
+				}
+				cbEnquiry.setValue(editHdrDC.getEnquiryId());
+				if (editHdrDC.getCommPerson() != null) {
+					cbwindcommPerson.setValue(editHdrDC.getCommPerson());
+				}
+				if (editHdrDC.getTechPerson() != null) {
+					cbwindTechPers.setValue(editHdrDC.getTechPerson());
+				}
+				if (editHdrDC.getClientAddress() != null) {
+					taClientAddres.setValue(editHdrDC.getClientAddress());
+				}
+				tfDcNo.setReadOnly(false);
+				tfDcNo.setValue(editHdrDC.getDcNo());
+				cbDCType.setValue(editHdrDC.getDcType());
+				cbVendor.setValue(editHdrDC.getVendorId());
+				cbClients.setValue(editHdrDC.getCustomerId());
+				cbModeOfTrans.setValue(editHdrDC.getModeofTrans());
+				cbPersonName.setValue(editHdrDC.getPersonName());
+				taRemarks.setValue(editHdrDC.getRemarks());
+				cbStatus.setValue(editHdrDC.getDcStatus());
+				logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected DC. Id -> "
+						+ issueId);
+				listDCDetails.addAll(serviceDCDtlHdr.getDCCtlList(null, dcHdrId, null, null, null, null, null, "F"));
 			}
-			cbEnquiry.setValue(editHdrDC.getEnquiryId());
-			if (editHdrDC.getCommPerson() != null) {
-				cbwindcommPerson.setValue(editHdrDC.getCommPerson());
-			}
-			if (editHdrDC.getTechPerson() != null) {
-				cbwindTechPers.setValue(editHdrDC.getTechPerson());
-			}
-			if (editHdrDC.getClientAddress() != null) {
-				taClientAddres.setValue(editHdrDC.getClientAddress());
-			}
-			tfDcNo.setReadOnly(false);
-			tfDcNo.setValue(editHdrDC.getDcNo());
-			cbDCType.setValue(editHdrDC.getDcType());
-			cbVendor.setValue(editHdrDC.getVendorId());
-			cbClients.setValue(editHdrDC.getCustomerId());
-			cbModeOfTrans.setValue(editHdrDC.getModeofTrans());
-			cbPersonName.setValue(editHdrDC.getPersonName());
-			taRemarks.setValue(editHdrDC.getRemarks());
-			cbStatus.setValue(editHdrDC.getDcStatus());
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected DC. Id -> "
-					+ issueId);
-			DCDtlList.addAll(serviceDCDtlHdr.getDCCtlList(null, dcHdrId, null, null, null, null, null, "F"));
+			loadDCDtl();
+			comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, null, dcHdrId, null,
+					status);
+			comments.loadsrch(true, null, null, null, null, null, null, null, dcHdrId, null);
 		}
-		loadDCDtl();
-		comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, null, dcHdrId, null, status);
-		comments.loadsrch(true, null, null, null, null, null, null, null, dcHdrId, null);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editDtls() {
-		hlUserInputLayout.setVisible(true);
-		if (tblDCDetails.getValue() != null) {
-			DCDtlDM dcDtlDM = beanDcDtlDM.getItem(tblDCDetails.getValue()).getBean();
-			cbGoodsType.setValue(dcDtlDM.getGoodsType());
-			Long matId = dcDtlDM.getMaterialId();
-			Collection<?> empColId = cbMaterialId.getItemIds();
-			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbMaterialId.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				MaterialDM matObj = (MaterialDM) itemclient.getBean();
-				if (matId != null && matId.equals(matObj.getMaterialId())) {
-					cbMaterialId.setValue(itemIdClient);
+		try {
+			hlUserInputLayout.setVisible(true);
+			if (tblDCDetails.getValue() != null) {
+				DCDtlDM dcDtlDM = beanDcDtlDM.getItem(tblDCDetails.getValue()).getBean();
+				cbGoodsType.setValue(dcDtlDM.getGoodsType());
+				Long matId = dcDtlDM.getMaterialId();
+				Collection<?> empColId = cbMaterialId.getItemIds();
+				for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbMaterialId.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					MaterialDM matObj = (MaterialDM) itemclient.getBean();
+					if (matId != null && matId.equals(matObj.getMaterialId())) {
+						cbMaterialId.setValue(itemIdClient);
+					}
 				}
-			}
-			Long prodId = dcDtlDM.getProductId();
-			Collection<?> empProdId = cbProduct.getItemIds();
-			for (Iterator<?> iteratorclient = empProdId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbProduct.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				ProductDM prodObj = (ProductDM) itemclient.getBean();
-				if (prodId != null && prodId.equals(prodObj.getProdid())) {
-					cbProduct.setValue(itemIdClient);
+				Long prodId = dcDtlDM.getProductId();
+				Collection<?> empProdId = cbProduct.getItemIds();
+				for (Iterator<?> iteratorclient = empProdId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbProduct.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					ProductDM prodObj = (ProductDM) itemclient.getBean();
+					if (prodId != null && prodId.equals(prodObj.getProdid())) {
+						cbProduct.setValue(itemIdClient);
+					}
 				}
+				if (dcDtlDM.getGoodsDesc() != null) {
+					taGoodsDesc.setValue(dcDtlDM.getGoodsDesc());
+				}
+				if (dcDtlDM.getDcQty() != null) {
+					tfDCQty.setValue(dcDtlDM.getDcQty().toString());
+				}
+				if (dcDtlDM.getGoodsUOM() != null) {
+					rfGoodsuom.setReadOnly(false);
+					rfGoodsuom.setValue(dcDtlDM.getGoodsUOM());
+					rfGoodsuom.setReadOnly(true);
+				}
+				cbGoodsStatus.setValue(dcDtlDM.getStatus());
 			}
-			if (dcDtlDM.getGoodsDesc() != null) {
-				taGoodsDesc.setValue(dcDtlDM.getGoodsDesc());
-			}
-			if (dcDtlDM.getDcQty() != null) {
-				tfDCQty.setValue(dcDtlDM.getDcQty().toString());
-			}
-			if (dcDtlDM.getGoodsUOM() != null) {
-				rfGoodsuom.setReadOnly(false);
-				rfGoodsuom.setValue(dcDtlDM.getGoodsUOM());
-				rfGoodsuom.setReadOnly(true);
-			}
-			cbGoodsStatus.setValue(dcDtlDM.getStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1023,37 +1035,42 @@ public class DC extends BaseTransUI {
 	}
 	
 	private void saveDCDtlListDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		DCDtlDM dcDtlDM = new DCDtlDM();
-		if (tblDCDetails.getValue() != null) {
-			dcDtlDM = beanDcDtlDM.getItem(tblDCDetails.getValue()).getBean();
-			DCDtlList.remove(dcDtlDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+			DCDtlDM dcDtlDM = new DCDtlDM();
+			if (tblDCDetails.getValue() != null) {
+				dcDtlDM = beanDcDtlDM.getItem(tblDCDetails.getValue()).getBean();
+				listDCDetails.remove(dcDtlDM);
+			}
+			dcDtlDM.setGoodsType((String) cbGoodsType.getValue());
+			if (cbMaterialId.getValue() != null) {
+				dcDtlDM.setMaterialId(((MaterialDM) cbMaterialId.getValue()).getMaterialId());
+				dcDtlDM.setMaterialName(((MaterialDM) cbMaterialId.getValue()).getMaterialName());
+			}
+			if (cbProduct.getValue() != null) {
+				dcDtlDM.setProductId(((ProductDM) cbProduct.getValue()).getProdid());
+				dcDtlDM.setProductName(((ProductDM) cbProduct.getValue()).getProdname());
+			}
+			dcDtlDM.setGoodsDesc(taGoodsDesc.getValue().toString());
+			dcDtlDM.setDcQty(Long.valueOf(tfDCQty.getValue().toString()));
+			if (rfGoodsuom.getValue() != null) {
+				rfGoodsuom.setReadOnly(false);
+				dcDtlDM.setGoodsUOM(rfGoodsuom.getValue().toString());
+				rfGoodsuom.setReadOnly(true);
+			}
+			if (cbGoodsStatus.getValue() != null) {
+				dcDtlDM.setStatus((String) cbGoodsStatus.getValue());
+			}
+			dcDtlDM.setLastUpdateddt(DateUtils.getcurrentdate());
+			dcDtlDM.setLastUpdatedby(username);
+			listDCDetails.add(dcDtlDM);
+			loadDCDtl();
+			resetDCDetails();
+			btnAddDtl.setCaption("Add");
 		}
-		dcDtlDM.setGoodsType((String) cbGoodsType.getValue());
-		if (cbMaterialId.getValue() != null) {
-			dcDtlDM.setMaterialId(((MaterialDM) cbMaterialId.getValue()).getMaterialId());
-			dcDtlDM.setMaterialName(((MaterialDM) cbMaterialId.getValue()).getMaterialName());
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
-		if (cbProduct.getValue() != null) {
-			dcDtlDM.setProductId(((ProductDM) cbProduct.getValue()).getProdid());
-			dcDtlDM.setProductName(((ProductDM) cbProduct.getValue()).getProdname());
-		}
-		dcDtlDM.setGoodsDesc(taGoodsDesc.getValue().toString());
-		dcDtlDM.setDcQty(Long.valueOf(tfDCQty.getValue().toString()));
-		if (rfGoodsuom.getValue() != null) {
-			rfGoodsuom.setReadOnly(false);
-			dcDtlDM.setGoodsUOM(rfGoodsuom.getValue().toString());
-			rfGoodsuom.setReadOnly(true);
-		}
-		if (cbGoodsStatus.getValue() != null) {
-			dcDtlDM.setStatus((String) cbGoodsStatus.getValue());
-		}
-		dcDtlDM.setLastUpdateddt(DateUtils.getcurrentdate());
-		dcDtlDM.setLastUpdatedby(username);
-		DCDtlList.add(dcDtlDM);
-		loadDCDtl();
-		resetDCDetails();
-		btnAddDtl.setCaption("Add");
 	}
 	
 	/*
@@ -1160,13 +1177,18 @@ public class DC extends BaseTransUI {
 	}
 	
 	private void deleteDetails() {
-		DCDtlDM save = new DCDtlDM();
-		if (tblDCDetails.getValue() != null) {
-			save = beanDcDtlDM.getItem(tblDCDetails.getValue()).getBean();
-			DCDtlList.remove(save);
-			resetDCDetails();
-			loadDCDtl();
-			btndelete.setEnabled(false);
+		try {
+			DCDtlDM save = new DCDtlDM();
+			if (tblDCDetails.getValue() != null) {
+				save = beanDcDtlDM.getItem(tblDCDetails.getValue()).getBean();
+				listDCDetails.remove(save);
+				resetDCDetails();
+				loadDCDtl();
+				btndelete.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

@@ -32,7 +32,6 @@ import java.util.TimeZone;
 import javax.servlet.annotation.WebServlet;
 import org.apache.log4j.Logger;
 import com.gnts.asm.txn.AssetComplaintRegister;
-import com.gnts.base.dashboard.DashbordDesignView;
 import com.gnts.base.domain.mst.AppScreensDM;
 import com.gnts.base.domain.mst.AppScreensMenuDM;
 import com.gnts.base.domain.mst.CompanyDM;
@@ -139,7 +138,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 	private Long loginCompanyId, userId, userLoginId, roleId, branchId, appScreenId, moduleId, employeeid, deptId,
 			quoteId, enquiryId, timezoneId, currenyId, countryid;
 	private String currencysymbol;
-	private String systemUser;
+	private String systemUser, dashboardview;
 	private Logger logger = Logger.getLogger(Login.class.getName());
 	private MenuBar mbFavarotise;
 	
@@ -519,6 +518,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 								+ mbaseuser.getLastlogindt());
 					}
 					systemUser = mbaseuser.getSystemuseryn();
+					dashboardview = mbaseuser.getDashboardView();
 					userId = mbaseuser.getUserid();
 					VaadinSession vSession = UI.getCurrent().getSession();
 					WrappedSession wSession = vSession.getSession();
@@ -659,11 +659,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 						settingsMenu.addItem(baseAppScreen.getScreendesc(), cmd);
 					}
 					clContent.removeAllComponents();
-					if (loginuserName.equalsIgnoreCase("design")) {
-						new DashbordDesignView();
-					} else {
-						new Dashboard();
-					}
+					getView(dashboardview);
 					clContent.addComponent(clArgumentLayout);
 					DateFormat gmtFormat = new SimpleDateFormat();
 					TimeZone gmtTime = TimeZone.getTimeZone("GMT");
@@ -894,7 +890,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 				targetClass = "com.gnts.base.dashboard.DashboardHCMView";
 			} else if (sreenName.equalsIgnoreCase("Material Management")) {
 				targetClass = "com.gnts.base.dashboard.DashboardMMSView";
-			} else if (sreenName.equalsIgnoreCase("MMS Setup")) {
+			} else if (sreenName.equalsIgnoreCase("Inventory Management")) {
 				targetClass = "com.gnts.base.dashboard.DashboardStoreView";
 			} else if (sreenName.equalsIgnoreCase("Asset Management")) {
 				targetClass = "com.gnts.base.dashboard.MaintenanceDashboardView";
@@ -905,13 +901,21 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 				targetClass = "com.gnts.base.dashboard.DashboardProduction";
 			} else if (sreenName.equalsIgnoreCase("Sales Management")) {
 				targetClass = "com.gnts.base.dashboard.DashbordView";
-			} else if (sreenName.equalsIgnoreCase("MFG Setup")) {
+			} else if (sreenName.equalsIgnoreCase("Testing")) {
 				targetClass = "com.gnts.base.dashboard.DashboardTestingView";
+			} else if (sreenName.equalsIgnoreCase("Planning")) {
+				targetClass = "com.gnts.base.dashboard.DashboardPlanningView";
 			} else {
 				targetClass = "com.gnts.base.mst.Dashboard";
 			}
 		}
 		System.out.println("test1" + targetClass);
+		getView(targetClass);
+		clContent.addComponent(clArgumentLayout);
+		cbSearchScreenCode.setValue(null);
+	}
+	
+	private void getView(String targetClass) {
 		Class<?> c = null;
 		Object b = null;
 		try {
@@ -931,8 +935,6 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 			e.printStackTrace();
 			logger.info("convert class type to object type " + e);
 		}
-		clContent.addComponent(clArgumentLayout);
-		cbSearchScreenCode.setValue(null);
 	}
 	
 	Command cmd = new Command() {

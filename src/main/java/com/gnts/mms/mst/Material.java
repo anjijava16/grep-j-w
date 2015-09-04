@@ -361,60 +361,81 @@ public class Material extends BaseUI {
 	 * loadSrchRslt()-->this function is used for load the search result to table
 	 */
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.setSelectable(true);
-		tblMstScrSrchRslt.removeAllItems();
-		List<MaterialDM> list = new ArrayList<MaterialDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ "materialCode" + "," + tfMaterialName.getValue() + "," + cbBranch.getValue() + ","
-				+ cbMaterialStatus.getValue() + "," + companyId);
-		list = serviceMaterial.getMaterialList(null, companyId, (Long) cbBranch.getValue(), null, null, null, null,
-				tfMaterialName.getValue(), (String) cbMaterialStatus.getValue(), "F");
-		recordCnt = list.size();
-		beanMaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
-		beanMaterial.addAll(serviceMaterial.getMaterialList(null, companyId, (Long) cbBranch.getValue(), null,
-				tfMaterialCode.getValue(), null, null, tfMaterialName.getValue(), (String) cbMaterialStatus.getValue(),
-				"F"));
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Got the Material result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanMaterial);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialId", "branchName", "materialName", "materialCode",
-				"materialStatus", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Material Name", "Material Code",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("materialId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.setSelectable(true);
+			tblMstScrSrchRslt.removeAllItems();
+			List<MaterialDM> list = new ArrayList<MaterialDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ "materialCode" + "," + tfMaterialName.getValue() + "," + cbBranch.getValue() + ","
+					+ cbMaterialStatus.getValue() + "," + companyId);
+			list = serviceMaterial.getMaterialList(null, companyId, (Long) cbBranch.getValue(), null, null, null, null,
+					tfMaterialName.getValue(), (String) cbMaterialStatus.getValue(), "F");
+			recordCnt = list.size();
+			beanMaterial = new BeanItemContainer<MaterialDM>(MaterialDM.class);
+			beanMaterial.addAll(serviceMaterial.getMaterialList(null, companyId, (Long) cbBranch.getValue(), null,
+					tfMaterialCode.getValue(), null, null, tfMaterialName.getValue(),
+					(String) cbMaterialStatus.getValue(), "F"));
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the Material result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanMaterial);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialId", "branchName", "materialName",
+					"materialCode", "materialStatus", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Material Name",
+					"Material Code", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("materialId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void deletematowner() {
-		MaterialOwnersDM save = new MaterialOwnersDM();
-		if (tblMatOwner.getValue() != null) {
-			save = beanMaterialOwner.getItem(tblMatOwner.getValue()).getBean();
-			listMatOwner.remove(save);
-			matOwnerResetFields();
-			loadSrchMatOwnerRslt(false);
-			btndeletematowner.setEnabled(false);
+		try {
+			MaterialOwnersDM save = new MaterialOwnersDM();
+			if (tblMatOwner.getValue() != null) {
+				save = beanMaterialOwner.getItem(tblMatOwner.getValue()).getBean();
+				listMatOwner.remove(save);
+				matOwnerResetFields();
+				loadSrchMatOwnerRslt(false);
+				btndeletematowner.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void deletematconsumer() {
-		MaterialConsumersDM save = new MaterialConsumersDM();
-		if (tblMatCons.getValue() != null) {
-			save = beanMaterialConsumer.getItem(tblMatCons.getValue()).getBean();
-			listMatConsumer.remove(save);
-			matConsResetFields();
-			loadSrchMatConsRslt(false);
-			btndeletematcmr.setEnabled(false);
+		try {
+			MaterialConsumersDM save = new MaterialConsumersDM();
+			if (tblMatCons.getValue() != null) {
+				save = beanMaterialConsumer.getItem(tblMatCons.getValue()).getBean();
+				listMatConsumer.remove(save);
+				matConsResetFields();
+				loadSrchMatConsRslt(false);
+				btndeletematcmr.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void deletematspec() {
-		MaterialSpecDM save = new MaterialSpecDM();
-		if (tblMatSpec.getValue() != null) {
-			save = beanMaterialSpec.getItem(tblMatSpec.getValue()).getBean();
-			listMatSpec.remove(save);
-			matSpecResetFields();
-			loadSrchMatSpecRslt(false);
-			btnDeleteSpec.setEnabled(false);
+		try {
+			MaterialSpecDM save = new MaterialSpecDM();
+			if (tblMatSpec.getValue() != null) {
+				save = beanMaterialSpec.getItem(tblMatSpec.getValue()).getBean();
+				listMatSpec.remove(save);
+				matSpecResetFields();
+				loadSrchMatSpecRslt(false);
+				btnDeleteSpec.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -422,81 +443,96 @@ public class Material extends BaseUI {
 	 * loadSrchMatOwnerRslt()-->this function is used for load the material owner search result to table
 	 */
 	private void loadSrchMatOwnerRslt(Boolean fromdb) {
-		logger.info("Material Owner Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Loading Material Owner Search...");
-		tblMatOwner.setPageLength(7);
-		tblMatOwner.setWidth("100%");
-		logger.info("Material Owner : Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Search Parameters are " + companyId + "," + materialId);
-		if (fromdb) {
-			listMatOwner = serviceMaterialOwner.getMaterialOwnerList(null, companyId, null, null, materialId, null,
-					"Active", "F");
+		try {
+			logger.info("Material Owner Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Loading Material Owner Search...");
+			tblMatOwner.setPageLength(7);
+			tblMatOwner.setWidth("100%");
+			logger.info("Material Owner : Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Search Parameters are " + companyId + "," + materialId);
+			if (fromdb) {
+				listMatOwner = serviceMaterialOwner.getMaterialOwnerList(null, companyId, null, null, materialId, null,
+						"Active", "F");
+			}
+			recordCntMatOwner = listMatOwner.size();
+			beanMaterialOwner = new BeanItemContainer<MaterialOwnersDM>(MaterialOwnersDM.class);
+			beanMaterialOwner.addAll(listMatOwner);
+			tblMatOwner.setSelectable(true);
+			tblMatOwner.setContainerDataSource(beanMaterialOwner);
+			tblMatOwner.setVisibleColumns(new Object[] { "employeeName", "branchName", "deptName", "ownershipStatus",
+					"lastupdateddt", "lastupdatedby" });
+			tblMatOwner.setColumnHeaders(new String[] { "Employee", "Branch", "Department", "Status",
+					"Last Updated Date", "Last Updated By" });
+			tblMatOwner.setColumnAlignment("materialOwnerId", Align.RIGHT);
+			tblMatOwner.setColumnFooter("lastupdatedby", "No.of Records : " + recordCntMatOwner);
 		}
-		recordCntMatOwner = listMatOwner.size();
-		beanMaterialOwner = new BeanItemContainer<MaterialOwnersDM>(MaterialOwnersDM.class);
-		beanMaterialOwner.addAll(listMatOwner);
-		tblMatOwner.setSelectable(true);
-		tblMatOwner.setContainerDataSource(beanMaterialOwner);
-		tblMatOwner.setVisibleColumns(new Object[] { "employeeName", "branchName", "deptName", "ownershipStatus",
-				"lastupdateddt", "lastupdatedby" });
-		tblMatOwner.setColumnHeaders(new String[] { "Employee", "Branch", "Department", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMatOwner.setColumnAlignment("materialOwnerId", Align.RIGHT);
-		tblMatOwner.setColumnFooter("lastupdatedby", "No.of Records : " + recordCntMatOwner);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadSrchMatConsRslt()-->this function is used for load the material owner search result to table
 	 */
 	private void loadSrchMatConsRslt(Boolean fromdb) {
-		logger.info("Masterial Consumer Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Loading Material Consumer Search...");
-		tblMatCons.setPageLength(7);
-		tblMatCons.setWidth("100%");
-		logger.info("" + "Material Consumer : Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Search Parameters are " + companyId + "," + materialId);
-		if (fromdb) {
-			listMatConsumer.addAll(serviceMaterialConsumer.getMaterialConsumerList(null, companyId, null, null,
-					materialId, "Active", "F"));
+		try {
+			logger.info("Masterial Consumer Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Loading Material Consumer Search...");
+			tblMatCons.setPageLength(7);
+			tblMatCons.setWidth("100%");
+			logger.info("" + "Material Consumer : Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Search Parameters are " + companyId + "," + materialId);
+			if (fromdb) {
+				listMatConsumer.addAll(serviceMaterialConsumer.getMaterialConsumerList(null, companyId, null, null,
+						materialId, "Active", "F"));
+			}
+			recordCntMatCons = listMatConsumer.size();
+			beanMaterialConsumer = new BeanItemContainer<MaterialConsumersDM>(MaterialConsumersDM.class);
+			beanMaterialConsumer.addAll(listMatConsumer);
+			tblMatCons.setSelectable(true);
+			tblMatCons.setContainerDataSource(beanMaterialConsumer);
+			tblMatCons.setVisibleColumns(new Object[] { "branchName", "deptname", "matConsStatus", "lastupdateddt",
+					"lastupdatedby" });
+			tblMatCons.setColumnHeaders(new String[] { "Branch", "Department", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMatCons.setColumnAlignment("matConsumerId", Align.RIGHT);
+			tblMatCons.setColumnFooter("lastupdatedby", "No.of Records : " + recordCntMatCons);
 		}
-		recordCntMatCons = listMatConsumer.size();
-		beanMaterialConsumer = new BeanItemContainer<MaterialConsumersDM>(MaterialConsumersDM.class);
-		beanMaterialConsumer.addAll(listMatConsumer);
-		tblMatCons.setSelectable(true);
-		tblMatCons.setContainerDataSource(beanMaterialConsumer);
-		tblMatCons.setVisibleColumns(new Object[] { "branchName", "deptname", "matConsStatus", "lastupdateddt",
-				"lastupdatedby" });
-		tblMatCons.setColumnHeaders(new String[] { "Branch", "Department", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMatCons.setColumnAlignment("matConsumerId", Align.RIGHT);
-		tblMatCons.setColumnFooter("lastupdatedby", "No.of Records : " + recordCntMatCons);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * loadSrchMatSpecRslt()-->this function is used for load the material owner search result to table
 	 */
 	private void loadSrchMatSpecRslt(Boolean fromdb) {
-		logger.info("Material Specification Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Loading Material Specification Search...");
-		tblMatSpec.setPageLength(7);
-		tblMatSpec.setWidth("100%");
-		logger.info("" + "Material Specification : Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Search Parameters are " + companyId + "," + materialId);
-		if (fromdb) {
-			listMatSpec.addAll(serviceMaterialSpec.getMaterialSpecList(null, companyId, materialId, null, null,
-					"Active", "F"));
+		try {
+			logger.info("Material Specification Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Loading Material Specification Search...");
+			tblMatSpec.setPageLength(7);
+			tblMatSpec.setWidth("100%");
+			logger.info("" + "Material Specification : Company ID : " + companyId + " | User Name : " + userName
+					+ " > " + "Search Parameters are " + companyId + "," + materialId);
+			if (fromdb) {
+				listMatSpec.addAll(serviceMaterialSpec.getMaterialSpecList(null, companyId, materialId, null, null,
+						"Active", "F"));
+			}
+			recordCntMatSpec = listMatSpec.size();
+			beanMaterialSpec = new BeanItemContainer<MaterialSpecDM>(MaterialSpecDM.class);
+			beanMaterialSpec.addAll(listMatSpec);
+			tblMatSpec.setSelectable(true);
+			tblMatSpec.setContainerDataSource(beanMaterialSpec);
+			tblMatSpec.setVisibleColumns(new Object[] { "specName", "specDesc", "matSpecStatus", "lastupdateddt",
+					"lastupdatedby" });
+			tblMatSpec.setColumnHeaders(new String[] { "Spec.Name", "Spec.Description", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMatSpec.setColumnAlignment("materialSpecId", Align.RIGHT);
+			tblMatSpec.setColumnFooter("lastupdatedby", "No.of Records : " + recordCntMatSpec);
 		}
-		recordCntMatSpec = listMatSpec.size();
-		beanMaterialSpec = new BeanItemContainer<MaterialSpecDM>(MaterialSpecDM.class);
-		beanMaterialSpec.addAll(listMatSpec);
-		tblMatSpec.setSelectable(true);
-		tblMatSpec.setContainerDataSource(beanMaterialSpec);
-		tblMatSpec.setVisibleColumns(new Object[] { "specName", "specDesc", "matSpecStatus", "lastupdateddt",
-				"lastupdatedby" });
-		tblMatSpec.setColumnHeaders(new String[] { "Spec.Name", "Spec.Description", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblMatSpec.setColumnAlignment("materialSpecId", Align.RIGHT);
-		tblMatSpec.setColumnFooter("lastupdatedby", "No.of Records : " + recordCntMatSpec);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -915,52 +951,57 @@ public class Material extends BaseUI {
 	
 	// Reset the selected row's data into material input components
 	private void editMaterial() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			MaterialDM editMaterialList = beanMaterial.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			materialId = editMaterialList.getMaterialId();
-			if ((editMaterialList.getMaterialCode() != null)) {
-				tfMaterialCode.setValue(editMaterialList.getMaterialCode());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				MaterialDM editMaterialList = beanMaterial.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				materialId = editMaterialList.getMaterialId();
+				if ((editMaterialList.getMaterialCode() != null)) {
+					tfMaterialCode.setValue(editMaterialList.getMaterialCode());
+				}
+				if ((editMaterialList.getMaterialName() != null)) {
+					tfMaterialName.setValue(editMaterialList.getMaterialName());
+				}
+				if ((editMaterialList.getMaterialGroup() != null)) {
+					cbMaterialGroup.setValue((String) editMaterialList.getMaterialGroup());
+				}
+				if ((editMaterialList.getMaterialTypeId() != null)) {
+					cbMaterialType.setValue(editMaterialList.getMaterialTypeId());
+				}
+				if ((editMaterialList.getPartCode() != null)) {
+					tfPartCode.setValue(editMaterialList.getPartCode().toString());
+				}
+				if ((editMaterialList.getMaterialUOM() != null)) {
+					cbMaterialUOM.setValue(editMaterialList.getMaterialUOM().toString());
+				}
+				if ((editMaterialList.getUnitRate() != null)) {
+					tfUnitRate.setValue(editMaterialList.getUnitRate().toString());
+				}
+				if ((editMaterialList.getVisualSpec() != null)) {
+					taVisualSpec.setValue(editMaterialList.getVisualSpec().toString());
+				}
+				if ((editMaterialList.getReorderLevel() != null)) {
+					tfReorderLevel.setValue(editMaterialList.getReorderLevel().toString());
+				}
+				if ((editMaterialList.getRemarks() != null)) {
+					taRemark.setValue(editMaterialList.getRemarks().toString());
+				}
+				if ((editMaterialList.getBranchId() != null)) {
+					cbBranch.setValue(editMaterialList.getBranchId());
+				}
+				if ((editMaterialList.getDeptId() != null)) {
+					cbDepartment.setValue(editMaterialList.getDeptId());
+				}
+				if (editMaterialList.getMaterialStatus() != null) {
+					cbMaterialStatus.setValue(editMaterialList.getMaterialStatus());
+				}
 			}
-			if ((editMaterialList.getMaterialName() != null)) {
-				tfMaterialName.setValue(editMaterialList.getMaterialName());
-			}
-			if ((editMaterialList.getMaterialGroup() != null)) {
-				cbMaterialGroup.setValue((String) editMaterialList.getMaterialGroup());
-			}
-			if ((editMaterialList.getMaterialTypeId() != null)) {
-				cbMaterialType.setValue(editMaterialList.getMaterialTypeId());
-			}
-			if ((editMaterialList.getPartCode() != null)) {
-				tfPartCode.setValue(editMaterialList.getPartCode().toString());
-			}
-			if ((editMaterialList.getMaterialUOM() != null)) {
-				cbMaterialUOM.setValue(editMaterialList.getMaterialUOM().toString());
-			}
-			if ((editMaterialList.getUnitRate() != null)) {
-				tfUnitRate.setValue(editMaterialList.getUnitRate().toString());
-			}
-			if ((editMaterialList.getVisualSpec() != null)) {
-				taVisualSpec.setValue(editMaterialList.getVisualSpec().toString());
-			}
-			if ((editMaterialList.getReorderLevel() != null)) {
-				tfReorderLevel.setValue(editMaterialList.getReorderLevel().toString());
-			}
-			if ((editMaterialList.getRemarks() != null)) {
-				taRemark.setValue(editMaterialList.getRemarks().toString());
-			}
-			if ((editMaterialList.getBranchId() != null)) {
-				cbBranch.setValue(editMaterialList.getBranchId());
-			}
-			if ((editMaterialList.getDeptId() != null)) {
-				cbDepartment.setValue(editMaterialList.getDeptId());
-			}
-			if (editMaterialList.getMaterialStatus() != null) {
-				cbMaterialStatus.setValue(editMaterialList.getMaterialStatus());
-			}
+			loadSrchMatOwnerRslt(true);
+			loadSrchMatConsRslt(true);
+			loadSrchMatSpecRslt(true);
 		}
-		loadSrchMatOwnerRslt(true);
-		loadSrchMatConsRslt(true);
-		loadSrchMatSpecRslt(true);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -1058,93 +1099,86 @@ public class Material extends BaseUI {
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
-		try {
-			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
-			MaterialDM materialObj = new MaterialDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				materialObj = beanMaterial.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			}
-			materialObj.setMaterialCode(tfMaterialCode.getValue());
-			materialObj.setCompanyId(companyId);
-			if (cbBranch.getValue() != null) {
-				materialObj.setBranchId((Long) cbBranch.getValue());
-			}
-			if (cbDepartment.getValue() != null) {
-				materialObj.setDeptId((Long) cbDepartment.getValue());
-			}
-			if (cbMaterialGroup.getValue() != null) {
-				materialObj.setMaterialGroup((String) cbMaterialGroup.getValue());
-			}
-			if (cbMaterialType.getValue() != null) {
-				materialObj.setMaterialTypeId((Long) cbMaterialType.getValue());
-			}
-			materialObj.setMaterialName(tfMaterialName.getValue().toString());
-			if (tfPartCode.getValue() != null) {
-				materialObj.setPartCode(tfPartCode.getValue().toString());
-			}
-			if (cbMaterialUOM.getValue() != null) {
-				materialObj.setMaterialUOM((String) cbMaterialUOM.getValue());
-			}
-			if (tfUnitRate.getValue() != null && tfUnitRate.getValue() != "") {
-				materialObj.setUnitRate(Long.valueOf(tfUnitRate.getValue()));
-			}
-			if (taVisualSpec.getValue() != null) {
-				materialObj.setVisualSpec(taVisualSpec.getValue());
-			}
-			if (tfReorderLevel.getValue() != "" && tfReorderLevel.getValue() != "") {
-				materialObj.setReorderLevel(Long.valueOf(tfReorderLevel.getValue()));
-			}
-			if (taRemark.getValue() != null) {
-				materialObj.setRemarks(taRemark.getValue());
-			}
-			if (cbMaterialStatus.getValue() != null) {
-				materialObj.setMaterialStatus((String) cbMaterialStatus.getValue());
-			}
-			materialObj.setLastupdateddt(DateUtils.getcurrentdate());
-			materialObj.setLastupdatedby(userName);
-			serviceMaterial.saveOrUpdateMaterial(materialObj);
-			materialId = materialObj.getMaterialId();
-			@SuppressWarnings("unchecked")
-			Collection<MaterialOwnersDM> matOwnerItemIds = (Collection<MaterialOwnersDM>) tblMatOwner
-					.getVisibleItemIds();
-			for (MaterialOwnersDM saveMatOwner : (Collection<MaterialOwnersDM>) matOwnerItemIds) {
-				saveMatOwner.setMaterialId(Long.valueOf(materialObj.getMaterialId()));
-				serviceMaterialOwner.saveOrUpdateMaterialOwner(saveMatOwner);
-			}
-			@SuppressWarnings("unchecked")
-			Collection<MaterialSpecDM> matSpecItemIds = (Collection<MaterialSpecDM>) tblMatSpec.getVisibleItemIds();
-			for (MaterialSpecDM saveMatSpec : (Collection<MaterialSpecDM>) matSpecItemIds) {
-				saveMatSpec.setMaterialId(Long.valueOf(materialObj.getMaterialId()));
-				serviceMaterialSpec.saverOrUpdateMaterialSpec(saveMatSpec);
-			}
-			@SuppressWarnings("unchecked")
-			Collection<MaterialConsumersDM> matConsItemIds = (Collection<MaterialConsumersDM>) tblMatCons
-					.getVisibleItemIds();
-			for (MaterialConsumersDM saveMatCons : (Collection<MaterialConsumersDM>) matConsItemIds) {
-				saveMatCons.setMaterialId(Long.valueOf(materialObj.getMaterialId()));
-				serviceMaterialConsumer.saveOrUpdateMaterialConsumer(saveMatCons);
-			}
-			if (tblMstScrSrchRslt.getValue() == null) {
-				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyId, branchId, moduleId, "MM_MTRLCD")
-							.get(0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyId, branchId, moduleId, "MM_MTRLCD");
-					}
-				}
-				catch (Exception e) {
-					e.printStackTrace();
+		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Saving Data... ");
+		MaterialDM materialObj = new MaterialDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			materialObj = beanMaterial.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		}
+		materialObj.setMaterialCode(tfMaterialCode.getValue());
+		materialObj.setCompanyId(companyId);
+		if (cbBranch.getValue() != null) {
+			materialObj.setBranchId((Long) cbBranch.getValue());
+		}
+		if (cbDepartment.getValue() != null) {
+			materialObj.setDeptId((Long) cbDepartment.getValue());
+		}
+		if (cbMaterialGroup.getValue() != null) {
+			materialObj.setMaterialGroup((String) cbMaterialGroup.getValue());
+		}
+		if (cbMaterialType.getValue() != null) {
+			materialObj.setMaterialTypeId((Long) cbMaterialType.getValue());
+		}
+		materialObj.setMaterialName(tfMaterialName.getValue().toString());
+		if (tfPartCode.getValue() != null) {
+			materialObj.setPartCode(tfPartCode.getValue().toString());
+		}
+		if (cbMaterialUOM.getValue() != null) {
+			materialObj.setMaterialUOM((String) cbMaterialUOM.getValue());
+		}
+		if (tfUnitRate.getValue() != null && tfUnitRate.getValue() != "") {
+			materialObj.setUnitRate(Long.valueOf(tfUnitRate.getValue()));
+		}
+		if (taVisualSpec.getValue() != null) {
+			materialObj.setVisualSpec(taVisualSpec.getValue());
+		}
+		if (tfReorderLevel.getValue() != "" && tfReorderLevel.getValue() != "") {
+			materialObj.setReorderLevel(Long.valueOf(tfReorderLevel.getValue()));
+		}
+		if (taRemark.getValue() != null) {
+			materialObj.setRemarks(taRemark.getValue());
+		}
+		if (cbMaterialStatus.getValue() != null) {
+			materialObj.setMaterialStatus((String) cbMaterialStatus.getValue());
+		}
+		materialObj.setLastupdateddt(DateUtils.getcurrentdate());
+		materialObj.setLastupdatedby(userName);
+		serviceMaterial.saveOrUpdateMaterial(materialObj);
+		materialId = materialObj.getMaterialId();
+		@SuppressWarnings("unchecked")
+		Collection<MaterialOwnersDM> matOwnerItemIds = (Collection<MaterialOwnersDM>) tblMatOwner.getVisibleItemIds();
+		for (MaterialOwnersDM saveMatOwner : (Collection<MaterialOwnersDM>) matOwnerItemIds) {
+			saveMatOwner.setMaterialId(Long.valueOf(materialObj.getMaterialId()));
+			serviceMaterialOwner.saveOrUpdateMaterialOwner(saveMatOwner);
+		}
+		@SuppressWarnings("unchecked")
+		Collection<MaterialSpecDM> matSpecItemIds = (Collection<MaterialSpecDM>) tblMatSpec.getVisibleItemIds();
+		for (MaterialSpecDM saveMatSpec : (Collection<MaterialSpecDM>) matSpecItemIds) {
+			saveMatSpec.setMaterialId(Long.valueOf(materialObj.getMaterialId()));
+			serviceMaterialSpec.saverOrUpdateMaterialSpec(saveMatSpec);
+		}
+		@SuppressWarnings("unchecked")
+		Collection<MaterialConsumersDM> matConsItemIds = (Collection<MaterialConsumersDM>) tblMatCons
+				.getVisibleItemIds();
+		for (MaterialConsumersDM saveMatCons : (Collection<MaterialConsumersDM>) matConsItemIds) {
+			saveMatCons.setMaterialId(Long.valueOf(materialObj.getMaterialId()));
+			serviceMaterialConsumer.saveOrUpdateMaterialConsumer(saveMatCons);
+		}
+		if (tblMstScrSrchRslt.getValue() == null) {
+			try {
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyId, branchId, moduleId, "MM_MTRLCD").get(0);
+				if (slnoObj.getAutoGenYN().equals("Y")) {
+					serviceSlnogen.updateNextSequenceNumber(companyId, branchId, moduleId, "MM_MTRLCD");
 				}
 			}
-			resetFields();
-			loadSrchRslt();
-			loadSrchMatOwnerRslt(true);
-			loadSrchMatConsRslt(true);
-			loadSrchMatSpecRslt(true);
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		resetFields();
+		loadSrchRslt();
+		loadSrchMatOwnerRslt(true);
+		loadSrchMatConsRslt(true);
+		loadSrchMatSpecRslt(true);
 	}
 	
 	@Override
@@ -1211,121 +1245,141 @@ public class Material extends BaseUI {
 	 * saveMatOwnerDetails()-->this function is used for save the material owner's details for temporary
 	 */
 	private void saveMatOwnerDetails() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Saving Material Owner Data... ");
-		validationmatowner();
-		MaterialOwnersDM matOwnerObj = new MaterialOwnersDM();
-		if (tblMatOwner.getValue() != null) {
-			matOwnerObj = beanMaterialOwner.getItem(tblMatOwner.getValue()).getBean();
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Saving Material Owner Data... ");
+			validationmatowner();
+			MaterialOwnersDM matOwnerObj = new MaterialOwnersDM();
+			if (tblMatOwner.getValue() != null) {
+				matOwnerObj = beanMaterialOwner.getItem(tblMatOwner.getValue()).getBean();
+			}
+			matOwnerObj.setEmployeeId(((EmployeeDM) cbMatOwnerEmployee.getValue()).getEmployeeid());
+			matOwnerObj.setEmployeeName(((EmployeeDM) cbMatOwnerEmployee.getValue()).getFullname());
+			matOwnerObj.setBranchId(((BranchDM) cbMatOwnerBranch.getValue()).getBranchId());
+			matOwnerObj.setBranchName(((BranchDM) cbMatOwnerBranch.getValue()).getBranchName());
+			matOwnerObj.setMaterialName((String) tfMaterialName.getValue());
+			matOwnerObj.setDeptId(((DepartmentDM) cbMatOwnerDept.getValue()).getDeptid());
+			matOwnerObj.setDeptName(((DepartmentDM) cbMatOwnerDept.getValue()).getDeptname());
+			matOwnerObj.setOwnershipStatus((String) cbMatOwnerStatus.getValue());
+			matOwnerObj.setLastupdateddt(DateUtils.getcurrentdate());
+			matOwnerObj.setLastupdatedby(userName);
+			matOwnerObj.setCompanyId(companyId);
+			listMatOwner.add(matOwnerObj);
+			loadSrchMatOwnerRslt(false);
+			btnaddMatOwner.setCaption("Add");
+			matOwnerResetFields();
 		}
-		matOwnerObj.setEmployeeId(((EmployeeDM) cbMatOwnerEmployee.getValue()).getEmployeeid());
-		matOwnerObj.setEmployeeName(((EmployeeDM) cbMatOwnerEmployee.getValue()).getFullname());
-		matOwnerObj.setBranchId(((BranchDM) cbMatOwnerBranch.getValue()).getBranchId());
-		matOwnerObj.setBranchName(((BranchDM) cbMatOwnerBranch.getValue()).getBranchName());
-		matOwnerObj.setMaterialName((String) tfMaterialName.getValue());
-		matOwnerObj.setDeptId(((DepartmentDM) cbMatOwnerDept.getValue()).getDeptid());
-		matOwnerObj.setDeptName(((DepartmentDM) cbMatOwnerDept.getValue()).getDeptname());
-		matOwnerObj.setOwnershipStatus((String) cbMatOwnerStatus.getValue());
-		matOwnerObj.setLastupdateddt(DateUtils.getcurrentdate());
-		matOwnerObj.setLastupdatedby(userName);
-		matOwnerObj.setCompanyId(companyId);
-		listMatOwner.add(matOwnerObj);
-		loadSrchMatOwnerRslt(false);
-		btnaddMatOwner.setCaption("Add");
-		matOwnerResetFields();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * saveMatSpecDetails()-->this function is used for save the material specification's details for temporary
 	 */
 	private void saveMatSpecDetails() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Saving Material Specification Data... ");
-		validationmatspecification();
-		MaterialSpecDM matSpecObj = new MaterialSpecDM();
-		if (tblMatSpec.getValue() != null) {
-			matSpecObj = beanMaterialSpec.getItem(tblMatSpec.getValue()).getBean();
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Saving Material Specification Data... ");
+			validationmatspecification();
+			MaterialSpecDM matSpecObj = new MaterialSpecDM();
+			if (tblMatSpec.getValue() != null) {
+				matSpecObj = beanMaterialSpec.getItem(tblMatSpec.getValue()).getBean();
+			}
+			matSpecObj.setSpecName(tfMatSpecName.getValue().toString());
+			matSpecObj.setSpecDesc(taMatSpecDesc.getValue().toString());
+			matSpecObj.setMaterialName((String) tfMaterialName.getValue());
+			matSpecObj.setMatSpecStatus(cbMatSpecStatus.getValue().toString());
+			matSpecObj.setLastupdateddt(DateUtils.getcurrentdate());
+			matSpecObj.setLastupdatedby(userName);
+			matSpecObj.setCompanyId(companyId);
+			listMatSpec.add(matSpecObj);
+			loadSrchMatSpecRslt(false);
+			btnaddMatSpec.setCaption("Add");
+			matSpecResetFields();
 		}
-		matSpecObj.setSpecName(tfMatSpecName.getValue().toString());
-		matSpecObj.setSpecDesc(taMatSpecDesc.getValue().toString());
-		matSpecObj.setMaterialName((String) tfMaterialName.getValue());
-		matSpecObj.setMatSpecStatus(cbMatSpecStatus.getValue().toString());
-		matSpecObj.setLastupdateddt(DateUtils.getcurrentdate());
-		matSpecObj.setLastupdatedby(userName);
-		matSpecObj.setCompanyId(companyId);
-		listMatSpec.add(matSpecObj);
-		loadSrchMatSpecRslt(false);
-		btnaddMatSpec.setCaption("Add");
-		matSpecResetFields();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * saveMatConsDetails()-->this function is used for save the material consumers's details for temporary
 	 */
 	private void saveMatConsDetails() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Saving Material Consumer Data... ");
-		validationmatconsumer();
-		MaterialConsumersDM materialConsObj = new MaterialConsumersDM();
-		if (tblMatCons.getValue() != null) {
-			materialConsObj = beanMaterialConsumer.getItem(tblMatCons.getValue()).getBean();
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Saving Material Consumer Data... ");
+			validationmatconsumer();
+			MaterialConsumersDM materialConsObj = new MaterialConsumersDM();
+			if (tblMatCons.getValue() != null) {
+				materialConsObj = beanMaterialConsumer.getItem(tblMatCons.getValue()).getBean();
+			}
+			materialConsObj.setBranchId(((BranchDM) cbMatConsBranch.getValue()).getBranchId());
+			materialConsObj.setBranchName(((BranchDM) cbMatConsBranch.getValue()).getBranchName());
+			materialConsObj.setDeptId(((DepartmentDM) cbMatConsDepartment.getValue()).getDeptid());
+			materialConsObj.setDeptname(((DepartmentDM) cbMatConsDepartment.getValue()).getDeptname());
+			materialConsObj.setMaterialName(tfMaterialName.getValue().toString());
+			materialConsObj.setMatConsStatus((String) cbMatConsStatus.getValue());
+			materialConsObj.setLastupdateddt(DateUtils.getcurrentdate());
+			materialConsObj.setLastupdatedby(userName);
+			materialConsObj.setCompanyId(companyId);
+			listMatConsumer.add(materialConsObj);
+			loadSrchMatConsRslt(false);
+			btnaddMatCons.setCaption("Add");
+			matConsResetFields();
 		}
-		materialConsObj.setBranchId(((BranchDM) cbMatConsBranch.getValue()).getBranchId());
-		materialConsObj.setBranchName(((BranchDM) cbMatConsBranch.getValue()).getBranchName());
-		materialConsObj.setDeptId(((DepartmentDM) cbMatConsDepartment.getValue()).getDeptid());
-		materialConsObj.setDeptname(((DepartmentDM) cbMatConsDepartment.getValue()).getDeptname());
-		materialConsObj.setMaterialName(tfMaterialName.getValue().toString());
-		materialConsObj.setMatConsStatus((String) cbMatConsStatus.getValue());
-		materialConsObj.setLastupdateddt(DateUtils.getcurrentdate());
-		materialConsObj.setLastupdatedby(userName);
-		materialConsObj.setCompanyId(companyId);
-		listMatConsumer.add(materialConsObj);
-		loadSrchMatConsRslt(false);
-		btnaddMatCons.setCaption("Add");
-		matConsResetFields();
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	/*
 	 * editMaterialOwner()-->this function is used for restore the selected row's data to material owner components
 	 */
 	private void editMaterialOwner() {
-		if (tblMatOwner.getValue() != null) {
-			MaterialOwnersDM editmatowner = beanMaterialOwner.getItem(tblMatOwner.getValue()).getBean();
-			Long empId = editmatowner.getEmployeeId();
-			Collection<?> empColId = cbMatOwnerEmployee.getItemIds();
-			for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbMatOwnerEmployee.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				EmployeeDM matObj = (EmployeeDM) itemclient.getBean();
-				if (empId != null && empId.equals(matObj.getEmployeeid())) {
-					cbMatOwnerEmployee.setValue(itemIdClient);
-					break;
+		try {
+			if (tblMatOwner.getValue() != null) {
+				MaterialOwnersDM editmatowner = beanMaterialOwner.getItem(tblMatOwner.getValue()).getBean();
+				Long empId = editmatowner.getEmployeeId();
+				Collection<?> empColId = cbMatOwnerEmployee.getItemIds();
+				for (Iterator<?> iteratorclient = empColId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbMatOwnerEmployee.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					EmployeeDM matObj = (EmployeeDM) itemclient.getBean();
+					if (empId != null && empId.equals(matObj.getEmployeeid())) {
+						cbMatOwnerEmployee.setValue(itemIdClient);
+						break;
+					}
 				}
-			}
-			Long branchId = editmatowner.getBranchId();
-			Collection<?> branchcolId = cbMatOwnerBranch.getItemIds();
-			for (Iterator<?> iteratorclient = branchcolId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbMatOwnerBranch.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				BranchDM matObj = (BranchDM) itemclient.getBean();
-				if (branchId != null && branchId.equals(matObj.getBranchId())) {
-					cbMatOwnerBranch.setValue(itemIdClient);
+				Long branchId = editmatowner.getBranchId();
+				Collection<?> branchcolId = cbMatOwnerBranch.getItemIds();
+				for (Iterator<?> iteratorclient = branchcolId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbMatOwnerBranch.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					BranchDM matObj = (BranchDM) itemclient.getBean();
+					if (branchId != null && branchId.equals(matObj.getBranchId())) {
+						cbMatOwnerBranch.setValue(itemIdClient);
+					}
 				}
-			}
-			Long deptId = editmatowner.getDeptId();
-			Collection<?> deptcolId = cbMatOwnerDept.getItemIds();
-			for (Iterator<?> iteratorclient = deptcolId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbMatOwnerDept.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				DepartmentDM matObj = (DepartmentDM) itemclient.getBean();
-				if (deptId != null && deptId.equals(matObj.getDeptid())) {
-					cbMatOwnerDept.setValue(itemIdClient);
+				Long deptId = editmatowner.getDeptId();
+				Collection<?> deptcolId = cbMatOwnerDept.getItemIds();
+				for (Iterator<?> iteratorclient = deptcolId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbMatOwnerDept.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					DepartmentDM matObj = (DepartmentDM) itemclient.getBean();
+					if (deptId != null && deptId.equals(matObj.getDeptid())) {
+						cbMatOwnerDept.setValue(itemIdClient);
+					}
 				}
+				cbMatOwnerStatus.setValue(editmatowner.getOwnershipStatus());
 			}
-			cbMatOwnerStatus.setValue(editmatowner.getOwnershipStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1334,31 +1388,36 @@ public class Material extends BaseUI {
 	 * components
 	 */
 	private void editMaterialConsumer() {
-		if (tblMatCons.getValue() != null) {
-			MaterialConsumersDM editmatowner = beanMaterialConsumer.getItem(tblMatCons.getValue()).getBean();
-			Long branchId = editmatowner.getBranchId();
-			Collection<?> branchcolId = cbMatConsBranch.getItemIds();
-			for (Iterator<?> iteratorclient = branchcolId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbMatConsBranch.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				BranchDM matObj = (BranchDM) itemclient.getBean();
-				if (branchId != null && branchId.equals(matObj.getBranchId())) {
-					cbMatConsBranch.setValue(itemIdClient);
+		try {
+			if (tblMatCons.getValue() != null) {
+				MaterialConsumersDM editmatowner = beanMaterialConsumer.getItem(tblMatCons.getValue()).getBean();
+				Long branchId = editmatowner.getBranchId();
+				Collection<?> branchcolId = cbMatConsBranch.getItemIds();
+				for (Iterator<?> iteratorclient = branchcolId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbMatConsBranch.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					BranchDM matObj = (BranchDM) itemclient.getBean();
+					if (branchId != null && branchId.equals(matObj.getBranchId())) {
+						cbMatConsBranch.setValue(itemIdClient);
+					}
 				}
-			}
-			Long deptId = editmatowner.getDeptId();
-			Collection<?> deptcolId = cbMatConsDepartment.getItemIds();
-			for (Iterator<?> iteratorclient = deptcolId.iterator(); iteratorclient.hasNext();) {
-				Object itemIdClient = (Object) iteratorclient.next();
-				BeanItem<?> itemclient = (BeanItem<?>) cbMatConsDepartment.getItem(itemIdClient);
-				// Get the actual bean and use the data
-				DepartmentDM matObj = (DepartmentDM) itemclient.getBean();
-				if (deptId != null && deptId.equals(matObj.getDeptid())) {
-					cbMatConsDepartment.setValue(itemIdClient);
+				Long deptId = editmatowner.getDeptId();
+				Collection<?> deptcolId = cbMatConsDepartment.getItemIds();
+				for (Iterator<?> iteratorclient = deptcolId.iterator(); iteratorclient.hasNext();) {
+					Object itemIdClient = (Object) iteratorclient.next();
+					BeanItem<?> itemclient = (BeanItem<?>) cbMatConsDepartment.getItem(itemIdClient);
+					// Get the actual bean and use the data
+					DepartmentDM matObj = (DepartmentDM) itemclient.getBean();
+					if (deptId != null && deptId.equals(matObj.getDeptid())) {
+						cbMatConsDepartment.setValue(itemIdClient);
+					}
 				}
+				cbMatConsStatus.setValue(editmatowner.getMatConsStatus());
 			}
-			cbMatConsStatus.setValue(editmatowner.getMatConsStatus());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1367,12 +1426,17 @@ public class Material extends BaseUI {
 	 * components
 	 */
 	private void editMaterialSpec() {
-		Item matSpecSelected = tblMatSpec.getItem(tblMatSpec.getValue());
-		if (matSpecSelected != null) {
-			tfMatSpecName.setValue(matSpecSelected.getItemProperty("specName").getValue().toString());
-			taMatSpecDesc.setValue(matSpecSelected.getItemProperty("specDesc").getValue().toString());
-			String stCode = matSpecSelected.getItemProperty("matSpecStatus").getValue().toString();
-			cbMatSpecStatus.setValue(stCode);
+		try {
+			Item item = tblMatSpec.getItem(tblMatSpec.getValue());
+			if (item != null) {
+				tfMatSpecName.setValue(item.getItemProperty("specName").getValue().toString());
+				taMatSpecDesc.setValue(item.getItemProperty("specDesc").getValue().toString());
+				String stCode = item.getItemProperty("matSpecStatus").getValue().toString();
+				cbMatSpecStatus.setValue(stCode);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

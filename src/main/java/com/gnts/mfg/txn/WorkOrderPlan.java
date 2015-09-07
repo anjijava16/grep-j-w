@@ -77,7 +77,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
@@ -435,104 +434,123 @@ public class WorkOrderPlan extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<WorkOrderPlanHdrDM> listWOPlan = new ArrayList<WorkOrderPlanHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid + ", ");
-		listWOPlan = serviceWorkOrderPlanHdr.getWorkOrderPlanHdr(null, (Long) cbBranchName.getValue(),
-				tfPlanNo.getValue(), (String) cbPlanStatus.getValue());
-		recordCnt = listWOPlan.size();
-		beanWrkOdrPlnHdr = new BeanItemContainer<WorkOrderPlanHdrDM>(WorkOrderPlanHdrDM.class);
-		beanWrkOdrPlnHdr.addAll(listWOPlan);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Got the WorkOrderPlanHdrDM. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanWrkOdrPlnHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "wrkPlanId", "branchName", "wrkPlanNo", "planDt",
-				"workStatus", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Brand Name", "Work Order Plan No.", "Plan Date",
-				"Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("wrkPlanId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<WorkOrderPlanHdrDM> listWOPlan = new ArrayList<WorkOrderPlanHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid + ", ");
+			listWOPlan = serviceWorkOrderPlanHdr.getWorkOrderPlanHdr(null, (Long) cbBranchName.getValue(),
+					tfPlanNo.getValue(), (String) cbPlanStatus.getValue());
+			recordCnt = listWOPlan.size();
+			beanWrkOdrPlnHdr = new BeanItemContainer<WorkOrderPlanHdrDM>(WorkOrderPlanHdrDM.class);
+			beanWrkOdrPlnHdr.addAll(listWOPlan);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Got the WorkOrderPlanHdrDM. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanWrkOdrPlnHdr);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "wrkPlanId", "branchName", "wrkPlanNo", "planDt",
+					"workStatus", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Brand Name", "Work Order Plan No.",
+					"Plan Date", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("wrkPlanId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadSrchWrkOdrPlnDtlRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid);
-		int recorddtlCnt = workOdrPlnPrdDtlList.size();
-		beanWrkOdrPlnPrdDtl = new BeanItemContainer<WorkOrderPlanProdDtlDM>(WorkOrderPlanProdDtlDM.class);
-		beanWrkOdrPlnPrdDtl.addAll(workOdrPlnPrdDtlList);
-		tblWrkOrdPlnDtl.setContainerDataSource(beanWrkOdrPlnPrdDtl);
-		tblWrkOrdPlnDtl
-				.setVisibleColumns(new Object[] { "prodName", "productName", "wrkOrdPlnQty", "wrkOrdPlnStatus" });
-		tblWrkOrdPlnDtl.setColumnHeaders(new String[] { "Product Name", "Customer Product Name", "WO.Plan Qty.",
-				"Status" });
-		tblWrkOrdPlnDtl.setColumnAlignment("productName", Align.LEFT);
-		tblWrkOrdPlnDtl.setFooterVisible(true);
-		tblWrkOrdPlnDtl.setColumnFooter("wrkOrdPlnStatus", "No.of Records : " + recorddtlCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid);
+			int recorddtlCnt = workOdrPlnPrdDtlList.size();
+			beanWrkOdrPlnPrdDtl = new BeanItemContainer<WorkOrderPlanProdDtlDM>(WorkOrderPlanProdDtlDM.class);
+			beanWrkOdrPlnPrdDtl.addAll(workOdrPlnPrdDtlList);
+			tblWrkOrdPlnDtl.setContainerDataSource(beanWrkOdrPlnPrdDtl);
+			tblWrkOrdPlnDtl.setVisibleColumns(new Object[] { "prodName", "productName", "wrkOrdPlnQty",
+					"wrkOrdPlnStatus" });
+			tblWrkOrdPlnDtl.setColumnHeaders(new String[] { "Product Name", "Customer Product Name", "WO.Plan Qty.",
+					"Status" });
+			tblWrkOrdPlnDtl.setColumnAlignment("productName", Align.LEFT);
+			tblWrkOrdPlnDtl.setFooterVisible(true);
+			tblWrkOrdPlnDtl.setColumnFooter("wrkOrdPlnStatus", "No.of Records : " + recorddtlCnt);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadSrchWrkOdrPlnMtrlDtlRslt(boolean loadMtrlTble) {
-		int recordCntmrl;
-		if (!loadMtrlTble) {
-			List<ProductBomDtlDM> wrkOrdPlnMtrlList = new ArrayList<ProductBomDtlDM>();
-			if (cbProductName.getValue() != null) {
-				productId = ((WorkOrderDtlDM) cbProductName.getValue()).getProdId();
-			}
-			wrkOrdPlnMtrlList = serviceWorkOrderPlanMtrlDtl.getProductBomDtlDM(productId, "Y");
-			List<WorkOrderPlanMtrlDtlDM> workOrdMtrllList = new ArrayList<WorkOrderPlanMtrlDtlDM>();
-			for (ProductBomDtlDM obj : wrkOrdPlnMtrlList) {
-				WorkOrderPlanMtrlDtlDM list = new WorkOrderPlanMtrlDtlDM();
-				list.setMtrlId(obj.getMaterialId());
-				list.setMtrlName(obj.getMaterialName());
-				list.setRequiredQty(obj.getMaterialQty());
+		try {
+			int recordCntmrl;
+			if (!loadMtrlTble) {
+				List<ProductBomDtlDM> wrkOrdPlnMtrlList = new ArrayList<ProductBomDtlDM>();
+				if (cbProductName.getValue() != null) {
+					productId = ((WorkOrderDtlDM) cbProductName.getValue()).getProdId();
+				}
+				wrkOrdPlnMtrlList = serviceWorkOrderPlanMtrlDtl.getProductBomDtlDM(productId, "Y");
+				List<WorkOrderPlanMtrlDtlDM> workOrdMtrllList = new ArrayList<WorkOrderPlanMtrlDtlDM>();
+				for (ProductBomDtlDM obj : wrkOrdPlnMtrlList) {
+					WorkOrderPlanMtrlDtlDM list = new WorkOrderPlanMtrlDtlDM();
+					list.setMtrlId(obj.getMaterialId());
+					list.setMtrlName(obj.getMaterialName());
+					list.setRequiredQty(obj.getMaterialQty());
 					list.setCurrentStock(serviceMaterialStock
-						.getMaterialStockList(obj.getMaterialId(), companyid, null, null, null, null, "F").get(0)
-						.getEffectiveStock());
-				workOrdMtrllList.add(list);
-			}
-			recordCntmrl = wrkOrdPlnMtrlList.size();
-			beanWrkOdrPlnMtrlDtl = new BeanItemContainer<WorkOrderPlanMtrlDtlDM>(WorkOrderPlanMtrlDtlDM.class);
-			beanWrkOdrPlnMtrlDtl.addAll(workOrdMtrllList);
-			tblWOPlanMaterials.setContainerDataSource(beanWrkOdrPlnMtrlDtl);
-		} else {
-			workOdrPlnMtrlDtlList = serviceWorkOrderPlanMtrlDtl.getWrkOrdPlnMtrlDtlDetails(null, null, woPlnHdr, null);
-			recordCntmrl = workOdrPlnMtrlDtlList.size();
-			beanWrkOdrPlnMtrlDtl = new BeanItemContainer<WorkOrderPlanMtrlDtlDM>(WorkOrderPlanMtrlDtlDM.class);
-			beanWrkOdrPlnMtrlDtl.addAll(workOdrPlnMtrlDtlList);
-			for (WorkOrderPlanMtrlDtlDM workOrderPlanMtrlDtlDM : workOdrPlnMtrlDtlList) {
-				if (workOrderPlanMtrlDtlDM.getWoMtrlStatus().equals("Active")) {
-					workOrderPlanMtrlDtlDM.setWoMtrlStatus("true");
-				} else {
-					workOrderPlanMtrlDtlDM.setWoMtrlStatus("false");
+							.getMaterialStockList(obj.getMaterialId(), companyid, null, null, null, null, "F").get(0)
+							.getEffectiveStock());
+					workOrdMtrllList.add(list);
 				}
+				recordCntmrl = wrkOrdPlnMtrlList.size();
+				beanWrkOdrPlnMtrlDtl = new BeanItemContainer<WorkOrderPlanMtrlDtlDM>(WorkOrderPlanMtrlDtlDM.class);
+				beanWrkOdrPlnMtrlDtl.addAll(workOrdMtrllList);
+				tblWOPlanMaterials.setContainerDataSource(beanWrkOdrPlnMtrlDtl);
+			} else {
+				workOdrPlnMtrlDtlList = serviceWorkOrderPlanMtrlDtl.getWrkOrdPlnMtrlDtlDetails(null, null, woPlnHdr,
+						null);
+				recordCntmrl = workOdrPlnMtrlDtlList.size();
+				beanWrkOdrPlnMtrlDtl = new BeanItemContainer<WorkOrderPlanMtrlDtlDM>(WorkOrderPlanMtrlDtlDM.class);
+				beanWrkOdrPlnMtrlDtl.addAll(workOdrPlnMtrlDtlList);
+				for (WorkOrderPlanMtrlDtlDM workOrderPlanMtrlDtlDM : workOdrPlnMtrlDtlList) {
+					if (workOrderPlanMtrlDtlDM.getWoMtrlStatus().equals("Active")) {
+						workOrderPlanMtrlDtlDM.setWoMtrlStatus("true");
+					} else {
+						workOrderPlanMtrlDtlDM.setWoMtrlStatus("false");
+					}
+				}
+				tblWOPlanMaterials.setContainerDataSource(beanWrkOdrPlnMtrlDtl);
 			}
-			tblWOPlanMaterials.setContainerDataSource(beanWrkOdrPlnMtrlDtl);
+			tblWOPlanMaterials.setVisibleColumns(new Object[] { "mtrlName", "requiredQty", "currentStock",
+					"woMtrlStatus" });
+			tblWOPlanMaterials.setColumnHeaders(new String[] { "Material Name", "Required Quantity", "Store Stock",
+					"IsRequired" });
+			tblWOPlanMaterials.setColumnAlignment("mtrlName", Align.LEFT);
+			tblWOPlanMaterials.setColumnFooter("woMtrlStatus", "No.of Records : " + recordCntmrl);
+			tblWOPlanMaterials.setEditable(true);
+			tblWOPlanMaterials.setTableFieldFactory(new TableFieldFactory() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+					if (propertyId.toString().equals("woMtrlStatus")) {
+						chIsRequired = new CheckBox();
+						return chIsRequired;
+					}
+					if (propertyId.toString().equals("requiredQty")) {
+						tfRequiredQty = new GERPTextField("");
+						tfRequiredQty.setWidth("100");
+						return tfRequiredQty;
+					}
+					return null;
+				}
+			});
 		}
-		tblWOPlanMaterials
-				.setVisibleColumns(new Object[] { "mtrlName", "requiredQty", "currentStock", "woMtrlStatus" });
-		tblWOPlanMaterials.setColumnHeaders(new String[] { "Material Name", "Required Quantity", "Store Stock",
-				"IsRequired" });
-		tblWOPlanMaterials.setColumnAlignment("mtrlName", Align.LEFT);
-		tblWOPlanMaterials.setColumnFooter("woMtrlStatus", "No.of Records : " + recordCntmrl);
-		tblWOPlanMaterials.setEditable(true);
-		tblWOPlanMaterials.setTableFieldFactory(new TableFieldFactory() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-				if (propertyId.toString().equals("woMtrlStatus")) {
-					chIsRequired = new CheckBox();
-					return chIsRequired;
-				}
-				if (propertyId.toString().equals("requiredQty")) {
-					tfRequiredQty = new GERPTextField("");
-					tfRequiredQty.setWidth("100");
-					return tfRequiredQty;
-				}
-				return null;
-			}
-		});
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void wrkOdrPlnDtlresetFields() {
@@ -544,57 +562,69 @@ public class WorkOrderPlan extends BaseTransUI {
 	}
 	
 	private void editWorkOrderPlnHdrDetails() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			WorkOrderPlanHdrDM workOrderPlanHdr = beanWrkOdrPlnHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			cbBranchName.setValue(workOrderPlanHdr.getBranchId());
-			woPlnHdr = Long.valueOf(workOrderPlanHdr.getWrkPlanId());
-			tfPlanNo.setReadOnly(false);
-			tfPlanNo.setValue(workOrderPlanHdr.getWrkPlanNo());
-			tfPlanNo.setReadOnly(true);
-			Long workordNo = workOrderPlanHdr.getWrkOrderNoID();
-			cbEnquiryNumber.setValue(serviceWorkOrderHdr
-					.getWorkOrderHDRList(companyid, null, null, null, null, null, "F", workordNo, null, null, null,
-							null).get(0).getEnquiryId());
-			Collection<?> woids = cbWorkOrderNo.getItemIds();
-			for (Iterator<?> iterator = woids.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbWorkOrderNo.getItem(itemId);
-				// Get the actual bean and use the data
-				WorkOrderHdrDM st = (WorkOrderHdrDM) item.getBean();
-				if (workordNo != null && workordNo.equals(st.getWorkOrdrId())) {
-					cbWorkOrderNo.setValue(itemId);
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				WorkOrderPlanHdrDM workOrderPlanHdr = beanWrkOdrPlnHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				cbBranchName.setValue(workOrderPlanHdr.getBranchId());
+				woPlnHdr = Long.valueOf(workOrderPlanHdr.getWrkPlanId());
+				tfPlanNo.setReadOnly(false);
+				tfPlanNo.setValue(workOrderPlanHdr.getWrkPlanNo());
+				tfPlanNo.setReadOnly(true);
+				Long workordNo = workOrderPlanHdr.getWrkOrderNoID();
+				cbEnquiryNumber.setValue(serviceWorkOrderHdr
+						.getWorkOrderHDRList(companyid, null, null, null, null, null, "F", workordNo, null, null, null,
+								null).get(0).getEnquiryId());
+				Collection<?> woids = cbWorkOrderNo.getItemIds();
+				for (Iterator<?> iterator = woids.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbWorkOrderNo.getItem(itemId);
+					// Get the actual bean and use the data
+					WorkOrderHdrDM st = (WorkOrderHdrDM) item.getBean();
+					if (workordNo != null && workordNo.equals(st.getWorkOrdrId())) {
+						cbWorkOrderNo.setValue(itemId);
+					}
 				}
+				dfPlanDate.setValue(workOrderPlanHdr.getPlanDtInt());
+				if (workOrderPlanHdr.getPlanRemarks() != null) {
+					taPlanRemrks.setValue(workOrderPlanHdr.getPlanRemarks());
+				}
+				cbPlanStatus.setValue(workOrderPlanHdr.getWorkStatus());
+				workOdrPlnPrdDtlList = serviceWorkOrderPlanProdDtl.getWorkOrderPlanDtlList(null, woPlnHdr, "Active");
 			}
-			dfPlanDate.setValue(workOrderPlanHdr.getPlanDtInt());
-			if (workOrderPlanHdr.getPlanRemarks() != null) {
-				taPlanRemrks.setValue(workOrderPlanHdr.getPlanRemarks());
-			}
-			cbPlanStatus.setValue(workOrderPlanHdr.getWorkStatus());
-			workOdrPlnPrdDtlList = serviceWorkOrderPlanProdDtl.getWorkOrderPlanDtlList(null, woPlnHdr, "Active");
+			comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
+			comment.loadsrch(true, null, companyid, null, null, null, Long.valueOf(woPlnHdr));
+			loadSrchWrkOdrPlnDtlRslt();
 		}
-		comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
-		comment.loadsrch(true, null, companyid, null, null, null, Long.valueOf(woPlnHdr));
-		loadSrchWrkOdrPlnDtlRslt();
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editWorkOrderPlnDtlDetails() {
-		if (tblWrkOrdPlnDtl.getValue() != null) {
-			WorkOrderPlanProdDtlDM workOrderPlanDtlDM = new WorkOrderPlanProdDtlDM();
-			workOrderPlanDtlDM = beanWrkOdrPlnPrdDtl.getItem(tblWrkOrdPlnDtl.getValue()).getBean();
-			Long prodid = workOrderPlanDtlDM.getProductId();
-			Collection<?> prodids = cbProductName.getItemIds();
-			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbProductName.getItem(itemId);
-				// Get the actual bean and use the data
-				WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
-				if (prodid != null && prodid.equals(st.getProdId())) {
-					cbProductName.setValue(itemId);
+		try {
+			if (tblWrkOrdPlnDtl.getValue() != null) {
+				WorkOrderPlanProdDtlDM workOrderPlanDtlDM = new WorkOrderPlanProdDtlDM();
+				workOrderPlanDtlDM = beanWrkOdrPlnPrdDtl.getItem(tblWrkOrdPlnDtl.getValue()).getBean();
+				Long prodid = workOrderPlanDtlDM.getProductId();
+				Collection<?> prodids = cbProductName.getItemIds();
+				for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbProductName.getItem(itemId);
+					// Get the actual bean and use the data
+					WorkOrderDtlDM st = (WorkOrderDtlDM) item.getBean();
+					if (prodid != null && prodid.equals(st.getProdId())) {
+						cbProductName.setValue(itemId);
+					}
 				}
+				tfProductName.setValue(workOrderPlanDtlDM.getProdName());
+				tfWrkOdrPlnQty.setValue(workOrderPlanDtlDM.getWrkOrdPlnQty().toString());
+				cbPlanDtlStatus.setValue(workOrderPlanDtlDM.getWrkOrdPlnStatus());
 			}
-			tfProductName.setValue(workOrderPlanDtlDM.getProdName());
-			tfWrkOdrPlnQty.setValue(workOrderPlanDtlDM.getWrkOrdPlnQty().toString());
-			cbPlanDtlStatus.setValue(workOrderPlanDtlDM.getWrkOrdPlnStatus());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -834,6 +864,7 @@ public class WorkOrderPlan extends BaseTransUI {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -909,34 +940,46 @@ public class WorkOrderPlan extends BaseTransUI {
 	}
 	
 	private void saveWorkOdrPlnDtlDetails() {
-		logger.info(" Inside of saveWorkOdrPlnDtlDetails Saving Data... ");
-		WorkOrderPlanProdDtlDM wrkOrdplnPrdDtl = new WorkOrderPlanProdDtlDM();
-		if (tblWrkOrdPlnDtl.getValue() != null) {
-			wrkOrdplnPrdDtl = beanWrkOdrPlnPrdDtl.getItem(tblWrkOrdPlnDtl.getValue()).getBean();
-			workOdrPlnPrdDtlList.remove(wrkOrdplnPrdDtl);
+		try {
+			logger.info(" Inside of saveWorkOdrPlnDtlDetails Saving Data... ");
+			WorkOrderPlanProdDtlDM wrkOrdplnPrdDtl = new WorkOrderPlanProdDtlDM();
+			if (tblWrkOrdPlnDtl.getValue() != null) {
+				wrkOrdplnPrdDtl = beanWrkOdrPlnPrdDtl.getItem(tblWrkOrdPlnDtl.getValue()).getBean();
+				workOdrPlnPrdDtlList.remove(wrkOrdplnPrdDtl);
+			}
+			wrkOrdplnPrdDtl.setProductId(((WorkOrderDtlDM) cbProductName.getValue()).getProdId());
+			wrkOrdplnPrdDtl.setProductName(tfProductName.getValue());
+			wrkOrdplnPrdDtl.setProdName(((WorkOrderDtlDM) cbProductName.getValue()).getProdName());
+			wrkOrdplnPrdDtl.setWrkOrdPlnQty(Long.valueOf(tfWrkOdrPlnQty.getValue()));
+			wrkOrdplnPrdDtl.setWrkOrdPlnStatus((String) cbPlanDtlStatus.getValue());
+			wrkOrdplnPrdDtl.setLastUpdatedDt(DateUtils.getcurrentdate());
+			wrkOrdplnPrdDtl.setLastUpdatedBy(username);
+			workOdrPlnPrdDtlList.add(wrkOrdplnPrdDtl);
+			wrkOdrPlnDtlresetFields();
+			loadSrchWrkOdrPlnDtlRslt();
+			btnsaveWrkOdrPlDtl.setCaption("Add");
 		}
-		wrkOrdplnPrdDtl.setProductId(((WorkOrderDtlDM) cbProductName.getValue()).getProdId());
-		wrkOrdplnPrdDtl.setProductName(tfProductName.getValue());
-		wrkOrdplnPrdDtl.setProdName(((WorkOrderDtlDM) cbProductName.getValue()).getProdName());
-		wrkOrdplnPrdDtl.setWrkOrdPlnQty(Long.valueOf(tfWrkOdrPlnQty.getValue()));
-		wrkOrdplnPrdDtl.setWrkOrdPlnStatus((String) cbPlanDtlStatus.getValue());
-		wrkOrdplnPrdDtl.setLastUpdatedDt(DateUtils.getcurrentdate());
-		wrkOrdplnPrdDtl.setLastUpdatedBy(username);
-		workOdrPlnPrdDtlList.add(wrkOrdplnPrdDtl);
-		wrkOdrPlnDtlresetFields();
-		loadSrchWrkOdrPlnDtlRslt();
-		btnsaveWrkOdrPlDtl.setCaption("Add");
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void deleteTstCondtnDetails() {
-		WorkOrderPlanProdDtlDM workOrderPlanProdDtlDM = new WorkOrderPlanProdDtlDM();
-		if (tblWrkOrdPlnDtl.getValue() != null) {
-			workOrderPlanProdDtlDM = beanWrkOdrPlnPrdDtl.getItem(tblWrkOrdPlnDtl.getValue()).getBean();
-			workOdrPlnPrdDtlList.remove(workOrderPlanProdDtlDM);
-			wrkOdrPlnDtlresetFields();
-			tblWrkOrdPlnDtl.setValue("");
-			loadSrchWrkOdrPlnDtlRslt();
-			btnDtleWrkDtl.setEnabled(false);
+		try {
+			WorkOrderPlanProdDtlDM workOrderPlanProdDtlDM = new WorkOrderPlanProdDtlDM();
+			if (tblWrkOrdPlnDtl.getValue() != null) {
+				workOrderPlanProdDtlDM = beanWrkOdrPlnPrdDtl.getItem(tblWrkOrdPlnDtl.getValue()).getBean();
+				workOdrPlnPrdDtlList.remove(workOrderPlanProdDtlDM);
+				wrkOdrPlnDtlresetFields();
+				tblWrkOrdPlnDtl.setValue("");
+				loadSrchWrkOdrPlnDtlRslt();
+				btnDtleWrkDtl.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

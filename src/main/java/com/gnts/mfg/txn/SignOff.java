@@ -393,38 +393,52 @@ public class SignOff extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		List<SignoffHdrDM> liSignoffHdr = new ArrayList<SignoffHdrDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyId);
-		listSignOffHdr = serviceSignoffHdr.getSignoffHdrDetails(null, companyId, (Long) cbBranch.getValue(),
-				(String) tfbatchNo.getValue(), (Long) cbClient.getValue(), (Long) cbProduct.getValue(),
-				(String) cbSignOffHdrStatus.getValue());
-		recordCnt = liSignoffHdr.size();
-		beanSignoffHdr = new BeanItemContainer<SignoffHdrDM>(SignoffHdrDM.class);
-		beanSignoffHdr.addAll(listSignOffHdr);
-		tblMstScrSrchRslt.setContainerDataSource(beanSignoffHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qasignoffid", "batchno", "batchdate", "clientName",
-				"productName", "workOrdNo", "batchqty", "batchtested", "lastupdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Batch No.", "Batch Dt.", "Client Name",
-				"Product Name", "Work Ord.No", "Batch Qty.", "Batch Tested", "Last Updated Dt.", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("qasignoffid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			List<SignoffHdrDM> liSignoffHdr = new ArrayList<SignoffHdrDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyId);
+			listSignOffHdr = serviceSignoffHdr.getSignoffHdrDetails(null, companyId, (Long) cbBranch.getValue(),
+					(String) tfbatchNo.getValue(), (Long) cbClient.getValue(), (Long) cbProduct.getValue(),
+					(String) cbSignOffHdrStatus.getValue());
+			recordCnt = liSignoffHdr.size();
+			beanSignoffHdr = new BeanItemContainer<SignoffHdrDM>(SignoffHdrDM.class);
+			beanSignoffHdr.addAll(listSignOffHdr);
+			tblMstScrSrchRslt.setContainerDataSource(beanSignoffHdr);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qasignoffid", "batchno", "batchdate", "clientName",
+					"productName", "workOrdNo", "batchqty", "batchtested", "lastupdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt
+					.setColumnHeaders(new String[] { "Ref.Id", "Batch No.", "Batch Dt.", "Client Name", "Product Name",
+							"Work Ord.No", "Batch Qty.", "Batch Tested", "Last Updated Dt.", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("qasignoffid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadSrchSignOffDtlList() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyId);
-		tblSignOffDtl.removeAllItems();
-		recordCnt = listSignOffDtlDM.size();
-		beanSignoffDtl = new BeanItemContainer<SignOffDtlDM>(SignOffDtlDM.class);
-		beanSignoffDtl.addAll(listSignOffDtlDM);
-		tblSignOffDtl.setContainerDataSource(beanSignoffDtl);
-		tblSignOffDtl.setVisibleColumns(new Object[] { "qaSignOffDtlId", "inspectionNo", "productSlNo", "signStatus" });
-		tblSignOffDtl.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Product Sl.No.", "Status", });
-		tblSignOffDtl.setColumnAlignment("qaSignOffDtlId", Align.RIGHT);
-		tblSignOffDtl.setColumnFooter("signStatus", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyId);
+			tblSignOffDtl.removeAllItems();
+			recordCnt = listSignOffDtlDM.size();
+			beanSignoffDtl = new BeanItemContainer<SignOffDtlDM>(SignOffDtlDM.class);
+			beanSignoffDtl.addAll(listSignOffDtlDM);
+			tblSignOffDtl.setContainerDataSource(beanSignoffDtl);
+			tblSignOffDtl.setVisibleColumns(new Object[] { "qaSignOffDtlId", "inspectionNo", "productSlNo",
+					"signStatus" });
+			tblSignOffDtl.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Product Sl.No.", "Status", });
+			tblSignOffDtl.setColumnAlignment("qaSignOffDtlId", Align.RIGHT);
+			tblSignOffDtl.setColumnFooter("signStatus", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -595,22 +609,28 @@ public class SignOff extends BaseTransUI {
 	}
 	
 	private void editSignOffDtlList() {
-		if (tblSignOffDtl.getValue() != null) {
-			SignOffDtlDM signOffDtlDM = new SignOffDtlDM();
-			signOffDtlDM = beanSignoffDtl.getItem(tblSignOffDtl.getValue()).getBean();
-			Long qaTestHdrId = signOffDtlDM.getQaTstId();
-			Collection<?> tstSpecID = cbInspectionNo.getItemIds();
-			for (Iterator<?> iterator = tstSpecID.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbInspectionNo.getItem(itemId);
-				// Get the actual bean and use the data
-				QATestHdrDM st = (QATestHdrDM) item.getBean();
-				if (qaTestHdrId != null && qaTestHdrId.equals(st.getQatestHdrid())) {
-					cbInspectionNo.setValue(itemId);
+		try {
+			if (tblSignOffDtl.getValue() != null) {
+				SignOffDtlDM signOffDtlDM = new SignOffDtlDM();
+				signOffDtlDM = beanSignoffDtl.getItem(tblSignOffDtl.getValue()).getBean();
+				Long qaTestHdrId = signOffDtlDM.getQaTstId();
+				Collection<?> tstSpecID = cbInspectionNo.getItemIds();
+				for (Iterator<?> iterator = tstSpecID.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbInspectionNo.getItem(itemId);
+					// Get the actual bean and use the data
+					QATestHdrDM st = (QATestHdrDM) item.getBean();
+					if (qaTestHdrId != null && qaTestHdrId.equals(st.getQatestHdrid())) {
+						cbInspectionNo.setValue(itemId);
+					}
 				}
+				tfProductSlNo.setValue(signOffDtlDM.getProductSlNo());
+				cbSignOffDtStatus.setValue(signOffDtlDM.getSignStatus());
 			}
-			tfProductSlNo.setValue(signOffDtlDM.getProductSlNo());
-			cbSignOffDtStatus.setValue(signOffDtlDM.getSignStatus());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

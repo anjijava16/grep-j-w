@@ -146,6 +146,8 @@ public class WorkOrder extends BaseTransUI {
 	private Button btnDtlWrkOrd = new GERPButton("Delete", "delete", this);
 	private GERPTextField tfCustomField1 = new GERPTextField("Part Number");
 	private GERPTextField tfCustomField2 = new GERPTextField("Drawing Number");
+	// for test documents
+	private VerticalLayout hlDocumentLayout = new VerticalLayout();
 	
 	// Constructor received the parameters from Login UI class
 	public WorkOrder() {
@@ -181,7 +183,6 @@ public class WorkOrder extends BaseTransUI {
 		cbwrkOdrType.addItem("Job Work Order");
 		cbwrkOdrType.addItem("Sample Work Order");
 		cbwrkOdrType.addItem("Mold Manufacturing");
-		cbwrkOdrType.setWidth("150");
 		cbwrkOdrType.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -233,7 +234,7 @@ public class WorkOrder extends BaseTransUI {
 			}
 		});
 		tblWrkOdrDtl = new GERPTable();
-		tblWrkOdrDtl.setPageLength(8);
+		tblWrkOdrDtl.setPageLength(5);
 		tblWrkOdrDtl.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -366,6 +367,12 @@ public class WorkOrder extends BaseTransUI {
 				if (item != null) {
 					loadClientList();
 					loadPurchaseOrdNo();
+					try {
+						new TestingDocuments(hlDocumentLayout, cbEnquiryNumber.getValue().toString(), "DR");
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
@@ -530,10 +537,10 @@ public class WorkOrder extends BaseTransUI {
 		flOdrHdrColumn1.addComponent(cbwrkOdrType);
 		flOdrHdrColumn1.addComponent(workordtype);
 		flOdrHdrColumn1.addComponent(cbBranchName);
-		flOdrHdrColumn1.addComponent(cbEnquiryNumber);
+		flOdrHdrColumn2.addComponent(cbEnquiryNumber);
 		flOdrHdrColumn2.addComponent(cbClientName);
 		flOdrHdrColumn2.addComponent(opPONumbers);
-		flOdrHdrColumn2.addComponent(cbPONumber);
+		flOdrHdrColumn3.addComponent(cbPONumber);
 		// adding components into second column in form layout2
 		flOdrHdrColumn3.addComponent(wrkOdrDate);
 		// adding components into third column in form layout3
@@ -583,8 +590,9 @@ public class WorkOrder extends BaseTransUI {
 		// Creating Tab Sheet
 		TabSheet tabSheet = new TabSheet();
 		tabSheet.setWidth("100%");
-		tabSheet.setHeight("390");
+		tabSheet.setHeight("324");
 		tabSheet.addTab(vlWrkOdrComp, "Work Order Detail", null);
+		tabSheet.addTab(hlDocumentLayout, "Documents", null);
 		tabSheet.addTab(vlCommendForm, "Comment", null);
 		vlWorkOdrHdl = new VerticalLayout();
 		vlWorkOdrHdl.addComponent(GERPPanelGenerator.createPanel(hlWrkOdrHdr));
@@ -600,46 +608,61 @@ public class WorkOrder extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<WorkOrderHdrDM> listWOHeader = new ArrayList<WorkOrderHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-				+ companyid);
-		Long client = (Long) cbClientName.getValue();
-		Long branch = (Long) cbBranchName.getValue();
-		if (name.equals("Reviewer")) {
-			listWOHeader = serviceWrkOrdHdr.getWorkOrderHDRList(companyid, branch, client,
-					(String) tfPlanRefNo.getValue(), (String) cbwrkOdrType.getValue(),
-					(String) cbWorkderStatus.getValue(), "F", null, null, null, null, null);
-		} else {
-			listWOHeader = serviceWrkOrdHdr.getWorkOrderHDRList(companyid, branch, client,
-					(String) tfPlanRefNo.getValue(), (String) cbwrkOdrType.getValue(),
-					(String) cbWorkderStatus.getValue(), "F", null, null, null, null, null);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			List<WorkOrderHdrDM> listWOHeader = new ArrayList<WorkOrderHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+					+ companyid);
+			Long client = (Long) cbClientName.getValue();
+			Long branch = (Long) cbBranchName.getValue();
+			if (name.equals("Reviewer")) {
+				listWOHeader = serviceWrkOrdHdr.getWorkOrderHDRList(companyid, branch, client,
+						(String) tfPlanRefNo.getValue(), (String) cbwrkOdrType.getValue(),
+						(String) cbWorkderStatus.getValue(), "F", null, null, null, null, null);
+			} else {
+				listWOHeader = serviceWrkOrdHdr.getWorkOrderHDRList(companyid, branch, client,
+						(String) tfPlanRefNo.getValue(), (String) cbwrkOdrType.getValue(),
+						(String) cbWorkderStatus.getValue(), "F", null, null, null, null, null);
+			}
+			recordCnt = listWOHeader.size();
+			beanWrkOdrHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
+			beanWrkOdrHdr.addAll(listWOHeader);
+			tblMstScrSrchRslt.setContainerDataSource(beanWrkOdrHdr);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "workOrdrId", "workOrdrNo", "pono", "workOrdrTyp",
+					"branchName", "clientName", "workOrdrDt", "workOrdrSts", "lastUpdatedDt", "lastUpdatedBy" });
+			tblMstScrSrchRslt
+					.setColumnHeaders(new String[] { "Ref.Id", "Work Order No.", "PO No.", "Work Order Type",
+							"Branch Name", "Client Name", "Work Order Date", "Status", "Last Updated Date",
+							"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("workOrdrId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnWidth("clientName", 100);
+			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
-		recordCnt = listWOHeader.size();
-		beanWrkOdrHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
-		beanWrkOdrHdr.addAll(listWOHeader);
-		tblMstScrSrchRslt.setContainerDataSource(beanWrkOdrHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "workOrdrId", "workOrdrNo", "pono", "workOrdrTyp",
-				"branchName", "clientName", "workOrdrDt", "workOrdrSts", "lastUpdatedDt", "lastUpdatedBy" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Work Order No.", "PO No.", "Work Order Type",
-				"Branch Name", "Client Name", "Work Order Date", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("workOrdrId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadSrchWrkOdrDtlRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblWrkOdrDtl.setFooterVisible(true);
-		recordDtlCount = listWODetails.size();
-		beanWrkOdrDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
-		beanWrkOdrDtl.addAll(listWODetails);
-		tblWrkOdrDtl.setContainerDataSource(beanWrkOdrDtl);
-		tblWrkOdrDtl.setVisibleColumns(new Object[] { "prodName", "workOrdQty", "customField1", "customField2",
-				"planQty", "balQty", "lastUpdatedDt", "lastUpdatedBy" });
-		tblWrkOdrDtl.setColumnHeaders(new String[] { "Product Name", "Work Order Qty.", "Part No.", "Drawing No.",
-				"Plan Qty.", "Balance Qty.", "Last Updated Date", "Last Updated By" });
-		tblWrkOdrDtl.setColumnAlignment("prodName", Align.RIGHT);
-		tblWrkOdrDtl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordDtlCount);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+			tblWrkOdrDtl.setFooterVisible(true);
+			recordDtlCount = listWODetails.size();
+			beanWrkOdrDtl = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
+			beanWrkOdrDtl.addAll(listWODetails);
+			tblWrkOdrDtl.setContainerDataSource(beanWrkOdrDtl);
+			tblWrkOdrDtl.setVisibleColumns(new Object[] { "prodName", "workOrdQty", "customField1", "customField2",
+					"planQty", "balQty", "lastUpdatedDt", "lastUpdatedBy" });
+			tblWrkOdrDtl.setColumnHeaders(new String[] { "Product Name", "Work Order Qty.", "Part No.", "Drawing No.",
+					"Plan Qty.", "Balance Qty.", "Last Updated Date", "Last Updated By" });
+			tblWrkOdrDtl.setColumnAlignment("prodName", Align.RIGHT);
+			tblWrkOdrDtl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordDtlCount);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to load branch List
@@ -741,87 +764,99 @@ public class WorkOrder extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editWorkOrderHdrDetails() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			WorkOrderHdrDM workOrderHdrDM = beanWrkOdrHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			wrkOdrHdrId = workOrderHdrDM.getWorkOrdrId();
-			wrkOdrDate.setReadOnly(false);
-			wrkOdrDate.setValue(workOrderHdrDM.getWorkOrdrDtF());
-			wrkOdrDate.setReadOnly(true);
-			tfPlanRefNo.setReadOnly(false);
-			tfPlanRefNo.setValue(workOrderHdrDM.getWorkOrdrNo());
-			tfPlanRefNo.setReadOnly(true);
-			cbBranchName.setReadOnly(false);
-			cbBranchName.setValue(workOrderHdrDM.getBranchId());
-			cbBranchName.setReadOnly(true);
-			cbEnquiryNumber.setReadOnly(false);
-			cbEnquiryNumber.setValue(workOrderHdrDM.getEnquiryId());
-			cbEnquiryNumber.setReadOnly(true);
-			cbClientName.setReadOnly(false);
-			cbClientName.setValue(workOrderHdrDM.getClientId());
-			cbClientName.setReadOnly(true);
-			cbPONumber.setReadOnly(false);
-			cbPONumber.setValue(workOrderHdrDM.getPoId());
-			cbPONumber.setReadOnly(true);
-			cbwrkOdrType.setReadOnly(false);
-			cbwrkOdrType.setValue(workOrderHdrDM.getWorkOrdrTyp());
-			cbwrkOdrType.setReadOnly(true);
-			if (workOrderHdrDM.getWorkOrdrRmrks() != null) {
-				taWrkOdrHdrRemarks.setValue(workOrderHdrDM.getWorkOrdrRmrks());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				WorkOrderHdrDM workOrderHdrDM = beanWrkOdrHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				wrkOdrHdrId = workOrderHdrDM.getWorkOrdrId();
+				wrkOdrDate.setReadOnly(false);
+				wrkOdrDate.setValue(workOrderHdrDM.getWorkOrdrDtF());
+				wrkOdrDate.setReadOnly(true);
+				tfPlanRefNo.setReadOnly(false);
+				tfPlanRefNo.setValue(workOrderHdrDM.getWorkOrdrNo());
+				tfPlanRefNo.setReadOnly(true);
+				cbBranchName.setReadOnly(false);
+				cbBranchName.setValue(workOrderHdrDM.getBranchId());
+				cbBranchName.setReadOnly(true);
+				cbEnquiryNumber.setReadOnly(false);
+				cbEnquiryNumber.setValue(workOrderHdrDM.getEnquiryId());
+				cbEnquiryNumber.setReadOnly(true);
+				cbClientName.setReadOnly(false);
+				cbClientName.setValue(workOrderHdrDM.getClientId());
+				cbClientName.setReadOnly(true);
+				cbPONumber.setReadOnly(false);
+				cbPONumber.setValue(workOrderHdrDM.getPoId());
+				cbPONumber.setReadOnly(true);
+				cbwrkOdrType.setReadOnly(false);
+				cbwrkOdrType.setValue(workOrderHdrDM.getWorkOrdrTyp());
+				cbwrkOdrType.setReadOnly(true);
+				if (workOrderHdrDM.getWorkOrdrRmrks() != null) {
+					taWrkOdrHdrRemarks.setValue(workOrderHdrDM.getWorkOrdrRmrks());
+				}
+				ogPriority.setValue(workOrderHdrDM.getPriority());
+				ogMaterialUsage.setValue(workOrderHdrDM.getMaterialUsage());
+				workordtype.setValue(workOrderHdrDM.getIsSelf());
+				opPONumbers.setValue(workOrderHdrDM.getIsLOI());
+				if (workOrderHdrDM.getWorkOrdrSts().equals("Approved")) {
+					cbWorkderStatus.setReadOnly(false);
+					cbWorkderStatus.setValue(workOrderHdrDM.getWorkOrdrSts());
+					cbWorkderStatus.setReadOnly(true);
+				} else {
+					cbWorkderStatus.setReadOnly(false);
+					cbWorkderStatus.setValue(workOrderHdrDM.getWorkOrdrSts());
+				}
+				listWODetails = serviceWrkOrdDtl.getWorkOrderDtlList(null, Long.valueOf(wrkOdrHdrId), null, "F");
 			}
-			ogPriority.setValue(workOrderHdrDM.getPriority());
-			ogMaterialUsage.setValue(workOrderHdrDM.getMaterialUsage());
-			workordtype.setValue(workOrderHdrDM.getIsSelf());
-			opPONumbers.setValue(workOrderHdrDM.getIsLOI());
-			if (workOrderHdrDM.getWorkOrdrSts().equals("Approved")) {
-				cbWorkderStatus.setReadOnly(false);
-				cbWorkderStatus.setValue(workOrderHdrDM.getWorkOrdrSts());
-				cbWorkderStatus.setReadOnly(true);
-			} else {
-				cbWorkderStatus.setReadOnly(false);
-				cbWorkderStatus.setValue(workOrderHdrDM.getWorkOrdrSts());
-			}
-			listWODetails = serviceWrkOrdDtl.getWorkOrderDtlList(null, Long.valueOf(wrkOdrHdrId), null, "F");
+			comment = new Comments(vlCommendForm, companyid, null, null, null, null, commentby);
+			comment.loadsrch(true, null, null, wrkOdrHdrId, null, null, null);
+			loadSrchWrkOdrDtlRslt();
 		}
-		comment = new Comments(vlCommendForm, companyid, null, null, null, null, commentby);
-		comment.loadsrch(true, null, null, wrkOdrHdrId, null, null, null);
-		loadSrchWrkOdrDtlRslt();
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void editWorkOrderDtlDetails() {
-		if (tblWrkOdrDtl.getValue() != null) {
-			WorkOrderDtlDM workOrderDtlDM = new WorkOrderDtlDM();
-			workOrderDtlDM = beanWrkOdrDtl.getItem(tblWrkOdrDtl.getValue()).getBean();
-			Long prodid = workOrderDtlDM.getProdId();
-			Collection<?> prodids = cbPrdName.getItemIds();
-			for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbPrdName.getItem(itemId);
-				// Get the actual bean and use the data
-				SmsPODtlDM st = (SmsPODtlDM) item.getBean();
-				if (prodid != null && prodid.equals(st.getProductid())) {
-					cbPrdName.setValue(itemId);
+		try {
+			if (tblWrkOdrDtl.getValue() != null) {
+				WorkOrderDtlDM workOrderDtlDM = new WorkOrderDtlDM();
+				workOrderDtlDM = beanWrkOdrDtl.getItem(tblWrkOdrDtl.getValue()).getBean();
+				Long prodid = workOrderDtlDM.getProdId();
+				Collection<?> prodids = cbPrdName.getItemIds();
+				for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbPrdName.getItem(itemId);
+					// Get the actual bean and use the data
+					SmsPODtlDM st = (SmsPODtlDM) item.getBean();
+					if (prodid != null && prodid.equals(st.getProductid())) {
+						cbPrdName.setValue(itemId);
+					}
 				}
+				tfPrdName.setReadOnly(false);
+				tfPrdName.setValue(workOrderDtlDM.getProductName());
+				tfPrdName.setReadOnly(true);
+				tfWrkOdrQty.setReadOnly(false);
+				tfWrkOdrQty.setValue(workOrderDtlDM.getWorkOrdQty().toString());
+				tfWrkOdrQty.setReadOnly(true);
+				tfPlnQty.setValue(workOrderDtlDM.getPlanQty().toString());
+				tfBalQty.setReadOnly(false);
+				tfBalQty.setValue(workOrderDtlDM.getBalQty().toString());
+				tfBalQty.setReadOnly(true);
+				if (workOrderDtlDM.getWorkOrdDlRmrks() != null) {
+					taWrkOdrDtlRmks.setValue(workOrderDtlDM.getWorkOrdDlRmrks());
+				}
+				if (workOrderDtlDM.getCustomField1() != null) {
+					tfCustomField1.setValue(workOrderDtlDM.getCustomField1());
+				}
+				if (workOrderDtlDM.getCustomField2() != null) {
+					tfCustomField2.setValue(workOrderDtlDM.getCustomField2());
+				}
+				delvrySchdDt.setValue(workOrderDtlDM.getDlvrySchdl());
 			}
-			tfPrdName.setReadOnly(false);
-			tfPrdName.setValue(workOrderDtlDM.getProductName());
-			tfPrdName.setReadOnly(true);
-			tfWrkOdrQty.setReadOnly(false);
-			tfWrkOdrQty.setValue(workOrderDtlDM.getWorkOrdQty().toString());
-			tfWrkOdrQty.setReadOnly(true);
-			tfPlnQty.setValue(workOrderDtlDM.getPlanQty().toString());
-			tfBalQty.setReadOnly(false);
-			tfBalQty.setValue(workOrderDtlDM.getBalQty().toString());
-			tfBalQty.setReadOnly(true);
-			if (workOrderDtlDM.getWorkOrdDlRmrks() != null) {
-				taWrkOdrDtlRmks.setValue(workOrderDtlDM.getWorkOrdDlRmrks());
-			}
-			if (workOrderDtlDM.getCustomField1() != null) {
-				tfCustomField1.setValue(workOrderDtlDM.getCustomField1());
-			}
-			if (workOrderDtlDM.getCustomField2() != null) {
-				tfCustomField2.setValue(workOrderDtlDM.getCustomField2());
-			}
-			delvrySchdDt.setValue(workOrderDtlDM.getDlvrySchdl());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -877,6 +912,7 @@ public class WorkOrder extends BaseTransUI {
 		tblWrkOdrDtl.setVisible(true);
 		comment = new Comments(vlCommendForm, companyid, null, null, null, null, commentby);
 		cbWorkderStatus.setValue(cbWorkderStatus.getItemIds().iterator().next());
+		hlDocumentLayout.removeAllComponents();
 	}
 	
 	// Method to get the audit history details
@@ -1090,6 +1126,7 @@ public class WorkOrder extends BaseTransUI {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

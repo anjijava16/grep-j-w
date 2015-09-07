@@ -243,6 +243,8 @@ public class QCTest extends BaseTransUI {
 		cbProductDrg = new GERPComboBox("Product Drg.Code");
 		cbProductDrg.setItemCaptionPropertyId("drawingCode");
 		cbProduct.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				loadProductDrgCodeList();
@@ -429,39 +431,51 @@ public class QCTest extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
-		List<QcTestHdrDM> listQcTstHdr = new ArrayList<QcTestHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyid);
-		listQcTstHdr = serviceQcTstHdr.getQcTestHdrDetails(null, companyid, (Long) cbBranch.getValue(),
-				(Long) cbProduct.getValue(), (String) tfInSpecNo.getValue(), (String) cbQcHdrStatus.getValue());
-		recordCnt = listQcTstHdr.size();
-		beanQcTstHdr = new BeanItemContainer<QcTestHdrDM>(QcTestHdrDM.class);
-		beanQcTstHdr.addAll(listQcTstHdr);
-		tblMstScrSrchRslt.setContainerDataSource(beanQcTstHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qctestid", "inspectionno", "inspectiondate", "branchName",
-				"prodName", "qcresult", "qcteststatus", "lastupdateddate", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Inspection Date", "Branch Name",
-				"Product Name", "QC Result", "Status", "Last Updated Dt.", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("workOrdrId", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
+			List<QcTestHdrDM> listQcTstHdr = new ArrayList<QcTestHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyid);
+			listQcTstHdr = serviceQcTstHdr.getQcTestHdrDetails(null, companyid, (Long) cbBranch.getValue(),
+					(Long) cbProduct.getValue(), (String) tfInSpecNo.getValue(), (String) cbQcHdrStatus.getValue());
+			recordCnt = listQcTstHdr.size();
+			beanQcTstHdr = new BeanItemContainer<QcTestHdrDM>(QcTestHdrDM.class);
+			beanQcTstHdr.addAll(listQcTstHdr);
+			tblMstScrSrchRslt.setContainerDataSource(beanQcTstHdr);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qctestid", "inspectionno", "inspectiondate",
+					"branchName", "prodName", "qcresult", "qcteststatus", "lastupdateddate", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Inspection Date",
+					"Branch Name", "Product Name", "QC Result", "Status", "Last Updated Dt.", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("workOrdrId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadSrchQCDtlList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyid);
-		tblQcDtlTbl.removeAllItems();
-		recordCnt = listQcTstDtl.size();
-		beanQcTstDtl = new BeanItemContainer<QcTestDtlDM>(QcTestDtlDM.class);
-		beanQcTstDtl.addAll(listQcTstDtl);
-		tblQcDtlTbl.setContainerDataSource(beanQcTstDtl);
-		tblQcDtlTbl.setVisibleColumns(new Object[] { "qcTestDtlID", "tstSpec", "testSpecRslt", "qcTestStatus",
-				"lastUpdatedDT", "lastUpdatedBy" });
-		tblQcDtlTbl.setColumnHeaders(new String[] { "Ref.Id", "Specification", "Result", "Status", "Last Updated Dt.",
-				"Last Updated By" });
-		tblQcDtlTbl.setColumnAlignment("qcTestDtlId", Align.RIGHT);
-		tblQcDtlTbl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyid);
+			tblQcDtlTbl.removeAllItems();
+			recordCnt = listQcTstDtl.size();
+			beanQcTstDtl = new BeanItemContainer<QcTestDtlDM>(QcTestDtlDM.class);
+			beanQcTstDtl.addAll(listQcTstDtl);
+			tblQcDtlTbl.setContainerDataSource(beanQcTstDtl);
+			tblQcDtlTbl.setVisibleColumns(new Object[] { "qcTestDtlID", "tstSpec", "testSpecRslt", "qcTestStatus",
+					"lastUpdatedDT", "lastUpdatedBy" });
+			tblQcDtlTbl.setColumnHeaders(new String[] { "Ref.Id", "Specification", "Result", "Status",
+					"Last Updated Dt.", "Last Updated By" });
+			tblQcDtlTbl.setColumnAlignment("qcTestDtlId", Align.RIGHT);
+			tblQcDtlTbl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Update QC Result
@@ -686,25 +700,31 @@ public class QCTest extends BaseTransUI {
 	}
 	
 	private void editQCDetails() {
-		if (tblQcDtlTbl.getValue() != null) {
-			QcTestDtlDM qcTestDtlDM = new QcTestDtlDM();
-			qcTestDtlDM = beanQcTstDtl.getItem(tblQcDtlTbl.getValue()).getBean();
-			Long tstSpecId = qcTestDtlDM.getQcTestSpecId();
-			Collection<?> tstSpecID = cbTstSpec.getItemIds();
-			for (Iterator<?> iterator = tstSpecID.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbTstSpec.getItem(itemId);
-				// Get the actual bean and use the data
-				QCTestSpecificationDM st = (QCTestSpecificationDM) item.getBean();
-				if (tstSpecId != null && tstSpecId.equals(st.getQcTstSpecId())) {
-					cbTstSpec.setValue(itemId);
+		try {
+			if (tblQcDtlTbl.getValue() != null) {
+				QcTestDtlDM qcTestDtlDM = new QcTestDtlDM();
+				qcTestDtlDM = beanQcTstDtl.getItem(tblQcDtlTbl.getValue()).getBean();
+				Long tstSpecId = qcTestDtlDM.getQcTestSpecId();
+				Collection<?> tstSpecID = cbTstSpec.getItemIds();
+				for (Iterator<?> iterator = tstSpecID.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbTstSpec.getItem(itemId);
+					// Get the actual bean and use the data
+					QCTestSpecificationDM st = (QCTestSpecificationDM) item.getBean();
+					if (tstSpecId != null && tstSpecId.equals(st.getQcTstSpecId())) {
+						cbTstSpec.setValue(itemId);
+					}
 				}
+				tfTstSpecReslt.setValue(qcTestDtlDM.getTestSpecRslt());
+				if (qcTestDtlDM.getQcRemarks() != null) {
+					taTstRemarks.setValue(qcTestDtlDM.getQcRemarks());
+				}
+				cbQcTstDtlStatus.setValue(qcTestDtlDM.getQcTestStatus());
 			}
-			tfTstSpecReslt.setValue(qcTestDtlDM.getTestSpecRslt());
-			if (qcTestDtlDM.getQcRemarks() != null) {
-				taTstRemarks.setValue(qcTestDtlDM.getQcRemarks());
-			}
-			cbQcTstDtlStatus.setValue(qcTestDtlDM.getQcTestStatus());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -969,23 +989,29 @@ public class QCTest extends BaseTransUI {
 	}
 	
 	private void saveQCTstDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Saving Data... ");
-		QcTestDtlDM qcTestDtlDM = new QcTestDtlDM();
-		if (tblQcDtlTbl.getValue() != null) {
-			qcTestDtlDM = beanQcTstDtl.getItem(tblQcDtlTbl.getValue()).getBean();
-			listQcTstDtl.remove(qcTestDtlDM);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Saving Data... ");
+			QcTestDtlDM qcTestDtlDM = new QcTestDtlDM();
+			if (tblQcDtlTbl.getValue() != null) {
+				qcTestDtlDM = beanQcTstDtl.getItem(tblQcDtlTbl.getValue()).getBean();
+				listQcTstDtl.remove(qcTestDtlDM);
+			}
+			qcTestDtlDM.setQcTestSpecId(Long.valueOf(((QCTestSpecificationDM) cbTstSpec.getValue()).getQcTstSpecId()));
+			qcTestDtlDM.setTstSpec(((QCTestSpecificationDM) cbTstSpec.getValue()).getTstSpec());
+			qcTestDtlDM.setTestSpecRslt(tfTstSpecReslt.getValue());
+			qcTestDtlDM.setQcRemarks(taTstRemarks.getValue());
+			qcTestDtlDM.setQcTestStatus((String) cbQcTstDtlStatus.getValue());
+			qcTestDtlDM.setLastUpdatedDT(DateUtils.getcurrentdate());
+			qcTestDtlDM.setLastUpdatedBy(userName);
+			listQcTstDtl.add(qcTestDtlDM);
+			resetQcTestDtl();
+			loadSrchQCDtlList();
+			btnSaveTst.setCaption("Add");
 		}
-		qcTestDtlDM.setQcTestSpecId(Long.valueOf(((QCTestSpecificationDM) cbTstSpec.getValue()).getQcTstSpecId()));
-		qcTestDtlDM.setTstSpec(((QCTestSpecificationDM) cbTstSpec.getValue()).getTstSpec());
-		qcTestDtlDM.setTestSpecRslt(tfTstSpecReslt.getValue());
-		qcTestDtlDM.setQcRemarks(taTstRemarks.getValue());
-		qcTestDtlDM.setQcTestStatus((String) cbQcTstDtlStatus.getValue());
-		qcTestDtlDM.setLastUpdatedDT(DateUtils.getcurrentdate());
-		qcTestDtlDM.setLastUpdatedBy(userName);
-		listQcTstDtl.add(qcTestDtlDM);
-		resetQcTestDtl();
-		loadSrchQCDtlList();
-		btnSaveTst.setCaption("Add");
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private boolean qcTstDtlValidation() {

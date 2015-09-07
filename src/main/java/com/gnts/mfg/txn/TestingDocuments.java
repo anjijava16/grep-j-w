@@ -111,53 +111,58 @@ public class TestingDocuments implements ClickListener {
 				documentList = serviceDocuments.getDocumentDetails(null, null, null, Long.valueOf(primaryId), null,
 						null, null, null, null, null, null, null);
 			}
+			int recordcount = documentList.size();
+			beanDocuments = new BeanItemContainer<DocumentsDM>(DocumentsDM.class);
+			beanDocuments.addAll(documentList);
+			tblDocuments.setSelectable(true);
+			tblDocuments.setContainerDataSource(beanDocuments);
+			tblDocuments.setVisibleColumns(new Object[] { "documentId", "documentName", "lastUpdatedBy" });
+			tblDocuments.setColumnHeaders(new String[] { "Ref.Id", "Document Name", "Uploaded By" });
+			tblDocuments.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordcount);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		int recordcount = documentList.size();
-		beanDocuments = new BeanItemContainer<DocumentsDM>(DocumentsDM.class);
-		beanDocuments.addAll(documentList);
-		tblDocuments.setSelectable(true);
-		tblDocuments.setContainerDataSource(beanDocuments);
-		tblDocuments.setVisibleColumns(new Object[] { "documentId", "documentName", "lastUpdatedBy" });
-		tblDocuments.setColumnHeaders(new String[] { "Ref.Id", "Document Name", "Uploaded By" });
-		tblDocuments.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordcount);
 	}
 	
 	private void saveDetails() {
-		Boolean isDocUploaded = (Boolean) UI.getCurrent().getSession().getAttribute("IS_DOC_UPLOAD");
-		if (isDocUploaded) {
-			byte[] uploadedDoc = (byte[]) UI.getCurrent().getSession().getAttribute("UPLOAD_FILE_BYTE");
-			String filename = (String) UI.getCurrent().getSession().getAttribute("UPLOAD_FILE_NAME");
-			DocumentsDM documentsDM = new DocumentsDM();
-			if (tblDocuments.getValue() != null) {
-				documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
+		try {
+			Boolean isDocUploaded = (Boolean) UI.getCurrent().getSession().getAttribute("IS_DOC_UPLOAD");
+			if (isDocUploaded) {
+				byte[] uploadedDoc = (byte[]) UI.getCurrent().getSession().getAttribute("UPLOAD_FILE_BYTE");
+				String filename = (String) UI.getCurrent().getSession().getAttribute("UPLOAD_FILE_NAME");
+				DocumentsDM documentsDM = new DocumentsDM();
+				if (tblDocuments.getValue() != null) {
+					documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
+				}
+				documentsDM.setCompanyId(companyId);
+				documentsDM.setDocument(uploadedDoc);
+				documentsDM.setDocumentName(tfDocumentName.getValue());
+				documentsDM.setComments(taComments.getValue());
+				documentsDM.setFileName(filename);
+				if (docType.equalsIgnoreCase("QC")) {
+					documentsDM.setQcTestId(Long.valueOf(docTypeId));
+				} else if (docType.equalsIgnoreCase("QA")) {
+					documentsDM.setQaTestId(Long.valueOf(docTypeId));
+				} else if (docType.equalsIgnoreCase("DR")) {
+					documentsDM.setEnquiryid(Long.valueOf(docTypeId));
+				} else if (docType.equalsIgnoreCase("SIGN_OFF")) {
+					documentsDM.setSignOffId(Long.valueOf(docTypeId));
+				} else if (docType.equalsIgnoreCase("CLIENT")) {
+					documentsDM.setClientId(Long.valueOf(docTypeId));
+				}
+				documentsDM.setDocumentType("pdf");
+				documentsDM.setLastUpdatedBy(username);
+				documentsDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+				serviceDocuments.saveOrUpdateDocumentsDetails(documentsDM);
+				resetDetails();
+				loadSearchResult(docTypeId);
+			} else {
+				Notification.show("Plz Upload PDF Document");
 			}
-			documentsDM.setCompanyId(companyId);
-			documentsDM.setDocument(uploadedDoc);
-			documentsDM.setDocumentName(tfDocumentName.getValue());
-			documentsDM.setComments(taComments.getValue());
-			documentsDM.setFileName(filename);
-			if (docType.equalsIgnoreCase("QC")) {
-				documentsDM.setQcTestId(Long.valueOf(docTypeId));
-			} else if (docType.equalsIgnoreCase("QA")) {
-				documentsDM.setQaTestId(Long.valueOf(docTypeId));
-			} else if (docType.equalsIgnoreCase("DR")) {
-				documentsDM.setEnquiryid(Long.valueOf(docTypeId));
-			} else if (docType.equalsIgnoreCase("SIGN_OFF")) {
-				documentsDM.setSignOffId(Long.valueOf(docTypeId));
-			} else if (docType.equalsIgnoreCase("CLIENT")) {
-				documentsDM.setClientId(Long.valueOf(docTypeId));
-			}
-			documentsDM.setDocumentType("pdf");
-			documentsDM.setLastUpdatedBy(username);
-			documentsDM.setLastUpdatedDt(DateUtils.getcurrentdate());
-			serviceDocuments.saveOrUpdateDocumentsDetails(documentsDM);
-			resetDetails();
-			loadSearchResult(docTypeId);
-		} else {
-			Notification.show("Plz Upload PDF Document");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -170,6 +175,7 @@ public class TestingDocuments implements ClickListener {
 			designDocumentUI.displayDocument(documentsDM.getDocument(), documentsDM.getFileName());
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	

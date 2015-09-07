@@ -71,7 +71,6 @@ import com.gnts.mfg.service.txn.QATestDtlService;
 import com.gnts.mfg.service.txn.QATestHdrService;
 import com.gnts.mfg.service.txn.WorkOrderDtlService;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
-import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -105,7 +104,7 @@ public class QATest extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	private TextField tfInspectionNo, tfPrdSlNo, tfTstReslt;
 	private ComboBox cbClient, cbProduct, cbProdDrg, cbWorkOrderNo, cbTestGrp, cbTesType, cbTestCondition,
-			cbQThdrStatus,cbProductsearch;
+			cbQThdrStatus, cbProductsearch;
 	private PopupDateField pdInspectionDt;
 	private TextArea taTstObservation;
 	private FormLayout flTstHdr1, flTstHdr2, flTstHdr3, flTstHdr4;
@@ -126,7 +125,6 @@ public class QATest extends BaseTransUI {
 	private QATestDtlService serviceQATstDtl = (QATestDtlService) SpringContextHelper.getBean("qatestDetls");
 	private QATestHdrService serviceQATstHdr = (QATestHdrService) SpringContextHelper.getBean("qatesthdr");
 	private WorkOrderDtlService serviceWrkOrdDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
-
 	private QATestCndRsltService serviceQATestCndRslt = (QATestCndRsltService) SpringContextHelper
 			.getBean("qatestCndnRslt");
 	private BeanItemContainer<QATestHdrDM> beanQATstHdr = null;
@@ -187,28 +185,28 @@ public class QATest extends BaseTransUI {
 		cbProduct.setItemCaptionPropertyId("prodName");
 		cbProductsearch = new GERPComboBox("Product Name");
 		cbProductsearch.setItemCaptionPropertyId("prodname");
-		
 		cbProdDrg = new GERPComboBox("Product Drawing No.");
 		cbProdDrg.setItemCaptionPropertyId("drawingCode");
 		cbWorkOrderNo = new GERPComboBox("Work Order No.");
 		cbWorkOrderNo.setItemCaptionPropertyId("workOrdrNo");
 		loadWorkOrdNo();
 		cbProduct.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				loadProductDrgCodeList();
 				cbProdDrg.setImmediate(true);
-
 			}
 		});
 		cbWorkOrderNo.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				loadClientList();
 				cbClient.setImmediate(true);
-
 				loadProductList();
-
 			}
 		});
 		cbTestGrp = new GERPComboBox("Test Group");
@@ -350,57 +348,76 @@ public class QATest extends BaseTransUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
-		List<QATestHdrDM> listQcTstHdr = new ArrayList<QATestHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyid);
-		listQcTstHdr = serviceQATstHdr.getQaTestHdrDetails(null, companyid, (String) tfInspectionNo.getValue(),
-				(Long) cbClient.getValue(), (Long) cbProduct.getValue(), (String) cbQThdrStatus.getValue());
-		recordCnt = listQcTstHdr.size();
-		beanQATstHdr = new BeanItemContainer<QATestHdrDM>(QATestHdrDM.class);
-		beanQATstHdr.addAll(listQcTstHdr);
-		tblMstScrSrchRslt.setContainerDataSource(beanQATstHdr);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qatestHdrid", "inspectionno", "inspectiondate",
-				"clientName", "productName", "workOrdNo", "testresult", "teststatus", "lastupdateddate",
-				"lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Inspection Date", "Client Name",
-				"Product Name", "Work Ord.No", "QC. Result", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("qatestHdrid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
+			List<QATestHdrDM> listQcTstHdr = new ArrayList<QATestHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyid);
+			listQcTstHdr = serviceQATstHdr.getQaTestHdrDetails(null, companyid, (String) tfInspectionNo.getValue(),
+					(Long) cbClient.getValue(), (Long) cbProduct.getValue(), (String) cbQThdrStatus.getValue());
+			recordCnt = listQcTstHdr.size();
+			beanQATstHdr = new BeanItemContainer<QATestHdrDM>(QATestHdrDM.class);
+			beanQATstHdr.addAll(listQcTstHdr);
+			tblMstScrSrchRslt.setContainerDataSource(beanQATstHdr);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qatestHdrid", "inspectionno", "inspectiondate",
+					"clientName", "productName", "workOrdNo", "testresult", "teststatus", "lastupdateddate",
+					"lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Inspection Date",
+					"Client Name", "Product Name", "Work Ord.No", "QC. Result", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("qatestHdrid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadSrchQADtlList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyid);
-		tblQATstDtl.removeAllItems();
-		recordCnt = listQATestDtl.size();
-		beanQATstDtl = new BeanItemContainer<QATestDtlDM>(QATestDtlDM.class);
-		beanQATstDtl.addAll(listQATestDtl);
-		tblQATstDtl.setContainerDataSource(beanQATstDtl);
-		tblQATstDtl.setVisibleColumns(new Object[] { "qatestDtlid", "tstSpec", "tstCycleNo", "tstSpecResult",
-				"qaTstStatus", "lastUpdatedDt", "lastUpdatedBy" });
-		tblQATstDtl.setColumnHeaders(new String[] { "Ref.Id", "Test Specification", "Test Cycles", "Result", "Status",
-				"Last Updated Date", "Last Updated By" });
-		tblQATstDtl.setColumnAlignment("qatestDtlid", Align.RIGHT);
-		tblQATstDtl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyid);
+			tblQATstDtl.removeAllItems();
+			recordCnt = listQATestDtl.size();
+			beanQATstDtl = new BeanItemContainer<QATestDtlDM>(QATestDtlDM.class);
+			beanQATstDtl.addAll(listQATestDtl);
+			tblQATstDtl.setContainerDataSource(beanQATstDtl);
+			tblQATstDtl.setVisibleColumns(new Object[] { "qatestDtlid", "tstSpec", "tstCycleNo", "tstSpecResult",
+					"qaTstStatus", "lastUpdatedDt", "lastUpdatedBy" });
+			tblQATstDtl.setColumnHeaders(new String[] { "Ref.Id", "Test Specification", "Test Cycles", "Result",
+					"Status", "Last Updated Date", "Last Updated By" });
+			tblQATstDtl.setColumnAlignment("qatestDtlid", Align.RIGHT);
+			tblQATstDtl.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadSrchQACndnRsltList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyid);
-		tblCndnRslt.removeAllItems();
-		recordCnt = listQATestCndtnReslt.size();
-		beanQATestCndtnReslt = new BeanItemContainer<QATestCndtnResltDM>(QATestCndtnResltDM.class);
-		beanQATestCndtnReslt.addAll(listQATestCndtnReslt);
-		tblCndnRslt.setContainerDataSource(beanQATestCndtnReslt);
-		tblCndnRslt.setVisibleColumns(new Object[] { "qaTstCndnRsltId", "tstCondition", "condnStatus", "lastUpdatedDt",
-				"lastUpdatedBy" });
-		tblCndnRslt.setColumnHeaders(new String[] { "Ref.Id", "Test Condition", "Status", "Last Updated Date",
-				"Last Updated By" });
-		tblCndnRslt.setColumnAlignment("qaTstCndnRsltId", Align.RIGHT);
-		tblCndnRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyid);
+			tblCndnRslt.removeAllItems();
+			recordCnt = listQATestCndtnReslt.size();
+			beanQATestCndtnReslt = new BeanItemContainer<QATestCndtnResltDM>(QATestCndtnResltDM.class);
+			beanQATestCndtnReslt.addAll(listQATestCndtnReslt);
+			tblCndnRslt.setContainerDataSource(beanQATestCndtnReslt);
+			tblCndnRslt.setVisibleColumns(new Object[] { "qaTstCndnRsltId", "tstCondition", "condnStatus",
+					"lastUpdatedDt", "lastUpdatedBy" });
+			tblCndnRslt.setColumnHeaders(new String[] { "Ref.Id", "Test Condition", "Status", "Last Updated Date",
+					"Last Updated By" });
+			tblCndnRslt.setColumnAlignment("qaTstCndnRsltId", Align.RIGHT);
+			tblCndnRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -460,7 +477,6 @@ public class QATest extends BaseTransUI {
 		flTstHdr4 = new FormLayout();
 		flTstHdr1.addComponent(tfInspectionNo);
 		flTstHdr1.addComponent(pdInspectionDt);
-	
 		flTstHdr1.addComponent(cbWorkOrderNo);
 		flTstHdr1.addComponent(cbClient);
 		flTstHdr2.addComponent(cbProduct);
@@ -587,7 +603,6 @@ public class QATest extends BaseTransUI {
 		tblQATstDtl.removeAllItems();
 		loadProductListfull();
 		loadClientListfull();
-
 	}
 	
 	private void resetQATstCndnRslt() {
@@ -657,7 +672,8 @@ public class QATest extends BaseTransUI {
 			BeanContainer<Long, ProductDrawingDM> beanProdDrg = new BeanContainer<Long, ProductDrawingDM>(
 					ProductDrawingDM.class);
 			beanProdDrg.setBeanIdProperty("productDrgId");
-			beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, (Long)cbProduct.getValue(), null, "Active"));
+			beanProdDrg.addAll(serviceProductDrawing.getProductDrgDetails(companyid, null, (Long) cbProduct.getValue(),
+					null, "Active"));
 			cbProdDrg.setContainerDataSource(beanProdDrg);
 		}
 		catch (Exception e) {
@@ -680,23 +696,23 @@ public class QATest extends BaseTransUI {
 	}
 	
 	private void loadProductList() {
-		
 		try {
 			BeanContainer<Long, WorkOrderDtlDM> beanEnqDtl = new BeanContainer<Long, WorkOrderDtlDM>(
 					WorkOrderDtlDM.class);
 			beanEnqDtl.setBeanIdProperty("prodId");
-			beanEnqDtl.addAll(serviceWrkOrdDtl.getWorkOrderDtlList(null, (Long)cbWorkOrderNo.getValue(), null, "F"));
+			beanEnqDtl.addAll(serviceWrkOrdDtl.getWorkOrderDtlList(null, (Long) cbWorkOrderNo.getValue(), null, "F"));
 			cbProduct.setContainerDataSource(beanEnqDtl);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
 		}
-	
 	}
 	
 	private void loadClientList() {
 		try {
-			Long clientid=serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F", (Long)cbWorkOrderNo.getValue(), null, null, null, null).get(0).getClientId();
+			Long clientid = serviceWorkOrderHdr
+					.getWorkOrderHDRList(companyid, null, null, null, null, null, "F", (Long) cbWorkOrderNo.getValue(),
+							null, null, null, null).get(0).getClientId();
 			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClient.setBeanIdProperty("clientId");
 			beanClient.addAll(serviceClient.getClientDetails(companyid, clientid, null, null, null, null, null, null,
@@ -792,77 +808,93 @@ public class QATest extends BaseTransUI {
 	}
 	
 	private void editQAHdrDetails() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			QATestHdrDM qaTestHdrDM = beanQATstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			qaTestHdrId = qaTestHdrDM.getQatestHdrid();
-			tfInspectionNo.setReadOnly(false);
-			tfInspectionNo.setValue(qaTestHdrDM.getInspectionno());
-			tfInspectionNo.setReadOnly(true);
-			tfPrdSlNo.setValue(qaTestHdrDM.getProdslno());
-			tfTstReslt.setValue(qaTestHdrDM.getTestresult());
-			cbWorkOrderNo.setValue(qaTestHdrDM.getWoid());
-
-			cbClient.setValue(qaTestHdrDM.getClientid());
-			cbProduct.setValue(qaTestHdrDM.getProductid());
-			cbTestGrp.setValue((Long) qaTestHdrDM.getQatestgroupid());
-			cbTesType.setValue((Long) qaTestHdrDM.getQattesttypeid());
-			cbTestCondition.setValue(qaTestHdrDM.getQatestcondid());
-			cbQThdrStatus.setValue(qaTestHdrDM.getTeststatus());
-			pdInspectionDt.setValue(qaTestHdrDM.getInspectiondateDt());
-			if (qaTestHdrDM.getObservation() != null) {
-				taTstObservation.setValue(qaTestHdrDM.getObservation());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				QATestHdrDM qaTestHdrDM = beanQATstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				qaTestHdrId = qaTestHdrDM.getQatestHdrid();
+				tfInspectionNo.setReadOnly(false);
+				tfInspectionNo.setValue(qaTestHdrDM.getInspectionno());
+				tfInspectionNo.setReadOnly(true);
+				tfPrdSlNo.setValue(qaTestHdrDM.getProdslno());
+				tfTstReslt.setValue(qaTestHdrDM.getTestresult());
+				cbWorkOrderNo.setValue(qaTestHdrDM.getWoid());
+				cbClient.setValue(qaTestHdrDM.getClientid());
+				cbProduct.setValue(qaTestHdrDM.getProductid());
+				cbTestGrp.setValue((Long) qaTestHdrDM.getQatestgroupid());
+				cbTesType.setValue((Long) qaTestHdrDM.getQattesttypeid());
+				cbTestCondition.setValue(qaTestHdrDM.getQatestcondid());
+				cbQThdrStatus.setValue(qaTestHdrDM.getTeststatus());
+				pdInspectionDt.setValue(qaTestHdrDM.getInspectiondateDt());
+				if (qaTestHdrDM.getObservation() != null) {
+					taTstObservation.setValue(qaTestHdrDM.getObservation());
+				}
+				listQATestDtl = serviceQATstDtl.getQATestDtlDetails(null, qaTestHdrId, null, null, "Active");
+				listQATestCndtnReslt = serviceQATestCndRslt.getQATestCndtnResltDetails(null, qaTestHdrId, "Active");
+				comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
+				comment.loadsrch(true, null, companyid, null, null, null, qaTestHdrId);
+				new TestingDocuments(hlDocumentLayout, qaTestHdrId.toString(), "QA");
+				hlDocumentLayout.setEnabled(true);
+				cbProdDrg.setValue(qaTestHdrDM.getProddwgid().toString());
+				cbProdDrg.setImmediate(true);
 			}
-			listQATestDtl = serviceQATstDtl.getQATestDtlDetails(null, qaTestHdrId, null, null, "Active");
-			listQATestCndtnReslt = serviceQATestCndRslt.getQATestCndtnResltDetails(null, qaTestHdrId, "Active");
-			comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
-			comment.loadsrch(true, null, companyid, null, null, null, qaTestHdrId);
-			new TestingDocuments(hlDocumentLayout, qaTestHdrId.toString(), "QA");
-			hlDocumentLayout.setEnabled(true);
-			cbProdDrg.setValue(qaTestHdrDM.getProddwgid().toString());
-			cbProdDrg.setImmediate(true);
-		
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editQATstDefnDetails() {
-		if (tblQATstDtl.getValue() != null) {
-			QATestDtlDM editQaTestDtl = beanQATstDtl.getItem(tblQATstDtl.getValue()).getBean();
-			Long speId = editQaTestDtl.getQatestSpecid();
-			Collection<?> specID = cbTstSpec.getItemIds();
-			for (Iterator<?> iterator = specID.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbTstSpec.getItem(itemId);
-				// Get the actual bean and use the data
-				TestSpecificationDM st = (TestSpecificationDM) item.getBean();
-				if (speId != null && speId.equals(st.getTestSpecId())) {
-					cbTstSpec.select(itemId);
+		try {
+			if (tblQATstDtl.getValue() != null) {
+				QATestDtlDM editQaTestDtl = beanQATstDtl.getItem(tblQATstDtl.getValue()).getBean();
+				Long speId = editQaTestDtl.getQatestSpecid();
+				Collection<?> specID = cbTstSpec.getItemIds();
+				for (Iterator<?> iterator = specID.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbTstSpec.getItem(itemId);
+					// Get the actual bean and use the data
+					TestSpecificationDM st = (TestSpecificationDM) item.getBean();
+					if (speId != null && speId.equals(st.getTestSpecId())) {
+						cbTstSpec.select(itemId);
+					}
+				}
+				tfTstCycle.setValue(Long.valueOf(editQaTestDtl.getTstCycleNo()).toString());
+				tfQADefntstReslt.setValue(editQaTestDtl.getTstSpecResult());
+				cbQDtlStatus.setValue(editQaTestDtl.getQaTstStatus());
+				if (editQaTestDtl.getQaTstRemarks() != null) {
+					taQcTstDtlRemarks.setValue(editQaTestDtl.getQaTstRemarks());
 				}
 			}
-			tfTstCycle.setValue(Long.valueOf(editQaTestDtl.getTstCycleNo()).toString());
-			tfQADefntstReslt.setValue(editQaTestDtl.getTstSpecResult());
-			cbQDtlStatus.setValue(editQaTestDtl.getQaTstStatus());
-			if (editQaTestDtl.getQaTstRemarks() != null) {
-				taQcTstDtlRemarks.setValue(editQaTestDtl.getQaTstRemarks());
-			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void editQATstCndnRslt() {
-		if (tblCndnRslt.getValue() != null) {
-			QATestCndtnResltDM editQaTestCndnRslt = beanQATestCndtnReslt.getItem(tblCndnRslt.getValue()).getBean();
-			Long cndnId = editQaTestCndnRslt.getQaTstCndnId();
-			Collection<?> cndnID = cbTstCondtn.getItemIds();
-			for (Iterator<?> iterator = cndnID.iterator(); iterator.hasNext();) {
-				Object itemId = (Object) iterator.next();
-				BeanItem<?> item = (BeanItem<?>) cbTstCondtn.getItem(itemId);
-				// Get the actual bean and use the data
-				TestConditionDM st = (TestConditionDM) item.getBean();
-				if (cndnId != null && cndnId.equals(st.getTestCondnId())) {
-					cbTstCondtn.select(itemId);
+		try {
+			if (tblCndnRslt.getValue() != null) {
+				QATestCndtnResltDM editQaTestCndnRslt = beanQATestCndtnReslt.getItem(tblCndnRslt.getValue()).getBean();
+				Long cndnId = editQaTestCndnRslt.getQaTstCndnId();
+				Collection<?> cndnID = cbTstCondtn.getItemIds();
+				for (Iterator<?> iterator = cndnID.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbTstCondtn.getItem(itemId);
+					// Get the actual bean and use the data
+					TestConditionDM st = (TestConditionDM) item.getBean();
+					if (cndnId != null && cndnId.equals(st.getTestCondnId())) {
+						cbTstCondtn.select(itemId);
+					}
 				}
+				cbQATstCndnStatus.setValue(editQaTestCndnRslt.getCondnStatus());
+				taCndnObservation.setValue(editQaTestCndnRslt.getCndnObserv());
 			}
-			cbQATstCndnStatus.setValue(editQaTestCndnRslt.getCondnStatus());
-			taCndnObservation.setValue(editQaTestCndnRslt.getCndnObserv());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -937,101 +969,101 @@ public class QATest extends BaseTransUI {
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
-		try {
-			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Saving Data... ");
-			QATestHdrDM qaTestHdrDM = new QATestHdrDM();
-			if (tblMstScrSrchRslt.getValue() != null) {
-				qaTestHdrDM = beanQATstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			}
-			qaTestHdrDM.setInspectionno(tfInspectionNo.getValue());
-			qaTestHdrDM.setCompanyid(companyid);
-			qaTestHdrDM.setProdslno(tfPrdSlNo.getValue());
-			qaTestHdrDM.setTestresult(tfTstReslt.getValue());
-			qaTestHdrDM.setClientid((Long) cbClient.getValue());
-			qaTestHdrDM.setProductid((Long) cbProduct.getValue());
-			qaTestHdrDM.setProddwgid(Long.valueOf(cbProdDrg.getValue().toString()));
-			qaTestHdrDM.setWoid(Long.valueOf(cbWorkOrderNo.getValue().toString()));
-			qaTestHdrDM.setQatestgroupid((Long) cbTestGrp.getValue());
-			qaTestHdrDM.setQattesttypeid(Long.valueOf(cbTesType.getValue().toString()));
-			qaTestHdrDM.setQatestcondid(((Long) cbTestCondition.getValue()));
-			qaTestHdrDM.setTeststatus((String) cbQThdrStatus.getValue());
-			qaTestHdrDM.setInspectiondate(pdInspectionDt.getValue());
-			qaTestHdrDM.setObservation(taTstObservation.getValue());
-			qaTestHdrDM.setPreparedby(employeeId);
-			qaTestHdrDM.setActionedby(null);
-			qaTestHdrDM.setReviewedby(null);
-			qaTestHdrDM.setLastupdateddate(DateUtils.getcurrentdate());
-			qaTestHdrDM.setLastupdatedby(userName);
-			serviceQATstHdr.saveQaTestHdr(qaTestHdrDM);
-			qaTestHdrId = qaTestHdrDM.getQatestHdrid();
-			@SuppressWarnings("unchecked")
-			Collection<QATestDtlDM> itemIds = (Collection<QATestDtlDM>) tblQATstDtl.getVisibleItemIds();
-			for (QATestDtlDM save : (Collection<QATestDtlDM>) itemIds) {
-				save.setQaTstHdrId(Long.valueOf(qaTestHdrDM.getQatestHdrid()));
-				serviceQATstDtl.saveQATestDtl(save);
-			}
-			@SuppressWarnings("unchecked")
-			Collection<QATestCndtnResltDM> itemIdss = (Collection<QATestCndtnResltDM>) tblCndnRslt.getVisibleItemIds();
-			for (QATestCndtnResltDM save : (Collection<QATestCndtnResltDM>) itemIdss) {
-				save.setQaTstHdrtId(Long.valueOf(qaTestHdrDM.getQatestHdrid()));
-				serviceQATestCndRslt.saveQATestCndtnReslt(save);
-			}
-			if (tblMstScrSrchRslt.getValue() == null) {
-				try {
-					SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchId, moduleId, "MF_QAINSNO").get(
-							0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSLNo.updateNextSequenceNumber(companyid, branchId, moduleId, "MF_QAINSNO");
-					}
-				}
-				catch (Exception e) {
+		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Saving Data... ");
+		QATestHdrDM qaTestHdrDM = new QATestHdrDM();
+		if (tblMstScrSrchRslt.getValue() != null) {
+			qaTestHdrDM = beanQATstHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		}
+		qaTestHdrDM.setInspectionno(tfInspectionNo.getValue());
+		qaTestHdrDM.setCompanyid(companyid);
+		qaTestHdrDM.setProdslno(tfPrdSlNo.getValue());
+		qaTestHdrDM.setTestresult(tfTstReslt.getValue());
+		qaTestHdrDM.setClientid((Long) cbClient.getValue());
+		qaTestHdrDM.setProductid((Long) cbProduct.getValue());
+		qaTestHdrDM.setProddwgid(Long.valueOf(cbProdDrg.getValue().toString()));
+		qaTestHdrDM.setWoid(Long.valueOf(cbWorkOrderNo.getValue().toString()));
+		qaTestHdrDM.setQatestgroupid((Long) cbTestGrp.getValue());
+		qaTestHdrDM.setQattesttypeid(Long.valueOf(cbTesType.getValue().toString()));
+		qaTestHdrDM.setQatestcondid(((Long) cbTestCondition.getValue()));
+		qaTestHdrDM.setTeststatus((String) cbQThdrStatus.getValue());
+		qaTestHdrDM.setInspectiondate(pdInspectionDt.getValue());
+		qaTestHdrDM.setObservation(taTstObservation.getValue());
+		qaTestHdrDM.setPreparedby(employeeId);
+		qaTestHdrDM.setActionedby(null);
+		qaTestHdrDM.setReviewedby(null);
+		qaTestHdrDM.setLastupdateddate(DateUtils.getcurrentdate());
+		qaTestHdrDM.setLastupdatedby(userName);
+		serviceQATstHdr.saveQaTestHdr(qaTestHdrDM);
+		qaTestHdrId = qaTestHdrDM.getQatestHdrid();
+		@SuppressWarnings("unchecked")
+		Collection<QATestDtlDM> itemIds = (Collection<QATestDtlDM>) tblQATstDtl.getVisibleItemIds();
+		for (QATestDtlDM save : (Collection<QATestDtlDM>) itemIds) {
+			save.setQaTstHdrId(Long.valueOf(qaTestHdrDM.getQatestHdrid()));
+			serviceQATstDtl.saveQATestDtl(save);
+		}
+		@SuppressWarnings("unchecked")
+		Collection<QATestCndtnResltDM> itemIdss = (Collection<QATestCndtnResltDM>) tblCndnRslt.getVisibleItemIds();
+		for (QATestCndtnResltDM save : (Collection<QATestCndtnResltDM>) itemIdss) {
+			save.setQaTstHdrtId(Long.valueOf(qaTestHdrDM.getQatestHdrid()));
+			serviceQATestCndRslt.saveQATestCndtnReslt(save);
+		}
+		if (tblMstScrSrchRslt.getValue() == null) {
+			try {
+				SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchId, moduleId, "MF_QAINSNO").get(0);
+				if (slnoObj.getAutoGenYN().equals("Y")) {
+					serviceSLNo.updateNextSequenceNumber(companyid, branchId, moduleId, "MF_QAINSNO");
 				}
 			}
-			resetFields();
-			resetQATestDefDtl();
-			resetQATstCndnRslt();
-			loadSrchRslt();
-			loadSrchQADtlList();
-			loadSrchQACndnRsltList();
-			comment.saveqaTst(qaTestHdrDM.getQatestHdrid());
-			comment.resetFields();
-			comment.commentList = new ArrayList<CommentDM>();
-			comment.resettbl();
-			new TestingDocuments(hlDocumentLayout, qaTestHdrId.toString(), "QA");
-			hlDocumentLayout.setEnabled(true);
+			catch (Exception e) {
+			}
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		resetFields();
+		resetQATestDefDtl();
+		resetQATstCndnRslt();
+		loadSrchRslt();
+		loadSrchQADtlList();
+		loadSrchQACndnRsltList();
+		comment.saveqaTst(qaTestHdrDM.getQatestHdrid());
+		comment.resetFields();
+		comment.commentList = new ArrayList<CommentDM>();
+		comment.resettbl();
+		new TestingDocuments(hlDocumentLayout, qaTestHdrId.toString(), "QA");
+		hlDocumentLayout.setEnabled(true);
 	}
 	
 	private void saveQaTstDtls() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
-				+ "Saving saveQaTstDtls  Data... ");
-		QATestDtlDM qaTestDtlDM = new QATestDtlDM();
-		if (tblQATstDtl.getValue() != null) {
-			qaTestDtlDM = beanQATstDtl.getItem(tblQATstDtl.getValue()).getBean();
-			listQATestDtl.remove(qaTestDtlDM);
-		}
-		qaTestDtlDM.setQatestSpecid(((TestSpecificationDM) cbTstSpec.getValue()).getTestSpecId());
-		qaTestDtlDM.setTstSpec(((TestSpecificationDM) cbTstSpec.getValue()).getTestSpec());
-		qaTestDtlDM.setQaTstRemarks(taQcTstDtlRemarks.getValue());
-		qaTestDtlDM.setTstSpecResult(tfQADefntstReslt.getValue());
 		try {
-			Long.valueOf(tfTstCycle.getValue());
-			tfTstCycle.setComponentError(null);
-			qaTestDtlDM.setTstCycleNo(Long.valueOf(tfTstCycle.getValue()));
-			qaTestDtlDM.setQaTstStatus((String) cbQDtlStatus.getValue());
-			qaTestDtlDM.setLastUpdatedDt(DateUtils.getcurrentdate());
-			qaTestDtlDM.setLastUpdatedBy(userName);
-			listQATestDtl.add(qaTestDtlDM);
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
+					+ "Saving saveQaTstDtls  Data... ");
+			QATestDtlDM qaTestDtlDM = new QATestDtlDM();
+			if (tblQATstDtl.getValue() != null) {
+				qaTestDtlDM = beanQATstDtl.getItem(tblQATstDtl.getValue()).getBean();
+				listQATestDtl.remove(qaTestDtlDM);
+			}
+			qaTestDtlDM.setQatestSpecid(((TestSpecificationDM) cbTstSpec.getValue()).getTestSpecId());
+			qaTestDtlDM.setTstSpec(((TestSpecificationDM) cbTstSpec.getValue()).getTestSpec());
+			qaTestDtlDM.setQaTstRemarks(taQcTstDtlRemarks.getValue());
+			qaTestDtlDM.setTstSpecResult(tfQADefntstReslt.getValue());
+			try {
+				Long.valueOf(tfTstCycle.getValue());
+				tfTstCycle.setComponentError(null);
+				qaTestDtlDM.setTstCycleNo(Long.valueOf(tfTstCycle.getValue()));
+				qaTestDtlDM.setQaTstStatus((String) cbQDtlStatus.getValue());
+				qaTestDtlDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+				qaTestDtlDM.setLastUpdatedBy(userName);
+				listQATestDtl.add(qaTestDtlDM);
+			}
+			catch (NumberFormatException e) {
+				tfTstCycle.setComponentError(new UserError(GERPErrorCodes.NULL_QC_TSTSMPL));
+			}
+			resetQATestDefDtl();
+			loadSrchQADtlList();
+			btnAddDtl.setCaption("Add");
 		}
-		catch (NumberFormatException e) {
-			tfTstCycle.setComponentError(new UserError(GERPErrorCodes.NULL_QC_TSTSMPL));
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
-		resetQATestDefDtl();
-		loadSrchQADtlList();
-		btnAddDtl.setCaption("Add");
 	}
 	
 	private Boolean validateTstDefDetails() {
@@ -1081,6 +1113,7 @@ public class QATest extends BaseTransUI {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -1122,7 +1155,6 @@ public class QATest extends BaseTransUI {
 		resetQATstCndnRslt();
 		assembleSearchLayout();
 		loadSrchRslt();
-		
 	}
 	
 	private void deleteDetails() {
@@ -1175,6 +1207,7 @@ public class QATest extends BaseTransUI {
 			}
 		}
 	}
+	
 	private void loadProductListfull() {
 		try {
 			BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
@@ -1186,6 +1219,7 @@ public class QATest extends BaseTransUI {
 			logger.info(e.getMessage());
 		}
 	}
+	
 	private void loadClientListfull() {
 		try {
 			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
@@ -1198,5 +1232,4 @@ public class QATest extends BaseTransUI {
 			logger.info(e.getMessage());
 		}
 	}
-	
 }

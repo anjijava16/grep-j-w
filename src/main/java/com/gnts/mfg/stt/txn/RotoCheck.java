@@ -1,6 +1,5 @@
 package com.gnts.mfg.stt.txn;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -30,8 +29,6 @@ import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.mms.domain.txn.MmsPoDtlDM;
-import com.gnts.mms.domain.txn.MmsQuoteDtlDM;
 import com.gnts.stt.mfg.domain.txn.RotoArmDM;
 import com.gnts.stt.mfg.domain.txn.RotoCheckDtlDM;
 import com.gnts.stt.mfg.domain.txn.RotoDtlDM;
@@ -874,7 +871,7 @@ public class RotoCheck extends BaseTransUI {
 			listRotoCheckDtlDetails.add(rotocheckdtlDM);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		// loadPODetails();
 		resetDetailsFields();

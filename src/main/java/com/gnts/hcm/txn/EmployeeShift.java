@@ -173,7 +173,7 @@ public class EmployeeShift extends BaseUI {
 		try {
 			BeanContainer<Long, ShiftDM> beanShift = new BeanContainer<Long, ShiftDM>(ShiftDM.class);
 			beanShift.setBeanIdProperty("shiftId");
-			beanShift.addAll(serviceShift.getShiftList(shiftId, null, companyId, null, "F"));
+			beanShift.addAll(serviceShift.getShiftList(shiftId, null, companyId, "Active", "F"));
 			cbShiftName.setContainerDataSource(beanShift);
 		}
 		catch (Exception e) {

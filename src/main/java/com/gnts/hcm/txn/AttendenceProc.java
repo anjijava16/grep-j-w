@@ -188,7 +188,6 @@ public class AttendenceProc extends BaseUI {
 		cbEmployeeName.setWidth("200");
 		cbEmployeeName.setImmediate(true);
 		cbEmployeeName.setNullSelectionAllowed(false);
-		loadEmployeeList();
 		btnSearchStaff = new GERPButton("Search Employee", "searchbt", this);
 		btnAttendanceProc = new GERPButton("Run Attendance Process", "savebt", this);
 		btnAttendanceProc.addClickListener(new ClickListener() {
@@ -279,7 +278,7 @@ public class AttendenceProc extends BaseUI {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			List<EmployeeDM> empList = new ArrayList<EmployeeDM>();
 			empList.add(new EmployeeDM(-1L, "All"));
-			empList.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null, null,
+			empList.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null, (Long)cbBranch.getValue(),
 					null, "P"));
 			BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanLoadEmployee.setBeanIdProperty("employeeid");
@@ -449,6 +448,8 @@ public class AttendenceProc extends BaseUI {
 			});
 			cbPayPeried.setComponentError(null);
 			cbBranch.setComponentError(null);
+			loadSrchRslt();
+			resetFields();
 		}
 		catch (Exception e) {
 			if (payPeriodId == null) {

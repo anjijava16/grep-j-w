@@ -34,6 +34,7 @@ import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.hcm.domain.txn.EmployeeOndutyDM;
+import com.gnts.hcm.domain.txn.EmployeeOndutyDatesDM;
 import com.gnts.hcm.service.txn.EmployeeOndutyService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -376,6 +377,8 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 			saveonduty.setLastupdatedby(username);
 			saveonduty.setLastupdateddt(DateUtils.getcurrentdate());
 			serviceOnduty.saveAndUpdate(saveonduty);
+			
+			
 			loadSrchRslt();
 			btnadd.setCaption("Add");
 		}
@@ -394,7 +397,13 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 			for (EmployeeOndutyDM saveduty : (Collection<EmployeeOndutyDM>) itemIds) {
 				saveduty.setEmployeeid(employeeid);
 				serviceOnduty.saveAndUpdate(saveduty);
+				}
+			@SuppressWarnings("unchecked")
+			Collection<EmployeeOndutyDatesDM> itemIds1 = (Collection<EmployeeOndutyDatesDM>) tblMstScrSrchRslt.getVisibleItemIds();
+			for (EmployeeOndutyDatesDM savedutydate : (Collection<EmployeeOndutyDatesDM>) itemIds1) {
+				savedutydate.setOndutyid(employeeid);				
 			}
+			EmployeeOndutyDatesDM ondutyDate=new EmployeeOndutyDatesDM();
 			loadSrchRslt();
 			tblMstScrSrchRslt.removeAllItems();
 		}

@@ -167,7 +167,6 @@ public class AttendenceApprove extends BaseUI {
 		cbEmployeeName.setWidth("200");
 		cbEmployeeName.setImmediate(true);
 		cbEmployeeName.setNullSelectionAllowed(false);
-		loadEmployeeList();
 		btnSearchStaff = new GERPButton("Search Employee", "searchbt", this);
 		btnSearch.setVisible(false);
 		hlSearchLayout = new GERPAddEditHLayout();
@@ -242,7 +241,7 @@ public class AttendenceApprove extends BaseUI {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			List<EmployeeDM> empList = new ArrayList<EmployeeDM>();
 			empList.add(new EmployeeDM(-1L, "All"));
-			empList.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null, null,
+			empList.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, null, null, (Long)cbBranch.getValue(),
 					null, "P"));
 			BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanLoadEmployee.setBeanIdProperty("employeeid");
@@ -485,6 +484,7 @@ public class AttendenceApprove extends BaseUI {
 			logger.info(e.getMessage());
 		}
 		loadSrchRslt();
+		resetFields();
 	}
 	
 	private void readonlytrue() {

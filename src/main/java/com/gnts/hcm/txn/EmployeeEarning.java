@@ -18,11 +18,14 @@ package com.gnts.hcm.txn;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.EmployeeDM;
+import com.gnts.base.domain.mst.ParameterDM;
 import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
@@ -36,22 +39,37 @@ import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
+import com.gnts.erputil.util.DateUtils;
+import com.gnts.hcm.domain.mst.AllowanceDM;
+import com.gnts.hcm.domain.mst.DeductionDM;
 import com.gnts.hcm.domain.mst.EarningsDM;
 import com.gnts.hcm.domain.mst.EmployeeDtlsDM;
+import com.gnts.hcm.domain.mst.GradeAllowanceDM;
+import com.gnts.hcm.domain.mst.GradeDeductionDM;
 import com.gnts.hcm.domain.mst.GradeEarningsDM;
+import com.gnts.hcm.domain.txn.EmployeeAllowanceDM;
+import com.gnts.hcm.domain.txn.EmployeeDeductionDM;
 import com.gnts.hcm.domain.txn.EmployeeEarningDM;
+import com.gnts.hcm.domain.txn.PayrollHdrDM;
+import com.gnts.hcm.service.mst.DeductionService;
 import com.gnts.hcm.service.mst.EarningsService;
 import com.gnts.hcm.service.mst.EmployeeDtlsService;
+import com.gnts.hcm.service.mst.GradeAllowanceService;
 import com.gnts.hcm.service.mst.GradeEarningService;
+import com.gnts.hcm.service.txn.EmployeeAllowanceService;
+import com.gnts.hcm.service.txn.EmployeeDeductionService;
 import com.gnts.hcm.service.txn.EmployeeEarningService;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
@@ -69,6 +87,13 @@ public class EmployeeEarning extends BaseUI {
 	private EmployeeDtlsService serviceEmpdetails = (EmployeeDtlsService) SpringContextHelper.getBean("Employeedtls");
 	private GradeEarningService serviceGradeEarning = (GradeEarningService) SpringContextHelper
 			.getBean("GradeEarnings");
+	private GradeAllowanceService serviceGradeAllowance = (GradeAllowanceService) SpringContextHelper
+			.getBean("GradeAllowance");
+	private DeductionService serviceDeduction = (DeductionService) SpringContextHelper.getBean("Deduction");
+	private EmployeeDeductionService serviceEmployeeDeduction = (EmployeeDeductionService) SpringContextHelper
+			.getBean("EmployeeDeduction");
+	private EmployeeAllowanceService serviceEmpAllowance = (EmployeeAllowanceService) SpringContextHelper
+			.getBean("EmployeeAllowance");
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Parent layout for all the input controls
@@ -83,9 +108,12 @@ public class EmployeeEarning extends BaseUI {
 	// BeanItemContainer
 	private BeanItemContainer<EmployeeEarningDM> beanEmployeeEarn = null;
 	// local variables declaration
-	private Long companyId, earnId;
+	private Long companyId, earnId, employeeId;
+	BigDecimal prevAmount;
 	private int recordCnt = 0;
-	private String userName, empEarnId;
+	private BigDecimal yearGrossAmt, revisedAmount;
+	private String userName;
+	Long empEarnId;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(EmployeeEarningDM.class);
 	private static final long serialVersionUID = 1L;
@@ -241,6 +269,25 @@ public class EmployeeEarning extends BaseUI {
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		vlSrchRsltContainer.addComponent(tblMstScrSrchRslt);
 		btnAdd.setVisible(false);
+		tblMstScrSrchRslt.addItemClickListener(new ItemClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			public void itemClick(ItemClickEvent event) {
+				if (tblMstScrSrchRslt.isSelected(event.getItemId())) {
+					btnEdit.setEnabled(false);
+				} else {
+					((AbstractSelect) event.getSource()).select(event.getItemId());
+					EmployeeEarningDM editempEarning = new EmployeeEarningDM();
+					editempEarning = beanEmployeeEarn.getItem(tblMstScrSrchRslt.getValue()).getBean();
+					if (editempEarning.getEarnCode().equals("GROSS")) {
+						btnEdit.setEnabled(true);
+					} else {
+						btnEdit.setEnabled(false);
+					}
+				}
+				resetFields();
+			}
+		});
 		assembleSearchLayout();
 		resetFields();
 		loadSrchRslt();
@@ -282,31 +329,26 @@ public class EmployeeEarning extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		try {
-			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-			tblMstScrSrchRslt.removeAllItems();
-			List<EmployeeEarningDM> listEmployeeEarning = new ArrayList<EmployeeEarningDM>();
-			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-					+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (Long) cbEarnCode.getValue()
-					+ (String) cbStatus.getValue());
-			listEmployeeEarning = serviceEmployeeEarning.getempearningList(null, (Long) cbSearchEmpName.getValue(),
-					(Long) cbSearchEarnCode.getValue(), (String) cbStatus.getValue(), "F");
-			recordCnt = listEmployeeEarning.size();
-			beanEmployeeEarn = new BeanItemContainer<EmployeeEarningDM>(EmployeeEarningDM.class);
-			beanEmployeeEarn.addAll(listEmployeeEarning);
-			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-					+ "Got the EmployeeEarning. result set");
-			tblMstScrSrchRslt.setContainerDataSource(beanEmployeeEarn);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empearnid", "employeeName", "earnCode",
-					"isflatpercent", "earnpercent", "earnamt", "empearnstatus", "lastpdateddt", "lastupdatedby" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Earn Code", "Flat/Percent",
-					"Earn Percent", "Earn Amount", "Status", "Last Updated Date", "Last Updated By" });
-			tblMstScrSrchRslt.setColumnAlignment("empearnid", Align.RIGHT);
-			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
+		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+		tblMstScrSrchRslt.removeAllItems();
+		List<EmployeeEarningDM> listEmployeeEarning = new ArrayList<EmployeeEarningDM>();
+		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+				+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (Long) cbEarnCode.getValue()
+				+ (String) cbStatus.getValue());
+		listEmployeeEarning = serviceEmployeeEarning.getempearningList(null, (Long) cbSearchEmpName.getValue(),
+				(Long) cbSearchEarnCode.getValue(), (String) cbStatus.getValue(), "F");
+		recordCnt = listEmployeeEarning.size();
+		beanEmployeeEarn = new BeanItemContainer<EmployeeEarningDM>(EmployeeEarningDM.class);
+		beanEmployeeEarn.addAll(listEmployeeEarning);
+		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+				+ "Got the EmployeeEarning. result set");
+		tblMstScrSrchRslt.setContainerDataSource(beanEmployeeEarn);
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empearnid", "employeeName", "earnCode", "isflatpercent",
+				"earnpercent", "earnamt", "empearnstatus", "lastpdateddt", "lastupdatedby" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Earn Code", "Flat/Percent",
+				"Earn Percent", "Earn Amount", "Status", "Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setColumnAlignment("empearnid", Align.RIGHT);
+		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 	}
 	
 	private void assembleSearchLayout() {
@@ -400,52 +442,51 @@ public class EmployeeEarning extends BaseUI {
 	}
 	
 	private void editEmpEarning() {
-		try {
-			if (tblMstScrSrchRslt.getValue() != null) {
-				EmployeeEarningDM empEarning = beanEmployeeEarn.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				cbEmpName.setReadOnly(false);
-				cbEmpName.setValue(empEarning.getEmployeeid());
-				cbEmpName.setReadOnly(true);
-				cbFlatPercnt.setReadOnly(false);
-				cbFlatPercnt.setValue(empEarning.getIsflatpercent());
-				cbFlatPercnt.setReadOnly(true);
-				cbEarnCode.setReadOnly(false);
-				cbEarnCode.setValue(empEarning.getEarnid());
-				cbEarnCode.setReadOnly(true);
-				if (empEarning.getEarnpercent() != null) {
-					tfEarnPerct.setReadOnly(false);
-					tfEarnPerct.setValue(empEarning.getEarnpercent().toString());
-				}
-				if (empEarning.getEarnamt() != null) {
-					tfEarnAmt.setValue(empEarning.getEarnamt().toString());
-					if (empEarning.getEffdt() != null) {
-						dfEffDt.setValue(empEarning.getEffdt());
-					}
-					if (empEarning.getPrevamt() != null) {
-						tfPreAmt.setValue(empEarning.getPrevamt().toString());
-					}
-					if (empEarning.getPrevpercent() != null) {
-						tfPrePercnt.setValue(empEarning.getPrevpercent().toString());
-					}
-					if (empEarning.getLastpaidt() != null) {
-						dfLastPaidDt.setValue(empEarning.getLastpaidt());
-					}
-					if (empEarning.getNxtpytdt() != null) {
-						dfNextPayDt.setValue(empEarning.getNxtpytdt());
-					}
-					if (empEarning.getArrearflag() != null) {
-						if (empEarning.getArrearflag().equals("Y")) {
-							ckFlag.setValue(true);
-						} else {
-							ckFlag.setValue(false);
-						}
-					}
-					cbStatus.setValue(empEarning.getEmpearnstatus());
-				}
+		if (tblMstScrSrchRslt.getValue() != null) {
+			EmployeeEarningDM empEarning = beanEmployeeEarn.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			btnSave.setCaption("Salary Revision");
+			employeeId = empEarning.getEmployeeid();
+			empEarnId = Long.valueOf(empEarning.getEmpearnid());
+			prevAmount = empEarning.getEarnamt();
+			cbEmpName.setReadOnly(false);
+			cbEmpName.setValue(empEarning.getEmployeeid());
+			cbEmpName.setReadOnly(true);
+			cbFlatPercnt.setReadOnly(false);
+			cbFlatPercnt.setValue(empEarning.getIsflatpercent());
+			cbFlatPercnt.setReadOnly(true);
+			cbEarnCode.setReadOnly(false);
+			cbEarnCode.setValue(empEarning.getEarnid());
+			cbEarnCode.setReadOnly(true);
+			if (empEarning.getEarnpercent() != null) {
+				tfEarnPerct.setReadOnly(false);
+				tfEarnPerct.setValue(empEarning.getEarnpercent().toString());
 			}
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
+			if (empEarning.getEarnamt() != null) {
+				tfEarnAmt.setValue(empEarning.getEarnamt().toString());
+				if (empEarning.getEffdt() != null) {
+					dfEffDt.setValue(empEarning.getEffdt());
+				}
+				if (empEarning.getPrevamt() != null) {
+					tfPreAmt.setValue(empEarning.getPrevamt().toString());
+				}
+				if (empEarning.getPrevpercent() != null) {
+					tfPrePercnt.setValue(empEarning.getPrevpercent().toString());
+				}
+				if (empEarning.getLastpaidt() != null) {
+					dfLastPaidDt.setValue(empEarning.getLastpaidt());
+				}
+				if (empEarning.getNxtpytdt() != null) {
+					dfNextPayDt.setValue(empEarning.getNxtpytdt());
+				}
+				if (empEarning.getArrearflag() != null) {
+					if (empEarning.getArrearflag().equals("Y")) {
+						ckFlag.setValue(true);
+					} else {
+						ckFlag.setValue(false);
+					}
+				}
+				cbStatus.setValue(empEarning.getEmpearnstatus());
+			}
 		}
 	}
 	
@@ -473,17 +514,46 @@ public class EmployeeEarning extends BaseUI {
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
-		EmployeeEarningDM employeeEarningDM = new EmployeeEarningDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			employeeEarningDM = beanEmployeeEarn.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			employeeEarningDM.setEarnamt(new BigDecimal(tfEarnAmt.getValue()));
-			employeeEarningDM.setEffdt(dfEffDt.getValue());
-			employeeEarningDM.setEmpearnstatus((String) cbStatus.getValue());
-			employeeEarningDM.setLastupdatedby(userName);
-			employeeEarningDM.setLastpdateddt(new Date());
-			serviceEmployeeEarning.saveAndUpdate(employeeEarningDM);
-			resetFields();
+		try {
+			revisedAmount = new BigDecimal(tfEarnAmt.getValue());
+
+			if (!revisedAmount.equals(prevAmount)) {
+				EmployeeEarningDM employeeEarningDM = new EmployeeEarningDM();
+				if (tblMstScrSrchRslt.getValue() != null) {
+					employeeEarningDM = beanEmployeeEarn.getItem(tblMstScrSrchRslt.getValue()).getBean();
+					serviceEmployeeEarning.updateRevicedSalary(employeeId, "E","Revised");
+					serviceEmployeeEarning.updateRevicedSalary(employeeId, "D","Revised");
+					serviceEmployeeEarning.updateRevicedSalary(employeeId, "A","Revised");
+					serviceEmployeeEarning.updateRevicedSalary(Long.valueOf(empEarnId), "REV","Revised");
+					Long gradeid = serviceEmpdetails
+							.getEmployeeDtls(null, employeeId, null, null, null, null, "F", null).get(0).getGradeid();
+					System.out.println("revisedAmount" + revisedAmount);
+					System.out.println("prevAmount" + prevAmount);
+					try {
+						insertEmployeeGradeEarning(employeeId, gradeid, revisedAmount);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					try {
+						insertEmployeeDeduction(employeeId, gradeid, Long.valueOf(revisedAmount.toString()));
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					try {
+						insertGradeAllowance(employeeId, gradeid, revisedAmount);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
 			loadSrchRslt();
+			resetFields();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -533,5 +603,312 @@ public class EmployeeEarning extends BaseUI {
 		dfNextPayDt.setValue(null);
 		ckFlag.setValue(false);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+		employeeId = 0L;
+	}
+	
+	@SuppressWarnings("unused")
+	private void insertEmployeeGradeEarning(Long employeeid, Long gradeid, BigDecimal EarnAmount) {
+		List<GradeEarningsDM> list = serviceEarnings.loadGradeEarningListByGradeId(gradeid);
+		BigDecimal minValueByBasic = EarnAmount;
+		BigDecimal earningAmount;
+		BigDecimal minVal = new BigDecimal("0");
+		BigDecimal totalGrossAmt = EarnAmount;
+		BigDecimal tatolGrossearnAmount = EarnAmount;
+		String isFlat = null;
+		BigDecimal earnBasiPercent = new BigDecimal(serviceEarnings.getBasicEarnPercent(gradeid));
+		BigDecimal basicAmount = minValueByBasic.multiply(earnBasiPercent).divide(new BigDecimal("100"));
+		for (GradeEarningsDM pojo : list) {
+			Long earnid = pojo.getEarnId();
+			isFlat = pojo.getIsFlatPer();
+			BigDecimal earnPercent = pojo.getEarnPercent();
+			minVal = EarnAmount;
+			String onBasicGross = pojo.getOnBasicGros();
+			System.out.println("isFlat--->" + isFlat + "\nonBasicGrossaa--->" + onBasicGross);
+			List<EarningsDM> earnlist = serviceEarnings.getEarningByEarnID(earnid);
+			EarningsDM earnPojo = null;
+			for (EarningsDM ernpojo : earnlist) {
+				earnPojo = ernpojo;
+				if (ernpojo.getEarnCode().equalsIgnoreCase("ALLOW")) {
+				}
+			}
+			EmployeeEarningDM staffearnPojo = new EmployeeEarningDM();
+			if (isFlat.equals("Percent") && onBasicGross.equalsIgnoreCase("GROSS")) {
+				System.out.println("Arun Jeyaraj " + minValueByBasic);
+				earningAmount = new BigDecimal(calculateEarnAmount(earnPercent, minValueByBasic));
+				totalGrossAmt = totalGrossAmt.subtract(earningAmount);
+				tatolGrossearnAmount = tatolGrossearnAmount.add(earningAmount);
+				staffearnPojo.setEmployeeid(employeeid);
+				staffearnPojo.setEarnid(earnPojo.getEarnId());
+				staffearnPojo.setIsflatpercent(isFlat);
+				staffearnPojo.setEarnamt(earningAmount);// Get the calculated amt based on BASIC code in earning and
+														// grade earnings
+				staffearnPojo.setEffdt(new Date());
+				staffearnPojo.setEarnpercent(earnPercent);
+				staffearnPojo.setEmpearnstatus("Active");
+				staffearnPojo.setLastpdateddt(DateUtils.getcurrentdate());
+				staffearnPojo.setLastupdatedby(userName);
+				serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
+			}
+			if (isFlat.equals("Percent") && onBasicGross.equalsIgnoreCase("BASIC")) {
+				earningAmount = new BigDecimal(calculateEarnAmount(earnPercent, basicAmount));
+				System.out.println("Arun Jeyaraj " + minValueByBasic);
+				totalGrossAmt = totalGrossAmt.subtract(earningAmount);
+				tatolGrossearnAmount = tatolGrossearnAmount.add(earningAmount);
+				staffearnPojo.setEmployeeid(employeeid);
+				staffearnPojo.setEarnid(earnPojo.getEarnId());
+				staffearnPojo.setIsflatpercent(isFlat);
+				staffearnPojo.setEarnamt(earningAmount);// Get the calculated amt based on BASIC code in earning and
+														// grade earnings
+				staffearnPojo.setEffdt(new Date());
+				staffearnPojo.setEarnpercent(earnPercent);
+				staffearnPojo.setEmpearnstatus("Active");
+				staffearnPojo.setLastpdateddt(DateUtils.getcurrentdate());
+				staffearnPojo.setLastupdatedby(userName);
+				serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
+			} else if (isFlat.equals("Flat")) {
+				if (!earnPojo.getEarnCode().equalsIgnoreCase("GROSS")) {
+					totalGrossAmt = totalGrossAmt.subtract(minVal);
+					tatolGrossearnAmount = tatolGrossearnAmount.add(minVal);
+					staffearnPojo.setEmployeeid(employeeId);
+					staffearnPojo.setEarnid(earnPojo.getEarnId());
+					staffearnPojo.setIsflatpercent(isFlat);
+					staffearnPojo.setEarnamt(minVal);// Get the minimum value if flat is selected in the
+					staffearnPojo.setEmployeeid(employeeid); // grade_earnings
+					staffearnPojo.setEffdt(new Date());
+					staffearnPojo.setEmpearnstatus("Active");
+					staffearnPojo.setLastpdateddt(DateUtils.getcurrentdate());
+					staffearnPojo.setLastupdatedby(userName);
+					serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
+				} else {
+					staffearnPojo.setEmployeeid(employeeId);
+					staffearnPojo.setEarnid(earnPojo.getEarnId());
+					staffearnPojo.setIsflatpercent(isFlat);
+					staffearnPojo.setEarnamt(minVal);// Get the minimum value if flat is selected in the
+					staffearnPojo.setEmployeeid(employeeid); // grade_earnings
+					staffearnPojo.setEffdt(new Date());
+					staffearnPojo.setEmpearnstatus("Active");
+					staffearnPojo.setLastpdateddt(DateUtils.getcurrentdate());
+					staffearnPojo.setLastupdatedby(userName);
+					serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
+				}
+			} else if (isFlat.equals("REM")) {
+				pojo.getIsFlatPer();
+				Long earnsid = pojo.getEarnId();
+				BigDecimal gradeAmount = pojo.getMinVal();
+				List<EarningsDM> earninglist = serviceEarnings.getEarningByEarnID(earnsid);
+				for (EarningsDM earnObj : earninglist) {
+				}
+				tatolGrossearnAmount = tatolGrossearnAmount.add(gradeAmount);
+			}
+		}
+	}
+	
+	private void insertEmployeeDeduction(Long employeeid, Long gradeid, Long EarnAmount) {
+		List<GradeDeductionDM> list = serviceDeduction.getGradeDeductionByGradeId(gradeid);
+		Long minValueByBasic = null;
+		Long minValueByGross = null;
+		Long minBypercentFTA = null;
+		Long minByVAluesFTA = null;
+		Long minValueByBasicFTA = null;
+		Long earnpercentBASIC = serviceDeduction.getMinValueByGradeid(gradeid);
+		minBypercentFTA = serviceDeduction.getMinValueByGradeidfta(gradeid);
+		minValueByGross = EarnAmount;
+		minValueByBasic = Long.valueOf(Math.round(minValueByGross * earnpercentBASIC) / 100);
+		minByVAluesFTA = Long.valueOf(Math.round(minValueByGross * minBypercentFTA) / 100);
+		minValueByBasicFTA = minValueByBasic + minByVAluesFTA;
+		for (GradeDeductionDM pojo : list) {
+			Long dednid = pojo.getDednId();
+			String isFlat = pojo.getIsFlatPer();
+			BigDecimal dednpercent = pojo.getDednPercent();
+			BigDecimal minVal = pojo.getMinVal();
+			String onBasic_Gross = pojo.getOnBasicGros();
+			System.out.println("Deuction on basic gross" + onBasic_Gross);
+			List<DeductionDM> dednlist = serviceDeduction.getDeductionListByDednId(dednid);
+			DeductionDM deductionPojo = null;
+			for (DeductionDM dednpojo : dednlist) {
+				deductionPojo = dednpojo;
+				dednpojo.getDeductionCode();
+			}
+			// Save the T_Staff_Deduction
+			EmployeeDeductionDM staffDednPojo = new EmployeeDeductionDM();
+			System.out.println("Deuction on basic gross and is flat =" + onBasic_Gross + " and " + isFlat);
+			System.out.println();
+			if (isFlat.equalsIgnoreCase("Percent") && onBasic_Gross.equalsIgnoreCase("GROSS")) {
+				BigDecimal deductionAmt = new BigDecimal(calculateDeductionAmount(dednpercent, minValueByGross));
+				staffDednPojo.setEmployeeid(employeeId);
+				staffDednPojo.setDednid(deductionPojo.getDeductionId());
+				staffDednPojo.setIsflatpt(isFlat);
+				staffDednPojo.setDednpt(dednpercent);
+				staffDednPojo.setDednamt(deductionAmt);// Get the percentage and calculate with gross value from
+				staffDednPojo.setEmployeeid(employeeid); // grade earnings
+				staffDednPojo.setEffdt(new Date());
+				staffDednPojo.setEmpdednstatus("Active");
+				staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
+				staffDednPojo.setLastupdatedby(userName);
+				serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
+			} else if (isFlat.equalsIgnoreCase("Percent") && onBasic_Gross.equalsIgnoreCase("BASIC")) {
+				BigDecimal deductionAmt = new BigDecimal(calculateDeductionAmount(dednpercent, minValueByBasic));
+				staffDednPojo.setEmployeeid(employeeId);
+				staffDednPojo.setDednid(deductionPojo.getDeductionId());
+				staffDednPojo.setIsflatpt(isFlat);
+				staffDednPojo.setDednpt(dednpercent);
+				staffDednPojo.setDednamt(deductionAmt);// Get the percentage and calculate with basic value from
+				staffDednPojo.setEmployeeid(employeeid); // grade earnings
+				staffDednPojo.setEffdt(new Date());
+				staffDednPojo.setEmpdednstatus("Active");
+				staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
+				staffDednPojo.setLastupdatedby(userName);
+				serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
+			} else if (isFlat.equalsIgnoreCase("Percent") && onBasic_Gross.equalsIgnoreCase("BASIC+FTA")) {
+				BigDecimal deductionAmt = new BigDecimal(calculateDeductionAmount(dednpercent, minValueByBasicFTA));
+				staffDednPojo.setEmployeeid(employeeId);
+				staffDednPojo.setDednid(deductionPojo.getDeductionId());
+				staffDednPojo.setIsflatpt(isFlat);
+				staffDednPojo.setDednpt(dednpercent);
+				staffDednPojo.setDednamt(deductionAmt);// Get the percentage and calculate with basic value from
+				staffDednPojo.setEmployeeid(employeeid); // grade earnings
+				staffDednPojo.setEffdt(new Date());
+				staffDednPojo.setEmpdednstatus("Active");
+				staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
+				staffDednPojo.setLastupdatedby(userName);
+				serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
+			} else {
+				staffDednPojo.setEmployeeid(employeeId);
+				staffDednPojo.setDednid(deductionPojo.getDeductionId());
+				staffDednPojo.setIsflatpt(isFlat);
+				staffDednPojo.setDednpt(minVal);// Get the minimum value from grade deduction
+				staffDednPojo.setEffdt(new Date());
+				staffDednPojo.setEmpdednstatus("Active");
+				staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
+				staffDednPojo.setLastupdatedby(userName);
+				staffDednPojo.setEmployeeid(employeeid);
+				serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
+			}
+		}
+	}
+	
+	private void insertGradeAllowance(Long employeeid, Long gradeid, BigDecimal EarnAmount) {
+		String medicalAmount = "";
+		List<ParameterDM> paramList = serviceEmployeeEarning.loadMedicalAllowanceDuration();
+		for (ParameterDM paramObj : paramList) {
+			medicalAmount = paramObj.getParamValue();
+		}
+		System.out.println("Medical Allowance Duration Amount" + medicalAmount);
+		BigDecimal medicalDuration = new BigDecimal(medicalAmount.toString());
+		List<GradeAllowanceDM> list = serviceGradeAllowance.getGradeAllowanceByGradeID(gradeid);
+		BigDecimal minValueByBasic = null;
+		BigDecimal minValueByGross = null;
+		String allownceCode = "";
+		minValueByGross = EarnAmount;
+		BigDecimal earnpercent = new BigDecimal(serviceDeduction.getMinValueByGradeid(gradeid));
+		minValueByBasic = (earnpercent.multiply(minValueByGross)).divide(new BigDecimal("100"));
+		System.out.println("BAsic Value for Calculate Based On Gross" + minValueByBasic);
+		yearGrossAmt = minValueByGross.multiply(new BigDecimal("12"));
+		for (GradeAllowanceDM pojo : list) {
+			Long allowanceid = pojo.getAlwnceId();
+			String isFlat = pojo.getIsFlatPer();
+			String onBasicOrGross = pojo.getOnBasicGros();
+			BigDecimal minPercent = null;
+			if (pojo.getMinPer() != null) {
+				minPercent = new BigDecimal(pojo.getMinPer().longValue());
+			}
+			BigDecimal minValue = null;
+			if (pojo.getMinVal() != null) {
+				minValue = new BigDecimal(pojo.getMinVal().toString());
+			}
+			List<AllowanceDM> allownList = serviceEmpAllowance.getAllowanceByAllowanceId(allowanceid);
+			AllowanceDM allowanceObj = null;
+			for (AllowanceDM alloPojo : allownList) {
+				allowanceObj = alloPojo;
+				allownceCode = alloPojo.getAlowncCode();
+			}
+			// Store the grade allowance to staff allowance table
+			EmployeeAllowanceDM staffAllwnPojo = new EmployeeAllowanceDM();
+			if (isFlat.equalsIgnoreCase("Percent") && onBasicOrGross.equalsIgnoreCase("GROSS")) {
+				BigDecimal allownAmt = new BigDecimal(calculateEarnAmount(minPercent, minValueByGross));
+				staffAllwnPojo.setAllowid(allowanceObj.getAlowncId());
+				staffAllwnPojo.setIsflpt(isFlat);
+				staffAllwnPojo.setAllowpt(minPercent);
+				staffAllwnPojo.setAllowamt(allownAmt);// Get the calculated value based on 'BASIC' if percent is
+				staffAllwnPojo.setEmpid(employeeid); // selected in the grade_allowance
+				staffAllwnPojo.setAllowbal(allownAmt);
+				staffAllwnPojo.setEffdt(new Date());
+				staffAllwnPojo.setAutopay("N");
+				staffAllwnPojo.setEmpawstatus("Active");
+				staffAllwnPojo.setLastupdt(DateUtils.getcurrentdate());
+				staffAllwnPojo.setLastupby(userName);
+				serviceEmpAllowance.saveAndUpdate(staffAllwnPojo);
+			} else if (isFlat.equalsIgnoreCase("Percent") && onBasicOrGross.equalsIgnoreCase("BASIC")) {
+				BigDecimal allownAmt = new BigDecimal(calculateEarnAmount(minPercent, minValueByBasic));
+				staffAllwnPojo.setEmpid(employeeid);
+				staffAllwnPojo.setAllowid(allowanceObj.getAlowncId());
+				staffAllwnPojo.setIsflpt(isFlat);
+				staffAllwnPojo.setAllowpt(minPercent);
+				staffAllwnPojo.setAllowamt(allownAmt);// Get the calculated value based on 'BASIC' if percent is
+														// selected in the grade_allowance
+				staffAllwnPojo.setAllowbal(allownAmt);
+				staffAllwnPojo.setEffdt(new Date());
+				staffAllwnPojo.setAutopay("N");
+				staffAllwnPojo.setEmpawstatus("Active");
+				staffAllwnPojo.setLastupdt(DateUtils.getcurrentdate());
+				staffAllwnPojo.setLastupby(userName);
+				serviceEmpAllowance.saveAndUpdate(staffAllwnPojo);
+			} else {
+				staffAllwnPojo.setEmpid(employeeid);
+				staffAllwnPojo.setAllowid(allowanceObj.getAlowncId());
+				staffAllwnPojo.setIsflpt(isFlat);
+				staffAllwnPojo.setAllowamt(minValue);// Get the minimum value if flat is selected in the
+														// grade_allowance
+				staffAllwnPojo.setAllowbal(minValue);
+				staffAllwnPojo.setEffdt(new Date());
+				staffAllwnPojo.setEmpawstatus("Active");
+				staffAllwnPojo.setAutopay("N");
+				staffAllwnPojo.setLastupdt(DateUtils.getcurrentdate());
+				staffAllwnPojo.setLastupby(userName);
+				if (allownceCode.equalsIgnoreCase("MEDA") && (yearGrossAmt.compareTo(medicalDuration)) == 1) {
+					serviceEmpAllowance.saveAndUpdate(staffAllwnPojo);
+				}
+				if (!allownceCode.equalsIgnoreCase("MEDA")) {
+					serviceEmpAllowance.saveAndUpdate(staffAllwnPojo);
+				}
+			}
+		}
+	}
+	
+	private Double calculateEarnAmount(BigDecimal earnPercent, BigDecimal minValuefrmBasic) {
+		System.out.println("Earn Amount On Gross" + minValuefrmBasic);
+		System.out.println("Earn Amount For Percent" + earnPercent);
+		try {
+			Double calEarnAmt = (double) ((minValuefrmBasic.doubleValue() * earnPercent.doubleValue()) / 100);
+			return calEarnAmt;
+		}
+		catch (NullPointerException e) {
+			return 0D;
+		}
+	}
+	
+	private Double calculateDeductionAmount(BigDecimal earnPercent, Long minValuefrmBasic) {
+		System.out.println("Earn Amount On Gross" + minValuefrmBasic);
+		System.out.println("Earn Amount For Percent" + earnPercent);
+		try {
+			Double calEarnAmt = (double) ((minValuefrmBasic * earnPercent.doubleValue()) / 100);
+			return calEarnAmt;
+		}
+		catch (NullPointerException e) {
+			return 0D;
+		}
+	}
+	
+	@SuppressWarnings("unused")
+	private Double calculateEarnAmount(Long earnPercent, Long minValuefrmBasic) {
+		System.out.println("Earn Amount On Gross" + minValuefrmBasic);
+		System.out.println("Earn Amount For Percent" + earnPercent);
+		try {
+			Double calEarnAmt = (double) ((minValuefrmBasic * earnPercent) / 100);
+			return calEarnAmt;
+		}
+		catch (NullPointerException e) {
+			return 0D;
+		}
 	}
 }

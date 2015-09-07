@@ -3625,6 +3625,9 @@ public class Employee extends BaseUI {
 		for (EmployeeDtlsDM saveemployeedtls : (Collection<EmployeeDtlsDM>) empdtlsitemids) {
 			saveemployeedtls.setEmployeeid(Long.valueOf(empObj.getEmployeeid()));
 			servempdtls.saveorupdateEmployeeDtls(saveemployeedtls);
+			serviceEmployeeEarning.updateRevicedSalary(empObj.getEmployeeid(), "E","Inactive");
+			serviceEmployeeEarning.updateRevicedSalary(empObj.getEmployeeid(), "D","Inactive");
+			serviceEmployeeEarning.updateRevicedSalary(empObj.getEmployeeid(), "A","Inactive");
 			// for employee earinngs
 			try {
 				insertEmployeeGradeEarning(empObj.getEmployeeid(), saveemployeedtls.getGradeid());

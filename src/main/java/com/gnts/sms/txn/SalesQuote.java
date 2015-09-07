@@ -141,7 +141,7 @@ public class SalesQuote extends BaseTransUI {
 	private VerticalLayout hlquoteDoc = new VerticalLayout();
 	// Sales QuoteDtl components
 	private ComboBox cbProduct, cbUom, cbdtlstatus;
-	private TextField tfQuoteQunt, tfUnitRate, tfBasicValue, tfcustprodcode;
+	private TextField tfQuoteQunt, tfUnitRate, tfBasicValue, tfcustprodcode, tfPdcValue;
 	private TextArea tacustproddesc;
 	private GERPTextField tfCustomField1 = new GERPTextField("Part Number");
 	private GERPTextField tfCustomField2 = new GERPTextField("Drawing Number");
@@ -149,6 +149,7 @@ public class SalesQuote extends BaseTransUI {
 	private BeanItemContainer<SmsQuoteHdrDM> beansmsQuoteHdr = null;
 	private BeanItemContainer<SmsQuoteDtlDM> beansmsQuoteDtl = null;
 	private List<SmsQuoteDtlDM> smsQuoteDtlList = new ArrayList<SmsQuoteDtlDM>();
+	BigDecimal sumPdc = new BigDecimal("0");
 	// local variables declaration
 	private String username;
 	private Long companyid;
@@ -230,12 +231,12 @@ public class SalesQuote extends BaseTransUI {
 				Object itemId = event.getProperty().getValue();
 				BeanItem<?> item = (BeanItem<?>) cbEnqNo.getItem(itemId);
 				if (item != null) {
-					
 					if (cbQuotationType.getValue() != null && cbQuotationType.getValue() != "Enquiry") {
 						loadfullProduct();
 					} else {
 						loadProductList(false);
-					}					loadclientCommCont();
+					}
+					loadclientCommCont();
 					loadclienTecCont();
 				}
 			}
@@ -407,7 +408,7 @@ public class SalesQuote extends BaseTransUI {
 		}
 		cbStatus.setWidth("150");
 		// Sales QuoteDtl Comp
-		cbProduct = new GERPComboBox("Product Name");
+		cbProduct = new GERPComboBox("Product");
 		cbProduct.setItemCaptionPropertyId("prodname");
 		cbProduct.setWidth("130");
 		cbProduct.addValueChangeListener(new ValueChangeListener() {
@@ -465,12 +466,11 @@ public class SalesQuote extends BaseTransUI {
 		tfUnitRate.setWidth("130");
 		tfUnitRate.setValue("0");
 		tfUnitRate.setImmediate(true);
-		tfUnitRate.addBlurListener(new BlurListener() {
+		tfUnitRate.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
-			public void blur(BlurEvent event) {
-				// TODO Auto-generated method stub
+			public void valueChange(ValueChangeEvent event) {
 				try {
 					tfBasicValue.setReadOnly(false);
 					tfBasicValue.setValue((new BigDecimal(tfUnitRate.getValue())).multiply(
@@ -481,11 +481,28 @@ public class SalesQuote extends BaseTransUI {
 				}
 			}
 		});
-		tfQuoteQunt.addBlurListener(new BlurListener() {
+		tfBasicValue.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void blur(BlurEvent event) {
+				try {
+					tfBasicValue.setReadOnly(false);
+					tfBasicValue.setValue((new BigDecimal(tfUnitRate.getValue())).multiply(
+							new BigDecimal(tfQuoteQunt.getValue())).toString());
+					tfBasicValue.setReadOnly(true);
+				}
+				catch (Exception e) {
+				}
+			}
+		});
+		tfPdcValue = new TextField("PDC Charge");
+		tfPdcValue.setWidth("150");
+		tfQuoteQunt.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
 				try {
 					tfBasicValue.setReadOnly(false);
 					tfBasicValue.setValue((new BigDecimal(tfUnitRate.getValue())).multiply(
@@ -713,6 +730,7 @@ public class SalesQuote extends BaseTransUI {
 		pp.setCaption("Packing(%)");
 		flColumn2.addComponent(pp);
 		flColumn2.setComponentAlignment(pp, Alignment.TOP_LEFT);
+		flColumn2.addComponent(tfPDCCharges);
 		flColumn2.addComponent(tfSubTotal);
 		HorizontalLayout ed = new HorizontalLayout();
 		ed.addComponent(tfEDPer);
@@ -725,8 +743,8 @@ public class SalesQuote extends BaseTransUI {
 		vp.addComponent(tfVatPer);
 		vp.addComponent(tfVatValue);
 		vp.setCaption("VAT");
-		flColumn2.addComponent(vp);
-		flColumn2.setComponentAlignment(vp, Alignment.TOP_LEFT);
+		flColumn3.addComponent(vp);
+		flColumn3.setComponentAlignment(vp, Alignment.TOP_LEFT);
 		HorizontalLayout cst = new HorizontalLayout();
 		cst.addComponent(tfCstPer);
 		cst.addComponent(tfCstValue);
@@ -736,7 +754,6 @@ public class SalesQuote extends BaseTransUI {
 		flColumn3.addComponent(tfFreightValue);
 		flColumn3.addComponent(tfOtherValue);
 		flColumn3.addComponent(tfDocumentCharges);
-		flColumn3.addComponent(tfPDCCharges);
 		flColumn3.addComponent(tfGrandtotal);
 		flColumn3.addComponent(cbpaymetTerms);
 		flColumn3.addComponent(cbFreightTerms);
@@ -764,13 +781,16 @@ public class SalesQuote extends BaseTransUI {
 		flDtlColumn1.addComponent(cbProduct);
 		flDtlColumn1.addComponent(tfQuoteQunt);
 		flDtlColumn1.addComponent(tfUnitRate);
+		flDtlColumn2.addComponent(tfPdcValue);
 		flDtlColumn2.addComponent(tfBasicValue);
 		flDtlColumn2.addComponent(tfCustomField1);
-		flDtlColumn2.addComponent(tfCustomField2);
+		flDtlColumn3.addComponent(tfCustomField2);
 		flDtlColumn3.addComponent(tacustproddesc);
-		flDtlColumn3.addComponent(cbdtlstatus);
-		flDtlColumn4.addComponent(btnsavepurQuote);
-		flDtlColumn4.addComponent(btndelete);
+		flDtlColumn4.addComponent(cbdtlstatus);
+		HorizontalLayout hl = new HorizontalLayout();
+		hl.addComponent(btnsavepurQuote);
+		hl.addComponent(btndelete);
+		flDtlColumn4.addComponent(hl);
 		HorizontalLayout hlSmsQuotDtl = new HorizontalLayout();
 		hlSmsQuotDtl.addComponent(flDtlColumn1);
 		hlSmsQuotDtl.addComponent(flDtlColumn2);
@@ -870,6 +890,15 @@ public class SalesQuote extends BaseTransUI {
 			for (SmsQuoteDtlDM obj : smsQuoteDtlList) {
 				if (obj.getBasicvalue() != null) {
 					sum = sum.add(obj.getBasicvalue());
+					System.out.println("======================================sum=======>"+sum);
+
+				}
+				if (obj.getPdcValue() != null) {
+					sumPdc = sumPdc.add(obj.getPdcValue());
+					System.out.println("=============================================>"+sumPdc);
+					tfPDCCharges.setReadOnly(false);
+					tfPDCCharges.setValue(sumPdc.toString());
+					tfPDCCharges.setReadOnly(true);
 				}
 			}
 			tfBasictotal.setReadOnly(false);
@@ -878,10 +907,10 @@ public class SalesQuote extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblsmsQuoteDtl.setContainerDataSource(beansmsQuoteDtl);
-			tblsmsQuoteDtl.setVisibleColumns(new Object[] { "prodname", "custproddesc", "quoteqty", "unitrate",
-					"basicvalue", "customField1", "quodtlstatus", "lastupdateddt", "lastupdatedby" });
-			tblsmsQuoteDtl.setColumnHeaders(new String[] { "Product Name", "Description", "Quote Qty", "Unit Rate",
-					"Basic Value", "Part No.", "Status", "Last Updated Date", "Last Updated By" });
+			tblsmsQuoteDtl.setVisibleColumns(new Object[] { "prodname", "custproddesc", "quoteqty", "pdcValue",
+					"unitrate", "basicvalue", "customField1", "quodtlstatus", "lastupdateddt", "lastupdatedby" });
+			tblsmsQuoteDtl.setColumnHeaders(new String[] { "Product Name", "Description", "Quote Qty", "PDC",
+					"Unit Rate", "Basic Value", "Part No.", "Status", "Last Updated Date", "Last Updated By" });
 			tblsmsQuoteDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
@@ -1185,6 +1214,9 @@ public class SalesQuote extends BaseTransUI {
 			if (quoteDtlDM.getCustprodcode() != null) {
 				tfcustprodcode.setValue(quoteDtlDM.getCustprodcode().toString());
 			}
+			if (quoteDtlDM.getPdcValue() != null) {
+				tfPdcValue.setValue(quoteDtlDM.getPdcValue().toString());
+			}
 			if (quoteDtlDM.getCustproddesc() != null) {
 				tacustproddesc.setValue(quoteDtlDM.getCustproddesc());
 			}
@@ -1211,6 +1243,7 @@ public class SalesQuote extends BaseTransUI {
 		tfQuoteQunt.setValue("");
 		tfQuoteQunt.setReadOnly(true);
 		tacustproddesc.setValue("");
+		tfPdcValue.setValue("");
 		tacustproddesc.setComponentError(null);
 		tfcustprodcode.setValue("");
 		tfcustprodcode.setComponentError(null);
@@ -1288,6 +1321,7 @@ public class SalesQuote extends BaseTransUI {
 		tfPaclingValue.setReadOnly(false);
 		tfPaclingValue.setValue(packingvalue.toString());
 		tfPaclingValue.setReadOnly(true);
+	
 		BigDecimal pdcCharges = new BigDecimal("0");
 		try {
 			pdcCharges = new BigDecimal(tfPDCCharges.getValue());
@@ -1682,6 +1716,7 @@ public class SalesQuote extends BaseTransUI {
 				smsQuotDtlobj.setBasicvalue(new BigDecimal(tfBasicValue.getValue()));
 			}
 			smsQuotDtlobj.setCustproddesc(tacustproddesc.getValue());
+			smsQuotDtlobj.setPdcValue(new BigDecimal(tfPdcValue.getValue()));
 			smsQuotDtlobj.setCustomField1(tfCustomField1.getValue());
 			smsQuotDtlobj.setCustomField2(tfCustomField2.getValue());
 			smsQuotDtlobj.setLastupdateddt(DateUtils.getcurrentdate());

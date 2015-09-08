@@ -44,10 +44,8 @@ import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.base.service.mst.StateService;
 import com.gnts.crm.domain.mst.ClientCategoryDM;
 import com.gnts.crm.domain.mst.ClientDM;
-import com.gnts.crm.domain.txn.DocumentsDM;
 import com.gnts.crm.service.mst.ClientCategoryService;
 import com.gnts.crm.service.mst.ClientService;
-import com.gnts.crm.service.txn.DocumentsService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
@@ -68,6 +66,7 @@ import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.stt.txn.EnquiryWorkflow;
+import com.gnts.mfg.txn.TestingDocuments;
 import com.gnts.saarc.util.SerialNumberGenerator;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
@@ -116,7 +115,6 @@ public class SmsEnquiry extends BaseTransUI {
 	private SmsEnquiryDtlService serviceEnqDtls = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
 	private SmsEnquirySpecService serviceEnqspec = (SmsEnquirySpecService) SpringContextHelper
 			.getBean("SmsEnquirySpec");
-	private DocumentsService serviceDocuments = (DocumentsService) SpringContextHelper.getBean("documents");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private CityService serviceCity = (CityService) SpringContextHelper.getBean("city");
@@ -146,12 +144,6 @@ public class SmsEnquiry extends BaseTransUI {
 	private GERPTextField tfCustomField2 = new GERPTextField("Drawing Number");
 	private Table tblEnqDetails = new GERPTable();
 	private BeanItemContainer<SmsEnquiryDtlDM> beandtl = null;
-	// Document Data
-	private GERPTextField tfEnquiry = new GERPTextField("Enquiry");
-	private GERPTextField tfDocumentName = new GERPTextField("Document Name");
-	private GERPTextArea taComments = new GERPTextArea("Comments");
-	// private GERPButton btnSave = new GERPButton("Save", "add", this);
-	private GERPTable tblDocuments = new GERPTable();
 	// commom data
 	private Window mywindow = new Window("Add New Client");
 	private Button saveClient = new Button("Save", this);
@@ -181,7 +173,6 @@ public class SmsEnquiry extends BaseTransUI {
 	private FormLayout fldtl1, fldtl2, fldtl3, fldtl4, fldtl5;
 	// form layout for input controls Sales Enquiry Specification
 	private FormLayout flspec1, flspec2, flspec3, flspec4, flspec5;
-	private FormLayout fldoc1, fldoc2, fldoc3, fldoc4;
 	// Search Control Layout
 	private HorizontalLayout hlsearchlayout;
 	// Parent layout for all the input controls Sales Enquiry Header
@@ -195,14 +186,10 @@ public class SmsEnquiry extends BaseTransUI {
 	private HorizontalLayout hlspecadd1 = new HorizontalLayout();
 	private HorizontalLayout hlEnquiryWorkflow = new HorizontalLayout();
 	private HorizontalLayout hlspec = new HorizontalLayout();
-	private HorizontalLayout hldoc = new HorizontalLayout();
 	private VerticalLayout vlspec = new VerticalLayout();
-	private VerticalLayout vldoc = new VerticalLayout();
 	// Parent layout for all the input controls Sms Comments
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	// Document Layout
-	private VerticalLayout hlDocumentLayout = new VerticalLayout();
-	private BeanItemContainer<DocumentsDM> beanDocuments = null;
 	// local variables declaration
 	private Long enquiryId;
 	private String username;
@@ -213,6 +200,8 @@ public class SmsEnquiry extends BaseTransUI {
 	private String status;
 	private Long branchId, employeeId;
 	private TabSheet dtlTab;
+	// for test documents
+	private VerticalLayout hlDocumentLayout = new VerticalLayout();
 	
 	// Constructor received the parameters from Login UI class
 	public SmsEnquiry() {
@@ -430,20 +419,6 @@ public class SmsEnquiry extends BaseTransUI {
 				}
 			}
 		});
-		tblDocuments.addItemClickListener(new ItemClickListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (tblDocuments.isSelected(event.getItemId())) {
-					tblDocuments.setImmediate(true);
-					resetdocuments();
-				} else {
-					((AbstractSelect) event.getSource()).select(event.getItemId());
-					editdocumentsenq();
-				}
-			}
-		});
 		btndetaildelete.addClickListener(new ClickListener() {
 			// Click Listener for delete Enquiry Detail
 			private static final long serialVersionUID = 6551953728534136363L;
@@ -643,25 +618,6 @@ public class SmsEnquiry extends BaseTransUI {
 		vlspec.addComponent(tblspec);
 		tblspec.setPageLength(10);
 		tblspec.setWidth("1188px");
-		// Document Specification
-		fldoc1 = new FormLayout();
-		fldoc2 = new FormLayout();
-		fldoc3 = new FormLayout();
-		fldoc4 = new FormLayout();
-		fldoc1.addComponent(tfEnquiry);
-		fldoc2.addComponent(tfDocumentName);
-		fldoc3.addComponent(taComments);
-		hldoc.setMargin(true);
-		hldoc.addComponent(fldoc1);
-		hldoc.addComponent(fldoc2);
-		hldoc.addComponent(fldoc3);
-		hldoc.addComponent(fldoc4);
-		hldoc.setMargin(true);
-		hldoc.setSpacing(true);
-		vldoc.addComponent(GERPPanelGenerator.createPanel(hldoc));
-		vldoc.addComponent(tblDocuments);
-		tblDocuments.setPageLength(10);
-		tblDocuments.setWidth("1188px");
 		// tblspec.setStyleName(Runo.TABLE_BORDERLESS);
 		loadEnquirySpec(false, null);
 		// vlspec.setWidth("200%");
@@ -670,8 +626,6 @@ public class SmsEnquiry extends BaseTransUI {
 		hlspecadd.addComponent(GERPPanelGenerator.createPanel(vldtl));
 		hlspecadd1.addComponent(vlspec);
 		hlspecadd1.setSpacing(true);
-		hlDocumentLayout.addComponent(vldoc);
-		hlDocumentLayout.setSpacing(true);
 		dtlTab = new TabSheet();
 		dtlTab.addTab(hlspecadd, "Sales Enquiry Detail");
 		dtlTab.addTab(hlspecadd1, "Sales Enquiry Specification");
@@ -850,7 +804,7 @@ public class SmsEnquiry extends BaseTransUI {
 		Long enquirydtlid = null;
 		if (fromdb) {
 			listEnqSpec = serviceEnqspec.getsmsenquiryspecList(null, enquiryId, enquirydtlid,
-					(String) cbSpecStatus.getValue(),prodid, "F");
+					(String) cbSpecStatus.getValue(), prodid, "F");
 		}
 		recordCnt = listEnqSpec.size();
 		beanpec = new BeanItemContainer<SmsEnquirySpecDM>(SmsEnquirySpecDM.class);
@@ -864,32 +818,6 @@ public class SmsEnquiry extends BaseTransUI {
 				"Enquiry Specification Status", "Last Updated Date", "Last Updated By" });
 		tblspec.setColumnAlignment("enquiryspecid", Align.RIGHT);
 		tblspec.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
-	}
-	
-	// Load Documents Datas
-	private void loadSearchResult() {
-		tfEnquiryNo.setReadOnly(false);
-		tfEnquiry.setValue(tfEnquiryNo.getValue());
-		// enqNoLong = Long.valueOf(tfEnquiry.getValue());
-		try {
-			List<DocumentsDM> documentList = new ArrayList<DocumentsDM>();
-			if (tfEnquiryNo.getValue() != null && tfEnquiryNo.getValue() != null) {
-				System.out.println("cbEnquiry.getValue()--->" + tfEnquiry.getValue()); // Long.valueOf(tfEnquiry.getValue())
-			}
-			int recordcount = documentList.size();
-			beanDocuments = new BeanItemContainer<DocumentsDM>(DocumentsDM.class);
-			beanDocuments.addAll(serviceDocuments.getDocumentDetails(null, null, this.enquiryId, null, null, null,
-					null, null, null, null, null, null));
-			tblDocuments.setSelectable(true);
-			tblDocuments.setContainerDataSource(beanDocuments);
-			tblDocuments.setVisibleColumns(new Object[] { "documentId", "documentName", "lastUpdatedBy" });
-			tblDocuments.setColumnHeaders(new String[] { "Ref.Id", "Document Name", "Uploaded By" });
-			tblDocuments.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordcount);
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
-		tfEnquiryNo.setReadOnly(true);
 	}
 	
 	// Load Branch List
@@ -987,21 +915,16 @@ public class SmsEnquiry extends BaseTransUI {
 			enqdtlList = serviceEnqDtls.getsmsenquirydtllist(null, enquiryId, null, null,
 					(String) cbEnquiryStatus.getValue(), "F");
 			listEnqSpec = serviceEnqspec.getsmsenquiryspecList(null, enquiryId, null, (String) cbSpecStatus.getValue(),
-					null,"F");
+					null, "F");
 		}
 		loadEnquiryDetails(true);
 		loadEnquirySpec(false, null);
-
 		new EnquiryWorkflow(hlEnquiryWorkflow, enquiryId, username);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, enquiryId, null, null,
 				null, status);
 		comments.loadsrch(true, null, null, null, null, null, null, null, enquiryId, null, null, null, null);
 		try {
-			tfEnquiryNo.setReadOnly(false);
-			if (tfEnquiryNo.getValue() != null && tfEnquiryNo.getValue() != "") {
-				loadSearchResult();
-			}
-			tfEnquiryNo.setReadOnly(true);
+			new TestingDocuments(hlDocumentLayout, enquiryId.toString(), "DR");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1044,10 +967,10 @@ public class SmsEnquiry extends BaseTransUI {
 			if (enquiryDtlDM.getCustomField2() != null) {
 				tfCustomField2.setValue(enquiryDtlDM.getCustomField2());
 			}
-			listEnqSpec=new ArrayList<SmsEnquirySpecDM>();
+			listEnqSpec = new ArrayList<SmsEnquirySpecDM>();
 			tblspec.removeAllItems();
 			listEnqSpec = serviceEnqspec.getsmsenquiryspecList(null, enquiryId, null, (String) cbSpecStatus.getValue(),
-					prodid,"F");
+					prodid, "F");
 			loadEnquirySpec(false, null);
 		}
 	}
@@ -1063,18 +986,6 @@ public class SmsEnquiry extends BaseTransUI {
 			tfSpeccode.setValue(enqspecList.getSpeccode());
 			if (enqspecList.getSpecdesc() != null) {
 				taSpecdesc.setValue(enqspecList.getSpecdesc().toString());
-			}
-		}
-	}
-	
-	private void editdocumentsenq() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hldtllayout.setVisible(true);
-		if (tblDocuments.getValue() != null) {
-			DocumentsDM enqspecList = beanDocuments.getItem(tblDocuments.getValue()).getBean();
-			tfDocumentName.setValue(enqspecList.getDocumentName());
-			if (enqspecList.getComments() != null) {
-				taComments.setValue(enqspecList.getComments().toString());
 			}
 		}
 	}
@@ -1157,6 +1068,12 @@ public class SmsEnquiry extends BaseTransUI {
 			}
 			catch (Exception e) {
 			}
+		}
+		try {
+			new TestingDocuments(hlDocumentLayout, enqHdrDM.getEnquiryId().toString(), "DR");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 		tfEnquiryNo.setReadOnly(false);
 		tfEnquiryNo.setValue(enqHdrDM.getEnquiryNo());
@@ -1282,6 +1199,7 @@ public class SmsEnquiry extends BaseTransUI {
 		tblEnqDetails.setVisible(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
 				null);
+		hlDocumentLayout.removeAllComponents();
 	}
 	
 	@Override
@@ -1318,7 +1236,6 @@ public class SmsEnquiry extends BaseTransUI {
 				hlUserIPContainer.setEnabled(false);
 				hldtllayout.setEnabled(false);
 				hlspecadd1.setEnabled(false);
-				
 			}
 		}
 		catch (Exception e) {
@@ -1490,7 +1407,6 @@ public class SmsEnquiry extends BaseTransUI {
 		cbEnquiryStatus.setValue("Open");
 		dfEnquiryDate.setValue(new Date());
 		dfDueDate.setValue(addDays(new Date(), 7));
-		hlDocumentLayout.removeAllComponents();
 	}
 	
 	private Date addDays(Date d, int days) {
@@ -1604,10 +1520,5 @@ public class SmsEnquiry extends BaseTransUI {
 				e.printStackTrace();
 			}
 		}
-	}
-	
-	private void resetdocuments() {
-		tfDocumentName.setValue("");
-		taComments.setValue("");
 	}
 }

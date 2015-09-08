@@ -380,7 +380,7 @@ public class SmsEnquiry extends BaseTransUI {
 					btndetailadd.setCaption("Update");
 					btndetailadd.setStyleName("savebt");
 					btndetaildelete.setEnabled(true);
-					if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+					if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")!=null&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
 						hldtllayout.setEnabled(true);
 						btndetaildelete.setEnabled(false);
 					}
@@ -477,7 +477,7 @@ public class SmsEnquiry extends BaseTransUI {
 		});
 		try {
 			btnAdd.setVisible(true);
-			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+			if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")!=null&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
 				btnAdd.setVisible(false);
 			}
 		}
@@ -1010,7 +1010,7 @@ public class SmsEnquiry extends BaseTransUI {
 		tfEnqQty.setCaption("Enquiry Qty");
 		btndetailadd.setCaption("Add");
 		try {
-			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+			if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")!=null&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
 				hlUserIPContainer.setEnabled(false);
 				 hldtllayout.setEnabled(false);
 				loadEnqFieldDisable();
@@ -1215,6 +1215,7 @@ public class SmsEnquiry extends BaseTransUI {
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
 				null);
 		hlDocumentLayout.removeAllComponents();
+		tblspec.removeAllItems();
 	}
 	
 	@Override
@@ -1245,7 +1246,18 @@ public class SmsEnquiry extends BaseTransUI {
 		editSmsEnqspecification();
 		cbBranch.setRequired(true);
 		// To Select Enquire workflow tab
-		
+		try {
+			if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")!=null&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+				dtlTab.setSelectedTab(hlEnquiryWorkflow);
+				hlUserIPContainer.setEnabled(false);
+				 hldtllayout.setEnabled(false);
+				loadEnqFieldDisable();
+				hlspecadd1.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private void loadEnqFieldDisable() {
@@ -1421,18 +1433,7 @@ public class SmsEnquiry extends BaseTransUI {
 		cbEnquiryStatus.setValue("Open");
 		dfEnquiryDate.setValue(new Date());
 		dfDueDate.setValue(addDays(new Date(), 7));
-		try {
-			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
-				dtlTab.setSelectedTab(hlEnquiryWorkflow);
-				hlUserIPContainer.setEnabled(false);
-				 hldtllayout.setEnabled(false);
-				loadEnqFieldDisable();
-				hlspecadd1.setEnabled(false);
-			}
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
+		
 	}
 	
 	private Date addDays(Date d, int days) {

@@ -156,7 +156,7 @@ public class DC extends BaseTransUI {
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		employeeId = (Long) UI.getCurrent().getSession().getAttribute("employeeId");
-		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
+		moduleId = 9L;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside DC() constructor");
 		// Loading the UI
 		buildView();
@@ -256,6 +256,10 @@ public class DC extends BaseTransUI {
 												"Active", "F").get(0).getClientAddress());
 							}
 						}
+						cbEnquiry.setRequired(true);
+						cbGoodsType.removeAllItems();
+						cbGoodsType.addItem("Product");
+
 					} else if (cbDCType.getValue().equals("Store")) {
 						cbVendor.setValue(cbVendor.getValue());
 						cbClients.setEnabled(false);
@@ -264,6 +268,9 @@ public class DC extends BaseTransUI {
 						btndelete.setEnabled(true);
 						cbwindcommPerson.setEnabled(false);
 						cbwindTechPers.setEnabled(false);
+						cbEnquiry.setRequired(false);
+						cbGoodsType.removeAllItems();
+						cbGoodsType.addItem("Material");
 					}
 				}
 			}
@@ -389,8 +396,6 @@ public class DC extends BaseTransUI {
 		// DC Details
 		// Goods Type
 		cbGoodsType = new GERPComboBox("Goods Type");
-		cbGoodsType.addItem("Material");
-		cbGoodsType.addItem("Product");
 		cbGoodsType.addValueChangeListener(new ValueChangeListener() {
 			/**
 			 * 
@@ -459,8 +464,8 @@ public class DC extends BaseTransUI {
 		flDCCol3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		flDCCol1.addComponent(tfDcNo);
-		flDCCol1.addComponent(cbEnquiry);
 		flDCCol1.addComponent(cbDCType);
+		flDCCol1.addComponent(cbEnquiry);
 		flDCCol1.addComponent(cbDCTypeRNR);
 		dfDcDt.setWidth("130");
 		flDCCol1.addComponent(dfDcDt);
@@ -541,10 +546,10 @@ public class DC extends BaseTransUI {
 			beanDcHdrDM.addAll(dcHdrList);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the DC. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanDcHdrDM);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enqNo", "dcNo", "dcType", "techPerson", "commPerson",
-					"lastUpdateddt", "lastUpdatedby" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Enquiry No", "DC No", "DC Type", "Technical Person",
-					"Commercial Person", "Updated Date", "Updated By" });
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "dcNo", "dcType", "dcTypeRNR",
+					"techPerson", "commPerson", "dcStatus" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "DC No", "Department", "DC Type",
+					"Technical Person", "Commercial Person", "Status" });
 			tblMstScrSrchRslt.setColumnAlignment("dcId", Align.RIGHT);
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 		}
@@ -580,9 +585,8 @@ public class DC extends BaseTransUI {
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		// tfDcNo.setReadOnly(false);
+		tfDcNo.setReadOnly(false);
 		tfDcNo.setValue("");
-		// tfDcNo.setReadOnly(true);
 		dfDcDt.setValue(new Date());
 		cbDCType.setValue(null);
 		cbVendor.setValue(null);
@@ -611,6 +615,10 @@ public class DC extends BaseTransUI {
 		cbEnquiry.setRequired(true);
 		listDCDetails = new ArrayList<DCDtlDM>();
 		tblDCDetails.removeAllItems();
+		cbDCTypeRNR.setValue(null);
+		cbClients.setValue(null);
+		cbGoodsType.removeAllItems();
+		cbMaterialId.setComponentError(null);
 	}
 	
 	// Method to edit the values from table into fields to update process
@@ -637,6 +645,7 @@ public class DC extends BaseTransUI {
 				}
 				tfDcNo.setReadOnly(false);
 				tfDcNo.setValue(editHdrDC.getDcNo());
+				tfDcNo.setReadOnly(true);
 				cbDCType.setValue(editHdrDC.getDcType());
 				cbVendor.setValue(editHdrDC.getVendorId());
 				cbClients.setValue(editHdrDC.getCustomerId());
@@ -644,6 +653,7 @@ public class DC extends BaseTransUI {
 				cbPersonName.setValue(editHdrDC.getPersonName());
 				taRemarks.setValue(editHdrDC.getRemarks());
 				cbStatus.setValue(editHdrDC.getDcStatus());
+				cbDCTypeRNR.setValue(editHdrDC.getDcTypeRNR());
 				logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected DC. Id -> "
 						+ issueId);
 				listDCDetails.addAll(serviceDCDtlHdr.getDCCtlList(null, dcHdrId, null, null, null, null, null, "F"));
@@ -728,7 +738,6 @@ public class DC extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		dfDcDt.setValue(null);
 		cbDCType.setValue(null);
-		tfDcNo.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		loadSrchRslt();
 	}
@@ -937,7 +946,7 @@ public class DC extends BaseTransUI {
 			cbDCType.setComponentError(new UserError(GERPErrorCodes.NULL_DC_TYPE));
 			errorFlag = true;
 		}
-		if (cbEnquiry.getValue() == null) {
+		if (cbEnquiry.getValue() == null && cbDCType.getValue().equals("Marketing")) {
 			cbEnquiry.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRYNO));
 			errorFlag = true;
 		} else {
@@ -1000,6 +1009,7 @@ public class DC extends BaseTransUI {
 			dcHdrDM.setActionedBy(employeeId);
 			dcHdrDM.setLastUpdateddt(DateUtils.getcurrentdate());
 			dcHdrDM.setLastUpdatedby(username);
+			dcHdrDM.setDcTypeRNR((String) cbDCTypeRNR.getValue());
 			serviceDCHdr.saveOrUpdate(dcHdrDM);
 			dcHdrId = dcHdrDM.getDcId();
 			@SuppressWarnings("unchecked")
@@ -1010,8 +1020,7 @@ public class DC extends BaseTransUI {
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
 				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MM_DCNO").get(
-							0);
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MM_DCNO").get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "MM_DCNO");
 					}
@@ -1153,7 +1162,7 @@ public class DC extends BaseTransUI {
 			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
 					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 					"MM_TRNSPRT"));
 			cbModeOfTrans.setContainerDataSource(beanCompanyLookUp);
 		}

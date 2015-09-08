@@ -654,8 +654,7 @@ public class SalesQuote extends BaseTransUI {
 		resetFields();
 		loadSrchRslt();
 		loadQuotationDetailList();
-		loadCommmercialTerms(true);
-		loadTechnicalTerms(true);
+	
 		btnsavepurQuote.setStyleName("add");
 	}
 	
@@ -1482,8 +1481,10 @@ public class SalesQuote extends BaseTransUI {
 		lblNotification.setValue("");
 		assembleInputUserLayout();
 		resetFields();
-		editQuoteDtl();
 		editQuoteHdr();
+		editQuoteDtl();
+	loadCommmercialTerms(true);
+	loadTechnicalTerms(true);
 		comments.loadsrch(true, null, null, null, quoteId, null, null, null, null, null, null, null, null);
 		comments.editcommentDetails();
 		btnprintback.setVisible(true);
@@ -1636,6 +1637,7 @@ public class SalesQuote extends BaseTransUI {
 			quoteHdrDM.setQuoteDoc(fileContents);
 			dtlValidation();
 			servicesmsQuoteHdr.saveOrUpdateSmsQuoteHdr(quoteHdrDM);
+			quoteId=quoteHdrDM.getQuoteId();
 			@SuppressWarnings("unchecked")
 			Collection<SmsQuoteDtlDM> itemIds = (Collection<SmsQuoteDtlDM>) tblsmsQuoteDtl.getVisibleItemIds();
 			for (SmsQuoteDtlDM save : (Collection<SmsQuoteDtlDM>) itemIds) {
@@ -1682,7 +1684,6 @@ public class SalesQuote extends BaseTransUI {
 			}
 			quoteDtlresetFields();
 			loadSrchRslt();
-			quoteId = 0L;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1862,6 +1863,8 @@ public class SalesQuote extends BaseTransUI {
 		tblCommercialTerms.removeAllItems();
 		listTechnicalTerms = new ArrayList<QuoteTechCondDM>();
 		tblTechnicalTerms.removeAllItems();
+		quoteId = 0L;
+
 	}
 	
 	@Override
@@ -2005,7 +2008,7 @@ public class SalesQuote extends BaseTransUI {
 	
 	private void saveTechnicalTerms() {
 		QuoteTechCondDM quoteTechCondDM = new QuoteTechCondDM();
-		if (tblCommercialTerms.getValue() != null) {
+		if (tblTechnicalTerms.getValue() != null) {
 			quoteTechCondDM = beanQuoteTech.getItem(tblTechnicalTerms.getValue()).getBean();
 		}
 		quoteTechCondDM.setDescription(taTechnicalTerms.getValue());

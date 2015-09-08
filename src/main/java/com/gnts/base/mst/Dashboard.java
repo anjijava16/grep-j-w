@@ -204,7 +204,7 @@ public class Dashboard {
 	
 	private void loadNewsDetails() {
 		try {
-			List<OrgNewsDM> newsList = serviceNews.getNewsList(null, null, null, "Active", companyId, null, null);
+			List<OrgNewsDM> newsList = serviceNews.getNewsList(null, null, "front", "Active", companyId, null, null);
 			if (newsList != null) {
 				tblNews.removeAllItems();
 				BeanItemContainer<OrgNewsDM> beansNews = new BeanItemContainer<OrgNewsDM>(OrgNewsDM.class);

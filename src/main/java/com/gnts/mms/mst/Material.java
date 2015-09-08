@@ -380,9 +380,9 @@ public class Material extends BaseUI {
 					+ "Got the Material result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanMaterial);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialId", "branchName", "materialName",
-					"materialCode", "materialStatus", "lastupdateddt", "lastupdatedby" });
+					"materialCode","materialGroup","materialUOM","materialTypeName","materialStatus","lastupdateddt" });
 			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Material Name",
-					"Material Code", "Status", "Last Updated Date", "Last Updated By" });
+					"Material Code","Material Group","UOM", "Material Type","Status","Upd Dt." });
 			tblMstScrSrchRslt.setColumnAlignment("materialId", Align.RIGHT);
 			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}

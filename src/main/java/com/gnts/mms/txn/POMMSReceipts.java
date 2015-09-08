@@ -45,6 +45,7 @@ import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.domain.txn.MaterialLedgerDM;
 import com.gnts.mms.domain.txn.MaterialStockDM;
 import com.gnts.mms.domain.txn.MmsPoDtlDM;
+import com.gnts.mms.domain.txn.MmsQuoteHdrDM;
 import com.gnts.mms.domain.txn.POHdrDM;
 import com.gnts.mms.domain.txn.PoReceiptDtlDM;
 import com.gnts.mms.domain.txn.PoReceiptHdrDM;
@@ -145,8 +146,13 @@ public class POMMSReceipts extends BaseTransUI {
 	private void buildView() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting POMMSReceipts UI");
 		// Initialization for Purchase Order Receipts Hdr Details user input components
+		cbIndentNo = new GERPComboBox("Indent No");
+		cbIndentNo.setItemCaptionPropertyId("indentNo");
+		cbIndentNo.setWidth("150");
 		cbPoNo = new GERPComboBox("PO No");
 		cbPoNo.setItemCaptionPropertyId("pono");
+		cbPoNo.setImmediate(true);
+		loadPoNo();
 		cbPoNo.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -155,14 +161,16 @@ public class POMMSReceipts extends BaseTransUI {
 				// TODO Auto-generated method stub
 				try {
 					loadMaterial();
-					cbIndentNo.setValue(((POHdrDM) cbPoNo.getValue()).getIndentId());
+					cbIndentNo.setImmediate(true);
+					cbIndentNo.setValue(serviceMMSPOHdr
+							.getPOHdrList(null, (Long) cbPoNo.getValue(), null, null, null, null, null, "F").get(0)
+							.getIndentId());
 				}
 				catch (Exception e) {
 					logger.info(e.getMessage());
 				}
 			}
 		});
-		loadPoNo();
 		cbBranch = new GERPComboBox("Branch");
 		cbBranch.setItemCaptionPropertyId("branchName");
 		loadBranchList();
@@ -178,10 +186,6 @@ public class POMMSReceipts extends BaseTransUI {
 		dfvendorDt = new GERPPopupDateField("Vendor Document Date");
 		dfvendorDt.setInputPrompt("Select Date");
 		dfvendorDt.setDateFormat("dd-MMM-yyyy");
-		cbIndentNo = new GERPComboBox("Indent No");
-		cbIndentNo.setItemCaptionPropertyId("indentNo");
-		cbIndentNo.setWidth("150");
-		loadindent();
 		tfVenInvNo = new GERPTextField("Vendor Invoice No.");
 		dfvendorInvDt = new GERPPopupDateField("Vendor Invoice Date");
 		dfvendorInvDt.setInputPrompt("Select Date");
@@ -449,20 +453,6 @@ public class POMMSReceipts extends BaseTransUI {
 				loadReceiptDtl();
 				btndelete.setEnabled(false);
 			}
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
-	}
-	
-	// Load Indent No
-	private void loadindent() {
-		try {
-			BeanContainer<Long, IndentHdrDM> beanIndent = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
-			beanIndent.setBeanIdProperty("indentId");
-			beanIndent.addAll(serviceIndent.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null,
-					null, "F"));
-			cbIndentNo.setContainerDataSource(beanIndent);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

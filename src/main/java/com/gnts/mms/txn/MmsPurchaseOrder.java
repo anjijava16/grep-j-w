@@ -62,6 +62,7 @@ import com.gnts.mms.domain.txn.MmsQuoteDtlDM;
 import com.gnts.mms.domain.txn.MmsQuoteHdrDM;
 import com.gnts.mms.domain.txn.POHdrDM;
 import com.gnts.mms.service.txn.MmsCommentsService;
+import com.gnts.mms.service.txn.MmsEnqHdrService;
 import com.gnts.mms.service.txn.MmsPoDtlService;
 import com.gnts.mms.service.txn.MmsQuoteDtlService;
 import com.gnts.mms.service.txn.MmsQuoteHdrService;
@@ -86,6 +87,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table.Align;
@@ -98,6 +100,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	// private static final long serialVersionUID = 1L;
 	private MmsPoDtlService servicepodtl = (MmsPoDtlService) SpringContextHelper.getBean("mmspoDtl");
 	private POHdrService servicepohdr = (POHdrService) SpringContextHelper.getBean("pohdr");
+	private MmsEnqHdrService serviceMmsEnqHdr = (MmsEnqHdrService) SpringContextHelper.getBean("MmsEnqHdr");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private MmsCommentsService serviceComments = (MmsCommentsService) SpringContextHelper.getBean("mmscomments");
@@ -168,7 +171,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		// StateId = Long.valueOf(UI.getCurrent().getSession().getAttribute("stateId").toString());
-		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
+		moduleId = 9L;
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
 		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
@@ -308,11 +311,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				if (cbVendor.getValue() != null) {
-					// tfvendorCode.setReadOnly(false);
-					// tfvendorCode.setValue(serviceVendor
-					// .getVendorList(null, (Long) cbVendor.getValue(), companyid, null, null, null, stateId,
-					// null, null, null, "P").get(0).getVendorCode());
-					// tfvendorCode.setReadOnly(true);
+					 tfvendorCode.setReadOnly(false);
+					 tfvendorCode.setValue(serviceVendor
+					 .getVendorList(null, (Long) cbVendor.getValue(), companyid, null, null, null, stateId,
+				 null, null, null, "P").get(0).getVendorCode());
+					 tfvendorCode.setReadOnly(true);
 					Long VendorstateId = serviceVendor
 							.getVendorList(null, (Long) cbVendor.getValue(), null, null, null, null, stateId, null,
 									null, null, "P").get(0).getStateId();
@@ -934,7 +937,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				tfBasictotal.setReadOnly(false);
 				tfBasictotal.setValue(poHdrDM.getBasicTotal().toString());
 				tfBasictotal.setReadOnly(true);
+				tfpackingPer.setReadOnly(false);
 				tfpackingPer.setValue(poHdrDM.getPackingPrcnt().toString());
+				tfpackingPer.setReadOnly(true);
 				tfPackingValue.setReadOnly(false);
 				tfPackingValue.setValue(poHdrDM.getPackingVL().toString());
 				tfPackingValue.setReadOnly(true);
@@ -942,22 +947,30 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				tfSubTotal.setValue(poHdrDM.getSubTotal().toString());
 				tfSubTotal.setReadOnly(true);
 				// tfEDPer.setValue(poHdrDM.get);
+				tfVatPer.setReadOnly(false);
 				tfVatPer.setValue(poHdrDM.getVatPrcnt().toString());
+				tfVatPer.setReadOnly(true);
 				tfVatValue.setReadOnly(false);
 				tfVatValue.setValue(poHdrDM.getVatValue().toString());
 				tfVatValue.setReadOnly(true);
+				tfCstPer.setReadOnly(false);
 				tfCstPer.setValue(poHdrDM.getCstPrcnt().toString());
+				tfCstPer.setReadOnly(true);
 				tfCstValue.setReadOnly(false);
 				tfCstValue.setValue(poHdrDM.getCstValue().toString());
 				tfCstValue.setReadOnly(true);
 				tfSubTaxTotal.setReadOnly(false);
 				tfSubTaxTotal.setValue(poHdrDM.getSubTaxTotal().toString());
 				tfSubTaxTotal.setReadOnly(true);
+				tfFreightPer.setReadOnly(false);
 				tfFreightPer.setValue(poHdrDM.getFrgtPrcnt().toString());
+				tfFreightPer.setReadOnly(true);
 				tfFreightValue.setReadOnly(false);
 				tfFreightValue.setValue(poHdrDM.getFrgtValue().toString());
 				tfFreightValue.setReadOnly(true);
+				tfOtherPer.setReadOnly(false);
 				tfOtherPer.setValue((poHdrDM.getOthersPrcnt().toString()));
+				tfOtherPer.setReadOnly(true);
 				tfOtherValue.setReadOnly(false);
 				tfOtherValue.setValue((poHdrDM.getOthersValue().toString()));
 				tfOtherValue.setReadOnly(true);
@@ -1163,8 +1176,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			tblMstScrSrchRslt.setVisible(false);
 			assembleInputUserLayout();
 			resetFields();
-			editPODtl();
 			editPOHdr();
+			editPODtl();
+
 			comments.loadsrch(true, null, companyid, null, null, null, poId, null, null, null);
 		}
 		catch (Exception e) {
@@ -1242,6 +1256,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			poHdrDM.setPono(tfPONo.getValue());
 			poHdrDM.setBranchId((Long) cbBranch.getValue());
 			poHdrDM.setCompanyId(companyid);
+			poHdrDM.setIndentId(serviceMmsEnqHdr
+					.getMmsEnqHdrList(null, ((MmsQuoteHdrDM) cbQuoteRef.getValue()).getEnquiryId(), null, null, null,
+							"F").get(0).getIndentId());
 			poHdrDM.setPurchaseDate(dfPODt.getValue());
 			poHdrDM.setExpDate(dfExpDt.getValue());
 			poHdrDM.setPoRemark(taRemark.getValue());
@@ -1312,7 +1329,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			fio.close();
 			poHdrDM.setPoDoc(fileContents);
 			servicepohdr.saveorUpdatePOHdrDetails(poHdrDM);
-			poId = poHdrDM.getPoId();
 			@SuppressWarnings("unchecked")
 			Collection<MmsPoDtlDM> itemIds = (Collection<MmsPoDtlDM>) tblPODetails.getVisibleItemIds();
 			for (MmsPoDtlDM save : (Collection<MmsPoDtlDM>) itemIds) {
@@ -1409,6 +1425,14 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
+		tfpackingPer.setReadOnly(false);
+		tfEDPer.setReadOnly(false);
+		tfVatPer.setReadOnly(false);
+		tfHEDPer.setReadOnly(false);
+		tfCessPer.setReadOnly(false);
+		tfCstPer.setReadOnly(false);
+		tfFreightPer.setReadOnly(false);
+		tfOtherPer.setReadOnly(false);
 		tfPONo.setReadOnly(false);
 		tfPONo.setValue("");
 		cbQuoteRef.setReadOnly(false);
@@ -1431,6 +1455,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfSubTaxTotal.setValue("0");
 		tfversionNo.setReadOnly(false);
 		tfversionNo.setValue("0");
+		tfvendorCode.setReadOnly(false);
 		tfvendorCode.setValue("");
 		tfPaymentTerms.setValue("");
 		tfPackingValue.setReadOnly(false);

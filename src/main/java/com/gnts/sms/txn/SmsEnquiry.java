@@ -380,6 +380,10 @@ public class SmsEnquiry extends BaseTransUI {
 					btndetailadd.setCaption("Update");
 					btndetailadd.setStyleName("savebt");
 					btndetaildelete.setEnabled(true);
+					if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+						hldtllayout.setEnabled(true);
+						btndetaildelete.setEnabled(false);
+					}
 					editSmsDetail();
 				}
 			}
@@ -1005,6 +1009,17 @@ public class SmsEnquiry extends BaseTransUI {
 		tfEnqQty.setComponentError(null);
 		tfEnqQty.setCaption("Enquiry Qty");
 		btndetailadd.setCaption("Add");
+		try {
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+				hlUserIPContainer.setEnabled(false);
+				 hldtllayout.setEnabled(false);
+				loadEnqFieldDisable();
+				hlspecadd1.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Reset Sales Enquiry Specification List
@@ -1230,17 +1245,16 @@ public class SmsEnquiry extends BaseTransUI {
 		editSmsEnqspecification();
 		cbBranch.setRequired(true);
 		// To Select Enquire workflow tab
-		try {
-			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
-				dtlTab.setSelectedTab(hlEnquiryWorkflow);
-				hlUserIPContainer.setEnabled(false);
-				hldtllayout.setEnabled(false);
-				hlspecadd1.setEnabled(false);
-			}
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
+		
+	}
+	
+	private void loadEnqFieldDisable() {
+		cdProduct.setEnabled(false);
+		tfEnqQty.setEnabled(false);
+		tacustproddesc.setEnabled(false);
+		tarequmentdesc.setEnabled(false);
+		cdEnqDtlstatus.setEnabled(false);
+		btndetaildelete.setEnabled(false);
 	}
 	
 	@Override
@@ -1407,6 +1421,18 @@ public class SmsEnquiry extends BaseTransUI {
 		cbEnquiryStatus.setValue("Open");
 		dfEnquiryDate.setValue(new Date());
 		dfDueDate.setValue(addDays(new Date(), 7));
+		try {
+			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+				dtlTab.setSelectedTab(hlEnquiryWorkflow);
+				hlUserIPContainer.setEnabled(false);
+				 hldtllayout.setEnabled(false);
+				loadEnqFieldDisable();
+				hlspecadd1.setEnabled(false);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private Date addDays(Date d, int days) {

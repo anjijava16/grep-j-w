@@ -216,7 +216,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		dfPODt.setWidth("130");
 		tfPONo = new TextField("PO No.");
 		tfPONo.setWidth("150");
-		taRemark = new TextArea("Remarks");
+		taRemark = new TextArea("Reference");
 		taRemark.setHeight("50");
 		taRemark.setWidth("150");
 		tfversionNo = new GERPNumberField("Version No");
@@ -590,12 +590,12 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		HorizontalLayout hlQtyUom = new HorizontalLayout();
 		hlQtyUom.addComponent(tfPOQnty);
 		hlQtyUom.addComponent(tfUomTemp);
-		hlQtyUom.setCaption("PO Qty");
+		hlQtyUom.setCaption("Quote Qty");
 		flDtlColumn2.addComponent(hlQtyUom);
 		HorizontalLayout hlAvuom = new HorizontalLayout();
 		hlAvuom.addComponent(tfReqdQty);
 		hlAvuom.addComponent(cbMatUom);
-		hlAvuom.setCaption("Required Qty");
+		hlAvuom.setCaption("PO Qty");
 		flDtlColumn2.addComponent(hlAvuom);
 		flDtlColumn3.addComponent(tfUnitRate);
 		flDtlColumn3.addComponent(tfBasicValue);

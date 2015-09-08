@@ -575,7 +575,7 @@ public class MaterialQuote extends BaseTransUI {
 		HorizontalLayout hlAvuom = new HorizontalLayout();
 		hlAvuom.addComponent(tfReqdQty);
 		hlAvuom.addComponent(cbUom);
-		hlAvuom.setCaption("Required Qty");
+		hlAvuom.setCaption("Quote Qty");
 		flDtlColumn2.addComponent(hlAvuom);
 		flDtlColumn3.addComponent(tfUnitRate);
 		flDtlColumn4.addComponent(tfBasicValue);

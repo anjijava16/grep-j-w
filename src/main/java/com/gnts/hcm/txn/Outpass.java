@@ -295,14 +295,19 @@ public class Outpass extends BaseTransUI {
 	 * Total time calculation.
 	 */
 	private void getTotalHours() {
-		// TODO Auto-generated method stub
-		if (tfTimeIn.getValue() != null && tfTimeOut.getValue() != null) {
-			if (tfTimeOut.getHorsMunitesinBigDecimal().compareTo(tfTimeIn.getHorsMunitesinBigDecimal()) < 0) {
-				tfTotalTime.setValue(tfTimeIn.getHorsMunitesinBigDecimal()
-						.subtract(tfTimeOut.getHorsMunitesinBigDecimal()).abs().toString());
-			} else {
-				tfTotalTime.setValue("0.0");
+		try {
+			// TODO Auto-generated method stub
+			if (tfTimeIn.getValue() != null && tfTimeOut.getValue() != null) {
+				if (tfTimeOut.getHorsMunitesinBigDecimal().compareTo(tfTimeIn.getHorsMunitesinBigDecimal()) < 0) {
+					tfTotalTime.setValue(tfTimeIn.getHorsMunitesinBigDecimal()
+							.subtract(tfTimeOut.getHorsMunitesinBigDecimal()).abs().toString());
+				} else {
+					tfTotalTime.setValue("0.0");
+				}
 			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

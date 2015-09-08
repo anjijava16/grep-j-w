@@ -54,7 +54,6 @@ import com.gnts.hcm.service.txn.PayrollDeductionsService;
 import com.gnts.hcm.service.txn.PayrollDetailsService;
 import com.gnts.hcm.service.txn.PayrollHdrService;
 import com.gnts.hcm.service.txn.payrollEarningsService;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -81,11 +80,11 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class Payslip extends BaseTransUI {
-	private PayrollHdrService servicepayrollhdr = (PayrollHdrService) SpringContextHelper.getBean("PayrollHdr");
+	private PayrollHdrService servicePayrollHdr = (PayrollHdrService) SpringContextHelper.getBean("PayrollHdr");
 	private PayrollDetailsService servicePayrollDetails = (PayrollDetailsService) SpringContextHelper
 			.getBean("payrolldetails");
-	private EmployeeService serviceemployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private DepartmentService servicedepartment = (DepartmentService) SpringContextHelper.getBean("department");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private DepartmentService serviceDepartment = (DepartmentService) SpringContextHelper.getBean("department");
 	private payrollEarningsService servicePayrollEarnings = (payrollEarningsService) SpringContextHelper
 			.getBean("payrollearnings");
 	private PayrollDeductionsService servicePayrollDeductions = (PayrollDeductionsService) SpringContextHelper
@@ -106,19 +105,19 @@ public class Payslip extends BaseTransUI {
 	private VerticalLayout vlstaff = new VerticalLayout();
 	private Label lblspec4 = new Label();
 	// User Input Components
-	private TextField tfpayrollid;
-	private TextArea tfremarks;
-	private PopupDateField processDt;
-	private ComboBox cbempname, cbdeptname, cbStatus;
+	private TextField tfPayrollId;
+	private TextArea tfRemarks;
+	private PopupDateField dfProcess;
+	private ComboBox cbEmployee, cbDepartment, cbStatus;
 	// lists
-	private List<payrollEarningsDM> payslipList = null;
+	private List<payrollEarningsDM> listPayEarnings = null;
 	// Bean container
 	private BeanItemContainer<PayrollHdrDM> beanPayrollHdrDM = null;
 	// button declaration
 	private Button btnviewED = new GERPButton("View Earning/Deduction", "searchbt", this);
 	private Button btnclose = new GERPButton("Close", "cancelbt", this);
 	// local tables
-	private Table tblHdrDtl = new GERPTable();
+	private Table tblPayDetails = new GERPTable();
 	private Table tblMstScrSrchRslt1 = new Table();
 	private Table tblMstScrSrchRslt2 = new Table();
 	private BeanItemContainer<PayrollDetailsDM> beanPayrollDetailsDM = null;
@@ -145,14 +144,14 @@ public class Payslip extends BaseTransUI {
 	private void buildview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Painting Payslip UI");
 		// payrollhdr Name text field
-		tfpayrollid = new GERPTextField("Process Id");
-		processDt = new PopupDateField("Process Date");
-		processDt.setDateFormat("dd-MMM-yyyy");
+		tfPayrollId = new GERPTextField("Process Id");
+		dfProcess = new PopupDateField("Process Date");
+		dfProcess.setDateFormat("dd-MMM-yyyy");
 		// Text area
-		tfremarks = new GERPTextArea("Remarks");
-		tfremarks.setInputPrompt("Enter Remarks");
-		tfremarks.setWidth("250");
-		tfremarks.setHeight("45");
+		tfRemarks = new GERPTextArea("Remarks");
+		tfRemarks.setInputPrompt("Enter Remarks");
+		tfRemarks.setWidth("250");
+		tfRemarks.setHeight("45");
 		// payrollhdr status combo box
 		cbStatus = new ComboBox("Status");
 		cbStatus = new GERPComboBox("Status", BASEConstants.T_HCM_PAYROLL_DTL, BASEConstants.PAYROLL_STATUS);
@@ -168,10 +167,10 @@ public class Payslip extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				if (cbStatus.getValue() != null) {
 					if (cbStatus.getValue().equals("Rejected")) {
-						tfremarks.setRequired(true);
-						tfremarks.setComponentError(null);
+						tfRemarks.setRequired(true);
+						tfRemarks.setComponentError(null);
 					} else if (cbStatus.getValue().equals("Approved")) {
-						tfremarks.setRequired(false);
+						tfRemarks.setRequired(false);
 					}
 				}
 			}
@@ -204,10 +203,10 @@ public class Payslip extends BaseTransUI {
 			}
 		});
 		// department Combo box
-		cbdeptname = new GERPComboBox("Department Name");
-		cbdeptname.setItemCaptionPropertyId("deptname");
+		cbDepartment = new GERPComboBox("Department Name");
+		cbDepartment.setItemCaptionPropertyId("deptname");
 		loadDepartmentList();
-		cbdeptname.addValueChangeListener(new Property.ValueChangeListener() {
+		cbDepartment.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void valueChange(ValueChangeEvent event) {
@@ -218,31 +217,31 @@ public class Payslip extends BaseTransUI {
 			}
 		});
 		// employee name Combo box
-		cbempname = new GERPComboBox("Employee Name");
-		cbempname.setItemCaptionPropertyId("fullname");
-		cbempname.addValueChangeListener(new Property.ValueChangeListener() {
+		cbEmployee = new GERPComboBox("Employee Name");
+		cbEmployee.setItemCaptionPropertyId("fullname");
+		cbEmployee.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void valueChange(ValueChangeEvent event) {
 				Object obj = event.getProperty().getValue();
 				if (obj != null) {
-					assembleInputUserLayout((Long) cbempname.getValue());
+					assembleInputUserLayout((Long) cbEmployee.getValue());
 				}
 			}
 		});
-		cbempname.addValueChangeListener(new Property.ValueChangeListener() {
+		cbEmployee.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void valueChange(ValueChangeEvent event) {
-				loadpaydetail();
+				loadPayrollDetail();
 			}
 		});
-		tblHdrDtl.addItemClickListener(new ItemClickListener() {
+		tblPayDetails.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblHdrDtl.isSelected(event.getItemId())) {
+				if (tblPayDetails.isSelected(event.getItemId())) {
 					btnEdit.setEnabled(false);
 					btnAdd.setEnabled(false);
 					btnviewED.setEnabled(false);
@@ -256,13 +255,13 @@ public class Payslip extends BaseTransUI {
 		});
 		assembleSearchLayout();
 		resetFields();
-		loadhdrrslt();
+		loadPayrollHdr();
 		btnclose.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				cbempname.setValue(null);
+				cbEmployee.setValue(null);
 				hlCmdBtnLayout.setVisible(false);
 				assembleInputUserLayout(employeeid);
 				closeED();
@@ -276,7 +275,7 @@ public class Payslip extends BaseTransUI {
 				hlUserIPContainer.removeAllComponents();
 				hlUserInputLayout.removeAllComponents();
 				hlSrchContainer.setVisible(false);
-				tblHdrDtl.setVisible(false);
+				tblPayDetails.setVisible(false);
 				tblMstScrSrchRslt1.setVisible(true);
 				tblMstScrSrchRslt2.setVisible(true);
 				viewearded();
@@ -303,10 +302,10 @@ public class Payslip extends BaseTransUI {
 		flcolumn2 = new FormLayout();
 		flcolumn3 = new FormLayout();
 		flcolumn4 = new FormLayout();
-		flcolumn1.addComponent(tfpayrollid);
-		flcolumn2.addComponent(processDt);
+		flcolumn1.addComponent(tfPayrollId);
+		flcolumn2.addComponent(dfProcess);
 		flcolumn3.addComponent(cbStatus);
-		flcolumn4.addComponent(tfremarks);
+		flcolumn4.addComponent(tfRemarks);
 		hlSearchLayout.addComponent(flcolumn1);
 		hlSearchLayout.addComponent(flcolumn2);
 		hlSearchLayout.addComponent(flcolumn3);
@@ -326,17 +325,17 @@ public class Payslip extends BaseTransUI {
 		hlpaydet.removeAllComponents();
 		vlpaydet.removeAllComponents();
 		tblMstScrSrchRslt.setVisible(false);
-		tblHdrDtl.setVisible(true);
+		tblPayDetails.setVisible(true);
 		hlPageHdrContainter.addComponent(btnviewED);
 		hlPageHdrContainter.setComponentAlignment(btnviewED, Alignment.MIDDLE_RIGHT);
-		tblHdrDtl.setWidth("100%");
-		cbempname.setWidth("100%");
+		tblPayDetails.setWidth("100%");
+		cbEmployee.setWidth("100%");
 		// Formlayout2 components
 		fldeptname = new GERPFormLayout();
-		fldeptname.addComponent(cbdeptname);
-		cbdeptname.setWidth("100%");
+		fldeptname.addComponent(cbDepartment);
+		cbDepartment.setWidth("100%");
 		flempname = new GERPFormLayout();
-		flempname.addComponent(cbempname);
+		flempname.addComponent(cbEmployee);
 		hlpaydet.addComponent(fldeptname);
 		hlpaydet.addComponent(flempname);
 		hlpaydet.setSpacing(true);
@@ -344,7 +343,7 @@ public class Payslip extends BaseTransUI {
 		hlpaydet.setSizeUndefined();
 		hlUserInputLayout.addComponent(hlpaydet);
 		vlpaydet.addComponent(hldetails);
-		vlpaydet.addComponent(tblHdrDtl);
+		vlpaydet.addComponent(tblPayDetails);
 		vlSrchRsltContainer.addComponent(vlpaydet);
 		btnSave.setVisible(false);
 		btnCancel.setCaption("Close");
@@ -354,83 +353,105 @@ public class Payslip extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(false);
 	}
 	
-	public void loadhdrrslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<PayrollHdrDM> payrollhdrList = new ArrayList<PayrollHdrDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are ");
-		payrollhdrList = servicepayrollhdr.getpayrollhdrlist(null, companyid, null, null, null, null);
-		tblMstScrSrchRslt.setPageLength(12);
-		recordCnt = payrollhdrList.size();
-		beanPayrollHdrDM = new BeanItemContainer<PayrollHdrDM>(PayrollHdrDM.class);
-		beanPayrollHdrDM.addAll(payrollhdrList);
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Got the Payroll result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanPayrollHdrDM);
-		tblMstScrSrchRslt.setColumnAlignment("payrollid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("verifiedby", "No. of Records:" + recordCnt);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "payrollid", "processeddt", "processedby", "payhdrstatus",
-				"verifieddt", "verifiedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Payroll Id", "Process Date ", "Processed By", "Status",
-				"Verified Date", "Verified By" });
-		tblMstScrSrchRslt.setColumnFooter("verifiedby", "No.of Records : " + recordCnt);
+	private void loadPayrollHdr() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<PayrollHdrDM> list = new ArrayList<PayrollHdrDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are ");
+			list = servicePayrollHdr.getpayrollhdrlist(null, companyid, null, null, null, null);
+			tblMstScrSrchRslt.setPageLength(12);
+			recordCnt = list.size();
+			beanPayrollHdrDM = new BeanItemContainer<PayrollHdrDM>(PayrollHdrDM.class);
+			beanPayrollHdrDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
+					+ "Got the Payroll result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanPayrollHdrDM);
+			tblMstScrSrchRslt.setColumnAlignment("payrollid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("verifiedby", "No. of Records:" + recordCnt);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "payrollid", "processeddt", "processedby",
+					"payhdrstatus", "verifieddt", "verifiedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Payroll Id", "Process Date ", "Processed By", "Status",
+					"Verified Date", "Verified By" });
+			tblMstScrSrchRslt.setColumnFooter("verifiedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
-	private void loadpaydetail() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search.pay det..");
-		tblHdrDtl.removeAllItems();
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are");
-		List<PayrollDetailsDM> listPayrollDetails = servicePayrollDetails.getpayrolldetailsList(companyid, null,
-				payrollid, (Long) cbempname.getValue(), null);
-		tblHdrDtl.setPageLength(14);
-		recordCnt = listPayrollDetails.size();
-		beanPayrollDetailsDM = new BeanItemContainer<PayrollDetailsDM>(PayrollDetailsDM.class);
-		beanPayrollDetailsDM.addAll(listPayrollDetails);
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Got the Taxslap. result set");
-		tblHdrDtl.setContainerDataSource(beanPayrollDetailsDM);
-		tblHdrDtl.setColumnAlignment("totalearn", Align.RIGHT);
-		tblHdrDtl.setColumnAlignment("totaldedn", Align.RIGHT);
-		tblHdrDtl.setColumnAlignment("netpay", Align.RIGHT);
-		tblHdrDtl.setVisibleColumns(new Object[] { "fullname", "totalearn", "totaldedn", "netpay" });
-		tblHdrDtl.setColumnHeaders(new String[] { "Employee Name", "Total Earnings(₹)", "Total Deductions(₹)",
-				"Net Pay(₹)" });
-		tblHdrDtl.setColumnFooter("netpay", "No.of Records : " + recordCnt);
+	private void loadPayrollDetail() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search.pay det..");
+			tblPayDetails.removeAllItems();
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are");
+			List<PayrollDetailsDM> list = servicePayrollDetails.getpayrolldetailsList(companyid, null,
+					payrollid, (Long) cbEmployee.getValue(), null);
+			tblPayDetails.setPageLength(14);
+			recordCnt = list.size();
+			beanPayrollDetailsDM = new BeanItemContainer<PayrollDetailsDM>(PayrollDetailsDM.class);
+			beanPayrollDetailsDM.addAll(list);
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
+					+ "Got the Taxslap. result set");
+			tblPayDetails.setContainerDataSource(beanPayrollDetailsDM);
+			tblPayDetails.setColumnAlignment("totalearn", Align.RIGHT);
+			tblPayDetails.setColumnAlignment("totaldedn", Align.RIGHT);
+			tblPayDetails.setColumnAlignment("netpay", Align.RIGHT);
+			tblPayDetails.setVisibleColumns(new Object[] { "fullname", "totalearn", "totaldedn", "netpay" });
+			tblPayDetails.setColumnHeaders(new String[] { "Employee Name", "Total Earnings(₹)", "Total Deductions(₹)",
+					"Net Pay(₹)" });
+			tblPayDetails.setColumnFooter("netpay", "No.of Records : " + recordCnt);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// load the employee list
 	private void loadEmpList() {
-		BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-		beanLoadEmployee.setBeanIdProperty("employeeid");
-		beanLoadEmployee.addAll(serviceemployee.getEmployeeList(null, null, (Long) cbdeptname.getValue(), "Active",
-				companyid, null, null, null, null, "P"));
-		cbempname.setContainerDataSource(beanLoadEmployee);
+		try {
+			BeanContainer<Long, EmployeeDM> beanLoadEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanLoadEmployee.setBeanIdProperty("employeeid");
+			beanLoadEmployee.addAll(serviceEmployee.getEmployeeList(null, null, (Long) cbDepartment.getValue(),
+					"Active", companyid, null, null, null, null, "P"));
+			cbEmployee.setContainerDataSource(beanLoadEmployee);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// load the department list
-	public void loadDepartmentList() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "loading DepartmentList");
-		List<DepartmentDM> departmentlist = servicedepartment.getDepartmentList(companyid, null, "Active", "F");
-		departmentlist.add(new DepartmentDM(0L, "All Departments"));
-		BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
-		beanDepartment.setBeanIdProperty("deptid");
-		beanDepartment.addAll(departmentlist);
-		cbdeptname.setContainerDataSource(beanDepartment);
+	private void loadDepartmentList() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "loading DepartmentList");
+			List<DepartmentDM> departmentlist = serviceDepartment.getDepartmentList(companyid, null, "Active", "F");
+			departmentlist.add(new DepartmentDM(0L, "All Departments"));
+			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
+			beanDepartment.setBeanIdProperty("deptid");
+			beanDepartment.addAll(departmentlist);
+			cbDepartment.setContainerDataSource(beanDepartment);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Resetting the UI controls");
-		tfpayrollid.setReadOnly(false);
-		tfpayrollid.setValue("");
-		tfpayrollid.setReadOnly(true);
-		processDt.setReadOnly(false);
-		processDt.setValue(null);
-		processDt.setReadOnly(true);
+		tfPayrollId.setReadOnly(false);
+		tfPayrollId.setValue("");
+		tfPayrollId.setReadOnly(true);
+		dfProcess.setReadOnly(false);
+		dfProcess.setValue(null);
+		dfProcess.setReadOnly(true);
 		cbStatus.setValue(null);
-		tfremarks.setValue("");
+		tfRemarks.setValue("");
 		btnSave.setEnabled(false);
-		tfremarks.setRequired(false);
-		cbdeptname.setValue(0L);
-		cbempname.setValue(null);
+		tfRemarks.setRequired(false);
+		cbDepartment.setValue(0L);
+		cbEmployee.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 	}
@@ -439,8 +460,8 @@ public class Payslip extends BaseTransUI {
 	protected void searchDetails() throws NoDataFoundException {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + " Invoking search");
 		tblMstScrSrchRslt.setVisible(false);
-		tblHdrDtl.setVisible(true);
-		loadpaydetail();
+		tblPayDetails.setVisible(true);
+		loadPayrollDetail();
 		if (recordCnt == 0) {
 			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
 					+ "No data for the search. throwing ERPException.NoDataFoundException");
@@ -458,25 +479,25 @@ public class Payslip extends BaseTransUI {
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		btnSearch.setVisible(false);
 		resetFields();
-		loadhdrrslt();
+		loadPayrollHdr();
 	}
 	
 	@Override
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Validating Data ");
-		tfremarks.setComponentError(null);
+		tfRemarks.setComponentError(null);
 		Boolean errorFlag = false;
 		if (cbStatus.getValue() != null) {
 			if (cbStatus.getValue().equals("Rejected")) {
-				if ((tfremarks.getValue() == null) || tfremarks.getValue().trim().length() == 0) {
-					tfremarks.setRequired(true);
-					tfremarks.setComponentError(new UserError(GERPErrorCodes.NULL_PAYROLL_HDR));
-					tfremarks.setEnabled(true);
+				if ((tfRemarks.getValue() == null) || tfRemarks.getValue().trim().length() == 0) {
+					tfRemarks.setRequired(true);
+					tfRemarks.setComponentError(new UserError(GERPErrorCodes.NULL_PAYROLL_HDR));
+					tfRemarks.setEnabled(true);
 					errorFlag = true;
 				}
 			} else if (cbStatus.getValue().equals("Approved")) {
-				tfremarks.setRequired(false);
-				tfremarks.setComponentError(null);
+				tfRemarks.setRequired(false);
+				tfRemarks.setComponentError(null);
 				errorFlag = false;
 			}
 		}
@@ -500,7 +521,7 @@ public class Payslip extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(false);
 		resetFields();
 		editdtl();
-		loadpaydetail();
+		loadPayrollDetail();
 	}
 	
 	@Override
@@ -518,110 +539,134 @@ public class Payslip extends BaseTransUI {
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editdtl() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Editing the selected record");
-		Item select = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (select != null) {
-			PayrollHdrDM editHdrList = beanPayrollHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			payrollid = editHdrList.getPayrollid();
-			processdate = editHdrList.getProcessedd();
-			Label lblspec2 = new Label("Payroll Details");
-			lblspec2.setStyleName("h4");
-			hldetails.addComponent(lblspec2);
-			hldetails.addComponent(lblspec4);
-			hldetails.setSpacing(true);
-			hldetails.setWidth("100%");
-			lblspec4.setValue("Processed Month :" + processdate);
-			lblspec4.setStyleName("h4");
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
+					+ "Editing the selected record");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				PayrollHdrDM payrollHdr = beanPayrollHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				payrollid = payrollHdr.getPayrollid();
+				processdate = payrollHdr.getProcessedd();
+				Label lblspec2 = new Label("Payroll Details");
+				lblspec2.setStyleName("h4");
+				hldetails.addComponent(lblspec2);
+				hldetails.addComponent(lblspec4);
+				hldetails.setSpacing(true);
+				hldetails.setWidth("100%");
+				lblspec4.setValue("Processed Month :" + processdate);
+				lblspec4.setStyleName("h4");
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editHdrDetails() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Editing the selected record");
-		Item select = tblMstScrSrchRslt.getItem(tblMstScrSrchRslt.getValue());
-		if (select != null) {
-			PayrollHdrDM editHdrList = beanPayrollHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			payrollid = editHdrList.getPayrollid();
-			if (editHdrList.getPayrollid() != null) {
-				tfpayrollid.setReadOnly(false);
-				tfpayrollid.setValue(select.getItemProperty("payrollid").getValue().toString());
-				tfpayrollid.setReadOnly(true);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
+					+ "Editing the selected record");
+			if (tblMstScrSrchRslt.getValue() != null) {
+				PayrollHdrDM payrollHdrDM = beanPayrollHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				payrollid = payrollHdrDM.getPayrollid();
+				if (payrollHdrDM.getPayrollid() != null) {
+					tfPayrollId.setReadOnly(false);
+					tfPayrollId.setValue(payrollHdrDM.getPayrollid().toString());
+					tfPayrollId.setReadOnly(true);
+				}
+				if (payrollHdrDM.getProcesseddt() != null) {
+					dfProcess.setReadOnly(false);
+					dfProcess.setValue(payrollHdrDM.getProcesseddt12());
+					dfProcess.setReadOnly(true);
+				}
+				if (payrollHdrDM.getVerifyremarks() != null) {
+					tfRemarks.setValue(payrollHdrDM.getVerifyremarks());
+				}
+				if (payrollHdrDM.getPayhdrstatus() != null) {
+					cbStatus.setValue(payrollHdrDM.getPayhdrstatus());
+				}
 			}
-			if (editHdrList.getProcesseddt() != null) {
-				processDt.setReadOnly(false);
-				processDt.setValue(editHdrList.getProcesseddt12());
-				processDt.setReadOnly(true);
-			}
-			if (editHdrList.getVerifyremarks() != null) {
-				tfremarks.setValue(select.getItemProperty("verifyremarks").getValue().toString());
-			}
-			if (editHdrList.getPayhdrstatus() != null) {
-				cbStatus.setValue(select.getItemProperty("payhdrstatus").getValue());
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
-	public void loadSrchRslt() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt2.removeAllItems();
-		payslipList = new ArrayList<payrollEarningsDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are");
-		payslipList = servicePayrollEarnings.getpayrollearningsList(companyid, null, payrollid, employeeid, null);
-		recordCnt = payslipList.size();
-		BeanItemContainer<payrollEarningsDM> beanpayrollEarningsDM = new BeanItemContainer<payrollEarningsDM>(
-				payrollEarningsDM.class);
-		beanpayrollEarningsDM.addAll(payslipList);
-		Long sum = 0L;
-		for (payrollEarningsDM obj : payslipList) {
-			if (obj.getEarnAmount() != null) {
-				sum = sum + obj.getEarnAmount();
+	private void loadSrchRslt() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt2.removeAllItems();
+			listPayEarnings = new ArrayList<payrollEarningsDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are");
+			listPayEarnings = servicePayrollEarnings.getpayrollearningsList(companyid, null, payrollid, employeeid,
+					null);
+			recordCnt = listPayEarnings.size();
+			BeanItemContainer<payrollEarningsDM> beanpayrollEarningsDM = new BeanItemContainer<payrollEarningsDM>(
+					payrollEarningsDM.class);
+			beanpayrollEarningsDM.addAll(listPayEarnings);
+			Long sum = 0L;
+			for (payrollEarningsDM obj : listPayEarnings) {
+				if (obj.getEarnAmount() != null) {
+					sum = sum + obj.getEarnAmount();
+				}
 			}
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
+					+ "Got the payslip result set");
+			tblMstScrSrchRslt2.setWidth("100%");
+			tblMstScrSrchRslt2.setContainerDataSource(beanpayrollEarningsDM);
+			tblMstScrSrchRslt2.setColumnAlignment("earnAmount", Align.RIGHT);
+			tblMstScrSrchRslt2.setVisibleColumns(new Object[] { "earnDesc", "earnAmount" });
+			tblMstScrSrchRslt2.setColumnHeaders(new String[] { "Earning Type", "Earning Amount(₹)" });
+			tblMstScrSrchRslt2.setColumnFooter("earnDesc", "Total");
+			tblMstScrSrchRslt2.setColumnFooter("earnAmount", "" + sum);
+			tblMstScrSrchRslt2.setColumnWidth("earnDesc", 355);
+			tblMstScrSrchRslt2.setFooterVisible(true);
+			tblMstScrSrchRslt2.setColumnWidth("earnAmount", 205);
+			tblMstScrSrchRslt2.setSizeFull();
+			tblMstScrSrchRslt2.setPageLength(8);
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Got the payslip result set");
-		tblMstScrSrchRslt2.setWidth("100%");
-		tblMstScrSrchRslt2.setContainerDataSource(beanpayrollEarningsDM);
-		tblMstScrSrchRslt2.setColumnAlignment("earnAmount", Align.RIGHT);
-		tblMstScrSrchRslt2.setVisibleColumns(new Object[] { "earnDesc", "earnAmount" });
-		tblMstScrSrchRslt2.setColumnHeaders(new String[] { "Earning Type", "Earning Amount(₹)" });
-		tblMstScrSrchRslt2.setColumnFooter("earnDesc", "Total");
-		tblMstScrSrchRslt2.setColumnFooter("earnAmount", "" + sum);
-		tblMstScrSrchRslt2.setColumnWidth("earnDesc", 355);
-		tblMstScrSrchRslt2.setFooterVisible(true);
-		tblMstScrSrchRslt2.setColumnWidth("earnAmount", 205);
-		tblMstScrSrchRslt2.setSizeFull();
-		tblMstScrSrchRslt2.setPageLength(8);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
-	public void loadtable() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt1.removeAllItems();
-		List<PayrollDeductionsDM> payslipList1 = new ArrayList<PayrollDeductionsDM>();
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are");
-		payslipList1 = servicePayrollDeductions.getpayrolldeductionsList(companyid, null, payrollid, employeeid, null);
-		recordCnt = payslipList1.size();
-		BeanItemContainer<PayrollDeductionsDM> beanPayrollDeductionsDM = new BeanItemContainer<PayrollDeductionsDM>(
-				PayrollDeductionsDM.class);
-		beanPayrollDeductionsDM.addAll(payslipList1);
-		Long sum1 = 0L;
-		for (PayrollDeductionsDM obj : payslipList1) {
-			if (obj.getDedamount() != null) {
-				sum1 = sum1 + obj.getDedamount();
+	private void loadPayDeductions() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt1.removeAllItems();
+			List<PayrollDeductionsDM> list = new ArrayList<PayrollDeductionsDM>();
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are");
+			list = servicePayrollDeductions.getpayrolldeductionsList(companyid, null, payrollid, employeeid,
+					null);
+			recordCnt = list.size();
+			BeanItemContainer<PayrollDeductionsDM> beanPayrollDeductionsDM = new BeanItemContainer<PayrollDeductionsDM>(
+					PayrollDeductionsDM.class);
+			beanPayrollDeductionsDM.addAll(list);
+			Long sum1 = 0L;
+			for (PayrollDeductionsDM obj : list) {
+				if (obj.getDedamount() != null) {
+					sum1 = sum1 + obj.getDedamount();
+				}
 			}
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
+					+ "Got the payslip result set");
+			tblMstScrSrchRslt1.setWidth("100%");
+			tblMstScrSrchRslt1.setContainerDataSource(beanPayrollDeductionsDM);
+			tblMstScrSrchRslt1.setColumnAlignment("dedamount", Align.RIGHT);
+			tblMstScrSrchRslt1.setVisibleColumns(new Object[] { "deddesc", "dedamount" });
+			tblMstScrSrchRslt1.setColumnHeaders(new String[] { "Deduction Type", "Deduction Amount(₹)" });
+			tblMstScrSrchRslt1.setColumnFooter("dedamount", "No.of Records : " + recordCnt);
+			tblMstScrSrchRslt1.setColumnFooter("deddesc", "Total");
+			tblMstScrSrchRslt1.setColumnFooter("dedamount", " " + sum1);
+			tblMstScrSrchRslt1.setColumnWidth("deddesc", 355);
+			tblMstScrSrchRslt1.setColumnWidth("dedamount", 205);
+			tblMstScrSrchRslt1.setSizeFull();
+			tblMstScrSrchRslt1.setPageLength(8);
+			tblMstScrSrchRslt1.setFooterVisible(true);
 		}
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Got the payslip result set");
-		tblMstScrSrchRslt1.setWidth("100%");
-		tblMstScrSrchRslt1.setContainerDataSource(beanPayrollDeductionsDM);
-		tblMstScrSrchRslt1.setColumnAlignment("dedamount", Align.RIGHT);
-		tblMstScrSrchRslt1.setVisibleColumns(new Object[] { "deddesc", "dedamount" });
-		tblMstScrSrchRslt1.setColumnHeaders(new String[] { "Deduction Type", "Deduction Amount(₹)" });
-		tblMstScrSrchRslt1.setColumnFooter("dedamount", "No.of Records : " + recordCnt);
-		tblMstScrSrchRslt1.setColumnFooter("deddesc", "Total");
-		tblMstScrSrchRslt1.setColumnFooter("dedamount", " " + sum1);
-		tblMstScrSrchRslt1.setColumnWidth("deddesc", 355);
-		tblMstScrSrchRslt1.setColumnWidth("dedamount", 205);
-		tblMstScrSrchRslt1.setSizeFull();
-		tblMstScrSrchRslt1.setPageLength(8);
-		tblMstScrSrchRslt1.setFooterVisible(true);
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -633,8 +678,8 @@ public class Payslip extends BaseTransUI {
 			payrollHdrobj = beanPayrollHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
 		payrollHdrobj.setCompanyid(companyid);
-		if (tfremarks.getValue() != null) {
-			payrollHdrobj.setVerifyremarks((String) tfremarks.getValue().toString());
+		if (tfRemarks.getValue() != null) {
+			payrollHdrobj.setVerifyremarks((String) tfRemarks.getValue().toString());
 		}
 		if (cbStatus.getValue() != null) {
 			payrollHdrobj.setPayhdrstatus((String) cbStatus.getValue());
@@ -642,9 +687,9 @@ public class Payslip extends BaseTransUI {
 		payrollHdrobj.setVerifiedby(userName);
 		payrollHdrobj.setVerifieddt(DateUtils.getcurrentdate());
 		btnSave.setEnabled(false);
-		servicepayrollhdr.saveAndUpdate(payrollHdrobj);
+		servicePayrollHdr.saveAndUpdate(payrollHdrobj);
 		resetFields();
-		loadhdrrslt();
+		loadPayrollHdr();
 	}
 	
 	@Override
@@ -672,62 +717,74 @@ public class Payslip extends BaseTransUI {
 		btnSave.setVisible(true);
 		tblMstScrSrchRslt.setVisible(true);
 		editdtl();
-		loadhdrrslt();
-		tblHdrDtl.setVisible(false);
+		loadPayrollHdr();
+		tblPayDetails.setVisible(false);
 		hlCmdBtnLayout.setVisible(true);
 		resetFields();
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
 	private void editpayED() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Editing the selected record");
-		if (tblHdrDtl.getValue() != null) {
-			PayrollDetailsDM editdetList = beanPayrollDetailsDM.getItem(tblHdrDtl.getValue()).getBean();
-			payrollid = editdetList.getPayrollid();
-			employeeid = editdetList.getEmployeeid();
-			if (editdetList.getEmployeeid() != null) {
-				cbempname.setValue(editdetList.getEmployeeid());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
+					+ "Editing the selected record");
+			if (tblPayDetails.getValue() != null) {
+				PayrollDetailsDM editdetList = beanPayrollDetailsDM.getItem(tblPayDetails.getValue()).getBean();
+				payrollid = editdetList.getPayrollid();
+				employeeid = editdetList.getEmployeeid();
+				if (editdetList.getEmployeeid() != null) {
+					cbEmployee.setValue(editdetList.getEmployeeid());
+				}
+				listPayEarnings = servicePayrollEarnings.getpayrollearningsList(companyid, null, payrollid, employeeid,
+						null);
 			}
-			payslipList = servicePayrollEarnings.getpayrollearningsList(companyid, null, payrollid, employeeid, null);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void viewearded() {
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "view Earnings Deductions");
-		vlSrchRsltContainer.removeAllComponents();
-		vlpaydet.removeAllComponents();
-		hlCmdBtnLayout.setVisible(false);
-		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Staff name>>>>");
-		if (tblHdrDtl.getValue() != null) {
-			PayrollDetailsDM editdetList = beanPayrollDetailsDM.getItem(tblHdrDtl.getValue()).getBean();
-			fullname = editdetList.getFullname();
-			Label lblspec3 = new Label();
-			lblspec3.setValue("Employee Name :" + fullname);
-			lblspec3.addStyleName("h2");
-			Label lblspec = new Label("Earnings Details");
-			lblspec.setStyleName("h4");
-			vlearn.addComponent(lblspec);
-			vlearn.addComponent(tblMstScrSrchRslt2);
-			Label lblspec1 = new Label("Deductions Details");
-			lblspec1.setStyleName("h4");
-			vldeduct.addComponent(lblspec1);
-			vldeduct.addComponent(tblMstScrSrchRslt1);
-			hlpayED.addComponent(vlearn);
-			hlpayED.addComponent(vldeduct);
-			hlpayED.setSpacing(true);
-			vlstaff.addComponent(lblspec3);
-			vlstaff.addComponent(hlpayED);
-			vlstaff.setSpacing(true);
-			hlUserInputLayout.addComponent(vlstaff);
-			btnCancel.setVisible(false);
-			btnviewED.setVisible(false);
-			btnclose.setVisible(true);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "view Earnings Deductions");
+			vlSrchRsltContainer.removeAllComponents();
 			vlpaydet.removeAllComponents();
-			hlPageHdrContainter.addComponent(btnclose);
-			hlPageHdrContainter.setComponentAlignment(btnclose, Alignment.MIDDLE_RIGHT);
-			editpayED();
-			loadtable();
-			loadSrchRslt();
+			hlCmdBtnLayout.setVisible(false);
+			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Staff name>>>>");
+			if (tblPayDetails.getValue() != null) {
+				PayrollDetailsDM payrollDetail = beanPayrollDetailsDM.getItem(tblPayDetails.getValue()).getBean();
+				fullname = payrollDetail.getFullname();
+				Label lblspec3 = new Label();
+				lblspec3.setValue("Employee Name :" + fullname);
+				lblspec3.addStyleName("h2");
+				Label lblspec = new Label("Earnings Details");
+				lblspec.setStyleName("h4");
+				vlearn.addComponent(lblspec);
+				vlearn.addComponent(tblMstScrSrchRslt2);
+				Label lblspec1 = new Label("Deductions Details");
+				lblspec1.setStyleName("h4");
+				vldeduct.addComponent(lblspec1);
+				vldeduct.addComponent(tblMstScrSrchRslt1);
+				hlpayED.addComponent(vlearn);
+				hlpayED.addComponent(vldeduct);
+				hlpayED.setSpacing(true);
+				vlstaff.addComponent(lblspec3);
+				vlstaff.addComponent(hlpayED);
+				vlstaff.setSpacing(true);
+				hlUserInputLayout.addComponent(vlstaff);
+				btnCancel.setVisible(false);
+				btnviewED.setVisible(false);
+				btnclose.setVisible(true);
+				vlpaydet.removeAllComponents();
+				hlPageHdrContainter.addComponent(btnclose);
+				hlPageHdrContainter.setComponentAlignment(btnclose, Alignment.MIDDLE_RIGHT);
+				editpayED();
+				loadPayDeductions();
+				loadSrchRslt();
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -752,7 +809,7 @@ public class Payslip extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(false);
 		resetFields();
 		editdtl();
-		loadpaydetail();
+		loadPayrollDetail();
 	}
 	
 	@Override

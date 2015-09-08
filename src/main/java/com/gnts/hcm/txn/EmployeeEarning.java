@@ -18,9 +18,7 @@ package com.gnts.hcm.txn;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -50,7 +48,6 @@ import com.gnts.hcm.domain.mst.GradeEarningsDM;
 import com.gnts.hcm.domain.txn.EmployeeAllowanceDM;
 import com.gnts.hcm.domain.txn.EmployeeDeductionDM;
 import com.gnts.hcm.domain.txn.EmployeeEarningDM;
-import com.gnts.hcm.domain.txn.PayrollHdrDM;
 import com.gnts.hcm.service.mst.DeductionService;
 import com.gnts.hcm.service.mst.EarningsService;
 import com.gnts.hcm.service.mst.EmployeeDtlsService;
@@ -64,9 +61,9 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractSelect;
@@ -109,11 +106,11 @@ public class EmployeeEarning extends BaseUI {
 	private BeanItemContainer<EmployeeEarningDM> beanEmployeeEarn = null;
 	// local variables declaration
 	private Long companyId, earnId, employeeId;
-	BigDecimal prevAmount;
+	private BigDecimal prevAmount;
 	private int recordCnt = 0;
 	private BigDecimal yearGrossAmt, revisedAmount;
 	private String userName;
-	Long empEarnId;
+	private Long empEarnId;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(EmployeeEarningDM.class);
 	private static final long serialVersionUID = 1L;
@@ -329,26 +326,31 @@ public class EmployeeEarning extends BaseUI {
 	}
 	
 	private void loadSrchRslt() {
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
-		tblMstScrSrchRslt.removeAllItems();
-		List<EmployeeEarningDM> listEmployeeEarning = new ArrayList<EmployeeEarningDM>();
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
-				+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (Long) cbEarnCode.getValue()
-				+ (String) cbStatus.getValue());
-		listEmployeeEarning = serviceEmployeeEarning.getempearningList(null, (Long) cbSearchEmpName.getValue(),
-				(Long) cbSearchEarnCode.getValue(), (String) cbStatus.getValue(), "F");
-		recordCnt = listEmployeeEarning.size();
-		beanEmployeeEarn = new BeanItemContainer<EmployeeEarningDM>(EmployeeEarningDM.class);
-		beanEmployeeEarn.addAll(listEmployeeEarning);
-		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Got the EmployeeEarning. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanEmployeeEarn);
-		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empearnid", "employeeName", "earnCode", "isflatpercent",
-				"earnpercent", "earnamt", "empearnstatus", "lastpdateddt", "lastupdatedby" });
-		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Earn Code", "Flat/Percent",
-				"Earn Percent", "Earn Amount", "Status", "Last Updated Date", "Last Updated By" });
-		tblMstScrSrchRslt.setColumnAlignment("empearnid", Align.RIGHT);
-		tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		try {
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
+			tblMstScrSrchRslt.removeAllItems();
+			List<EmployeeEarningDM> listEmployeeEarning = new ArrayList<EmployeeEarningDM>();
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
+					+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (Long) cbEarnCode.getValue()
+					+ (String) cbStatus.getValue());
+			listEmployeeEarning = serviceEmployeeEarning.getempearningList(null, (Long) cbSearchEmpName.getValue(),
+					(Long) cbSearchEarnCode.getValue(), (String) cbStatus.getValue(), "F");
+			recordCnt = listEmployeeEarning.size();
+			beanEmployeeEarn = new BeanItemContainer<EmployeeEarningDM>(EmployeeEarningDM.class);
+			beanEmployeeEarn.addAll(listEmployeeEarning);
+			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+					+ "Got the EmployeeEarning. result set");
+			tblMstScrSrchRslt.setContainerDataSource(beanEmployeeEarn);
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "empearnid", "employeeName", "earnCode",
+					"isflatpercent", "earnpercent", "earnamt", "empearnstatus", "lastpdateddt", "lastupdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Employee Name", "Earn Code", "Flat/Percent",
+					"Earn Percent", "Earn Amount", "Status", "Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnAlignment("empearnid", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
+		}
+		catch (Exception ex) {
+			logger.info("load Earnings Details" + ex);
+		}
 	}
 	
 	private void assembleSearchLayout() {
@@ -442,51 +444,56 @@ public class EmployeeEarning extends BaseUI {
 	}
 	
 	private void editEmpEarning() {
-		if (tblMstScrSrchRslt.getValue() != null) {
-			EmployeeEarningDM empEarning = beanEmployeeEarn.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			btnSave.setCaption("Salary Revision");
-			employeeId = empEarning.getEmployeeid();
-			empEarnId = Long.valueOf(empEarning.getEmpearnid());
-			prevAmount = empEarning.getEarnamt();
-			cbEmpName.setReadOnly(false);
-			cbEmpName.setValue(empEarning.getEmployeeid());
-			cbEmpName.setReadOnly(true);
-			cbFlatPercnt.setReadOnly(false);
-			cbFlatPercnt.setValue(empEarning.getIsflatpercent());
-			cbFlatPercnt.setReadOnly(true);
-			cbEarnCode.setReadOnly(false);
-			cbEarnCode.setValue(empEarning.getEarnid());
-			cbEarnCode.setReadOnly(true);
-			if (empEarning.getEarnpercent() != null) {
-				tfEarnPerct.setReadOnly(false);
-				tfEarnPerct.setValue(empEarning.getEarnpercent().toString());
-			}
-			if (empEarning.getEarnamt() != null) {
-				tfEarnAmt.setValue(empEarning.getEarnamt().toString());
-				if (empEarning.getEffdt() != null) {
-					dfEffDt.setValue(empEarning.getEffdt());
+		try {
+			if (tblMstScrSrchRslt.getValue() != null) {
+				EmployeeEarningDM empEarning = beanEmployeeEarn.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				btnSave.setCaption("Salary Revision");
+				employeeId = empEarning.getEmployeeid();
+				empEarnId = Long.valueOf(empEarning.getEmpearnid());
+				prevAmount = empEarning.getEarnamt();
+				cbEmpName.setReadOnly(false);
+				cbEmpName.setValue(empEarning.getEmployeeid());
+				cbEmpName.setReadOnly(true);
+				cbFlatPercnt.setReadOnly(false);
+				cbFlatPercnt.setValue(empEarning.getIsflatpercent());
+				cbFlatPercnt.setReadOnly(true);
+				cbEarnCode.setReadOnly(false);
+				cbEarnCode.setValue(empEarning.getEarnid());
+				cbEarnCode.setReadOnly(true);
+				if (empEarning.getEarnpercent() != null) {
+					tfEarnPerct.setReadOnly(false);
+					tfEarnPerct.setValue(empEarning.getEarnpercent().toString());
 				}
-				if (empEarning.getPrevamt() != null) {
-					tfPreAmt.setValue(empEarning.getPrevamt().toString());
-				}
-				if (empEarning.getPrevpercent() != null) {
-					tfPrePercnt.setValue(empEarning.getPrevpercent().toString());
-				}
-				if (empEarning.getLastpaidt() != null) {
-					dfLastPaidDt.setValue(empEarning.getLastpaidt());
-				}
-				if (empEarning.getNxtpytdt() != null) {
-					dfNextPayDt.setValue(empEarning.getNxtpytdt());
-				}
-				if (empEarning.getArrearflag() != null) {
-					if (empEarning.getArrearflag().equals("Y")) {
-						ckFlag.setValue(true);
-					} else {
-						ckFlag.setValue(false);
+				if (empEarning.getEarnamt() != null) {
+					tfEarnAmt.setValue(empEarning.getEarnamt().toString());
+					if (empEarning.getEffdt() != null) {
+						dfEffDt.setValue(empEarning.getEffdt());
 					}
+					if (empEarning.getPrevamt() != null) {
+						tfPreAmt.setValue(empEarning.getPrevamt().toString());
+					}
+					if (empEarning.getPrevpercent() != null) {
+						tfPrePercnt.setValue(empEarning.getPrevpercent().toString());
+					}
+					if (empEarning.getLastpaidt() != null) {
+						dfLastPaidDt.setValue(empEarning.getLastpaidt());
+					}
+					if (empEarning.getNxtpytdt() != null) {
+						dfNextPayDt.setValue(empEarning.getNxtpytdt());
+					}
+					if (empEarning.getArrearflag() != null) {
+						if (empEarning.getArrearflag().equals("Y")) {
+							ckFlag.setValue(true);
+						} else {
+							ckFlag.setValue(false);
+						}
+					}
+					cbStatus.setValue(empEarning.getEmpearnstatus());
 				}
-				cbStatus.setValue(empEarning.getEmpearnstatus());
 			}
+		}
+		catch (Exception ex) {
+			logger.info("load Earnings Details" + ex);
 		}
 	}
 	
@@ -516,15 +523,12 @@ public class EmployeeEarning extends BaseUI {
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		try {
 			revisedAmount = new BigDecimal(tfEarnAmt.getValue());
-
 			if (!revisedAmount.equals(prevAmount)) {
-				EmployeeEarningDM employeeEarningDM = new EmployeeEarningDM();
 				if (tblMstScrSrchRslt.getValue() != null) {
-					employeeEarningDM = beanEmployeeEarn.getItem(tblMstScrSrchRslt.getValue()).getBean();
-					serviceEmployeeEarning.updateRevicedSalary(employeeId, "E","Revised");
-					serviceEmployeeEarning.updateRevicedSalary(employeeId, "D","Revised");
-					serviceEmployeeEarning.updateRevicedSalary(employeeId, "A","Revised");
-					serviceEmployeeEarning.updateRevicedSalary(Long.valueOf(empEarnId), "REV","Revised");
+					serviceEmployeeEarning.updateRevicedSalary(employeeId, "E", "Revised");
+					serviceEmployeeEarning.updateRevicedSalary(employeeId, "D", "Revised");
+					serviceEmployeeEarning.updateRevicedSalary(employeeId, "A", "Revised");
+					serviceEmployeeEarning.updateRevicedSalary(Long.valueOf(empEarnId), "REV", "Revised");
 					Long gradeid = serviceEmpdetails
 							.getEmployeeDtls(null, employeeId, null, null, null, null, "F", null).get(0).getGradeid();
 					System.out.println("revisedAmount" + revisedAmount);
@@ -552,8 +556,8 @@ public class EmployeeEarning extends BaseUI {
 			loadSrchRslt();
 			resetFields();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		catch (Exception ex) {
+			logger.info("load Earnings Details" + ex);
 		}
 	}
 	

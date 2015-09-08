@@ -687,7 +687,7 @@ public class EBReading extends BaseTransUI {
 			ebReadingDM = serviceEBReading.getEbReadingDetailList(null, null, null, null, "Y").get(0);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			tfOffPeakHrs.setReadOnly(false);
@@ -697,7 +697,7 @@ public class EBReading extends BaseTransUI {
 			tfOffPeakHrs.setReadOnly(true);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
@@ -707,7 +707,7 @@ public class EBReading extends BaseTransUI {
 			ebReadingDM = serviceEBReading.getEbReadingDetailList(null, null, null, null, "Y").get(0);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			tfPerDayUnit.setReadOnly(false);
@@ -716,25 +716,26 @@ public class EBReading extends BaseTransUI {
 			tfPerDayUnit.setReadOnly(true);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	
 	// Load Last Unit Values.
+	@SuppressWarnings("unused")
 	private void getunitvalues() {
 		EbReadingDM ebReadingDM = null;
 		try {
 			ebReadingDM = serviceEBReading.getEbReadingDetailList(null, null, null, null, "Y").get(0);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			oneUnitChrO.setValue(ebReadingDM.getOneUnitO());
 			oneUnitChrP.setValue(ebReadingDM.getOneUnitP());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 }

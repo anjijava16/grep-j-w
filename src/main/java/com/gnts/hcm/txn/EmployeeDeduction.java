@@ -138,7 +138,7 @@ public class EmployeeDeduction extends BaseUI {
 					}
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					logger.info(e.getMessage());
 				}
 			}
 		});

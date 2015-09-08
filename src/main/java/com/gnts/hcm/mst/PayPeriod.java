@@ -58,7 +58,7 @@ public class PayPeriod extends BaseUI {
 	private BeanItemContainer<PayPeriodDM> beanPayPeriodDM = null;
 	// local variables declaration
 	private Long companyid;
-	private String PayPeriodId;
+	private String payPeriodId;
 	private int recordCnt = 0;
 	private String username;
 	// Initialize logger
@@ -217,9 +217,9 @@ public class PayPeriod extends BaseUI {
 		try {
 			hlUserInputLayout.setVisible(true);
 			PayPeriodDM payPeriodDM = beanPayPeriodDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			PayPeriodId = payPeriodDM.getPayPeriodId().toString();
+			payPeriodId = payPeriodDM.getPayPeriodId().toString();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Selected PayPeriod. Id -> " + PayPeriodId);
+					+ "Selected PayPeriod. Id -> " + payPeriodId);
 			if (payPeriodDM.getPeriodName() != null) {
 				tfPayPeriodName.setValue(payPeriodDM.getPeriodName());
 			}
@@ -282,9 +282,9 @@ public class PayPeriod extends BaseUI {
 	@Override
 	protected void showAuditDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Getting audit record for PayPeriod. ID " + PayPeriodId);
+				+ "Getting audit record for PayPeriod. ID " + payPeriodId);
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.M_HCM_PAYPERIOD);
-		UI.getCurrent().getSession().setAttribute("audittablepk", PayPeriodId);
+		UI.getCurrent().getSession().setAttribute("audittablepk", payPeriodId);
 	}
 	
 	@Override

@@ -93,9 +93,9 @@ public class EmployeeAppraisal extends BaseUI {
 	private VerticalLayout vlempAprisalDtl, vlEmpApraisalHdrDtl;
 	private Button btnAddEmpAprisalDtl = new GERPButton("Add", "add", this);
 	private ComboBox cbEmployee, cbAppYear, cbKPIGrpName, cbstatus, cbapprsename, cbkpiname, cvApprlevelname;
-	private PopupDateField pdfappdate, pdfempsgndate, pdfclsddate;
+	private PopupDateField dfAppdate, dfSignoffDt, dfCloseDt;
 	private CheckBox chkpromflag, chkempagd;
-	private TextField tfoverrtng, tfkpiRating;
+	private TextField tfoverrtng, tfKPIRating;
 	private GERPTextArea taComments, taRemarks, comments;
 	// local variables declaration
 	private String aprisalId;
@@ -177,10 +177,10 @@ public class EmployeeAppraisal extends BaseUI {
 		cbAppYear.setWidth("100");
 		cbAppYear.setRequired(true);
 		loadAppraisalYearList();
-		pdfappdate = new PopupDateField("Appraisal Date");
-		pdfappdate.setDateFormat("dd-MMM-yyyy");
-		pdfappdate.setWidth("100");
-		pdfappdate.setRequired(true);
+		dfAppdate = new PopupDateField("Appraisal Date");
+		dfAppdate.setDateFormat("dd-MMM-yyyy");
+		dfAppdate.setWidth("100");
+		dfAppdate.setRequired(true);
 		// KPI Group Name ComboBox
 		cbKPIGrpName = new ComboBox("KPI Group Name");
 		cbKPIGrpName.setWidth("100");
@@ -194,15 +194,15 @@ public class EmployeeAppraisal extends BaseUI {
 		taComments.setWidth("110%");
 		taComments.setHeight("75px");
 		chkempagd = new CheckBox("Employee Agreed");
-		pdfempsgndate = new PopupDateField("SignOff Date");
-		pdfempsgndate.setDateFormat("dd-MMM-yyyy");
-		pdfempsgndate.setWidth("80");
+		dfSignoffDt = new PopupDateField("SignOff Date");
+		dfSignoffDt.setDateFormat("dd-MMM-yyyy");
+		dfSignoffDt.setWidth("80");
 		taRemarks = new GERPTextArea("Remarks");
 		taRemarks.setWidth("110");
 		taRemarks.setHeight("50px");
-		pdfclsddate = new PopupDateField("Closed Date");
-		pdfclsddate.setDateFormat("dd-MMM-yyyy");
-		pdfclsddate.setWidth("80");
+		dfCloseDt = new PopupDateField("Closed Date");
+		dfCloseDt.setDateFormat("dd-MMM-yyyy");
+		dfCloseDt.setWidth("80");
 		// Status ComboBox
 		cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbstatus.setWidth("110");
@@ -225,9 +225,9 @@ public class EmployeeAppraisal extends BaseUI {
 		cvApprlevelname.setItemCaptionPropertyId("levelname");
 		loadApprlevelNameList();
 		// KPI Rating text field
-		tfkpiRating = new TextField("KPI Rating");
-		tfkpiRating.setValue("0");
-		tfkpiRating.setWidth("110");
+		tfKPIRating = new TextField("KPI Rating");
+		tfKPIRating.setValue("0");
+		tfKPIRating.setWidth("110");
 		comments = new GERPTextArea("Comments");
 		comments.setWidth("110%");
 		comments.setHeight("50px");
@@ -269,13 +269,13 @@ public class EmployeeAppraisal extends BaseUI {
 		fcolt5 = new FormLayout();
 		fcolt1.addComponent(cbEmployee);
 		fcolt1.addComponent(cbAppYear);
-		fcolt1.addComponent(pdfappdate);
+		fcolt1.addComponent(dfAppdate);
 		fcolt2.addComponent(cbKPIGrpName);
 		fcolt2.addComponent(chkpromflag);
 		fcolt2.addComponent(tfoverrtng);
 		fcolt3.addComponent(chkempagd);
-		fcolt3.addComponent(pdfclsddate);
-		fcolt3.addComponent(pdfempsgndate);
+		fcolt3.addComponent(dfCloseDt);
+		fcolt3.addComponent(dfSignoffDt);
 		fcolt4.addComponent(taComments);
 		fcolt5.addComponent(taRemarks);
 		fcolt5.addComponent(cbstatus);
@@ -296,7 +296,7 @@ public class EmployeeAppraisal extends BaseUI {
 		fcolDtl1.addComponent(cbapprsename);
 		fcolDtl1.addComponent(cbkpiname);
 		fcolDtl2.addComponent(cvApprlevelname);
-		fcolDtl2.addComponent(tfkpiRating);
+		fcolDtl2.addComponent(tfKPIRating);
 		fcolDtl3.addComponent(comments);
 		fcolDtl4.addComponent(btnAddEmpAprisalDtl);
 		fcolDtl4.addComponent(btnDelete);
@@ -381,8 +381,8 @@ public class EmployeeAppraisal extends BaseUI {
 		cbEmployee.setComponentError(null);
 		cbAppYear.setValue(null);
 		cbAppYear.setComponentError(null);
-		pdfappdate.setValue(null);
-		pdfappdate.setComponentError(null);
+		dfAppdate.setValue(null);
+		dfAppdate.setComponentError(null);
 		cbKPIGrpName.setReadOnly(false);
 		cbKPIGrpName.setValue(null);
 		cbKPIGrpName.setComponentError(null);
@@ -392,8 +392,8 @@ public class EmployeeAppraisal extends BaseUI {
 		taComments.setValue("");
 		taComments.setNullRepresentation("");
 		chkempagd.setValue(false);
-		pdfclsddate.setValue(null);
-		pdfempsgndate.setValue(null);
+		dfCloseDt.setValue(null);
+		dfSignoffDt.setValue(null);
 		taRemarks.setValue("");
 		taRemarks.setNullRepresentation("");
 		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
@@ -414,7 +414,7 @@ public class EmployeeAppraisal extends BaseUI {
 				cbEmployee.setReadOnly(false);
 				cbEmployee.setValue(empAppraisalHdr.getEmployeeid());
 				cbAppYear.setValue(empAppraisalHdr.getApryear());
-				pdfappdate.setValue(empAppraisalHdr.getAprdate());
+				dfAppdate.setValue(empAppraisalHdr.getAprdate());
 				cbKPIGrpName.setReadOnly(false);
 				cbKPIGrpName.setValue(empAppraisalHdr.getKpigrpid());
 				if (empAppraisalHdr.getPromotionflag().equals("Y")) {
@@ -429,8 +429,8 @@ public class EmployeeAppraisal extends BaseUI {
 				}
 				tfoverrtng.setValue(empAppraisalHdr.getOverallrating());
 				taComments.setValue(empAppraisalHdr.getHrcomments());
-				pdfempsgndate.setValue(empAppraisalHdr.getEmpsignoffdate());
-				pdfclsddate.setValue(empAppraisalHdr.getCloseddate());
+				dfSignoffDt.setValue(empAppraisalHdr.getEmpsignoffdate());
+				dfCloseDt.setValue(empAppraisalHdr.getCloseddate());
 				taRemarks.setValue(empAppraisalHdr.getEmpremarks());
 				cbstatus.setValue(empAppraisalHdr.getApprstatus());
 				listEmpApprDtls.addAll(serviceAppraisaldtl.getEmpAppraisalDtl(null, (Long.valueOf(aprisalId)), null,
@@ -483,7 +483,7 @@ public class EmployeeAppraisal extends BaseUI {
 						cvApprlevelname.setValue(itemId);
 					}
 				}
-				tfkpiRating.setValue(empAppraisalDtlDM.getKpirating().toString());
+				tfKPIRating.setValue(empAppraisalDtlDM.getKpirating().toString());
 				comments.setValue(empAppraisalDtlDM.getComments());
 			}
 		}
@@ -531,8 +531,8 @@ public class EmployeeAppraisal extends BaseUI {
 		cbkpiname.setComponentError(null);
 		cvApprlevelname.setValue(null);
 		cvApprlevelname.setComponentError(null);
-		tfkpiRating.setValue("0");
-		tfkpiRating.setNullRepresentation("");
+		tfKPIRating.setValue("0");
+		tfKPIRating.setNullRepresentation("");
 		comments.setValue("");
 		comments.setNullRepresentation("");
 		resetsearch();
@@ -607,7 +607,7 @@ public class EmployeeAppraisal extends BaseUI {
 		cbkpiname.setComponentError(null);
 		cvApprlevelname.setValue(null);
 		cvApprlevelname.setComponentError(null);
-		tfkpiRating.setValue("0");
+		tfKPIRating.setValue("0");
 		comments.setValue("");
 	}
 	
@@ -617,7 +617,7 @@ public class EmployeeAppraisal extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		cbEmployee.setComponentError(null);
 		cbAppYear.setComponentError(null);
-		pdfappdate.setComponentError(null);
+		dfAppdate.setComponentError(null);
 		cbKPIGrpName.setComponentError(null);
 		errorFlag = false;
 		if (cbEmployee.getValue() == null) {
@@ -632,10 +632,10 @@ public class EmployeeAppraisal extends BaseUI {
 					+ "Throwing ValidationException. User data is > " + cbAppYear.getValue());
 			errorFlag = true;
 		}
-		if (pdfappdate.getValue() == null) {
-			pdfappdate.setComponentError(new UserError(GERPErrorCodes.NULL_Appraisal_Date));
+		if (dfAppdate.getValue() == null) {
+			dfAppdate.setComponentError(new UserError(GERPErrorCodes.NULL_Appraisal_Date));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + pdfappdate.getValue());
+					+ "Throwing ValidationException. User data is > " + dfAppdate.getValue());
 			errorFlag = true;
 		}
 		if (cbKPIGrpName.getValue() == null) {
@@ -699,9 +699,9 @@ public class EmployeeAppraisal extends BaseUI {
 		if (cbAppYear.getValue() != null) {
 			empAppHdrObj.setApryear((String) cbAppYear.getValue());
 		}
-		empAppHdrObj.setAprdt((Date) pdfappdate.getValue());
-		empAppHdrObj.setCloseddt((Date) pdfclsddate.getValue());
-		empAppHdrObj.setEmpsignoffdt((Date) pdfempsgndate.getValue());
+		empAppHdrObj.setAprdt((Date) dfAppdate.getValue());
+		empAppHdrObj.setCloseddt((Date) dfCloseDt.getValue());
+		empAppHdrObj.setEmpsignoffdt((Date) dfSignoffDt.getValue());
 		if (tfoverrtng.getValue() != null) {
 			empAppHdrObj.setOverallrating((String) tfoverrtng.getValue());
 		}
@@ -764,7 +764,7 @@ public class EmployeeAppraisal extends BaseUI {
 				empAppDtlObj.setKpiName(((KpiDM) cbkpiname.getValue()).getKpiName());
 				empAppDtlObj.setApprlevelid(((AppraisalLevelsDM) cvApprlevelname.getValue()).getApprlevelid());
 				empAppDtlObj.setLevelname(((AppraisalLevelsDM) cvApprlevelname.getValue()).getLevelname());
-				empAppDtlObj.setKpirating(Long.valueOf(tfkpiRating.getValue()));
+				empAppDtlObj.setKpirating(Long.valueOf(tfKPIRating.getValue()));
 				empAppDtlObj.setComments(comments.getValue());
 				empAppDtlObj.setLastupdateddt(DateUtils.getcurrentdate());
 				empAppDtlObj.setLastupdatedby(username);

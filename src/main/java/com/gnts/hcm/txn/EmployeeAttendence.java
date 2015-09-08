@@ -224,7 +224,8 @@ public class EmployeeAttendence extends BaseUI {
 			empAttendenceDM.setLastUpdatedDt(new Date());
 			serviceEmpAtndnc.saveAndUpdate(empAttendenceDM);
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
+			logger.info(ex.getMessage());
 		}
 		staffAttendancePapulateAndConfig(true);
 	}

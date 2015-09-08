@@ -286,14 +286,19 @@ public class JobCandidate extends BaseUI {
 	 * Work Experince must control flow.
 	 */
 	private void getWorkExper() {
-		if (cbWrkExp != null) {
-			if (cbWrkExp.getValue().toString().equals("Yes")) {
-				tfWrkExpYr.setRequired(true);
-				tfWrkExpDesc.setRequired(true);
-			} else {
-				tfWrkExpDesc.setRequired(false);
-				tfWrkExpYr.setRequired(false);
+		try {
+			if (cbWrkExp != null) {
+				if (cbWrkExp.getValue().toString().equals("Yes")) {
+					tfWrkExpYr.setRequired(true);
+					tfWrkExpDesc.setRequired(true);
+				} else {
+					tfWrkExpDesc.setRequired(false);
+					tfWrkExpYr.setRequired(false);
+				}
 			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

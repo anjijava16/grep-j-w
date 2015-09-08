@@ -51,7 +51,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class ITOtherIncome extends BaseUI {
-	private ITOtherIncomeService serviceITOtherIncomeService = (ITOtherIncomeService) SpringContextHelper
+	private ITOtherIncomeService serviceITOtherIncome = (ITOtherIncomeService) SpringContextHelper
 			.getBean("ITOtherIncome");
 	private ParameterService serviceParameter = (ParameterService) SpringContextHelper.getBean("parameter");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
@@ -189,7 +189,7 @@ public class ITOtherIncome extends BaseUI {
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Search Parameters are " + companyId + ", " + (Long) cbEmpName.getValue() + ", "
 					+ (String) cbStatus.getValue());
-			list = serviceITOtherIncomeService.getItOtherIncomeList(null, (Long) cbEmpName.getValue(), null,
+			list = serviceITOtherIncome.getItOtherIncomeList(null, (Long) cbEmpName.getValue(), null,
 					(String) cbStatus.getValue(), "F");
 			recordCnt = list.size();
 			beanITOtherIncomeDM = new BeanItemContainer<ITOtherIncomeDM>(ITOtherIncomeDM.class);
@@ -364,7 +364,7 @@ public class ITOtherIncome extends BaseUI {
 		}
 		itOtherIncomeObj.setVerifiedDt(DateUtils.getcurrentdate());
 		itOtherIncomeObj.setVerifiedBy(loginUserName);
-		serviceITOtherIncomeService.saveItInvest(itOtherIncomeObj);
+		serviceITOtherIncome.saveItInvest(itOtherIncomeObj);
 		resetFields();
 		loadSrchRslt();
 	}

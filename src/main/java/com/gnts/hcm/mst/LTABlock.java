@@ -55,7 +55,7 @@ public class LTABlock extends BaseUI {
 	private BeanItemContainer<LTABlockDM> beanLTABlock = null;
 	// local variables declaration
 	private Long companyid;
-	private String LTABlockId;
+	private String ltaBlockId;
 	private int recordCnt = 0;
 	private String username;
 	// Initialize logger
@@ -178,9 +178,9 @@ public class LTABlock extends BaseUI {
 					+ "Editing the selected record");
 			hlUserInputLayout.setVisible(true);
 			LTABlockDM editLTABlock = beanLTABlock.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			LTABlockId = editLTABlock.getLtaBlockId().toString();
+			ltaBlockId = editLTABlock.getLtaBlockId().toString();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Selected LTABlock. Id -> " + LTABlockId);
+					+ "Selected LTABlock. Id -> " + ltaBlockId);
 			if (editLTABlock.getBlockPeriod() != null) {
 				tfBlckPeriod.setValue(editLTABlock.getBlockPeriod());
 			}
@@ -243,9 +243,9 @@ public class LTABlock extends BaseUI {
 	@Override
 	protected void showAuditDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Getting audit record for LTABlock. ID " + LTABlockId);
+				+ "Getting audit record for LTABlock. ID " + ltaBlockId);
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.M_BASE_LEAVE_TYPE);
-		UI.getCurrent().getSession().setAttribute("audittablepk", LTABlockId);
+		UI.getCurrent().getSession().setAttribute("audittablepk", ltaBlockId);
 	}
 	
 	@Override

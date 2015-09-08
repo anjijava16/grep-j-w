@@ -251,13 +251,13 @@ public class Generator extends BaseTransUI {
 			generatorDM = serviceGenerator.getGeneratorDetailList(null, null, null, null, "Y", null).get(0);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		try {
 			tfGenTotalTime.setValue(generatorDM.getGenTotalTime().toString());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 	

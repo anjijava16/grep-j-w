@@ -250,16 +250,21 @@ public class EmployeeAllowance extends BaseUI {
 	}
 	
 	private void getAllowanceAmount() {
-		allPercent = (new BigDecimal(tfAlwncPercent.getValue()));
-		BigDecimal packingvalue = gerPercentageValue(allPercent, basictotal);
-		tfAllownceAmt.setReadOnly(false);
-		tfAllownceAmt.setValue("0");
-		tfAllBal.setReadOnly(false);
-		tfAllBal.setValue("0");
-		tfAllownceAmt.setValue(packingvalue.toString());
-		tfAllBal.setValue(packingvalue.toString());
-		tfAllownceAmt.setReadOnly(true);
-		tfAllBal.setReadOnly(true);
+		try {
+			allPercent = (new BigDecimal(tfAlwncPercent.getValue()));
+			BigDecimal packingvalue = gerPercentageValue(allPercent, basictotal);
+			tfAllownceAmt.setReadOnly(false);
+			tfAllownceAmt.setValue("0");
+			tfAllBal.setReadOnly(false);
+			tfAllBal.setValue("0");
+			tfAllownceAmt.setValue(packingvalue.toString());
+			tfAllBal.setValue(packingvalue.toString());
+			tfAllownceAmt.setReadOnly(true);
+			tfAllBal.setReadOnly(true);
+		}
+		catch (Exception ex) {
+			logger.info("load Earnings Details" + ex);
+		}
 	}
 	
 	private BigDecimal gerPercentageValue(BigDecimal percent, BigDecimal value) {
@@ -374,7 +379,6 @@ public class EmployeeAllowance extends BaseUI {
 		cbAlwncDesc.setComponentError(null);
 		dtEffectiveDt.setComponentError(null);
 		tfAllBal.setComponentError(null);
-
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form

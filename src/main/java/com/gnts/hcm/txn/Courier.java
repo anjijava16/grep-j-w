@@ -210,24 +210,30 @@ public class Courier extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process for VisitorPass
 	private void ediVisitorpass() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		hllayout.setVisible(true);
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
-				+ courierId);
-		if (tblMstScrSrchRslt.getValue() != null) {
-			CourierDM courierDM = beanCourier.getItem(tblMstScrSrchRslt.getValue()).getBean();
-			courierId = courierDM.getCourierId();
-			cbCourierType.setValue(courierDM.getCourierType());
-			cbDepartment.setValue(courierDM.getDepartmentId());
-			dfRefDate.setValue(courierDM.getRefDate());
-			cbFromOrTo.setValue(courierDM.getFromOrTo());
-			cbStatus.setValue(courierDM.getStatus());
-			tfNoofDocuments.setValue(courierDM.getNoOfDocuments());
-			tfModeofPost.setValue(courierDM.getModeofPost());
-			tfDocketNo.setValue(courierDM.getDocketNumber());
-			taRemarks.setValue(courierDM.getRemarks());
-			tfSentTo.setValue(courierDM.getSendTo());
-			taAddress.setValue(courierDM.getAddress());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			hllayout.setVisible(true);
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected ecrid -> "
+					+ courierId);
+			if (tblMstScrSrchRslt.getValue() != null) {
+				CourierDM courierDM = beanCourier.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				courierId = courierDM.getCourierId();
+				cbCourierType.setValue(courierDM.getCourierType());
+				cbDepartment.setValue(courierDM.getDepartmentId());
+				dfRefDate.setValue(courierDM.getRefDate());
+				cbFromOrTo.setValue(courierDM.getFromOrTo());
+				cbStatus.setValue(courierDM.getStatus());
+				tfNoofDocuments.setValue(courierDM.getNoOfDocuments());
+				tfModeofPost.setValue(courierDM.getModeofPost());
+				tfDocketNo.setValue(courierDM.getDocketNumber());
+				taRemarks.setValue(courierDM.getRemarks());
+				tfSentTo.setValue(courierDM.getSendTo());
+				taAddress.setValue(courierDM.getAddress());
+			}
+		}
+		catch (Exception ex) {
+			logger.info("load Earnings Details" + ex);
 		}
 	}
 	

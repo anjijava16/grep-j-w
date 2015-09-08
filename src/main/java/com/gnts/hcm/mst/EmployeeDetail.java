@@ -104,7 +104,7 @@ public class EmployeeDetail implements ClickListener {
 	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
 	private GradeService serviceGrade = (GradeService) SpringContextHelper.getBean("Grade");
 	private DesignationService serviceDesignation = (DesignationService) SpringContextHelper.getBean("Designation");
-	private PayPeriodService servicePayPeriodService = (PayPeriodService) SpringContextHelper.getBean("PayPeriod");
+	private PayPeriodService servicePayPeriod = (PayPeriodService) SpringContextHelper.getBean("PayPeriod");
 	private EmploymentTypeService serviceEmploymentType = (EmploymentTypeService) SpringContextHelper
 			.getBean("EmploymentType");
 	private EmployeeDtlsService servempdtls = (EmployeeDtlsService) SpringContextHelper.getBean("Employeedtls");
@@ -812,7 +812,7 @@ public class EmployeeDetail implements ClickListener {
 					+ "Loading Payperiod  Search...");
 			BeanContainer<Long, PayPeriodDM> beanpayperiod = new BeanContainer<Long, PayPeriodDM>(PayPeriodDM.class);
 			beanpayperiod.setBeanIdProperty("payPeriodId");
-			beanpayperiod.addAll(servicePayPeriodService.getPayList(id, null, null, null, companyid, "Active", "F"));
+			beanpayperiod.addAll(servicePayPeriod.getPayList(id, null, null, null, companyid, "Active", "F"));
 			cbPayperiod.setContainerDataSource(beanpayperiod);
 		}
 		catch (Exception e) {

@@ -480,51 +480,51 @@ public class GradeAllowance extends BaseUI {
 	@Override
 	protected void saveDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		GradeAllowanceDM gradeAllowanceObj = new GradeAllowanceDM();
+		GradeAllowanceDM gradeAllowance = new GradeAllowanceDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
-			gradeAllowanceObj = beanGradeEarningDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			gradeAllowance = beanGradeEarningDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
 		if (tfMinValue.getValue() != null && tfMinValue.getValue().trim().length() > 0) {
-			gradeAllowanceObj.setMinVal(new BigDecimal(tfMinValue.getValue()));
+			gradeAllowance.setMinVal(new BigDecimal(tfMinValue.getValue()));
 		} else {
-			gradeAllowanceObj.setMinVal(new BigDecimal("0"));
+			gradeAllowance.setMinVal(new BigDecimal("0"));
 		}
 		if (tfMaxValue.getValue() != null && tfMaxValue.getValue().trim().length() > 0) {
-			gradeAllowanceObj.setMaxVal(new BigDecimal(tfMaxValue.getValue()));
+			gradeAllowance.setMaxVal(new BigDecimal(tfMaxValue.getValue()));
 		} else {
-			gradeAllowanceObj.setMaxVal(new BigDecimal("0"));
+			gradeAllowance.setMaxVal(new BigDecimal("0"));
 		}
 		if (tfMinPer.getValue() != null && tfMinPer.getValue().trim().length() > 0) {
-			gradeAllowanceObj.setMinPer(new BigDecimal(tfMinPer.getValue()));
+			gradeAllowance.setMinPer(new BigDecimal(tfMinPer.getValue()));
 		} else {
-			gradeAllowanceObj.setMinPer(new BigDecimal("0"));
+			gradeAllowance.setMinPer(new BigDecimal("0"));
 		}
 		if (tfMaxPer.getValue() != null && tfMaxPer.getValue().trim().length() > 0) {
-			gradeAllowanceObj.setMaxPer(new BigDecimal(tfMaxPer.getValue()));
+			gradeAllowance.setMaxPer(new BigDecimal(tfMaxPer.getValue()));
 		} else {
-			gradeAllowanceObj.setMaxPer(new BigDecimal("0"));
+			gradeAllowance.setMaxPer(new BigDecimal("0"));
 		}
 		if (cbStatus.getValue() != null) {
-			gradeAllowanceObj.setStatus((String) cbStatus.getValue());
+			gradeAllowance.setStatus((String) cbStatus.getValue());
 		}
 		if (cbAlwncPercent.getValue() != null) {
-			gradeAllowanceObj.setIsFlatPer((String) cbAlwncPercent.getValue());
+			gradeAllowance.setIsFlatPer((String) cbAlwncPercent.getValue());
 		}
 		if (cbOnBasicGros.getValue() != null) {
-			gradeAllowanceObj.setOnBasicGros((String) cbOnBasicGros.getValue());
+			gradeAllowance.setOnBasicGros((String) cbOnBasicGros.getValue());
 		}
 		if (cbPayBasic.getValue() != null) {
-			gradeAllowanceObj.setPayBasis((String) cbPayBasic.getValue());
+			gradeAllowance.setPayBasis((String) cbPayBasic.getValue());
 		}
 		if (cbGradeDesc.getValue() != null) {
-			gradeAllowanceObj.setGradeId((Long.valueOf(cbGradeDesc.getValue().toString())));
+			gradeAllowance.setGradeId((Long.valueOf(cbGradeDesc.getValue().toString())));
 		}
 		if (cbAlwncDesc.getValue() != null) {
-			gradeAllowanceObj.setAlwnceId((Long.valueOf(cbAlwncDesc.getValue().toString())));
+			gradeAllowance.setAlwnceId((Long.valueOf(cbAlwncDesc.getValue().toString())));
 		}
-		gradeAllowanceObj.setLastUpdatedDate(DateUtils.getcurrentdate());
-		gradeAllowanceObj.setLastUpdatedBy(username);
-		serviceGradeAllowance.saveDetails(gradeAllowanceObj);
+		gradeAllowance.setLastUpdatedDate(DateUtils.getcurrentdate());
+		gradeAllowance.setLastUpdatedBy(username);
+		serviceGradeAllowance.saveDetails(gradeAllowance);
 		resetFields();
 		loadSrchRslt();
 	}

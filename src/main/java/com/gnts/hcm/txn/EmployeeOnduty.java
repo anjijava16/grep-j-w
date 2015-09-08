@@ -403,7 +403,6 @@ public class EmployeeOnduty extends VerticalLayout implements ClickListener {
 			for (EmployeeOndutyDatesDM savedutydate : (Collection<EmployeeOndutyDatesDM>) itemIds1) {
 				savedutydate.setOndutyid(employeeid);				
 			}
-			EmployeeOndutyDatesDM ondutyDate=new EmployeeOndutyDatesDM();
 			loadSrchRslt();
 			tblMstScrSrchRslt.removeAllItems();
 		}

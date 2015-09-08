@@ -78,7 +78,7 @@ public class Tax extends BaseUI {
 	private HorizontalLayout hlSearchLayout;
 	// User Input Components for Work Order Details
 	private Button btnAddTaxslap = new GERPButton("Add", "addbt", this);
-	private TextField tffinanceYr = new GERPTextField("Finance Year");
+	private TextField tfFinanceYr = new GERPTextField("Finance Year");
 	private ComboBox cbGender, cbStatus;
 	private ComboBox cbTaxStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
@@ -164,8 +164,8 @@ public class Tax extends BaseUI {
 		cbGender.setItemCaptionPropertyId("lookupname");
 		loadGenderType();
 		// Finance Year TextField
-		tffinanceYr.setValue(serviceParameter.getParameterValue("FM_FINYEAR", companyid, null));
-		tffinanceYr.setReadOnly(true);
+		tfFinanceYr.setValue(serviceParameter.getParameterValue("FM_FINYEAR", companyid, null));
+		tfFinanceYr.setReadOnly(true);
 		// Earn amount From Text field
 		tfEarnAmtFrm = new GERPTextField("Earn Amount From");
 		tfEarnAmtFrm.setValue("0");
@@ -212,7 +212,7 @@ public class Tax extends BaseUI {
 		fltaxCol3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		fltaxCol1.addComponent(tfTaxName);
-		fltaxCol2.addComponent(tffinanceYr);
+		fltaxCol2.addComponent(tfFinanceYr);
 		fltaxCol3.addComponent(cbGender);
 		flColumn4.addComponent(cbTaxStatus);
 		hlTax = new HorizontalLayout();
@@ -315,9 +315,9 @@ public class Tax extends BaseUI {
 		tfTaxName.setValue("");
 		tfTaxName.setComponentError(null);
 		tfEarnAmtTo.setComponentError(null);
-		tffinanceYr.setReadOnly(false);
-		tffinanceYr.setValue(serviceParameter.getParameterValue("FM_FINYEAR", companyid, null));
-		tffinanceYr.setReadOnly(true);
+		tfFinanceYr.setReadOnly(false);
+		tfFinanceYr.setValue(serviceParameter.getParameterValue("FM_FINYEAR", companyid, null));
+		tfFinanceYr.setReadOnly(true);
 		cbTaxStatus.setValue(cbTaxStatus.getItemIds().iterator().next());
 		listTaxSlab = new ArrayList<TaxSlapDM>();
 		tblTaxslap.removeAllItems();
@@ -338,9 +338,9 @@ public class Tax extends BaseUI {
 					tfTaxName.setValue(taxDM.getTaxname());
 				}
 				if (taxDM.getFinyear() != null) {
-					tffinanceYr.setReadOnly(false);
-					tffinanceYr.setValue(taxDM.getFinyear());
-					tffinanceYr.setReadOnly(true);
+					tfFinanceYr.setReadOnly(false);
+					tfFinanceYr.setValue(taxDM.getFinyear());
+					tfFinanceYr.setReadOnly(true);
 				}
 				cbTaxStatus.setValue(taxDM.getTaxstatus());
 				if (taxDM.getGender() != null) {
@@ -516,7 +516,7 @@ public class Tax extends BaseUI {
 			}
 			taxDM.setCompanyid(companyid);
 			taxDM.setTaxname(tfTaxName.getValue().toString());
-			taxDM.setFinyear(tffinanceYr.getValue().toString());
+			taxDM.setFinyear(tfFinanceYr.getValue().toString());
 			if (cbTaxStatus.getValue() != null) {
 				taxDM.setTaxstatus((String) cbTaxStatus.getValue());
 			}

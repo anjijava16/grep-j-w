@@ -778,6 +778,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfBasictotal.setReadOnly(false);
 		tfBasictotal.setValue(sum.toString());
 		tfBasictotal.setReadOnly(true);
+		getCalculatedValues();
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Taxslap. result set");
 		tblPODetails.setContainerDataSource(beanpodtl);
 		tblPODetails.setVisibleColumns(new Object[] { "materialname", "poqty", "reqQty", "unitrate", "basicvalue",
@@ -940,7 +941,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				tfSubTotal.setReadOnly(false);
 				tfSubTotal.setValue(poHdrDM.getSubTotal().toString());
 				tfSubTotal.setReadOnly(true);
-				//tfEDPer.setValue(poHdrDM.get);
+				// tfEDPer.setValue(poHdrDM.get);
 				tfVatPer.setValue(poHdrDM.getVatPrcnt().toString());
 				tfVatValue.setReadOnly(false);
 				tfVatValue.setValue(poHdrDM.getVatValue().toString());
@@ -1018,7 +1019,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				} else {
 					ckPdcRqu.setValue(false);
 				}
-		
 				cbStatus.setValue(poHdrDM.getpOStatus());
 				listPODetails = servicepodtl.getpodtllist(companyid, poId, branchId.toString(), null, null, "F");
 			}
@@ -1345,9 +1345,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			if (tfReqdQty.getValue() != null) {
-			
 				MmsPoDtlDM poDtlDM = new MmsPoDtlDM();
-				
 				poDtlDM.setMaterialid(((MmsQuoteDtlDM) cbMaterial.getValue()).getMaterialid());
 				poDtlDM.setMaterialname(((MmsQuoteDtlDM) cbMaterial.getValue()).getMaterialname());
 				tfPOQnty.setReadOnly(false);
@@ -1374,7 +1372,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				poDtlDM.setLastupdatedby(username);
 				listPODetails.add(poDtlDM);
 			}
-		
 		}
 		catch (Exception e) {
 			e.printStackTrace();

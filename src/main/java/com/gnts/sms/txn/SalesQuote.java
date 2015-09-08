@@ -890,17 +890,18 @@ public class SalesQuote extends BaseTransUI {
 			for (SmsQuoteDtlDM obj : smsQuoteDtlList) {
 				if (obj.getBasicvalue() != null) {
 					sum = sum.add(obj.getBasicvalue());
-					System.out.println("======================================sum=======>"+sum);
-
-				}
-				if (obj.getPdcValue() != null) {
-					sumPdc = sumPdc.add(obj.getPdcValue());
-					System.out.println("=============================================>"+sumPdc);
-					tfPDCCharges.setReadOnly(false);
-					tfPDCCharges.setValue(sumPdc.toString());
-					tfPDCCharges.setReadOnly(true);
+					System.out.println("======================================sum=======>" + sum);
 				}
 			}
+			for (SmsQuoteDtlDM obj : smsQuoteDtlList) {
+				if (obj.getPdcValue() != null) {
+					sumPdc = sumPdc.add(obj.getPdcValue());
+					System.out.println("=============================================>" + sumPdc);
+				}
+			}
+			tfPDCCharges.setReadOnly(false);
+			tfPDCCharges.setValue(sumPdc.toString());
+			tfPDCCharges.setReadOnly(true);
 			tfBasictotal.setReadOnly(false);
 			tfBasictotal.setValue(sum.toString());
 			tfBasictotal.setReadOnly(true);
@@ -1321,7 +1322,6 @@ public class SalesQuote extends BaseTransUI {
 		tfPaclingValue.setReadOnly(false);
 		tfPaclingValue.setValue(packingvalue.toString());
 		tfPaclingValue.setReadOnly(true);
-	
 		BigDecimal pdcCharges = new BigDecimal("0");
 		try {
 			pdcCharges = new BigDecimal(tfPDCCharges.getValue());

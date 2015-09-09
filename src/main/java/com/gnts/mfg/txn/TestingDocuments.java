@@ -2,6 +2,7 @@ package com.gnts.mfg.txn;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.vaadin.dialogs.ConfirmDialog;
 import com.gnts.crm.domain.txn.DocumentsDM;
 import com.gnts.crm.service.txn.DocumentsService;
 import com.gnts.dsn.stt.txn.DesignDocumentUI;
@@ -33,6 +34,7 @@ public class TestingDocuments implements ClickListener {
 	private GERPTextField tfDocumentName = new GERPTextField("Document Name");
 	private GERPTextArea taComments = new GERPTextArea("Comments");
 	private GERPButton btnSave = new GERPButton("Save", "add", this);
+	private GERPButton btnDelete = new GERPButton("Delete", "cancelbt", this);
 	private GERPTable tblDocuments = new GERPTable();
 	private VerticalLayout vlDocument = new VerticalLayout();
 	private BeanItemContainer<DocumentsDM> beanDocuments = null;
@@ -65,7 +67,14 @@ public class TestingDocuments implements ClickListener {
 								setSpacing(true);
 								addComponent(tfDocumentName);
 								addComponent(taComments);
-								addComponent(btnSave);
+								addComponent(new HorizontalLayout() {
+									private static final long serialVersionUID = 1L;
+									{
+										setSpacing(true);
+										addComponent(btnSave);
+										addComponent(btnDelete);
+									}
+								});
 							}
 						});
 						addComponent(tblDocuments);
@@ -97,28 +106,28 @@ public class TestingDocuments implements ClickListener {
 		try {
 			if (docType.equalsIgnoreCase("QC")) {
 				documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null,
-						null, Long.valueOf(primaryId), null, null);
+						null, Long.valueOf(primaryId), null, null, "Active");
 			} else if (docType.equalsIgnoreCase("QA")) {
 				documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null,
-						null, null, Long.valueOf(primaryId), null);
+						null, null, Long.valueOf(primaryId), null, "Active");
 			} else if (docType.equalsIgnoreCase("DR")) {
 				documentList = serviceDocuments.getDocumentDetails(null, null, Long.valueOf(primaryId), null, null,
-						null, null, null, null, null, null, null);
+						null, null, null, null, null, null, null, "Active");
 			} else if (docType.equalsIgnoreCase("SIGN_OFF")) {
 				documentList = serviceDocuments.getDocumentDetails(null, null, null, null, null, null, null, null,
-						null, null, null, Long.valueOf(primaryId));
+						null, null, null, Long.valueOf(primaryId), "Active");
 			} else if (docType.equalsIgnoreCase("CLIENT")) {
 				documentList = serviceDocuments.getDocumentDetails(null, null, null, Long.valueOf(primaryId), null,
-						null, null, null, null, null, null, null);
+						null, null, null, null, null, null, null, "Active");
 			}
 			int recordcount = documentList.size();
 			beanDocuments = new BeanItemContainer<DocumentsDM>(DocumentsDM.class);
 			beanDocuments.addAll(documentList);
 			tblDocuments.setSelectable(true);
 			tblDocuments.setContainerDataSource(beanDocuments);
-			tblDocuments.setVisibleColumns(new Object[] { "documentId", "documentName", "lastUpdatedBy" });
-			tblDocuments.setColumnHeaders(new String[] { "Ref.Id", "Document Name", "Uploaded By" });
-			tblDocuments.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordcount);
+			tblDocuments.setVisibleColumns(new Object[] { "documentName", "lastUpdatedBy","lastUpdatedDt" });
+			tblDocuments.setColumnHeaders(new String[] { "Document Name", "Uploaded By","Uploaded Dt" });
+			tblDocuments.setColumnFooter("lastUpdatedDt", "No.of Records : " + recordcount);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -153,6 +162,7 @@ public class TestingDocuments implements ClickListener {
 				}
 				documentsDM.setDocumentType("pdf");
 				documentsDM.setLastUpdatedBy(username);
+				documentsDM.setStatus("Active");
 				documentsDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 				serviceDocuments.saveOrUpdateDocumentsDetails(documentsDM);
 				resetDetails();
@@ -171,7 +181,9 @@ public class TestingDocuments implements ClickListener {
 			DocumentsDM documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
 			DesignDocumentUI designDocumentUI = new DesignDocumentUI(vlDocument);
 			tfDocumentName.setValue(documentsDM.getDocumentName());
-			taComments.setValue(documentsDM.getComments());
+			if (documentsDM.getComments() != null) {
+				taComments.setValue(documentsDM.getComments());
+			}
 			designDocumentUI.displayDocument(documentsDM.getDocument(), documentsDM.getFileName());
 		}
 		catch (Exception e) {
@@ -186,11 +198,37 @@ public class TestingDocuments implements ClickListener {
 		UI.getCurrent().getSession().setAttribute("IS_DOC_UPLOAD", false);
 	}
 	
+	private void deleteDetails() {
+		// TODO Auto-generated method stub
+		try {
+			// TODO Auto-generated method stub
+			ConfirmDialog.show(UI.getCurrent(), "Please Confirm:", "Are you really sure?", "Delete File", "Not quite",
+					new ConfirmDialog.Listener() {
+						private static final long serialVersionUID = 1L;
+						
+						public void onClose(ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								DocumentsDM documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
+								documentsDM.setStatus("Inactive");
+								serviceDocuments.saveOrUpdateDocumentsDetails(documentsDM);
+								resetDetails();
+								loadSearchResult(docTypeId);
+							}
+						}
+					});
+		}
+		catch (Exception e) {
+		}
+	}
+	
 	@Override
 	public void buttonClick(ClickEvent event) {
 		// TODO Auto-generated method stub
 		if (event.getButton() == btnSave) {
 			saveDetails();
+		}
+		if (event.getButton() == btnDelete) {
+			deleteDetails();
 		}
 	}
 }

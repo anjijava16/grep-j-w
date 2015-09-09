@@ -78,6 +78,7 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TableFieldFactory;
@@ -146,6 +147,8 @@ public class WorkOrderPlan extends BaseTransUI {
 	private Comments comment;
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	private Long commentby;
+	// for test documents
+	private VerticalLayout hlDocumentLayout = new VerticalLayout();
 	
 	// Constructor received the parameters from Login UI class
 	public WorkOrderPlan() {
@@ -206,6 +209,12 @@ public class WorkOrderPlan extends BaseTransUI {
 				BeanItem<?> item = (BeanItem<?>) cbEnquiryNumber.getItem(itemId);
 				if (item != null) {
 					loadWorkOrderNo();
+					try {
+						new TestingDocuments(hlDocumentLayout, cbEnquiryNumber.getValue().toString(), "DR");
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
@@ -428,7 +437,10 @@ public class WorkOrderPlan extends BaseTransUI {
 		hlWorkOdrHdl.setWidth("100%");
 		hlWorkOdrHdl.setSpacing(true);
 		hlWorkOdrHdl.setMargin(false);
-		hlUserInputLayout.addComponent(hlWorkOdrHdl);
+		TabSheet tab = new TabSheet();
+		tab.addTab(hlWorkOdrHdl, "Planning Sheet");
+		tab.addTab(hlDocumentLayout, "Design Documents");
+		hlUserInputLayout.addComponent(tab);
 		hlUserInputLayout.setWidth("100%");
 		hlUserInputLayout.setMargin(false);
 	}
@@ -722,6 +734,7 @@ public class WorkOrderPlan extends BaseTransUI {
 		loadSrchWrkOdrPlnMtrlDtlRslt(false);
 		loadSrchWrkOdrPlnDtlRslt();
 		comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
+		hlDocumentLayout.removeAllComponents();
 	}
 	
 	// reset the input controls to default value

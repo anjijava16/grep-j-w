@@ -3,6 +3,7 @@ package com.gnts.dsn.stt.txn;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.vaadin.dialogs.ConfirmDialog;
 import com.gnts.crm.domain.txn.DocumentsDM;
 import com.gnts.crm.service.txn.DocumentsService;
 import com.gnts.erputil.components.GERPButton;
@@ -50,6 +51,7 @@ public class DesignDocuments implements ClickListener {
 	private GERPTextField tfDocumentName = new GERPTextField("Document Name");
 	private GERPTextArea taComments = new GERPTextArea("Comments");
 	private GERPButton btnSave = new GERPButton("Save", "add", this);
+	private GERPButton btnDelete = new GERPButton("Delete", "cancelbt", this);
 	private GERPTable tblDocuments = new GERPTable();
 	private VerticalLayout vlDocument = new VerticalLayout();
 	private BeanItemContainer<DocumentsDM> beanDocuments = null;
@@ -94,7 +96,14 @@ public class DesignDocuments implements ClickListener {
 								addComponent(cbEnquiry);
 								addComponent(tfDocumentName);
 								addComponent(taComments);
-								addComponent(btnSave);
+								addComponent(new HorizontalLayout() {
+									private static final long serialVersionUID = 1L;
+									{
+										setSpacing(true);
+										addComponent(btnSave);
+										addComponent(btnDelete);
+									}
+								});
 							}
 						});
 						addComponent(tblDocuments);
@@ -137,7 +146,7 @@ public class DesignDocuments implements ClickListener {
 			if (cbEnquiry.getValue() != null) {
 				System.out.println("cbEnquiry.getValue()--->" + cbEnquiry.getValue());
 				documentList = serviceDocuments.getDocumentDetails(null, null, (Long) cbEnquiry.getValue(), null, null,
-						null, null, null, null, null, null, null);
+						null, null, null, null, null, null, null, "Active");
 			}
 			int recordcount = documentList.size();
 			beanDocuments = new BeanItemContainer<DocumentsDM>(DocumentsDM.class);
@@ -189,6 +198,7 @@ public class DesignDocuments implements ClickListener {
 			documentsDM.setFileName(filename);
 			documentsDM.setDocumentType("pdf");
 			documentsDM.setLastUpdatedBy(username);
+			documentsDM.setStatus("Active");
 			documentsDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 			serviceDocuments.saveOrUpdateDocumentsDetails(documentsDM);
 			resetDetails();
@@ -203,8 +213,34 @@ public class DesignDocuments implements ClickListener {
 			DocumentsDM documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
 			DesignDocumentUI designDocumentUI = new DesignDocumentUI(vlDocument);
 			tfDocumentName.setValue(documentsDM.getDocumentName());
-			taComments.setValue(documentsDM.getComments());
+			if (documentsDM.getComments() != null) {
+				taComments.setValue(documentsDM.getComments());
+			}
 			designDocumentUI.displayDocument(documentsDM.getDocument(), documentsDM.getFileName());
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void deleteDetails() {
+		// TODO Auto-generated method stub
+		try {
+			// TODO Auto-generated method stub
+			ConfirmDialog.show(UI.getCurrent(), "Please Confirm:", "Are you really sure?", "Delete File", "Not quite",
+					new ConfirmDialog.Listener() {
+						private static final long serialVersionUID = 1L;
+						
+						public void onClose(ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								DocumentsDM documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
+								documentsDM.setStatus("Inactive");
+								serviceDocuments.saveOrUpdateDocumentsDetails(documentsDM);
+								resetDetails();
+								loadSearchResult();
+							}
+						}
+					});
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -223,6 +259,9 @@ public class DesignDocuments implements ClickListener {
 		// TODO Auto-generated method stub
 		if (event.getButton() == btnSave) {
 			saveDetails();
+		}
+		if (event.getButton() == btnDelete) {
+			deleteDetails();
 		}
 	}
 }

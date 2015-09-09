@@ -160,6 +160,7 @@ public class QATest extends BaseTransUI {
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	private Long commentby;
 	// for test documents
+	private VerticalLayout hlTestDocLayout = new VerticalLayout();
 	private VerticalLayout hlDocumentLayout = new VerticalLayout();
 	
 	public QATest() {
@@ -207,6 +208,14 @@ public class QATest extends BaseTransUI {
 				loadClientList();
 				cbClient.setImmediate(true);
 				loadProductList();
+				try {
+					WorkOrderHdrDM workOrderHdrDM = serviceWorkOrderHdr.getWorkOrderHDRList(null, null, null, null,
+							null, null, "P", (Long) cbWorkOrderNo.getValue(), null, null, null, null).get(0);
+					new TestingDocuments(hlDocumentLayout, workOrderHdrDM.getEnquiryId().toString(), "DR");
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		cbTestGrp = new GERPComboBox("Test Group");
@@ -281,7 +290,7 @@ public class QATest extends BaseTransUI {
 			}
 		});
 		tblQATstDtl = new GERPTable();
-		tblQATstDtl.setPageLength(6);
+		tblQATstDtl.setPageLength(5);
 		tblQATstDtl.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -320,7 +329,7 @@ public class QATest extends BaseTransUI {
 			}
 		});
 		tblCndnRslt = new GERPTable();
-		tblCndnRslt.setPageLength(6);
+		tblCndnRslt.setPageLength(5);
 		tblCndnRslt.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -344,7 +353,7 @@ public class QATest extends BaseTransUI {
 		resetQATstCndnRslt();
 		assembleSearchLayout();
 		loadSrchRslt();
-		hlDocumentLayout.setEnabled(false);
+		hlTestDocLayout.setEnabled(false);
 	}
 	
 	private void loadSrchRslt() {
@@ -545,7 +554,7 @@ public class QATest extends BaseTransUI {
 		tabSheet.setHeight("320");
 		tabSheet.addTab(vlTstDtl, "Test Definition", null);
 		tabSheet.addTab(vlTstCndn, "Test Condition Result", null);
-		tabSheet.addTab(hlDocumentLayout, "Testing Documents");
+		tabSheet.addTab(hlTestDocLayout, "Testing Documents");
 		tabSheet.addTab(vlTableForm, "Comments", null);
 		VerticalLayout vlAllComponent = new VerticalLayout();
 		vlAllComponent.addComponent(hlTstHdr);
@@ -554,7 +563,10 @@ public class QATest extends BaseTransUI {
 		vlAllComponent.setSpacing(true);
 		vlAllComponent.setWidth("100%");
 		// adding form layouts into user input layouts
-		hlUserInputLayout.addComponent(vlAllComponent);
+		TabSheet tab = new TabSheet();
+		tab.addTab(vlAllComponent, "Test Ovewview");
+		tab.addTab(hlDocumentLayout, "Design Documents");
+		hlUserInputLayout.addComponent(tab);
 		hlUserInputLayout.setWidth("100%");
 	}
 	
@@ -664,7 +676,8 @@ public class QATest extends BaseTransUI {
 		loadSrchQACndnRsltList();
 		loadSrchQADtlList();
 		comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
-		hlDocumentLayout.setEnabled(false);
+		hlTestDocLayout.setEnabled(false);
+		hlDocumentLayout.removeAllComponents();
 	}
 	
 	private void loadProductDrgCodeList() {
@@ -832,8 +845,8 @@ public class QATest extends BaseTransUI {
 				listQATestCndtnReslt = serviceQATestCndRslt.getQATestCndtnResltDetails(null, qaTestHdrId, "Active");
 				comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
 				comment.loadsrch(true, null, companyid, null, null, null, qaTestHdrId);
-				new TestingDocuments(hlDocumentLayout, qaTestHdrId.toString(), "QA");
-				hlDocumentLayout.setEnabled(true);
+				new TestingDocuments(hlTestDocLayout, qaTestHdrId.toString(), "QA");
+				hlTestDocLayout.setEnabled(true);
 				cbProdDrg.setValue(qaTestHdrDM.getProddwgid().toString());
 				cbProdDrg.setImmediate(true);
 			}
@@ -859,7 +872,7 @@ public class QATest extends BaseTransUI {
 						cbTstSpec.select(itemId);
 					}
 				}
-				tfTstCycle.setValue(Long.valueOf(editQaTestDtl.getTstCycleNo()).toString());
+				tfTstCycle.setValue(editQaTestDtl.getTstCycleNo());
 				tfQADefntstReslt.setValue(editQaTestDtl.getTstSpecResult());
 				cbQDtlStatus.setValue(editQaTestDtl.getQaTstStatus());
 				if (editQaTestDtl.getQaTstRemarks() != null) {
@@ -1027,8 +1040,8 @@ public class QATest extends BaseTransUI {
 		comment.resetFields();
 		comment.commentList = new ArrayList<CommentDM>();
 		comment.resettbl();
-		new TestingDocuments(hlDocumentLayout, qaTestHdrId.toString(), "QA");
-		hlDocumentLayout.setEnabled(true);
+		new TestingDocuments(hlTestDocLayout, qaTestHdrId.toString(), "QA");
+		hlTestDocLayout.setEnabled(true);
 	}
 	
 	private void saveQaTstDtls() {
@@ -1045,9 +1058,8 @@ public class QATest extends BaseTransUI {
 			qaTestDtlDM.setQaTstRemarks(taQcTstDtlRemarks.getValue());
 			qaTestDtlDM.setTstSpecResult(tfQADefntstReslt.getValue());
 			try {
-				Long.valueOf(tfTstCycle.getValue());
 				tfTstCycle.setComponentError(null);
-				qaTestDtlDM.setTstCycleNo(Long.valueOf(tfTstCycle.getValue()));
+				qaTestDtlDM.setTstCycleNo(tfTstCycle.getValue());
 				qaTestDtlDM.setQaTstStatus((String) cbQDtlStatus.getValue());
 				qaTestDtlDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 				qaTestDtlDM.setLastUpdatedBy(userName);

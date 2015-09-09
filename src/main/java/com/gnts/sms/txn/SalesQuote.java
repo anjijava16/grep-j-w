@@ -137,7 +137,7 @@ public class SalesQuote extends BaseTransUI {
 	private PopupDateField dfQuoteDt, dfvalidDt;
 	private CheckBox chkDutyExe, ckPdcRqu, chkCformReq;
 	private GERPButton btnsavepurQuote = new GERPButton("Add", "addbt", this);
-	private GERPButton btnprintback = new GERPButton("Print Back", "downloadbt", this);
+	private GERPButton btnprintbackquote = new GERPButton("Print Back", "downloadbt", this);
 	private VerticalLayout hlquoteDoc = new VerticalLayout();
 	// Sales QuoteDtl components
 	private ComboBox cbProduct, cbUom, cbdtlstatus;
@@ -527,9 +527,9 @@ public class SalesQuote extends BaseTransUI {
 				}
 			}
 		});
-		hlPageHdrContainter.addComponent(btnprintback);
-		hlPageHdrContainter.setComponentAlignment(btnprintback, Alignment.MIDDLE_LEFT);
-		btnprintback.addClickListener(new ClickListener() {
+		hlPageHdrContainter.addComponent(btnprintbackquote);
+		hlPageHdrContainter.setComponentAlignment(btnprintbackquote, Alignment.MIDDLE_RIGHT);
+		btnprintbackquote.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				printDetailsback();
@@ -1455,7 +1455,7 @@ public class SalesQuote extends BaseTransUI {
 		// for load Technical and Commercial Terms
 		addDefaultCommercialTerms();
 		addDefaultTechnicalTerms();
-		btnprintback.setVisible(true);
+		btnprintbackquote.setVisible(true);
 	}
 	
 	@Override
@@ -1487,7 +1487,7 @@ public class SalesQuote extends BaseTransUI {
 	loadTechnicalTerms(true);
 		comments.loadsrch(true, null, null, null, quoteId, null, null, null, null, null, null, null, null);
 		comments.editcommentDetails();
-		btnprintback.setVisible(true);
+		btnprintbackquote.setVisible(true);
 	}
 	
 	@Override
@@ -1858,7 +1858,7 @@ public class SalesQuote extends BaseTransUI {
 		smsQuoteDtlList = new ArrayList<SmsQuoteDtlDM>();
 		tblsmsQuoteDtl.removeAllItems();
 		new UploadDocumentUI(hlquoteDoc);
-		btnprintback.setVisible(false);
+		btnprintbackquote.setVisible(false);
 		listCommercialTerms = new ArrayList<QuoteCommCondDM>();
 		tblCommercialTerms.removeAllItems();
 		listTechnicalTerms = new ArrayList<QuoteTechCondDM>();
@@ -1909,7 +1909,7 @@ public class SalesQuote extends BaseTransUI {
 			parameterMap.put("QTID", quoteId.toString());
 			System.out.println("quote id" + quoteId);
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "//WEB-INF//reports//quoteback"); // productlist is the name of my jasper
+			rpt.setReportName(basepath + "/WEB-INF/reports/quoteback"); // productlist is the name of my jasper
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

@@ -114,7 +114,7 @@ public class WorkOrder extends BaseTransUI {
 	private PopupDateField delvrySchdDt;
 	private Table tblWrkOdrDtl;
 	private Button btnsaveWrkOdrDtl;
-	private GERPButton btnprintback = new GERPButton("Print Back", "downloadbt", this);
+	private GERPButton btnprintbackWO = new GERPButton("Print Back", "downloadbt", this);
 
 	// User Input Components for Work Order Header
 	private TextField tfPlanRefNo, tfEnquiryNumber, tfmoldtime, tfplanning, tfrototime, tffoamtime;
@@ -200,12 +200,12 @@ public class WorkOrder extends BaseTransUI {
 				}
 			}
 		});
-		hlPageHdrContainter.addComponent(btnprintback);
-		hlPageHdrContainter.setComponentAlignment(btnprintback, Alignment.MIDDLE_LEFT);
-		btnprintback.addClickListener(new ClickListener() {
+		hlPageHdrContainter.addComponent(btnprintbackWO);
+		hlPageHdrContainter.setComponentAlignment(btnprintbackWO, Alignment.MIDDLE_RIGHT);
+		btnprintbackWO.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				printDetailsback();
+				printDetailsback1();
 			}
 		});
 		opPONumbers.addItems("LOI", "PO");
@@ -790,7 +790,7 @@ public class WorkOrder extends BaseTransUI {
 		tblWrkOdrDtl.removeAllItems();
 		cbEnquiryNumber.setReadOnly(false);
 		cbEnquiryNumber.setValue(null);
-		btnprintback.setVisible(false);
+		btnprintbackWO.setVisible(false);
 
 	}
 	
@@ -962,7 +962,7 @@ public class WorkOrder extends BaseTransUI {
 		comment = new Comments(vlCommendForm, companyid, null, null, null, null, commentby);
 		cbWorkderStatus.setValue(cbWorkderStatus.getItemIds().iterator().next());
 		hlDocumentLayout.removeAllComponents();
-		btnprintback.setVisible(true);
+		btnprintbackWO.setVisible(true);
 
 	}
 	
@@ -1018,7 +1018,7 @@ public class WorkOrder extends BaseTransUI {
 		editWorkOrderHdrDetails();
 		editWorkOrderDtlDetails();
 		loadSrchWrkOdrDtlRslt();
-		btnprintback.setVisible(true);
+		btnprintbackWO.setVisible(true);
 
 	}
 	
@@ -1381,7 +1381,7 @@ public class WorkOrder extends BaseTransUI {
 			}
 		}
 	}
-	private void printDetailsback() {
+	private void printDetailsback1() {
 		// TODO Auto-generated method stub
 		Connection connection = null;
 		Statement statement = null;
@@ -1389,10 +1389,10 @@ public class WorkOrder extends BaseTransUI {
 		try {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
-			HashMap<String, String> parameterMap = new HashMap<String, String>();
-			parameterMap.put("WOID", wrkOdrHdrId.toString());
+			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
+			parameterMap.put("WOID", wrkOdrHdrId);
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "//WEB-INF//reports//workorderback"); // productlist is the name of my jasper
+			rpt.setReportName(basepath + "/WEB-INF/reports/workorderback"); // workorder is the name of my jasper
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

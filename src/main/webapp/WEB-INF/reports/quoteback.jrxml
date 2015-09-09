@@ -18,12 +18,12 @@
 		<band splitType="Stretch"/>
 	</background>
 	<summary>
-		<band height="708" splitType="Stretch">
+		<band height="752" splitType="Stretch">
 			<rectangle>
-				<reportElement x="0" y="0" width="572" height="699" uuid="853d1657-215c-449f-a7c0-a442dc8e293a"/>
+				<reportElement x="0" y="0" width="572" height="752" uuid="853d1657-215c-449f-a7c0-a442dc8e293a"/>
 			</rectangle>
 			<subreport>
-				<reportElement x="1" y="32" width="571" height="221" uuid="05482032-898a-44bc-a5a6-b1a24a13b12d"/>
+				<reportElement x="1" y="24" width="571" height="261" uuid="05482032-898a-44bc-a5a6-b1a24a13b12d"/>
 				<subreportParameter name="QTID">
 					<subreportParameterExpression><![CDATA[$P{QTID}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -31,7 +31,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "quote_tech_terms.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement x="0" y="255" width="572" height="361" uuid="b3220fc6-7fa8-4a80-a94c-b020ea5c5763"/>
+				<reportElement x="0" y="302" width="572" height="361" uuid="b3220fc6-7fa8-4a80-a94c-b020ea5c5763"/>
 				<subreportParameter name="QTID">
 					<subreportParameterExpression><![CDATA[$P{QTID}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -46,49 +46,49 @@
 				<text><![CDATA[Technical Terms & Conditions]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="3" y="225" width="306" height="20" uuid="0907c0d4-37b7-4288-9d86-0f2cea0e17ed"/>
+				<reportElement x="3" y="285" width="306" height="20" uuid="0907c0d4-37b7-4288-9d86-0f2cea0e17ed"/>
 				<textElement>
 					<font isBold="true" isUnderline="true"/>
 				</textElement>
 				<text><![CDATA[Commercial Terms & Conditions]]></text>
 			</staticText>
 			<line>
-				<reportElement x="1" y="616" width="571" height="1" uuid="69a6a90c-790d-48db-bc46-5e3e1fddbb68"/>
+				<reportElement x="1" y="663" width="571" height="1" uuid="69a6a90c-790d-48db-bc46-5e3e1fddbb68"/>
 			</line>
 			<staticText>
-				<reportElement x="16" y="643" width="110" height="20" uuid="e23e1fa1-bf69-4075-9155-08cdbee4c335"/>
+				<reportElement x="16" y="695" width="110" height="20" uuid="e23e1fa1-bf69-4075-9155-08cdbee4c335"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Prepared by]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="236" y="643" width="110" height="20" uuid="26e65f78-6b73-4dfa-84cd-3968dc7eee03"/>
+				<reportElement x="236" y="695" width="110" height="20" uuid="26e65f78-6b73-4dfa-84cd-3968dc7eee03"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Checked by]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="434" y="643" width="110" height="20" uuid="558bf116-19df-4c28-b206-cf6032b2656b"/>
+				<reportElement x="434" y="695" width="110" height="20" uuid="558bf116-19df-4c28-b206-cf6032b2656b"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Approved by]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="16" y="677" width="30" height="20" uuid="88894b54-3f55-424c-b9dc-d08c73734072"/>
+				<reportElement x="16" y="729" width="30" height="20" uuid="88894b54-3f55-424c-b9dc-d08c73734072"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Encl:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="70" y="679" width="100" height="20" uuid="7ce7207d-07b0-4c04-b7ac-2f8eea640122"/>
+				<reportElement x="70" y="731" width="100" height="20" uuid="7ce7207d-07b0-4c04-b7ac-2f8eea640122"/>
 				<text><![CDATA[Preliminary Drawing]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="236" y="679" width="100" height="20" uuid="6339c429-1e19-4e00-ba52-cfcdd06f4bad"/>
+				<reportElement x="236" y="731" width="100" height="20" uuid="6339c429-1e19-4e00-ba52-cfcdd06f4bad"/>
 				<text><![CDATA[Complete Drawing]]></text>
 			</staticText>
 		</band>

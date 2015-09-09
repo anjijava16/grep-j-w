@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="planning_sheet" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b1b91010-e391-4e46-a454-64df028aea6a">
+	<property name="ireport.zoom" value="1.4641000000000028"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="27"/>
+	<parameter name="PLANID" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select wh.wo_id,woh.wo_no,woh.client_id,cl.client_name ||' - '||cl.client_code  client_name,wp.product_name,wp.woplan_qty,
+wm.material_id,m.materail_name || ' - ' || m.material_code materail_name,wm.required_qty ||' '|| m.materail_uom required_qty,
+wh.plan_no,wh.plan_dt
+from T_MFG_WO_PLAN_HDR wh,T_MFG_WO_PLAN_MTRL_DTL wm,T_MFG_WO_PLAN_PROD_DTL wp,T_MFG_WORKORDER_HDR woh,m_crm_clients cl,m_mms_material m
+where wh.wo_id = woh.wo_id
+and wh.woplan_id = wm.woplan_id
+and wh.woplan_id = wp.woplan_id
+and wm.woplan_id = wp.woplan_id
+and woh.client_id = cl.client_id
+and wm.material_id = m.material_id
+and wh.woplan_id =$P{PLANID}]]>
+	</queryString>
+	<field name="WO_ID" class="java.math.BigDecimal"/>
+	<field name="WO_NO" class="java.lang.String"/>
+	<field name="CLIENT_ID" class="java.math.BigDecimal"/>
+	<field name="CLIENT_NAME" class="java.lang.String"/>
+	<field name="PRODUCT_NAME" class="java.lang.String"/>
+	<field name="WOPLAN_QTY" class="java.math.BigDecimal"/>
+	<field name="MATERIAL_ID" class="java.math.BigDecimal"/>
+	<field name="MATERAIL_NAME" class="java.lang.String"/>
+	<field name="REQUIRED_QTY" class="java.lang.String"/>
+	<field name="PLAN_NO" class="java.lang.String"/>
+	<field name="PLAN_DT" class="java.sql.Timestamp"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="8c197f09-be21-4165-a7a5-2a0e0684298a" x="0" y="29" width="554" height="24"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Planning Sheet for Accessories Issues]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="aec1f364-31f2-4421-9eee-20110353761c" x="0" y="55" width="554" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="38ca536e-0711-4ac2-ae1f-493bdf5780ed" x="1" y="3" width="556" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SAARC TOOL TECH (P) LTD, COIMBATORE]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="91" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="ef62afcc-ee06-418d-b6c2-25dfe97d8bcc" x="3" y="3" width="84" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Plan Date :]]></text>
+			</staticText>
+			<textField pattern="dd-MMM-yyyy">
+				<reportElement uuid="e600eb92-8471-4c35-a21f-002df34c2302" x="88" y="3" width="209" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PLAN_DT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="64d556bb-e400-4bce-b427-00479132a830" x="1" y="65" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Client Name :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3c67e1c7-9fa4-4bac-ab96-4ea1a60570e1" x="3" y="24" width="84" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Plan Ref. :]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement uuid="bce9d380-589a-4949-9106-c7cb705ef2a6" x="88" y="24" width="209" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PLAN_NO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="5e28a43a-a3d7-417c-9ba4-e4bd42c2cfcc" x="3" y="44" width="83" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[WO Ref. :]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="b45b6b87-44f9-41b9-9bad-79b701974138" x="1" y="88" width="553" height="1"/>
+			</line>
+			<textField>
+				<reportElement uuid="c0981b57-a010-4570-a88d-f0f08c2f3c69" x="88" y="65" width="209" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CLIENT_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="bef9ba3f-dcc2-42ef-b52d-70f525160bd8" x="88" y="44" width="209" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{WO_NO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="dcca63d5-1a7d-48a5-b656-41163a8dd6e4" x="316" y="4" width="136" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Pattern Number]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9bdf4bdd-99aa-4791-9d34-b9c3fb34f184" x="469" y="4" width="85" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Box Quantity]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="2115748d-f334-4c51-9772-5b4a3f216acf" x="317" y="24" width="135" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PRODUCT_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="8b1b74c6-f9f4-4ca0-bd59-baaddac72645" x="452" y="24" width="17" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="174cb09b-e4b8-4a43-9ee4-d22ef8577748" x="469" y="24" width="85" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WOPLAN_QTY}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="19" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="4cc7fe4d-238e-4632-a17c-75b52a2a8f0f" x="1" y="2" width="46" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Sl. No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5b810d1b-b472-4b59-a495-b6a38f3347ad" x="51" y="2" width="220" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Receipt Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b5288ff9-de06-40b2-9828-210e0da74531" x="277" y="2" width="102" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Allotment]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="a310fdab-f388-4c48-be21-199d90980e46" x="0" y="17" width="556" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="567ae112-8c28-447b-817d-24e2e8a893f8" x="395" y="0" width="159" height="16"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Remarks if any]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<textField pattern="dd-MMM-yyyy">
+				<reportElement uuid="1c5b9f1e-29e7-4f0e-bf7b-3d0b06dbff46" x="277" y="0" width="102" height="22"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{REQUIRED_QTY}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yyyy">
+				<reportElement uuid="5b9c0bbb-746f-4af4-a70a-9bb9038a8e5f" x="51" y="2" width="220" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MATERAIL_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="aba4d472-a901-4189-a90d-18bc7cb8c9da" x="3" y="4" width="44" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="14382dd7-a960-4c66-aef3-a3b0477c8faf" x="0" y="13" width="158" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Prepared By]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="eab0df43-2ac3-4416-95d6-11e519cfa7af" x="197" y="13" width="141" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Approved By]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d1ec9d71-0ed0-4c1b-a9d2-580667eeb81a" x="395" y="13" width="157" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Authorized By]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

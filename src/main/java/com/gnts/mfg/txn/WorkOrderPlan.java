@@ -14,8 +14,11 @@
  */
 package com.gnts.mfg.txn;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -40,6 +43,8 @@ import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
+import com.gnts.erputil.ui.Database;
+import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
@@ -67,6 +72,7 @@ import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -836,6 +842,7 @@ public class WorkOrderPlan extends BaseTransUI {
 			wrkOrdPlnHdr.setLastUpdatedDt(DateUtils.getcurrentdate());
 			wrkOrdPlnHdr.setLastUpdatedBy(username);
 			serviceWorkOrderPlanHdr.saveOrUpdate(wrkOrdPlnHdr);
+			woPlnHdr= Long.valueOf(wrkOrdPlnHdr.getWrkPlanId());
 			@SuppressWarnings("unchecked")
 			Collection<WorkOrderPlanProdDtlDM> itemIds = (Collection<WorkOrderPlanProdDtlDM>) tblWrkOrdPlnDtl
 					.getVisibleItemIds();
@@ -999,6 +1006,30 @@ public class WorkOrderPlan extends BaseTransUI {
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
+			parameterMap.put("PLANID", woPlnHdr);
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "/WEB-INF/reports/planning_sheet"); // workorder is the name of my jasper
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	// Load EnquiryNo

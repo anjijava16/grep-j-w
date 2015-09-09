@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="workback" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="50c72e5a-1060-4f44-a8cd-34297f769c40">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Sara\\22.Projects\\workspace\\gerp-web\\src\\main\\webapp\\WEB-INF\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="WOID" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select PROBLEM_DESC problem,CORRECT_ACTION ||' and '|| PREV_ACTION action,ROOT_CAUSE_ANAL verification from T_SMS_SER_CALL_FORM where WO_ID=$P{WOID}]]>
+	</queryString>
+	<field name="PROBLEM" class="java.lang.String"/>
+	<field name="ACTION" class="java.lang.String"/>
+	<field name="VERIFICATION" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<summary>
+		<band height="708" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="572" height="708" uuid="853d1657-215c-449f-a7c0-a442dc8e293a"/>
+				<graphicElement>
+					<pen lineWidth="2.5" lineStyle="Double"/>
+				</graphicElement>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="89" width="572" height="1" uuid="fde5acea-4039-4bac-93d3-319fecf43787"/>
+			</line>
+			<line>
+				<reportElement x="0" y="510" width="573" height="1" uuid="f30addfb-29ff-4c3c-90cc-95a2fb7f5955"/>
+			</line>
+			<staticText>
+				<reportElement x="210" y="11" width="144" height="20" uuid="383c53a1-7e8e-4cf9-8f69-668c1792266e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="14" isBold="true" isItalic="true" isUnderline="true" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[Customer Feedback]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="63" width="54" height="18" uuid="fcf1da97-6033-4e71-b746-3d93e15450e7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Ref No:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="91" width="233" height="19" uuid="e262209e-ac7a-46ba-bbc4-1bc5954cfd7e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Problem Reported By Customer:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="281" width="245" height="19" uuid="b748a1bb-9943-4461-aae2-ebb02a3063a1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Corrective and preventive Action:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="279" width="572" height="1" uuid="f00c4069-c843-4f30-b37a-b4c9b91e78b3"/>
+			</line>
+			<staticText>
+				<reportElement x="3" y="510" width="245" height="18" uuid="82535c6a-9b37-423a-8154-c2fe217f9c16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Verification:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="58" y="110" width="514" height="157" uuid="6f306882-f0b6-465c-acfe-2af7d2df139e"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PROBLEM}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="58" y="315" width="514" height="175" uuid="e2fc9b09-3f5a-4919-81c4-38b3ff6fef2a"/>
+				<textFieldExpression><![CDATA[$F{ACTION}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="58" y="546" width="514" height="144" uuid="3303186b-c2b0-45e7-91c9-e36a5bc173ca"/>
+				<textFieldExpression><![CDATA[$F{VERIFICATION}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

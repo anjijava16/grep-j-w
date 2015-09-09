@@ -528,7 +528,7 @@ public class SalesQuote extends BaseTransUI {
 			}
 		});
 		hlPageHdrContainter.addComponent(btnprintback);
-		hlPageHdrContainter.setComponentAlignment(btnprintback, Alignment.MIDDLE_RIGHT);
+		hlPageHdrContainter.setComponentAlignment(btnprintback, Alignment.MIDDLE_LEFT);
 		btnprintback.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {

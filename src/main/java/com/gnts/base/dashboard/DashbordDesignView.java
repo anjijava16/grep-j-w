@@ -6,6 +6,7 @@ import com.gnts.base.mst.Product;
 import com.gnts.base.service.mst.ProductService;
 import com.gnts.crm.mst.Client;
 import com.gnts.crm.service.mst.ClientService;
+import com.gnts.die.txn.DieRequest;
 import com.gnts.dsn.stt.txn.DesignDocuments;
 import com.gnts.dsn.stt.txn.ECNote;
 import com.gnts.dsn.stt.txn.ECRequest;
@@ -76,6 +77,7 @@ public class DashbordDesignView implements ClickListener {
 		btnEnquiryWorkflow.setStyleName("borderless-colored");
 		btnECRequest.setStyleName("borderless-colored");
 		btnECNote.setStyleName("borderless-colored");
+		btnWOCount.setStyleName("borderless-colored");
 		btnProductCount.setStyleName("borderless-coloredbig");
 		btnClientCount.setStyleName("borderless-coloredbig");
 		btnNotify.setIcon(new ThemeResource("img/download.png"));
@@ -96,6 +98,7 @@ public class DashbordDesignView implements ClickListener {
 		custom.addComponent(btnECNote, "invoicecount");
 		custom.addComponent(btnProductCount, "productCount");
 		custom.addComponent(btnClientCount, "clientCount");
+		custom.addComponent(btnWOCount, "workordercount");
 		custom.addComponent(new CalendarMonthly("DESIGN_VIEW"), "designview");
 	}
 	
@@ -154,6 +157,11 @@ public class DashbordDesignView implements ClickListener {
 			new ECNote();
 		}
 		if (event.getButton() == btnWOCount) {
+			clMainLayout.removeAllComponents();
+			hlHeader.removeAllComponents();
+			UI.getCurrent().getSession().setAttribute("screenName", "Bill of Material");
+			UI.getCurrent().getSession().setAttribute("moduleId", 17L);
+			new DieRequest();
 		}
 		if (event.getButton() == btnProductCount) {
 			clMainLayout.removeAllComponents();

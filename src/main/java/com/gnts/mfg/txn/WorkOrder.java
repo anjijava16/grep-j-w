@@ -75,6 +75,7 @@ import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -105,7 +106,7 @@ public class WorkOrder extends BaseTransUI {
 	// form layout for input controls for Work Order Header
 	private FormLayout flOdrHdrColumn1, flOdrHdrColumn2, flOdrHdrColumn3, flOdrHdrColumn4, flOdrHdrColumn5;
 	// form layout for input controls for Work Order Details
-	private FormLayout flOdrDtlColumn1, flOdrDtlColumn2, flOdrDtlColumn3, flOdrDtlColumn4;
+	private FormLayout flOdrDtlColumn1, flOdrDtlColumn2, flOdrDtlColumn3, flOdrDtlColumn4, flOdrDtlColumn5;
 	// // User Input Components for Work Order Details
 	private ComboBox cbPrdName;
 	private TextField tfPrdName, tfWrkOdrQty, tfPlnQty, tfBalQty;
@@ -113,8 +114,10 @@ public class WorkOrder extends BaseTransUI {
 	private PopupDateField delvrySchdDt;
 	private Table tblWrkOdrDtl;
 	private Button btnsaveWrkOdrDtl;
+	private GERPButton btnprintback = new GERPButton("Print Back", "downloadbt", this);
+
 	// User Input Components for Work Order Header
-	private TextField tfPlanRefNo, tfEnquiryNumber;
+	private TextField tfPlanRefNo, tfEnquiryNumber, tfmoldtime, tfplanning, tfrototime, tffoamtime;
 	private TextArea taWrkOdrHdrRemarks;
 	private PopupDateField wrkOdrDate;
 	private OptionGroup workordtype = new OptionGroup("");
@@ -191,7 +194,18 @@ public class WorkOrder extends BaseTransUI {
 				// TODO Auto-generated method stub
 				if (cbwrkOdrType.getValue() != null) {
 					loadworkordertypeAutogen();
+					if(cbwrkOdrType.getValue().equals("Mold Manufacturing")){
+						tfmoldtime.setEnabled(true);
+					}
 				}
+			}
+		});
+		hlPageHdrContainter.addComponent(btnprintback);
+		hlPageHdrContainter.setComponentAlignment(btnprintback, Alignment.MIDDLE_LEFT);
+		btnprintback.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				printDetailsback();
 			}
 		});
 		opPONumbers.addItems("LOI", "PO");
@@ -309,10 +323,10 @@ public class WorkOrder extends BaseTransUI {
 				}
 			}
 		});
-		taWrkOdrDtlRmks = new GERPTextArea("Work Order Remarks");
+		taWrkOdrDtlRmks = new GERPTextArea("Remarks");
 		taWrkOdrDtlRmks.setWidth("150");
 		taWrkOdrDtlRmks.setHeight("50");
-		delvrySchdDt = new GERPPopupDateField("Delivery Schd.Date");
+		delvrySchdDt = new GERPPopupDateField("Date at QC");
 		delvrySchdDt.setWidth("133");
 		delvrySchdDt.setImmediate(true);
 		// Initialization for work order header user input components
@@ -326,6 +340,18 @@ public class WorkOrder extends BaseTransUI {
 		tfPlanRefNo = new GERPTextField("Work Order No.");
 		tfPlanRefNo.setWidth("150");
 		tfPlanRefNo.setMaxLength(10);
+		tfmoldtime = new GERPTextField("Mold Time");
+		tfmoldtime.setWidth("130");
+		tfmoldtime.setMaxLength(10);
+		tfplanning = new GERPTextField("Planning Time");
+		tfplanning.setWidth("130");
+		tfplanning.setMaxLength(10);
+		tfrototime = new GERPTextField("Roto Time");
+		tfrototime.setWidth("130");
+		tfrototime.setMaxLength(10);
+		tffoamtime = new GERPTextField("Foam Time");
+		tffoamtime.setWidth("130");
+		tffoamtime.setMaxLength(10);
 		try {
 			ApprovalSchemaDM obj = serviceWrkOrdHdr.getReviewerId(companyid, appScreenId, branchID, roleId).get(0);
 			name = obj.getApprLevel();
@@ -531,7 +557,6 @@ public class WorkOrder extends BaseTransUI {
 		tfPrdName.setRequired(true);
 		tfPlnQty.setRequired(true);
 		tfBalQty.setRequired(true);
-		delvrySchdDt.setRequired(true);
 		// adding components into first column in form layout1
 		flOdrHdrColumn1.addComponent(tfPlanRefNo);
 		flOdrHdrColumn1.addComponent(cbwrkOdrType);
@@ -562,10 +587,14 @@ public class WorkOrder extends BaseTransUI {
 		flOdrDtlColumn1.addComponent(tfWrkOdrQty);
 		flOdrDtlColumn1.addComponent(tfPlnQty);
 		flOdrDtlColumn2.addComponent(tfBalQty);
-		flOdrDtlColumn3.addComponent(tfCustomField2);
-		flOdrDtlColumn3.addComponent(taWrkOdrDtlRmks);
+		flOdrDtlColumn2.addComponent(tfCustomField2);
 		flOdrDtlColumn2.addComponent(delvrySchdDt);
 		flOdrDtlColumn2.addComponent(tfCustomField1);
+		flOdrDtlColumn3.addComponent(tfmoldtime);
+		flOdrDtlColumn3.addComponent(tfplanning);
+		flOdrDtlColumn3.addComponent(tfrototime);
+		flOdrDtlColumn3.addComponent(tffoamtime);
+		flOdrDtlColumn4.addComponent(taWrkOdrDtlRmks);
 		flOdrDtlColumn4.addComponent(btnsaveWrkOdrDtl);
 		flOdrDtlColumn4.addComponent(btnDtlWrkOrd);
 		// adding form layouts into user input layouts
@@ -582,6 +611,7 @@ public class WorkOrder extends BaseTransUI {
 		hlOdrDtl.addComponent(flOdrDtlColumn2);
 		hlOdrDtl.addComponent(flOdrDtlColumn3);
 		hlOdrDtl.addComponent(flOdrDtlColumn4);
+
 		hlOdrDtl.setSpacing(true);
 		hlOdrDtl.setMargin(true);
 		vlWrkOdrComp = new VerticalLayout();
@@ -760,6 +790,8 @@ public class WorkOrder extends BaseTransUI {
 		tblWrkOdrDtl.removeAllItems();
 		cbEnquiryNumber.setReadOnly(false);
 		cbEnquiryNumber.setValue(null);
+		btnprintback.setVisible(false);
+
 	}
 	
 	// Method to edit the values from table into fields to update process
@@ -851,7 +883,24 @@ public class WorkOrder extends BaseTransUI {
 				if (workOrderDtlDM.getCustomField2() != null) {
 					tfCustomField2.setValue(workOrderDtlDM.getCustomField2());
 				}
-				delvrySchdDt.setValue(workOrderDtlDM.getDlvrySchdl());
+				if (workOrderDtlDM.getDateQc() != null) {
+					delvrySchdDt.setValue(workOrderDtlDM.getDateQc());
+				}
+				if (workOrderDtlDM.getRotoTime() != null) {
+					tfrototime.setValue(workOrderDtlDM.getRotoTime());
+				}
+				if (workOrderDtlDM.getMouldTime() != null) {
+					tfmoldtime.setValue(workOrderDtlDM.getMouldTime());
+				}
+				if (workOrderDtlDM.getPlanning() != null) {
+					tfplanning.setValue(workOrderDtlDM.getPlanning());
+				}
+				if (workOrderDtlDM.getFoamTime() != null) {
+					tffoamtime.setValue(workOrderDtlDM.getFoamTime());
+				}
+				if(cbwrkOdrType.getValue().equals("Mold Manufacturing")){
+				tfmoldtime.setEnabled(true);	
+				}
 			}
 		}
 		catch (Exception e) {
@@ -913,6 +962,8 @@ public class WorkOrder extends BaseTransUI {
 		comment = new Comments(vlCommendForm, companyid, null, null, null, null, commentby);
 		cbWorkderStatus.setValue(cbWorkderStatus.getItemIds().iterator().next());
 		hlDocumentLayout.removeAllComponents();
+		btnprintback.setVisible(true);
+
 	}
 	
 	// Method to get the audit history details
@@ -938,7 +989,6 @@ public class WorkOrder extends BaseTransUI {
 		tfPrdName.setRequired(false);
 		tfPlnQty.setRequired(false);
 		tfBalQty.setRequired(false);
-		delvrySchdDt.setRequired(false);
 		cbWorkderStatus.setRequired(false);
 		resetFields();
 		resetWorkOrdDtl();
@@ -968,6 +1018,8 @@ public class WorkOrder extends BaseTransUI {
 		editWorkOrderHdrDetails();
 		editWorkOrderDtlDetails();
 		loadSrchWrkOdrDtlRslt();
+		btnprintback.setVisible(true);
+
 	}
 	
 	private void resetWorkOrdDtl() {
@@ -989,10 +1041,15 @@ public class WorkOrder extends BaseTransUI {
 		tfBalQty.setComponentError(null);
 		tfPrdName.setComponentError(null);
 		delvrySchdDt.setValue(null);
-		delvrySchdDt.setComponentError(null);
 		taWrkOdrDtlRmks.setValue("");
 		tfCustomField1.setValue("");
 		tfCustomField2.setValue("");
+		tfmoldtime.setValue("");
+		tfplanning.setValue("");
+		tfrototime.setValue("");
+		tffoamtime.setValue("");
+		tfmoldtime.setEnabled(false);
+
 	}
 	
 	// Method to implement about validations to the required input fields
@@ -1153,12 +1210,7 @@ public class WorkOrder extends BaseTransUI {
 			tfPlnQty.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_INCOR_PL_QTY));
 			isValid = false;
 		}
-		if (delvrySchdDt.getValue() == null) {
-			delvrySchdDt.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_DT));
-			isValid = false;
-		} else {
-			delvrySchdDt.setComponentError(null);
-		}
+		
 		return isValid;
 	}
 	
@@ -1178,13 +1230,27 @@ public class WorkOrder extends BaseTransUI {
 			tfWrkOdrQty.setReadOnly(true);
 			workOrderDtlDM.setPlanQty(Long.valueOf(tfPlnQty.getValue()));
 			workOrderDtlDM.setBalQty(Long.valueOf(tfBalQty.getValue().toString()));
-			workOrderDtlDM.setDlvrySchdl(delvrySchdDt.getValue());
+			if(delvrySchdDt.getValue()!=null){
+			workOrderDtlDM.setDateQc(delvrySchdDt.getValue());}
 			workOrderDtlDM.setWorkOrdDlRmrks(taWrkOdrDtlRmks.getValue());
 			workOrderDtlDM.setWdStatus((String) cbWorkderStatus.getValue());
 			workOrderDtlDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 			workOrderDtlDM.setLastUpdatedBy(username);
 			workOrderDtlDM.setCustomField1(tfCustomField1.getValue());
 			workOrderDtlDM.setCustomField2(tfCustomField2.getValue());
+			if (tfmoldtime.getValue() != "") {
+				workOrderDtlDM.setMouldTime(tfmoldtime.getValue());
+			}
+			if (tfplanning.getValue() != "") {
+				workOrderDtlDM.setPlanning(tfplanning.getValue());
+			}
+			if (tfrototime.getValue() != "") {
+				workOrderDtlDM.setRotoTime(tfrototime.getValue());
+			}
+			if (tffoamtime.getValue() != "") {
+				workOrderDtlDM.setFoamTime(tffoamtime.getValue());
+			}
+			
 			listWODetails.add(workOrderDtlDM);
 			resetWorkOrdDtl();
 			loadSrchWrkOdrDtlRslt();
@@ -1315,4 +1381,32 @@ public class WorkOrder extends BaseTransUI {
 			}
 		}
 	}
+	private void printDetailsback() {
+		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, String> parameterMap = new HashMap<String, String>();
+			parameterMap.put("WOID", wrkOdrHdrId.toString());
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "//WEB-INF//reports//workorderback"); // productlist is the name of my jasper
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 }

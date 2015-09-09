@@ -634,8 +634,8 @@ public class ServiceCallForm extends BaseTransUI {
 			}
 			serviceCallFormDM.setProdStatus((String) cbprodstatus.getValue());
 		}
-		if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM") != null
-				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")) {
+		if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM") != null
+				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM")) {
 			serviceCallFormDM.setSerEndDt(dfEndDt.getValue());
 			serviceCallFormDM.setSerStartDt(dfStartDt.getValue());
 			serviceCallFormDM.setServDesc(tfserdesc.getValue());
@@ -644,8 +644,8 @@ public class ServiceCallForm extends BaseTransUI {
 			}
 			serviceCallFormDM.setQcStatus((String) cbqcstatus.getValue());
 		}
-		if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM") != null
-				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM")) {
+		if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM") != null
+				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")) {
 			serviceCallFormDM.setRootCauseAnal(tarootcauseanl.getValue());
 			serviceCallFormDM.setCorrectAction(tacorrectiveaction.getValue());
 			serviceCallFormDM.setPrevAction(taprevaction.getValue());

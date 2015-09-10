@@ -14,7 +14,7 @@ FROM T_SMS_SER_CALL_FORM a,
 T_SMS_ENQUIRY_HDR b,M_CRM_CLIENTS c ,T_SMS_PO_HDR d,T_MFG_WORKORDER_HDR e,T_SMS_ENQUIRY_DTL F where a.ENQUIRY_ID=b.ENQUIRY_ID and
 a.CLIENT_ID=c.CLIENT_ID and a.WO_ID=e.WO_ID(+) and a.PO_ID=d.PO_ID(+) AND b.ENQUIRY_ID=F.ENQUIRY_ID and a.SER_CALL_FORM_ID=$P{SER_CALL_FORM_ID}]]>
 	</queryString>
-	<field name="SL_NO" class="java.math.BigDecimal"/>
+	<field name="SL_NO" class="java.lang.String"/>
 	<field name="ENQUIRY_NO" class="java.lang.String"/>
 	<field name="CLIENT_CODE" class="java.lang.String"/>
 	<field name="REF_DATE" class="java.sql.Timestamp"/>

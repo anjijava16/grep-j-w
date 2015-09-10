@@ -109,7 +109,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class SalesPO extends BaseTransUI {
+public class SalesPO extends BaseTransUI  {
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private SmsCommentsService serviceComment = (SmsCommentsService) SpringContextHelper.getBean("smsComments");
 	private SmsPOHdrService servicesmsPOHdr = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
@@ -146,7 +146,7 @@ public class SalesPO extends BaseTransUI {
 	private VerticalLayout hlPODoc = new VerticalLayout();
 	// PODtl components
 	private ComboBox cbProduct, cbproduom, cbPODtlStatus;
-	private TextField tfQuoteQty, tfUnitRate, tfBasicValue, tfcustprodcode, tfOrderQty;
+	private TextField tfQuoteQty, tfUnitRate, tfBasicValue, tfcustprodcode, tfOrderQty, tfdtlPDC;
 	private TextArea tacustproddesc;
 	private GERPTextField tfCustomField1 = new GERPTextField("Part Number");
 	private GERPTextField tfCustomField2 = new GERPTextField("Drawing Number");
@@ -551,6 +551,9 @@ public class SalesPO extends BaseTransUI {
 		tfQuoteQty = new TextField("Quote Qty");
 		tfQuoteQty.setValue("0");
 		tfQuoteQty.setWidth("110");
+		tfdtlPDC = new TextField("PDC Charge");
+		tfdtlPDC.setValue("0");
+		tfdtlPDC.setWidth("110");
 		cbproduom = new ComboBox("Product Uom");
 		cbproduom.setItemCaptionPropertyId("lookupname");
 		cbproduom.setWidth("110");
@@ -833,6 +836,7 @@ public class SalesPO extends BaseTransUI {
 		flDtlColumn5 = new FormLayout();
 		flDtlColumn1.addComponent(cbProduct);
 		flDtlColumn1.addComponent(tfQuoteQty);
+		flDtlColumn1.addComponent(tfdtlPDC);
 		flDtlColumn2.addComponent(tfOrderQty);
 		flDtlColumn2.addComponent(tfUnitRate);
 		flDtlColumn3.addComponent(tfBasicValue);
@@ -924,9 +928,18 @@ public class SalesPO extends BaseTransUI {
 			beansmsPODtl = new BeanItemContainer<SmsPODtlDM>(SmsPODtlDM.class);
 			beansmsPODtl.addAll(listPODetails);
 			BigDecimal sum = new BigDecimal("0");
+			BigDecimal sumPdc = new BigDecimal("0");
+
 			for (SmsPODtlDM obj : listPODetails) {
 				if (obj.getBasicvalue() != null) {
 					sum = sum.add(obj.getBasicvalue());
+				}
+			}
+			
+			for (SmsPODtlDM obj : listPODetails) {
+				if (obj.getPdcValue() != null) {
+					sumPdc = sumPdc.add(obj.getPdcValue());
+					System.out.println("=============================================>" + sumPdc);
 				}
 			}
 			tfBasictotal.setReadOnly(false);
@@ -1165,7 +1178,7 @@ public class SalesPO extends BaseTransUI {
 			tfSubTaxTotal.setReadOnly(false);
 			tfSubTaxTotal.setValue(poHdrDM.getSubtaxtotal().toString());
 			tfSubTaxTotal.setReadOnly(true);
-				tfGrandtotal.setReadOnly(false);
+			tfGrandtotal.setReadOnly(false);
 			tfGrandtotal.setValue(poHdrDM.getGrandtotal().toString());
 			tfGrandtotal.setReadOnly(true);
 			if (poHdrDM.getPaymentterms() != null) {
@@ -1228,10 +1241,8 @@ public class SalesPO extends BaseTransUI {
 			cbStatus.setValue(poHdrDM.getPostatus());
 			tfFreightValue.setValue(poHdrDM.getFreightvalue().toString());
 			tfOtherValue.setValue((poHdrDM.getOthersvalue().toString()));
-	
 		}
 		listPODetails = servicesmspodtl.getsmspodtllist(null, poid, null, null, null, null, null);
-
 		loadPODetails();
 		loadPOAcceptParamDetails(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, poid, null,
@@ -1242,55 +1253,71 @@ public class SalesPO extends BaseTransUI {
 	}
 	
 	private void editPODtl() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
-		if (tblSmsPODtl.getValue() != null) {
-			SmsPODtlDM poDtlDM = beansmsPODtl.getItem(tblSmsPODtl.getValue()).getBean();
-			Long prodid = poDtlDM.getProductid();
-			if (cbQuoteNo.getValue() != null) {
-				Collection<?> prodids = cbProduct.getItemIds();
-				for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
-					Object itemId = (Object) iterator.next();
-					BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
-					// Get the actual bean and use the data
-					SmsQuoteDtlDM st = (SmsQuoteDtlDM) item.getBean();
-					if (prodid != null && prodid.equals(st.getProductid())) {
-						cbProduct.setValue(itemId);
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Editing the selected record");
+			if (tblSmsPODtl.getValue() != null) {
+				SmsPODtlDM poDtlDM = beansmsPODtl.getItem(tblSmsPODtl.getValue()).getBean();
+				Long prodid = poDtlDM.getProductid();
+				if (cbQuoteNo.getValue() != null) {
+					Collection<?> prodids = cbProduct.getItemIds();
+					for (Iterator<?> iterator = prodids.iterator(); iterator.hasNext();) {
+						Object itemId = (Object) iterator.next();
+						BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
+						// Get the actual bean and use the data
+						SmsQuoteDtlDM st = (SmsQuoteDtlDM) item.getBean();
+						if (prodid != null && prodid.equals(st.getProductid())) {
+							cbProduct.setValue(itemId);
+						}
+					}
+				} else {
+					Collection<?> uomid = cbProduct.getItemIds();
+					for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+						Object itemId = (Object) iterator.next();
+						BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
+						// Get the actual bean and use the data
+						ProductDM st = (ProductDM) item.getBean();
+						if (prodid != null && prodid.equals(st.getProdid())) {
+							cbProduct.setValue(itemId);
+						}
 					}
 				}
-			} else {
-				Collection<?> uomid = cbProduct.getItemIds();
-				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
-					Object itemId = (Object) iterator.next();
-					BeanItem<?> item = (BeanItem<?>) cbProduct.getItem(itemId);
-					// Get the actual bean and use the data
-					ProductDM st = (ProductDM) item.getBean();
-					if (prodid != null && prodid.equals(st.getProdid())) {
-						cbProduct.setValue(itemId);
-					}
+				tfUnitRate.setValue(poDtlDM.getUnitrate().toString());
+				cbproduom.setReadOnly(false);
+				cbproduom.setValue(poDtlDM.getProduom());
+				cbproduom.setReadOnly(true);
+				cbPODtlStatus.setValue(poDtlDM.getPodtlstatus());
+				tfBasicValue.setReadOnly(false);
+				tfBasicValue.setValue(poDtlDM.getBasicvalue().toString());
+				if (poDtlDM.getCustprodcode() != null) {
+					tfcustprodcode.setValue(poDtlDM.getCustprodcode());
+				}
+				if (poDtlDM.getInvoicedqty() != null) {
+					tfOrderQty.setValue(poDtlDM.getPoqty().toString());
+				}
+				if (poDtlDM.getCustomField1() != null) {
+					tfCustomField1.setValue(poDtlDM.getCustomField1());
+				}
+				if (poDtlDM.getCustomField2() != null) {
+					tfCustomField2.setValue(poDtlDM.getCustomField2());
+				}
+				if (poDtlDM.getCustproddesc() != null) {
+					tacustproddesc.setValue(poDtlDM.getCustproddesc());
+				}
+				SmsQuoteDtlDM pdcprodVal = servicesmseQuoteDtl.getsmsquotedtllist(null,
+						((SmsQuoteHdrDM) cbQuoteNo.getValue()).getQuoteId(), poDtlDM.getProductid(), null).get(0);
+				if ((pdcprodVal.getPdcValue() != null)) {
+					tfdtlPDC.setReadOnly(false);
+					tfdtlPDC.setValue(pdcprodVal.getPdcValue().toString());
+					tfdtlPDC.setReadOnly(true);
+				}
+				if(tacustproddesc.getValue()!=null){
+					tacustproddesc.setValue(poDtlDM.getCustproddesc());
 				}
 			}
-			tfUnitRate.setValue(poDtlDM.getUnitrate().toString());
-			cbproduom.setReadOnly(false);
-			cbproduom.setValue(poDtlDM.getProduom());
-			cbproduom.setReadOnly(true);
-			cbPODtlStatus.setValue(poDtlDM.getPodtlstatus());
-			tfBasicValue.setReadOnly(false);
-			tfBasicValue.setValue(poDtlDM.getBasicvalue().toString());
-			if (poDtlDM.getCustprodcode() != null) {
-				tfcustprodcode.setValue(poDtlDM.getCustprodcode());
-			}
-			if (poDtlDM.getInvoicedqty() != null) {
-				tfOrderQty.setValue(poDtlDM.getPoqty().toString());
-			}
-			if (poDtlDM.getCustomField1() != null) {
-				tfCustomField1.setValue(poDtlDM.getCustomField1());
-			}
-			if (poDtlDM.getCustomField2() != null) {
-				tfCustomField2.setValue(poDtlDM.getCustomField2());
-			}
-			if (poDtlDM.getCustproddesc() != null) {
-				tacustproddesc.setValue(poDtlDM.getCustproddesc());
-			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -1372,7 +1399,6 @@ public class SalesPO extends BaseTransUI {
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
 				null);
 		loadPOAcceptParamDetails(false);
-
 	}
 	
 	@Override
@@ -1628,6 +1654,7 @@ public class SalesPO extends BaseTransUI {
 				salesOrderDtlobj.setCustomField2(tfCustomField2.getValue());
 				salesOrderDtlobj.setLastupdateddt(DateUtils.getcurrentdate());
 				salesOrderDtlobj.setLastupdatedby(username);
+				salesOrderDtlobj.setPdcValue(new BigDecimal(tfdtlPDC.getValue()));
 				listPODetails.add(salesOrderDtlobj);
 				loadPODetails();
 				getCalculatedValues();
@@ -1784,7 +1811,10 @@ public class SalesPO extends BaseTransUI {
 		tfQuoteQty.setReadOnly(false);
 		tfQuoteQty.setValue("0");
 		tfQuoteQty.setReadOnly(true);
-		tfQuoteQty.setComponentError(null);
+		tfdtlPDC.setComponentError(null);
+		tfdtlPDC.setReadOnly(false);
+		tfdtlPDC.setValue("0");
+		tfdtlPDC.setReadOnly(true);
 		tfOrderQty.setValue("0");
 		tfOrderQty.setComponentError(null);
 		tfcustprodcode.setValue("0");
@@ -1906,14 +1936,10 @@ public class SalesPO extends BaseTransUI {
 		BigDecimal csttotal = vatvalue;
 		BigDecimal frgval = new BigDecimal(0);
 		BigDecimal otherval = new BigDecimal(0);
-
-		
-		
-			frgval = new BigDecimal(tfFreightValue.getValue());
-			tfFreightValue.setValue(frgval.toString());
-			otherval = new BigDecimal(tfOtherValue.getValue());
-			tfOtherValue.setValue(otherval.toString());
-		
+		frgval = new BigDecimal(tfFreightValue.getValue());
+		tfFreightValue.setValue(frgval.toString());
+		otherval = new BigDecimal(tfOtherValue.getValue());
+		tfOtherValue.setValue(otherval.toString());
 		BigDecimal grand = frgval.add(otherval).add(cstval).add(csttotal);
 		BigDecimal documentCharges = new BigDecimal(tfDocumentCharges.getValue());
 		BigDecimal grandTotal = subtaxTotal.add(grand).add(documentCharges);
@@ -2023,6 +2049,7 @@ public class SalesPO extends BaseTransUI {
 			if (((SmsQuoteHdrDM) cbQuoteNo.getValue()).getDeliveryTerms() != null) {
 				cbDelTerms.setValue(((SmsQuoteHdrDM) cbQuoteNo.getValue()).getDeliveryTerms().toString());
 			}
+			
 			// load quote details
 			listPODetails = new ArrayList<SmsPODtlDM>();
 			for (SmsQuoteDtlDM quoteDtlDM : servicesmseQuoteDtl.getsmsquotedtllist(null,

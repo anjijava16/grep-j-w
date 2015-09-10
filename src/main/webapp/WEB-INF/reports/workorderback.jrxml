@@ -3,9 +3,6 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["C:\\Sara\\22.Projects\\workspace\\gerp-web\\src\\main\\webapp\\WEB-INF\\reports\\"]]></defaultValueExpression>
-	</parameter>
 	<parameter name="WOID" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -36,7 +33,7 @@
 			<staticText>
 				<reportElement x="210" y="11" width="144" height="20" uuid="383c53a1-7e8e-4cf9-8f69-668c1792266e"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="DejaVu Serif Condensed" size="14" isBold="true" isItalic="true" isUnderline="true" isStrikeThrough="false"/>
+					<font fontName="SansSerif" size="14" isBold="true" isItalic="true" isUnderline="true" isStrikeThrough="false"/>
 				</textElement>
 				<text><![CDATA[Customer Feedback]]></text>
 			</staticText>

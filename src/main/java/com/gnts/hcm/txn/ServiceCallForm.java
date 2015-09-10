@@ -1028,7 +1028,7 @@ public class ServiceCallForm extends BaseTransUI {
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
 			parameterMap.put("SER_CALL_FORM_ID", serCallFormId);
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "//WEB-INF//reports//servicecallform"); // productlist is the name of my jasper
+			rpt.setReportName(basepath + "/WEB-INF/reports/servicecallform"); // productlist is the name of my jasper
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

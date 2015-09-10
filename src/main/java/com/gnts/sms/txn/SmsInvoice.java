@@ -93,6 +93,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
@@ -124,7 +125,7 @@ public class SmsInvoice extends BaseTransUI {
 	private FormLayout flDtlColumn1, flDtlColumn2, flDtlColumn3, flDtlColumn4, flDtlColumn5;
 	// // User Input Components for invoiceHdr Details
 	private ComboBox cbBranch, cbStatus, cbPONumber, cbClient, cbCarrier;
-	private TextField tfInvNo, tfBasictotal, tfpackingPer, tfPaclingValue, tfvendorName, tfDelNOtNo;
+	private TextField tfInvNo, tfBasictotal, tfpackingPer, tfPaclingValue, tfvendorName, tfDelNOtNo, tfdtlPDC;
 	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
 	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
 	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal, tfLrNo, tfDocumentCharges,
@@ -194,19 +195,7 @@ public class SmsInvoice extends BaseTransUI {
 		cbClient = new GERPComboBox("Client Name");
 		cbClient.setItemCaptionPropertyId("clientName");
 		cbClient.setWidth("116");
-		cbClient.addValueChangeListener(new Property.ValueChangeListener() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			
-			public void valueChange(ValueChangeEvent event) {
-				Object itemid = event.getProperty().getValue();
-				if (itemid != null) {
-					loadPoNo();
-				}
-			}
-		});
+		
 		btndelete.setEnabled(false);
 		btndelete.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -256,6 +245,7 @@ public class SmsInvoice extends BaseTransUI {
 				if (item != null) {
 					try {
 						loadPoNo();
+						cbPONumber.setImmediate(true);
 						loadClientList();
 					}
 					catch (Exception e) {
@@ -449,6 +439,9 @@ public class SmsInvoice extends BaseTransUI {
 		dfLRDate.setInputPrompt("Select Date");
 		tfDelNOtNo = new TextField("Delivery Note No.");
 		tfDelNOtNo.setWidth("116");
+		tfdtlPDC = new TextField("PDC Charge");
+		tfdtlPDC.setValue("0");
+		tfdtlPDC.setWidth("110");
 		dfDelNotDt = new GERPPopupDateField("Delivery Note Dt.");
 		dfDelNotDt.setWidth("116");
 		dfDelNotDt.setInputPrompt("Select Date");
@@ -517,6 +510,16 @@ public class SmsInvoice extends BaseTransUI {
 						tfCustomField2.setValue(((SmsPODtlDM) cbProduct.getValue()).getCustomField2());
 					} else {
 						tfCustomField2.setValue("");
+					}
+					Notification.show(""+((SmsPODtlDM) cbProduct.getValue()).getPdcValue());
+					if (((SmsPODtlDM) cbProduct.getValue()).getPdcValue() != null) {
+						tfdtlPDC.setReadOnly(false);
+						tfdtlPDC.setValue(((SmsPODtlDM) cbProduct.getValue()).getPdcValue()+"");
+						tfdtlPDC.setReadOnly(true);
+					} else {
+						tfdtlPDC.setReadOnly(false);
+						tfdtlPDC.setValue("");
+						tfdtlPDC.setReadOnly(true);
 					}
 				}
 			}
@@ -829,6 +832,7 @@ public class SmsInvoice extends BaseTransUI {
 		flDtlColumn5 = new FormLayout();
 		flDtlColumn1.addComponent(cbProduct);
 		flDtlColumn1.addComponent(tfInvoiceQty);
+		flDtlColumn1.addComponent(tfdtlPDC);
 		flDtlColumn2.addComponent(tfUnitRate);
 		flDtlColumn2.addComponent(tfBasicValue);
 		flDtlColumn3.addComponent(tfCustomField1);
@@ -901,9 +905,16 @@ public class SmsInvoice extends BaseTransUI {
 			beanInvoiceDtl = new BeanItemContainer<SmsInvoiceDtlDM>(SmsInvoiceDtlDM.class);
 			beanInvoiceDtl.addAll(listInvDetails);
 			BigDecimal sum = new BigDecimal("0");
+			BigDecimal sumPdc = new BigDecimal("0");
 			for (SmsInvoiceDtlDM obj : listInvDetails) {
 				if (obj.getBasicValue() != null) {
 					sum = sum.add(obj.getBasicValue());
+				}
+			}
+			for (SmsInvoiceDtlDM obj : listInvDetails) {
+				if (obj.getPdcValue() != null) {
+					sumPdc = sumPdc.add(obj.getPdcValue());
+					System.out.println("=============================================>" + sumPdc);
 				}
 			}
 			tfBasictotal.setReadOnly(false);
@@ -984,7 +995,7 @@ public class SmsInvoice extends BaseTransUI {
 			BeanContainer<Long, SmsPOHdrDM> beanPurchaseOrdHdr = new BeanContainer<Long, SmsPOHdrDM>(SmsPOHdrDM.class);
 			beanPurchaseOrdHdr.setBeanIdProperty("poid");
 			beanPurchaseOrdHdr.addAll(servicePurchaseOrdHdr.getSmspohdrList(null, null, companyid, null, null, null,
-					null, "F", Long.valueOf(cbEnqNumber.getValue().toString())));
+					null, "P", Long.valueOf(cbEnqNumber.getValue().toString())));
 			cbPONumber.setContainerDataSource(beanPurchaseOrdHdr);
 		}
 		catch (Exception e) {
@@ -1254,6 +1265,11 @@ public class SmsInvoice extends BaseTransUI {
 			}
 			if (invoiceDtlDM.getInvoDtlStatus() != null) {
 				cbDtlStatus.setValue(invoiceDtlDM.getInvoDtlStatus());
+			}
+			if (invoiceDtlDM.getPdcValue() != null) {
+				tfdtlPDC.setReadOnly(false);
+				tfdtlPDC.setValue(invoiceDtlDM.getPdcValue().toString());
+				tfdtlPDC.setReadOnly(true);
 			}
 		}
 	}
@@ -1624,6 +1640,9 @@ public class SmsInvoice extends BaseTransUI {
 			invoiceDtlDM.setCusProdDesc(taCustProdDessc.getValue());
 			invoiceDtlDM.setLastUpdtDate(DateUtils.getcurrentdate());
 			invoiceDtlDM.setLastUpdatedBy(username);
+			tfdtlPDC.setReadOnly(false);
+			invoiceDtlDM.setPdcValue(new BigDecimal(tfdtlPDC.getValue()));
+			tfdtlPDC.setReadOnly(true);
 			listInvDetails.add(invoiceDtlDM);
 			loadInvoiceDtl();
 			getCalculatedValues();
@@ -1784,6 +1803,10 @@ public class SmsInvoice extends BaseTransUI {
 		cbDispatchBy.setValue(null);
 		tfDisToatal.setValue("0");
 		loadProduct();
+		tfdtlPDC.setComponentError(null);
+		tfdtlPDC.setReadOnly(false);
+		tfdtlPDC.setValue("0");
+		tfdtlPDC.setReadOnly(true);
 	}
 	
 	private void deletesmsinDetails() {

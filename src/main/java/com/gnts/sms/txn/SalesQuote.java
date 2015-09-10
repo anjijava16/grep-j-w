@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.vaadin.dialogs.ConfirmDialog;
 import com.gnts.base.domain.mst.ApprovalSchemaDM;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
@@ -39,6 +40,7 @@ import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.ProductService;
 import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.crm.domain.txn.ClientsContactsDM;
+import com.gnts.crm.domain.txn.DocumentsDM;
 import com.gnts.crm.service.txn.ClientContactsService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
@@ -148,6 +150,8 @@ public class SalesQuote extends BaseTransUI {
 	// BeanItem container
 	private BeanItemContainer<SmsQuoteHdrDM> beansmsQuoteHdr = null;
 	private BeanItemContainer<SmsQuoteDtlDM> beansmsQuoteDtl = null;
+	private GERPButton btnDeleteTech = new GERPButton("Delete", "cancelbt", this);
+	private GERPButton btnDeleteComm = new GERPButton("Delete", "cancelbt", this);
 	private List<SmsQuoteDtlDM> smsQuoteDtlList = new ArrayList<SmsQuoteDtlDM>();
 	BigDecimal sumPdc = new BigDecimal("0");
 	// local variables declaration
@@ -239,6 +243,18 @@ public class SalesQuote extends BaseTransUI {
 					loadclientCommCont();
 					loadclienTecCont();
 				}
+			}
+		});	
+		btnDeleteComm.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				deleteDetailsComm();
+			}
+		});
+		btnDeleteTech.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				deleteDetailsTech();
 			}
 		});
 		tfQuoteVersion = new TextField("Quote Version");
@@ -654,7 +670,6 @@ public class SalesQuote extends BaseTransUI {
 		resetFields();
 		loadSrchRslt();
 		loadQuotationDetailList();
-	
 		btnsavepurQuote.setStyleName("add");
 	}
 	
@@ -754,11 +769,6 @@ public class SalesQuote extends BaseTransUI {
 		flColumn3.addComponent(tfOtherValue);
 		flColumn3.addComponent(tfDocumentCharges);
 		flColumn3.addComponent(tfGrandtotal);
-		flColumn3.addComponent(cbpaymetTerms);
-		flColumn3.addComponent(cbFreightTerms);
-		flColumn4.addComponent(cbWarrentyTerms);
-		flColumn4.addComponent(cbDelTerms);
-		flColumn4.addComponent(tfLiquidatedDamage);
 		flColumn4.addComponent(cbStatus);
 		flColumn4.addComponent(chkDutyExe);
 		flColumn4.addComponent(chkCformReq);
@@ -810,7 +820,10 @@ public class SalesQuote extends BaseTransUI {
 		hlTechTerms.setSpacing(true);
 		hlTechTerms.addComponent(new FormLayout(taTechnicalTerms));
 		hlTechTerms.addComponent(btnAddTech);
+		hlTechTerms.addComponent(btnDeleteTech);
 		hlTechTerms.setComponentAlignment(btnAddTech, Alignment.MIDDLE_LEFT);
+		hlTechTerms.setComponentAlignment(btnDeleteTech, Alignment.MIDDLE_LEFT);
+
 		TabSheet dtlTab = new TabSheet();
 		dtlTab.addTab(vlSmsQuoteHDR, "Sales Quote Detail");
 		dtlTab.addTab(new VerticalLayout() {
@@ -830,7 +843,10 @@ public class SalesQuote extends BaseTransUI {
 		hlCommTerms.addComponent(new FormLayout(tfTermsCode));
 		hlCommTerms.addComponent(new FormLayout(taTermsDesc));
 		hlCommTerms.addComponent(btnAddComm);
+		hlCommTerms.addComponent(btnDeleteComm);
 		hlCommTerms.setComponentAlignment(btnAddComm, Alignment.MIDDLE_LEFT);
+		hlCommTerms.setComponentAlignment(btnDeleteComm, Alignment.MIDDLE_LEFT);
+
 		dtlTab.addTab(new VerticalLayout() {
 			private static final long serialVersionUID = 1L;
 			{
@@ -883,6 +899,7 @@ public class SalesQuote extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblsmsQuoteDtl.setPageLength(3);
 			recordCnt = smsQuoteDtlList.size();
+			sumPdc = new BigDecimal(0);
 			beansmsQuoteDtl = new BeanItemContainer<SmsQuoteDtlDM>(SmsQuoteDtlDM.class);
 			beansmsQuoteDtl.addAll(smsQuoteDtlList);
 			BigDecimal sum = new BigDecimal("0");
@@ -921,7 +938,7 @@ public class SalesQuote extends BaseTransUI {
 	private void loadCommmercialTerms(Boolean fromdb) {
 		tblCommercialTerms.removeAllItems();
 		if (fromdb) {
-			listCommercialTerms = serviceQuoteCommCond.getQuoteCommCondDetails(null, quoteId, null, null);
+			listCommercialTerms = serviceQuoteCommCond.getQuoteCommCondDetails(null, quoteId, null, "Active");
 		}
 		beanQuoteComm = new BeanItemContainer<QuoteCommCondDM>(QuoteCommCondDM.class);
 		beanQuoteComm.addAll(listCommercialTerms);
@@ -934,7 +951,7 @@ public class SalesQuote extends BaseTransUI {
 	private void loadTechnicalTerms(Boolean fromdb) {
 		tblTechnicalTerms.removeAllItems();
 		if (fromdb) {
-			listTechnicalTerms = serviceQuoteTechCond.getQuoteTechCondDetails(null, quoteId, null);
+			listTechnicalTerms = serviceQuoteTechCond.getQuoteTechCondDetails(null, quoteId, "Active");
 		}
 		beanQuoteTech = new BeanItemContainer<QuoteTechCondDM>(QuoteTechCondDM.class);
 		beanQuoteTech.addAll(listTechnicalTerms);
@@ -1483,8 +1500,8 @@ public class SalesQuote extends BaseTransUI {
 		resetFields();
 		editQuoteHdr();
 		editQuoteDtl();
-	loadCommmercialTerms(true);
-	loadTechnicalTerms(true);
+		loadCommmercialTerms(true);
+		loadTechnicalTerms(true);
 		comments.loadsrch(true, null, null, null, quoteId, null, null, null, null, null, null, null, null);
 		comments.editcommentDetails();
 		btnprintbackquote.setVisible(true);
@@ -1637,7 +1654,7 @@ public class SalesQuote extends BaseTransUI {
 			quoteHdrDM.setQuoteDoc(fileContents);
 			dtlValidation();
 			servicesmsQuoteHdr.saveOrUpdateSmsQuoteHdr(quoteHdrDM);
-			quoteId=quoteHdrDM.getQuoteId();
+			quoteId = quoteHdrDM.getQuoteId();
 			@SuppressWarnings("unchecked")
 			Collection<SmsQuoteDtlDM> itemIds = (Collection<SmsQuoteDtlDM>) tblsmsQuoteDtl.getVisibleItemIds();
 			for (SmsQuoteDtlDM save : (Collection<SmsQuoteDtlDM>) itemIds) {
@@ -1864,7 +1881,6 @@ public class SalesQuote extends BaseTransUI {
 		listTechnicalTerms = new ArrayList<QuoteTechCondDM>();
 		tblTechnicalTerms.removeAllItems();
 		quoteId = 0L;
-
 	}
 	
 	@Override
@@ -1880,7 +1896,7 @@ public class SalesQuote extends BaseTransUI {
 			parameterMap.put("QTID", quoteId);
 			System.out.println("quote id" + quoteId);
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "//WEB-INF//reports//qutationReport"); // productlist is the name of my jasper
+			rpt.setReportName(basepath + "/WEB-INF/reports/qutationReport"); // productlist is the name of my jasper
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {
@@ -1913,6 +1929,7 @@ public class SalesQuote extends BaseTransUI {
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {
+			logger.info(e.getMessage());
 			e.printStackTrace();
 		}
 		finally {
@@ -1921,6 +1938,7 @@ public class SalesQuote extends BaseTransUI {
 				Database.close(connection);
 			}
 			catch (Exception e) {
+				logger.info(e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -2059,4 +2077,56 @@ public class SalesQuote extends BaseTransUI {
 			logger.info(e.getMessage());
 		}
 	}
+	
+	private void deleteDetailsTech() {
+		// TODO Auto-generated method stub
+		try {
+			// TODO Auto-generated method stub
+			ConfirmDialog.show(UI.getCurrent(), "Please Confirm:", "Are you really sure?", "Delete this record",
+					"Not quite", new ConfirmDialog.Listener() {
+						private static final long serialVersionUID = 1L;
+						
+						public void onClose(ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								QuoteTechCondDM quoteTechCondDM = beanQuoteTech.getItem(tblTechnicalTerms.getValue())
+										.getBean();
+								quoteTechCondDM.setStatus("Inactive");
+								serviceQuoteTechCond.saveOrUpdateDetails(quoteTechCondDM);
+								resetTechnicalTerms();
+								loadTechnicalTerms(true);
+							}
+						}
+					});
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void deleteDetailsComm() {
+		// TODO Auto-generated method stub
+		try {
+			// TODO Auto-generated method stub
+			ConfirmDialog.show(UI.getCurrent(), "Please Confirm:", "Are you really sure?", "Delete this record",
+					"Not quite", new ConfirmDialog.Listener() {
+						private static final long serialVersionUID = 1L;
+						
+						public void onClose(ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								QuoteCommCondDM quoteCommCondDM = beanQuoteComm.getItem(tblCommercialTerms.getValue())
+										.getBean();
+								quoteCommCondDM.setStatus("Inactive");
+								serviceQuoteCommCond.saveOrUpdateDetails(quoteCommCondDM);
+								resetCommercialTerms();
+								loadCommmercialTerms(true);
+							}
+						}
+					});
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	
 }

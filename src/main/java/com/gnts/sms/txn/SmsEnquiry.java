@@ -1433,7 +1433,7 @@ public class SmsEnquiry extends BaseTransUI {
 		cbEnquiryStatus.setValue("Open");
 		dfEnquiryDate.setValue(new Date());
 		dfDueDate.setValue(addDays(new Date(), 7));
-		
+		enquiryId=0L;
 	}
 	
 	private Date addDays(Date d, int days) {
@@ -1531,7 +1531,7 @@ public class SmsEnquiry extends BaseTransUI {
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
 			parameterMap.put("ENQID", enquiryId);
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "//WEB-INF//reports//enquiryRpt"); // productlist is the name of my jasper
+			rpt.setReportName(basepath + "/WEB-INF/reports/enquiryRpt"); // productlist is the name of my jasper
 			// file.
 			rpt.callReport(basepath, "Preview");
 		}

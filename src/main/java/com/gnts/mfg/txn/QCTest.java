@@ -441,9 +441,9 @@ public class QCTest extends BaseTransUI {
 			beanQcTstHdr.addAll(listQcTstHdr);
 			tblMstScrSrchRslt.setContainerDataSource(beanQcTstHdr);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qctestid", "inspectionno", "inspectiondate",
-					"branchName", "prodName", "qcresult", "qcteststatus", "lastupdateddate", "lastupdatedby" });
+					"branchName","materialName", "prodName", "qcresult", "qcteststatus", "lastupdateddate", "lastupdatedby" });
 			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Inspection Date",
-					"Branch Name", "Product Name", "QC Result", "Status", "Last Updated Dt.", "Last Updated By" });
+					"Branch Name","Material Name", "Product Name", "QC Result", "Status", "Last Updated Dt.", "Last Updated By" });
 			tblMstScrSrchRslt.setColumnAlignment("workOrdrId", Align.RIGHT);
 			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}

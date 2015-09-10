@@ -375,6 +375,10 @@ public class DieRequest extends BaseTransUI {
 		if (UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ") != null
 				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ")) {
 			btnAdd.setVisible(false);
+		}
+		if (UI.getCurrent().getSession().getAttribute("IS_DESIGN_DR") != null
+				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_DESIGN_DR")) {
+			btnAdd.setVisible(false);
 		} else {
 			btnAdd.setVisible(true);
 		}
@@ -739,6 +743,15 @@ public class DieRequest extends BaseTransUI {
 				}
 				catch (Exception e) {
 					logger.info(e.getMessage());
+				}
+				if (UI.getCurrent().getSession().getAttribute("IS_DESIGN_DR") != null
+						&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_DESIGN_DR")) {
+					vlDieSection.setEnabled(false);
+					vlMoldTrialRequest.setEnabled(false);
+					vlDieCompletion.setEnabled(false);
+					hlDocumentLayout.setEnabled(true);
+					vlBillofMaterial.setEnabled(true);
+					tbDieRequest.setSelectedTab(vlBillofMaterial);
 				}
 			}
 		}

@@ -311,11 +311,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				if (cbVendor.getValue() != null) {
-					 tfvendorCode.setReadOnly(false);
-					 tfvendorCode.setValue(serviceVendor
-					 .getVendorList(null, (Long) cbVendor.getValue(), companyid, null, null, null, stateId,
-				 null, null, null, "P").get(0).getVendorCode());
-					 tfvendorCode.setReadOnly(true);
+					tfvendorCode.setReadOnly(false);
+					tfvendorCode.setValue(serviceVendor
+							.getVendorList(null, (Long) cbVendor.getValue(), companyid, null, null, null, stateId,
+									null, null, null, "P").get(0).getVendorCode());
+					tfvendorCode.setReadOnly(true);
 					Long VendorstateId = serviceVendor
 							.getVendorList(null, (Long) cbVendor.getValue(), null, null, null, null, stateId, null,
 									null, null, "P").get(0).getStateId();
@@ -765,6 +765,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	}
 	
 	private void loadPODetails() {
+		System.out.println("+++++++++++++++++=============Loading Detail Table=============++++++++++++++++");
 		recordcnt = listPODetails.size();
 		tblPODetails.removeAllItems();
 		tblPODetails.setPageLength(3);
@@ -773,7 +774,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		beanpodtl.addAll(listPODetails);
 		BigDecimal sum = new BigDecimal("0");
 		for (MmsPoDtlDM obj : listPODetails) {
-			System.out.println(">>>" + obj.getReqQty());
 			if (obj.getBasicvalue() != null) {
 				sum = sum.add(obj.getBasicvalue());
 			}
@@ -926,6 +926,19 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				POHdrDM poHdrDM = beanpohdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				poId = poHdrDM.getPoId();
 				cbBranch.setValue(poHdrDM.getBranchId());
+				Long quoteid = poHdrDM.getQuoteId();
+				Collection<?> quoteids = cbQuoteRef.getItemIds();
+				for (Iterator<?> iterator = quoteids.iterator(); iterator.hasNext();) {
+					Object itemId = (Object) iterator.next();
+					BeanItem<?> item = (BeanItem<?>) cbQuoteRef.getItem(itemId);
+					// Get the actual bean and use the data
+					MmsQuoteHdrDM st = (MmsQuoteHdrDM) item.getBean();
+					if (quoteid != null && quoteid.equals(st.getQuoteId())) {
+						cbQuoteRef.setReadOnly(false);
+						cbQuoteRef.setValue(itemId);
+						cbQuoteRef.setReadOnly(true);
+					}
+				}
 				tfPONo.setReadOnly(false);
 				tfPONo.setValue(poHdrDM.getPono());
 				tfPONo.setReadOnly(true);
@@ -946,7 +959,24 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				tfSubTotal.setReadOnly(false);
 				tfSubTotal.setValue(poHdrDM.getSubTotal().toString());
 				tfSubTotal.setReadOnly(true);
-				// tfEDPer.setValue(poHdrDM.get);
+				tfEDPer.setReadOnly(false);
+				tfEDPer.setValue(poHdrDM.getEdPrcnt().toString());
+				tfEDPer.setReadOnly(true);
+				tfEDValue.setReadOnly(false);
+				tfEDValue.setValue(poHdrDM.getEdValue().toString());
+				tfEDValue.setReadOnly(true);
+				tfHEDPer.setReadOnly(false);
+				tfHEDPer.setValue(poHdrDM.getHedPrcnt().toString());
+				tfHEDPer.setReadOnly(true);
+				tfHEDValue.setReadOnly(false);
+				tfHEDValue.setValue(poHdrDM.getHedValue().toString());
+				tfHEDValue.setReadOnly(true);
+				tfCessPer.setReadOnly(false);
+				tfCessPer.setValue(poHdrDM.getCessPrcnt().toString());
+				tfCessPer.setReadOnly(true);
+				tfCessValue.setReadOnly(false);
+				tfCessValue.setValue(poHdrDM.getCessValue().toString());
+				tfCessValue.setReadOnly(true);
 				tfVatPer.setReadOnly(false);
 				tfVatPer.setValue(poHdrDM.getVatPrcnt().toString());
 				tfVatPer.setReadOnly(true);
@@ -1004,19 +1034,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				if (poHdrDM.getVendorId() != null) {
 					cbVendor.setValue(poHdrDM.getVendorId());
 				}
-				Long quoteid = poHdrDM.getQuoteId();
-				Collection<?> quoteids = cbQuoteRef.getItemIds();
-				for (Iterator<?> iterator = quoteids.iterator(); iterator.hasNext();) {
-					Object itemId = (Object) iterator.next();
-					BeanItem<?> item = (BeanItem<?>) cbQuoteRef.getItem(itemId);
-					// Get the actual bean and use the data
-					MmsQuoteHdrDM st = (MmsQuoteHdrDM) item.getBean();
-					if (quoteid != null && quoteid.equals(st.getQuoteId())) {
-						cbQuoteRef.setReadOnly(false);
-						cbQuoteRef.setValue(itemId);
-						cbQuoteRef.setReadOnly(true);
-					}
-				}
+				
 				if (poHdrDM.getDutyExempt().equals("Y")) {
 					ckdutyexm.setValue(true);
 				} else {
@@ -1033,8 +1051,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 					ckPdcRqu.setValue(false);
 				}
 				cbStatus.setValue(poHdrDM.getpOStatus());
-				listPODetails = servicepodtl.getpodtllist(companyid, poId, branchId.toString(), null, null, "F");
 			}
+			listPODetails = servicepodtl.getpodtllist(poId,null , "Active", null, null, "F");
+
 			loadPODetails();
 			comments = new MmsComments(vlTableForm, null, companyid, null, null, null, poId, null, null, null, null);
 			comments.loadsrch(true, null, companyid, null, null, null, poId, null, null, null);
@@ -1177,8 +1196,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			assembleInputUserLayout();
 			resetFields();
 			editPOHdr();
-			editPODtl();
-
 			comments.loadsrch(true, null, companyid, null, null, null, poId, null, null, null);
 		}
 		catch (Exception e) {
@@ -1261,6 +1278,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 							"F").get(0).getIndentId());
 			poHdrDM.setPurchaseDate(dfPODt.getValue());
 			poHdrDM.setExpDate(dfExpDt.getValue());
+			poHdrDM.setQuoteId(((MmsQuoteHdrDM)cbQuoteRef.getValue()).getQuoteId());
 			poHdrDM.setPoRemark(taRemark.getValue());
 			poHdrDM.setpOType((String) cbpoType.getValue());
 			poHdrDM.setVendorId((Long) cbVendor.getValue());
@@ -1274,10 +1292,16 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			poHdrDM.setCstPrcnt((new BigDecimal(tfCstPer.getValue())));
 			poHdrDM.setCstValue(new BigDecimal(tfCstValue.getValue()));
 			poHdrDM.setSubTaxTotal(new BigDecimal(tfSubTaxTotal.getValue()));
-			poHdrDM.setFrgtValue(new BigDecimal(tfFreightPer.getValue()));
+			poHdrDM.setFrgtValue(new BigDecimal(tfFreightValue.getValue()));
 			poHdrDM.setFrgtPrcnt(new BigDecimal(tfFreightPer.getValue()));
 			poHdrDM.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
 			poHdrDM.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
+			poHdrDM.setEdPrcnt(new BigDecimal(tfEDPer.getValue()));
+			poHdrDM.setEdValue(new BigDecimal(tfEDValue.getValue()));
+			poHdrDM.setHedPrcnt(new BigDecimal(tfHEDPer.getValue()));
+			poHdrDM.setHedValue(new BigDecimal(tfHEDValue.getValue()));
+			poHdrDM.setCessPrcnt(new BigDecimal(tfCessPer.getValue()));
+			poHdrDM.setCessValue(new BigDecimal(tfCessValue.getValue()));
 			poHdrDM.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
 			poHdrDM.setVendorCode(tfvendorCode.getValue());
 			if (tfPaymentTerms.getValue() != null) {

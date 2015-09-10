@@ -160,7 +160,9 @@ public class DashbordDesignView implements ClickListener {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Bill of Material");
-			UI.getCurrent().getSession().setAttribute("moduleId", 17L);
+			UI.getCurrent().getSession().setAttribute("IS_DESIGN_DR", true);
+			UI.getCurrent().getSession().setAttribute("IS_DIE_ENQ", false);
+			// UI.getCurrent().getSession().setAttribute("moduleId", 17L);
 			new DieRequest();
 		}
 		if (event.getButton() == btnProductCount) {

@@ -180,8 +180,8 @@ public class QATest extends BaseTransUI {
 		tfInspectionNo = new GERPTextField("Inspection No.");
 		tfPrdSlNo = new GERPTextField("Product Sl.No");
 		tfTstReslt = new GERPTextField("Result");
-		cbClient = new GERPComboBox("Client Name");
-		cbClient.setItemCaptionPropertyId("clientName");
+		cbClient = new GERPComboBox("Client Code");
+		cbClient.setItemCaptionPropertyId("clientCode");
 		cbProduct = new GERPComboBox("Product Name");
 		cbProduct.setItemCaptionPropertyId("prodName");
 		cbProductsearch = new GERPComboBox("Product Name");
@@ -369,10 +369,10 @@ public class QATest extends BaseTransUI {
 			beanQATstHdr.addAll(listQcTstHdr);
 			tblMstScrSrchRslt.setContainerDataSource(beanQATstHdr);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "qatestHdrid", "inspectionno", "inspectiondate",
-					"clientName", "productName", "workOrdNo", "testresult", "teststatus", "lastupdateddate",
+					"clientCode", "productName", "workOrdNo", "testresult", "teststatus", "lastupdateddate",
 					"lastupdatedby" });
 			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Inspection No.", "Inspection Date",
-					"Client Name", "Product Name", "Work Ord.No", "QC. Result", "Status", "Last Updated Date",
+					"Client Code", "Product Name", "Work Ord.No", "QC. Result", "Status", "Last Updated Date",
 					"Last Updated By" });
 			tblMstScrSrchRslt.setColumnAlignment("qatestHdrid", Align.RIGHT);
 			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);

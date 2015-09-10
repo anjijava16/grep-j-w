@@ -131,7 +131,6 @@ public class QCTest extends BaseTransUI {
 	private VerticalLayout vlTstDtlNtbl, vlQcHdrNDtl;
 	private int recordCnt;
 	private Long employeeId;
-	private Long moduleId;
 	private Long branchId;;
 	private String testTypeId;
 	private Button btnDtete = new GERPButton("Delete", "delete", this);
@@ -146,7 +145,6 @@ public class QCTest extends BaseTransUI {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
-		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Inside QCTest() constructor");
 		// Loading the TestType UI
@@ -739,7 +737,7 @@ public class QCTest extends BaseTransUI {
 		resetFields();
 		resetQcTestDtl();
 		try {
-			SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchId, moduleId, "MF_QCINSNO").get(0);
+			SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchId, null, "MF_QCINSNO").get(0);
 			tfInSpecNo.setReadOnly(false);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				tfInSpecNo.setValue(slnoObj.getKeyDesc());
@@ -968,10 +966,10 @@ public class QCTest extends BaseTransUI {
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
 				try {
-					SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchId, moduleId, "MF_QCINSNO").get(
+					SlnoGenDM slnoObj = serviceSLNo.getSequenceNumber(companyid, branchId, null, "MF_QCINSNO").get(
 							0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSLNo.updateNextSequenceNumber(companyid, branchId, moduleId, "MF_QCINSNO");
+						serviceSLNo.updateNextSequenceNumber(companyid, branchId, null, "MF_QCINSNO");
 					}
 				}
 				catch (Exception e) {

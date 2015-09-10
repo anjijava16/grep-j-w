@@ -1,5 +1,6 @@
 package com.gnts.base.dashboard;
 
+import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.die.txn.DieRequest;
 import com.gnts.erputil.helper.SpringContextHelper;
@@ -7,8 +8,10 @@ import com.gnts.hcm.txn.ServiceCallForm;
 import com.gnts.mfg.txn.QATest;
 import com.gnts.mfg.txn.QCTest;
 import com.gnts.mms.domain.mst.MaterialDM;
+import com.gnts.mms.domain.txn.MaterialLedgerDM;
 import com.gnts.mms.domain.txn.MaterialStockDM;
 import com.gnts.mms.service.mst.MaterialService;
+import com.gnts.mms.service.txn.MaterialLedgerService;
 import com.gnts.mms.service.txn.MaterialStockService;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -37,9 +40,11 @@ public class DashboardTestingView implements ClickListener {
 	private Button btnDieReqCount = new Button("17 Nos.", this);
 	private Button btnOthers = new Button("0 Nos.", this);
 	private Table tblMaterialStock = new Table();
+	private Table tblMaterialInward = new Table();
 	private MaterialStockService servicematerialstock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
+	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
 	private Logger logger = Logger.getLogger(DashboardTestingView.class);
 	private Long companyId;
 	
@@ -75,9 +80,12 @@ public class DashboardTestingView implements ClickListener {
 		custom.addComponent(btnDieReqCount, "dierequest");
 		custom.addComponent(btnOthers, "others");
 		custom.addComponent(tblMaterialStock, "stockDetails");
+		custom.addComponent(tblMaterialInward, "inwardDetails");
 		custom.addComponent(new CalendarMonthly("WO_SCHEDULE"), "testschedule");
 		tblMaterialStock.setPageLength(11);
+		tblMaterialInward.setPageLength(20);
 		loadStockDetails();
+		loadMaterialInwardDetails();
 	}
 	
 	private void loadStockDetails() {
@@ -128,6 +136,26 @@ public class DashboardTestingView implements ClickListener {
 					}
 				}
 			});
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void loadMaterialInwardDetails() {
+		try {
+			tblMaterialInward.removeAllItems();
+			List<MaterialLedgerDM> materiallist = serviceledger.getMaterialLedgerList(null, null, null, null, null,
+					"I", null, "F");
+			BeanItemContainer<MaterialLedgerDM> beanmatrlledger = new BeanItemContainer<MaterialLedgerDM>(
+					MaterialLedgerDM.class);
+			beanmatrlledger.addAll(materiallist);
+			tblMaterialInward.setContainerDataSource(beanmatrlledger);
+			tblMaterialInward.setSelectable(true);
+			tblMaterialInward.setVisibleColumns(new Object[] { "materialName", "stockledgeDate", "inoutFQty",
+					"materialUOM", "referenceRemark" });
+			tblMaterialInward.setColumnHeaders(new String[] { "Material", "Date", "Qty", "UOM", "Remarks" });
+			tblMaterialInward.setColumnWidth("referenceRemark", 130);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

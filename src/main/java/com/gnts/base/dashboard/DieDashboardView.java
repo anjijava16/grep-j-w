@@ -6,6 +6,7 @@ import com.gnts.asm.domain.txn.GeneratorDM;
 import com.gnts.asm.service.txn.AssetMaintDetailService;
 import com.gnts.asm.service.txn.GeneratorService;
 import com.gnts.die.txn.DieRequest;
+import com.gnts.die.txn.DieTimesheet;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.mms.domain.txn.MmsEnqHdrDM;
 import com.gnts.mms.service.txn.MmsEnqHdrService;
@@ -38,7 +39,7 @@ public class DieDashboardView implements ClickListener {
 	private Button btnDieSection = new Button("15 Nos.", this);
 	private Button btnMoldTrialReq = new Button("13 Nos.", this);
 	private Button btnDieCompletion = new Button("17 Nos.", this);
-	private Button btnBOM = new Button("16 Nos.", this);
+	private Button btnTimesheet = new Button("0 Nos.", this);
 	private AssetMaintDetailService serviceAssetMaintDetails = (AssetMaintDetailService) SpringContextHelper
 			.getBean("assetMaintDetails");
 	private MmsEnqHdrService serviceMmsEnqHdr = (MmsEnqHdrService) SpringContextHelper.getBean("MmsEnqHdr");
@@ -74,11 +75,11 @@ public class DieDashboardView implements ClickListener {
 		btnDieSection.setStyleName(Runo.BUTTON_LINK);
 		btnMoldTrialReq.setStyleName(Runo.BUTTON_LINK);
 		btnDieCompletion.setStyleName(Runo.BUTTON_LINK);
-		btnBOM.setStyleName(Runo.BUTTON_LINK);
+		btnTimesheet.setStyleName(Runo.BUTTON_LINK);
 		custom.addComponent(btnDieRequest, "enquiry");
 		custom.addComponent(btnDieSection, "quotation");
 		custom.addComponent(btnMoldTrialReq, "purchaseorder");
-		custom.addComponent(btnBOM, "receipts");
+		custom.addComponent(btnTimesheet, "receipts");
 		custom.addComponent(btnDieCompletion, "vendorbills");
 		custom.addComponent(tblAssetMaint, "stockDetails");
 		custom.addComponent(vlGensetOilStatus, "gensetoilchk");
@@ -218,12 +219,12 @@ public class DieDashboardView implements ClickListener {
 			UI.getCurrent().getSession().setAttribute("moduleId", 17L);
 			new DieRequest();
 		}
-		if (event.getButton() == btnBOM) {
+		if (event.getButton() == btnTimesheet) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
-			UI.getCurrent().getSession().setAttribute("screenName", "Bill of Material");
+			UI.getCurrent().getSession().setAttribute("screenName", "Die Timesheet");
 			UI.getCurrent().getSession().setAttribute("moduleId", 17L);
-			new DieRequest();
+			new DieTimesheet();
 		}
 	}
 }

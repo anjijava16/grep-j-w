@@ -945,6 +945,9 @@ public class SalesPO extends BaseTransUI  {
 			tfBasictotal.setReadOnly(false);
 			tfBasictotal.setValue(sum.toString());
 			tfBasictotal.setReadOnly(true);
+			tfPDCCharges.setReadOnly(false);
+			tfPDCCharges.setValue(sumPdc.toString());
+			tfPDCCharges.setReadOnly(true);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblSmsPODtl.setContainerDataSource(beansmsPODtl);
@@ -1307,9 +1310,7 @@ public class SalesPO extends BaseTransUI  {
 				SmsQuoteDtlDM pdcprodVal = servicesmseQuoteDtl.getsmsquotedtllist(null,
 						((SmsQuoteHdrDM) cbQuoteNo.getValue()).getQuoteId(), poDtlDM.getProductid(), null).get(0);
 				if ((pdcprodVal.getPdcValue() != null)) {
-					tfdtlPDC.setReadOnly(false);
 					tfdtlPDC.setValue(pdcprodVal.getPdcValue().toString());
-					tfdtlPDC.setReadOnly(true);
 				}
 				if(tacustproddesc.getValue()!=null){
 					tacustproddesc.setValue(poDtlDM.getCustproddesc());
@@ -1812,9 +1813,7 @@ public class SalesPO extends BaseTransUI  {
 		tfQuoteQty.setValue("0");
 		tfQuoteQty.setReadOnly(true);
 		tfdtlPDC.setComponentError(null);
-		tfdtlPDC.setReadOnly(false);
 		tfdtlPDC.setValue("0");
-		tfdtlPDC.setReadOnly(true);
 		tfOrderQty.setValue("0");
 		tfOrderQty.setComponentError(null);
 		tfcustprodcode.setValue("0");

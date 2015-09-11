@@ -195,7 +195,6 @@ public class SmsInvoice extends BaseTransUI {
 		cbClient = new GERPComboBox("Client Name");
 		cbClient.setItemCaptionPropertyId("clientName");
 		cbClient.setWidth("116");
-		
 		btndelete.setEnabled(false);
 		btndelete.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -511,15 +510,17 @@ public class SmsInvoice extends BaseTransUI {
 					} else {
 						tfCustomField2.setValue("");
 					}
-					Notification.show(""+((SmsPODtlDM) cbProduct.getValue()).getPdcValue());
-					if (((SmsPODtlDM) cbProduct.getValue()).getPdcValue() != null) {
+					if (servicesmspodtl
+							.getsmspodtllist(null, (Long) cbPONumber.getValue(), (Long) cbProduct.getValue(), null,
+									null, "Active", "F").get(0).getPdcValue() != null) {
+						BigDecimal pdvdtlvalue = servicesmspodtl
+								.getsmspodtllist(null, (Long) cbPONumber.getValue(), (Long) cbProduct.getValue(), null,
+										null, "Active", "F").get(0).getPdcValue();
 						tfdtlPDC.setReadOnly(false);
-						tfdtlPDC.setValue(((SmsPODtlDM) cbProduct.getValue()).getPdcValue()+"");
-						tfdtlPDC.setReadOnly(true);
+						tfdtlPDC.setValue(pdvdtlvalue + "");
 					} else {
 						tfdtlPDC.setReadOnly(false);
 						tfdtlPDC.setValue("");
-						tfdtlPDC.setReadOnly(true);
 					}
 				}
 			}
@@ -920,6 +921,9 @@ public class SmsInvoice extends BaseTransUI {
 			tfBasictotal.setReadOnly(false);
 			tfBasictotal.setValue(sum.toString());
 			tfBasictotal.setReadOnly(true);
+			tfPDCCharges.setReadOnly(false);
+			tfPDCCharges.setValue(sumPdc.toString());
+			tfPDCCharges.setReadOnly(true);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblInvoicDtl.setContainerDataSource(beanInvoiceDtl);
@@ -1269,7 +1273,6 @@ public class SmsInvoice extends BaseTransUI {
 			if (invoiceDtlDM.getPdcValue() != null) {
 				tfdtlPDC.setReadOnly(false);
 				tfdtlPDC.setValue(invoiceDtlDM.getPdcValue().toString());
-				tfdtlPDC.setReadOnly(true);
 			}
 		}
 	}
@@ -1642,7 +1645,6 @@ public class SmsInvoice extends BaseTransUI {
 			invoiceDtlDM.setLastUpdatedBy(username);
 			tfdtlPDC.setReadOnly(false);
 			invoiceDtlDM.setPdcValue(new BigDecimal(tfdtlPDC.getValue()));
-			tfdtlPDC.setReadOnly(true);
 			listInvDetails.add(invoiceDtlDM);
 			loadInvoiceDtl();
 			getCalculatedValues();
@@ -1806,7 +1808,6 @@ public class SmsInvoice extends BaseTransUI {
 		tfdtlPDC.setComponentError(null);
 		tfdtlPDC.setReadOnly(false);
 		tfdtlPDC.setValue("0");
-		tfdtlPDC.setReadOnly(true);
 	}
 	
 	private void deletesmsinDetails() {

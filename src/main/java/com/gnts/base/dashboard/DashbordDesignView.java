@@ -68,7 +68,7 @@ public class DashbordDesignView implements ClickListener {
 		btnNotify.setHtmlContentAllowed(true);
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("dashdesign");
-		btnEnquiryCount.setCaption(serviceenqhdr.getSMSEnquiryListCount(null, null, null, null, null, null, null, null)
+		btnEnquiryCount.setCaption(serviceenqhdr.getSMSEnquiryListCount(null, null, null, null, "Approved", null, null, null)
 				.toString());
 		btnClientCount.setCaption(serviceClients.getClientDetailscount(companyId, null, "Active", null).toString());
 		btnProductCount.setCaption(ServiceProduct.getProductscount(companyId, null, "Active", null).toString());
@@ -135,7 +135,10 @@ public class DashbordDesignView implements ClickListener {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Sales Enquiry");
+			UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", false);
+
 			UI.getCurrent().getSession().setAttribute("IS_ENQ_WF", true);
+			
 			new SmsEnquiry();
 		}
 		if (event.getButton() == btnEnquiryWorkflow) {

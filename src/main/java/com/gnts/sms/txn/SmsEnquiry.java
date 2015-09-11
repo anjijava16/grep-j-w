@@ -1,7 +1,7 @@
 /**
  * File Name 	 :   SmsEnquiry.java 
  * Description 	 :   This Screen Purpose for Modify the SmsEnquiry Details.Add the SmsEnquiry details and Specification process should be directly added in DB.
- * Author 		 :   Sudhakar S 
+ * Author 		 :   Arun Jeyaraj R
  * Date 		 :   17-Sep-2014
  * 
  * Copyright (C) 2014 GNTS Technologies pvt. ltd. * All rights reserved.
@@ -9,7 +9,7 @@
  * This software is the confidential and proprietary information of GNTS Technologies pvt. ltd.
  * 
  * Version  Date           Modified By        Remarks
- * 0.1      17-Sep-2014    Sudhakar S     Initial Version
+ * 0.1      17-Sep-2014    Arun Jeyaraj R     Initial Version
  */
 package com.gnts.sms.txn;
 
@@ -290,7 +290,7 @@ public class SmsEnquiry extends BaseTransUI {
 		dfDueDate.setInputPrompt("Select Date");
 		dfDueDate.setWidth("100px");
 		taRemarks = new GERPTextArea("Remarks");
-		taRemarks.setWidth("130");
+		taRemarks.setWidth("100");
 		taRemarks.setHeight("50");
 		tAClientAddrs = new GERPTextArea("Address");
 		tAClientAddrs.setWidth("130");
@@ -348,8 +348,6 @@ public class SmsEnquiry extends BaseTransUI {
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
-		resetFields();
-		loadSrchRslt();
 		btndetailadd.setStyleName("add");
 		btndetailadd.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update Sales Detail
@@ -380,7 +378,8 @@ public class SmsEnquiry extends BaseTransUI {
 					btndetailadd.setCaption("Update");
 					btndetailadd.setStyleName("savebt");
 					btndetaildelete.setEnabled(true);
-					if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")!=null&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+					if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF") != null
+							&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
 						hldtllayout.setEnabled(true);
 						btndetaildelete.setEnabled(false);
 					}
@@ -477,13 +476,17 @@ public class SmsEnquiry extends BaseTransUI {
 		});
 		try {
 			btnAdd.setVisible(true);
-			if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")!=null&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+			if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
 				btnAdd.setVisible(false);
 			}
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
 		}
+		resetFields();
+		loadSrchRslt();
+
 		// Document Components
 	}
 	
@@ -746,8 +749,19 @@ public class SmsEnquiry extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + cbBranch.getValue() + "," + tfEnquiryNo.getValue() + ", "
 					+ (String) cbEnquiryStatus.getValue());
-			list = serviceEnqhdr.getSmsEnqHdrList(companyid, null, (Long) cbBranch.getValue(), null,
-					(String) cbEnquiryStatus.getValue(), username, (String) tfEnquiryNo.getValue(), null);
+			try {
+				if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF") != null
+						&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+					list = serviceEnqhdr.getSmsEnqHdrList(companyid, null, (Long) cbBranch.getValue(), null,
+							"Approved", username, (String) tfEnquiryNo.getValue(), null);
+				} else {
+					list = serviceEnqhdr.getSmsEnqHdrList(companyid, null, (Long) cbBranch.getValue(), null,
+							(String) cbEnquiryStatus.getValue(), username, (String) tfEnquiryNo.getValue(), null);
+				}
+			}
+			catch (Exception e) {
+				logger.info(e.getMessage());
+			}
 			recordCnt = list.size();
 			beanEnqHdr = new BeanItemContainer<SmsEnqHdrDM>(SmsEnqHdrDM.class);
 			beanEnqHdr.addAll(list);
@@ -1010,9 +1024,10 @@ public class SmsEnquiry extends BaseTransUI {
 		tfEnqQty.setCaption("Enquiry Qty");
 		btndetailadd.setCaption("Add");
 		try {
-			if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")!=null&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+			if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
 				hlUserIPContainer.setEnabled(false);
-				 hldtllayout.setEnabled(false);
+				hldtllayout.setEnabled(false);
 				loadEnqFieldDisable();
 				hlspecadd1.setEnabled(false);
 			}
@@ -1094,6 +1109,7 @@ public class SmsEnquiry extends BaseTransUI {
 		tfEnquiryNo.setValue(enqHdrDM.getEnquiryNo());
 		tfEnquiryNo.setReadOnly(true);
 		comments.saveSalesEnqId(enqHdrDM.getEnquiryId(), null);
+		enquiryId = enqHdrDM.getEnquiryId();
 		enqDtlresetFields();
 		enqSpecResetfields();
 		loadSrchRslt();
@@ -1136,22 +1152,27 @@ public class SmsEnquiry extends BaseTransUI {
 	
 	// This function is used for save the Enquiry Specification's details for temporary
 	private void saveEnqSpec() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		validationForEnqSpecification();
-		SmsEnquirySpecDM enquirySpecDM = new SmsEnquirySpecDM();
-		if (tblspec.getValue() != null) {
-			enquirySpecDM = beanpec.getItem(tblspec.getValue()).getBean();
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+			validationForEnqSpecification();
+			SmsEnquirySpecDM enquirySpecDM = new SmsEnquirySpecDM();
+			if (tblspec.getValue() != null) {
+				enquirySpecDM = beanpec.getItem(tblspec.getValue()).getBean();
+			}
+			enquirySpecDM.setSpeccode(tfSpeccode.getValue().toString());
+			enquirySpecDM.setSpecdesc(taSpecdesc.getValue().toString());
+			enquirySpecDM.setEnqryspecstatus(((String) cbSpecStatus.getValue()));
+			enquirySpecDM.setLastupdateddt(DateUtils.getcurrentdate());
+			enquirySpecDM.setLastupdatedby(username);
+			enquirySpecDM.setProductId(prodid);
+			listEnqSpec.add(enquirySpecDM);
+			enqSpecResetfields();
+			loadEnquirySpec(false, null);
+			btnaddspec.setCaption("Add");
 		}
-		enquirySpecDM.setSpeccode(tfSpeccode.getValue().toString());
-		enquirySpecDM.setSpecdesc(taSpecdesc.getValue().toString());
-		enquirySpecDM.setEnqryspecstatus(((String) cbSpecStatus.getValue()));
-		enquirySpecDM.setLastupdateddt(DateUtils.getcurrentdate());
-		enquirySpecDM.setLastupdatedby(username);
-		enquirySpecDM.setProductId(prodid);
-		listEnqSpec.add(enquirySpecDM);
-		enqSpecResetfields();
-		loadEnquirySpec(false, null);
-		btnaddspec.setCaption("Add");
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	@Override
@@ -1160,7 +1181,7 @@ public class SmsEnquiry extends BaseTransUI {
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
 		cbBranch.setValue(branchId);
-		cbEnquiryStatus.setValue("Open");
+		resetFields();
 		tfEnquiryNo.setValue("");
 		tfEnquiryNo.setReadOnly(false);
 		lblNotification.setIcon(null);
@@ -1247,10 +1268,11 @@ public class SmsEnquiry extends BaseTransUI {
 		cbBranch.setRequired(true);
 		// To Select Enquire workflow tab
 		try {
-			if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")!=null&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+			if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
 				dtlTab.setSelectedTab(hlEnquiryWorkflow);
 				hlUserIPContainer.setEnabled(false);
-				 hldtllayout.setEnabled(false);
+				hldtllayout.setEnabled(false);
 				loadEnqFieldDisable();
 				hlspecadd1.setEnabled(false);
 			}
@@ -1283,6 +1305,8 @@ public class SmsEnquiry extends BaseTransUI {
 		if (cbClient.getValue() == null) {
 			cbClient.setComponentError(new UserError(GERPErrorCodes.NULL_CLIENT_NAME));
 			errorFlag = true;
+		} else {
+			cbClient.setComponentError(null);
 		}
 		if ((dfEnquiryDate.getValue() != null) || (dfDueDate.getValue() != null)) {
 			if (dfEnquiryDate.getValue().after(dfDueDate.getValue())) {
@@ -1323,7 +1347,8 @@ public class SmsEnquiry extends BaseTransUI {
 	// Validation for Sales Enquiry Detail
 	private boolean validationForEnqDetails() {
 		boolean isValid = true;
-		if (((tfEnqQty.getValue() == null) || tfEnqQty.getValue().trim().length() == 0)) {
+		if (((tfEnqQty.getValue() == null) || tfEnqQty.getValue().trim().length() == 0)
+				|| tfEnqQty.getValue().equals("0")) {
 			tfEnqQty.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRY_QTY));
 			isValid = false;
 		} else {
@@ -1430,10 +1455,22 @@ public class SmsEnquiry extends BaseTransUI {
 		cbModeofEnquiry.setValue(null);
 		taRemarks.setValue("");
 		taRemarks.setComponentError(null);
-		cbEnquiryStatus.setValue("Open");
 		dfEnquiryDate.setValue(new Date());
 		dfDueDate.setValue(addDays(new Date(), 7));
-		enquiryId=0L;
+		enquiryId = 0L;
+		enqDtlresetFields();
+		enqSpecResetfields();
+		try {
+			if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+				cbEnquiryStatus.setValue("Approved");
+			} else {
+				cbEnquiryStatus.setValue("Progress");
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	private Date addDays(Date d, int days) {

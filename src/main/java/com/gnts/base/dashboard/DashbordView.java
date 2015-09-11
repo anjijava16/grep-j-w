@@ -76,6 +76,7 @@ public class DashbordView implements ClickListener {
 	private HorizontalLayout hlHeader;
 	private Table tblStatus = new Table();
 	private Logger logger = Logger.getLogger(DashbordView.class);
+	
 	public DashbordView() {
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
@@ -88,7 +89,7 @@ public class DashbordView implements ClickListener {
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("dashmarket");
 		btnEnquiryCount.setCaption(serviceEnquiry
-				.getSMSEnquiryListCount(null, null, null, null, null, null, null, null).toString());
+				.getSMSEnquiryListCount(null, null, null, null, "Pending", null, null, null).toString());
 		btnQuotationCount.setCaption(servicesmsQuoteHdr.getSMSQuoteCount(null, null, null, null, null, null, null)
 				.toString());
 		btnPOCount.setCaption(servicePurchaseOrd.getSMSPOListCount(null, null, companyId, null, null, null, null, null)
@@ -133,7 +134,7 @@ public class DashbordView implements ClickListener {
 		custom.addComponent(tblStatus, "workorderstatus");
 		loadWorkOrderStatus();
 		try {
-			//new EmailTrigger("soundar@gnts.in", "Test Message", "Test Message");
+			// new EmailTrigger("soundar@gnts.in", "Test Message", "Test Message");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -173,7 +174,9 @@ public class DashbordView implements ClickListener {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Sales Enquiry");
-						UI.getCurrent().getSession().setAttribute("moduleId", 13L);
+			UI.getCurrent().getSession().setAttribute("moduleId", 13L);
+			UI.getCurrent().getSession().setAttribute("IS_ENQ_WF", false);
+			UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", true);
 			new SmsEnquiry();
 		}
 		if (event.getButton() == btnQuotationCount) {
@@ -215,9 +218,7 @@ public class DashbordView implements ClickListener {
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("IS_PROD_FRM", false);
 			UI.getCurrent().getSession().setAttribute("IS_QC_FRM", false);
-
 			UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", true);
-
 			UI.getCurrent().getSession().setAttribute("screenName", "Service Call Form");
 			new ServiceCallForm();
 		}

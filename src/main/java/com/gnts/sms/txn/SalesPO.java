@@ -1307,10 +1307,8 @@ public class SalesPO extends BaseTransUI  {
 				if (poDtlDM.getCustproddesc() != null) {
 					tacustproddesc.setValue(poDtlDM.getCustproddesc());
 				}
-				SmsQuoteDtlDM pdcprodVal = servicesmseQuoteDtl.getsmsquotedtllist(null,
-						((SmsQuoteHdrDM) cbQuoteNo.getValue()).getQuoteId(), poDtlDM.getProductid(), null).get(0);
-				if ((pdcprodVal.getPdcValue() != null)) {
-					tfdtlPDC.setValue(pdcprodVal.getPdcValue().toString());
+				if ((poDtlDM.getPdcValue() != null)) {
+					tfdtlPDC.setValue(poDtlDM.getPdcValue().toString());
 				}
 				if(tacustproddesc.getValue()!=null){
 					tacustproddesc.setValue(poDtlDM.getCustproddesc());
@@ -2057,6 +2055,7 @@ public class SalesPO extends BaseTransUI  {
 				smspoDtlDM.setProductid(quoteDtlDM.getProductid());
 				smspoDtlDM.setProdname(quoteDtlDM.getProdname());
 				smspoDtlDM.setUnitrate(quoteDtlDM.getUnitrate());
+				smspoDtlDM.setPdcValue(quoteDtlDM.getPdcValue());
 				smspoDtlDM.setPoqty(quoteDtlDM.getQuoteqty());
 				smspoDtlDM.setProduom(quoteDtlDM.getProduom());
 				smspoDtlDM.setBasicvalue(quoteDtlDM.getBasicvalue());

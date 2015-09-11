@@ -1269,6 +1269,8 @@ public class SmsInvoice extends BaseTransUI {
 			if (invoiceDtlDM.getPdcValue() != null) {
 				tfdtlPDC.setValue(invoiceDtlDM.getPdcValue().toString());
 			}
+			
+			
 		}
 	}
 	

@@ -195,6 +195,7 @@ public class SmsInvoice extends BaseTransUI {
 		cbClient = new GERPComboBox("Client Name");
 		cbClient.setItemCaptionPropertyId("clientName");
 		cbClient.setWidth("116");
+		
 		btndelete.setEnabled(false);
 		btndelete.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -510,16 +511,10 @@ public class SmsInvoice extends BaseTransUI {
 					} else {
 						tfCustomField2.setValue("");
 					}
-					if (servicesmspodtl
-							.getsmspodtllist(null, (Long) cbPONumber.getValue(), (Long) cbProduct.getValue(), null,
-									null, "Active", "F").get(0).getPdcValue() != null) {
-						BigDecimal pdvdtlvalue = servicesmspodtl
-								.getsmspodtllist(null, (Long) cbPONumber.getValue(), (Long) cbProduct.getValue(), null,
-										null, "Active", "F").get(0).getPdcValue();
-						tfdtlPDC.setReadOnly(false);
-						tfdtlPDC.setValue(pdvdtlvalue + "");
+					Notification.show(""+((SmsPODtlDM) cbProduct.getValue()).getPdcValue());
+					if (((SmsPODtlDM) cbProduct.getValue()).getPdcValue() != null) {
+						tfdtlPDC.setValue(((SmsPODtlDM) cbProduct.getValue()).getPdcValue()+"");
 					} else {
-						tfdtlPDC.setReadOnly(false);
 						tfdtlPDC.setValue("");
 					}
 				}
@@ -924,6 +919,7 @@ public class SmsInvoice extends BaseTransUI {
 			tfPDCCharges.setReadOnly(false);
 			tfPDCCharges.setValue(sumPdc.toString());
 			tfPDCCharges.setReadOnly(true);
+		
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblInvoicDtl.setContainerDataSource(beanInvoiceDtl);
@@ -1271,7 +1267,6 @@ public class SmsInvoice extends BaseTransUI {
 				cbDtlStatus.setValue(invoiceDtlDM.getInvoDtlStatus());
 			}
 			if (invoiceDtlDM.getPdcValue() != null) {
-				tfdtlPDC.setReadOnly(false);
 				tfdtlPDC.setValue(invoiceDtlDM.getPdcValue().toString());
 			}
 		}
@@ -1643,7 +1638,6 @@ public class SmsInvoice extends BaseTransUI {
 			invoiceDtlDM.setCusProdDesc(taCustProdDessc.getValue());
 			invoiceDtlDM.setLastUpdtDate(DateUtils.getcurrentdate());
 			invoiceDtlDM.setLastUpdatedBy(username);
-			tfdtlPDC.setReadOnly(false);
 			invoiceDtlDM.setPdcValue(new BigDecimal(tfdtlPDC.getValue()));
 			listInvDetails.add(invoiceDtlDM);
 			loadInvoiceDtl();
@@ -1806,7 +1800,6 @@ public class SmsInvoice extends BaseTransUI {
 		tfDisToatal.setValue("0");
 		loadProduct();
 		tfdtlPDC.setComponentError(null);
-		tfdtlPDC.setReadOnly(false);
 		tfdtlPDC.setValue("0");
 	}
 	

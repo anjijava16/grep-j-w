@@ -165,15 +165,15 @@ public class KpiGrp extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<KpiGroupDM> listKPIGroup = new ArrayList<KpiGroupDM>();
+			List<KpiGroupDM> list = new ArrayList<KpiGroupDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Search Parameters are " + companyId + ", " + (Long) cbJobClasfn.getValue() + ", "
 					+ (String) cbStatus.getValue());
-			listKPIGroup = serviceKpiGroup.getkpigrouplist(tfKpigrpName.getValue(), null, companyId, null,
+			list = serviceKpiGroup.getkpigrouplist(tfKpigrpName.getValue(), null, companyId, null,
 					(String) cbStatus.getValue(), "F");
-			recordCnt = listKPIGroup.size();
+			recordCnt = list.size();
 			beanKpiGroupDM = new BeanItemContainer<KpiGroupDM>(KpiGroupDM.class);
-			beanKpiGroupDM.addAll(listKPIGroup);
+			beanKpiGroupDM.addAll(list);
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Got the KPI Group List result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanKpiGroupDM);

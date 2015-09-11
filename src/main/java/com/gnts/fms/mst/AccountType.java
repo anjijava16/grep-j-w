@@ -242,20 +242,30 @@ public class AccountType extends BaseUI {
 		logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 				+ "Search Parameters are " + ":" + tfAccountType.getValue() + ",  Active ," + companyId + ",F"
 				+ "Saving Data... ");
-		AccountTypeDM accType = new AccountTypeDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			accType = beanAcountTypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		try {
+			AccountTypeDM accType = new AccountTypeDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				accType = beanAcountTypeDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
+			accType.setCompanyid(companyId);
+			accType.setAccttype(tfAccountType.getValue().toString());
+			if (cbStatus.getValue() != null) {
+				accType.setAccttypestatus((String) cbStatus.getValue());
+			}
+			accType.setLastupdateddt(DateUtils.getcurrentdate());
+			accType.setLastupdatedby(strLoginUserName);
+			serviceAccountType.saveDetails(accType);
+			resetFields();
+			loadSrchRslt();
 		}
-		accType.setCompanyid(companyId);
-		accType.setAccttype(tfAccountType.getValue().toString());
-		if (cbStatus.getValue() != null) {
-			accType.setAccttypestatus((String) cbStatus.getValue());
+		catch (Exception e) {
+			try {
+				throw new ERPException.SaveException();
+			}
+			catch (SaveException e1) {
+				e1.printStackTrace();
+			}
 		}
-		accType.setLastupdateddt(DateUtils.getcurrentdate());
-		accType.setLastupdatedby(strLoginUserName);
-		serviceAccountType.saveDetails(accType);
-		resetFields();
-		loadSrchRslt();
 	}
 	
 	@Override

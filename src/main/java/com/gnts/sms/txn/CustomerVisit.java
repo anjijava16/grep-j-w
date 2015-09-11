@@ -427,11 +427,11 @@ public class CustomerVisit extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
 			tblMstScrSrchRslt.setPageLength(14);
-			List<CustomerVisitHdrDM> listVisitHdrDM = new ArrayList<CustomerVisitHdrDM>();
-			listVisitHdrDM = serviceCustomerVisitHdr.getCustomerVisitHdrList(null, null, null, null, null, "F");
-			recordCnt = listVisitHdrDM.size();
+			List<CustomerVisitHdrDM> list = new ArrayList<CustomerVisitHdrDM>();
+			list = serviceCustomerVisitHdr.getCustomerVisitHdrList(null, null, null, null, null, "F");
+			recordCnt = list.size();
 			beanCustomerVisitHdrDM = new BeanItemContainer<CustomerVisitHdrDM>(CustomerVisitHdrDM.class);
-			beanCustomerVisitHdrDM.addAll(listVisitHdrDM);
+			beanCustomerVisitHdrDM.addAll(list);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Customer Visit result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanCustomerVisitHdrDM);

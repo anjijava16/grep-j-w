@@ -77,7 +77,7 @@ public class ProductLedger extends BaseUI {
 		cbBranch.setItemCaptionPropertyId("branchName");
 		cbBranch.setWidth("150");
 		cbBranch.setNullSelectionAllowed(false);
-		loadbranchlist();
+		loadBranchlist();
 		cbProduct = new GERPComboBox("Product Name");
 		cbProduct.setItemCaptionPropertyId("prodname");
 		cbProduct.setWidth("150");
@@ -171,7 +171,7 @@ public class ProductLedger extends BaseUI {
 	}
 	
 	// Loading Branch List
-	private void loadbranchlist() {
+	private void loadBranchlist() {
 		try {
 			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanbranch.setBeanIdProperty("branchId");

@@ -113,14 +113,14 @@ public class JobClass extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<JobClassificationDM> jobClsList = new ArrayList<JobClassificationDM>();
+			List<JobClassificationDM> list = new ArrayList<JobClassificationDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfClsFctnName.getValue() + ", " + cbStatus.getValue());
-			jobClsList = serviceJobClassification.getJobClassificationList(null, tfClsFctnName.getValue(), companyid,
+			list = serviceJobClassification.getJobClassificationList(null, tfClsFctnName.getValue(), companyid,
 					(String) cbStatus.getValue(), "F");
-			recordCnt = jobClsList.size();
+			recordCnt = list.size();
 			beanJobClassificationDM = new BeanItemContainer<JobClassificationDM>(JobClassificationDM.class);
-			beanJobClassificationDM.addAll(jobClsList);
+			beanJobClassificationDM.addAll(list);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the JobClassification. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanJobClassificationDM);

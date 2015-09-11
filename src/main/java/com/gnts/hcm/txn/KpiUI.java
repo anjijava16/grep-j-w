@@ -167,15 +167,15 @@ public class KpiUI extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<KpiDM> kpiList = new ArrayList<KpiDM>();
+			List<KpiDM> list = new ArrayList<KpiDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Search Parameters are " + companyId + ", " + (Long) cbKpiGrp.getValue() + ", "
 					+ (String) cbStatus.getValue());
-			kpiList = serviceKpi.getKpiList(null, (Long) cbKpiGrp.getValue(), (String) tfKpiName.getValue(), null,
+			list = serviceKpi.getKpiList(null, (Long) cbKpiGrp.getValue(), (String) tfKpiName.getValue(), null,
 					(String) cbStatus.getValue(), "F");
-			recordCnt = kpiList.size();
+			recordCnt = list.size();
 			beanKpiDM = new BeanItemContainer<KpiDM>(KpiDM.class);
-			beanKpiDM.addAll(kpiList);
+			beanKpiDM.addAll(list);
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Got the KPI List result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanKpiDM);

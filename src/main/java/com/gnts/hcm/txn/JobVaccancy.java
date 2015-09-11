@@ -91,7 +91,7 @@ public class JobVaccancy extends BaseUI {
 	// BeanItemContainer
 	private BeanItemContainer<JobVaccancyDM> beanJobVaccancyDM = null;
 	// local variables declaration
-	private Long companyid, employeeId, vaccancyId;
+	private Long companyid, vaccancyId;
 	private int recordCnt = 0;
 	private String username;
 	// Initialize logger
@@ -146,7 +146,6 @@ public class JobVaccancy extends BaseUI {
 		loadJobClassification();
 		cbHirgMgr = new GERPComboBox("Hiring Manager");
 		cbHirgMgr.setItemCaptionPropertyId("firstname");
-		loadEmployeeList();
 		cbDesgntnName = new GERPComboBox("Designation");
 		cbDesgntnName.setItemCaptionPropertyId("designationName");
 		loadDesignation();
@@ -155,7 +154,6 @@ public class JobVaccancy extends BaseUI {
 		loadBranchList();
 		cbReqstdName = new GERPComboBox("Requested By");
 		cbReqstdName.setItemCaptionPropertyId("firstname");
-		loadEmployeList();
 		cbApvdName = new GERPComboBox("Approved By");
 		cbApvdName.setItemCaptionPropertyId("firstname");
 		loadEmpList();
@@ -238,16 +236,16 @@ public class JobVaccancy extends BaseUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
 			tblMstScrSrchRslt.setPageLength(13);
-			List<JobVaccancyDM> listJobvacncy = new ArrayList<JobVaccancyDM>();
+			List<JobVaccancyDM> list = new ArrayList<JobVaccancyDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + (String) tfJobtitle.getValue() + ", " + (Long) cbJobClsName.getValue()
 					+ (String) cbJbStatus.getValue() + ", " + (Long) cbDesgntnName.getValue());
-			listJobvacncy = serviceJobVaccancy.getJobVaccancyList(vaccancyId, (String) tfJobtitle.getValue(),
+			list = serviceJobVaccancy.getJobVaccancyList(vaccancyId, (String) tfJobtitle.getValue(),
 					(Long) cbJobClsName.getValue(), (Long) cbDesgntnName.getValue(), null, null,
 					(String) cbJbStatus.getValue(), "F");
-			recordCnt = listJobvacncy.size();
+			recordCnt = list.size();
 			beanJobVaccancyDM = new BeanItemContainer<JobVaccancyDM>(JobVaccancyDM.class);
-			beanJobVaccancyDM.addAll(listJobvacncy);
+			beanJobVaccancyDM.addAll(list);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the JobVaccancy. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanJobVaccancyDM);
@@ -293,19 +291,6 @@ public class JobVaccancy extends BaseUI {
 		}
 	}
 	
-	private void loadEmployeeList() {
-		try {
-			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeId,
-					null, null, null, "P"));
-			cbHirgMgr.setContainerDataSource(beanEmployeeDM);
-		}
-		catch (Exception e) {
-			logger.info("load Employee details" + e);
-		}
-	}
-	
 	/*
 	 * Laod Work Experince Type
 	 */
@@ -345,26 +330,22 @@ public class JobVaccancy extends BaseUI {
 		}
 	}
 	
-	private void loadEmployeList() {
-		try {
-			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeId,
-					null, null, null, "P"));
-			cbReqstdName.setContainerDataSource(beanEmployeeDM);
-		}
-		catch (Exception e) {
-			logger.info("load Employee details" + e);
-		}
-	}
-	
 	private void loadEmpList() {
 		try {
+			List<EmployeeDM> list = serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, null,
+					null, null, null, "P");
 			BeanContainer<Long, EmployeeDM> beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployeeDM.setBeanIdProperty("employeeid");
-			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeId,
-					null, null, null, "P"));
+			beanEmployeeDM.addAll(list);
 			cbApvdName.setContainerDataSource(beanEmployeeDM);
+			beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployeeDM.setBeanIdProperty("employeeid");
+			beanEmployeeDM.addAll(list);
+			cbReqstdName.setContainerDataSource(beanEmployeeDM);
+			beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployeeDM.setBeanIdProperty("employeeid");
+			beanEmployeeDM.addAll(list);
+			cbHirgMgr.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
 			logger.info("load Employee details" + e);

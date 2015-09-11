@@ -100,7 +100,7 @@ public class ProductParked extends BaseUI {
 		loadProdList();
 		cbBranch = new GERPComboBox("Branch Name");
 		cbBranch.setItemCaptionPropertyId("branchName");
-		loadbranchlist();
+		loadBranchlist();
 		cbStockType = new GERPComboBox("Stock Type");
 		cbStockType.addItem("new");
 		cbStockType.addItem("scrap");
@@ -219,13 +219,13 @@ public class ProductParked extends BaseUI {
 	// get the search result from DB based on the search ProductParkedStockDM
 	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		List<ProductParkedStockDM> parkedList = new ArrayList<ProductParkedStockDM>();
+		List<ProductParkedStockDM> list = new ArrayList<ProductParkedStockDM>();
 		// String productStock = (String) cbStockType.getValue();
-		parkedList = serviceProductParkedStock.getProductParkedStockList((Long) cbProduct.getValue(), null,
+		list = serviceProductParkedStock.getProductParkedStockList((Long) cbProduct.getValue(), null,
 				(Long) cbBranch.getValue(), (String) cbStockType.getValue(), "F");
-		recordCnt = parkedList.size();
+		recordCnt = list.size();
 		beanProductParkedStockDM = new BeanItemContainer<ProductParkedStockDM>(ProductParkedStockDM.class);
-		beanProductParkedStockDM.addAll(parkedList);
+		beanProductParkedStockDM.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Ratesetting. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanProductParkedStockDM);
@@ -254,7 +254,7 @@ public class ProductParked extends BaseUI {
 	}
 	
 	// Loading Branch List
-	private void loadbranchlist() {
+	private void loadBranchlist() {
 		try {
 			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanbranch.setBeanIdProperty("branchId");

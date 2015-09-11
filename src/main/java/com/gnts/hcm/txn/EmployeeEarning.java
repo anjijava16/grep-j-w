@@ -329,15 +329,15 @@ public class EmployeeEarning extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<EmployeeEarningDM> listEmployeeEarning = new ArrayList<EmployeeEarningDM>();
+			List<EmployeeEarningDM> list = new ArrayList<EmployeeEarningDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (Long) cbEarnCode.getValue()
 					+ (String) cbStatus.getValue());
-			listEmployeeEarning = serviceEmployeeEarning.getempearningList(null, (Long) cbSearchEmpName.getValue(),
+			list = serviceEmployeeEarning.getempearningList(null, (Long) cbSearchEmpName.getValue(),
 					(Long) cbSearchEarnCode.getValue(), (String) cbStatus.getValue(), "F");
-			recordCnt = listEmployeeEarning.size();
+			recordCnt = list.size();
 			beanEmployeeEarn = new BeanItemContainer<EmployeeEarningDM>(EmployeeEarningDM.class);
-			beanEmployeeEarn.addAll(listEmployeeEarning);
+			beanEmployeeEarn.addAll(list);
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 					+ "Got the EmployeeEarning. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanEmployeeEarn);
@@ -612,270 +612,285 @@ public class EmployeeEarning extends BaseUI {
 	
 	@SuppressWarnings("unused")
 	private void insertEmployeeGradeEarning(Long employeeid, Long gradeid, BigDecimal EarnAmount) {
-		List<GradeEarningsDM> list = serviceEarnings.loadGradeEarningListByGradeId(gradeid);
-		BigDecimal minValueByBasic = EarnAmount;
-		BigDecimal earningAmount;
-		BigDecimal minVal = new BigDecimal("0");
-		BigDecimal totalGrossAmt = EarnAmount;
-		BigDecimal tatolGrossearnAmount = EarnAmount;
-		String isFlat = null;
-		BigDecimal earnBasiPercent = new BigDecimal(serviceEarnings.getBasicEarnPercent(gradeid));
-		BigDecimal basicAmount = minValueByBasic.multiply(earnBasiPercent).divide(new BigDecimal("100"));
-		for (GradeEarningsDM pojo : list) {
-			Long earnid = pojo.getEarnId();
-			isFlat = pojo.getIsFlatPer();
-			BigDecimal earnPercent = pojo.getEarnPercent();
-			minVal = EarnAmount;
-			String onBasicGross = pojo.getOnBasicGros();
-			System.out.println("isFlat--->" + isFlat + "\nonBasicGrossaa--->" + onBasicGross);
-			List<EarningsDM> earnlist = serviceEarnings.getEarningByEarnID(earnid);
-			EarningsDM earnPojo = null;
-			for (EarningsDM ernpojo : earnlist) {
-				earnPojo = ernpojo;
-				if (ernpojo.getEarnCode().equalsIgnoreCase("ALLOW")) {
+		try {
+			List<GradeEarningsDM> list = serviceEarnings.loadGradeEarningListByGradeId(gradeid);
+			BigDecimal minValueByBasic = EarnAmount;
+			BigDecimal earningAmount;
+			BigDecimal minVal = new BigDecimal("0");
+			BigDecimal totalGrossAmt = EarnAmount;
+			BigDecimal tatolGrossearnAmount = EarnAmount;
+			String isFlat = null;
+			BigDecimal earnBasiPercent = new BigDecimal(serviceEarnings.getBasicEarnPercent(gradeid));
+			BigDecimal basicAmount = minValueByBasic.multiply(earnBasiPercent).divide(new BigDecimal("100"));
+			for (GradeEarningsDM pojo : list) {
+				Long earnid = pojo.getEarnId();
+				isFlat = pojo.getIsFlatPer();
+				BigDecimal earnPercent = pojo.getEarnPercent();
+				minVal = EarnAmount;
+				String onBasicGross = pojo.getOnBasicGros();
+				System.out.println("isFlat--->" + isFlat + "\nonBasicGrossaa--->" + onBasicGross);
+				List<EarningsDM> earnlist = serviceEarnings.getEarningByEarnID(earnid);
+				EarningsDM earnPojo = null;
+				for (EarningsDM ernpojo : earnlist) {
+					earnPojo = ernpojo;
+					if (ernpojo.getEarnCode().equalsIgnoreCase("ALLOW")) {
+					}
 				}
-			}
-			EmployeeEarningDM staffearnPojo = new EmployeeEarningDM();
-			if (isFlat.equals("Percent") && onBasicGross.equalsIgnoreCase("GROSS")) {
-				System.out.println("Arun Jeyaraj " + minValueByBasic);
-				earningAmount = new BigDecimal(calculateEarnAmount(earnPercent, minValueByBasic));
-				totalGrossAmt = totalGrossAmt.subtract(earningAmount);
-				tatolGrossearnAmount = tatolGrossearnAmount.add(earningAmount);
-				staffearnPojo.setEmployeeid(employeeid);
-				staffearnPojo.setEarnid(earnPojo.getEarnId());
-				staffearnPojo.setIsflatpercent(isFlat);
-				staffearnPojo.setEarnamt(earningAmount);// Get the calculated amt based on BASIC code in earning and
-														// grade earnings
-				staffearnPojo.setEffdt(new Date());
-				staffearnPojo.setEarnpercent(earnPercent);
-				staffearnPojo.setEmpearnstatus("Active");
-				staffearnPojo.setLastpdateddt(DateUtils.getcurrentdate());
-				staffearnPojo.setLastupdatedby(userName);
-				serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
-			}
-			if (isFlat.equals("Percent") && onBasicGross.equalsIgnoreCase("BASIC")) {
-				earningAmount = new BigDecimal(calculateEarnAmount(earnPercent, basicAmount));
-				System.out.println("Arun Jeyaraj " + minValueByBasic);
-				totalGrossAmt = totalGrossAmt.subtract(earningAmount);
-				tatolGrossearnAmount = tatolGrossearnAmount.add(earningAmount);
-				staffearnPojo.setEmployeeid(employeeid);
-				staffearnPojo.setEarnid(earnPojo.getEarnId());
-				staffearnPojo.setIsflatpercent(isFlat);
-				staffearnPojo.setEarnamt(earningAmount);// Get the calculated amt based on BASIC code in earning and
-														// grade earnings
-				staffearnPojo.setEffdt(new Date());
-				staffearnPojo.setEarnpercent(earnPercent);
-				staffearnPojo.setEmpearnstatus("Active");
-				staffearnPojo.setLastpdateddt(DateUtils.getcurrentdate());
-				staffearnPojo.setLastupdatedby(userName);
-				serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
-			} else if (isFlat.equals("Flat")) {
-				if (!earnPojo.getEarnCode().equalsIgnoreCase("GROSS")) {
-					totalGrossAmt = totalGrossAmt.subtract(minVal);
-					tatolGrossearnAmount = tatolGrossearnAmount.add(minVal);
-					staffearnPojo.setEmployeeid(employeeId);
+				EmployeeEarningDM staffearnPojo = new EmployeeEarningDM();
+				if (isFlat.equals("Percent") && onBasicGross.equalsIgnoreCase("GROSS")) {
+					System.out.println("Arun Jeyaraj " + minValueByBasic);
+					earningAmount = new BigDecimal(calculateEarnAmount(earnPercent, minValueByBasic));
+					totalGrossAmt = totalGrossAmt.subtract(earningAmount);
+					tatolGrossearnAmount = tatolGrossearnAmount.add(earningAmount);
+					staffearnPojo.setEmployeeid(employeeid);
 					staffearnPojo.setEarnid(earnPojo.getEarnId());
 					staffearnPojo.setIsflatpercent(isFlat);
-					staffearnPojo.setEarnamt(minVal);// Get the minimum value if flat is selected in the
-					staffearnPojo.setEmployeeid(employeeid); // grade_earnings
+					staffearnPojo.setEarnamt(earningAmount);// Get the calculated amt based on BASIC code in earning and
+															// grade earnings
 					staffearnPojo.setEffdt(new Date());
-					staffearnPojo.setEmpearnstatus("Active");
-					staffearnPojo.setLastpdateddt(DateUtils.getcurrentdate());
-					staffearnPojo.setLastupdatedby(userName);
-					serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
-				} else {
-					staffearnPojo.setEmployeeid(employeeId);
-					staffearnPojo.setEarnid(earnPojo.getEarnId());
-					staffearnPojo.setIsflatpercent(isFlat);
-					staffearnPojo.setEarnamt(minVal);// Get the minimum value if flat is selected in the
-					staffearnPojo.setEmployeeid(employeeid); // grade_earnings
-					staffearnPojo.setEffdt(new Date());
+					staffearnPojo.setEarnpercent(earnPercent);
 					staffearnPojo.setEmpearnstatus("Active");
 					staffearnPojo.setLastpdateddt(DateUtils.getcurrentdate());
 					staffearnPojo.setLastupdatedby(userName);
 					serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
 				}
-			} else if (isFlat.equals("REM")) {
-				pojo.getIsFlatPer();
-				Long earnsid = pojo.getEarnId();
-				BigDecimal gradeAmount = pojo.getMinVal();
-				List<EarningsDM> earninglist = serviceEarnings.getEarningByEarnID(earnsid);
-				for (EarningsDM earnObj : earninglist) {
+				if (isFlat.equals("Percent") && onBasicGross.equalsIgnoreCase("BASIC")) {
+					earningAmount = new BigDecimal(calculateEarnAmount(earnPercent, basicAmount));
+					System.out.println("Arun Jeyaraj " + minValueByBasic);
+					totalGrossAmt = totalGrossAmt.subtract(earningAmount);
+					tatolGrossearnAmount = tatolGrossearnAmount.add(earningAmount);
+					staffearnPojo.setEmployeeid(employeeid);
+					staffearnPojo.setEarnid(earnPojo.getEarnId());
+					staffearnPojo.setIsflatpercent(isFlat);
+					staffearnPojo.setEarnamt(earningAmount);// Get the calculated amt based on BASIC code in earning and
+															// grade earnings
+					staffearnPojo.setEffdt(new Date());
+					staffearnPojo.setEarnpercent(earnPercent);
+					staffearnPojo.setEmpearnstatus("Active");
+					staffearnPojo.setLastpdateddt(DateUtils.getcurrentdate());
+					staffearnPojo.setLastupdatedby(userName);
+					serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
+				} else if (isFlat.equals("Flat")) {
+					if (!earnPojo.getEarnCode().equalsIgnoreCase("GROSS")) {
+						totalGrossAmt = totalGrossAmt.subtract(minVal);
+						tatolGrossearnAmount = tatolGrossearnAmount.add(minVal);
+						staffearnPojo.setEmployeeid(employeeId);
+						staffearnPojo.setEarnid(earnPojo.getEarnId());
+						staffearnPojo.setIsflatpercent(isFlat);
+						staffearnPojo.setEarnamt(minVal);// Get the minimum value if flat is selected in the
+						staffearnPojo.setEmployeeid(employeeid); // grade_earnings
+						staffearnPojo.setEffdt(new Date());
+						staffearnPojo.setEmpearnstatus("Active");
+						staffearnPojo.setLastpdateddt(DateUtils.getcurrentdate());
+						staffearnPojo.setLastupdatedby(userName);
+						serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
+					} else {
+						staffearnPojo.setEmployeeid(employeeId);
+						staffearnPojo.setEarnid(earnPojo.getEarnId());
+						staffearnPojo.setIsflatpercent(isFlat);
+						staffearnPojo.setEarnamt(minVal);// Get the minimum value if flat is selected in the
+						staffearnPojo.setEmployeeid(employeeid); // grade_earnings
+						staffearnPojo.setEffdt(new Date());
+						staffearnPojo.setEmpearnstatus("Active");
+						staffearnPojo.setLastpdateddt(DateUtils.getcurrentdate());
+						staffearnPojo.setLastupdatedby(userName);
+						serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
+					}
+				} else if (isFlat.equals("REM")) {
+					pojo.getIsFlatPer();
+					Long earnsid = pojo.getEarnId();
+					BigDecimal gradeAmount = pojo.getMinVal();
+					List<EarningsDM> earninglist = serviceEarnings.getEarningByEarnID(earnsid);
+					for (EarningsDM earnObj : earninglist) {
+					}
+					tatolGrossearnAmount = tatolGrossearnAmount.add(gradeAmount);
 				}
-				tatolGrossearnAmount = tatolGrossearnAmount.add(gradeAmount);
 			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void insertEmployeeDeduction(Long employeeid, Long gradeid, Long EarnAmount) {
-		List<GradeDeductionDM> list = serviceDeduction.getGradeDeductionByGradeId(gradeid);
-		Long minValueByBasic = null;
-		Long minValueByGross = null;
-		Long minBypercentFTA = null;
-		Long minByVAluesFTA = null;
-		Long minValueByBasicFTA = null;
-		Long earnpercentBASIC = serviceDeduction.getMinValueByGradeid(gradeid);
-		minBypercentFTA = serviceDeduction.getMinValueByGradeidfta(gradeid);
-		minValueByGross = EarnAmount;
-		minValueByBasic = Long.valueOf(Math.round(minValueByGross * earnpercentBASIC) / 100);
-		minByVAluesFTA = Long.valueOf(Math.round(minValueByGross * minBypercentFTA) / 100);
-		minValueByBasicFTA = minValueByBasic + minByVAluesFTA;
-		for (GradeDeductionDM pojo : list) {
-			Long dednid = pojo.getDednId();
-			String isFlat = pojo.getIsFlatPer();
-			BigDecimal dednpercent = pojo.getDednPercent();
-			BigDecimal minVal = pojo.getMinVal();
-			String onBasic_Gross = pojo.getOnBasicGros();
-			System.out.println("Deuction on basic gross" + onBasic_Gross);
-			List<DeductionDM> dednlist = serviceDeduction.getDeductionListByDednId(dednid);
-			DeductionDM deductionPojo = null;
-			for (DeductionDM dednpojo : dednlist) {
-				deductionPojo = dednpojo;
-				dednpojo.getDeductionCode();
+		try {
+			List<GradeDeductionDM> list = serviceDeduction.getGradeDeductionByGradeId(gradeid);
+			Long minValueByBasic = null;
+			Long minValueByGross = null;
+			Long minBypercentFTA = null;
+			Long minByVAluesFTA = null;
+			Long minValueByBasicFTA = null;
+			Long earnpercentBASIC = serviceDeduction.getMinValueByGradeid(gradeid);
+			minBypercentFTA = serviceDeduction.getMinValueByGradeidfta(gradeid);
+			minValueByGross = EarnAmount;
+			minValueByBasic = Long.valueOf(Math.round(minValueByGross * earnpercentBASIC) / 100);
+			minByVAluesFTA = Long.valueOf(Math.round(minValueByGross * minBypercentFTA) / 100);
+			minValueByBasicFTA = minValueByBasic + minByVAluesFTA;
+			for (GradeDeductionDM pojo : list) {
+				Long dednid = pojo.getDednId();
+				String isFlat = pojo.getIsFlatPer();
+				BigDecimal dednpercent = pojo.getDednPercent();
+				BigDecimal minVal = pojo.getMinVal();
+				String onBasic_Gross = pojo.getOnBasicGros();
+				System.out.println("Deuction on basic gross" + onBasic_Gross);
+				List<DeductionDM> dednlist = serviceDeduction.getDeductionListByDednId(dednid);
+				DeductionDM deductionPojo = null;
+				for (DeductionDM dednpojo : dednlist) {
+					deductionPojo = dednpojo;
+					dednpojo.getDeductionCode();
+				}
+				// Save the T_Staff_Deduction
+				EmployeeDeductionDM staffDednPojo = new EmployeeDeductionDM();
+				System.out.println("Deuction on basic gross and is flat =" + onBasic_Gross + " and " + isFlat);
+				System.out.println();
+				if (isFlat.equalsIgnoreCase("Percent") && onBasic_Gross.equalsIgnoreCase("GROSS")) {
+					BigDecimal deductionAmt = new BigDecimal(calculateDeductionAmount(dednpercent, minValueByGross));
+					staffDednPojo.setEmployeeid(employeeId);
+					staffDednPojo.setDednid(deductionPojo.getDeductionId());
+					staffDednPojo.setIsflatpt(isFlat);
+					staffDednPojo.setDednpt(dednpercent);
+					staffDednPojo.setDednamt(deductionAmt);// Get the percentage and calculate with gross value from
+					staffDednPojo.setEmployeeid(employeeid); // grade earnings
+					staffDednPojo.setEffdt(new Date());
+					staffDednPojo.setEmpdednstatus("Active");
+					staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
+					staffDednPojo.setLastupdatedby(userName);
+					serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
+				} else if (isFlat.equalsIgnoreCase("Percent") && onBasic_Gross.equalsIgnoreCase("BASIC")) {
+					BigDecimal deductionAmt = new BigDecimal(calculateDeductionAmount(dednpercent, minValueByBasic));
+					staffDednPojo.setEmployeeid(employeeId);
+					staffDednPojo.setDednid(deductionPojo.getDeductionId());
+					staffDednPojo.setIsflatpt(isFlat);
+					staffDednPojo.setDednpt(dednpercent);
+					staffDednPojo.setDednamt(deductionAmt);// Get the percentage and calculate with basic value from
+					staffDednPojo.setEmployeeid(employeeid); // grade earnings
+					staffDednPojo.setEffdt(new Date());
+					staffDednPojo.setEmpdednstatus("Active");
+					staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
+					staffDednPojo.setLastupdatedby(userName);
+					serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
+				} else if (isFlat.equalsIgnoreCase("Percent") && onBasic_Gross.equalsIgnoreCase("BASIC+FTA")) {
+					BigDecimal deductionAmt = new BigDecimal(calculateDeductionAmount(dednpercent, minValueByBasicFTA));
+					staffDednPojo.setEmployeeid(employeeId);
+					staffDednPojo.setDednid(deductionPojo.getDeductionId());
+					staffDednPojo.setIsflatpt(isFlat);
+					staffDednPojo.setDednpt(dednpercent);
+					staffDednPojo.setDednamt(deductionAmt);// Get the percentage and calculate with basic value from
+					staffDednPojo.setEmployeeid(employeeid); // grade earnings
+					staffDednPojo.setEffdt(new Date());
+					staffDednPojo.setEmpdednstatus("Active");
+					staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
+					staffDednPojo.setLastupdatedby(userName);
+					serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
+				} else {
+					staffDednPojo.setEmployeeid(employeeId);
+					staffDednPojo.setDednid(deductionPojo.getDeductionId());
+					staffDednPojo.setIsflatpt(isFlat);
+					staffDednPojo.setDednpt(minVal);// Get the minimum value from grade deduction
+					staffDednPojo.setEffdt(new Date());
+					staffDednPojo.setEmpdednstatus("Active");
+					staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
+					staffDednPojo.setLastupdatedby(userName);
+					staffDednPojo.setEmployeeid(employeeid);
+					serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
+				}
 			}
-			// Save the T_Staff_Deduction
-			EmployeeDeductionDM staffDednPojo = new EmployeeDeductionDM();
-			System.out.println("Deuction on basic gross and is flat =" + onBasic_Gross + " and " + isFlat);
-			System.out.println();
-			if (isFlat.equalsIgnoreCase("Percent") && onBasic_Gross.equalsIgnoreCase("GROSS")) {
-				BigDecimal deductionAmt = new BigDecimal(calculateDeductionAmount(dednpercent, minValueByGross));
-				staffDednPojo.setEmployeeid(employeeId);
-				staffDednPojo.setDednid(deductionPojo.getDeductionId());
-				staffDednPojo.setIsflatpt(isFlat);
-				staffDednPojo.setDednpt(dednpercent);
-				staffDednPojo.setDednamt(deductionAmt);// Get the percentage and calculate with gross value from
-				staffDednPojo.setEmployeeid(employeeid); // grade earnings
-				staffDednPojo.setEffdt(new Date());
-				staffDednPojo.setEmpdednstatus("Active");
-				staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
-				staffDednPojo.setLastupdatedby(userName);
-				serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
-			} else if (isFlat.equalsIgnoreCase("Percent") && onBasic_Gross.equalsIgnoreCase("BASIC")) {
-				BigDecimal deductionAmt = new BigDecimal(calculateDeductionAmount(dednpercent, minValueByBasic));
-				staffDednPojo.setEmployeeid(employeeId);
-				staffDednPojo.setDednid(deductionPojo.getDeductionId());
-				staffDednPojo.setIsflatpt(isFlat);
-				staffDednPojo.setDednpt(dednpercent);
-				staffDednPojo.setDednamt(deductionAmt);// Get the percentage and calculate with basic value from
-				staffDednPojo.setEmployeeid(employeeid); // grade earnings
-				staffDednPojo.setEffdt(new Date());
-				staffDednPojo.setEmpdednstatus("Active");
-				staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
-				staffDednPojo.setLastupdatedby(userName);
-				serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
-			} else if (isFlat.equalsIgnoreCase("Percent") && onBasic_Gross.equalsIgnoreCase("BASIC+FTA")) {
-				BigDecimal deductionAmt = new BigDecimal(calculateDeductionAmount(dednpercent, minValueByBasicFTA));
-				staffDednPojo.setEmployeeid(employeeId);
-				staffDednPojo.setDednid(deductionPojo.getDeductionId());
-				staffDednPojo.setIsflatpt(isFlat);
-				staffDednPojo.setDednpt(dednpercent);
-				staffDednPojo.setDednamt(deductionAmt);// Get the percentage and calculate with basic value from
-				staffDednPojo.setEmployeeid(employeeid); // grade earnings
-				staffDednPojo.setEffdt(new Date());
-				staffDednPojo.setEmpdednstatus("Active");
-				staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
-				staffDednPojo.setLastupdatedby(userName);
-				serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
-			} else {
-				staffDednPojo.setEmployeeid(employeeId);
-				staffDednPojo.setDednid(deductionPojo.getDeductionId());
-				staffDednPojo.setIsflatpt(isFlat);
-				staffDednPojo.setDednpt(minVal);// Get the minimum value from grade deduction
-				staffDednPojo.setEffdt(new Date());
-				staffDednPojo.setEmpdednstatus("Active");
-				staffDednPojo.setLastupdateddt(DateUtils.getcurrentdate());
-				staffDednPojo.setLastupdatedby(userName);
-				staffDednPojo.setEmployeeid(employeeid);
-				serviceEmployeeDeduction.saveAndUpdate(staffDednPojo);
-			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	
 	private void insertGradeAllowance(Long employeeid, Long gradeid, BigDecimal EarnAmount) {
-		String medicalAmount = "";
-		List<ParameterDM> paramList = serviceEmployeeEarning.loadMedicalAllowanceDuration();
-		for (ParameterDM paramObj : paramList) {
-			medicalAmount = paramObj.getParamValue();
+		try {
+			String medicalAmount = "";
+			List<ParameterDM> paramList = serviceEmployeeEarning.loadMedicalAllowanceDuration();
+			for (ParameterDM paramObj : paramList) {
+				medicalAmount = paramObj.getParamValue();
+			}
+			System.out.println("Medical Allowance Duration Amount" + medicalAmount);
+			BigDecimal medicalDuration = new BigDecimal(medicalAmount.toString());
+			List<GradeAllowanceDM> list = serviceGradeAllowance.getGradeAllowanceByGradeID(gradeid);
+			BigDecimal minValueByBasic = null;
+			BigDecimal minValueByGross = null;
+			String allownceCode = "";
+			minValueByGross = EarnAmount;
+			BigDecimal earnpercent = new BigDecimal(serviceDeduction.getMinValueByGradeid(gradeid));
+			minValueByBasic = (earnpercent.multiply(minValueByGross)).divide(new BigDecimal("100"));
+			System.out.println("BAsic Value for Calculate Based On Gross" + minValueByBasic);
+			yearGrossAmt = minValueByGross.multiply(new BigDecimal("12"));
+			for (GradeAllowanceDM pojo : list) {
+				Long allowanceid = pojo.getAlwnceId();
+				String isFlat = pojo.getIsFlatPer();
+				String onBasicOrGross = pojo.getOnBasicGros();
+				BigDecimal minPercent = null;
+				if (pojo.getMinPer() != null) {
+					minPercent = new BigDecimal(pojo.getMinPer().longValue());
+				}
+				BigDecimal minValue = null;
+				if (pojo.getMinVal() != null) {
+					minValue = new BigDecimal(pojo.getMinVal().toString());
+				}
+				List<AllowanceDM> allownList = serviceEmpAllowance.getAllowanceByAllowanceId(allowanceid);
+				AllowanceDM allowanceObj = null;
+				for (AllowanceDM alloPojo : allownList) {
+					allowanceObj = alloPojo;
+					allownceCode = alloPojo.getAlowncCode();
+				}
+				// Store the grade allowance to staff allowance table
+				EmployeeAllowanceDM staffAllwnPojo = new EmployeeAllowanceDM();
+				if (isFlat.equalsIgnoreCase("Percent") && onBasicOrGross.equalsIgnoreCase("GROSS")) {
+					BigDecimal allownAmt = new BigDecimal(calculateEarnAmount(minPercent, minValueByGross));
+					staffAllwnPojo.setAllowid(allowanceObj.getAlowncId());
+					staffAllwnPojo.setIsflpt(isFlat);
+					staffAllwnPojo.setAllowpt(minPercent);
+					staffAllwnPojo.setAllowamt(allownAmt);// Get the calculated value based on 'BASIC' if percent is
+					staffAllwnPojo.setEmpid(employeeid); // selected in the grade_allowance
+					staffAllwnPojo.setAllowbal(allownAmt);
+					staffAllwnPojo.setEffdt(new Date());
+					staffAllwnPojo.setAutopay("N");
+					staffAllwnPojo.setEmpawstatus("Active");
+					staffAllwnPojo.setLastupdt(DateUtils.getcurrentdate());
+					staffAllwnPojo.setLastupby(userName);
+					serviceEmpAllowance.saveAndUpdate(staffAllwnPojo);
+				} else if (isFlat.equalsIgnoreCase("Percent") && onBasicOrGross.equalsIgnoreCase("BASIC")) {
+					BigDecimal allownAmt = new BigDecimal(calculateEarnAmount(minPercent, minValueByBasic));
+					staffAllwnPojo.setEmpid(employeeid);
+					staffAllwnPojo.setAllowid(allowanceObj.getAlowncId());
+					staffAllwnPojo.setIsflpt(isFlat);
+					staffAllwnPojo.setAllowpt(minPercent);
+					staffAllwnPojo.setAllowamt(allownAmt);// Get the calculated value based on 'BASIC' if percent is
+															// selected in the grade_allowance
+					staffAllwnPojo.setAllowbal(allownAmt);
+					staffAllwnPojo.setEffdt(new Date());
+					staffAllwnPojo.setAutopay("N");
+					staffAllwnPojo.setEmpawstatus("Active");
+					staffAllwnPojo.setLastupdt(DateUtils.getcurrentdate());
+					staffAllwnPojo.setLastupby(userName);
+					serviceEmpAllowance.saveAndUpdate(staffAllwnPojo);
+				} else {
+					staffAllwnPojo.setEmpid(employeeid);
+					staffAllwnPojo.setAllowid(allowanceObj.getAlowncId());
+					staffAllwnPojo.setIsflpt(isFlat);
+					staffAllwnPojo.setAllowamt(minValue);// Get the minimum value if flat is selected in the
+															// grade_allowance
+					staffAllwnPojo.setAllowbal(minValue);
+					staffAllwnPojo.setEffdt(new Date());
+					staffAllwnPojo.setEmpawstatus("Active");
+					staffAllwnPojo.setAutopay("N");
+					staffAllwnPojo.setLastupdt(DateUtils.getcurrentdate());
+					staffAllwnPojo.setLastupby(userName);
+					if (allownceCode.equalsIgnoreCase("MEDA") && (yearGrossAmt.compareTo(medicalDuration)) == 1) {
+						serviceEmpAllowance.saveAndUpdate(staffAllwnPojo);
+					}
+					if (!allownceCode.equalsIgnoreCase("MEDA")) {
+						serviceEmpAllowance.saveAndUpdate(staffAllwnPojo);
+					}
+				}
+			}
 		}
-		System.out.println("Medical Allowance Duration Amount" + medicalAmount);
-		BigDecimal medicalDuration = new BigDecimal(medicalAmount.toString());
-		List<GradeAllowanceDM> list = serviceGradeAllowance.getGradeAllowanceByGradeID(gradeid);
-		BigDecimal minValueByBasic = null;
-		BigDecimal minValueByGross = null;
-		String allownceCode = "";
-		minValueByGross = EarnAmount;
-		BigDecimal earnpercent = new BigDecimal(serviceDeduction.getMinValueByGradeid(gradeid));
-		minValueByBasic = (earnpercent.multiply(minValueByGross)).divide(new BigDecimal("100"));
-		System.out.println("BAsic Value for Calculate Based On Gross" + minValueByBasic);
-		yearGrossAmt = minValueByGross.multiply(new BigDecimal("12"));
-		for (GradeAllowanceDM pojo : list) {
-			Long allowanceid = pojo.getAlwnceId();
-			String isFlat = pojo.getIsFlatPer();
-			String onBasicOrGross = pojo.getOnBasicGros();
-			BigDecimal minPercent = null;
-			if (pojo.getMinPer() != null) {
-				minPercent = new BigDecimal(pojo.getMinPer().longValue());
-			}
-			BigDecimal minValue = null;
-			if (pojo.getMinVal() != null) {
-				minValue = new BigDecimal(pojo.getMinVal().toString());
-			}
-			List<AllowanceDM> allownList = serviceEmpAllowance.getAllowanceByAllowanceId(allowanceid);
-			AllowanceDM allowanceObj = null;
-			for (AllowanceDM alloPojo : allownList) {
-				allowanceObj = alloPojo;
-				allownceCode = alloPojo.getAlowncCode();
-			}
-			// Store the grade allowance to staff allowance table
-			EmployeeAllowanceDM staffAllwnPojo = new EmployeeAllowanceDM();
-			if (isFlat.equalsIgnoreCase("Percent") && onBasicOrGross.equalsIgnoreCase("GROSS")) {
-				BigDecimal allownAmt = new BigDecimal(calculateEarnAmount(minPercent, minValueByGross));
-				staffAllwnPojo.setAllowid(allowanceObj.getAlowncId());
-				staffAllwnPojo.setIsflpt(isFlat);
-				staffAllwnPojo.setAllowpt(minPercent);
-				staffAllwnPojo.setAllowamt(allownAmt);// Get the calculated value based on 'BASIC' if percent is
-				staffAllwnPojo.setEmpid(employeeid); // selected in the grade_allowance
-				staffAllwnPojo.setAllowbal(allownAmt);
-				staffAllwnPojo.setEffdt(new Date());
-				staffAllwnPojo.setAutopay("N");
-				staffAllwnPojo.setEmpawstatus("Active");
-				staffAllwnPojo.setLastupdt(DateUtils.getcurrentdate());
-				staffAllwnPojo.setLastupby(userName);
-				serviceEmpAllowance.saveAndUpdate(staffAllwnPojo);
-			} else if (isFlat.equalsIgnoreCase("Percent") && onBasicOrGross.equalsIgnoreCase("BASIC")) {
-				BigDecimal allownAmt = new BigDecimal(calculateEarnAmount(minPercent, minValueByBasic));
-				staffAllwnPojo.setEmpid(employeeid);
-				staffAllwnPojo.setAllowid(allowanceObj.getAlowncId());
-				staffAllwnPojo.setIsflpt(isFlat);
-				staffAllwnPojo.setAllowpt(minPercent);
-				staffAllwnPojo.setAllowamt(allownAmt);// Get the calculated value based on 'BASIC' if percent is
-														// selected in the grade_allowance
-				staffAllwnPojo.setAllowbal(allownAmt);
-				staffAllwnPojo.setEffdt(new Date());
-				staffAllwnPojo.setAutopay("N");
-				staffAllwnPojo.setEmpawstatus("Active");
-				staffAllwnPojo.setLastupdt(DateUtils.getcurrentdate());
-				staffAllwnPojo.setLastupby(userName);
-				serviceEmpAllowance.saveAndUpdate(staffAllwnPojo);
-			} else {
-				staffAllwnPojo.setEmpid(employeeid);
-				staffAllwnPojo.setAllowid(allowanceObj.getAlowncId());
-				staffAllwnPojo.setIsflpt(isFlat);
-				staffAllwnPojo.setAllowamt(minValue);// Get the minimum value if flat is selected in the
-														// grade_allowance
-				staffAllwnPojo.setAllowbal(minValue);
-				staffAllwnPojo.setEffdt(new Date());
-				staffAllwnPojo.setEmpawstatus("Active");
-				staffAllwnPojo.setAutopay("N");
-				staffAllwnPojo.setLastupdt(DateUtils.getcurrentdate());
-				staffAllwnPojo.setLastupby(userName);
-				if (allownceCode.equalsIgnoreCase("MEDA") && (yearGrossAmt.compareTo(medicalDuration)) == 1) {
-					serviceEmpAllowance.saveAndUpdate(staffAllwnPojo);
-				}
-				if (!allownceCode.equalsIgnoreCase("MEDA")) {
-					serviceEmpAllowance.saveAndUpdate(staffAllwnPojo);
-				}
-			}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 	

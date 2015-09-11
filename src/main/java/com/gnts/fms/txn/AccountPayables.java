@@ -183,15 +183,15 @@ public class AccountPayables extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<AccountPayablesDM> listACPayable = new ArrayList<AccountPayablesDM>();
+			List<AccountPayablesDM> list = new ArrayList<AccountPayablesDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Search Parameters are " + companyId + ", " + (Long) cbBranchName.getValue() + " , "
 					+ tfBillNo.getValue() + ", " + (String) cbStatus.getValue());
-			listACPayable = serviceAccountPayables.getAccountpayablesList(companyId, (Long) cbBranchName.getValue(),
+			list = serviceAccountPayables.getAccountpayablesList(companyId, (Long) cbBranchName.getValue(),
 					tfBillNo.getValue(), (String) cbStatus.getValue(), null);
-			recordCnt = listACPayable.size();
+			recordCnt = list.size();
 			beansAccountPayablesDM = new BeanItemContainer<AccountPayablesDM>(AccountPayablesDM.class);
-			beansAccountPayablesDM.addAll(listACPayable);
+			beansAccountPayablesDM.addAll(list);
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Got the Account Payables List result set");
 			tblMstScrSrchRslt.setContainerDataSource(beansAccountPayablesDM);

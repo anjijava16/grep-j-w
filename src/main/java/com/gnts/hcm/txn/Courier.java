@@ -47,7 +47,7 @@ public class Courier extends BaseTransUI {
 	// Bean Creation
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private CourierService serviceCourier = (CourierService) SpringContextHelper.getBean("courier");
-	private DepartmentService serviceDepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private DepartmentService serviceDepartment = (DepartmentService) SpringContextHelper.getBean("department");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(Courier.class);
 	// User Input Fields for Courier
@@ -383,7 +383,7 @@ public class Courier extends BaseTransUI {
 					+ "Loading Department Search...");
 			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 			beanDepartment.setBeanIdProperty("deptid");
-			beanDepartment.addAll(serviceDepartmant.getDepartmentList(companyid, null, "Active", "P"));
+			beanDepartment.addAll(serviceDepartment.getDepartmentList(companyid, null, "Active", "P"));
 			cbDepartment.setContainerDataSource(beanDepartment);
 		}
 		catch (Exception e) {

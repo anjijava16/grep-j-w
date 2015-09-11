@@ -233,15 +233,15 @@ public class EmployeeDeduction extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<EmployeeDeductionDM> loadEmpDedcnList = new ArrayList<EmployeeDeductionDM>();
+			List<EmployeeDeductionDM> list = new ArrayList<EmployeeDeductionDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyId + ", " + (Long) cbEmpName.getValue() + ", " + (Long) cbDedcnCode.getValue()
 					+ (String) cbStatus.getValue());
-			loadEmpDedcnList = serviceEmployeeDeduction.getempdeductionlist(null, (Long) cbEmpName.getValue(),
+			list = serviceEmployeeDeduction.getempdeductionlist(null, (Long) cbEmpName.getValue(),
 					(Long) cbDedcnCode.getValue(), (String) cbStatus.getValue(), "F");
-			recordCnt = loadEmpDedcnList.size();
+			recordCnt = list.size();
 			beanEmployeeDecn = new BeanItemContainer<EmployeeDeductionDM>(EmployeeDeductionDM.class);
-			beanEmployeeDecn.addAll(loadEmpDedcnList);
+			beanEmployeeDecn.addAll(list);
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 					+ "Got the EmployeeDeduction. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanEmployeeDecn);

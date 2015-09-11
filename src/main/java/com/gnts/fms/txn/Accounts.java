@@ -104,7 +104,7 @@ public class Accounts extends BaseTransUI {
 	private TextField tfAccountNumber = new GERPTextField("Account Number");
 	private TextField tfAccountName = new GERPTextField("Account Name");
 	private PopupDateField dfAccountDate = new GERPPopupDateField("Account Date");
-	private TextField tffinanceYr = new GERPTextField("Finance Year");
+	private TextField tfFinanceYr = new GERPTextField("Finance Year");
 	private CheckBox ckGenerateVoucheryn = new CheckBox("Generate Voucher");
 	private ComboBox cbOwnerName = new GERPComboBox("Account owner");
 	private ComboBox cbBankName = new GERPComboBox("Bank Name");
@@ -159,8 +159,8 @@ public class Accounts extends BaseTransUI {
 		});
 		cbStatus.setWidth("150");
 		cbApprovelAuth.setWidth("150");
-		tffinanceYr.setValue(serviceParameter.getParameterValue("FM_FINYEAR", companyId, null));
-		tffinanceYr.setReadOnly(true);
+		tfFinanceYr.setValue(serviceParameter.getParameterValue("FM_FINYEAR", companyId, null));
+		tfFinanceYr.setReadOnly(true);
 		tfAccountNumber.setMaxLength(30);
 		tfAccountName.setRequired(true);
 		loadEmployeeList();
@@ -258,7 +258,7 @@ public class Accounts extends BaseTransUI {
 		flFormLayout1.addComponent(tfAccountNumber);
 		flFormLayout1.addComponent(tfAccountName);
 		flFormLayout1.addComponent(dfAccountDate);
-		flFormLayout1.addComponent(tffinanceYr);
+		flFormLayout1.addComponent(tfFinanceYr);
 		flFormLayout1.addComponent(ckGenerateVoucheryn);
 		flFormLayout1.addComponent(cbOwnerName);
 		flFormLayout1.addComponent(cbBankName);
@@ -465,10 +465,10 @@ public class Accounts extends BaseTransUI {
 				if (accountsDM.getAccountdt() != null) {
 					dfAccountDate.setValue(accountsDM.getAccountdt());
 				}
-				tffinanceYr.setReadOnly(false);
+				tfFinanceYr.setReadOnly(false);
 				if (accountsDM.getFinanceyear() != null) {
-					tffinanceYr.setValue(accountsDM.getFinanceyear());
-					tffinanceYr.setReadOnly(true);
+					tfFinanceYr.setValue(accountsDM.getFinanceyear());
+					tfFinanceYr.setReadOnly(true);
 				}
 				if (accountsDM.getGenerateVoucherYN().equals("Y")) {
 					ckGenerateVoucheryn.setValue(true);
@@ -586,9 +586,9 @@ public class Accounts extends BaseTransUI {
 		tfOpenBalance.setReadOnly(false);
 		tfOpenBalance.setValue("0");
 		tfOpenBalance.setReadOnly(true);
-		tffinanceYr.setReadOnly(false);
-		tffinanceYr.setValue(serviceParameter.getParameterValue("FM_FINYEAR", companyId, null));
-		tffinanceYr.setReadOnly(true);
+		tfFinanceYr.setReadOnly(false);
+		tfFinanceYr.setValue(serviceParameter.getParameterValue("FM_FINYEAR", companyId, null));
+		tfFinanceYr.setReadOnly(true);
 		ckGenerateVoucheryn.setValue(false);
 		cbBankName.setValue(null);
 		cbVendorName.setValue(null);
@@ -733,7 +733,7 @@ public class Accounts extends BaseTransUI {
 			if (dfAccountDate.getValue() != null) {
 				accountsobj.setAccountdt(dfAccountDate.getValue());
 			}
-			accountsobj.setFinanceyear(tffinanceYr.getValue().toString());
+			accountsobj.setFinanceyear(tfFinanceYr.getValue().toString());
 			if (ckGenerateVoucheryn.getValue().equals(true)) {
 				accountsobj.setGenerateVoucherYN("Y");
 			} else {

@@ -92,11 +92,11 @@ public class EmployeeAppraisal extends BaseUI {
 	private BeanItemContainer<EmpAppraisalDtlDM> beanEmpAppraisalDtlDM = null;
 	private VerticalLayout vlempAprisalDtl, vlEmpApraisalHdrDtl;
 	private Button btnAddEmpAprisalDtl = new GERPButton("Add", "add", this);
-	private ComboBox cbEmployee, cbAppYear, cbKPIGrpName, cbstatus, cbapprsename, cbkpiname, cvApprlevelname;
+	private ComboBox cbEmployee, cbAppYear, cbKPIGrpName, cbstatus, cbapprsename, cbKPIName, cvApprlevelname;
 	private PopupDateField dfAppdate, dfSignoffDt, dfCloseDt;
-	private CheckBox chkpromflag, chkempagd;
-	private TextField tfoverrtng, tfKPIRating;
-	private GERPTextArea taComments, taRemarks, comments;
+	private CheckBox chkPromflag, chkEmpAgrd;
+	private TextField tfOvrlRtng, tfKPIRating;
+	private GERPTextArea taComments, taRemarks, taComments2;
 	// local variables declaration
 	private String aprisalId;
 	private String username;
@@ -186,14 +186,14 @@ public class EmployeeAppraisal extends BaseUI {
 		cbKPIGrpName.setWidth("100");
 		cbKPIGrpName.setItemCaptionPropertyId("kpigroupname");
 		loadKpiGroupNameList();
-		chkpromflag = new CheckBox("Promotion Flag");
+		chkPromflag = new CheckBox("Promotion Flag");
 		// Overall Rating text field
-		tfoverrtng = new TextField("Overall Rating");
-		tfoverrtng.setWidth("100");
+		tfOvrlRtng = new TextField("Overall Rating");
+		tfOvrlRtng.setWidth("100");
 		taComments = new GERPTextArea("Comments");
 		taComments.setWidth("110%");
 		taComments.setHeight("75px");
-		chkempagd = new CheckBox("Employee Agreed");
+		chkEmpAgrd = new CheckBox("Employee Agreed");
 		dfSignoffDt = new PopupDateField("SignOff Date");
 		dfSignoffDt.setDateFormat("dd-MMM-yyyy");
 		dfSignoffDt.setWidth("80");
@@ -213,10 +213,10 @@ public class EmployeeAppraisal extends BaseUI {
 		cbapprsename.setRequired(true);
 		loadAppraiseeNameList();
 		// KPI Name ComboBox
-		cbkpiname = new GERPComboBox("KPI Name");
-		cbkpiname.setWidth("110");
-		cbkpiname.setRequired(true);
-		cbkpiname.setItemCaptionPropertyId("kpiName");
+		cbKPIName = new GERPComboBox("KPI Name");
+		cbKPIName.setWidth("110");
+		cbKPIName.setRequired(true);
+		cbKPIName.setItemCaptionPropertyId("kpiName");
 		loadKpiNameList();
 		// Apprlevel Name ComboBox
 		cvApprlevelname = new ComboBox("Level");
@@ -228,9 +228,9 @@ public class EmployeeAppraisal extends BaseUI {
 		tfKPIRating = new TextField("KPI Rating");
 		tfKPIRating.setValue("0");
 		tfKPIRating.setWidth("110");
-		comments = new GERPTextArea("Comments");
-		comments.setWidth("110%");
-		comments.setHeight("50px");
+		taComments2 = new GERPTextArea("Comments");
+		taComments2.setWidth("110%");
+		taComments2.setHeight("50px");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assemblesearchlayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
@@ -271,9 +271,9 @@ public class EmployeeAppraisal extends BaseUI {
 		fcolt1.addComponent(cbAppYear);
 		fcolt1.addComponent(dfAppdate);
 		fcolt2.addComponent(cbKPIGrpName);
-		fcolt2.addComponent(chkpromflag);
-		fcolt2.addComponent(tfoverrtng);
-		fcolt3.addComponent(chkempagd);
+		fcolt2.addComponent(chkPromflag);
+		fcolt2.addComponent(tfOvrlRtng);
+		fcolt3.addComponent(chkEmpAgrd);
 		fcolt3.addComponent(dfCloseDt);
 		fcolt3.addComponent(dfSignoffDt);
 		fcolt4.addComponent(taComments);
@@ -294,10 +294,10 @@ public class EmployeeAppraisal extends BaseUI {
 		fcolDtl3 = new FormLayout();
 		fcolDtl4 = new FormLayout();
 		fcolDtl1.addComponent(cbapprsename);
-		fcolDtl1.addComponent(cbkpiname);
+		fcolDtl1.addComponent(cbKPIName);
 		fcolDtl2.addComponent(cvApprlevelname);
 		fcolDtl2.addComponent(tfKPIRating);
-		fcolDtl3.addComponent(comments);
+		fcolDtl3.addComponent(taComments2);
 		fcolDtl4.addComponent(btnAddEmpAprisalDtl);
 		fcolDtl4.addComponent(btnDelete);
 		h3search = new HorizontalLayout();
@@ -386,12 +386,12 @@ public class EmployeeAppraisal extends BaseUI {
 		cbKPIGrpName.setReadOnly(false);
 		cbKPIGrpName.setValue(null);
 		cbKPIGrpName.setComponentError(null);
-		chkpromflag.setValue(false);
-		tfoverrtng.setValue("0");
-		tfoverrtng.setNullRepresentation("");
+		chkPromflag.setValue(false);
+		tfOvrlRtng.setValue("0");
+		tfOvrlRtng.setNullRepresentation("");
 		taComments.setValue("");
 		taComments.setNullRepresentation("");
-		chkempagd.setValue(false);
+		chkEmpAgrd.setValue(false);
 		dfCloseDt.setValue(null);
 		dfSignoffDt.setValue(null);
 		taRemarks.setValue("");
@@ -418,16 +418,16 @@ public class EmployeeAppraisal extends BaseUI {
 				cbKPIGrpName.setReadOnly(false);
 				cbKPIGrpName.setValue(empAppraisalHdr.getKpigrpid());
 				if (empAppraisalHdr.getPromotionflag().equals("Y")) {
-					chkpromflag.setValue(true);
+					chkPromflag.setValue(true);
 				} else {
-					chkpromflag.setValue(false);
+					chkPromflag.setValue(false);
 				}
 				if (empAppraisalHdr.getEmpagreed().equals("Y")) {
-					chkempagd.setValue(true);
+					chkEmpAgrd.setValue(true);
 				} else {
-					chkempagd.setValue(false);
+					chkEmpAgrd.setValue(false);
 				}
-				tfoverrtng.setValue(empAppraisalHdr.getOverallrating());
+				tfOvrlRtng.setValue(empAppraisalHdr.getOverallrating());
 				taComments.setValue(empAppraisalHdr.getHrcomments());
 				dfSignoffDt.setValue(empAppraisalHdr.getEmpsignoffdate());
 				dfCloseDt.setValue(empAppraisalHdr.getCloseddate());
@@ -462,14 +462,14 @@ public class EmployeeAppraisal extends BaseUI {
 					}
 				}
 				Long som = empAppraisalDtlDM.getKpiid();
-				Collection<?> somid = cbkpiname.getItemIds();
+				Collection<?> somid = cbKPIName.getItemIds();
 				for (Iterator<?> iterator = somid.iterator(); iterator.hasNext();) {
 					Object itemId = (Object) iterator.next();
-					BeanItem<?> item = (BeanItem<?>) cbkpiname.getItem(itemId);
+					BeanItem<?> item = (BeanItem<?>) cbKPIName.getItem(itemId);
 					// Get the actual bean and use the data
 					KpiDM kt = (KpiDM) item.getBean();
 					if (som != null && som.equals(kt.getKpiId())) {
-						cbkpiname.setValue(itemId);
+						cbKPIName.setValue(itemId);
 					}
 				}
 				Long pom = empAppraisalDtlDM.getApprlevelid();
@@ -484,7 +484,7 @@ public class EmployeeAppraisal extends BaseUI {
 					}
 				}
 				tfKPIRating.setValue(empAppraisalDtlDM.getKpirating().toString());
-				comments.setValue(empAppraisalDtlDM.getComments());
+				taComments2.setValue(empAppraisalDtlDM.getComments());
 			}
 		}
 		catch (Exception e) {
@@ -527,14 +527,14 @@ public class EmployeeAppraisal extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbapprsename.setValue(null);
 		cbapprsename.setComponentError(null);
-		cbkpiname.setValue(null);
-		cbkpiname.setComponentError(null);
+		cbKPIName.setValue(null);
+		cbKPIName.setComponentError(null);
 		cvApprlevelname.setValue(null);
 		cvApprlevelname.setComponentError(null);
 		tfKPIRating.setValue("0");
 		tfKPIRating.setNullRepresentation("");
-		comments.setValue("");
-		comments.setNullRepresentation("");
+		taComments2.setValue("");
+		taComments2.setNullRepresentation("");
 		resetsearch();
 	}
 	
@@ -603,12 +603,12 @@ public class EmployeeAppraisal extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbapprsename.setValue(null);
 		cbapprsename.setComponentError(null);
-		cbkpiname.setValue(null);
-		cbkpiname.setComponentError(null);
+		cbKPIName.setValue(null);
+		cbKPIName.setComponentError(null);
 		cvApprlevelname.setValue(null);
 		cvApprlevelname.setComponentError(null);
 		tfKPIRating.setValue("0");
-		comments.setValue("");
+		taComments2.setValue("");
 	}
 	
 	// Method to implement about validations to the required input fields
@@ -646,7 +646,7 @@ public class EmployeeAppraisal extends BaseUI {
 		}
 		if (tblEmpAprisalDtl.size() == 0) {
 			cbapprsename.setComponentError(new UserError(GERPErrorCodes.NULL_APPRAISAL_NAME));
-			cbkpiname.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_NAME));
+			cbKPIName.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_NAME));
 			cvApprlevelname.setComponentError(new UserError(GERPErrorCodes.NULL_LEVEL_NAME));
 			errorFlag = true;
 		}
@@ -666,13 +666,13 @@ public class EmployeeAppraisal extends BaseUI {
 		} else {
 			cbapprsename.setComponentError(null);
 		}
-		if ((cbkpiname.getValue() == null)) {
-			cbkpiname.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_NAME));
+		if ((cbKPIName.getValue() == null)) {
+			cbKPIName.setComponentError(new UserError(GERPErrorCodes.NULL_KPI_NAME));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + cbkpiname.getValue());
+					+ "Throwing ValidationException. User data is > " + cbKPIName.getValue());
 			isValid = false;
 		} else {
-			cbkpiname.setComponentError(null);
+			cbKPIName.setComponentError(null);
 		}
 		if ((cvApprlevelname.getValue() == null)) {
 			cvApprlevelname.setComponentError(new UserError(GERPErrorCodes.NULL_LEVEL_NAME));
@@ -702,8 +702,8 @@ public class EmployeeAppraisal extends BaseUI {
 		empAppHdrObj.setAprdt((Date) dfAppdate.getValue());
 		empAppHdrObj.setCloseddt((Date) dfCloseDt.getValue());
 		empAppHdrObj.setEmpsignoffdt((Date) dfSignoffDt.getValue());
-		if (tfoverrtng.getValue() != null) {
-			empAppHdrObj.setOverallrating((String) tfoverrtng.getValue());
+		if (tfOvrlRtng.getValue() != null) {
+			empAppHdrObj.setOverallrating((String) tfOvrlRtng.getValue());
 		}
 		if (cbKPIGrpName.getValue() != null) {
 			empAppHdrObj.setKpigrpid(Long.valueOf(cbKPIGrpName.getValue().toString()));
@@ -717,12 +717,12 @@ public class EmployeeAppraisal extends BaseUI {
 		if (cbstatus.getValue() != null) {
 			empAppHdrObj.setApprstatus((String) cbstatus.getValue());
 		}
-		if (chkpromflag.getValue().equals(true)) {
+		if (chkPromflag.getValue().equals(true)) {
 			empAppHdrObj.setPromotionflag("Y");
 		} else {
 			empAppHdrObj.setPromotionflag("N");
 		}
-		if (chkempagd.getValue().equals(true)) {
+		if (chkEmpAgrd.getValue().equals(true)) {
 			empAppHdrObj.setEmpagreed("Y");
 		} else {
 			empAppHdrObj.setEmpagreed("N");
@@ -760,12 +760,12 @@ public class EmployeeAppraisal extends BaseUI {
 				}
 				empAppDtlObj.setAppraiseeid(((EmployeeDM) cbapprsename.getValue()).getEmployeeid());
 				empAppDtlObj.setFirstlastname(((EmployeeDM) cbapprsename.getValue()).getFirstlastname());
-				empAppDtlObj.setKpiid(((KpiDM) cbkpiname.getValue()).getKpiId());
-				empAppDtlObj.setKpiName(((KpiDM) cbkpiname.getValue()).getKpiName());
+				empAppDtlObj.setKpiid(((KpiDM) cbKPIName.getValue()).getKpiId());
+				empAppDtlObj.setKpiName(((KpiDM) cbKPIName.getValue()).getKpiName());
 				empAppDtlObj.setApprlevelid(((AppraisalLevelsDM) cvApprlevelname.getValue()).getApprlevelid());
 				empAppDtlObj.setLevelname(((AppraisalLevelsDM) cvApprlevelname.getValue()).getLevelname());
 				empAppDtlObj.setKpirating(Long.valueOf(tfKPIRating.getValue()));
-				empAppDtlObj.setComments(comments.getValue());
+				empAppDtlObj.setComments(taComments2.getValue());
 				empAppDtlObj.setLastupdateddt(DateUtils.getcurrentdate());
 				empAppDtlObj.setLastupdatedby(username);
 				listEmpApprDtls.add(empAppDtlObj);
@@ -783,19 +783,7 @@ public class EmployeeAppraisal extends BaseUI {
 	/*
 	 * loadEmployeeList()-->this function is used for load the employee list
 	 */
-	private void loadEmployeeList() {
-		try {
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
-			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-			beanEmployee.setBeanIdProperty("employeeid");
-			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeid,
-					null, null, null, "P"));
-			cbEmployee.setContainerDataSource(beanEmployee);
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
-	}
+	
 	
 	/*
 	 * loadAppraisalYearList()-->this function is used for load the appraisal year list
@@ -833,15 +821,30 @@ public class EmployeeAppraisal extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "loading AppraiseeNameList");
-			BeanItemContainer<EmployeeDM> beanappraiseename = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
-			beanappraiseename.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeid,
+			
+			BeanItemContainer<EmployeeDM> beanEmployee = new BeanItemContainer<EmployeeDM>(EmployeeDM.class);
+			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeid,
 					null, null, null, "P"));
-			cbapprsename.setContainerDataSource(beanappraiseename);
+			cbapprsename.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
 		}
 	}
+	private void loadEmployeeList() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading EmployeeList");
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeid,
+					null, null, null, "P"));
+			cbEmployee.setContainerDataSource(beanEmployee);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
 	
 	/*
 	 * loadKpiNameList()-->this function is used for load the kpi name list
@@ -851,7 +854,7 @@ public class EmployeeAppraisal extends BaseUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading KpiNameList");
 			BeanItemContainer<KpiDM> beankpi = new BeanItemContainer<KpiDM>(KpiDM.class);
 			beankpi.addAll(serviceKPI.getKpiList(null, null, null, null, "Active", "F"));
-			cbkpiname.setContainerDataSource(beankpi);
+			cbKPIName.setContainerDataSource(beankpi);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

@@ -129,15 +129,15 @@ public class EmployeeProximity extends BaseUI {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
 			tblMstScrSrchRslt.setPageLength(14);
-			List<EmployeeProximityDM> listEmployeeProximity = new ArrayList<EmployeeProximityDM>();
+			List<EmployeeProximityDM> list = new ArrayList<EmployeeProximityDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyId + ", " + (String) tfProximityNo.getValue() + ", " + (Long) cbEmployeeName.getValue()
 					+ (String) cbStatus.getValue());
-			listEmployeeProximity = serviceEmployeeProximity.getempproxmtyList(null, (String) tfProximityNo.getValue(),
+			list = serviceEmployeeProximity.getempproxmtyList(null, (String) tfProximityNo.getValue(),
 					(Long) cbEmployeeName.getValue(), (String) cbStatus.getValue(), "F");
-			recordCnt = listEmployeeProximity.size();
+			recordCnt = list.size();
 			beanEmployeeProximityDM = new BeanItemContainer<EmployeeProximityDM>(EmployeeProximityDM.class);
-			beanEmployeeProximityDM.addAll(listEmployeeProximity);
+			beanEmployeeProximityDM.addAll(list);
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 					+ "Got the EmployeeProximity. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanEmployeeProximityDM);

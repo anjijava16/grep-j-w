@@ -95,12 +95,12 @@ public class ServiceCallForm extends BaseTransUI {
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(SmsEnquiry.class);
 	// User Input Fields for Sales Enquiry Header
-	private TextField tfSerialNo, tfclientname, tfClientCity, tfAlloDays, tfpersonsAllo, tfTravelmode, tfExpanses,
-			tfnoofdaysWrkd;
-	private GERPTextArea tfserdesc;
+	private TextField tfSerialNo, tfClientname, tfClientCity, tfAlloDays, tfPersonsAllo, tfTravelmode, tfExpanses,
+			tfNoofDaysWrkd;
+	private GERPTextArea tfNote;
 	private TextArea taCustomerDetails, taserviceProblmRep, tarootcauseanl, tacorrectiveaction, taprevaction;
 	private PopupDateField dfRefDate, dfEndDt, dfStartDt;
-	private ComboBox cbBranch, cbtype, cbClient, cbWorkOrderNo, cbmarkstatus, cbprodstatus, cbqcstatus,
+	private ComboBox cbBranch, cbType, cbClient, cbWorkOrderNo, cbmarkstatus, cbProdstatus, cbQCStatus,
 			cbEnquiryNumber, cbPONumber, cbinfnRecBy, cbDragNo;
 	private BeanItemContainer<ServiceCallFormDM> beanServiceCallForm = null;
 	private GERPTextField tfClntName = new GERPTextField("Client Name");
@@ -178,11 +178,11 @@ public class ServiceCallForm extends BaseTransUI {
 		cbClient.setWidth("150");
 		cbmarkstatus = new GERPComboBox("Status", BASEConstants.T_SMS_SER_CALL_FORM, BASEConstants.T_SMS_SER_CALL_FORM);
 		cbmarkstatus.setWidth("130");
-		cbprodstatus = new GERPComboBox("Status", BASEConstants.T_SMS_SER_CALL_FORM1,
+		cbProdstatus = new GERPComboBox("Status", BASEConstants.T_SMS_SER_CALL_FORM1,
 				BASEConstants.T_SMS_SER_CALL_FORM1);
-		cbprodstatus.setWidth("130");
-		cbqcstatus = new GERPComboBox("Status", BASEConstants.T_SMS_SER_CALL_FORM1, BASEConstants.T_SMS_SER_CALL_FORM1);
-		cbqcstatus.setWidth("130");
+		cbProdstatus.setWidth("130");
+		cbQCStatus = new GERPComboBox("Status", BASEConstants.T_SMS_SER_CALL_FORM1, BASEConstants.T_SMS_SER_CALL_FORM1);
+		cbQCStatus.setWidth("130");
 		cbinfnRecBy = new GERPComboBox("Information Rec.BY");
 		cbinfnRecBy.setItemCaptionPropertyId("lookupname");
 		cbinfnRecBy.setImmediate(true);
@@ -223,7 +223,7 @@ public class ServiceCallForm extends BaseTransUI {
 				Object itemId = event.getProperty().getValue();
 				BeanItem<?> item = (BeanItem<?>) cbEnquiryNumber.getItem(itemId);
 				if (item != null) {
-					loaddrawingNo();
+					loaDrawingNo();
 					loadClientList();
 					loadPurchaseOrdNo();
 				}
@@ -232,18 +232,18 @@ public class ServiceCallForm extends BaseTransUI {
 		cbWorkOrderNo = new GERPComboBox("WO.No");
 		cbWorkOrderNo.setItemCaptionPropertyId("workOrdrNo");
 		cbWorkOrderNo.setWidth("140");
-		tfclientname = new GERPTextField("Client Name");
-		tfclientname.setReadOnly(true);
+		tfClientname = new GERPTextField("Client Name");
+		tfClientname.setReadOnly(true);
 		tfClientCity = new GERPTextField("Client City");
 		tfClientCity.setReadOnly(true);
 		tfAlloDays = new GERPTextField("Alloted Days for Rework");
-		tfpersonsAllo = new GERPTextField("Name of Persons alloted for Rework");
+		tfPersonsAllo = new GERPTextField("Name of Persons alloted for Rework");
 		tfTravelmode = new GERPTextField("Travelling Mode/Days");
 		tfExpanses = new GERPTextField("Service Expenses");
-		tfnoofdaysWrkd = new GERPTextField("Number of Days Worked");
-		tfserdesc = new GERPTextArea("Note");
-		tfserdesc.setWidth("300");
-		tfserdesc.setHeight("100");
+		tfNoofDaysWrkd = new GERPTextField("Number of Days Worked");
+		tfNote = new GERPTextArea("Note");
+		tfNote.setWidth("300");
+		tfNote.setHeight("100");
 		cbClient.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -251,10 +251,10 @@ public class ServiceCallForm extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				if (cbClient.getValue() != null) {
-					tfclientname.setReadOnly(false);
+					tfClientname.setReadOnly(false);
 					tfClientCity.setReadOnly(false);
 					try {
-						tfclientname.setValue(serviceClients
+						tfClientname.setValue(serviceClients
 								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
 										null, null, null, null, "Active", "P").get(0).getClientName());
 						tfClientCity.setValue(serviceClients
@@ -264,21 +264,21 @@ public class ServiceCallForm extends BaseTransUI {
 					catch (Exception e) {
 						logger.info(e.getMessage());
 					}
-					tfclientname.setReadOnly(true);
+					tfClientname.setReadOnly(true);
 					tfClientCity.setReadOnly(true);
 				}
 			}
 		});
-		tfclientname.setImmediate(true);
-		tfclientname.setWidth("150");
+		tfClientname.setImmediate(true);
+		tfClientname.setWidth("150");
 		tfClientCity.setImmediate(true);
 		tfClientCity.setWidth("150");
-		cbtype = new GERPComboBox("Type");
-		cbtype.setItemCaptionPropertyId("lookupname");
-		cbtype.setImmediate(true);
-		cbtype.setNullSelectionAllowed(false);
-		cbtype.setWidth("120");
-		loadtype();
+		cbType = new GERPComboBox("Type");
+		cbType.setItemCaptionPropertyId("lookupname");
+		cbType.setImmediate(true);
+		cbType.setNullSelectionAllowed(false);
+		cbType.setWidth("120");
+		loadType();
 		dfRefDate = new GERPPopupDateField("Date");
 		dfRefDate.setDateFormat("dd-MMM-yyyy");
 		dfRefDate.setInputPrompt("Select Date");
@@ -340,7 +340,7 @@ public class ServiceCallForm extends BaseTransUI {
 		flcol2 = new FormLayout();
 		flcol3 = new FormLayout();
 		flcol1.addComponent(cbEnquiryNumber);
-		flcol2.addComponent(cbtype);
+		flcol2.addComponent(cbType);
 		flcol3.addComponent(dfRefDate);
 		hlsearchlayout.addComponent(flcol1);
 		hlsearchlayout.addComponent(flcol2);
@@ -364,9 +364,9 @@ public class ServiceCallForm extends BaseTransUI {
 		flcol2.addComponent(cbEnquiryNumber);
 		flcol2.addComponent(cbDragNo);
 		flcol2.addComponent(cbClient);
-		flcol3.addComponent(tfclientname);
+		flcol3.addComponent(tfClientname);
 		flcol3.addComponent(tfClientCity);
-		flcol3.addComponent(cbtype);
+		flcol3.addComponent(cbType);
 		flcol4.addComponent(cbPONumber);
 		flcol4.addComponent(cbWorkOrderNo);
 		hllayout.setMargin(true);
@@ -400,10 +400,10 @@ public class ServiceCallForm extends BaseTransUI {
 		flspec1 = new FormLayout();
 		flspec1.addComponent(taMatReq);
 		flspec1.addComponent(tfAlloDays);
-		flspec1.addComponent(tfpersonsAllo);
+		flspec1.addComponent(tfPersonsAllo);
 		flspec1.addComponent(tfTravelmode);
 		flspec1.addComponent(tfExpanses);
-		flspec1.addComponent(cbprodstatus);
+		flspec1.addComponent(cbProdstatus);
 		hlspec.setMargin(true);
 		hlspec.addComponent(flspec1);
 		hlspec.setMargin(true);
@@ -416,9 +416,9 @@ public class ServiceCallForm extends BaseTransUI {
 		fldoc2 = new FormLayout();
 		fldoc1.addComponent(dfStartDt);
 		fldoc2.addComponent(dfEndDt);
-		fldoc1.addComponent(tfnoofdaysWrkd);
-		fldoc1.addComponent(tfserdesc);
-		fldoc1.addComponent(cbqcstatus);
+		fldoc1.addComponent(tfNoofDaysWrkd);
+		fldoc1.addComponent(tfNote);
+		fldoc1.addComponent(cbQCStatus);
 		hldoc.setMargin(true);
 		hldoc.addComponent(fldoc1);
 		hldoc.addComponent(fldoc2);
@@ -449,23 +449,23 @@ public class ServiceCallForm extends BaseTransUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<ServiceCallFormDM> hdrlist = new ArrayList<ServiceCallFormDM>();
+			List<ServiceCallFormDM> list = new ArrayList<ServiceCallFormDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + cbBranch.getValue() + "," + tfSerialNo.getValue() + ", "
 					+ (Long) cbEnquiryNumber.getValue());
 			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM") != null
 					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")) {
 				btnAdd.setEnabled(true);
-				hdrlist = serviveCallFormService.getServicecallFormList(null, (Long) cbEnquiryNumber.getValue(), null,
-						dfRefDate.getValue(), (String) cbtype.getValue(), null, null, "F", null, null, null);
+				list = serviveCallFormService.getServicecallFormList(null, (Long) cbEnquiryNumber.getValue(), null,
+						dfRefDate.getValue(), (String) cbType.getValue(), null, null, "F", null, null, null);
 			} else {
 				btnAdd.setEnabled(false);
-				hdrlist = serviveCallFormService.getServicecallFormList(null, (Long) cbEnquiryNumber.getValue(), null,
-						dfRefDate.getValue(), (String) cbtype.getValue(), null, null, "F", "Approved", null, null);
+				list = serviveCallFormService.getServicecallFormList(null, (Long) cbEnquiryNumber.getValue(), null,
+						dfRefDate.getValue(), (String) cbType.getValue(), null, null, "F", "Approved", null, null);
 			}
-			recordCnt = hdrlist.size();
+			recordCnt = list.size();
 			beanServiceCallForm = new BeanItemContainer<ServiceCallFormDM>(ServiceCallFormDM.class);
-			beanServiceCallForm.addAll(hdrlist);
+			beanServiceCallForm.addAll(list);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the SMSENQUIRY. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanServiceCallForm);
@@ -513,7 +513,7 @@ public class ServiceCallForm extends BaseTransUI {
 	}
 	
 	// Load Mod_of_Enquiry List
-	private void loadtype() {
+	private void loadType() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
 			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
@@ -521,7 +521,7 @@ public class ServiceCallForm extends BaseTransUI {
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
 			beanCompanyLookUp.addAll(serviceCompanyLookup
 					.getCompanyLookUpByLookUp(companyid, null, "Active", "SM_TYPE"));
-			cbtype.setContainerDataSource(beanCompanyLookUp);
+			cbType.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -562,25 +562,25 @@ public class ServiceCallForm extends BaseTransUI {
 				cbEnquiryNumber.setValue(serviceCallForm.getEnquiryId());
 				cbPONumber.setValue(serviceCallForm.getPoId());
 				cbWorkOrderNo.setValue(serviceCallForm.getWoId());
-				cbtype.setValue(serviceCallForm.getType());
+				cbType.setValue(serviceCallForm.getType());
 				taCustomerDetails.setValue(serviceCallForm.getCustomerDetails());
 				taserviceProblmRep.setValue(serviceCallForm.getProblemDesc());
 				cbinfnRecBy.setValue(serviceCallForm.getComnMode());
 				taMatReq.setValue(serviceCallForm.getMatRequirement());
 				tfAlloDays.setValue(serviceCallForm.getAllotDays());
-				tfpersonsAllo.setValue(serviceCallForm.getPersonsAllot());
+				tfPersonsAllo.setValue(serviceCallForm.getPersonsAllot());
 				tfTravelmode.setValue(serviceCallForm.getTravelMode());
 				cbmarkstatus.setValue(serviceCallForm.getMarkStatus());
-				cbprodstatus.setValue(serviceCallForm.getProdStatus());
-				cbqcstatus.setValue(serviceCallForm.getQcStatus());
+				cbProdstatus.setValue(serviceCallForm.getProdStatus());
+				cbQCStatus.setValue(serviceCallForm.getQcStatus());
 				if (serviceCallForm.getServiceExpenses() != null && serviceCallForm.getServiceExpenses().equals("")) tfExpanses
 						.setValue(Long.valueOf(serviceCallForm.getServiceExpenses()).toString());
 				dfStartDt.setValue(serviceCallForm.getSerStartDt());
 				dfEndDt.setValue(serviceCallForm.getSerEndDt());
 				if (serviceCallForm.getNoDaysWorked() != null && serviceCallForm.getNoDaysWorked().equals("")) {
-					tfnoofdaysWrkd.setValue(Long.valueOf(serviceCallForm.getNoDaysWorked()).toString());
+					tfNoofDaysWrkd.setValue(Long.valueOf(serviceCallForm.getNoDaysWorked()).toString());
 				}
-				tfserdesc.setValue(serviceCallForm.getServDesc());
+				tfNote.setValue(serviceCallForm.getServDesc());
 				tarootcauseanl.setValue(serviceCallForm.getRootCauseAnal());
 				tacorrectiveaction.setValue(serviceCallForm.getCorrectAction());
 				taprevaction.setValue(serviceCallForm.getPrevAction());
@@ -605,8 +605,8 @@ public class ServiceCallForm extends BaseTransUI {
 		}
 		serviceCallFormDM.setCompanyId(companyid);
 		serviceCallFormDM.setRefDate(dfRefDate.getValue());
-		if (cbtype.getValue() != null) {
-			serviceCallFormDM.setType(cbtype.getValue().toString());
+		if (cbType.getValue() != null) {
+			serviceCallFormDM.setType(cbType.getValue().toString());
 		}
 		serviceCallFormDM.setEnquiryId((Long) cbEnquiryNumber.getValue());
 		serviceCallFormDM.setProduct_id((Long) cbDragNo.getValue());
@@ -629,20 +629,20 @@ public class ServiceCallForm extends BaseTransUI {
 			if (tfExpanses.getValue() != "") {
 				serviceCallFormDM.setServiceExpenses(Long.valueOf(tfExpanses.getValue()));
 			}
-			if (tfpersonsAllo.getValue() != "") {
-				serviceCallFormDM.setPersonsAllot(tfpersonsAllo.getValue());
+			if (tfPersonsAllo.getValue() != "") {
+				serviceCallFormDM.setPersonsAllot(tfPersonsAllo.getValue());
 			}
-			serviceCallFormDM.setProdStatus((String) cbprodstatus.getValue());
+			serviceCallFormDM.setProdStatus((String) cbProdstatus.getValue());
 		}
 		if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM") != null
 				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_CUST_FRM")) {
 			serviceCallFormDM.setSerEndDt(dfEndDt.getValue());
 			serviceCallFormDM.setSerStartDt(dfStartDt.getValue());
-			serviceCallFormDM.setServDesc(tfserdesc.getValue());
-			if (tfnoofdaysWrkd.getValue() != "") {
-				serviceCallFormDM.setNoDaysWorked(Long.valueOf(tfnoofdaysWrkd.getValue()));
+			serviceCallFormDM.setServDesc(tfNote.getValue());
+			if (tfNoofDaysWrkd.getValue() != "") {
+				serviceCallFormDM.setNoDaysWorked(Long.valueOf(tfNoofDaysWrkd.getValue()));
 			}
-			serviceCallFormDM.setQcStatus((String) cbqcstatus.getValue());
+			serviceCallFormDM.setQcStatus((String) cbQCStatus.getValue());
 		}
 		if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM") != null
 				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_QC_FRM")) {
@@ -676,7 +676,7 @@ public class ServiceCallForm extends BaseTransUI {
 		// reset the field valued to default
 		cbBranch.setValue(branchId);
 		cbEnquiryNumber.setValue(null);
-		cbtype.setValue(null);
+		cbType.setValue(null);
 		dfRefDate.setValue(null);
 		tfSerialNo.setValue("");
 		tfSerialNo.setReadOnly(false);
@@ -927,7 +927,7 @@ public class ServiceCallForm extends BaseTransUI {
 		}
 		logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Throwing ValidationException. User data is > " + cbBranch.getValue() + "," + cbClient.getValue()
-				+ "," + "," + cbtype.getValue() + "," + dfRefDate.getValue() + "," + dfEndDt.getValue());
+				+ "," + "," + cbType.getValue() + "," + dfRefDate.getValue() + "," + dfEndDt.getValue());
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
@@ -946,7 +946,7 @@ public class ServiceCallForm extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		hllayout1.removeAllComponents();
 		tblMstScrSrchRslt.setValue(null);
-		cbtype.setRequired(false);
+		cbType.setRequired(false);
 		assembleSearchLayout();
 		hlCmdBtnLayout.setVisible(true);
 		tblMstScrSrchRslt.setVisible(true);
@@ -963,9 +963,9 @@ public class ServiceCallForm extends BaseTransUI {
 		tfSerialNo.setReadOnly(false);
 		tfSerialNo.setValue("");
 		cbEnquiryNumber.setValue(null);
-		tfclientname.setReadOnly(false);
-		tfclientname.setValue("");
-		tfclientname.setReadOnly(true);
+		tfClientname.setReadOnly(false);
+		tfClientname.setValue("");
+		tfClientname.setReadOnly(true);
 		tfClientCity.setReadOnly(false);
 		tfClientCity.setValue("");
 		tfClientCity.setReadOnly(true);
@@ -976,9 +976,9 @@ public class ServiceCallForm extends BaseTransUI {
 		cbClient.setValue(null);
 		dfRefDate.setValue(null);
 		dfEndDt.setValue(null);
-		cbtype.setValue(null);
+		cbType.setValue(null);
 		taCustomerDetails.setValue("");
-		cbtype.setValue(null);
+		cbType.setValue(null);
 		dfEndDt.setValue(null);
 		cbClient.setRequired(true);
 		cbinfnRecBy.setRequired(true);
@@ -995,9 +995,9 @@ public class ServiceCallForm extends BaseTransUI {
 		cbWorkOrderNo.setValue(null);
 		cbEnquiryNumber.setComponentError(null);
 		cbmarkstatus.setValue(cbmarkstatus.getItemIds().iterator().next());
-		cbprodstatus.setValue(cbprodstatus.getItemIds().iterator().next());
-		cbqcstatus.setValue(cbqcstatus.getItemIds().iterator().next());
-		tfserdesc.setValue("");
+		cbProdstatus.setValue(cbProdstatus.getItemIds().iterator().next());
+		cbQCStatus.setValue(cbQCStatus.getItemIds().iterator().next());
+		tfNote.setValue("");
 	}
 	
 	@Override
@@ -1085,7 +1085,7 @@ public class ServiceCallForm extends BaseTransUI {
 		}
 	}
 	
-	private void loaddrawingNo() {
+	private void loaDrawingNo() {
 		try {
 			BeanContainer<Long, SmsEnquiryDtlDM> beandrgNo = new BeanContainer<Long, SmsEnquiryDtlDM>(
 					SmsEnquiryDtlDM.class);

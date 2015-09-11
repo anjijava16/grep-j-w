@@ -113,7 +113,7 @@ public class Outpass extends BaseTransUI {
 			@Override
 			public void blur(BlurEvent event) {
 				// TODO Auto-generated method stub
-				gettotalKMCalc();
+				getTotalKMCalc();
 			}
 		});
 		cbVehicle = new GERPComboBox("Vehicle");
@@ -331,7 +331,7 @@ public class Outpass extends BaseTransUI {
 	/*
 	 * Total KM Calculation.
 	 */
-	private void gettotalKMCalc() {
+	private void getTotalKMCalc() {
 		try {
 			// TODO Auto-generated method stub
 			if (tfKMIn.getValue() != null && tfKMOut.getValue() != null) {

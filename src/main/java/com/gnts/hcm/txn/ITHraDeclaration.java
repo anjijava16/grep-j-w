@@ -56,7 +56,7 @@ import com.vaadin.ui.VerticalLayout;
 public class ITHraDeclaration extends BaseUI {
 	private ITHraDeclService serviceITHraDecl = (ITHraDeclService) SpringContextHelper.getBean("ITHRA");
 	private ParameterService serviceParameter = (ParameterService) SpringContextHelper.getBean("parameter");
-	private EmployeeService servicebeanEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
+	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// Parent layout for all the input controls
@@ -189,7 +189,7 @@ public class ITHraDeclaration extends BaseUI {
 		try {
 			BeanContainer<Long, EmployeeDM> bean = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			bean.setBeanIdProperty("employeeid");
-			bean.addAll(servicebeanEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, null, null,
+			bean.addAll(serviceEmployee.getEmployeeList((String) cbEmpName.getValue(), null, null, null, null,
 					null, null, null, null, "P"));
 			cbEmpName.setContainerDataSource(bean);
 		}
@@ -203,15 +203,15 @@ public class ITHraDeclaration extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<ITHraDeclDM> listITHraDecl = new ArrayList<ITHraDeclDM>();
+			List<ITHraDeclDM> list = new ArrayList<ITHraDeclDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Search Parameters are " + companyId + ", " + (Long) cbEmpName.getValue() + ", "
 					+ (String) cbStatus.getValue());
-			listITHraDecl = serviceITHraDecl.getITHRAList(null, (Long) cbEmpName.getValue(), null,
+			list = serviceITHraDecl.getITHRAList(null, (Long) cbEmpName.getValue(), null,
 					(String) cbStatus.getValue(), "F");
-			recordCnt = listITHraDecl.size();
+			recordCnt = list.size();
 			beanITHraDeclDM = new BeanItemContainer<ITHraDeclDM>(ITHraDeclDM.class);
-			beanITHraDeclDM.addAll(listITHraDecl);
+			beanITHraDeclDM.addAll(list);
 			logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 					+ "Got the IT Other HRA declaration List result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanITHraDeclDM);

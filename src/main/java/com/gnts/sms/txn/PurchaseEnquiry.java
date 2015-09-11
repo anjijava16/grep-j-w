@@ -486,27 +486,27 @@ public class PurchaseEnquiry extends BaseUI {
 		try {
 			hlUserInputLayout.setVisible(true);
 			if (tblMstScrSrchRslt.getValue() != null) {
-				SmsPurEnqHdrDM smsPurEnqHdrDM = beanSmsPurEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				enquiryId = smsPurEnqHdrDM.getEnquiryId();
+				SmsPurEnqHdrDM enqHdrDM = beanSmsPurEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				enquiryId = enqHdrDM.getEnquiryId();
 				logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 						+ "Selected enquiryId. Id -> " + enquiryId);
 				logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 						+ "Selected enquiryId. Id -> " + enquiryId);
-				cbBranch.setValue(smsPurEnqHdrDM.getBranchId());
+				cbBranch.setValue(enqHdrDM.getBranchId());
 				tfEnqNo.setReadOnly(false);
-				tfEnqNo.setValue(smsPurEnqHdrDM.getEnquiryNo());
+				tfEnqNo.setValue(enqHdrDM.getEnquiryNo());
 				tfEnqNo.setReadOnly(true);
-				dfEnqDate.setValue(smsPurEnqHdrDM.getEnquiryDate());
-				dfDueDate.setValue(smsPurEnqHdrDM.getDueDate());
+				dfEnqDate.setValue(enqHdrDM.getEnquiryDate());
+				dfDueDate.setValue(enqHdrDM.getDueDate());
 				for (EnquiryVendorDtlDM enquiryVendorDtlDM : serviceEnquiryVendorDtl.getpurchasevdrdtl(null, enquiryId,
 						null)) {
 					lsVendorName.select(enquiryVendorDtlDM.getVendorid().toString());
 				}
-				if (smsPurEnqHdrDM.getEnquiryStatus() != null) {
-					cbEnqStatus.setValue(smsPurEnqHdrDM.getEnquiryStatus());
+				if (enqHdrDM.getEnquiryStatus() != null) {
+					cbEnqStatus.setValue(enqHdrDM.getEnquiryStatus());
 				}
-				if (smsPurEnqHdrDM.getEnqRemark() != null) {
-					taEnqRem.setValue(smsPurEnqHdrDM.getEnqRemark().toString());
+				if (enqHdrDM.getEnqRemark() != null) {
+					taEnqRem.setValue(enqHdrDM.getEnqRemark().toString());
 				}
 				listEnqDtls = serviceSmsPurEnqDtl.getSmsPurEnqDtlList(null, enquiryId, null,
 						(String) cbEnqDtlStatus.getValue());

@@ -72,7 +72,7 @@ public class JobCandidate extends BaseUI {
 	// Add User Input Controls
 	private TextField tfFirstname, tfLastname, tfEMailid, tfContactno;
 	private PopupDateField dfDOA;
-	private TextArea taresumkywrd;
+	private TextArea taResumkywrd;
 	private ComboBox cbStatus, cbJobtitle;
 	private VerticalLayout vlresumdoc = new VerticalLayout();
 	// BeanItemContainer
@@ -131,9 +131,9 @@ public class JobCandidate extends BaseUI {
 		tfContactno = new GERPTextField("Contact No.");
 		tfContactno.setMaxLength(12);
 		// Resume Keyword Description Area
-		taresumkywrd = new GERPTextArea("Resume Keyword");
-		taresumkywrd.setHeight("25");
-		taresumkywrd.setWidth("150");
+		taResumkywrd = new GERPTextArea("Resume Keyword");
+		taResumkywrd.setHeight("25");
+		taResumkywrd.setWidth("150");
 		dfDOA = new GERPPopupDateField("DOA");
 		dfDOA.setWidth("130");
 		// Job Title combobox
@@ -187,7 +187,7 @@ public class JobCandidate extends BaseUI {
 		flColumn1.addComponent(tfEMailid);
 		flColumn2.addComponent(tfContactno);
 		flColumn2.addComponent(dfDOA);
-		flColumn2.addComponent(taresumkywrd);
+		flColumn2.addComponent(taResumkywrd);
 		flColumn2.addComponent(cbWrkExp);
 		flColumn3.addComponent(tfWrkExpYr);
 		flColumn3.addComponent(tfWrkExpDesc);
@@ -351,7 +351,7 @@ public class JobCandidate extends BaseUI {
 					dfDOA.setValue(jobCandidateDM.getDoa());
 				}
 				if ((jobCandidateDM.getResumKeywrds() != null)) {
-					taresumkywrd.setValue(jobCandidateDM.getResumKeywrds());
+					taResumkywrd.setValue(jobCandidateDM.getResumKeywrds());
 				}
 				if ((jobCandidateDM.getStatus() != null)) {
 					cbStatus.setValue(jobCandidateDM.getStatus());
@@ -427,7 +427,7 @@ public class JobCandidate extends BaseUI {
 			jobcandidateobj.setWorkExp(cbWrkExp.getValue().toString());
 			jobcandidateobj.setExpYear(tfWrkExpYr.getValue());
 			jobcandidateobj.setExpDesc(tfWrkExpDesc.getValue());
-			jobcandidateobj.setResumKeywrds(taresumkywrd.getValue().toString());
+			jobcandidateobj.setResumKeywrds(taResumkywrd.getValue().toString());
 			if (cbStatus.getValue() != null) {
 				jobcandidateobj.setStatus((String) cbStatus.getValue());
 			}
@@ -488,8 +488,8 @@ public class JobCandidate extends BaseUI {
 		tfEMailid.setValue("");
 		dfDOA.setComponentError(null);
 		dfDOA.setValue(null);
-		taresumkywrd.setComponentError(null);
-		taresumkywrd.setValue("");
+		taResumkywrd.setComponentError(null);
+		taResumkywrd.setValue("");
 		tfWrkExpYr.setValue(null);
 		tfWrkExpDesc.setValue(null);
 		new UploadDocumentUI(vlresumdoc);

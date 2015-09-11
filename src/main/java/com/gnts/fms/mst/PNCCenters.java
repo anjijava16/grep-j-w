@@ -27,6 +27,7 @@ import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
+import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
@@ -290,36 +291,46 @@ public class PNCCenters extends BaseUI {
 	
 	@Override
 	protected void saveDetails() throws ERPException.SaveException {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		PNCCentersDM pncCentersDM = new PNCCentersDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			pncCentersDM = beanPNCCenter.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
+			PNCCentersDM pncCentersDM = new PNCCentersDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				pncCentersDM = beanPNCCenter.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
+			pncCentersDM.setCompanyid(companyid);
+			pncCentersDM.setPnccode(tfPNCCode.getValue().toString());
+			pncCentersDM.setPncdesc(tfPNCDesc.getValue().toString());
+			if (cbPNCStatus.getValue() != null) {
+				pncCentersDM.setStatus((String) cbPNCStatus.getValue());
+			}
+			pncCentersDM.setLastupdateddt(DateUtils.getcurrentdate());
+			pncCentersDM.setLastupdatedby(username);
+			servicePNCCenter.saveDetails(pncCentersDM);
+			String[] split = lSDeptName.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+			servicePNCDeptMap.deletePncDeptmap(pkPNCId);
+			for (String obj : split) {
+				if (obj.trim().length() > 0) {
+					PNCDeptMapDM pncDeptMapDM = new PNCDeptMapDM();
+					pncDeptMapDM.setPncid(pncCentersDM.getPncid());
+					pncDeptMapDM.setCompanyid(companyid);
+					pncDeptMapDM.setDeptid(Long.valueOf(obj.trim()));
+					pncDeptMapDM.setStatus("Active");
+					pncDeptMapDM.setLastupdatedby(username);
+					pncDeptMapDM.setLastupdateddt(DateUtils.getcurrentdate());
+					servicePNCDeptMap.saveDetails(pncDeptMapDM);
+				}
+			}
+			resetFields();
+			loadSrchRslt();
 		}
-		pncCentersDM.setCompanyid(companyid);
-		pncCentersDM.setPnccode(tfPNCCode.getValue().toString());
-		pncCentersDM.setPncdesc(tfPNCDesc.getValue().toString());
-		if (cbPNCStatus.getValue() != null) {
-			pncCentersDM.setStatus((String) cbPNCStatus.getValue());
-		}
-		pncCentersDM.setLastupdateddt(DateUtils.getcurrentdate());
-		pncCentersDM.setLastupdatedby(username);
-		servicePNCCenter.saveDetails(pncCentersDM);
-		String[] split = lSDeptName.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
-		servicePNCDeptMap.deletePncDeptmap(pkPNCId);
-		for (String obj : split) {
-			if (obj.trim().length() > 0) {
-				PNCDeptMapDM pncDeptMapList = new PNCDeptMapDM();
-				pncDeptMapList.setPncid(pncCentersDM.getPncid());
-				pncDeptMapList.setCompanyid(companyid);
-				pncDeptMapList.setDeptid(Long.valueOf(obj.trim()));
-				pncDeptMapList.setStatus("Active");
-				pncDeptMapList.setLastupdatedby(username);
-				pncDeptMapList.setLastupdateddt(DateUtils.getcurrentdate());
-				servicePNCDeptMap.saveDetails(pncDeptMapList);
+		catch (Exception e) {
+			try {
+				throw new ERPException.SaveException();
+			}
+			catch (SaveException e1) {
+				logger.info(e.getMessage());
 			}
 		}
-		resetFields();
-		loadSrchRslt();
 	}
 	
 	/*

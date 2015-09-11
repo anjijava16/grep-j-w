@@ -60,7 +60,7 @@ public class PayAdhocEntry extends BaseUI {
 	private HorizontalLayout hlsearchlayout = new HorizontalLayout();
 	// Add Input fields
 	private ComboBox cbEmployeeName, cbStatus;
-	private CheckBox chkentry;
+	private CheckBox chkEntry;
 	private GERPTextField tfPayAmount;
 	private PopupDateField pdfPayDate;
 	private GERPTextArea taRemarks;
@@ -87,8 +87,8 @@ public class PayAdhocEntry extends BaseUI {
 		cbEmployeeName = new GERPComboBox("Employee Name");
 		cbEmployeeName.setItemCaptionPropertyId("firstlastname");
 		loadEmployeeList();
-		chkentry = new CheckBox();
-		chkentry.setCaption("Entry Type");
+		chkEntry = new CheckBox();
+		chkEntry.setCaption("Entry Type");
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		tfPayAmount = new GERPTextField("Pay Amount");
 		taRemarks = new GERPTextArea("Remark");
@@ -139,7 +139,7 @@ public class PayAdhocEntry extends BaseUI {
 		flColumn3.addComponent(taRemarks);
 		taRemarks.setValue("");
 		taRemarks.setHeight("50");
-		flcolumn4.addComponent(chkentry);
+		flcolumn4.addComponent(chkEntry);
 		hluserInputlayout.addComponent(flColumn1);
 		hluserInputlayout.addComponent(flColumn2);
 		hluserInputlayout.addComponent(flColumn3);
@@ -233,7 +233,7 @@ public class PayAdhocEntry extends BaseUI {
 		if (cbEmployeeName.getValue() != null) {
 			payadhocobj.setEmpid((Long) cbEmployeeName.getValue());
 		}
-		if (chkentry.getValue().equals(true)) {
+		if (chkEntry.getValue().equals(true)) {
 			payadhocobj.setEntryType("Y");
 		} else {
 			payadhocobj.setEntryType("N");
@@ -270,7 +270,7 @@ public class PayAdhocEntry extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "resetfields...");
 		cbEmployeeName.setValue(null);
 		cbEmployeeName.setComponentError(null);
-		chkentry.setValue(false);
+		chkEntry.setValue(false);
 		tfPayAmount.setValue("0");
 		pdfPayDate.setValue(null);
 		pdfPayDate.setComponentError(null);
@@ -302,10 +302,10 @@ public class PayAdhocEntry extends BaseUI {
 		hlUserIPContainer.removeAllComponents();
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hluserInputlayout));
-		editpayadoc();
+		editPayAdoc();
 	}
 	
-	private void editpayadoc() {
+	private void editPayAdoc() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Editing PayAdhocEntry.......");
@@ -318,9 +318,9 @@ public class PayAdhocEntry extends BaseUI {
 				tfPayAmount.setValue(payadhocentry.getPaytollAmt().toString());
 				cbStatus.setValue(payadhocentry.getStatus());
 				if (payadhocentry.getEntryType().equals("Y")) {
-					chkentry.setValue(true);
+					chkEntry.setValue(true);
 				} else {
-					chkentry.setValue(false);
+					chkEntry.setValue(false);
 				}
 				if (payadhocentry.getPayrollDt() != null) {
 					pdfPayDate.setValue(payadhocentry.getPayrollDt1());

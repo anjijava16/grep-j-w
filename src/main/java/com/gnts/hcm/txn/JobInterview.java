@@ -68,7 +68,7 @@ public class JobInterview extends BaseUI {
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
-	private ComboBox cbCandidateName, cbJobTitle, cbStatus, cbinterviewerid, cbIntrvwLevel;
+	private ComboBox cbCandidateName, cbJobTitle, cbStatus, cbInterviewer, cbIntrvwLevel;
 	private PopupDateField dfIntrvwDate;
 	private GERPTimeField tfIntrvwTime;
 	private TextArea taIntrvwDesc;
@@ -114,8 +114,8 @@ public class JobInterview extends BaseUI {
 		cbJobTitle = new GERPComboBox("Vaccancy Title");
 		cbJobTitle.setItemCaptionPropertyId("jobtitle");
 		loadJobVaccancy();
-		cbinterviewerid = new GERPComboBox("Interviewer Name");
-		cbinterviewerid.setItemCaptionPropertyId("firstname");
+		cbInterviewer = new GERPComboBox("Interviewer Name");
+		cbInterviewer.setItemCaptionPropertyId("firstname");
 		loadEmployeeList();
 		dfIntrvwDate = new GERPPopupDateField("Interview Date");
 		dfIntrvwDate.setWidth("150");
@@ -161,7 +161,7 @@ public class JobInterview extends BaseUI {
 		flColumn2.addComponent(dfIntrvwDate);
 		flColumn2.addComponent(taIntrvwDesc);
 		flColumn3.addComponent(cbIntrvwLevel);
-		flColumn3.addComponent(cbinterviewerid);
+		flColumn3.addComponent(cbInterviewer);
 		flColumn4.addComponent(tfIntrvwTime);
 		flColumn4.addComponent(cbStatus);
 		hlUserInputLayout.addComponent(flColumn1);
@@ -240,7 +240,7 @@ public class JobInterview extends BaseUI {
 			beanEmployeeDM.setBeanIdProperty("employeeid");
 			beanEmployeeDM.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyid, employeeId,
 					null, null, null, "P"));
-			cbinterviewerid.setContainerDataSource(beanEmployeeDM);
+			cbInterviewer.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
 			logger.info("load Employee details" + e);
@@ -286,11 +286,11 @@ public class JobInterview extends BaseUI {
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		cbCandidateName.setRequired(true);
 		cbJobTitle.setRequired(true);
-		cbinterviewerid.setRequired(true);
+		cbInterviewer.setRequired(true);
 		cbIntrvwLevel.setRequired(true);
 		cbJobTitle.setComponentError(null);
 		cbCandidateName.setComponentError(null);
-		cbinterviewerid.setComponentError(null);
+		cbInterviewer.setComponentError(null);
 		hlUserInputLayout.setSpacing(true);
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
@@ -319,7 +319,7 @@ public class JobInterview extends BaseUI {
 				}
 				tfIntrvwTime.setTime(jobInterviewDM.getIntervwtime());
 				cbStatus.setValue(jobInterviewDM.getStatus());
-				cbinterviewerid.setValue(jobInterviewDM.getInterviewerid());
+				cbInterviewer.setValue(jobInterviewDM.getInterviewerid());
 			}
 		}
 		catch (Exception e) {
@@ -334,7 +334,7 @@ public class JobInterview extends BaseUI {
 		hlUserIPContainer.removeAllComponents();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		cbCandidateName.setRequired(true);
-		cbinterviewerid.setRequired(true);
+		cbInterviewer.setRequired(true);
 		cbIntrvwLevel.setRequired(true);
 		cbJobTitle.setRequired(true);
 		assembleUserInputLayout();
@@ -348,7 +348,7 @@ public class JobInterview extends BaseUI {
 		logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Throwing ValidationException. User data is > " + cbJobTitle.getValue());
 		cbCandidateName.setComponentError(null);
-		cbinterviewerid.setComponentError(null);
+		cbInterviewer.setComponentError(null);
 		cbJobTitle.setComponentError(null);
 		cbIntrvwLevel.setComponentError(null);
 		boolean errorFlag = false;
@@ -360,8 +360,8 @@ public class JobInterview extends BaseUI {
 			cbJobTitle.setComponentError(new UserError(GERPErrorCodes.NULL_JOB_VANCY_TITLE));
 			errorFlag = true;
 		}
-		if (cbinterviewerid.getValue() == null) {
-			cbinterviewerid.setComponentError(new UserError(GERPErrorCodes.NULL_INTERVIEWER_ID));
+		if (cbInterviewer.getValue() == null) {
+			cbInterviewer.setComponentError(new UserError(GERPErrorCodes.NULL_INTERVIEWER_ID));
 			errorFlag = true;
 		}
 		if (cbIntrvwLevel.getValue() == null) {
@@ -388,7 +388,7 @@ public class JobInterview extends BaseUI {
 			}
 			jobInterviewDM.setIntervwdesc(taIntrvwDesc.getValue().toString());
 			jobInterviewDM.setIntervwlevel(cbIntrvwLevel.getValue().toString());
-			jobInterviewDM.setInterviewerid((Long) cbinterviewerid.getValue());
+			jobInterviewDM.setInterviewerid((Long) cbInterviewer.getValue());
 			jobInterviewDM.setStatus(cbStatus.getValue().toString());
 			if (tfIntrvwTime.getValue() != null) {
 				jobInterviewDM.setIntervwtime(tfIntrvwTime.getHorsMunites());
@@ -418,7 +418,7 @@ public class JobInterview extends BaseUI {
 		cbCandidateName.setRequired(false);
 		cbJobTitle.setRequired(false);
 		cbIntrvwLevel.setRequired(false);
-		cbinterviewerid.setRequired(false);
+		cbInterviewer.setRequired(false);
 		tblMstScrSrchRslt.setValue(null);
 		resetFields();
 		assembleSearchLayout();
@@ -439,8 +439,8 @@ public class JobInterview extends BaseUI {
 		taIntrvwDesc.setValue("");
 		cbIntrvwLevel.setComponentError(null);
 		cbIntrvwLevel.setValue(null);
-		cbinterviewerid.setComponentError(null);
-		cbinterviewerid.setValue(null);
+		cbInterviewer.setComponentError(null);
+		cbInterviewer.setValue(null);
 		tfIntrvwTime.setComponentError(null);
 		tfIntrvwTime.setValue(null);
 		cbStatus.setComponentError(null);

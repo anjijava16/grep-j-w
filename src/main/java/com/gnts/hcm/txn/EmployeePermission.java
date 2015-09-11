@@ -62,10 +62,10 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 	 */
 	private static final long serialVersionUID = 1L;
 	// Declaration for add and edit panel components
-	private ComboBox cbPermissionApprmgr;
+	private ComboBox cbApprmgr;
 	private PopupDateField dfPermissiondate;
 	private TextArea taPermissionremarks;
-	private GERPTimeField tfintime;
+	private GERPTimeField tfIntime;
 	private TextField tfPermissionprmhrs;
 	private ComboBox cbPermissionStatus;
 	// for Search
@@ -115,17 +115,17 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 		tfPermissionprmhrs.setWidth("100");
 		tfPermissionprmhrs.setRequired(true);
 		// Initialization for tfintime
-		tfintime = new GERPTimeField("In Time");
-		tfintime.setRequired(true);
+		tfIntime = new GERPTimeField("In Time");
+		tfIntime.setRequired(true);
 		// Initialization for taPermissionremarks
 		taPermissionremarks = new GERPTextArea("Remarks");
 		taPermissionremarks.setWidth("170");
 		taPermissionremarks.setHeight("55");
 		// Initialization for cbPermissionApprmgr
-		cbPermissionApprmgr = new GERPComboBox("Approve manager");
-		cbPermissionApprmgr.setItemCaptionPropertyId("fullname");
-		cbPermissionApprmgr.setWidth("100");
-		cbPermissionApprmgr.setRequired(true);
+		cbApprmgr = new GERPComboBox("Approve manager");
+		cbApprmgr.setItemCaptionPropertyId("fullname");
+		cbApprmgr.setWidth("100");
+		cbApprmgr.setRequired(true);
 		loadAppMgrList();
 		// Initialization for cbPermissionStatus
 		cbPermissionStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
@@ -202,9 +202,9 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		flColumn1.addComponent(dfPermissiondate);
-		flColumn1.addComponent(tfintime);
+		flColumn1.addComponent(tfIntime);
 		flColumn2.addComponent(tfPermissionprmhrs);
-		flColumn2.addComponent(cbPermissionApprmgr);
+		flColumn2.addComponent(cbApprmgr);
 		flColumn3.addComponent(taPermissionremarks);
 		flColumn4.addComponent(cbPermissionStatus);
 		HorizontalLayout hlInput = new HorizontalLayout();
@@ -235,7 +235,7 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 			beanEmployee.setBeanIdProperty("employeeid");
 			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null,/* department */
 					"Active", companyid, null, null, null, null, "P"));
-			cbPermissionApprmgr.setContainerDataSource(beanEmployee);
+			cbApprmgr.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -277,9 +277,9 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 				EmployeePermissionDM employeePermissionDM = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				dfPermissiondate.setValue(employeePermissionDM.getPermissiondate());
 				tfPermissionprmhrs.setValue((employeePermissionDM.getPermissionhrs().toString()));
-				tfintime.setTime(employeePermissionDM.getIntime());
+				tfIntime.setTime(employeePermissionDM.getIntime());
 				taPermissionremarks.setValue(employeePermissionDM.getRemarks());
-				cbPermissionApprmgr.setValue(employeePermissionDM.getApprovemgr());
+				cbApprmgr.setValue(employeePermissionDM.getApprovemgr());
 				cbPermissionStatus.setValue(employeePermissionDM.getEmppermstatus());
 			}
 		}
@@ -304,14 +304,14 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 			if (tfPermissionprmhrs.getValue() != null) {
 				savePermission.setPermissionhrs((new BigDecimal(tfPermissionprmhrs.getValue())));
 			}
-			if (tfintime.getValue() != null) {
-				savePermission.setIntime(tfintime.getHorsMunites());
+			if (tfIntime.getValue() != null) {
+				savePermission.setIntime(tfIntime.getHorsMunites());
 			}
 			if (taPermissionremarks.getValue() != null) {
 				savePermission.setRemarks(taPermissionremarks.getValue());
 			}
-			if (cbPermissionApprmgr.getValue() != null) {
-				savePermission.setApprovemgr((Long.valueOf(cbPermissionApprmgr.getValue().toString())));
+			if (cbApprmgr.getValue() != null) {
+				savePermission.setApprovemgr((Long.valueOf(cbApprmgr.getValue().toString())));
 			}
 			if (cbPermissionStatus.getValue() != null) {
 				savePermission.setEmppermstatus((String) cbPermissionStatus.getValue());
@@ -353,23 +353,23 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 				+ "Validating EmployeePermission Details.....");
 		boolean errorFlag = true;
 		dfPermissiondate.setComponentError(null);
-		tfintime.setComponentError(null);
+		tfIntime.setComponentError(null);
 		tfPermissionprmhrs.setComponentError(null);
-		cbPermissionApprmgr.setComponentError(null);
+		cbApprmgr.setComponentError(null);
 		if (dfPermissiondate.getValue() == null) {
 			dfPermissiondate.setComponentError(new UserError(GERPErrorCodes.NULL_PERMIS_PRMDATE));
 			errorFlag = false;
 		}
-		if (tfintime.getValue() == null) {
-			tfintime.setComponentError(new UserError(GERPErrorCodes.NULL_PERMIS_INTIM));
+		if (tfIntime.getValue() == null) {
+			tfIntime.setComponentError(new UserError(GERPErrorCodes.NULL_PERMIS_INTIM));
 			errorFlag = false;
 		}
 		if ((tfPermissionprmhrs.getValue() == null) || tfPermissionprmhrs.getValue().trim().length() == 0) {
 			tfPermissionprmhrs.setComponentError(new UserError(GERPErrorCodes.NULL_PERMIS_TOTHRS));
 			errorFlag = false;
 		}
-		if (cbPermissionApprmgr.getValue() == null) {
-			cbPermissionApprmgr.setComponentError(new UserError(GERPErrorCodes.NULL_PERMIS_APPMGR));
+		if (cbApprmgr.getValue() == null) {
+			cbApprmgr.setComponentError(new UserError(GERPErrorCodes.NULL_PERMIS_APPMGR));
 			errorFlag = false;
 		}
 		return errorFlag;
@@ -381,11 +381,11 @@ public class EmployeePermission extends VerticalLayout implements ClickListener 
 		dfPermissiondate.setComponentError(null);
 		tfPermissionprmhrs.setValue("0");
 		tfPermissionprmhrs.setComponentError(null);
-		tfintime.setValue(null);
-		tfintime.setComponentError(null);
+		tfIntime.setValue(null);
+		tfIntime.setComponentError(null);
 		taPermissionremarks.setValue("");
-		cbPermissionApprmgr.setValue(null);
-		cbPermissionApprmgr.setComponentError(null);
+		cbApprmgr.setValue(null);
+		cbApprmgr.setComponentError(null);
 		cbPermissionStatus.setValue(cbPermissionStatus.getItemIds().iterator().next());
 	}
 	

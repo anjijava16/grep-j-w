@@ -154,13 +154,13 @@ public class AppraisalLevels extends BaseUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblMstScrSrchRslt.setSelectable(true);
 			tblMstScrSrchRslt.removeAllItems();
-			List<AppraisalLevelsDM> listAppraisalLvl = new ArrayList<AppraisalLevelsDM>();
+			List<AppraisalLevelsDM> list = new ArrayList<AppraisalLevelsDM>();
 			String levelname = tfLevelName.getValue().toString();
-			listAppraisalLvl = serviceAppraisalLevel.getAppraisalLevelsList(null, (String) cbapprasallvl.getValue(),
+			list = serviceAppraisalLevel.getAppraisalLevelsList(null, (String) cbapprasallvl.getValue(),
 					levelname, (String) cbStatus.getValue(), "F");
-			recordCnt = listAppraisalLvl.size();
+			recordCnt = list.size();
 			beanAppraisalLevelsDM = new BeanItemContainer<AppraisalLevelsDM>(AppraisalLevelsDM.class);
-			beanAppraisalLevelsDM.addAll(listAppraisalLvl);
+			beanAppraisalLevelsDM.addAll(list);
 			tblMstScrSrchRslt.setContainerDataSource(beanAppraisalLevelsDM);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "apprlevelid", "levelname", "appraisallevel",
 					"appraisaldetails", "levelstatus", "lastupdateddt", "lastupdatedby" });

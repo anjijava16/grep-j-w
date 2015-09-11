@@ -32,6 +32,7 @@ import com.gnts.erputil.components.GERPTextField;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
+import com.gnts.erputil.exceptions.ERPException.SaveException;
 import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
@@ -470,7 +471,12 @@ public class BankBranch extends BaseUI {
 			loadSrchRslt();
 		}
 		catch (Exception e) {
-			logger.info(e.getMessage());
+			try {
+				throw new ERPException.SaveException();
+			}
+			catch (SaveException e1) {
+				logger.info(e.getMessage());
+			}
 		}
 	}
 	

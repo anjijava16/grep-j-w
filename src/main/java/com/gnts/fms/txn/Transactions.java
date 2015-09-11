@@ -90,7 +90,7 @@ public class Transactions extends BaseTransUI {
 	private TransactionTypeService serviceTransType = (TransactionTypeService) SpringContextHelper.getBean("transtype");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private Button btnaddamt = new GERPButton("Add", "addbt", this);
+	private Button btnAddamt = new GERPButton("Add", "addbt", this);
 	private PopupDateField dfTransactionDate = new GERPPopupDateField("Transaction Date");
 	private ComboBox cbAccountReference = new GERPComboBox("Account Ref.");
 	private ComboBox cbApproveManager = new GERPComboBox("Approve Name");
@@ -98,7 +98,7 @@ public class Transactions extends BaseTransUI {
 	private TextField tfTransactionAmount = new GERPTextField("Trans. Amount");
 	private TextField tfChequeNumber = new GERPTextField("Cheque Number");
 	private PopupDateField dfChequeDate = new GERPPopupDateField("Cheque Date");
-	private ComboBox cbDepartmentName = new GERPComboBox("Department Name");
+	private ComboBox cbDepartment = new GERPComboBox("Department Name");
 	private TextArea tfInstrumentRemarks = new GERPTextArea("Remarks");
 	private ComboBox cbPaymentMode = new GERPComboBox("Payment Mode");
 	private TextField tfVoucherNo = new GERPTextField("Voucher No.");
@@ -139,7 +139,7 @@ public class Transactions extends BaseTransUI {
 	private void buildView() {
 		cbAccountReference.setWidth("150");
 		cbApproveManager.setWidth("150");
-		cbDepartmentName.setWidth("150");
+		cbDepartment.setWidth("150");
 		cbTransactionType.setWidth("150");
 		tfApproverRemarks.setHeight("43px");
 		tfInstrumentRemarks.setHeight("86px");
@@ -151,14 +151,14 @@ public class Transactions extends BaseTransUI {
 		loadEmployeeList();
 		cbAccountReference.setItemCaptionPropertyId("accountname");
 		loadAccountTypeList();
-		cbDepartmentName.setItemCaptionPropertyId("ccyname");
+		cbDepartment.setItemCaptionPropertyId("ccyname");
 		cbTransactionType.setItemCaptionPropertyId("transtypename");
 		loadMTranstypeList();
 		cbProjectName.setItemCaptionPropertyId("projectName");
 		tfChequeNumber.setMaxLength(30);
 		cbPaymentMode.setItemCaptionPropertyId("lookupname");
 		loadPaymentmodeList();
-		btnaddamt.addClickListener(new ClickListener() {
+		btnAddamt.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
 			
@@ -314,7 +314,7 @@ public class Transactions extends BaseTransUI {
 		VerticalLayout vl = new VerticalLayout();
 		vl.addComponent(tfBalAmt);
 		vl.setSpacing(true);
-		vl.addComponent(btnaddamt);
+		vl.addComponent(btnAddamt);
 		flFormLayout4.setSpacing(true);
 		hlUserInputLayout.setSpacing(true);
 		hlUserInputLayout.addComponent(flFormLayout1);
@@ -616,7 +616,7 @@ public class Transactions extends BaseTransUI {
 		cbAccountReference.setValue(null);
 		cbApproveManager.setValue(null);
 		cbTransactionType.setValue(null);
-		cbDepartmentName.setValue(null);
+		cbDepartment.setValue(null);
 		tfInstrumentRemarks.setValue("");
 		tfTransactionAmount.setValue("0");
 		tfApproverRemarks.setValue("");

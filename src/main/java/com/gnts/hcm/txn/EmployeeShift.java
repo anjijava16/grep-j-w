@@ -186,15 +186,15 @@ public class EmployeeShift extends BaseUI {
 			tblMstScrSrchRslt.removeAllItems();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<EmployeeShiftDM> listEmployeeShift = new ArrayList<EmployeeShiftDM>();
+			List<EmployeeShiftDM> list = new ArrayList<EmployeeShiftDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyId + ", " + (Long) cbShiftName.getValue() + ", " + (Long) cbEmployeeName.getValue()
 					+ (String) cbStatus.getValue());
-			listEmployeeShift = serviceEmployeeShift.getempshiftlist(null, (Long) cbEmployeeName.getValue(),
+			list = serviceEmployeeShift.getempshiftlist(null, (Long) cbEmployeeName.getValue(),
 					(Long) cbShiftName.getValue(), (String) cbStatus.getValue(), "F");
-			recordCnt = listEmployeeShift.size();
+			recordCnt = list.size();
 			beanEmployeeShift = new BeanItemContainer<EmployeeShiftDM>(EmployeeShiftDM.class);
-			beanEmployeeShift.addAll(listEmployeeShift);
+			beanEmployeeShift.addAll(list);
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 					+ "Got the EmployeeShift. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanEmployeeShift);

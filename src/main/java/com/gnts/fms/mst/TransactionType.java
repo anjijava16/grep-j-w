@@ -125,15 +125,15 @@ public class TransactionType extends BaseUI {
 			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 					+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + "," + (String) cbStatus.getValue()
 					+ ", " + companyId + "Loading Search...");
-			List<TransactionTypeDM> listTransType = new ArrayList<TransactionTypeDM>();
+			List<TransactionTypeDM> list = new ArrayList<TransactionTypeDM>();
 			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 					+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + "," + (String) cbStatus.getValue()
 					+ ", " + companyId);
-			listTransType = serviceTransType.getTransactionTypeList(companyId, tfTranstypeName.getValue(),
+			list = serviceTransType.getTransactionTypeList(companyId, tfTranstypeName.getValue(),
 					(String) cbStatus.getValue(), (String) cbCreditDebit.getValue(), null);
-			recordCnt = listTransType.size();
+			recordCnt = list.size();
 			beanTransactionTypeDM = new BeanItemContainer<TransactionTypeDM>(TransactionTypeDM.class);
-			beanTransactionTypeDM.addAll(listTransType);
+			beanTransactionTypeDM.addAll(list);
 			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 					+ "Search Parameters are " + ":" + tfTranstypeName.getValue() + ",  Active ," + companyId
 					+ "Got the Transaction Type result set");

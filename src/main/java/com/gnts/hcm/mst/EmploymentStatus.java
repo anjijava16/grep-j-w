@@ -54,7 +54,7 @@ public class EmploymentStatus extends BaseUI {
 	private HorizontalLayout hlSearchLayout;
 	// Add User Input Controls
 	private TextField tfStatusCode, tfStatusDesc;
-	private CheckBox ckprssalry;
+	private CheckBox ckProcSalary;
 	private ComboBox cbStatus;
 	private Boolean errorFlag = false;
 	// BeanItemContainer
@@ -90,8 +90,8 @@ public class EmploymentStatus extends BaseUI {
 		tfStatusDesc = new GERPTextField("Emp. Status Desc");
 		tfStatusDesc.setWidth("250");
 		// Salary field
-		ckprssalry = new CheckBox("");
-		ckprssalry.setCaption("Process Salary");
+		ckProcSalary = new CheckBox("");
+		ckProcSalary.setCaption("Process Salary");
 		// build search layout
 		hlSearchLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
@@ -126,7 +126,7 @@ public class EmploymentStatus extends BaseUI {
 		flColumn4 = new FormLayout();
 		flColumn1.addComponent(tfStatusCode);
 		flColumn2.addComponent(tfStatusDesc);
-		flColumn3.addComponent(ckprssalry);
+		flColumn3.addComponent(ckProcSalary);
 		flColumn4.addComponent(cbStatus);
 		hlUserInputLayout.addComponent(flColumn1);
 		hlUserInputLayout.addComponent(flColumn2);
@@ -227,9 +227,9 @@ public class EmploymentStatus extends BaseUI {
 					tfStatusCode.setValue(empsts.getEmpstatuscode());
 				}
 				if (empsts.getProcesssalary().equals("Y")) {
-					ckprssalry.setValue(true);
+					ckProcSalary.setValue(true);
 				} else {
-					ckprssalry.setValue(false);
+					ckProcSalary.setValue(false);
 				}
 				cbStatus.setValue(empsts.getStatus());
 			}
@@ -284,7 +284,7 @@ public class EmploymentStatus extends BaseUI {
 			if (tfStatusDesc.getValue() != null) {
 				employmentStatus.setEmpstatusdesc(tfStatusDesc.getValue().toString());
 			}
-			if (ckprssalry.getValue().equals(true)) {
+			if (ckProcSalary.getValue().equals(true)) {
 				employmentStatus.setProcesssalary("Y");
 			} else {
 				employmentStatus.setProcesssalary("N");
@@ -327,7 +327,7 @@ public class EmploymentStatus extends BaseUI {
 		tfStatusCode.setValue("");
 		tfStatusDesc.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
-		ckprssalry.setValue(false);
+		ckProcSalary.setValue(false);
 		tfStatusCode.setComponentError(null);
 		tfStatusDesc.setComponentError(null);
 	}

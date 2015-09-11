@@ -92,11 +92,11 @@ public class EmployeeLeave extends BaseUI {
 	private ComboBox cbEmployeeName, cbDepartmentName;
 	private Table tblMstScrSrchRslt = new GERPTable();
 	// Vertical Control Layout
-	private PopupDateField dfdatefrom, dfdateto;
-	private TextField tfnoofdays;
-	private ComboBox cbappmanager, cbLeavetype, cbEmpStatus;
+	private PopupDateField dfDateFrom, dfDateTo;
+	private TextField tfNoofdays;
+	private ComboBox cbAprovMgr, cbLeavetype, cbEmpStatus;
 	private TextArea taLeaveReason;
-	private CheckBox cbhalfday;
+	private CheckBox ckHalfDay;
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	private String username;
 	private Button btnSubmit = new GERPButton("Save", "savebt");
@@ -248,40 +248,40 @@ public class EmployeeLeave extends BaseUI {
 			}
 		});
 		// Initialization for dfdatefrom
-		dfdatefrom = new GERPPopupDateField("Date From");
-		dfdatefrom.setDateFormat("dd-MMM-yyyy");
-		dfdatefrom.setRequired(true);
-		dfdatefrom.setWidth("150");
-		dfdatefrom.addBlurListener(new BlurListener() {
+		dfDateFrom = new GERPPopupDateField("Date From");
+		dfDateFrom.setDateFormat("dd-MMM-yyyy");
+		dfDateFrom.setRequired(true);
+		dfDateFrom.setWidth("150");
+		dfDateFrom.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
-				dtfrm = dfdatefrom.getValue();
-				if (dfdatefrom.getValue().after(new Date()) || dfdatefrom.getValue().equals(new Date())) {
-					dfdatefrom.setComponentError(new UserError(GERPErrorCodes.DATE_FROM));
+				dtfrm = dfDateFrom.getValue();
+				if (dfDateFrom.getValue().after(new Date()) || dfDateFrom.getValue().equals(new Date())) {
+					dfDateFrom.setComponentError(new UserError(GERPErrorCodes.DATE_FROM));
 				} else {
-					dfdatefrom.setComponentError(null);
+					dfDateFrom.setComponentError(null);
 				}
 			}
 		});
 		// Initialization for dfdatefrom
-		dfdateto = new GERPPopupDateField("Date To");
-		dfdateto.setDateFormat("dd-MMM-yyyy");
-		dfdateto.setRequired(true);
-		dfdateto.setWidth("150");
-		dfdateto.addBlurListener(new BlurListener() {
+		dfDateTo = new GERPPopupDateField("Date To");
+		dfDateTo.setDateFormat("dd-MMM-yyyy");
+		dfDateTo.setRequired(true);
+		dfDateTo.setWidth("150");
+		dfDateTo.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
-				if (dfdateto.getValue().before(dtfrm)) {
-					dfdateto.setComponentError(new UserError(GERPErrorCodes.DATE_TO));
+				if (dfDateTo.getValue().before(dtfrm)) {
+					dfDateTo.setComponentError(new UserError(GERPErrorCodes.DATE_TO));
 				} else {
-					dfdateto.setComponentError(null);
+					dfDateTo.setComponentError(null);
 				}
 			}
 		});
-		dfdateto.setImmediate(true);
-		dfdateto.addValueChangeListener(new ValueChangeListener() {
+		dfDateTo.setImmediate(true);
+		dfDateTo.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
@@ -289,27 +289,27 @@ public class EmployeeLeave extends BaseUI {
 				// TODO Auto-generated method stub
 				diffdays();
 				if (Double.valueOf(check.toString()) == 1.0) {
-					cbhalfday.setEnabled(true);
+					ckHalfDay.setEnabled(true);
 				} else {
-					cbhalfday.setValue(false);
-					cbhalfday.setEnabled(false);
+					ckHalfDay.setValue(false);
+					ckHalfDay.setEnabled(false);
 				}
 			}
 		});
 		// Initialization for tfnoofdays
-		tfnoofdays = new TextField("No of Days");
-		tfnoofdays.setWidth("150");
-		tfnoofdays.setRequired(true);
+		tfNoofdays = new TextField("No of Days");
+		tfNoofdays.setWidth("150");
+		tfNoofdays.setRequired(true);
 		vlSrchRsltContainer.removeAllComponents();
 		// Initialization for cbappmanager
-		cbappmanager = new GERPComboBox("Approve Manager");
-		cbappmanager.setItemCaptionPropertyId("firstname");
-		cbappmanager.setRequired(true);
+		cbAprovMgr = new GERPComboBox("Approve Manager");
+		cbAprovMgr.setItemCaptionPropertyId("firstname");
+		cbAprovMgr.setRequired(true);
 		// Initialization for cbleavetype
 		cbLeavetype = new GERPComboBox("Leave Type");
 		cbLeavetype.setItemCaptionPropertyId("leaveTypeName");
 		cbLeavetype.setRequired(true);
-		loadleavetype();
+		loadLeaveType();
 		// Initialization for taleavereason
 		taLeaveReason = new GERPTextArea("Leave Reason");
 		taLeaveReason.setInputPrompt("Enter Remarks");
@@ -317,7 +317,7 @@ public class EmployeeLeave extends BaseUI {
 		taLeaveReason.setWidth("195");
 		taLeaveReason.setReadOnly(false);
 		// Initialization for cbhalfday
-		cbhalfday = new CheckBox("Halfday");
+		ckHalfDay = new CheckBox("Halfday");
 		// Initialization for btnSave
 		btnSave = new Button("Save", this);
 		btnSave.setDescription("Save");
@@ -374,7 +374,7 @@ public class EmployeeLeave extends BaseUI {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnadd.setCaption("Update");
 					btnadd.setStyleName("savebt");
-					editleave();
+					editEmpLeave();
 				}
 			}
 		});
@@ -385,11 +385,11 @@ public class EmployeeLeave extends BaseUI {
 		flColumn4 = new FormLayout();
 		// add the user input items into appropriate form layout
 		flColumn1.addComponent(cbLeavetype);
-		flColumn1.addComponent(dfdatefrom);
-		flColumn1.addComponent(dfdateto);
-		flColumn2.addComponent(tfnoofdays);
-		flColumn2.addComponent(cbhalfday);
-		flColumn2.addComponent(cbappmanager);
+		flColumn1.addComponent(dfDateFrom);
+		flColumn1.addComponent(dfDateTo);
+		flColumn2.addComponent(tfNoofdays);
+		flColumn2.addComponent(ckHalfDay);
+		flColumn2.addComponent(cbAprovMgr);
 		flColumn3.addComponent(taLeaveReason);
 		flColumn4.addComponent(cbEmpStatus);
 		flColumn4.addComponent(btnadd);
@@ -491,7 +491,7 @@ public class EmployeeLeave extends BaseUI {
 			beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
 			beanEmployee.setBeanIdProperty("employeeid");
 			beanEmployee.addAll(listEmpl);
-			cbappmanager.setContainerDataSource(beanEmployee);
+			cbAprovMgr.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -499,7 +499,7 @@ public class EmployeeLeave extends BaseUI {
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
-	private void loadleavetype() {
+	private void loadLeaveType() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading leave Type");
 			BeanContainer<Long, LeaveTypeDM> beanLeave = new BeanContainer<Long, LeaveTypeDM>(LeaveTypeDM.class);
@@ -513,23 +513,23 @@ public class EmployeeLeave extends BaseUI {
 	}
 	
 	// Method used to display selected row's values in desired text box and combo box for edit the values
-	private void editleave() {
+	private void editEmpLeave() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Editing Leave details.......");
 			if (tblMstScrSrchRslt.getValue() != null) {
 				EmployeeLeaveDM leave = beanLeave.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				dfdatefrom.setValue(leave.getDatefrm());
-				dfdateto.setValue(leave.getDatetoo());
-				tfnoofdays.setReadOnly(false);
-				tfnoofdays.setValue(leave.getNoofdays().toString());
-				tfnoofdays.setReadOnly(true);
-				cbappmanager.setValue(leave.getAppmgr());
+				dfDateFrom.setValue(leave.getDatefrm());
+				dfDateTo.setValue(leave.getDatetoo());
+				tfNoofdays.setReadOnly(false);
+				tfNoofdays.setValue(leave.getNoofdays().toString());
+				tfNoofdays.setReadOnly(true);
+				cbAprovMgr.setValue(leave.getAppmgr());
 				cbLeavetype.setValue(leave.getLeavetypeid());
 				if (leave.getHalfday().equals("Y")) {
-					cbhalfday.setValue(true);
+					ckHalfDay.setValue(true);
 				} else {
-					cbhalfday.setValue(false);
+					ckHalfDay.setValue(false);
 				}
 				if (leave.getLeavereason() != null) {
 					taLeaveReason.setValue(leave.getLeavereason());
@@ -550,17 +550,17 @@ public class EmployeeLeave extends BaseUI {
 				employeeLeaveDM = beanLeave.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				usertable.remove(employeeLeaveDM);
 			}
-			if (dfdatefrom.getValue() != null) {
-				employeeLeaveDM.setDatefrom(dfdatefrom.getValue());
+			if (dfDateFrom.getValue() != null) {
+				employeeLeaveDM.setDatefrom(dfDateFrom.getValue());
 			}
-			if (dfdateto.getValue() != null) {
-				employeeLeaveDM.setDateto(dfdateto.getValue());
+			if (dfDateTo.getValue() != null) {
+				employeeLeaveDM.setDateto(dfDateTo.getValue());
 			}
-			if (tfnoofdays.getValue() != null) {
-				employeeLeaveDM.setNoofdays((new BigDecimal(tfnoofdays.getValue())));
+			if (tfNoofdays.getValue() != null) {
+				employeeLeaveDM.setNoofdays((new BigDecimal(tfNoofdays.getValue())));
 			}
-			if (cbappmanager.getValue() != null) {
-				employeeLeaveDM.setAppmgr(Long.valueOf(cbappmanager.getValue().toString()));
+			if (cbAprovMgr.getValue() != null) {
+				employeeLeaveDM.setAppmgr(Long.valueOf(cbAprovMgr.getValue().toString()));
 			}
 			if (cbLeavetype.getValue() != null) {
 				employeeLeaveDM.setLeavetypeid(Long.valueOf(cbLeavetype.getValue().toString()));
@@ -568,7 +568,7 @@ public class EmployeeLeave extends BaseUI {
 			if (taLeaveReason.getValue() != null) {
 				employeeLeaveDM.setLeavereason(taLeaveReason.getValue());
 			}
-			if (cbhalfday.getValue() == null || cbhalfday.getValue().equals(false)) {
+			if (ckHalfDay.getValue() == null || ckHalfDay.getValue().equals(false)) {
 				employeeLeaveDM.setHalfday("N");
 			} else {
 				employeeLeaveDM.setHalfday("Y");
@@ -609,29 +609,29 @@ public class EmployeeLeave extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validatating Data.....");
 		Boolean errorFlag = true;
 		cbEmployeeName.setComponentError(null);
-		dfdatefrom.setComponentError(null);
-		dfdateto.setComponentError(null);
-		tfnoofdays.setComponentError(null);
-		cbappmanager.setComponentError(null);
+		dfDateFrom.setComponentError(null);
+		dfDateTo.setComponentError(null);
+		tfNoofdays.setComponentError(null);
+		cbAprovMgr.setComponentError(null);
 		cbLeavetype.setComponentError(null);
 		if (cbEmployeeName.getValue() == null) {
 			cbEmployeeName.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_EMPNAME));
 			errorFlag = false;
 		}
-		if (dfdatefrom.getValue() == null) {
-			dfdatefrom.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_DATEFRM));
+		if (dfDateFrom.getValue() == null) {
+			dfDateFrom.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_DATEFRM));
 			errorFlag = false;
 		}
-		if (dfdateto.getValue() == null) {
-			dfdateto.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_DATETO));
+		if (dfDateTo.getValue() == null) {
+			dfDateTo.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_DATETO));
 			errorFlag = false;
 		}
-		if ((tfnoofdays.getValue() == "") || tfnoofdays.getValue().trim().length() == 0) {
-			tfnoofdays.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_NOOFDAYS));
+		if ((tfNoofdays.getValue() == "") || tfNoofdays.getValue().trim().length() == 0) {
+			tfNoofdays.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_NOOFDAYS));
 			errorFlag = false;
 		}
-		if (cbappmanager.getValue() == null) {
-			cbappmanager.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_MANAGER));
+		if (cbAprovMgr.getValue() == null) {
+			cbAprovMgr.setComponentError(new UserError(GERPErrorCodes.NULL_LVE_MANAGER));
 			errorFlag = false;
 		}
 		if (cbLeavetype.getValue() == null) {
@@ -645,24 +645,24 @@ public class EmployeeLeave extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbDepartmentName.setValue(0L);
 		cbEmployeeName.setComponentError(null);
-		dfdatefrom.setValue(null);
-		dfdateto.setValue(null);
-		tfnoofdays.setReadOnly(false);
-		tfnoofdays.setValue("0");
-		tfnoofdays.setReadOnly(true);
-		cbappmanager.setValue(null);
+		dfDateFrom.setValue(null);
+		dfDateTo.setValue(null);
+		tfNoofdays.setReadOnly(false);
+		tfNoofdays.setValue("0");
+		tfNoofdays.setReadOnly(true);
+		cbAprovMgr.setValue(null);
 		cbLeavetype.setValue(null);
 		taLeaveReason.setValue("");
-		cbhalfday.setValue(null);
+		ckHalfDay.setValue(null);
 		cbEmpStatus.setValue(cbEmpStatus.getItemIds().iterator().next());
 		btnadd.setCaption("Add");
 		btnadd.setStyleName("add");
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
-		dfdatefrom.setComponentError(null);
-		dfdateto.setComponentError(null);
-		tfnoofdays.setComponentError(null);
-		cbappmanager.setComponentError(null);
+		dfDateFrom.setComponentError(null);
+		dfDateTo.setComponentError(null);
+		tfNoofdays.setComponentError(null);
+		cbAprovMgr.setComponentError(null);
 		cbLeavetype.setComponentError(null);
 	}
 	
@@ -711,16 +711,16 @@ public class EmployeeLeave extends BaseUI {
 	
 	private void diffdays() {
 		try {
-			Date startDate2 = (Date) dfdatefrom.getValue();
-			Date endDate2 = (Date) dfdateto.getValue();
+			Date startDate2 = (Date) dfDateFrom.getValue();
+			Date endDate2 = (Date) dfDateTo.getValue();
 			long diff = endDate2.getTime() - startDate2.getTime();
 			int diffDays = (int) (diff / (24 * 1000 * 60 * 60));
 			check = 0d;
 			check = (double) (diffDays + 1);
-			tfnoofdays.setReadOnly(false);
-			tfnoofdays.setValue(check.toString());
-			tfnoofdays.setReadOnly(true);
-			dfdatefrom.setComponentError(null);
+			tfNoofdays.setReadOnly(false);
+			tfNoofdays.setValue(check.toString());
+			tfNoofdays.setReadOnly(true);
+			dfDateFrom.setComponentError(null);
 		}
 		catch (Exception e) {
 		}

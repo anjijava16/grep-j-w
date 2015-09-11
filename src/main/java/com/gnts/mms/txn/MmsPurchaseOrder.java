@@ -765,7 +765,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	}
 	
 	private void loadPODetails() {
-		System.out.println("+++++++++++++++++=============Loading Detail Table=============++++++++++++++++");
 		recordcnt = listPODetails.size();
 		tblPODetails.removeAllItems();
 		tblPODetails.setPageLength(3);

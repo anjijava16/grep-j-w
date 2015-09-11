@@ -47,6 +47,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
@@ -110,6 +111,10 @@ public class Generator extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				getLiterHour();
+				getDiselCloseBal();
+				if (tfOneLtrCost.getValue() != null) {
+					getTotLtrCost();
+				}
 			}
 		});
 		tfVolts = new GERPTextField("Volts");
@@ -126,7 +131,25 @@ public class Generator extends BaseTransUI {
 			}
 		});
 		tfDiselPurLtrs = new GERPTextField("Disel Purchase(Ltrs)");
+		tfDiselPurLtrs.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getDiselCloseBal();
+			}
+		});
 		tfOtherUseLtrs = new GERPTextField("Other Use(Ltrs)");
+		tfOtherUseLtrs.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getDiselCloseBal();
+			}
+		});
 		tfLtrPerHours = new GERPTextField("Liter per Hour");
 		tfMachineServRemain = new GERPTextField("Service Remainder");
 		tfOneLtrCost = new GERPTextField("One Liter Cost");
@@ -141,15 +164,13 @@ public class Generator extends BaseTransUI {
 		});
 		tfTotalTime = new GERPTextField("Session Time");
 		tfTotalTime.addBlurListener(new BlurListener() {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void blur(BlurEvent event) {
+				tfGenTotalTime.setValue((new BigDecimal(tfTotalTime.getValue())).add(
+						new BigDecimal(tfGenTotalTime.getValue())).toString());
 				// TODO Auto-generated method stub
-				getunitvalues();
 			}
 		});
 		tfTotalCost = new GERPTextField("Total Cost");
@@ -187,21 +208,7 @@ public class Generator extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				try {
-					GeneratorDM generatorDM = serviceGenerator.getGeneratorDetailList(null,
-							(Long) cbAssetName.getValue(), null, null, "Y", null).get(0);
-					if (generatorDM.getDiselCloseBalance() != null) {
-						tfDiselOpenBal.setValue(generatorDM.getDiselCloseBalance().toString());
-					}
-					if (generatorDM.getRpmHz() != null) {
-						tfRpmHz.setValue(generatorDM.getRpmHz().toString());
-					}
-				}
-				catch (Exception e) {
-					tfDiselOpenBal.setValue("0");
-					tfRpmHz.setValue("0");
-					e.printStackTrace();
-				}
-				try {
+					loadAssetDetails();
 					getGenSetTotalTime();
 				}
 				catch (Exception e) {
@@ -211,11 +218,10 @@ public class Generator extends BaseTransUI {
 			}
 		});
 		loadAssetList();
-		dfRefDate = new GERPPopupDateField(" Start Date");
+		dfRefDate = new GERPPopupDateField("Start Date");
 		dfRefDate.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
-			@Override
 			public void blur(BlurEvent event) {
 				// TODO Auto-generated method stub
 				getGenSetTotalTime();
@@ -359,8 +365,8 @@ public class Generator extends BaseTransUI {
 		flcol2 = new FormLayout();
 		flcol3 = new FormLayout();
 		flcol4 = new FormLayout();
-		flcol1.addComponent(cbAssetName);
 		flcol1.addComponent(dfRefDate);
+		flcol1.addComponent(cbAssetName);
 		flcol1.addComponent(tfGenStartTime);
 		flcol1.addComponent(tfGenStopTime);
 		flcol2.addComponent(tfTotalTime);
@@ -418,9 +424,9 @@ public class Generator extends BaseTransUI {
 					+ "Got the ECReq. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanGenerator);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "gensetId", "assetName", "gensetDate", "genOnTime",
-					"getOffTime", "totalTime", "status", "lastupdateddt", "lastupdatedby" });
+					"getOffTime", "totalTime", "genTotalTime", "status", "lastupdateddt", "lastupdatedby" });
 			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Asset Name", "Date", "On Time", "Off Time",
-					"Total Time", "Status", "Last Updated date", "Last Updated by" });
+					"Session Time", "Total Time", "Status", "Last Updated date", "Last Updated by" });
 			tblMstScrSrchRslt.setColumnAlignment("gensetId", Align.RIGHT);
 			tblMstScrSrchRslt.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
@@ -572,7 +578,6 @@ public class Generator extends BaseTransUI {
 		vlSrchRsltContainer.setVisible(true);
 		assembleinputLayout();
 		resetFields();
-		dfRefDate.setValue(new Date());
 	}
 	
 	@Override
@@ -740,6 +745,36 @@ public class Generator extends BaseTransUI {
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
+		}
+	}
+	
+	private void loadAssetDetails() {
+		try {
+			System.out.println("======================================>" + dfRefDate.getValue());
+			GeneratorDM generatorDM = serviceGenerator.getGeneratorDetailList(null, (Long) cbAssetName.getValue(),
+					dfRefDate.getValue(), null, "Y", addDays(dfRefDate.getValue(), 1)).get(0);
+			System.out.println("======================================>" + dfRefDate.getValue());
+			if (generatorDM.getGenTotalTime() != null) {
+				tfGenTotalTime.setValue(generatorDM.getGenTotalTime().toString());
+			}
+			if (generatorDM.getDiselCloseBalance() != null) {
+				tfDiselOpenBal.setValue(generatorDM.getDiselCloseBalance().toString());
+			}
+			if (generatorDM.getRpmHz() != null) {
+				tfRpmHz.setValue(generatorDM.getRpmHz().toString());
+			}
+			if (generatorDM.getVolts() != null) {
+				tfVolts.setValue(generatorDM.getVolts().toString());
+			}
+			if (generatorDM.getAmps() != null) {
+				tfAmps.setValue(generatorDM.getAmps().toString());
+			}
+			if (generatorDM.getOneLiterCost() != null) {
+				tfOneLtrCost.setValue(generatorDM.getOneLiterCost().toString());
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

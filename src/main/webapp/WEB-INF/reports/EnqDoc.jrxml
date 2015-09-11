@@ -14,9 +14,9 @@
 		<band splitType="Stretch"/>
 	</background>
 	<detail>
-		<band height="35" splitType="Stretch">
+		<band height="22" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="371" height="20" uuid="1b7694cd-33d7-4cc3-86c5-1c15aba78da6"/>
+				<reportElement uuid="1b7694cd-33d7-4cc3-86c5-1c15aba78da6" x="0" y="0" width="371" height="19"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{DOCUMENT_NAME}]]></textFieldExpression>
 			</textField>

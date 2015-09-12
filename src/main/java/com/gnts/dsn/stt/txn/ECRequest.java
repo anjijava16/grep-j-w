@@ -265,7 +265,7 @@ public class ECRequest extends BaseTransUI {
 			List<ECRequestDM> listECReq = new ArrayList<ECRequestDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + null + "," + tfECRNumber.getValue() + ", " + (String) cbStatus.getValue());
-			listECReq = serviceECRequest.getECRequestList(null, tfECRNumber.getValue(), null,
+			listECReq = serviceECRequest.getECRequestList(companyid, branchId, null, tfECRNumber.getValue(), null,
 					(String) cbStatus.getValue());
 			recordCnt = listECReq.size();
 			beanECReq = new BeanItemContainer<ECRequestDM>(ECRequestDM.class);
@@ -432,6 +432,8 @@ public class ECRequest extends BaseTransUI {
 		ecRequestDM.setIfAnyTest(taTestIfAny.getValue());
 		ecRequestDM.setStatus((String) cbStatus.getValue());
 		ecRequestDM.setLastUpdatedBy(username);
+		ecRequestDM.setCompanyId(companyid);
+		ecRequestDM.setBranchId(branchId);
 		ecRequestDM.setLastUpdatedDate(DateUtils.getcurrentdate());
 		serviceECRequest.saveOrUpdateECRequest(ecRequestDM);
 		ecrid = ecRequestDM.getEcrid();

@@ -80,10 +80,13 @@ public class DashboardHCMView implements ClickListener {
 	private JobCandidateService serviceJobCandidate = (JobCandidateService) SpringContextHelper.getBean("JobCandidate");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(DashboardHCMView.class);
+	private Long companyid, branchId;
 	
 	public DashboardHCMView() {
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
 		hlHeader = (HorizontalLayout) UI.getCurrent().getSession().getAttribute("hlLayout");
+		companyid = (Long) UI.getCurrent().getSession().getAttribute("loginCompanyId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		buildView(clMainLayout, hlHeader);
 	}
 	
@@ -198,7 +201,8 @@ public class DashboardHCMView implements ClickListener {
 			// logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
 			tblPhoneReg.removeAllItems();
 			BeanItemContainer<PhoneRegDM> beanphonereg = new BeanItemContainer<PhoneRegDM>(PhoneRegDM.class);
-			beanphonereg.addAll(servicePhoneReg.getPhoneRegList(null, null, null, null, null, null, null));
+			beanphonereg.addAll(servicePhoneReg.getPhoneRegList(companyid, branchId, null, null, null, null, null,
+					null, null));
 			tblPhoneReg.setContainerDataSource(beanphonereg);
 			tblPhoneReg.setVisibleColumns(new Object[] { "callDate", "callType", "companyName", "employeeId",
 					"phoneNumber", "interNo" });
@@ -221,7 +225,7 @@ public class DashboardHCMView implements ClickListener {
 			// logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
 			tblOutpass.removeAllItems();
 			BeanItemContainer<OutpassDM> beanoutpass = new BeanItemContainer<OutpassDM>(OutpassDM.class);
-			beanoutpass.addAll(serviceOutpass.getOutpassList(null, null, null, null, "Active"));
+			beanoutpass.addAll(serviceOutpass.getOutpassList(companyid, branchId, null, null, null, null, "Active"));
 			tblOutpass.setContainerDataSource(beanoutpass);
 			tblOutpass.setVisibleColumns(new Object[] { "passDate", "firstname", "place", "vehicle", "totalTime",
 					"totalKM" });
@@ -244,7 +248,7 @@ public class DashboardHCMView implements ClickListener {
 			// logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
 			tblVisitpass.removeAllItems();
 			BeanItemContainer<VisitPassDM> beanvisitpass = new BeanItemContainer<VisitPassDM>(VisitPassDM.class);
-			beanvisitpass.addAll(serviceVisitpass.getVisitPasList(null, null, null, null, null));
+			beanvisitpass.addAll(serviceVisitpass.getVisitPasList(companyid, branchId, null, null, null, null, null));
 			tblVisitpass.setContainerDataSource(beanvisitpass);
 			tblVisitpass.setVisibleColumns(new Object[] { "visitDate", "visitorName", "contactNo", "mateFLow",
 					"inTime", "totalTime" });

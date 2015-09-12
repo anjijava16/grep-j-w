@@ -47,7 +47,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
@@ -63,7 +62,7 @@ public class Generator extends BaseTransUI {
 			.getBean("assetDetails");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(Generator.class);
-	// User Input Fields for EC Request
+	// User Input Fields for Generator
 	private TextField tfDiselOpenBal, tfGenTotalTime, tfDiselConsBal, tfVolts, tfAmps, tfRpmHz, tfDiselCloseBal,
 			tfDiselPurLtrs, tfOtherUseLtrs, tfLtrPerHours, tfMachineServRemain, tfOneLtrCost, tfTotalCost, tfTotalTime;
 	private PopupDateField dfRefDate, dfRefEndDate;
@@ -73,7 +72,7 @@ public class Generator extends BaseTransUI {
 	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<GeneratorDM> beanGenerator = null;
-	// form layout for input controls EC Request
+	// form layout for input controls Generator
 	private FormLayout flcol1, flcol2, flcol3, flcol4;
 	// Search Control Layout
 	private HorizontalLayout hlsearchlayout;
@@ -83,7 +82,7 @@ public class Generator extends BaseTransUI {
 	// local variables declaration
 	private Long generatorId;
 	private String username;
-	private Long companyid;
+	private Long companyid, branchId;
 	private int recordCnt = 0;
 	
 	// Constructor received the parameters from Login UI class
@@ -91,6 +90,7 @@ public class Generator extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside Generator() constructor");
 		buildview();
@@ -240,8 +240,8 @@ public class Generator extends BaseTransUI {
 	private void getGenSetTotalTime() {
 		// TODO Auto-generated method stub
 		try {
-			for (GeneratorDM generatorDM : serviceGenerator.getGeneratorDetailList(null, (Long) cbAssetName.getValue(),
-					dfRefDate.getValue(), null, null, addDays(dfRefDate.getValue(), 1))) {
+			for (GeneratorDM generatorDM : serviceGenerator.getGeneratorDetailList(companyid, branchId, null,
+					(Long) cbAssetName.getValue(), dfRefDate.getValue(), null, null, addDays(dfRefDate.getValue(), 1))) {
 				tfGenTotalTime.setValue(generatorDM.getGenTotalTime().toString());
 			}
 		}
@@ -254,7 +254,8 @@ public class Generator extends BaseTransUI {
 	private void loadGenTotalTime() {
 		GeneratorDM generatorDM = null;
 		try {
-			generatorDM = serviceGenerator.getGeneratorDetailList(null, null, null, null, "Y", null).get(0);
+			generatorDM = serviceGenerator.getGeneratorDetailList(companyid, branchId, null, null, null, null, "Y",
+					null).get(0);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -415,8 +416,8 @@ public class Generator extends BaseTransUI {
 			List<GeneratorDM> list = new ArrayList<GeneratorDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + null + "," + tfDiselOpenBal.getValue() + ", " + (String) cbStatus.getValue());
-			list = serviceGenerator.getGeneratorDetailList(null, (Long) cbAssetName.getValue(), dfRefDate.getValue(),
-					(String) cbStatus.getValue(), null, dfRefEndDate.getValue());
+			list = serviceGenerator.getGeneratorDetailList(companyid, branchId, null, (Long) cbAssetName.getValue(),
+					dfRefDate.getValue(), (String) cbStatus.getValue(), null, dfRefEndDate.getValue());
 			recordCnt = list.size();
 			beanGenerator = new BeanItemContainer<GeneratorDM>(GeneratorDM.class);
 			beanGenerator.addAll(list);
@@ -550,6 +551,8 @@ public class Generator extends BaseTransUI {
 		generatorDM.setRemarks(taRemarks.getValue());
 		generatorDM.setStatus((String) cbStatus.getValue());
 		generatorDM.setLastupdatedby(username);
+		generatorDM.setCompanyId(companyid);
+		generatorDM.setBranchId(branchId);
 		generatorDM.setLastupdateddt(DateUtils.getcurrentdate());
 		serviceGenerator.saveOrUpdateDetails(generatorDM);
 		generatorId = generatorDM.getGensetId();
@@ -645,8 +648,8 @@ public class Generator extends BaseTransUI {
 		tfTotalTime.setValue("0");
 		tfDiselOpenBal.setValue("0");
 		tfGenTotalTime.setValue("0");
-		// tfDiselConsBal.setReadOnly(false);
-		// tfDiselConsBal.setWidth("150");
+		tfDiselConsBal.setReadOnly(false);
+		tfDiselConsBal.setValue("0");
 		tfVolts.setValue("0");
 		tfAmps.setValue("0");
 		tfRpmHz.setValue("0");
@@ -660,6 +663,8 @@ public class Generator extends BaseTransUI {
 		tfLtrPerHours.setReadOnly(true);
 		tfMachineServRemain.setValue("");
 		tfTotalCost.setValue("0");
+		tfOneLtrCost.setReadOnly(false);
+		tfOneLtrCost.setValue("0");
 		taRunningMachineDtl.setValue("");
 		taRemarks.setValue("");
 		cbStatus.setValue(null);
@@ -737,23 +742,11 @@ public class Generator extends BaseTransUI {
 		return now.getTime();
 	}
 	
-	// Load Last Unit Values.
-	private void getunitvalues() {
-		try {
-			tfGenTotalTime.setValue(new BigDecimal(tfGenTotalTime.getValue()).add(
-					new BigDecimal(tfGenTotalTime.getValue())).toString());
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
-	}
-	
 	private void loadAssetDetails() {
 		try {
-			System.out.println("======================================>" + dfRefDate.getValue());
-			GeneratorDM generatorDM = serviceGenerator.getGeneratorDetailList(null, (Long) cbAssetName.getValue(),
-					dfRefDate.getValue(), null, "Y", addDays(dfRefDate.getValue(), 1)).get(0);
-			System.out.println("======================================>" + dfRefDate.getValue());
+			GeneratorDM generatorDM = serviceGenerator.getGeneratorDetailList(companyid, branchId, null,
+					(Long) cbAssetName.getValue(), dfRefDate.getValue(), null, "Y", addDays(dfRefDate.getValue(), 1))
+					.get(0);
 			if (generatorDM.getGenTotalTime() != null) {
 				tfGenTotalTime.setValue(generatorDM.getGenTotalTime().toString());
 			}

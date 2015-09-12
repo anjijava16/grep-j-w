@@ -50,7 +50,7 @@ public class DashbordView implements ClickListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Long companyId;
+	private Long companyId,branchId;
 	private Label lblDashboardTitle;
 	private Button btnEnquiryCount = new Button("100", this);
 	private Button btnQuotationCount = new Button("125", this);
@@ -79,6 +79,7 @@ public class DashbordView implements ClickListener {
 	
 	public DashbordView() {
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
 		hlHeader = (HorizontalLayout) UI.getCurrent().getSession().getAttribute("hlLayout");
 		buildView(clMainLayout, hlHeader);
@@ -275,7 +276,7 @@ public class DashbordView implements ClickListener {
 		final Panel panel = new Panel("Notifications");
 		notificationsLayout.addComponent(panel);
 		List<ECRequestDM> ecrequestDm = new ArrayList<ECRequestDM>();
-		ecrequestDm = ServiceEcrequest.getECRequestList(null, null, null, "Active");
+		ecrequestDm = ServiceEcrequest.getECRequestList(companyId,branchId,null, null, null, "Active");
 		FormLayout fmlayout = new FormLayout();
 		VerticalLayout hrLayout = new VerticalLayout();
 		for (ECRequestDM n : ecrequestDm) {

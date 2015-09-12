@@ -61,7 +61,7 @@ public class EBReading extends BaseTransUI {
 			tfOffPeakHrs, oneUnitChrO, oneUnitChrP;
 	private PopupDateField dfRefDate;
 	private TextArea taMachineRunDetails, taRemarks;
-	private GERPComboBox cbEmploye;
+	private GERPComboBox cbEmployee;
 	private ComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<EbReadingDM> beanECReq = null;
@@ -75,7 +75,7 @@ public class EBReading extends BaseTransUI {
 	// local variables declaration
 	private Long ebReadingId;
 	private String username;
-	private Long companyid;
+	private Long companyid,branchId;
 	private Long dpmt = (long) 209;
 	private int recordCnt = 0;
 	
@@ -84,6 +84,7 @@ public class EBReading extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside ECRequest() constructor");
 		buildview();
@@ -165,10 +166,10 @@ public class EBReading extends BaseTransUI {
 		oneUnitChrO.setWidth("150");
 		oneUnitChrP = new GERPTextField("One Unit(Peak)");
 		oneUnitChrP.setWidth("150");
-		cbEmploye = new GERPComboBox("Employee");
-		cbEmploye.setItemCaptionPropertyId("firstname");
+		cbEmployee = new GERPComboBox("Employee");
+		cbEmployee.setItemCaptionPropertyId("firstname");
 		loadEmployeeList();
-		cbEmploye.setWidth("150");
+		cbEmployee.setWidth("150");
 		tfC1.setWidth("70");
 		tfC2.setWidth("70");
 		tfC3.setWidth("70");
@@ -218,7 +219,7 @@ public class EBReading extends BaseTransUI {
 		flcol4 = new FormLayout();
 		flcol5 = new FormLayout();
 		flcol1.addComponent(dfRefDate);
-		flcol1.addComponent(cbEmploye);
+		flcol1.addComponent(cbEmployee);
 		flcol1.addComponent(oneUnitChrO);
 		flcol1.addComponent(oneUnitChrP);
 		flcol1.addComponent(tfMainKwHr);
@@ -280,7 +281,7 @@ public class EBReading extends BaseTransUI {
 			List<EbReadingDM> list = new ArrayList<EbReadingDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + null + "," + tfMainKwHr.getValue() + ", " + (String) cbStatus.getValue());
-			list = serviceEBReading.getEbReadingDetailList(null, null, null, null, null);
+			list = serviceEBReading.getEbReadingDetailList(companyid,branchId,null, null, null, null, null);
 			recordCnt = list.size();
 			beanECReq = new BeanItemContainer<EbReadingDM>(EbReadingDM.class);
 			beanECReq.addAll(list);
@@ -384,7 +385,7 @@ public class EBReading extends BaseTransUI {
 					tfKvaMdr.setValue(ebReadingDM.getKvaMdr().toString());
 				}
 				if (ebReadingDM.getEmployeeId() != null) {
-					cbEmploye.setValue(ebReadingDM.getEmployeeId().toString());
+					cbEmployee.setValue(ebReadingDM.getEmployeeId());
 				}
 				if (ebReadingDM.getOneUnitO() != null) {
 					oneUnitChrO.setValue(ebReadingDM.getOneUnitO().toString());
@@ -474,8 +475,8 @@ public class EBReading extends BaseTransUI {
 		if (tfKvaMdr.getValue() != null) {
 			ebReadingDM.setKvaMdr(new BigDecimal(tfKvaMdr.getValue()));
 		}
-		if (cbEmploye.getValue() != null) {
-			ebReadingDM.setEmployeeId((Long) cbEmploye.getValue());
+		if (cbEmployee.getValue() != null) {
+			ebReadingDM.setEmployeeId((Long) cbEmployee.getValue());
 		}
 		if (oneUnitChrO.getValue() != null) {
 			ebReadingDM.setOneUnitO(oneUnitChrO.getValue());
@@ -483,6 +484,8 @@ public class EBReading extends BaseTransUI {
 		if (oneUnitChrP.getValue() != null) {
 			ebReadingDM.setOneUnitP(oneUnitChrP.getValue());
 		}
+		ebReadingDM.setCompanyId(companyid);
+		ebReadingDM.setBranchId(branchId);
 		ebReadingDM.setMachineRunDetails(taMachineRunDetails.getValue());
 		ebReadingDM.setRemarks(taRemarks.getValue());
 		ebReadingDM.setStatus((String) cbStatus.getValue());
@@ -599,7 +602,7 @@ public class EBReading extends BaseTransUI {
 		cbStatus.setValue("Active");
 		tfOffPeakHrs.setReadOnly(false);
 		tfOffPeakHrs.setValue("0");
-		cbEmploye.setValue(null);
+		cbEmployee.setValue(null);
 	}
 	
 	@Override
@@ -652,7 +655,7 @@ public class EBReading extends BaseTransUI {
 			beanInitiatedBy.setBeanIdProperty("employeeid");
 			beanInitiatedBy.addAll(serviceEmployee.getEmployeeList(null, null, dpmt, "Active", companyid, null, null,
 					null, null, "P"));
-			cbEmploye.setContainerDataSource(beanInitiatedBy);
+			cbEmployee.setContainerDataSource(beanInitiatedBy);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -662,7 +665,7 @@ public class EBReading extends BaseTransUI {
 	private void getCalcDetails() {
 		EbReadingDM ebReadingDM = null;
 		try {
-			ebReadingDM = serviceEBReading.getEbReadingDetailList(null, null, null, null, "Y").get(0);
+			ebReadingDM = serviceEBReading.getEbReadingDetailList(companyid,branchId,null, null, null, null, "Y").get(0);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -684,7 +687,7 @@ public class EBReading extends BaseTransUI {
 	private void getCalcDetails1() {
 		EbReadingDM ebReadingDM = null;
 		try {
-			ebReadingDM = serviceEBReading.getEbReadingDetailList(null, null, null, null, "Y").get(0);
+			ebReadingDM = serviceEBReading.getEbReadingDetailList(companyid,branchId,null, null, null, null, "Y").get(0);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -704,7 +707,7 @@ public class EBReading extends BaseTransUI {
 	private void getCalcDetailsPDU() {
 		EbReadingDM ebReadingDM = null;
 		try {
-			ebReadingDM = serviceEBReading.getEbReadingDetailList(null, null, null, null, "Y").get(0);
+			ebReadingDM = serviceEBReading.getEbReadingDetailList(companyid,branchId,null, null, null, null, "Y").get(0);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -725,7 +728,7 @@ public class EBReading extends BaseTransUI {
 	private void getunitvalues() {
 		EbReadingDM ebReadingDM = null;
 		try {
-			ebReadingDM = serviceEBReading.getEbReadingDetailList(null, null, null, null, "Y").get(0);
+			ebReadingDM = serviceEBReading.getEbReadingDetailList(companyid,branchId,null, null, null, null, "Y").get(0);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

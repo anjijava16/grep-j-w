@@ -232,8 +232,8 @@ public class Dashboard {
 	
 	private void loadClientVistDetails() {
 		try {
-			List<CustomerVisitHdrDM> newsList = serviceCustomerVisitHdr.getCustomerVisitHdrList(null, null, null, null,
-					null, "F");
+			List<CustomerVisitHdrDM> newsList = serviceCustomerVisitHdr.getCustomerVisitHdrList(companyId, branchId,
+					null, null, null, null, null, "F");
 			if (newsList != null) {
 				tblClientVisit.removeAllItems();
 				BeanItemContainer<CustomerVisitHdrDM> beansNews = new BeanItemContainer<CustomerVisitHdrDM>(

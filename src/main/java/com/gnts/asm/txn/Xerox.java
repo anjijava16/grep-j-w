@@ -76,7 +76,7 @@ public class Xerox extends BaseTransUI {
 	// local variables declaration
 	private Long xeroxRefId;
 	private String username;
-	private Long companyid;
+	private Long companyid,branchId;
 	private int recordCnt = 0;
 	
 	// Constructor received the parameters from Login UI class
@@ -84,6 +84,7 @@ public class Xerox extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside Xerox() constructor");
 		buildview();
 	}
@@ -193,7 +194,7 @@ public class Xerox extends BaseTransUI {
 			List<XeroxDM> list = new ArrayList<XeroxDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + null + "," + null + ", " + (String) cbStatus.getValue());
-			list = serviceXerox.getXeroxDetailList(null, (Long) cbAssetName.getValue(), (Long) cbDepartment.getValue(),
+			list = serviceXerox.getXeroxDetailList(companyid,branchId,null, (Long) cbAssetName.getValue(), (Long) cbDepartment.getValue(),
 					null, null, null);
 			recordCnt = list.size();
 			beanXerox = new BeanItemContainer<XeroxDM>(XeroxDM.class);
@@ -317,6 +318,8 @@ public class Xerox extends BaseTransUI {
 		xeroxDM.setPurpose(taPurpose.getValue());
 		xeroxDM.setStatus((String) cbStatus.getValue());
 		xeroxDM.setLastupdatedby(username);
+		xeroxDM.setCompanyId(companyid);
+		xeroxDM.setBranchId(branchId);
 		xeroxDM.setLastupdateddt(DateUtils.getcurrentdate());
 		serviceXerox.saveOrUpdateDetails(xeroxDM);
 		xeroxRefId = xeroxDM.getXeroxRefId();

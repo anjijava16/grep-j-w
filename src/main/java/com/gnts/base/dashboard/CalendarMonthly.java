@@ -31,6 +31,7 @@ import com.vaadin.ui.Calendar;
 import com.vaadin.ui.Calendar.TimeFormat;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
@@ -59,6 +60,8 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 	private String type;
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(CalendarMonthly.class);
+	Long companyid = (Long) UI.getCurrent().getSession().getAttribute("loginCompanyId");
+	Long branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 	
 	public CalendarMonthly(String type) {
 		this.type = type;
@@ -180,7 +183,8 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 			}
 		} else if (type.equalsIgnoreCase("DIE_SCHEDULE")) {
 			try {
-				for (DieRequestDM dieRequestDM : serviceDieRequest.getDieRequestList(null, null, null, null, null)) {
+				for (DieRequestDM dieRequestDM : serviceDieRequest.getDieRequestList(companyid, branchId, null, null,
+						null, null, null)) {
 					calendar.setTime(dieRequestDM.getRefDate1());
 					calendar.add(GregorianCalendar.DATE, 2);
 					if (dieRequestDM.getPlanCompleteDate() != null) {
@@ -231,8 +235,8 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 					e.add(event);
 				}
 				// Customer Visit Date On Calender.
-				for (CustomerVisitHdrDM customervisitHdrDM : serviceCustomerVisit.getCustomerVisitHdrList(null, null,
-						null, null, null, "F")) {
+				for (CustomerVisitHdrDM customervisitHdrDM : serviceCustomerVisit.getCustomerVisitHdrList(companyid,
+						branchId, null, null, null, null, null, "F")) {
 					calendar.setTime(customervisitHdrDM.getVisitDt1());
 					calendar.add(GregorianCalendar.DATE, 2);
 					CalendarTestEvent event2 = getNewEvent(

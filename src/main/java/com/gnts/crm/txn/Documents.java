@@ -192,10 +192,8 @@ public class Documents implements ClickListener {
 		 */
 		tblDocuments = new Table();
 		tblDocuments.setStyleName(Runo.TABLE_SMALL);
-		tblDocuments.setPageLength(4);
-		tblDocuments.setWidth("600");
-		tblDocuments.setSizeUndefined();
-		tblDocuments.setSizeFull();
+		tblDocuments.setPageLength(7);
+		tblDocuments.setWidth("100%");
 		tblDocuments.setInvalidAllowed(true);
 		tblDocuments.setFooterVisible(true);
 		tblDocuments.setColumnCollapsingAllowed(true);
@@ -259,7 +257,7 @@ public class Documents implements ClickListener {
 			Long oppurtunuityId, Long caseId) {
 		if (from) {
 			documentList = serviceDoc.getDocumentDetails(companyId, null, null, clientId, clntContactId, leadId,
-					campaingnId, clntOppertunityId, clntCaseId, null, null,null,"Active");
+					campaingnId, oppurtunuityId, caseId, null, null,null,"Active");
 			recordcount = documentList.size();
 		}
 		try {
@@ -269,9 +267,9 @@ public class Documents implements ClickListener {
 			recordcount = documentList.size();
 			tblDocuments.setSelectable(true);
 			tblDocuments.setContainerDataSource(beanDocuments);
-			tblDocuments.setVisibleColumns(new Object[] { "documentId", "documentName", "documentType", "documentDate",
+			tblDocuments.setVisibleColumns(new Object[] {"documentName", "documentType", "documentDate",
 					"lastUpdatedDt", "lastUpdatedBy" });
-			tblDocuments.setColumnHeaders(new String[] { "Ref.Id", "Document Name", "Document Type", "Document Date",
+			tblDocuments.setColumnHeaders(new String[] {"Document Name", "Document Type", "Document Date",
 					"Last Updated Date", "Last Updated By" });
 			tblDocuments.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordcount);
 		}

@@ -117,7 +117,7 @@ public class ClientAppointments extends BaseUI {
 	private EmployeeDM employee;
 	private CompanyLookupDM typeLookUp;
 	private BeanItemContainer<ClientAppointmentsDM> beanAppointment = null;
-	private Long clientId, moduleId;
+	private Long clientId, moduleId, branchId;
 	private int recordCnt = 0;
 	private Logger logger = Logger.getLogger(ClientAppointments.class);
 	private BasicEvent dayEvent;
@@ -127,6 +127,7 @@ public class ClientAppointments extends BaseUI {
 		// Get the logged in user name and company id from the session
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		buildview();
 	}
 	
@@ -691,7 +692,8 @@ public class ClientAppointments extends BaseUI {
 			BeanContainer<Long, ClientCasesDM> beanClntCase = new BeanContainer<Long, ClientCasesDM>(
 					ClientCasesDM.class);
 			beanClntCase.setBeanIdProperty("clientCaseId");
-			beanClntCase.addAll(serviceCase.getClientCaseDetails(companyId, caseid, null, null, null, "Active", "P"));
+			beanClntCase.addAll(serviceCase.getClientCaseDetails(companyId, branchId, caseid, null, null, null,
+					"Active", "P"));
 			cbCase.setContainerDataSource(beanClntCase);
 		}
 		catch (Exception e) {

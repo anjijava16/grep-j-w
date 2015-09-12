@@ -557,7 +557,7 @@ public class DieRequest extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
 			List<DieRequestDM> list = new ArrayList<DieRequestDM>();
-			list = serviceDieRequest.getDieRequestList(null, null, null, null, null);
+			list = serviceDieRequest.getDieRequestList(companyid, branchId, null, null, null, null, null);
 			recordCnt = list.size();
 			beanDieRequest = new BeanItemContainer<DieRequestDM>(DieRequestDM.class);
 			beanDieRequest.addAll(list);
@@ -1019,6 +1019,8 @@ public class DieRequest extends BaseTransUI {
 		dieRequestDM.setChangeNote(taChangeNote.getValue());
 		dieRequestDM.setStatus((String) cbStatus.getValue());
 		dieRequestDM.setLastUpdatedBy(username);
+		dieRequestDM.setCompanyId(companyid);
+		dieRequestDM.setBranchId(branchId);
 		dieRequestDM.setLastUpdatedDate(DateUtils.getcurrentdate());
 		serviceDieRequest.saveOrUpdateDetails(dieRequestDM);
 		dieRequestId = dieRequestDM.getDieReqId();

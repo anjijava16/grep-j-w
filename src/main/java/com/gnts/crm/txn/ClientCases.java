@@ -84,7 +84,7 @@ public class ClientCases extends BaseTransUI {
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private SmsPOHdrService servicePurchaseOrdHdr = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
 	private ClientCasesService serviceCase = (ClientCasesService) SpringContextHelper.getBean("clientCase");
-	private Long companyId;
+	private Long companyId, branchId;
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	private HorizontalLayout hlSearchLayout;
@@ -111,6 +111,7 @@ public class ClientCases extends BaseTransUI {
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		moduleId = Long.valueOf(UI.getCurrent().getSession().getAttribute("moduleId").toString());
 		deptId = Long.valueOf(UI.getCurrent().getSession().getAttribute("deptId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		buildview();
 	}
 	
@@ -359,8 +360,8 @@ public class ClientCases extends BaseTransUI {
 			List<ClientCasesDM> listClientCase = new ArrayList<ClientCasesDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyId + ", " + tfCaseResult.getValue() + ",");
-			listClientCase = serviceCase.getClientCaseDetails(companyId, null, (Long) cbClient.getValue(), null,
-					tfCaseTitle.getValue(), (String) cbClntCaseStatus.getValue(), "F");
+			listClientCase = serviceCase.getClientCaseDetails(companyId, branchId, null, (Long) cbClient.getValue(),
+					null, tfCaseTitle.getValue(), (String) cbClntCaseStatus.getValue(), "F");
 			recordCnt = listClientCase.size();
 			beanClntCases = new BeanItemContainer<ClientCasesDM>(ClientCasesDM.class);
 			beanClntCases.addAll(listClientCase);
@@ -636,6 +637,8 @@ public class ClientCases extends BaseTransUI {
 			clientCasesDM.setEnquiryId((Long) cbEnquiryNo.getValue());
 			clientCasesDM.setPoid((Long) cbPONo.getValue());
 			clientCasesDM.setLastUpdatedBy(userName);
+			clientCasesDM.setCompanyId(companyId);
+			clientCasesDM.setBranchId(branchId);
 			clientCasesDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 			clientCasesDM.setProdid(((SmsPODtlDM) cbProduct.getValue()).getProductid());
 			tfpartNo.setReadOnly(false);

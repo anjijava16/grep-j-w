@@ -255,7 +255,7 @@ public class ECNote extends BaseTransUI {
 			List<ECNoteDM> listECNote = new ArrayList<ECNoteDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + null + "," + tfECNNumber.getValue() + ", " + (String) cbStatus.getValue());
-			listECNote = serviceECNote.getECNoteList(null, tfECNNumber.getValue(), null, null,
+			listECNote = serviceECNote.getECNoteList(companyid, branchId, null, tfECNNumber.getValue(), null, null,
 					(String) cbStatus.getValue());
 			recordCnt = listECNote.size();
 			beanECNote = new BeanItemContainer<ECNoteDM>(ECNoteDM.class);
@@ -323,7 +323,7 @@ public class ECNote extends BaseTransUI {
 	private void loadECRequest() {
 		try {
 			BeanItemContainer<ECRequestDM> beanECReq = new BeanItemContainer<ECRequestDM>(ECRequestDM.class);
-			beanECReq.addAll(serviceECRequest.getECRequestList(null, null, null, null));
+			beanECReq.addAll(serviceECRequest.getECRequestList(companyid, branchId, null, null, null, null));
 			cbECRequest.setContainerDataSource(beanECReq);
 		}
 		catch (Exception e) {
@@ -398,6 +398,8 @@ public class ECNote extends BaseTransUI {
 		ecNoteDM.setDocRefNumber(tfDocRefNumber.getValue());
 		ecNoteDM.setStatus((String) cbStatus.getValue());
 		ecNoteDM.setLastUpdatedBy(username);
+		ecNoteDM.setCompanyId(companyid);
+		ecNoteDM.setBranchId(branchId);
 		ecNoteDM.setLastUpdatedDate(DateUtils.getcurrentdate());
 		serviceECNote.saveOrUpdateECNote(ecNoteDM);
 		ecnid = ecNoteDM.getEcnid();

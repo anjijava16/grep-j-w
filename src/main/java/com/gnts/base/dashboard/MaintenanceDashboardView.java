@@ -50,7 +50,7 @@ public class MaintenanceDashboardView implements ClickListener {
 	private Logger logger = Logger.getLogger(DashboardMMSView.class);
 	private Table tblAssetMaint = new Table();
 	private Table tblEnquiry = new Table();
-	private Long companyId;
+	private Long companyId, branchId;
 	private VerticalLayout vlGensetOilStatus = new VerticalLayout();
 	
 	public MaintenanceDashboardView() {
@@ -62,6 +62,7 @@ public class MaintenanceDashboardView implements ClickListener {
 		catch (Exception e) {
 			logger.info(e.getMessage());
 		}
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		buildView(clMainLayout, hlHeader);
 	}
 	
@@ -184,7 +185,8 @@ public class MaintenanceDashboardView implements ClickListener {
 	private void loadGensetDetails() {
 		try {
 			vlGensetOilStatus.setSpacing(true);
-			for (GeneratorDM generatorDM : serviceGenerator.getGeneratorDetailList(null, null, null, null, "Y", null)) {
+			for (GeneratorDM generatorDM : serviceGenerator.getGeneratorDetailList(companyId, branchId, null, null,
+					null, null, "Y", null)) {
 				Label lbl = new Label(generatorDM.getAssetName()
 						+ " disel closing balance is   <span style='color:red;font-size:15px'>"
 						+ generatorDM.getDiselCloseBalance() + " Ltrs.</span>", ContentMode.HTML);

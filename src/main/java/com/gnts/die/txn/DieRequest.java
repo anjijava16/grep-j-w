@@ -54,6 +54,8 @@ import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.mfg.txn.TestingDocuments;
+import com.gnts.mms.domain.mst.MaterialDM;
+import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
@@ -91,6 +93,7 @@ public class DieRequest extends BaseTransUI {
 	private SmsEnqHdrService serviceEnqHeader = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private DieRequestService serviceDieRequest = (DieRequestService) SpringContextHelper.getBean("dieRequest");
 	private DieSectionService serviceDieSection = (DieSectionService) SpringContextHelper.getBean("dieSection");
+	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private SmsEnquiryDtlService serviceEnqDetail = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
@@ -288,6 +291,8 @@ public class DieRequest extends BaseTransUI {
 		tfBOMIOM = new GERPTextField("IOM");
 		tfBOMPartNumber = new GERPTextField("Saarc p/no");
 		cbBOMMaterial = new GERPComboBox("Material");
+		cbBOMMaterial.setItemCaptionPropertyId("materialName");
+		loadMaterialList();
 		tfBOMLIDProfile = new GERPTextField("Lid profile with");
 		tfBOMTopQty = new GERPTextField("Top Qty");
 		tfBOMBottomQty = new GERPTextField("Bottom Qty");
@@ -1346,6 +1351,19 @@ public class DieRequest extends BaseTransUI {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private void loadMaterialList() {
+		try {
+			BeanContainer<Long, MaterialDM> beanMaterial = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
+			beanMaterial.setBeanIdProperty("materialId");
+			beanMaterial.addAll(serviceMaterial.getMaterialList(null, null, null, null, null, null, null, null,
+					"Active", "P"));
+			cbBOMMaterial.setContainerDataSource(beanMaterial);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

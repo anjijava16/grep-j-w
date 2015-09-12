@@ -1033,7 +1033,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				if (poHdrDM.getVendorId() != null) {
 					cbVendor.setValue(poHdrDM.getVendorId());
 				}
-				
 				if (poHdrDM.getDutyExempt().equals("Y")) {
 					ckdutyexm.setValue(true);
 				} else {
@@ -1051,8 +1050,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				}
 				cbStatus.setValue(poHdrDM.getpOStatus());
 			}
-			listPODetails = servicepodtl.getpodtllist(poId,null , "Active", null, null, "F");
-
+			listPODetails = servicepodtl.getpodtllist(poId, null, "Active", null, null, "F");
 			loadPODetails();
 			comments = new MmsComments(vlTableForm, null, companyid, null, null, null, poId, null, null, null, null);
 			comments.loadsrch(true, null, companyid, null, null, null, poId, null, null, null);
@@ -1277,7 +1275,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 							"F").get(0).getIndentId());
 			poHdrDM.setPurchaseDate(dfPODt.getValue());
 			poHdrDM.setExpDate(dfExpDt.getValue());
-			poHdrDM.setQuoteId(((MmsQuoteHdrDM)cbQuoteRef.getValue()).getQuoteId());
+			poHdrDM.setQuoteId(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getQuoteId());
 			poHdrDM.setPoRemark(taRemark.getValue());
 			poHdrDM.setpOType((String) cbpoType.getValue());
 			poHdrDM.setVendorId((Long) cbVendor.getValue());
@@ -1452,6 +1450,15 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfEDPer.setReadOnly(false);
 		tfVatPer.setReadOnly(false);
 		tfHEDPer.setReadOnly(false);
+		tfEDPer.setValue("0");
+		tfVatPer.setValue("0");
+		tfHEDPer.setValue("0");
+		tfEDValue.setReadOnly(false);
+		tfHEDValue.setReadOnly(false);
+		tfCessValue.setReadOnly(false);
+		tfEDValue.setValue("0");
+		tfHEDValue.setValue("0");
+		tfCessValue.setValue("0");
 		tfCessPer.setReadOnly(false);
 		tfCstPer.setReadOnly(false);
 		tfFreightPer.setReadOnly(false);

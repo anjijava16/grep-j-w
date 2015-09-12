@@ -1,7 +1,11 @@
 package com.gnts.mfg.stt.txn;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,6 +58,8 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
@@ -112,7 +118,8 @@ public class Extruder extends BaseTransUI {
 	private Button btnAddTemp = new GERPButton("Add", "addbt", this);
 	private ComboBox cbMtrlStatus, cbDtlStatus, cbTempStatus, cbMaterial, cbLotno;
 	private ComboBox cbMachineName, cbMatName, cbStockType, cbZoneName;
-	private TextField tfExtRefNo, tfGradeNo, tfLotNo, tfExTPlnRef, tfOpQty, tfOeePerc, tfMtrlQty, tfIsoNo, tfTempValue;
+	private TextField tfExtRefNo, tfGradeNo, tfLotNo, tfExTPlnRef, tfIpQty, tfTotTime, tfOpQty, tfOeePerc, tfMtrlQty,
+			tfIsoNo, tfTempValue;
 	private PopupDateField dfExtDt, dfProdDt;
 	private GERPTimeField tiHeatngTime, tiChrgStTm, tiChargEdTm;
 	private TextArea taInstruct, taRemark;
@@ -294,13 +301,43 @@ public class Extruder extends BaseTransUI {
 		// taInstruct.setHeight("103px");
 		// Initializing Dtl
 		dfProdDt = new GERPPopupDateField("Production Date");
+		tfIpQty = new GERPTextField("Input Qty.");
+		tfIpQty.setWidth("120");
+		tfTotTime = new GERPTextField("Total Time");
+		tfTotTime.setWidth("120");
 		tfOpQty = new GERPTextField("OutPut Qty.");
-		tfOpQty.setWidth("130");
+		tfOpQty.setWidth("120");
 		tiChrgStTm = new GERPTimeField("Charge St.Time");
+		tiChrgStTm.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getTotalHours();
+			}
+		});
 		tiChargEdTm = new GERPTimeField("Charge Ed.Time");
+		tiChargEdTm.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getTotalHours();
+			}
+		});
 		tfOeePerc = new GERPTextField("OEE Percent");
-		tfOeePerc.setWidth("150");
+		tfOeePerc.setWidth("120");
 		tfOeePerc.setValue("0");
+		tfOeePerc.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				getOeePercentage();
+			}
+		});
 		taRemark = new TextArea("Instruction");
 		taRemark.setWidth("155px");
 		taRemark.setHeight("");
@@ -461,9 +498,11 @@ public class Extruder extends BaseTransUI {
 		flExtDtlCol1 = new FormLayout();
 		flExtDtlCol2 = new FormLayout();
 		// flExtDtlCol1.addComponent(dfProdDt);
+		flExtDtlCol1.addComponent(tfIpQty);
 		flExtDtlCol1.addComponent(tfOpQty);
 		flExtDtlCol1.addComponent(tiChrgStTm);
 		flExtDtlCol1.addComponent(tiChargEdTm);
+		flExtDtlCol1.addComponent(tfTotTime);
 		flExtDtlCol1.addComponent(tfOeePerc);
 		flExtDtlCol2.addComponent(taRemark);
 		flExtDtlCol2.addComponent(cbDtlStatus);
@@ -581,16 +620,17 @@ public class Extruder extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Extruderslap. result set");
 			tblExtrDtl.setContainerDataSource(beanExtrudersDtlDM);
-			tblExtrDtl.setVisibleColumns(new Object[] { "extDtlId", "prodDate", "outQty", "oeePrnct", "chrgStTime",
-					"chrgEdTime" });
+			tblExtrDtl.setVisibleColumns(new Object[] { "extDtlId", "inputQty", "outQty", "oeePrnct", "chrgStTime",
+					"chrgEdTime", "totalTime" });
 			tblExtrDtl.setColumnWidth("extDtlId", 60);
-			tblExtrDtl.setColumnWidth("prodDate", 85);
+			tblExtrDtl.setColumnWidth("", 85);
 			tblExtrDtl.setColumnWidth("outQty", 60);
 			tblExtrDtl.setColumnWidth("oeePrnct", 60);
 			tblExtrDtl.setColumnWidth("chrgStTime", 70);
 			tblExtrDtl.setColumnWidth("chrgEdTime", 80);
-			tblExtrDtl.setColumnHeaders(new String[] { "Ref.Id", "Prodtn. Date", "O/P Qty.", "OEE %", "Start Time",
-					"End Time" });
+			tblExtrDtl.setColumnWidth("", 80);
+			tblExtrDtl.setColumnHeaders(new String[] { "Ref.Id", "I/P Qty.", "O/P Qty.", "OEE %", "Start Time",
+					"End Time", "Total Time" });
 			tblExtrDtl.setColumnFooter("chrgEdTime", "Records :" + recordDtlCnt);
 		}
 		catch (Exception e) {
@@ -660,6 +700,8 @@ public class Extruder extends BaseTransUI {
 		tiChrgStTm.setValue(null);
 		tiChargEdTm.setValue(null);
 		tfOeePerc.setValue("");
+		tfIpQty.setValue("");
+		tfTotTime.setValue("");
 		taRemark.setValue(null);
 		cbDtlStatus.setValue(cbHdrStatus.getItemIds().iterator().next());
 		// Extruders Mtrl Resetfields
@@ -728,6 +770,12 @@ public class Extruder extends BaseTransUI {
 				dfProdDt.setValue(extrudersDtlDM.getProdDateDT());
 				if (extrudersDtlDM.getOutQty() != null) {
 					tfOpQty.setValue(extrudersDtlDM.getOutQty().toString());
+				}
+				if (extrudersDtlDM.getInputQty() != null) {
+					tfIpQty.setValue(extrudersDtlDM.getInputQty().toString());
+				}
+				if (extrudersDtlDM.getTotalTime() != null) {
+					tfTotTime.setValue(extrudersDtlDM.getTotalTime().toString());
 				}
 				if (extrudersDtlDM.getChrgStTime() != null) {
 					tiChrgStTm.setTime(extrudersDtlDM.getChrgStTime());
@@ -1215,6 +1263,8 @@ public class Extruder extends BaseTransUI {
 				extruderDtlObj.setExtDtlId(Long.valueOf(serviceExtruderDtl.getSequence().toString()));
 			}
 			extruderDtlObj.setProdDate(dfProdDt.getValue());
+			extruderDtlObj.setInputQty(tfIpQty.getValue().toString());
+			extruderDtlObj.setTotalTime(tfTotTime.getValue().toString());
 			extruderDtlObj.setOutQty(Long.valueOf(tfOpQty.getValue()));
 			if (tiChrgStTm.getValue() != null) {
 				extruderDtlObj.setChrgStTime(tiChrgStTm.getHorsMunites());
@@ -1454,6 +1504,36 @@ public class Extruder extends BaseTransUI {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private void getOeePercentage() {
+		try {
+			BigDecimal outPutOty = (new BigDecimal(tfOpQty.getValue()).divide(new BigDecimal("650"), 2,
+					RoundingMode.HALF_UP)).multiply(new BigDecimal("100"));
+			BigDecimal time = tiChargEdTm.getHorsMunitesinBigDecimal()
+					.subtract(tiChrgStTm.getHorsMunitesinBigDecimal())
+					.divide(new BigDecimal("6.30"), 2, RoundingMode.HALF_UP);
+			tfOeePerc.setValue(outPutOty.multiply(time).round(new MathContext(2)).toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	private void getTotalHours() {
+		try {
+			// TODO Auto-generated method stub
+			if (tiChrgStTm.getValue() != null && tiChargEdTm.getValue() != null) {
+				if (tiChrgStTm.getHorsMunitesinBigDecimal().compareTo(tiChargEdTm.getHorsMunitesinBigDecimal()) < 0) {
+					tfTotTime.setValue(tiChrgStTm.getHorsMunitesinBigDecimal()
+							.subtract(tiChargEdTm.getHorsMunitesinBigDecimal()).abs().toString());
+				} else {
+					tfTotTime.setValue("0.0");
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

@@ -137,7 +137,7 @@ public class ProductBomHdr extends BaseTransUI {
 		cbProduct = new GERPComboBox("Product Name");
 		cbProduct.setWidth("200");
 		cbProduct.setRequired(true);
-		cbProduct.setItemCaptionPropertyId("customField1");
+		cbProduct.setItemCaptionPropertyId("prodname");
 		cbBranch = new GERPComboBox("Branch Name");
 		cbBranch.setWidth("200");
 		cbBranch.setRequired(true);
@@ -204,6 +204,7 @@ public class ProductBomHdr extends BaseTransUI {
 									.getMaterialList(Long.valueOf(obj.trim()), companyId, null, null, null, null, null,
 											null, null, "F").get(0).getMaterialUOM());
 							cbMaterialUOM.setReadOnly(true);
+							System.out.println("_---------------------->"+cbMaterialUOM.getValue());
 						}
 					}
 				}
@@ -280,6 +281,9 @@ public class ProductBomHdr extends BaseTransUI {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ "," + bomId + "," + companyId);
 			recordCntBomDtl = listBOMDtls.size();
+			System.out.println("------------>"+listBOMDtls);
+			System.out.println("------------>"+listBOMDtls.size());
+
 			beanProductBomDtl = new BeanItemContainer<ProductBomDtlDM>(ProductBomDtlDM.class);
 			beanProductBomDtl.addAll(listBOMDtls);
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
@@ -419,7 +423,7 @@ public class ProductBomHdr extends BaseTransUI {
 			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
 					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, null, "Active",
 					"MM_UOM"));
 			cbMaterialUOM.setContainerDataSource(beanCompanyLookUp);
 		}
@@ -535,8 +539,9 @@ public class ProductBomHdr extends BaseTransUI {
 				if ((productBomHdr.getBomStatus() != null)) {
 					cbBomStatus.setValue(productBomHdr.getBomStatus());
 				}
-				listBOMDtls.addAll(serviceProductBomDtl.getProductBomDtlList(null, bomId, null, null, "F"));
 			}
+			listBOMDtls.addAll(serviceProductBomDtl.getProductBomDtlList(null, bomId, null, "Active", "B"));
+
 			loadProductBomDtlRslt();
 			comments = new MmsComments(vlTableForm, null, companyId, bomId, null, null, null, null, null, null, null);
 			comments.loadsrch(true, null, null, bomId, null, null, null, null, null, null);
@@ -634,16 +639,16 @@ public class ProductBomHdr extends BaseTransUI {
 			cbMaterialName.setComponentError(null);
 		}
 		if (Long.valueOf(tfMaterialQty.getValue()) < 0) {
-			cbMaterialUOM.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_QTYZero));
+			tfMaterialQty.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_QTYZero));
 			isValid = false;
 		} else {
-			cbMaterialUOM.setComponentError(null);
+			tfMaterialQty.setComponentError(null);
 		}
 		if (tfMaterialQty.getValue().equals("0")) {
-			cbMaterialUOM.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_QTYZero));
+			tfMaterialQty.setComponentError(new UserError(GERPErrorCodes.NULL_MATERIAL_QTYZero));
 			isValid = false;
 		} else {
-			cbMaterialUOM.setComponentError(null);
+			tfMaterialQty.setComponentError(null);
 		}
 		return isValid;
 	}
@@ -770,7 +775,6 @@ public class ProductBomHdr extends BaseTransUI {
 		cbMaterialUOM.setComponentError(null);
 		cbMaterialUOM.setReadOnly(true);
 		tfMaterialQty.setValue("0");
-		cbMaterialUOM.setComponentError(null);
 		cbMaterialStatus.setValue(cbMaterialStatus.getItemIds().iterator().next());
 		listBOMDtls = new ArrayList<ProductBomDtlDM>();
 		tblBOMDetails.removeAllItems();

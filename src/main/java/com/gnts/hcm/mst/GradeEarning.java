@@ -133,7 +133,7 @@ public class GradeEarning extends BaseUI {
 			}
 		});
 		// Grand Name Combo Box
-		cbGradeDesc = new GERPComboBox("Grand Name");
+		cbGradeDesc = new GERPComboBox("Grade Name");
 		cbGradeDesc.setRequired(false);
 		cbGradeDesc.setItemCaptionPropertyId("gradeDESC");
 		loadGradeList();
@@ -255,7 +255,7 @@ public class GradeEarning extends BaseUI {
 			tblMstScrSrchRslt.setContainerDataSource(beanGradeEarningDM);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "grdEarnId", "gradeDESC", "earnDesc", "status",
 					"lastUpdatedDate", "lastUpdatedBy" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Grand Name", "Earn Name", "Status",
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Grade Name", "Earn Name", "Status",
 					"Last Updated Date", "Last Updated By" });
 			tblMstScrSrchRslt.setColumnAlignment("grdEarnId", Align.RIGHT);
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);

@@ -172,7 +172,6 @@ public class JobCandidate extends BaseUI {
 	
 	private void assembleUserInputLayout() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Assembling User Input layout");
-		tfEMailid.setRequired(true);
 		tblMstScrSrchRslt.setPageLength(12);
 		// Remove all components in Search Layout
 		hlSearchLayout.removeAllComponents();
@@ -324,7 +323,6 @@ public class JobCandidate extends BaseUI {
 		assembleUserInputLayout();
 		resetFields();
 		cbJobtitle.setRequired(true);
-		tfEMailid.setRequired(true);
 	}
 	
 	private void editCandidate() {
@@ -387,7 +385,6 @@ public class JobCandidate extends BaseUI {
 		assembleUserInputLayout();
 		resetFields();
 		cbJobtitle.setRequired(true);
-		tfEMailid.setRequired(true);
 		editCandidate();
 	}
 	
@@ -396,16 +393,16 @@ public class JobCandidate extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		boolean errorFlag = false;
 		cbJobtitle.setComponentError(null);
-		tfEMailid.setComponentError(null);
+		//tfEMailid.setComponentError(null);
 		if ((cbJobtitle.getValue() == null)) {
 			cbJobtitle.setComponentError(new UserError(GERPErrorCodes.NULL_JOB_CANDIDATE));
 			errorFlag = true;
 		}
-		String emailSeq = tfEMailid.getValue().toString();
+	/*	String emailSeq = tfEMailid.getValue().toString();
 		if (!emailSeq.contains("@") || !emailSeq.contains(".")) {
 			tfEMailid.setComponentError(new UserError(GERPErrorCodes.EMAIL_VALIDATION));
 			errorFlag = true;
-		}
+		}*/
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}
@@ -465,7 +462,6 @@ public class JobCandidate extends BaseUI {
 		assembleSearchLayout();
 		tblMstScrSrchRslt.setValue(null);
 		cbJobtitle.setRequired(false);
-		tfEMailid.setRequired(false);
 		resetFields();
 		loadSrchRslt();
 	}
@@ -484,7 +480,6 @@ public class JobCandidate extends BaseUI {
 		cbJobtitle.setValue(null);
 		tfLastname.setComponentError(null);
 		tfLastname.setValue("");
-		tfEMailid.setComponentError(null);
 		tfEMailid.setValue("");
 		dfDOA.setComponentError(null);
 		dfDOA.setValue(null);

@@ -203,7 +203,7 @@ public class Grade extends BaseUI {
 			tblMstScrSrchRslt.setContainerDataSource(beanGradeDM);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "gradeId", "gradeDESC", "gradeLvl", "minSal", "maxSal",
 					"status", "noOfLates", "noOfPermission" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Grand Desc.", "Grade Level", "Min Salary",
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Grade Desc.", "Grade Level", "Min Salary",
 					"Max Salary", "Status", "No of Lates", "No of Permission" });
 			tblMstScrSrchRslt.setColumnAlignment("gradeId", Align.RIGHT);
 			tblMstScrSrchRslt.setColumnAlignment("minSal", Align.RIGHT);

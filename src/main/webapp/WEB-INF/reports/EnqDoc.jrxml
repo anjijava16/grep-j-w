@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="enqDoc" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="c0e887a7-53ba-4318-859c-ca504c03e55c">
 	<property name="ireport.zoom" value="2.357947691000002"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="383"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="ENQID" class="java.lang.Long">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select doc.DOCUMENT_NAME from T_CRM_DOCUMENTS doc,T_SMS_ENQUIRY_HDR enq where enq.ENQUIRY_ID=doc.ENQUIRY_ID and doc.ENQUIRY_ID=$P{ENQID}]]>
+		<![CDATA[select LISTAGG(doc.DOCUMENT_NAME,',') within group (order by doc.DOCUMENT_NAME ) names from T_CRM_DOCUMENTS doc,T_SMS_ENQUIRY_HDR enq where enq.ENQUIRY_ID=doc.ENQUIRY_ID and doc.ENQUIRY_ID=$P{ENQID}]]>
 	</queryString>
-	<field name="DOCUMENT_NAME" class="java.lang.String"/>
+	<field name="NAMES" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<detail>
 		<band height="22" splitType="Stretch">
 			<textField>
-				<reportElement uuid="1b7694cd-33d7-4cc3-86c5-1c15aba78da6" x="0" y="0" width="371" height="19"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{DOCUMENT_NAME}]]></textFieldExpression>
+				<reportElement x="0" y="0" width="555" height="20" uuid="94fda482-3b12-4785-93ab-3ea6ec52e5a3"/>
+				<textFieldExpression><![CDATA[$F{NAMES}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

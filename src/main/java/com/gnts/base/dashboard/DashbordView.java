@@ -89,7 +89,7 @@ public class DashbordView implements ClickListener {
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("dashmarket");
 		btnEnquiryCount.setCaption(serviceEnquiry
-				.getSMSEnquiryListCount(null, null, null, null, "Pending", null, null, null).toString());
+				.getSMSEnquiryListCount(null, null, null, null, "Progress", null, null, null).toString());
 		btnQuotationCount.setCaption(servicesmsQuoteHdr.getSMSQuoteCount(null, null, null, null, null, null, null)
 				.toString());
 		btnPOCount.setCaption(servicePurchaseOrd.getSMSPOListCount(null, null, companyId, null, null, null, null, null)

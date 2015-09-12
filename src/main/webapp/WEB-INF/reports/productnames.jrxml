@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="productnames" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="c0e887a7-53ba-4318-859c-ca504c03e55c">
+	<property name="ireport.zoom" value="2.357947691000002"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="QTID" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select LISTAGG(pro.PRODUCT_NAME, '; ') WITHIN GROUP (ORDER BY pro.PRODUCT_NAME) names
+from T_SMS_QUOTE_HDR qth,T_SMS_QUOTE_DTL qtd,M_BASE_PRODUCT pro
+
+where qth.QUOTE_ID = qtd.QUOTE_ID
+  and  qtd.PRODUCT_ID =  pro.PRODUCT_ID
+  and  qtd.QUODTL_STATUS = 'Active'
+
+  and  qth.QUOTE_ID =$P{QTID}]]>
+	</queryString>
+	<field name="NAMES" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="20" uuid="79fe3085-ed18-43dc-8c4c-0749df0eb51b"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{NAMES}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -105,7 +105,7 @@ public class Branch extends BaseUI {
 		taBranchAddress.setHeight("118");
 		taBranchAddress.setWidth("200");
 		// Branch Name text field
-		tfPhoneNo = new GERPTextField("Phone No.");
+		tfPhoneNo = new GERPTextField("Mobile No.");
 		tfPhoneNo.setMaxLength(11);
 		// tfPhoneNo.addValidator(new PhoneNumberValidation("Enter valid no"));
 		// Text field for Branch Email-ID
@@ -364,8 +364,6 @@ public class Branch extends BaseUI {
 		cbCountryName.setRequired(true);
 		cbStateName.setRequired(true);
 		cbCityName.setRequired(true);
-		tfPhoneNo.setRequired(true);
-		tfEmailId.setRequired(true);
 		// reset the input controls to default value
 		resetFields();
 	}
@@ -383,8 +381,6 @@ public class Branch extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assembleSearchLayout();
 		tfBranchName.setRequired(false);
-		tfPhoneNo.setRequired(false);
-		tfEmailId.setRequired(false);
 		tblMstScrSrchRslt.setValue(null);
 		resetFields();
 		loadSrchRslt();
@@ -399,8 +395,6 @@ public class Branch extends BaseUI {
 		cbCountryName.setRequired(true);
 		cbStateName.setRequired(true);
 		cbCityName.setRequired(true);
-		tfPhoneNo.setRequired(true);
-		tfEmailId.setRequired(true);
 		hlUserIPContainer.removeAllComponents();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		// tfBranchName.setRequired(false);
@@ -417,7 +411,7 @@ public class Branch extends BaseUI {
 		cbStateName.setComponentError(null);
 		cbCityName.setComponentError(null);
 		tfPhoneNo.setComponentError(null);
-		tfEmailId.setComponentError(null);
+		// tfEmailId.setComponentError(null);
 		if ((tfBranchName.getValue() == null) || tfBranchName.getValue().trim().length() == 0) {
 			tfBranchName.setComponentError(new UserError(GERPErrorCodes.NULL_BRANCH_NAME));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -437,20 +431,17 @@ public class Branch extends BaseUI {
 			cbStateName.setComponentError(new UserError(GERPErrorCodes.NULL_COMPANY_STATE));
 			errorFlag = true;
 		}
-		if (tfPhoneNo.getValue().toString() == null) {
-			tfPhoneNo.setComponentError(new UserError(GERPErrorCodes.NULL_PHONE_NUMBER));
-			// errorFlag = true;
-		} else if (tfPhoneNo.getValue() != null) {
+		if (tfPhoneNo.getValue() != null) {
 			if (!tfPhoneNo.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) {
 				tfPhoneNo.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
 				errorFlag = true;
 			}
 		}
-		String emailSeq = tfEmailId.getValue().toString();
+		/*String emailSeq = tfEmailId.getValue().toString();
 		if (!emailSeq.contains("@") || !emailSeq.contains(".")) {
 			tfEmailId.setComponentError(new UserError(GERPErrorCodes.EMAIL_VALIDATION));
 			errorFlag = true;
-		}
+		}*/
 		if (cbCityName.getValue() == null) {
 			cbCityName.setComponentError(new UserError(GERPErrorCodes.NULL_CITY_NAME));
 			errorFlag = true;

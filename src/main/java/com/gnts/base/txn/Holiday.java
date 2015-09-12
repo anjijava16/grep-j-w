@@ -89,7 +89,7 @@ public class Holiday extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting holiday UI");
 		lblspace = new Label();
 		// Holiday Hours Combo box
-		cbHolidayHrs = new GERPComboBox("Holiday Hours", BASEConstants.T_BASE_HOLIDAY, BASEConstants.HOLDY_SESSION);
+		cbHolidayHrs = new GERPComboBox("Holiday", BASEConstants.T_BASE_HOLIDAY, BASEConstants.HOLDY_SESSION);
 		// Initializing and properties for holidayDate PopupDateField
 		dtHolidayDate = new GERPPopupDateField("Holiday Date");
 		dtHolidayDate.setVisible(false);

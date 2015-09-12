@@ -208,8 +208,8 @@ public class Indent extends BaseTransUI {
 		cbUom.setReadOnly(true);
 		// Indent Type GERPComboBox
 		cbIndType = new GERPComboBox("Indent Type");
-		cbIndType.addItem("Local Purchase");
-		cbIndType.addItem("Normal Purchase");
+		cbIndType.addItem("Internal Purchase");
+		cbIndType.addItem("External Purchase");
 		cbIndType.setWidth("130px");
 		cbDepartment = new GERPComboBox("Department");
 		cbDepartment.setItemCaptionPropertyId("deptname");
@@ -426,7 +426,7 @@ public class Indent extends BaseTransUI {
 			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
 					CompanyLookupDM.class);
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 					"MM_UOM"));
 			cbUom.setContainerDataSource(beanCompanyLookUp);
 		}

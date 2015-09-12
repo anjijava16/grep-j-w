@@ -362,7 +362,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			List<SmsSDAHdrDM> list = new ArrayList<SmsSDAHdrDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + null + "," + tfSDANumber.getValue() + ", " + (String) cbSDAStatus.getValue());
-			list = serviceSDAHeader.getsmsSDRdetails(null, tfSDANumber.getValue(), null,
+			list = serviceSDAHeader.getsmsSDRdetails(companyid, branchId, null, tfSDANumber.getValue(), null,
 					(String) cbSDAStatus.getValue());
 			recordCnt = list.size();
 			beanhdr = new BeanItemContainer<SmsSDAHdrDM>(SmsSDAHdrDM.class);
@@ -375,6 +375,9 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "SDA Number", "Enquiry No.", "Client Name",
 					"Commer. Person", "Tech. Person", "Date", "Status", "Last Updated date", "Last Updated by" });
 			tblMstScrSrchRslt.setColumnAlignment("sdaHdrId", Align.RIGHT);
+			tblMstScrSrchRslt.setColumnWidth("cpmPerson", 90);
+			tblMstScrSrchRslt.setColumnWidth("tecPerson", 90);
+			tblMstScrSrchRslt.setColumnWidth("clientName", 120);
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
@@ -448,7 +451,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			tfSDANumber.setValue(smsSDAHdrDM.getSdaNo());
 			tfSDANumber.setReadOnly(true);
 			cbEnquiry.setValue(smsSDAHdrDM.getEnquiryId());
-			dfSDADate.setValue(smsSDAHdrDM.getSdaDate());
+			dfSDADate.setValue(smsSDAHdrDM.getSdaDate1());
 			cbSDAStatus.setValue(smsSDAHdrDM.getStatus());
 			if (smsSDAHdrDM.getCpmPerson() != null) {
 				cbwindcommPerson.setValue(smsSDAHdrDM.getCpmPerson());
@@ -520,6 +523,8 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 			smsSDAHdrDM.setSdaDate(dfSDADate.getValue());
 			smsSDAHdrDM.setStatus((String) cbSDAStatus.getValue());
 			smsSDAHdrDM.setLastUpdatedBy(username);
+			smsSDAHdrDM.setCompanyId(companyid);
+			smsSDAHdrDM.setBranchId(branchId);
 			smsSDAHdrDM.setLastUpdatedDate(DateUtils.getcurrentdate());
 			if (taClientAddres.getValue() != null) {
 				smsSDAHdrDM.setClientAddress(taClientAddres.getValue());

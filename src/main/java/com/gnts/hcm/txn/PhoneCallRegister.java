@@ -71,7 +71,7 @@ public class PhoneCallRegister extends BaseTransUI {
 	// local variables declaration
 	private Long phoneRegid;
 	private String username;
-	private Long companyid;
+	private Long companyid, branchId;
 	private int recordCnt = 0;
 	
 	// Constructor received the parameters from Login UI class
@@ -79,6 +79,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside PhoneCallRegister() constructor");
 		buildview();
@@ -179,7 +180,7 @@ public class PhoneCallRegister extends BaseTransUI {
 			List<PhoneRegDM> list = new ArrayList<PhoneRegDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + null + "," + tfPhoneNumber.getValue() + ", " + (String) cbStatus.getValue());
-			list = servicePhoneReg.getPhoneRegList(null, (Long) cbEmployee.getValue(), null, null,
+			list = servicePhoneReg.getPhoneRegList(companyid, branchId, null, (Long) cbEmployee.getValue(), null, null,
 					(String) cbStatus.getValue(), null, null);
 			recordCnt = list.size();
 			beanPhoneReg = new BeanItemContainer<PhoneRegDM>(PhoneRegDM.class);
@@ -294,6 +295,8 @@ public class PhoneCallRegister extends BaseTransUI {
 		phoneRegDM.setPhoneTime(tfTime.getValue());
 		phoneRegDM.setLastUpdatedBy(username);
 		phoneRegDM.setCallType(cbCallType.getValue().toString());
+		phoneRegDM.setCompanyId(companyid);
+		phoneRegDM.setBranchId(branchId);
 		phoneRegDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 		servicePhoneReg.saveOrUpdatePhoneReg(phoneRegDM);
 		phoneRegid = phoneRegDM.getPhoneRegId();
@@ -394,6 +397,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		dfCallDate.setValue(null);
 		taPurpose.setValue("");
 		tfTime.setValue("");
+		cbCallType.setValue(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	

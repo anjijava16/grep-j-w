@@ -81,7 +81,7 @@ public class Outpass extends BaseTransUI {
 	// local variables declaration
 	private Long outpassid;
 	private String username;
-	private Long companyid;
+	private Long companyid, branchId;
 	private int recordCnt = 0;
 	
 	// Constructor received the parameters from Login UI class
@@ -89,6 +89,7 @@ public class Outpass extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside Outpass() constructor");
 		buildview();
 	}
@@ -238,7 +239,7 @@ public class Outpass extends BaseTransUI {
 			List<OutpassDM> list = new ArrayList<OutpassDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + null + "," + tfPlace.getValue() + ", " + (String) cbStatus.getValue());
-			list = serviceOutpass.getOutpassList(null, (Long) cbEmployee.getValue(), null, null,
+			list = serviceOutpass.getOutpassList(companyid, branchId, null, (Long) cbEmployee.getValue(), null, null,
 					(String) cbStatus.getValue());
 			recordCnt = list.size();
 			beanOutpass = new BeanItemContainer<OutpassDM>(OutpassDM.class);
@@ -276,7 +277,7 @@ public class Outpass extends BaseTransUI {
 	 * COndition for vechine name
 	 */
 	private void getVehicleName() {
-		if (cbVehicle != null) {
+		if (cbVehicle.getValue() != null) {
 			if (cbVehicle.getValue().toString().equals("Company")) {
 				cbVehicleName.setRequired(true);
 				tfVehicleNo.setRequired(false);
@@ -382,7 +383,6 @@ public class Outpass extends BaseTransUI {
 				tfTimeIn.setTime(outpassDM.getInTime());
 				taPurpose.setValue(outpassDM.getPurpose());
 				cbVehicle.setValue(outpassDM.getVehicle());
-				// cbVehicleName
 				tfVehicleNo.setValue(outpassDM.getVehicleNo());
 				tfKMOut.setValue(outpassDM.getKmOut().toString());
 				tfKMIn.setValue(outpassDM.getKmIn().toString());
@@ -397,32 +397,39 @@ public class Outpass extends BaseTransUI {
 	
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... "); //
-		OutpassDM outpassDM = new OutpassDM();
-		if (tblMstScrSrchRslt.getValue() != null) {
-			outpassDM = beanOutpass.getItem(tblMstScrSrchRslt.getValue()).getBean();
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... "); //
+			OutpassDM outpassDM = new OutpassDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				outpassDM = beanOutpass.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
+			outpassDM.setPassDate(dfPassDate.getValue());
+			outpassDM.setEmployeeId((Long) cbEmployee.getValue());
+			outpassDM.setDeptId((Long) cbDepartment.getValue());
+			outpassDM.setStatus((String) cbStatus.getValue());
+			outpassDM.setPlace(tfPlace.getValue());
+			outpassDM.setOutTime(tfTimeOut.getHorsMunites());
+			outpassDM.setInTime(tfTimeIn.getHorsMunites());
+			outpassDM.setPurpose(taPurpose.getValue());
+			outpassDM.setVehicle((String) cbVehicle.getValue());
+			// cbVehicleName
+			outpassDM.setVehicleNo(tfVehicleNo.getValue());
+			outpassDM.setKmOut(new BigDecimal(tfKMOut.getValue()));
+			outpassDM.setKmIn(new BigDecimal(tfKMIn.getValue()));
+			outpassDM.setLastUpdatedBy(username);
+			outpassDM.setCompanyId(companyid);
+			outpassDM.setBranchId(branchId);
+			outpassDM.setLastUpdatedDt(DateUtils.getcurrentdate());
+			outpassDM.setTotalKM(new BigDecimal(tfTotalKM.getValue()));
+			outpassDM.setTotalTime(tfTotalTime.getValue());
+			serviceOutpass.saveOrUpdateOutpass(outpassDM);
+			outpassid = outpassDM.getOutpassId();
+			resetFields();
+			loadSrchRslt();
 		}
-		outpassDM.setPassDate(dfPassDate.getValue());
-		outpassDM.setEmployeeId((Long) cbEmployee.getValue());
-		outpassDM.setDeptId((Long) cbDepartment.getValue());
-		outpassDM.setStatus((String) cbStatus.getValue());
-		outpassDM.setPlace(tfPlace.getValue());
-		outpassDM.setOutTime(tfTimeOut.getHorsMunites());
-		outpassDM.setInTime(tfTimeIn.getHorsMunites());
-		outpassDM.setPurpose(taPurpose.getValue());
-		outpassDM.setVehicle((String) cbVehicle.getValue());
-		// cbVehicleName
-		outpassDM.setVehicleNo(tfVehicleNo.getValue());
-		outpassDM.setKmOut(new BigDecimal(tfKMOut.getValue()));
-		outpassDM.setKmIn(new BigDecimal(tfKMIn.getValue()));
-		outpassDM.setLastUpdatedBy(username);
-		outpassDM.setLastUpdatedDt(DateUtils.getcurrentdate());
-		outpassDM.setTotalKM(new BigDecimal(tfTotalKM.getValue()));
-		outpassDM.setTotalTime(tfTotalTime.getValue());
-		serviceOutpass.saveOrUpdateOutpass(outpassDM);
-		outpassid = outpassDM.getOutpassId();
-		resetFields();
-		loadSrchRslt();
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

@@ -68,7 +68,7 @@ public class Courier extends BaseTransUI {
 	// local variables declaration
 	private Long courierId;
 	private String username;
-	private Long companyid;
+	private Long companyid,branchId;
 	private int recordCnt = 0;
 	
 	// Constructor received the parameters from Login UI class
@@ -76,6 +76,7 @@ public class Courier extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside Courier() constructor");
 		buildview();
 	}
@@ -174,7 +175,7 @@ public class Courier extends BaseTransUI {
 			List<CourierDM> list = new ArrayList<CourierDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + null + "," + dfRefDate.getValue() + ", " + (String) cbStatus.getValue());
-			list = serviceCourier.getCourierList(null, null, (String) cbCourierType.getValue(), null, null,
+			list = serviceCourier.getCourierList(companyid,branchId,null, null, (String) cbCourierType.getValue(), null, null,
 					(String) cbStatus.getValue());
 			recordCnt = list.size();
 			beanCourier = new BeanItemContainer<CourierDM>(CourierDM.class);
@@ -256,6 +257,8 @@ public class Courier extends BaseTransUI {
 		courierDM.setAddress(taAddress.getValue());
 		courierDM.setDepartmentId((Long) cbDepartment.getValue());
 		courierDM.setLastUpdatedBy(username);
+		courierDM.setCompanyId(companyid);
+		courierDM.setBranchId(branchId);
 		courierDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 		serviceCourier.saveOrUpdateDetails(courierDM);
 		courierId = courierDM.getCourierId();

@@ -428,7 +428,8 @@ public class CustomerVisit extends BaseTransUI {
 			tblMstScrSrchRslt.removeAllItems();
 			tblMstScrSrchRslt.setPageLength(14);
 			List<CustomerVisitHdrDM> list = new ArrayList<CustomerVisitHdrDM>();
-			list = serviceCustomerVisitHdr.getCustomerVisitHdrList(null, null, null, null, null, "F");
+			list = serviceCustomerVisitHdr.getCustomerVisitHdrList(companyid, branchId, null, null, null, null, null,
+					"F");
 			recordCnt = list.size();
 			beanCustomerVisitHdrDM = new BeanItemContainer<CustomerVisitHdrDM>(CustomerVisitHdrDM.class);
 			beanCustomerVisitHdrDM.addAll(list);
@@ -614,7 +615,6 @@ public class CustomerVisit extends BaseTransUI {
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_MFG_WORKORDER_HDR);
 	}
 	
-	
 	@Override
 	protected void printDetails() {
 		// TODO Auto-generated method stub
@@ -725,6 +725,8 @@ public class CustomerVisit extends BaseTransUI {
 			if (cbPersonNoStatus.getValue() != null) {
 				customerVisitHdrDM.setCustHdrStatus((String) cbHdrStatus.getValue());
 			}
+			customerVisitHdrDM.setCompanyId(companyid);
+			customerVisitHdrDM.setBranchId(branchId);
 			customerVisitHdrDM.setLastUpdatedby(username);
 			customerVisitHdrDM.setLastUpdateddt(DateUtils.getcurrentdate());
 			serviceCustomerVisitHdr.saveorUpdateCustomerVisitHdrDetails(customerVisitHdrDM);

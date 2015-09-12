@@ -72,7 +72,7 @@ public class EmployeeWarning extends BaseTransUI {
 	// local variables declaration
 	private Long visitorid;
 	private String username;
-	private Long companyid;
+	private Long companyid, branchId;
 	private int recordCnt = 0;
 	
 	// Constructor received the parameters from Login UI class
@@ -80,6 +80,7 @@ public class EmployeeWarning extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside EmployeeWarning() constructor");
 		buildview();
@@ -178,7 +179,8 @@ public class EmployeeWarning extends BaseTransUI {
 			List<EmployeeWarningDM> list = new ArrayList<EmployeeWarningDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + null + "," + tfFrom.getValue() + ", " + (String) cbStatus.getValue());
-			list = serviceEmplyeeWarning.getEmployeeWarningList(null, null, null, (String) cbStatus.getValue());
+			list = serviceEmplyeeWarning.getEmployeeWarningList(companyid, branchId, null, null, null,
+					(String) cbStatus.getValue());
 			recordCnt = list.size();
 			beanEmpWarning = new BeanItemContainer<EmployeeWarningDM>(EmployeeWarningDM.class);
 			beanEmpWarning.addAll(list);
@@ -241,7 +243,7 @@ public class EmployeeWarning extends BaseTransUI {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				EmployeeWarningDM employeewarningDM = beanEmpWarning.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				visitorid = employeewarningDM.getEmpwarningId();
-				dfRefDate.setValue(employeewarningDM.getRefDate());
+				dfRefDate.setValue(employeewarningDM.getRefDate1());
 				cbEmployee.setValue(employeewarningDM.getEmployeeID());
 				cbStatus.setValue(employeewarningDM.getStatus());
 				tfFrom.setValue(employeewarningDM.getFromName());
@@ -278,6 +280,8 @@ public class EmployeeWarning extends BaseTransUI {
 		employeewarningDM.setWarLevel(cbWarLevel.getValue().toString());
 		employeewarningDM.setDateTo(dfDateTo.getValue());
 		employeewarningDM.setTimeOut(tfTimeOut.getHorsMunites().toString());
+		employeewarningDM.setCompanyId(companyid);
+		employeewarningDM.setBranchId(branchId);
 		employeewarningDM.setLastUpdatedDate(DateUtils.getcurrentdate());
 		serviceEmplyeeWarning.saveOrUpdateEmployeeWarning(employeewarningDM);
 		visitorid = employeewarningDM.getEmpwarningId();
@@ -375,7 +379,10 @@ public class EmployeeWarning extends BaseTransUI {
 		dfRefDate.setValue(null);
 		taRemarks.setValue("");
 		tfDeductMonth.setValue("");
+		cbWarLevel.setValue(null);
+		dfDateTo.setValue(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+		tfTimeOut.setValue(null);
 	}
 	
 	@Override

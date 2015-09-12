@@ -74,7 +74,7 @@ public class VisitorPass extends BaseTransUI {
 	// local variables declaration
 	private Long visitorid;
 	private String username;
-	private Long companyid;
+	private Long companyid, branchId;
 	private int recordCnt = 0;
 	
 	// Constructor received the parameters from Login UI class
@@ -82,6 +82,7 @@ public class VisitorPass extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside VisitorPass() constructor");
 		buildview();
@@ -183,13 +184,17 @@ public class VisitorPass extends BaseTransUI {
 	 * Condition for product description
 	 */
 	private void getmatedescription() {
-		if (cbMaterialFlw != null) {
-			if (cbMaterialFlw.getValue().toString().equals("Inward")
-					|| cbMaterialFlw.getValue().toString().equals("Outward")) {
-				taMaterialDesc.setRequired(true);
-			} else {
-				taMaterialDesc.setRequired(false);
+		try {
+			if (cbMaterialFlw.getValue() != null) {
+				if (cbMaterialFlw.getValue().toString().equals("Inward")
+						|| cbMaterialFlw.getValue().toString().equals("Outward")) {
+					taMaterialDesc.setRequired(true);
+				} else {
+					taMaterialDesc.setRequired(false);
+				}
 			}
+		}
+		catch (Exception e) {
 		}
 	}
 	
@@ -261,7 +266,7 @@ public class VisitorPass extends BaseTransUI {
 			List<VisitPassDM> list = new ArrayList<VisitPassDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + null + "," + tfVisitorsName.getValue() + ", " + (String) cbStatus.getValue());
-			list = serviceVisitorPass.getVisitPasList(null, tfVisitorsName.getValue(), null, null,
+			list = serviceVisitorPass.getVisitPasList(companyid, branchId, null, tfVisitorsName.getValue(), null, null,
 					(String) cbStatus.getValue());
 			recordCnt = list.size();
 			beanVisitpass = new BeanItemContainer<VisitPassDM>(VisitPassDM.class);
@@ -347,6 +352,8 @@ public class VisitorPass extends BaseTransUI {
 		visitPassDM.setTotalTime(tfTotalTime.getValue());
 		visitPassDM.setMateFLow(cbMaterialFlw.getValue().toString());
 		visitPassDM.setMateDesc(taMaterialDesc.getValue());
+		visitPassDM.setCompanyId(companyid);
+		visitPassDM.setBranchId(branchId);
 		visitPassDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 		serviceVisitorPass.saveOrUpdateVisitPass(visitPassDM);
 		visitorid = visitPassDM.getVisitorId();
@@ -448,6 +455,7 @@ public class VisitorPass extends BaseTransUI {
 		tfCompanyName.setValue("");
 		tfTotalTime.setValue("0");
 		taMaterialDesc.setValue("");
+		cbMaterialFlw.setValue(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	

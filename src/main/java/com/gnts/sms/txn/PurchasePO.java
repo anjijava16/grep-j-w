@@ -85,7 +85,7 @@ import com.vaadin.ui.VerticalLayout;
 
 public class PurchasePO extends BaseUI {
 	private SmsCommentsService serviceComment = (SmsCommentsService) SpringContextHelper.getBean("smsComments");
-	private PurchasePOHdrService servicepurchaePOHdr = (PurchasePOHdrService) SpringContextHelper
+	private PurchasePOHdrService servicePurchasePOHdr = (PurchasePOHdrService) SpringContextHelper
 			.getBean("PurchasePOhdr");
 	private PurchaseQuoteDtlService servicePurchaseQuoteDtl = (PurchaseQuoteDtlService) SpringContextHelper
 			.getBean("PurchaseQuotDtl");
@@ -94,7 +94,7 @@ public class PurchasePO extends BaseUI {
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private PurchaseQuotHdrService servicepurchaeQuoteHdr = (PurchaseQuotHdrService) SpringContextHelper
+	private PurchaseQuotHdrService servicePurchaseQuoteHdr = (PurchaseQuotHdrService) SpringContextHelper
 			.getBean("PurchaseQuot");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	// form layout for input controls for PO Header
@@ -102,9 +102,9 @@ public class PurchasePO extends BaseUI {
 	// form layout for input controls for PO Details
 	private FormLayout flDtlColumn1, flDtlColumn2, flDtlColumn3, flDtlColumn4, flDtlColumn5;
 	// // User Input Components for PO Details
-	private ComboBox cbBranch, cbStatus, cbpoType, cbQuoteNo;
-	private TextField tfpaymetTerms, tfFreightTerms, tfWarrentyTerms, tfDelTerms;
-	private TextField tfversionNo, tfBasictotal, tfpackingPer, tfPaclingValue, tfPONo, tfvendor;
+	private ComboBox cbBranch, cbStatus, cbPOType, cbQuoteNo;
+	private TextField tfPaymetTerms, tfFreightTerms, tfWarrentyTerms, tfDelTerms;
+	private TextField tfversionNo, tfBasictotal, tfpackingPer, tfPaclingValue, tfPONo, tfVendor;
 	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
 	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
 	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal;
@@ -170,8 +170,8 @@ public class PurchasePO extends BaseUI {
 		cbQuoteNo.setWidth("150");
 		cbQuoteNo.setRequired(true);
 		loadQuoteNoList();
-		tfvendor = new TextField("Vendor Name");
-		tfvendor.setWidth("150");
+		tfVendor = new TextField("Vendor Name");
+		tfVendor.setWidth("150");
 		cbQuoteNo.setImmediate(true);
 		cbQuoteNo.addValueChangeListener(new Property.ValueChangeListener() {
 			/**
@@ -184,9 +184,9 @@ public class PurchasePO extends BaseUI {
 				Object itemId = event.getProperty().getValue();
 				BeanItem<?> item = (BeanItem<?>) cbQuoteNo.getItem(itemId);
 				if (item != null) {
-					tfvendor.setReadOnly(false);
-					tfvendor.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getVendorName());
-					tfvendor.setReadOnly(true);
+					tfVendor.setReadOnly(false);
+					tfVendor.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getVendorName());
+					tfVendor.setReadOnly(true);
 				}
 			}
 		});
@@ -276,7 +276,7 @@ public class PurchasePO extends BaseUI {
 		tfGrandtotal.setWidth("150");
 		tfOtherPer = new TextField();
 		tfOtherPer.setWidth("30");
-		tfpaymetTerms = new TextField("Payment Terms");
+		tfPaymetTerms = new TextField("Payment Terms");
 		tfFreightTerms = new TextField("Freight Terms");
 		tfWarrentyTerms = new TextField("Warrenty Terms");
 		tfDelTerms = new TextField("Delivery Terms");
@@ -288,12 +288,12 @@ public class PurchasePO extends BaseUI {
 		cbBranch.setWidth("150");
 		cbBranch.setItemCaptionPropertyId("branchName");
 		loadBranchList();
-		cbpoType = new ComboBox("Order Type");
-		cbpoType.setItemCaptionPropertyId("lookupname");
-		cbpoType.setWidth("150");
+		cbPOType = new ComboBox("Order Type");
+		cbPOType.setItemCaptionPropertyId("lookupname");
+		cbPOType.setWidth("150");
 		loadPOTypet();
 		try {
-			ApprovalSchemaDM obj = servicepurchaePOHdr.getReviewerId(companyid, appScreenId, branchID, roleId).get(0);
+			ApprovalSchemaDM obj = servicePurchasePOHdr.getReviewerId(companyid, appScreenId, branchID, roleId).get(0);
 			if (obj.getApprLevel().equals("Reviewer")) {
 				cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_RV_STATUS);
 			} else {
@@ -401,7 +401,7 @@ public class PurchasePO extends BaseUI {
 		// Adding components into form layouts for TestType UI search layout
 		flColumn1.addComponent(cbBranch);
 		flColumn2.addComponent(tfPONo);
-		flColumn3.addComponent(cbpoType);
+		flColumn3.addComponent(cbPOType);
 		flColumn4.addComponent(cbStatus);
 		// Adding form layouts into search layout for TestType UI search mode
 		hlSearchLayout.addComponent(flColumn1);
@@ -428,8 +428,8 @@ public class PurchasePO extends BaseUI {
 		flColumn4 = new FormLayout();
 		flColumn1.addComponent(cbBranch);
 		flColumn1.addComponent(cbQuoteNo);
-		flColumn1.addComponent(tfvendor);
-		flColumn1.addComponent(cbpoType);
+		flColumn1.addComponent(tfVendor);
+		flColumn1.addComponent(cbPOType);
 		flColumn1.addComponent(ckIsCasePO);
 		flColumn1.addComponent(tfPONo);
 		flColumn1.addComponent(dfPODt);
@@ -490,7 +490,7 @@ public class PurchasePO extends BaseUI {
 		flColumn3.addComponent(other);
 		flColumn3.setComponentAlignment(other, Alignment.TOP_LEFT);
 		flColumn3.addComponent(tfGrandtotal);
-		flColumn3.addComponent(tfpaymetTerms);
+		flColumn3.addComponent(tfPaymetTerms);
 		flColumn3.addComponent(tfFreightTerms);
 		flColumn3.addComponent(tfWarrentyTerms);
 		flColumn4.addComponent(tfDelTerms);
@@ -608,7 +608,7 @@ public class PurchasePO extends BaseUI {
 		tfGrandtotal.setReadOnly(false);
 		tfGrandtotal.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getGrandTotal().toString());
 		tfGrandtotal.setReadOnly(true);
-		tfpaymetTerms.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getPaymentTerms().toString());
+		tfPaymetTerms.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getPaymentTerms().toString());
 		tfFreightTerms.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getFreightTerms().toString());
 		tfWarrentyTerms.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getWarrentyTerms().toString());
 		tfDelTerms.setValue(((PurchaseQuotHdrDM) cbQuoteNo.getValue()).getDeliveryTerms().toString());
@@ -638,8 +638,8 @@ public class PurchasePO extends BaseUI {
 			List<PurchasePOHdrDM> list = new ArrayList<PurchasePOHdrDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
-			list = servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, (Long) cbBranch.getValue(),
-					(String) cbpoType.getValue(), (String) cbStatus.getValue(), tfPONo.getValue());
+			list = servicePurchasePOHdr.getPurchaseOrdHdrList(companyid, (Long) cbBranch.getValue(),
+					(String) cbPOType.getValue(), (String) cbStatus.getValue(), tfPONo.getValue());
 			recordCnt = list.size();
 			beanPurchasePOHdr = new BeanItemContainer<PurchasePOHdrDM>(PurchasePOHdrDM.class);
 			beanPurchasePOHdr.addAll(list);
@@ -738,7 +738,7 @@ public class PurchasePO extends BaseUI {
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
 			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
 					"SM_POTYPE"));
-			cbpoType.setContainerDataSource(beanCompanyLookUp);
+			cbPOType.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -749,7 +749,7 @@ public class PurchasePO extends BaseUI {
 		try {
 			BeanItemContainer<PurchaseQuotHdrDM> beanQuote = new BeanItemContainer<PurchaseQuotHdrDM>(
 					PurchaseQuotHdrDM.class);
-			beanQuote.addAll(servicepurchaeQuoteHdr.getPurchaseQuotHdrList(null, companyid, null, null, "Progress",
+			beanQuote.addAll(servicePurchaseQuoteHdr.getPurchaseQuotHdrList(null, companyid, null, null, "Progress",
 					null, null, null, "P"));
 			cbQuoteNo.setContainerDataSource(beanQuote);
 		}
@@ -817,7 +817,7 @@ public class PurchasePO extends BaseUI {
 			tfGrandtotal.setValue(purchasePOHdrDM.getGrandTotal().toString());
 			tfGrandtotal.setReadOnly(true);
 			if (purchasePOHdrDM.getPaymentTerms() != null) {
-				tfpaymetTerms.setValue(purchasePOHdrDM.getPaymentTerms().toString());
+				tfPaymetTerms.setValue(purchasePOHdrDM.getPaymentTerms().toString());
 			}
 			if (purchasePOHdrDM.getFrnghtTerms() != null) {
 				tfFreightTerms.setValue(purchasePOHdrDM.getFrnghtTerms());
@@ -829,7 +829,7 @@ public class PurchasePO extends BaseUI {
 				tfDelTerms.setValue(purchasePOHdrDM.getDlvryTerms());
 			}
 			if (purchasePOHdrDM.getpoType() != null) {
-				cbpoType.setValue(purchasePOHdrDM.getpoType());
+				cbPOType.setValue(purchasePOHdrDM.getpoType());
 			}
 			if (purchasePOHdrDM.getShippingAddr() != null) {
 				taShpnAddr.setValue(purchasePOHdrDM.getShippingAddr());
@@ -838,9 +838,9 @@ public class PurchasePO extends BaseUI {
 				taInvoiceOrd.setValue(purchasePOHdrDM.getInvoiceAddress());
 			}
 			if (purchasePOHdrDM.getVendorId() != null) {
-				tfvendor.setReadOnly(false);
-				tfvendor.setValue(purchasePOHdrDM.getVendorName());
-				tfvendor.setReadOnly(true);
+				tfVendor.setReadOnly(false);
+				tfVendor.setValue(purchasePOHdrDM.getVendorName());
+				tfVendor.setReadOnly(true);
 			}
 			Long quoteid = purchasePOHdrDM.getQuoteId();
 			Collection<?> quoteids = cbQuoteNo.getItemIds();
@@ -935,7 +935,7 @@ public class PurchasePO extends BaseUI {
 	protected void resetSearchDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbStatus.setValue(null);
-		cbpoType.setValue(null);
+		cbPOType.setValue(null);
 		tfPONo.setValue("");
 		cbBranch.setValue(null);
 		lblNotification.setIcon(null);
@@ -955,7 +955,7 @@ public class PurchasePO extends BaseUI {
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		hlUserInputLayout.setSpacing(true);
 		cbBranch.setRequired(true);
-		cbpoType.setRequired(true);
+		cbPOType.setRequired(true);
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
 		resetFields();
@@ -1020,15 +1020,15 @@ public class PurchasePO extends BaseUI {
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		cbBranch.setComponentError(null);
-		cbpoType.setComponentError(null);
+		cbPOType.setComponentError(null);
 		cbQuoteNo.setComponentError(null);
 		Boolean errorFlag = false;
 		if ((cbBranch.getValue() == null)) {
 			cbBranch.setComponentError(new UserError(GERPErrorCodes.BRANCH_NAME));
 			errorFlag = true;
 		}
-		if (cbpoType.getValue() == null) {
-			cbpoType.setComponentError(new UserError(GERPErrorCodes.ORDER_TYPE));
+		if (cbPOType.getValue() == null) {
+			cbPOType.setComponentError(new UserError(GERPErrorCodes.ORDER_TYPE));
 			errorFlag = true;
 		}
 		if ((cbQuoteNo.getValue() == null)) {
@@ -1064,8 +1064,8 @@ public class PurchasePO extends BaseUI {
 			purchaseHdrobj.setCompanyId(companyid);
 			purchaseHdrobj.setPurchaseDate(dfPODt.getValue());
 			purchaseHdrobj.setPoRemark(taRemark.getValue());
-			purchaseHdrobj.setpoType(cbpoType.getValue().toString());
-			purchaseHdrobj.setVendorName(tfvendor.getValue());
+			purchaseHdrobj.setpoType(cbPOType.getValue().toString());
+			purchaseHdrobj.setVendorName(tfVendor.getValue());
 			purchaseHdrobj.setVersionNo((Long.valueOf(tfversionNo.getValue())));
 			purchaseHdrobj.setBasicTotal(new BigDecimal(tfBasictotal.getValue()));
 			purchaseHdrobj.setPackingPrcnt((new BigDecimal(tfpackingPer.getValue())));
@@ -1087,8 +1087,8 @@ public class PurchasePO extends BaseUI {
 			purchaseHdrobj.setOthersPrcnt(new BigDecimal(tfOtherPer.getValue()));
 			purchaseHdrobj.setOthersValue(new BigDecimal(tfOtherValue.getValue()));
 			purchaseHdrobj.setGrandTotal(new BigDecimal(tfGrandtotal.getValue()));
-			if (tfpaymetTerms.getValue() != null) {
-				purchaseHdrobj.setPaymentTerms((tfpaymetTerms.getValue().toString()));
+			if (tfPaymetTerms.getValue() != null) {
+				purchaseHdrobj.setPaymentTerms((tfPaymetTerms.getValue().toString()));
 			}
 			if (tfFreightTerms.getValue() != null) {
 				purchaseHdrobj.setFrnghtTerms(tfFreightTerms.getValue().toString());
@@ -1138,7 +1138,7 @@ public class PurchasePO extends BaseUI {
 			fio.read(fileContents);
 			fio.close();
 			purchaseHdrobj.setPoDoc(fileContents);
-			servicepurchaePOHdr.saveorUpdatePurchaseOrdHdrDetails(purchaseHdrobj);
+			servicePurchasePOHdr.saveorUpdatePurchaseOrdHdrDetails(purchaseHdrobj);
 			@SuppressWarnings("unchecked")
 			Collection<PurchasePODtlDM> itemIds = (Collection<PurchasePODtlDM>) tblPurDetails.getVisibleItemIds();
 			for (PurchasePODtlDM save : (Collection<PurchasePODtlDM>) itemIds) {
@@ -1223,7 +1223,7 @@ public class PurchasePO extends BaseUI {
 		tblMstScrSrchRslt.setVisible(true);
 		cbProduct.setRequired(false);
 		cbBranch.setRequired(false);
-		cbpoType.setRequired(false);
+		cbPOType.setRequired(false);
 		tfPONo.setRequired(false);
 		resetFields();
 		poDtlresetFields();
@@ -1256,7 +1256,7 @@ public class PurchasePO extends BaseUI {
 		tfversionNo.setReadOnly(false);
 		tfversionNo.setValue("0");
 		cbQuoteNo.setValue(null);
-		tfpaymetTerms.setValue("");
+		tfPaymetTerms.setValue("");
 		tfPaclingValue.setReadOnly(false);
 		tfPaclingValue.setValue("0");
 		tfOtherValue.setReadOnly(false);
@@ -1278,14 +1278,14 @@ public class PurchasePO extends BaseUI {
 		listPODetails = new ArrayList<PurchasePODtlDM>();
 		tblPurDetails.removeAllItems();
 		new UploadDocumentUI(hlPODoc);
-		cbpoType.setValue(null);
-		tfvendor.setReadOnly(false);
-		tfvendor.setValue("");
-		tfvendor.setReadOnly(true);
+		cbPOType.setValue(null);
+		tfVendor.setReadOnly(false);
+		tfVendor.setValue("");
+		tfVendor.setReadOnly(true);
 		taInvoiceOrd.setValue("");
 		taShpnAddr.setValue("");
 		ckIsCasePO.setValue(false);
-		cbpoType.setComponentError(null);
+		cbPOType.setComponentError(null);
 		cbQuoteNo.setComponentError(null);
 		cbProduct.setContainerDataSource(null);
 	}

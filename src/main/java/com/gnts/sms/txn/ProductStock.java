@@ -35,7 +35,7 @@ public class ProductStock extends BaseUI {
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	// User Input Fields for Product Stock
 	private ComboBox cbBranch, cbProduct, cbStocktype;
-	private BeanItemContainer<ProductStockDM> beanproductstock = null;
+	private BeanItemContainer<ProductStockDM> beanProductStock = null;
 	private FormLayout fl1, fl2, fl3;
 	private GERPAddEditHLayout hlSearLayout;
 	// Local variables declaration
@@ -137,9 +137,9 @@ public class ProductStock extends BaseUI {
 			listProductstock = serviceProdStock.getProductStockList((Long) cbProduct.getValue(),
 					(String) cbStocktype.getValue(), productStockId, (Long) cbBranch.getValue(), "F");
 			recordcnt = listProductstock.size();
-			beanproductstock = new BeanItemContainer<ProductStockDM>(ProductStockDM.class);
-			beanproductstock.addAll(listProductstock);
-			tblMstScrSrchRslt.setContainerDataSource(beanproductstock);
+			beanProductStock = new BeanItemContainer<ProductStockDM>(ProductStockDM.class);
+			beanProductStock.addAll(listProductstock);
+			tblMstScrSrchRslt.setContainerDataSource(beanProductStock);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "productStockId", "branchName", "prodname", "stockType",
 					"currentStock", "parkedStock", "effectiveStock", "uom", "lastUpdateddt", "lastUpdatedby" });
 			tblMstScrSrchRslt

@@ -953,46 +953,46 @@ public class Material extends BaseUI {
 	private void editMaterial() {
 		try {
 			if (tblMstScrSrchRslt.getValue() != null) {
-				MaterialDM editMaterialList = beanMaterial.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				materialId = editMaterialList.getMaterialId();
-				if ((editMaterialList.getMaterialCode() != null)) {
-					tfMaterialCode.setValue(editMaterialList.getMaterialCode());
+				MaterialDM material = beanMaterial.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				materialId = material.getMaterialId();
+				if ((material.getMaterialCode() != null)) {
+					tfMaterialCode.setValue(material.getMaterialCode());
 				}
-				if ((editMaterialList.getMaterialName() != null)) {
-					tfMaterialName.setValue(editMaterialList.getMaterialName());
+				if ((material.getMaterialName() != null)) {
+					tfMaterialName.setValue(material.getMaterialName());
 				}
-				if ((editMaterialList.getMaterialGroup() != null)) {
-					cbMaterialGroup.setValue((String) editMaterialList.getMaterialGroup());
+				if ((material.getMaterialGroup() != null)) {
+					cbMaterialGroup.setValue((String) material.getMaterialGroup());
 				}
-				if ((editMaterialList.getMaterialTypeId() != null)) {
-					cbMaterialType.setValue(editMaterialList.getMaterialTypeId());
+				if ((material.getMaterialTypeId() != null)) {
+					cbMaterialType.setValue(material.getMaterialTypeId());
 				}
-				if ((editMaterialList.getPartCode() != null)) {
-					tfPartCode.setValue(editMaterialList.getPartCode().toString());
+				if ((material.getPartCode() != null)) {
+					tfPartCode.setValue(material.getPartCode().toString());
 				}
-				if ((editMaterialList.getMaterialUOM() != null)) {
-					cbMaterialUOM.setValue(editMaterialList.getMaterialUOM().toString());
+				if ((material.getMaterialUOM() != null)) {
+					cbMaterialUOM.setValue(material.getMaterialUOM().toString());
 				}
-				if ((editMaterialList.getUnitRate() != null)) {
-					tfUnitRate.setValue(editMaterialList.getUnitRate().toString());
+				if ((material.getUnitRate() != null)) {
+					tfUnitRate.setValue(material.getUnitRate().toString());
 				}
-				if ((editMaterialList.getVisualSpec() != null)) {
-					taVisualSpec.setValue(editMaterialList.getVisualSpec().toString());
+				if ((material.getVisualSpec() != null)) {
+					taVisualSpec.setValue(material.getVisualSpec().toString());
 				}
-				if ((editMaterialList.getReorderLevel() != null)) {
-					tfReorderLevel.setValue(editMaterialList.getReorderLevel().toString());
+				if ((material.getReorderLevel() != null)) {
+					tfReorderLevel.setValue(material.getReorderLevel().toString());
 				}
-				if ((editMaterialList.getRemarks() != null)) {
-					taRemark.setValue(editMaterialList.getRemarks().toString());
+				if ((material.getRemarks() != null)) {
+					taRemark.setValue(material.getRemarks().toString());
 				}
-				if ((editMaterialList.getBranchId() != null)) {
-					cbBranch.setValue(editMaterialList.getBranchId());
+				if ((material.getBranchId() != null)) {
+					cbBranch.setValue(material.getBranchId());
 				}
-				if ((editMaterialList.getDeptId() != null)) {
-					cbDepartment.setValue(editMaterialList.getDeptId());
+				if ((material.getDeptId() != null)) {
+					cbDepartment.setValue(material.getDeptId());
 				}
-				if (editMaterialList.getMaterialStatus() != null) {
-					cbMaterialStatus.setValue(editMaterialList.getMaterialStatus());
+				if (material.getMaterialStatus() != null) {
+					cbMaterialStatus.setValue(material.getMaterialStatus());
 				}
 			}
 			loadSrchMatOwnerRslt(true);

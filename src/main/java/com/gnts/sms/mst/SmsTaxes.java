@@ -52,7 +52,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class SmsTaxes extends BaseUI {
-	private SmsTaxesService serviceTaxesSms = (SmsTaxesService) SpringContextHelper.getBean("SmsTaxes");
+	private SmsTaxesService serviceTaxes = (SmsTaxesService) SpringContextHelper.getBean("SmsTaxes");
 	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
 	private StateService serviceState = (StateService) SpringContextHelper.getBean("mstate");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
@@ -203,7 +203,7 @@ public class SmsTaxes extends BaseUI {
 		List<SmsTaxesDM> listTaxes = new ArrayList<SmsTaxesDM>();
 		logger.info("" + "SmsTaxes : Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Search Parameters are " + companyid + ", " + cbTaxCode.getValue());
-		listTaxes = serviceTaxesSms.getTaxesSmsList(companyid, null, (String) cbTaxCode.getValue(),
+		listTaxes = serviceTaxes.getTaxesSmsList(companyid, null, (String) cbTaxCode.getValue(),
 				(String) cbStatus.getValue(), null);
 		recordCnt = listTaxes.size();
 		beanTaxDM = new BeanItemContainer<SmsTaxesDM>(SmsTaxesDM.class);
@@ -380,7 +380,7 @@ public class SmsTaxes extends BaseUI {
 		}
 		cbTaxCode.setComponentError(null);
 		if (tblMstScrSrchRslt.getValue() == null) {
-			if (serviceTaxesSms.getTaxesSmsListSize(cbTaxCode.getValue().toString(), (Long) cbCountry.getValue(),
+			if (serviceTaxes.getTaxesSmsListSize(cbTaxCode.getValue().toString(), (Long) cbCountry.getValue(),
 					Long.valueOf(cbState.getValue().toString()), dfStartDate.getValue(), dfEndDate.getValue()).size() > 0) {
 				cbTaxCode.setComponentError(new UserError("This tax code is already available"));
 				errorFlag = true;
@@ -412,7 +412,7 @@ public class SmsTaxes extends BaseUI {
 			taxesDM.setTaxstatus((String) cbStatus.getValue());
 			taxesDM.setLastupdateddt(DateUtils.getcurrentdate());
 			taxesDM.setLastupdatedby(username);
-			serviceTaxesSms.saveTaxesSmsDetails(taxesDM);
+			serviceTaxes.saveTaxesSmsDetails(taxesDM);
 			btnAdd.setCaption("add");
 			resetFields();
 			loadSrchRslt();

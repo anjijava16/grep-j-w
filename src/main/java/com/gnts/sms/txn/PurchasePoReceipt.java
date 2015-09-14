@@ -87,7 +87,7 @@ public class PurchasePoReceipt extends BaseUI {
 			.getBean("purporeceiptDtl");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private PurchasePOHdrService servicepurchaePOHdr = (PurchasePOHdrService) SpringContextHelper
+	private PurchasePOHdrService servicePurchasePOHdr = (PurchasePOHdrService) SpringContextHelper
 			.getBean("PurchasePOhdr");
 	private PurchasePODtlService servicePurchasePODtl = (PurchasePODtlService) SpringContextHelper
 			.getBean("PurchasePODtl");
@@ -106,7 +106,7 @@ public class PurchasePoReceipt extends BaseUI {
 	private Button btnadd = new GERPButton("Add", "addbt", this);
 	// User Input Fields for Po Receipt Header
 	private ComboBox cbBranch, cbHdrStatus, cbPONo;
-	private TextField tfLotNo, tfVenorDcNo, tfvenInvNo, tfDocType;
+	private TextField tfLotNo, tfVenorDcNo, tfVendInvNo, tfDocType;
 	private TextArea taReceiptRemark;
 	private PopupDateField dfReceiptDt, dfDocDt, dfInvDt;
 	private CheckBox ckBillRaised;
@@ -183,7 +183,7 @@ public class PurchasePoReceipt extends BaseUI {
 		tfVenorDcNo = new TextField("Vendor Doc No.");
 		dfDocDt = new GERPPopupDateField("Vendor Document Date");
 		dfDocDt.setInputPrompt("Select Date");
-		tfvenInvNo = new TextField("Vendor Invoice No.");
+		tfVendInvNo = new TextField("Vendor Invoice No.");
 		dfInvDt = new GERPPopupDateField("Vendor Invoice Date");
 		dfInvDt.setInputPrompt("Select Date");
 		taReceiptRemark = new GERPTextArea("Remarks");
@@ -343,7 +343,7 @@ public class PurchasePoReceipt extends BaseUI {
 		flHdr2.addComponent(tfLotNo);
 		flHdr2.addComponent(tfVenorDcNo);
 		flHdr2.addComponent(dfDocDt);
-		flHdr2.addComponent(tfvenInvNo);
+		flHdr2.addComponent(tfVendInvNo);
 		flHdr3.addComponent(dfInvDt);
 		flHdr3.addComponent(taReceiptRemark);
 		flHdr3.addComponent(cbHdrStatus);
@@ -536,7 +536,7 @@ public class PurchasePoReceipt extends BaseUI {
 		try {
 			BeanItemContainer<PurchasePOHdrDM> beanPurPoDM = new BeanItemContainer<PurchasePOHdrDM>(
 					PurchasePOHdrDM.class);
-			beanPurPoDM.addAll(servicepurchaePOHdr.getPurchaseOrdHdrList(companyid, branchId, null, null, null));
+			beanPurPoDM.addAll(servicePurchasePOHdr.getPurchaseOrdHdrList(companyid, branchId, null, null, null));
 			cbPONo.setContainerDataSource(beanPurPoDM);
 		}
 		catch (Exception e) {
@@ -569,7 +569,7 @@ public class PurchasePoReceipt extends BaseUI {
 				tfDocType.setValue(receiptsHdrDM.getReceiptdocType());
 			}
 			if (receiptsHdrDM.getVendorinvoiceNo() != null) {
-				tfvenInvNo.setValue(receiptsHdrDM.getVendorinvoiceNo());
+				tfVendInvNo.setValue(receiptsHdrDM.getVendorinvoiceNo());
 			}
 			if (receiptsHdrDM.getVendorinvoiceDate() != null) {
 				dfInvDt.setValue(receiptsHdrDM.getVendorinvoiceDate());
@@ -803,7 +803,7 @@ public class PurchasePoReceipt extends BaseUI {
 			}
 			receiptobj.setVendordcNo((tfVenorDcNo.getValue()));
 			receiptobj.setVendorDate((Date) dfDocDt.getValue());
-			receiptobj.setVendorinvoiceNo(tfvenInvNo.getValue().toString());
+			receiptobj.setVendorinvoiceNo(tfVendInvNo.getValue().toString());
 			receiptobj.setVendorinvoiceDate((Date) dfInvDt.getValue());
 			receiptobj.setReceiptRemark((taReceiptRemark.getValue()));
 			if (ckBillRaised.getValue().equals(true)) {
@@ -925,7 +925,7 @@ public class PurchasePoReceipt extends BaseUI {
 		cbPONo.setValue(null);
 		cbPONo.setComponentError(null);
 		tfLotNo.setValue("");
-		tfvenInvNo.setValue("");
+		tfVendInvNo.setValue("");
 		tfVenorDcNo.setValue("");
 		taReceiptRemark.setValue("");
 		dfDocDt.setValue(null);

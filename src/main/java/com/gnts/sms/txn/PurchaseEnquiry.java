@@ -115,8 +115,8 @@ public class PurchaseEnquiry extends BaseUI {
 	private TextField tfEnqQty, cbUom;
 	private TextArea taEnqDtlRem;
 	private Table tblSmsEnqDtl = new GERPTable();
-	private BeanItemContainer<SmsPurEnqHdrDM> beanSmsPurEnqHdrDM = null;
-	private BeanItemContainer<SmsPurEnqDtlDM> beanSmsPurEnqDtlDM = null;
+	private BeanItemContainer<SmsPurEnqHdrDM> beanPurEnqHdrDM = null;
+	private BeanItemContainer<SmsPurEnqDtlDM> beanPurEnqDtlDM = null;
 	// local variables declaration
 	private Long companyid;
 	private Long enquiryId;
@@ -380,11 +380,11 @@ public class PurchaseEnquiry extends BaseUI {
 			listPurEnq = serviceSmsPurEnqHdr.getSmsPurEnqHdrList(companyid, null, tfEnqNo.getValue(),
 					(Long) cbBranch.getValue(), (String) cbEnqStatus.getValue(), username);
 			recordCnt = listPurEnq.size();
-			beanSmsPurEnqHdrDM = new BeanItemContainer<SmsPurEnqHdrDM>(SmsPurEnqHdrDM.class);
-			beanSmsPurEnqHdrDM.addAll(listPurEnq);
+			beanPurEnqHdrDM = new BeanItemContainer<SmsPurEnqHdrDM>(SmsPurEnqHdrDM.class);
+			beanPurEnqHdrDM.addAll(listPurEnq);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the PurchaseEnquiry. result set");
-			tblMstScrSrchRslt.setContainerDataSource(beanSmsPurEnqHdrDM);
+			tblMstScrSrchRslt.setContainerDataSource(beanPurEnqHdrDM);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "branchName", "enquiryNo", "enquiryStatus",
 					"lastUpdateddt", "lastUpdatedby" });
 			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "EnquiryNo.", "Status",
@@ -402,11 +402,11 @@ public class PurchaseEnquiry extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			recordCnt = listEnqDtls.size();
-			beanSmsPurEnqDtlDM = new BeanItemContainer<SmsPurEnqDtlDM>(SmsPurEnqDtlDM.class);
-			beanSmsPurEnqDtlDM.addAll(listEnqDtls);
+			beanPurEnqDtlDM = new BeanItemContainer<SmsPurEnqDtlDM>(SmsPurEnqDtlDM.class);
+			beanPurEnqDtlDM.addAll(listEnqDtls);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the dPurDt. result set");
-			tblSmsEnqDtl.setContainerDataSource(beanSmsPurEnqDtlDM);
+			tblSmsEnqDtl.setContainerDataSource(beanPurEnqDtlDM);
 			tblSmsEnqDtl.setVisibleColumns(new Object[] { "pordName", "productUom", "enquiryQty", "enqDtlStaus",
 					"lastUpdateddt", "lastUpdatedby" });
 			tblSmsEnqDtl.setColumnHeaders(new String[] { "Product Name", "UOM", "Enquiry Qty", "Status",
@@ -486,7 +486,7 @@ public class PurchaseEnquiry extends BaseUI {
 		try {
 			hlUserInputLayout.setVisible(true);
 			if (tblMstScrSrchRslt.getValue() != null) {
-				SmsPurEnqHdrDM enqHdrDM = beanSmsPurEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				SmsPurEnqHdrDM enqHdrDM = beanPurEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				enquiryId = enqHdrDM.getEnquiryId();
 				logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 						+ "Selected enquiryId. Id -> " + enquiryId);
@@ -525,7 +525,7 @@ public class PurchaseEnquiry extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		hlUserInputLayout.setVisible(true);
 		if (tblSmsEnqDtl.getValue() != null) {
-			SmsPurEnqDtlDM purEnqDtlDM = beanSmsPurEnqDtlDM.getItem(tblSmsEnqDtl.getValue()).getBean();
+			SmsPurEnqDtlDM purEnqDtlDM = beanPurEnqDtlDM.getItem(tblSmsEnqDtl.getValue()).getBean();
 			lsProduct.setValue(null);
 			Long prodid = purEnqDtlDM.getProductId();
 			Collection<?> prodids = lsProduct.getItemIds();
@@ -720,7 +720,7 @@ public class PurchaseEnquiry extends BaseUI {
 		try {
 			SmsPurEnqHdrDM purEnqobj = new SmsPurEnqHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
-				purEnqobj = beanSmsPurEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+				purEnqobj = beanPurEnqHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				purEnqobj.setEnquiryNo(tfEnqNo.getValue());
 			}
 			purEnqobj.setEnquiryNo(tfEnqNo.getValue());
@@ -796,7 +796,7 @@ public class PurchaseEnquiry extends BaseUI {
 					if (count == 0) {
 						SmsPurEnqDtlDM enqDtlObj = new SmsPurEnqDtlDM();
 						if (tblSmsEnqDtl.getValue() != null) {
-							enqDtlObj = beanSmsPurEnqDtlDM.getItem(tblSmsEnqDtl.getValue()).getBean();
+							enqDtlObj = beanPurEnqDtlDM.getItem(tblSmsEnqDtl.getValue()).getBean();
 							listEnqDtls.remove(enqDtlObj);
 						}
 						if (lsProduct.getValue() != null) {
@@ -877,7 +877,7 @@ public class PurchaseEnquiry extends BaseUI {
 	private void deleteDetails() {
 		SmsPurEnqDtlDM save = new SmsPurEnqDtlDM();
 		if (tblSmsEnqDtl.getValue() != null) {
-			save = beanSmsPurEnqDtlDM.getItem(tblSmsEnqDtl.getValue()).getBean();
+			save = beanPurEnqDtlDM.getItem(tblSmsEnqDtl.getValue()).getBean();
 			listEnqDtls.remove(save);
 			enqDtlresetFields();
 			loadPurDtl();

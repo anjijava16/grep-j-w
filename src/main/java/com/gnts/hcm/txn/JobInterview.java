@@ -427,24 +427,29 @@ public class JobInterview extends BaseUI {
 	
 	@Override
 	protected void resetFields() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Resetting search fields and reloading the result");
-		cbCandidateName.setValue(null);
-		cbCandidateName.setComponentError(null);
-		cbJobTitle.setComponentError(null);
-		cbJobTitle.setValue(null);
-		dfIntrvwDate.setComponentError(null);
-		dfIntrvwDate.setValue(new Date());
-		taIntrvwDesc.setComponentError(null);
-		taIntrvwDesc.setValue("");
-		cbIntrvwLevel.setComponentError(null);
-		cbIntrvwLevel.setValue(null);
-		cbInterviewer.setComponentError(null);
-		cbInterviewer.setValue(null);
-		tfIntrvwTime.setComponentError(null);
-		tfIntrvwTime.setValue(null);
-		cbStatus.setComponentError(null);
-		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+					+ "Resetting search fields and reloading the result");
+			cbCandidateName.setValue(null);
+			cbCandidateName.setComponentError(null);
+			cbJobTitle.setComponentError(null);
+			cbJobTitle.setValue(null);
+			dfIntrvwDate.setComponentError(null);
+			dfIntrvwDate.setValue(new Date());
+			taIntrvwDesc.setComponentError(null);
+			taIntrvwDesc.setValue("");
+			cbIntrvwLevel.setComponentError(null);
+			cbIntrvwLevel.setValue(null);
+			cbInterviewer.setComponentError(null);
+			cbInterviewer.setValue(null);
+			tfIntrvwTime.setComponentError(null);
+			tfIntrvwTime.setValue(null);
+			cbStatus.setComponentError(null);
+			cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void loadIinterviewLevels() {

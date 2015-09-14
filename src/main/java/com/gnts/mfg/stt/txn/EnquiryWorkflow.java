@@ -13,6 +13,8 @@ import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.DepartmentService;
 import com.gnts.base.service.mst.EmployeeService;
+import com.gnts.crm.domain.txn.ClientsContactsDM;
+import com.gnts.crm.service.txn.ClientContactsService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
@@ -24,6 +26,7 @@ import com.gnts.erputil.tool.EmailTrigger;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
 import com.gnts.erputil.ui.UploadDocumentUI;
+import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.stt.mfg.domain.txn.EnquiryWorkflowDM;
 import com.gnts.stt.mfg.service.txn.EnquiryWorkflowService;
 import com.vaadin.data.util.BeanContainer;
@@ -39,8 +42,8 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.Table.Align;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class EnquiryWorkflow implements ClickListener {
@@ -51,6 +54,8 @@ public class EnquiryWorkflow implements ClickListener {
 	private HorizontalLayout hlEnquiryWorkflow = new HorizontalLayout();
 	private Table tblEnquiryWorkflow = new Table();
 	private GERPComboBox cbInitiatedBy = new GERPComboBox("Initiated By");
+	private GERPComboBox cbwindTechPers = new GERPComboBox("Technical Person");
+	private GERPComboBox cbwindcommPerson = new GERPComboBox("Commercial Person");
 	private GERPComboBox cbPendingWith = new GERPComboBox("Allotted To");
 	private GERPComboBox cbDesignAuthBy = new GERPComboBox("Design Authorised By");
 	private GERPComboBox cbFromDept = new GERPComboBox("From");
@@ -62,9 +67,11 @@ public class EnquiryWorkflow implements ClickListener {
 	private GERPComboBox cbExistingCase;
 	private GERPTextField tfFusionedCase = new GERPTextField("Fusioned Case Model");
 	private GERPTextField tfNewDieCase = new GERPTextField("New Die Case Model");
+	private GERPTextField tfprojectName = new GERPTextField("Project Name");
 	private GERPTextField tfBottomTopCase = new GERPTextField("Bottom/Top to be made");
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
+	private SmsEnqHdrService serviceEnqHeader = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	// User Input Components for Sales Enquire workflow
 	private Button btnAddWorkflow = new GERPButton("Add", "add", this);
 	private Button btnDeleteWorkflow = new GERPButton("Delete", "delete", this);
@@ -76,18 +83,21 @@ public class EnquiryWorkflow implements ClickListener {
 			.getBean("enquiryWorkflow");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
+	private ClientContactsService serviceClntContact = (ClientContactsService) SpringContextHelper
+			.getBean("clientContact");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private DepartmentService servicebeandepartmant = (DepartmentService) SpringContextHelper.getBean("department");
 	private VerticalLayout hlDocumentUpload = new VerticalLayout();
 	private BeanItemContainer<EnquiryWorkflowDM> beanWorkflow;
 	private String username;
-	private Long enquiryId, companyid, workflowId;
+	private Long enquiryId, companyid, workflowId, clientId;
 	private Logger logger = Logger.getLogger(EnquiryWorkflow.class);
 	
-	public EnquiryWorkflow(HorizontalLayout hlEnquiryWorkflow, Long enquiryId, String username) {
+	public EnquiryWorkflow(HorizontalLayout hlEnquiryWorkflow, Long enquiryId, String username, Long clientId) {
 		this.hlEnquiryWorkflow = hlEnquiryWorkflow;
 		this.username = username;
 		this.enquiryId = enquiryId;
+		this.clientId = clientId;
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		buildView();
 	}
@@ -136,6 +146,7 @@ public class EnquiryWorkflow implements ClickListener {
 								addComponent(cbInitiatedBy);
 								addComponent(cbToDept);
 								addComponent(cbPendingWith);
+								addComponent(tfprojectName);
 							}
 						});
 						addComponent(new FormLayout() {
@@ -145,6 +156,7 @@ public class EnquiryWorkflow implements ClickListener {
 								addComponent(dfTargetDate);
 								addComponent(dfCompletedDate);
 								addComponent(cbDesignAuthBy);
+								addComponent(cbwindTechPers);
 							}
 						});
 						addComponent(new FormLayout() {
@@ -154,6 +166,7 @@ public class EnquiryWorkflow implements ClickListener {
 								addComponent(tfFusionedCase);
 								addComponent(tfNewDieCase);
 								addComponent(tfBottomTopCase);
+								addComponent(cbwindcommPerson);
 							}
 						});
 						addComponent(new FormLayout() {
@@ -194,6 +207,8 @@ public class EnquiryWorkflow implements ClickListener {
 			}
 		});
 		resetWorkflowFields();
+		loadclienTecCont();
+		loadclientCommCont();
 	}
 	
 	private void getEnqWorkflowDetails() {
@@ -240,6 +255,10 @@ public class EnquiryWorkflow implements ClickListener {
 		cbPendingWith.setComponentError(null);
 		cbFromDept.setComponentError(null);
 		cbToDept.setComponentError(null);
+		cbwindcommPerson.setValue(null);
+		cbwindTechPers.setValue(null);
+		
+		tfprojectName.setValue("");
 		// new UploadDocumentUI(hlDocumentUpload);
 	}
 	
@@ -276,6 +295,18 @@ public class EnquiryWorkflow implements ClickListener {
 			enquiryWorkflowDM.setDesignLocation((String) UI.getCurrent().getSession().getAttribute("uploadedFilePath"));
 			enquiryWorkflowDM.setLastUpdatedDate(new Date());
 			enquiryWorkflowDM.setLastUpdatedBy(username);
+			enquiryWorkflowDM.setRefNo(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, 13L, "Active", "DES_REF_NO").get(0).getLookupname());
+			enquiryWorkflowDM.setIssueNo(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, 13L, "Active", "ISSUE_NO").get(0).getLookupname());
+			enquiryWorkflowDM.setPageRevNo(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, 13L, "Active", "PAGE_REV_NO").get(0).getLookupname());
+			if (tfprojectName.getValue() != "") {
+				enquiryWorkflowDM.setProjectName(tfprojectName.getValue());
+			}
+			if (cbwindcommPerson.getValue() != null) {
+				enquiryWorkflowDM.setCommPerson(cbwindcommPerson.getValue().toString());
+			}
+			if (cbwindTechPers.getValue() != null) {
+				enquiryWorkflowDM.setTechPerson(cbwindTechPers.getValue().toString());
+			}
 			serviceWorkflow.saveOrUpdateEnqWorkflow(enquiryWorkflowDM);
 			workflowId = enquiryWorkflowDM.getEnqWorkflowId();
 			resetWorkflowFields();
@@ -342,6 +373,15 @@ public class EnquiryWorkflow implements ClickListener {
 			}
 			tfSIRNumber.setValue(enquiryWorkflowDM.getSirNumber());
 			cbStatus.setValue(enquiryWorkflowDM.getStatus());
+			if (enquiryWorkflowDM.getTechPerson() != null) {
+				cbwindTechPers.setValue(enquiryWorkflowDM.getTechPerson().toString());
+			}
+			if (enquiryWorkflowDM.getCommPerson() != null) {
+				cbwindcommPerson.setValue(enquiryWorkflowDM.getCommPerson().toString());
+			}
+			if (enquiryWorkflowDM.getProjectName() != null) {
+				tfprojectName.setValue(enquiryWorkflowDM.getProjectName());
+			}
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -452,6 +492,38 @@ public class EnquiryWorkflow implements ClickListener {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private void loadclienTecCont() {
+		try {
+			Long clientId = serviceEnqHeader.getSmsEnqHdrList(companyid, enquiryId, null, null, null, "P", null, null)
+					.get(0).getClientId();
+			BeanContainer<Long, ClientsContactsDM> beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(
+					ClientsContactsDM.class);
+			beanclientcontact.setBeanIdProperty("contactName");
+			beanclientcontact.addAll(serviceClntContact.getClientContactsDetails(companyid, null, clientId, null,
+					"Active", "Technical Person"));
+			cbwindTechPers.setContainerDataSource(beanclientcontact);
+			cbwindTechPers.setItemCaptionPropertyId("contactName");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void loadclientCommCont() {
+		try {
+			BeanContainer<Long, ClientsContactsDM> beanclientcontact = new BeanContainer<Long, ClientsContactsDM>(
+					ClientsContactsDM.class);
+			beanclientcontact.setBeanIdProperty("contactName");
+			beanclientcontact.addAll(serviceClntContact.getClientContactsDetails(companyid, null, clientId, null,
+					"Active", "Contact Person"));
+			cbwindcommPerson.setContainerDataSource(beanclientcontact);
+			cbwindcommPerson.setItemCaptionPropertyId("contactName");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

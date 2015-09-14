@@ -260,8 +260,9 @@ public class WorkOrderPlan extends BaseTransUI {
 				// TODO Auto-generated method stub
 				try {
 					WorkOrderDtlDM workOrderDtlDM = (WorkOrderDtlDM) cbProductName.getValue();
-					tfProductName.setValue(workOrderDtlDM.getProductName());
 					tfWrkOdrPlnQty.setValue(workOrderDtlDM.getPlanQty().toString());
+					tfProductName.setImmediate(true);
+					tfProductName.setValue(workOrderDtlDM.getProdName());
 					if (cbProductName == null) {
 						tblWOPlanMaterials.removeAllItems();
 					}
@@ -291,7 +292,7 @@ public class WorkOrderPlan extends BaseTransUI {
 			}
 		});
 		cbPlanDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		tfProductName = new GERPTextField("Cust.Product Name");
+		tfProductName = new GERPTextField("Product Name");
 		tfProductName.setWidth("130");
 		tfWrkOdrPlnQty = new GERPTextField("WO.Plan.Qty");
 		tfWrkOdrPlnQty.setWidth("110");
@@ -842,7 +843,7 @@ public class WorkOrderPlan extends BaseTransUI {
 			wrkOrdPlnHdr.setLastUpdatedDt(DateUtils.getcurrentdate());
 			wrkOrdPlnHdr.setLastUpdatedBy(username);
 			serviceWorkOrderPlanHdr.saveOrUpdate(wrkOrdPlnHdr);
-			woPlnHdr= Long.valueOf(wrkOrdPlnHdr.getWrkPlanId());
+			woPlnHdr = Long.valueOf(wrkOrdPlnHdr.getWrkPlanId());
 			@SuppressWarnings("unchecked")
 			Collection<WorkOrderPlanProdDtlDM> itemIds = (Collection<WorkOrderPlanProdDtlDM>) tblWrkOrdPlnDtl
 					.getVisibleItemIds();

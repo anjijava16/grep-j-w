@@ -191,7 +191,7 @@ public class SmsEnquiry extends BaseTransUI {
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	// Document Layout
 	// local variables declaration
-	private Long enquiryId;
+	private Long enquiryId,clientId;
 	private String username;
 	private Long companyid, moduleId;
 	Long prodid;
@@ -917,6 +917,7 @@ public class SmsEnquiry extends BaseTransUI {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			SmsEnqHdrDM enqHdrDM = beanEnqHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			enquiryId = enqHdrDM.getEnquiryId();
+			clientId=enqHdrDM.getClientId();
 			cbBranch.setValue(enqHdrDM.getBranchId());
 			tfEnquiryNo.setReadOnly(false);
 			tfEnquiryNo.setValue(enqHdrDM.getEnquiryNo());
@@ -937,7 +938,7 @@ public class SmsEnquiry extends BaseTransUI {
 		}
 		loadEnquiryDetails(true);
 		loadEnquirySpec(false, null);
-		new EnquiryWorkflow(hlEnquiryWorkflow, enquiryId, username);
+		new EnquiryWorkflow(hlEnquiryWorkflow, enquiryId, username,clientId);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, enquiryId, null, null,
 				null, status);
 		comments.loadsrch(true, null, null, null, null, null, null, null, enquiryId, null, null, null, null);
@@ -1110,6 +1111,7 @@ public class SmsEnquiry extends BaseTransUI {
 		tfEnquiryNo.setReadOnly(true);
 		comments.saveSalesEnqId(enqHdrDM.getEnquiryId(), null);
 		enquiryId = enqHdrDM.getEnquiryId();
+		clientId=enqHdrDM.getClientId();
 		enqDtlresetFields();
 		enqSpecResetfields();
 		loadSrchRslt();
@@ -1458,11 +1460,13 @@ public class SmsEnquiry extends BaseTransUI {
 		dfEnquiryDate.setValue(new Date());
 		dfDueDate.setValue(addDays(new Date(), 7));
 		enquiryId = 0L;
+		clientId=0L;
 		enqDtlresetFields();
 		enqSpecResetfields();
 		try {
 			if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF") != null
 					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_ENQ_WF")) {
+				cbEnquiryStatus.setEnabled(false);
 				cbEnquiryStatus.setValue("Approved");
 			} else {
 				cbEnquiryStatus.setValue("Progress");

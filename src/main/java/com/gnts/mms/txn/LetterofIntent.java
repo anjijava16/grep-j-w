@@ -41,6 +41,7 @@ import com.gnts.mms.service.txn.LOIDetailService;
 import com.gnts.mms.service.txn.LOIHeaderService;
 import com.gnts.mms.service.txn.MmsQuoteDtlService;
 import com.gnts.mms.service.txn.MmsQuoteHdrService;
+import com.gnts.saarc.util.SerialNumberGenerator;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -237,7 +238,6 @@ public class LetterofIntent extends BaseTransUI {
 					cbUom.setValue(((MmsQuoteDtlDM) cbMatName.getValue()).getMatuom());
 					cbUom.setReadOnly(true);
 					tfIntQty.setValue(((MmsQuoteDtlDM) cbMatName.getValue()).getQuoteqty().toString());
-					tfUnitprice.setValue(((MmsQuoteDtlDM) cbMatName.getValue()).getUnitrate().toString());
 				}
 			}
 		});
@@ -330,7 +330,7 @@ public class LetterofIntent extends BaseTransUI {
 		hlIndentDtl.addComponent(tblLOIDetail);
 		hlIndentDtl.setSpacing(true);
 		hlIndentDtl.setMargin(true);
-		tfLOINumber.setReadOnly(false);
+		tfLOINumber.setReadOnly(true);
 		VerticalLayout vlIndentHdrAndDtl = new VerticalLayout();
 		vlIndentHdrAndDtl = new VerticalLayout();
 		vlIndentHdrAndDtl.addComponent(GERPPanelGenerator.createPanel(hlTax));
@@ -346,29 +346,23 @@ public class LetterofIntent extends BaseTransUI {
 	
 	// Load for Indent Search Hdr
 	private void loadSrchRslt() {
-		try {
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			tblMstScrSrchRslt.removeAllItems();
-			List<LOIHeaderDM> indentHdrList = new ArrayList<LOIHeaderDM>();
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-					+ companyid + ", " + tfLOINumber.getValue() + ", " + cbHdrStatus.getValue());
-			indentHdrList = serviceLOIHeader.getLOIHeaderDMList(null, null, null, null, null, null);
-			recordCnt = indentHdrList.size();
-			beanIndentHdrDM = new BeanItemContainer<LOIHeaderDM>(LOIHeaderDM.class);
-			beanIndentHdrDM.addAll(indentHdrList);
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Got the Indent. result set");
-			tblMstScrSrchRslt.setContainerDataSource(beanIndentHdrDM);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "loiHdrId", "loiNumber", "quoteNumber", "vendorName",
-					"status", "lastUpdatedDt", "lastUpdatedBy" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "LOI Number", "Quote", "Vendor Name", "Status",
-					"Last Updated Date", "Last Updated By" });
-			tblMstScrSrchRslt.setColumnAlignment("loiHdrId", Align.RIGHT);
-			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
+		tblMstScrSrchRslt.removeAllItems();
+		List<LOIHeaderDM> indentHdrList = new ArrayList<LOIHeaderDM>();
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
+				+ companyid + ", " + tfLOINumber.getValue() + ", " + cbHdrStatus.getValue());
+		indentHdrList = serviceLOIHeader.getLOIHeaderDMList(null, null, null, null, null, null);
+		recordCnt = indentHdrList.size();
+		beanIndentHdrDM = new BeanItemContainer<LOIHeaderDM>(LOIHeaderDM.class);
+		beanIndentHdrDM.addAll(indentHdrList);
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Indent. result set");
+		tblMstScrSrchRslt.setContainerDataSource(beanIndentHdrDM);
+		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "loiHdrId", "loiNumber", "quoteNumber", "vendorName",
+				"status", "lastUpdatedDt", "lastUpdatedBy" });
+		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "LOI Number", "Quote", "Vendor Name", "Status",
+				"Last Updated Date", "Last Updated By" });
+		tblMstScrSrchRslt.setColumnAlignment("loiHdrId", Align.RIGHT);
+		tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 	}
 	
 	// Load for Indent Search Dtl
@@ -431,73 +425,62 @@ public class LetterofIntent extends BaseTransUI {
 	
 	// Method to edit the values from table into fields to update process
 	private void editHeaderDetails() {
-		try {
-			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Editing the selected record");
-			hlUserInputLayout.setVisible(true);
-			if (tblMstScrSrchRslt.getValue() != null) {
-				LOIHeaderDM loiHeaderDM = beanIndentHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				loiHdrId = loiHeaderDM.getLoiHdrId();
-				tfLOINumber.setValue(loiHeaderDM.getLoiNumber());
-				dfReferenceDate.setValue(loiHeaderDM.getRefDate());
-				cbVendor.setValue(loiHeaderDM.getVendorId());
-				Long quote = loiHeaderDM.getQuoteid();
-				Collection<?> quoteids = cbQuotation.getItemIds();
-				for (Iterator<?> iterator = quoteids.iterator(); iterator.hasNext();) {
-					Object itemId = (Object) iterator.next();
-					BeanItem<?> item = (BeanItem<?>) cbQuotation.getItem(itemId);
-					// Get the actual bean and use the data
-					MmsQuoteHdrDM st = (MmsQuoteHdrDM) item.getBean();
-					if (quote != null && quote.equals(st.getQuoteId())) {
-						cbQuotation.setValue(itemId);
-						break;
-					} else {
-						cbQuotation.setValue(null);
-					}
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
+		hlUserInputLayout.setVisible(true);
+		if (tblMstScrSrchRslt.getValue() != null) {
+			LOIHeaderDM loiHeaderDM = beanIndentHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			loiHdrId = loiHeaderDM.getLoiHdrId();
+			tfLOINumber.setValue(loiHeaderDM.getLoiNumber());
+			dfReferenceDate.setValue(loiHeaderDM.getRefDate());
+			cbVendor.setValue(loiHeaderDM.getVendorId());
+			Long quote = loiHeaderDM.getQuoteid();
+			Collection<?> quoteids = cbQuotation.getItemIds();
+			for (Iterator<?> iterator = quoteids.iterator(); iterator.hasNext();) {
+				Object itemId = (Object) iterator.next();
+				BeanItem<?> item = (BeanItem<?>) cbQuotation.getItem(itemId);
+				// Get the actual bean and use the data
+				MmsQuoteHdrDM st = (MmsQuoteHdrDM) item.getBean();
+				if (quote != null && quote.equals(st.getQuoteId())) {
+					cbQuotation.setValue(itemId);
+					break;
+				} else {
+					cbQuotation.setValue(null);
 				}
-				taRemarks.setValue(loiHeaderDM.getRemarks());
-				indentDtlList.addAll(serviceLOIDetail.getLOIDetailList(null, loiHdrId, null, null));
 			}
-			loadLOIDetails();
+			taRemarks.setValue(loiHeaderDM.getRemarks());
+			indentDtlList.addAll(serviceLOIDetail.getLOIDetailList(null, loiHdrId, null, null));
 		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
+		loadLOIDetails();
 	}
 	
 	// Method to edit the values from table into fields to update process
 	private void editLOIDetails() {
-		try {
-			hlUserInputLayout.setVisible(true);
-			if (tblLOIDetail.getValue() != null) {
-				LOIDetailsDM editDtl = beanIndentDtlDM.getItem(tblLOIDetail.getValue()).getBean();
-				Long uom = editDtl.getMaterialId();
-				Collection<?> uomid = cbMatName.getItemIds();
-				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
-					Object itemId = (Object) iterator.next();
-					BeanItem<?> item = (BeanItem<?>) cbMatName.getItem(itemId);
-					// Get the actual bean and use the data
-					MmsQuoteDtlDM st = (MmsQuoteDtlDM) item.getBean();
-					if (uom != null && uom.equals(st.getMaterialid())) {
-						cbMatName.setValue(itemId);
-					}
-				}
-				if (editDtl.getQty() != null) {
-					tfIntQty.setValue(editDtl.getQty().toString());
-				}
-				if (editDtl.getUnitRate() != null) {
-					tfUnitprice.setValue(editDtl.getUnitRate().toString());
-				}
-				if (editDtl.getStatus() != null) {
-					cbDtlStatus.setValue(editDtl.getStatus());
-				}
-				if (editDtl.getRemarks() != null) {
-					tfDtlRemarks.setValue(editDtl.getRemarks());
+		hlUserInputLayout.setVisible(true);
+		if (tblLOIDetail.getValue() != null) {
+			LOIDetailsDM editDtl = beanIndentDtlDM.getItem(tblLOIDetail.getValue()).getBean();
+			Long uom = editDtl.getMaterialId();
+			Collection<?> uomid = cbMatName.getItemIds();
+			for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+				Object itemId = (Object) iterator.next();
+				BeanItem<?> item = (BeanItem<?>) cbMatName.getItem(itemId);
+				// Get the actual bean and use the data
+				MmsQuoteDtlDM st = (MmsQuoteDtlDM) item.getBean();
+				if (uom != null && uom.equals(st.getMaterialid())) {
+					cbMatName.setValue(itemId);
 				}
 			}
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
+			if (editDtl.getQty() != null) {
+				tfIntQty.setValue(editDtl.getQty().toString());
+			}
+			if (editDtl.getUnitRate() != null) {
+				tfUnitprice.setValue(editDtl.getUnitRate().toString());
+			}
+			if (editDtl.getStatus() != null) {
+				cbDtlStatus.setValue(editDtl.getStatus());
+			}
+			if (editDtl.getRemarks() != null) {
+				tfDtlRemarks.setValue(editDtl.getRemarks());
+			}
 		}
 	}
 	
@@ -549,6 +532,18 @@ public class LetterofIntent extends BaseTransUI {
 		assembleInputUserLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		// reset the input controls to default value
+		try {
+			tfLOINumber.setReadOnly(false);
+			//SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MMS_LOI").get(0);
+			//if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfLOINumber.setReadOnly(false);
+				tfLOINumber.setValue(SerialNumberGenerator.generateSNoLOI(companyid, branchId, moduleId, "MM_NPONO"));
+				tfLOINumber.setReadOnly(true);
+			//}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		btnAddDtl.setCaption("Add");
@@ -605,6 +600,8 @@ public class LetterofIntent extends BaseTransUI {
 		resetFields();
 		editHeaderDetails();
 		editLOIDetails();
+		tfLOINumber.setReadOnly(true);
+
 	}
 	
 	// reset the input values to IndentDtl
@@ -723,7 +720,7 @@ public class LetterofIntent extends BaseTransUI {
 			// resetFields();
 		}
 		catch (Exception e) {
-			logger.info(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	
@@ -764,7 +761,7 @@ public class LetterofIntent extends BaseTransUI {
 			resetLOIDetails();
 		}
 		catch (Exception e) {
-			logger.info(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	
@@ -810,18 +807,13 @@ public class LetterofIntent extends BaseTransUI {
 	
 	// delete row in temporary table
 	private void deleteDetails() {
-		try {
-			LOIDetailsDM loiDetailsDM = new LOIDetailsDM();
-			if (tblLOIDetail.getValue() != null) {
-				loiDetailsDM = beanIndentDtlDM.getItem(tblLOIDetail.getValue()).getBean();
-				indentDtlList.remove(loiDetailsDM);
-				resetLOIDetails();
-				loadLOIDetails();
-				btndelete.setEnabled(false);
-			}
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
+		LOIDetailsDM loiDetailsDM = new LOIDetailsDM();
+		if (tblLOIDetail.getValue() != null) {
+			loiDetailsDM = beanIndentDtlDM.getItem(tblLOIDetail.getValue()).getBean();
+			indentDtlList.remove(loiDetailsDM);
+			resetLOIDetails();
+			loadLOIDetails();
+			btndelete.setEnabled(false);
 		}
 	}
 	

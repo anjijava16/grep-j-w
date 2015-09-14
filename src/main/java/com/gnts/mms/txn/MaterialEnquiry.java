@@ -393,9 +393,9 @@ public class MaterialEnquiry extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the MaterialEnquiry. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanMmsEnqHdrDM);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "branchName", "enquiryNo", "enquiryStatus",
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "branchName", "enquiryNo","enqRemark", "enquiryStatus",
 					"lastUpdateddt", "lastUpdatedby" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Enquiry No", "Status",
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Enquiry No","Remarks","Status",
 					"Last Updated Date", "Last Updated By" });
 			tblMstScrSrchRslt.setColumnAlignment("enquiryId", Align.RIGHT);
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);

@@ -1161,7 +1161,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		try {
 			resetFields();
 			tfPONo.setReadOnly(false);
-			tfPONo.setValue(SerialNumberGenerator.generateSNoMMSPO(companyid, branchId, moduleId, "MM_NPONO", null));
+			tfPONo.setValue(SerialNumberGenerator.generateSNoMMSPO(companyid, branchId, moduleId, "MM_NPONO"));
 			tfPONo.setReadOnly(true);
 		}
 		catch (Exception e) {
@@ -1362,7 +1362,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_NPONO")
 							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_NPONO");
+						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_NPONO");
 					}
 				}
 				catch (Exception e) {
@@ -1371,7 +1371,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			resetDetailsFields();
 			resetFields();
 			loadSrchRslt();
-			poId = 0L;
+			//poId = 0L;
 		}
 		catch (Exception e) {
 			e.printStackTrace();

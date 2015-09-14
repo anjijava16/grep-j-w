@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="mmspo" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
-	<property name="ireport.zoom" value="3.0"/>
-	<property name="ireport.x" value="687"/>
-	<property name="ireport.y" value="977"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<style name="Crosstab Data Text" hAlign="Center"/>
 	<parameter name="ENQID" class="java.lang.String"/>
 	<queryString>
@@ -291,7 +291,7 @@ AND hdr.po_id    =$P{ENQID}]]>
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="258" splitType="Stretch">
+		<band height="246" splitType="Stretch">
 			<line>
 				<reportElement uuid="1ac04e8c-3ee1-4c12-9883-8f1d8385a4df" x="1" y="0" width="555" height="1"/>
 			</line>
@@ -336,7 +336,7 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<text><![CDATA[%]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="5b26486a-fc64-49bc-84a4-76aa5c7afec0" x="242" y="229" width="135" height="16"/>
+				<reportElement uuid="5b26486a-fc64-49bc-84a4-76aa5c7afec0" x="4" y="229" width="135" height="16"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
@@ -501,7 +501,7 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<textFieldExpression><![CDATA[$F{GRAND_TOTAL}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="8a56073d-6664-4f2d-997f-5d6f5f3415fa" x="380" y="229" width="171" height="16"/>
+				<reportElement uuid="8a56073d-6664-4f2d-997f-5d6f5f3415fa" x="144" y="229" width="407" height="16"/>
 				<textElement verticalAlignment="Top"/>
 				<textFieldExpression><![CDATA[$F{AMT_WORDS}]]></textFieldExpression>
 			</textField>
@@ -536,7 +536,7 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<textFieldExpression><![CDATA[$F{CESS_VALUE}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement uuid="f2e17ee3-c457-4b2e-9045-a0dbfb7ce1b9" x="240" y="7" width="1" height="240" forecolor="#999999"/>
+				<reportElement uuid="f2e17ee3-c457-4b2e-9045-a0dbfb7ce1b9" x="240" y="7" width="1" height="221" forecolor="#999999"/>
 			</line>
 			<line>
 				<reportElement uuid="9f813155-e245-490b-aae3-9092bd2ed06f" x="241" y="7" width="312" height="1" forecolor="#999999"/>
@@ -548,7 +548,7 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<reportElement uuid="9f813155-e245-490b-aae3-9092bd2ed06f" x="240" y="45" width="313" height="1" forecolor="#999999"/>
 			</line>
 			<line>
-				<reportElement uuid="f2e17ee3-c457-4b2e-9045-a0dbfb7ce1b9" x="378" y="7" width="1" height="239" forecolor="#999999"/>
+				<reportElement uuid="f2e17ee3-c457-4b2e-9045-a0dbfb7ce1b9" x="378" y="7" width="1" height="221" forecolor="#999999"/>
 			</line>
 			<line>
 				<reportElement uuid="9f813155-e245-490b-aae3-9092bd2ed06f" x="240" y="63" width="313" height="1" forecolor="#999999"/>
@@ -578,7 +578,7 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<reportElement uuid="9f813155-e245-490b-aae3-9092bd2ed06f" x="240" y="209" width="314" height="1" forecolor="#999999"/>
 			</line>
 			<line>
-				<reportElement uuid="9f813155-e245-490b-aae3-9092bd2ed06f" x="240" y="227" width="313" height="1" forecolor="#999999"/>
+				<reportElement uuid="9f813155-e245-490b-aae3-9092bd2ed06f" x="240" y="227" width="314" height="1" forecolor="#999999"/>
 			</line>
 			<line>
 				<reportElement uuid="f2e17ee3-c457-4b2e-9045-a0dbfb7ce1b9" x="448" y="26" width="1" height="38" forecolor="#999999"/>
@@ -590,10 +590,13 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<reportElement uuid="f2e17ee3-c457-4b2e-9045-a0dbfb7ce1b9" x="448" y="172" width="1" height="38" forecolor="#999999"/>
 			</line>
 			<line>
-				<reportElement uuid="9f813155-e245-490b-aae3-9092bd2ed06f" x="240" y="246" width="314" height="1" forecolor="#999999"/>
+				<reportElement uuid="9f813155-e245-490b-aae3-9092bd2ed06f" x="0" y="227" width="240" height="1" forecolor="#999999"/>
 			</line>
 			<line>
 				<reportElement uuid="f2e17ee3-c457-4b2e-9045-a0dbfb7ce1b9" x="553" y="7" width="1" height="239" forecolor="#999999"/>
+			</line>
+			<line>
+				<reportElement uuid="f2e17ee3-c457-4b2e-9045-a0dbfb7ce1b9" x="141" y="228" width="1" height="18" forecolor="#999999"/>
 			</line>
 		</band>
 	</columnFooter>
@@ -635,13 +638,6 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<text><![CDATA[Credit Terms]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="100bd97a-44ca-41c9-8de2-32d8c4b23f45" x="2" y="104" width="123" height="19"/>
-				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Tax]]></text>
-			</staticText>
-			<staticText>
 				<reportElement uuid="ea4e7b5f-d25f-452c-91a1-fe221146ef07" x="125" y="27" width="11" height="19"/>
 				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[:]]></text>
@@ -661,11 +657,6 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[:]]></text>
 			</staticText>
-			<staticText>
-				<reportElement uuid="ea4e7b5f-d25f-452c-91a1-fe221146ef07" x="125" y="104" width="11" height="19"/>
-				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[:]]></text>
-			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement uuid="8f647651-7322-4953-a15c-5cb40f020271" x="136" y="46" width="403" height="19"/>
 				<textElement verticalAlignment="Middle"/>
@@ -677,7 +668,7 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<textFieldExpression><![CDATA[$F{DELIVERY_TERMS}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement uuid="3a849adb-30c3-4c2c-a77e-2ab2e707b049" x="4" y="0" width="553" height="1"/>
+				<reportElement uuid="3a849adb-30c3-4c2c-a77e-2ab2e707b049" x="0" y="0" width="555" height="1"/>
 			</line>
 			<textField isBlankWhenNull="true">
 				<reportElement uuid="44901e89-458b-4606-9666-c824e197d7b2" x="136" y="27" width="403" height="19"/>

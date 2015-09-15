@@ -250,14 +250,13 @@ public class EnquiryWorkflow implements ClickListener {
 		tfECNNumber.setValue("");
 		tfECRNumber.setValue("");
 		tfSIRNumber.setValue("");
-		cbStatus.setValue(null);
+		cbStatus.setValue("Active");
 		cbInitiatedBy.setComponentError(null);
 		cbPendingWith.setComponentError(null);
 		cbFromDept.setComponentError(null);
 		cbToDept.setComponentError(null);
 		cbwindcommPerson.setValue(null);
 		cbwindTechPers.setValue(null);
-		
 		tfprojectName.setValue("");
 		// new UploadDocumentUI(hlDocumentUpload);
 	}
@@ -295,9 +294,12 @@ public class EnquiryWorkflow implements ClickListener {
 			enquiryWorkflowDM.setDesignLocation((String) UI.getCurrent().getSession().getAttribute("uploadedFilePath"));
 			enquiryWorkflowDM.setLastUpdatedDate(new Date());
 			enquiryWorkflowDM.setLastUpdatedBy(username);
-			enquiryWorkflowDM.setRefNo(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, 13L, "Active", "DES_REF_NO").get(0).getLookupname());
-			enquiryWorkflowDM.setIssueNo(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, 13L, "Active", "ISSUE_NO").get(0).getLookupname());
-			enquiryWorkflowDM.setPageRevNo(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, 13L, "Active", "PAGE_REV_NO").get(0).getLookupname());
+			enquiryWorkflowDM.setRefNo(serviceCompanyLookup
+					.getCompanyLookUpByLookUp(companyid, 13L, "Active", "DES_REF_NO").get(0).getLookupname());
+			enquiryWorkflowDM.setIssueNo(serviceCompanyLookup
+					.getCompanyLookUpByLookUp(companyid, 13L, "Active", "ISSUE_NO").get(0).getLookupname());
+			enquiryWorkflowDM.setPageRevNo(serviceCompanyLookup
+					.getCompanyLookUpByLookUp(companyid, 13L, "Active", "PAGE_REV_NO").get(0).getLookupname());
 			if (tfprojectName.getValue() != "") {
 				enquiryWorkflowDM.setProjectName(tfprojectName.getValue());
 			}
@@ -309,10 +311,17 @@ public class EnquiryWorkflow implements ClickListener {
 			}
 			serviceWorkflow.saveOrUpdateEnqWorkflow(enquiryWorkflowDM);
 			workflowId = enquiryWorkflowDM.getEnqWorkflowId();
+			String enno=enquiryWorkflowDM.getEnquiryRef();
+			System.out.println("------------>"+enno);
+			String messageHdr = "Reg : Enquiry WorkFlow Added";
+			String messageBody = "Hi Sir/Madam ,\nEnquiry No : "
+					+ enno + "\n WorkFlow Id  : " + workflowId;
 			resetWorkflowFields();
 			getEnqWorkflowDetails();
 			try {
-				new EmailTrigger("soundar@gnts.in", workflowId.toString(), "Enquiry Workflow");
+				new EmailTrigger(serviceCompanyLookup
+						.getCompanyLookUpByLookUp(companyid, null, "Active", "SMS_MARK_MAIL").get(0).getLookupname(),
+						messageBody, messageHdr);
 			}
 			catch (Exception e) {
 				e.printStackTrace();

@@ -21,8 +21,8 @@ import com.gnts.sms.txn.SalesPO;
 import com.gnts.sms.txn.SalesQuote;
 import com.gnts.sms.txn.SmsEnquiry;
 import com.gnts.sms.txn.SmsInvoice;
-import com.gnts.stt.dsn.domain.txn.ECRequestDM;
-import com.gnts.stt.dsn.service.txn.ECRequestService;
+import com.gnts.stt.mfg.domain.txn.EnquiryWorkflowDM;
+import com.gnts.stt.mfg.service.txn.EnquiryWorkflowService;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -50,7 +50,7 @@ public class DashbordView implements ClickListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Long companyId,branchId;
+	private Long companyId, branchId;
 	private Label lblDashboardTitle;
 	private Button btnEnquiryCount = new Button("100", this);
 	private Button btnQuotationCount = new Button("125", this);
@@ -61,7 +61,7 @@ public class DashbordView implements ClickListener {
 	private Button btnClientCount = new Button("22", this);
 	private Button btnEnquiryDocs = new Button("Documents", this);
 	private Button btnDieRequest = new Button("10", this);
-	private Button btnNotify = new Button();
+	private Button btnNotify;
 	private Window notificationsWindow;
 	private SmsEnqHdrService serviceEnquiry = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private SmsQuoteHdrService servicesmsQuoteHdr = (SmsQuoteHdrService) SpringContextHelper.getBean("smsquotehdr");
@@ -69,13 +69,17 @@ public class DashbordView implements ClickListener {
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private SmsInvoiceHdrService serviceInvoiceHdr = (SmsInvoiceHdrService) SpringContextHelper
 			.getBean("smsInvoiceheader");
+	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper
+			.getBean("enquiryWorkflow");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private ProductService ServiceProduct = (ProductService) SpringContextHelper.getBean("Product");
-	private ECRequestService ServiceEcrequest = (ECRequestService) SpringContextHelper.getBean("ecRequest");
 	private VerticalLayout clMainLayout;
 	private HorizontalLayout hlHeader;
 	private Table tblStatus = new Table();
 	private Logger logger = Logger.getLogger(DashbordView.class);
+	List<SmsEnqHdrDM> smsEnqHdrDM = new ArrayList<SmsEnqHdrDM>();
+	List<EnquiryWorkflowDM> enquiryWorkflowDM = new ArrayList<EnquiryWorkflowDM>();
+	int countnotify = 0;
 	
 	public DashbordView() {
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
@@ -85,12 +89,19 @@ public class DashbordView implements ClickListener {
 		buildView(clMainLayout, hlHeader);
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void buildView(VerticalLayout clMainLayout, HorizontalLayout hlHeader) {
+		enquiryWorkflowDM = serviceWorkflow.getEnqWorkflowList(null, null, "Active", null, null);
+		for (EnquiryWorkflowDM n : enquiryWorkflowDM) {
+			countnotify = serviceEnquiry.getSmsEnqHdrList(companyId, n.getEnquiryId(), branchId, null, "Approved", "F",
+					null, null).size();
+		}
+		btnNotify = new Button(countnotify+"");
 		btnNotify.setIcon(new ThemeResource("img/download.png"));
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("dashmarket");
-		btnEnquiryCount.setCaption(serviceEnquiry
-				.getSMSEnquiryListCount(null, null, null, null, "Progress", null, null, null).toString());
+		btnEnquiryCount.setCaption(serviceEnquiry.getSMSEnquiryListCount(null, null, null, null, "Progress", null,
+				null, null).toString());
 		btnQuotationCount.setCaption(servicesmsQuoteHdr.getSMSQuoteCount(null, null, null, null, null, null, null)
 				.toString());
 		btnPOCount.setCaption(servicePurchaseOrd.getSMSPOListCount(null, null, companyId, null, null, null, null, null)
@@ -273,33 +284,36 @@ public class DashbordView implements ClickListener {
 		VerticalLayout notificationsLayout = new VerticalLayout();
 		notificationsLayout.setMargin(true);
 		notificationsLayout.setSpacing(true);
-		final Panel panel = new Panel("Notifications");
+		enquiryWorkflowDM = serviceWorkflow.getEnqWorkflowList(null, null, "Active", null, null);
+		final Panel panel = new Panel("Notifications(<font color=red><font size=3>"+ countnotify+ "</font></font color>) ");
 		notificationsLayout.addComponent(panel);
-		List<ECRequestDM> ecrequestDm = new ArrayList<ECRequestDM>();
-		ecrequestDm = ServiceEcrequest.getECRequestList(companyId,branchId,null, null, null, "Active");
 		FormLayout fmlayout = new FormLayout();
 		VerticalLayout hrLayout = new VerticalLayout();
-		for (ECRequestDM n : ecrequestDm) {
-			hrLayout.addStyleName("notification-item");
-			if (n.getPartNumber() != null & n.getDrgNumber() != null) {
-				Label titleLabel = new Label("\n"
-						+ "<table style=width:100%><tr><td><small>Status : </small><font color=blue><font size=4>"
-						+ n.getStatus() + "</font></font color></td><td><small>ECR No : </small><font color=green>"
-						+ n.getEcrNumber() + "</font></td></tr></table>", ContentMode.HTML);
-				Label titleLabel1 = new Label("<small>Enquiry No: </small><font color=green>" + n.getEnquiryNo()
-						+ "</font>", ContentMode.HTML);
-				Label titleLabel3 = new Label("<small>Drag No : </small><font color=red>" + n.getDrgNumber()
-						+ "</font>", ContentMode.HTML);
-				Label titleLabel4 = new Label("<small>Part No  : </small><font color=red>" + n.getPartNumber()
-						+ "</font>", ContentMode.HTML);
-				Label titleLabel5 = new Label("<HR size=3 color=red>", ContentMode.HTML);
-				titleLabel.addStyleName("notification-title");
-				fmlayout.addComponents(titleLabel);
-				fmlayout.addComponents(titleLabel1);
-				fmlayout.addComponent(titleLabel3);
-				fmlayout.addComponent(titleLabel4);
-				fmlayout.addComponent(titleLabel5);
-				hrLayout.addComponent(fmlayout);
+		for (EnquiryWorkflowDM n : enquiryWorkflowDM) {
+			for (SmsEnqHdrDM m : serviceEnquiry.getSmsEnqHdrList(companyId, n.getEnquiryId(), branchId, null,
+					"Approved", "F", null, null)) {
+				hrLayout.addStyleName("notification-item");
+				if (enquiryWorkflowDM.size() > 0) {
+					Label titleLabel = new Label("\n"
+							+ "<table style=width:100%><tr><td><small>Status : </small><font color=blue><font size=4>"
+							+ n.getStatus()
+							+ "</font></font color></td><td><small>WorkFlow Id : </small><font color=green>"
+							+ n.getEnqWorkflowId() + "</font></td></tr></table>", ContentMode.HTML);
+					Label titleLabel1 = new Label("<small>Enquiry No: </small><font color=green>" + n.getEnquiryRef()
+							+ "</font>", ContentMode.HTML);
+					Label titleLabel3 = new Label("<small>Initiator Name : </small><font color=red>"
+							+ n.getInitiatorName() + "</font>", ContentMode.HTML);
+					Label titleLabel4 = new Label("<small>Alloted Name : </small><font color=red>" + n.getPendingName()
+							+ "</font>", ContentMode.HTML);
+					Label titleLabel5 = new Label("<HR size=3 color=red>", ContentMode.HTML);
+					titleLabel.addStyleName("notification-title");
+					fmlayout.addComponents(titleLabel);
+					fmlayout.addComponents(titleLabel1);
+					fmlayout.addComponent(titleLabel3);
+					fmlayout.addComponent(titleLabel4);
+					fmlayout.addComponent(titleLabel5);
+					hrLayout.addComponent(fmlayout);
+				}
 			}
 		}
 		notificationsLayout.addComponent(hrLayout);

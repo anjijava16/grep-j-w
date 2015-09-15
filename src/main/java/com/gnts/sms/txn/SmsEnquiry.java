@@ -1114,7 +1114,6 @@ public class SmsEnquiry extends BaseTransUI {
 		clientId=enqHdrDM.getClientId();
 		enqDtlresetFields();
 		enqSpecResetfields();
-		loadSrchRslt();
 	}
 	
 	// This function is used for save the Sales Enquiry details for temporary

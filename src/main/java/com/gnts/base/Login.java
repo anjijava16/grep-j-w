@@ -77,8 +77,10 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
@@ -651,6 +653,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 					/**
 					 * add list to Menu
 					 */
+				
 					appScreenList = serviceAppScreen.getMBaseAppScreenListByUserId(userId);
 					MenuItem settingsMenu = mbFavarotise.addItem("", null);
 					// settingsMenu.setStyleName("icon-cog");
@@ -667,6 +670,17 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 					System.out.println("Current Date" + DateUtils.getcurrentdate());
 					System.out.println("Current DateTime in GMT : " + gmtFormat.format(DateUtils.getcurrentdate()));
 					System.out.println("Adjust time" + adjustTime);
+					if (roleId==2) {
+						UI.getCurrent().getSession().setAttribute("IS_ENQ_WF", false);
+						UI.getCurrent().getSession().setAttribute("IS_PROD_FRM", false);
+						UI.getCurrent().getSession().setAttribute("IS_QC_FRM", false);
+						UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", true);
+					} else if (roleId==3) {
+						UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", false);
+						UI.getCurrent().getSession().setAttribute("IS_DIE_ENQ", false);
+						UI.getCurrent().getSession().setAttribute("IS_ENQ_WF", true);
+						UI.getCurrent().getSession().setAttribute("IS_DESIGN_DR", true);
+					}
 					// System.out.println("Adjuseted Date and time"
 					// + gmtFormat.format(DateUtils.getcurrentdate().getTimezoneOffset()));
 					// Date dstDate = new Date( gmtFormat.format(DateUtils.getcurrentdate()) +

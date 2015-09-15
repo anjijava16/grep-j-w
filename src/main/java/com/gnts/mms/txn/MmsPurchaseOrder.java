@@ -87,7 +87,6 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table.Align;
@@ -121,9 +120,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	// // User Input Components for PO Details
 	private ComboBox cbBranch, cbStatus, cbVendor, cbpoType;
 	private GERPComboBox cbQuoteRef;
-	private TextField tfversionNo, tfBasictotal, tfPackingValue, tfPONo;
-	private TextField tfSubTotal;
-	private TextField tfCstValue, tfSubTaxTotal, tfEDValue, tfHEDValue, tfCessValue, tfVatValue;
+	private TextField tfCstValue, tfSubTaxTotal, tfEDValue, tfHEDValue, tfCessValue, tfVatValue,tfversionNo, tfBasictotal, tfPackingValue, tfPONo,tfSubTotal;
 	private TextField tfFreightValue, tfOtherValue, tfGrandtotal, tfvendorCode, tfpackingPer, tfVatPer, tfEDPer,
 			tfHEDPer, tfCessPer, tfCstPer, tfFreightPer, tfOtherPer;
 	private TextArea taRemark, taInvoiceOrd, taShpnAddr, tfPaymentTerms, tfFreightTerms, tfWarrentyTerms, tfDelTerms;
@@ -785,7 +782,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tblPODetails.setContainerDataSource(beanpodtl);
 		tblPODetails.setVisibleColumns(new Object[] { "materialname", "poqty", "reqQty", "unitrate", "basicvalue",
 				"podtlstatus", "lastupdatedt", "lastupdatedby" });
-		tblPODetails.setColumnHeaders(new String[] { "Material Name", "Qty", "Required Qty", "Unit Rate",
+		tblPODetails.setColumnHeaders(new String[] { "Material Name", "Quote Qty", "PO Qty", "Unit Rate",
 				"Basic Value", "Status", "Last Updated Date", "Last Updated By" });
 	}
 	

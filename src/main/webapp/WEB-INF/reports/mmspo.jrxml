@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="mmspo" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="1.3310000000000004"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="247"/>
 	<style name="Crosstab Data Text" hAlign="Center"/>
 	<parameter name="ENQID" class="java.lang.String"/>
 	<queryString>
@@ -38,7 +38,7 @@
   hdr.freight_terms,
   hdr.delivery_terms,
   m.materail_name,
-  dtl.po_qty,
+  dtl.po_qty ||' '|| dtl.material_uom rate_uom,
   dtl.unit_rate,
   dtl.basic_value,
   ltrim(pkg_app_utils.fn_amount_to_words(ROUND(hdr.grand_total,2))) amt_words
@@ -83,7 +83,7 @@ AND hdr.po_id    =$P{ENQID}]]>
 	<field name="FREIGHT_TERMS" class="java.lang.String"/>
 	<field name="DELIVERY_TERMS" class="java.lang.String"/>
 	<field name="MATERAIL_NAME" class="java.lang.String"/>
-	<field name="PO_QTY" class="java.math.BigDecimal"/>
+	<field name="RATE_UOM" class="java.lang.String"/>
 	<field name="UNIT_RATE" class="java.math.BigDecimal"/>
 	<field name="BASIC_VALUE" class="java.math.BigDecimal"/>
 	<field name="AMT_WORDS" class="java.lang.String"/>
@@ -243,7 +243,7 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Qty In Kgs]]></text>
+				<text><![CDATA[Quantity]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="b305570d-e399-441b-b78e-5341803dfc71" x="0" y="0" width="32" height="20"/>
@@ -279,14 +279,14 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<textFieldExpression><![CDATA[$F{BASIC_VALUE}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="518a5ca2-d3e8-414b-af01-d65788a5d915" x="233" y="3" width="66" height="18"/>
-				<textElement textAlignment="Center"/>
-				<textFieldExpression><![CDATA[$F{REQUIRED_QTY}]]></textFieldExpression>
-			</textField>
-			<textField>
 				<reportElement uuid="a427184f-5f48-4a03-9b18-b83ad2a66968" x="315" y="3" width="92" height="18"/>
 				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$F{UNIT_RATE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="883623d0-15ff-43c9-8bc9-ca76282d52d5" x="233" y="2" width="66" height="20"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{RATE_UOM}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

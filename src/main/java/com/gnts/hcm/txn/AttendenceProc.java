@@ -105,7 +105,7 @@ public class AttendenceProc extends BaseUI {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Inside Material() constructor");
+				+ "Inside Attendence Proc() constructor");
 		buildView();
 	}
 	

@@ -119,13 +119,13 @@ public class Material extends BaseUI {
 	private ComboBox cbMatConsBranch, cbMatConsDepartment;
 	private ComboBox cbMatConsStatus = new GERPComboBox("Status", BASEConstants.M_BASE_USER, BASEConstants.USER_STATUS);
 	private Table tblMatCons = new GERPTable();
-	private Button btnaddMatCons = new GERPButton("Add", "addbt", this);
-	private Button btndeletematcmr = new GERPButton("Delete", "delete", this);
+	private Button btnAddMatCons = new GERPButton("Add", "addbt", this);
+	private Button btnDeletematcmr = new GERPButton("Delete", "delete", this);
 	// Material Owner Components Declaration
 	private ComboBox cbMatOwnerEmployee, cbMatOwnerBranch, cbMatOwnerDept;
 	private ComboBox cbMatOwnerStatus = new GERPComboBox("Status", BASEConstants.M_BASE_USER, BASEConstants.USER_STATUS);
 	private Button btnaddMatOwner = new GERPButton("Add", "addbt", this);
-	private Button btndeletematowner = new GERPButton("Delete", "delete", this);
+	private Button btnDeleteMatOwner = new GERPButton("Delete", "delete", this);
 	private Table tblMatOwner = new GERPTable();
 	// Material Specification Components Declaration
 	private TextField tfMatSpecName;
@@ -195,7 +195,7 @@ public class Material extends BaseUI {
 				}
 			}
 		});
-		btndeletematowner.setEnabled(false);
+		btnDeleteMatOwner.setEnabled(false);
 		tblMatOwner = new GERPTable();
 		tblMatOwner.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -206,24 +206,24 @@ public class Material extends BaseUI {
 					tblMatOwner.setImmediate(true);
 					btnaddMatOwner.setCaption("Add");
 					btnaddMatOwner.setStyleName("savebt");
-					btndeletematowner.setEnabled(false);
+					btnDeleteMatOwner.setEnabled(false);
 					matOwnerResetFields();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnaddMatOwner.setCaption("Update");
 					btnaddMatOwner.setStyleName("savebt");
-					btndeletematowner.setEnabled(true);
+					btnDeleteMatOwner.setEnabled(true);
 					editMaterialOwner();
 				}
 			}
 		});
-		btndeletematowner.addClickListener(new ClickListener() {
+		btnDeleteMatOwner.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (btndeletematowner == event.getButton()) {
+				if (btnDeleteMatOwner == event.getButton()) {
 					deletematowner();
 				}
 			}
@@ -234,8 +234,8 @@ public class Material extends BaseUI {
 		cbMatConsBranch.setItemCaptionPropertyId("branchName");
 		cbMatConsDepartment = new GERPComboBox("Department");
 		cbMatConsDepartment.setItemCaptionPropertyId("deptname");
-		btnaddMatCons.setStyleName("add");
-		btnaddMatCons.addClickListener(new ClickListener() {
+		btnAddMatCons.setStyleName("add");
+		btnAddMatCons.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update for Material Consumer
 			private static final long serialVersionUID = 6551953728534136363L;
 			
@@ -246,7 +246,7 @@ public class Material extends BaseUI {
 				}
 			}
 		});
-		btndeletematcmr.setEnabled(false);
+		btnDeletematcmr.setEnabled(false);
 		tblMatCons = new GERPTable();
 		// ClickListener for Material Consumer Tale
 		tblMatCons.addItemClickListener(new ItemClickListener() {
@@ -256,26 +256,26 @@ public class Material extends BaseUI {
 			public void itemClick(ItemClickEvent event) {
 				if (tblMatCons.isSelected(event.getItemId())) {
 					tblMatCons.setImmediate(true);
-					btnaddMatCons.setCaption("Add");
-					btnaddMatCons.setStyleName("savebt");
-					btndeletematcmr.setEnabled(false);
+					btnAddMatCons.setCaption("Add");
+					btnAddMatCons.setStyleName("savebt");
+					btnDeletematcmr.setEnabled(false);
 					matConsResetFields();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
-					btnaddMatCons.setCaption("Update");
-					btnaddMatCons.setStyleName("savebt");
-					btndeletematcmr.setEnabled(true);
+					btnAddMatCons.setCaption("Update");
+					btnAddMatCons.setStyleName("savebt");
+					btnDeletematcmr.setEnabled(true);
 					editMaterialConsumer();
 				}
 			}
 		});
-		btndeletematcmr.addClickListener(new ClickListener() {
+		btnDeletematcmr.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (btndeletematcmr == event.getButton()) {
+				if (btnDeletematcmr == event.getButton()) {
 					deletematconsumer();
 				}
 			}
@@ -399,7 +399,7 @@ public class Material extends BaseUI {
 				listMatOwner.remove(save);
 				matOwnerResetFields();
 				loadSrchMatOwnerRslt(false);
-				btndeletematowner.setEnabled(false);
+				btnDeleteMatOwner.setEnabled(false);
 			}
 		}
 		catch (Exception e) {
@@ -415,7 +415,7 @@ public class Material extends BaseUI {
 				listMatConsumer.remove(save);
 				matConsResetFields();
 				loadSrchMatConsRslt(false);
-				btndeletematcmr.setEnabled(false);
+				btnDeletematcmr.setEnabled(false);
 			}
 		}
 		catch (Exception e) {
@@ -623,9 +623,9 @@ public class Material extends BaseUI {
 		hlMaterialOwnerComponent.addComponent(flMaterialOwner3);
 		hlMaterialOwnerComponent.addComponent(flMaterialOwner4);
 		hlMaterialOwnerComponent.addComponent(btnaddMatOwner);
-		hlMaterialOwnerComponent.addComponent(btndeletematowner);
+		hlMaterialOwnerComponent.addComponent(btnDeleteMatOwner);
 		hlMaterialOwnerComponent.setComponentAlignment(btnaddMatOwner, Alignment.MIDDLE_LEFT);
-		hlMaterialOwnerComponent.setComponentAlignment(btndeletematowner, Alignment.MIDDLE_LEFT);
+		hlMaterialOwnerComponent.setComponentAlignment(btnDeleteMatOwner, Alignment.MIDDLE_LEFT);
 		hlMaterialOwnerComponent.setSpacing(true);
 		hlMaterialOwnerComponent.setMargin(true);
 		hlMaterialOwnerComponent.setSizeUndefined();
@@ -658,10 +658,10 @@ public class Material extends BaseUI {
 		hlMaterialConsumerComponent.addComponent(flMaterialConsumer1);
 		hlMaterialConsumerComponent.addComponent(flMaterialConsumer2);
 		hlMaterialConsumerComponent.addComponent(flMaterialConsumer3);
-		hlMaterialConsumerComponent.addComponent(btnaddMatCons);
-		hlMaterialConsumerComponent.addComponent(btndeletematcmr);
-		hlMaterialConsumerComponent.setComponentAlignment(btnaddMatCons, Alignment.MIDDLE_LEFT);
-		hlMaterialConsumerComponent.setComponentAlignment(btndeletematcmr, Alignment.MIDDLE_LEFT);
+		hlMaterialConsumerComponent.addComponent(btnAddMatCons);
+		hlMaterialConsumerComponent.addComponent(btnDeletematcmr);
+		hlMaterialConsumerComponent.setComponentAlignment(btnAddMatCons, Alignment.MIDDLE_LEFT);
+		hlMaterialConsumerComponent.setComponentAlignment(btnDeletematcmr, Alignment.MIDDLE_LEFT);
 		hlMaterialConsumerComponent.setSpacing(true);
 		hlMaterialConsumerComponent.setMargin(true);
 		hlMaterialConsumerComponent.setSizeUndefined();
@@ -1224,7 +1224,7 @@ public class Material extends BaseUI {
 		cbMatConsBranch.setValue(null);
 		cbMatConsDepartment.setValue(null);
 		tblMatCons.setValue(null);
-		btnaddMatCons.setCaption("Add");
+		btnAddMatCons.setCaption("Add");
 		cbMatConsStatus.setValue(cbMatConsStatus.getItemIds().iterator().next());
 	}
 	
@@ -1326,7 +1326,7 @@ public class Material extends BaseUI {
 			materialConsObj.setCompanyId(companyId);
 			listMatConsumer.add(materialConsObj);
 			loadSrchMatConsRslt(false);
-			btnaddMatCons.setCaption("Add");
+			btnAddMatCons.setCaption("Add");
 			matConsResetFields();
 		}
 		catch (Exception e) {

@@ -298,10 +298,10 @@ public class EmployeeEarning extends BaseUI {
 			beanEmployeeDM.setBeanIdProperty("employeeid");
 			beanEmployeeDM.addAll(empList);
 			cbEmpName.setContainerDataSource(beanEmployeeDM);
-			BeanContainer<Long, EmployeeDM> beanEmployeeDM1 = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-			beanEmployeeDM1.setBeanIdProperty("employeeid");
-			beanEmployeeDM1.addAll(empList);
-			cbSearchEmpName.setContainerDataSource(beanEmployeeDM1);
+			beanEmployeeDM = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployeeDM.setBeanIdProperty("employeeid");
+			beanEmployeeDM.addAll(empList);
+			cbSearchEmpName.setContainerDataSource(beanEmployeeDM);
 		}
 		catch (Exception e) {
 			logger.info("load Employee details" + e);
@@ -315,10 +315,10 @@ public class EmployeeEarning extends BaseUI {
 			beanEarning.setBeanIdProperty("earnId");
 			beanEarning.addAll(earningList);
 			cbEarnCode.setContainerDataSource(beanEarning);
-			BeanContainer<Long, EarningsDM> beanEarning1 = new BeanContainer<Long, EarningsDM>(EarningsDM.class);
-			beanEarning1.setBeanIdProperty("earnId");
-			beanEarning1.addAll(earningList);
-			cbSearchEarnCode.setContainerDataSource(beanEarning1);
+			beanEarning = new BeanContainer<Long, EarningsDM>(EarningsDM.class);
+			beanEarning.setBeanIdProperty("earnId");
+			beanEarning.addAll(earningList);
+			cbSearchEarnCode.setContainerDataSource(beanEarning);
 		}
 		catch (Exception ex) {
 			logger.info("load Earnings Details" + ex);

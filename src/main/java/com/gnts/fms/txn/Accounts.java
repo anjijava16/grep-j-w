@@ -301,14 +301,14 @@ public class Accounts extends BaseTransUI {
 			employeebeans.setBeanIdProperty("employeeid");
 			employeebeans.addAll(list);
 			cbOwnerName.setContainerDataSource(employeebeans);
-			BeanContainer<Long, EmployeeDM> employeebeans1 = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-			employeebeans1.setBeanIdProperty("employeeid");
-			employeebeans1.addAll(list);
-			cbApproveManager.setContainerDataSource(employeebeans1);
-			BeanContainer<Long, EmployeeDM> employeebeans2 = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-			employeebeans2.setBeanIdProperty("employeeid");
-			employeebeans2.addAll(list);
-			lsAccountOwners.setContainerDataSource(employeebeans2);
+			employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			employeebeans.setBeanIdProperty("employeeid");
+			employeebeans.addAll(list);
+			cbApproveManager.setContainerDataSource(employeebeans);
+			employeebeans = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			employeebeans.setBeanIdProperty("employeeid");
+			employeebeans.addAll(list);
+			lsAccountOwners.setContainerDataSource(employeebeans);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

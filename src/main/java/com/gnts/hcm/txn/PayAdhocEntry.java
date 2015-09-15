@@ -53,7 +53,7 @@ import com.vaadin.ui.UI;
 public class PayAdhocEntry extends BaseUI {
 	private Logger logger = Logger.getLogger(PayAdhocEntry.class);
 	private static final long serialVersionUID = 1L;
-	private PayAdhocEntryService servicePayadhocentry = (PayAdhocEntryService) SpringContextHelper.getBean("PayAdhoc");
+	private PayAdhocEntryService servicePayAdhocEntry = (PayAdhocEntryService) SpringContextHelper.getBean("PayAdhoc");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private HorizontalLayout hluserInputlayout = new HorizontalLayout();
 	// Search Horizontal Layout
@@ -159,7 +159,7 @@ public class PayAdhocEntry extends BaseUI {
 			}
 			List<PayAdhocEntryDM> list = new ArrayList<PayAdhocEntryDM>();
 			Date payrolldt = (Date) pdfPayDate.getValue();
-			list = servicePayadhocentry.getPayAdhocEntry(null, empid, payrolldt, (String) cbStatus.getValue(), "F");
+			list = servicePayAdhocEntry.getPayAdhocEntry(null, empid, payrolldt, (String) cbStatus.getValue(), "F");
 			recordCnt = list.size();
 			beanPayAdhocEntryDM = new BeanItemContainer<PayAdhocEntryDM>(PayAdhocEntryDM.class);
 			beanPayAdhocEntryDM.addAll(list);
@@ -250,7 +250,7 @@ public class PayAdhocEntry extends BaseUI {
 		payadhocobj.setEntryRemarks(taRemarks.getValue());
 		payadhocobj.setLastUpdatedDt(DateUtils.getcurrentdate());
 		payadhocobj.setLastUpdatedBy(username);
-		servicePayadhocentry.saveAndUpdate(payadhocobj);
+		servicePayAdhocEntry.saveAndUpdate(payadhocobj);
 		resetFields();
 		loadSrchRslt();
 	}

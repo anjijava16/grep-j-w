@@ -62,7 +62,7 @@ public class AppraisalLevels extends BaseUI {
 	private TextField tfLevelName;
 	private PopupDateField dfStartDate;
 	private PopupDateField dfEndDate;
-	private ComboBox cbStatus, cbapprasallvl, cbapprsalyr;
+	private ComboBox cbStatus, cbApprasalLvl, cbApprsalYr;
 	private GERPTextArea taApprasialDtls;
 	private FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4;
 	private HorizontalLayout hlsearchlayout;
@@ -84,11 +84,11 @@ public class AppraisalLevels extends BaseUI {
 	private void buidview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "building appraisallevel UI");
 		tfLevelName = new GERPTextField("Level Name");
-		cbapprasallvl = new GERPComboBox("Appraisal Level");
-		cbapprasallvl.setItemCaptionPropertyId("lookupname");
+		cbApprasalLvl = new GERPComboBox("Appraisal Level");
+		cbApprasalLvl.setItemCaptionPropertyId("lookupname");
 		loadappraisallvl();
-		cbapprsalyr = new GERPComboBox("Appraisal Year");
-		cbapprsalyr.setInputPrompt("Select Year");
+		cbApprsalYr = new GERPComboBox("Appraisal Year");
+		cbApprsalYr.setInputPrompt("Select Year");
 		loadapprlist();
 		dfStartDate = new GERPPopupDateField("Start Date");
 		dfStartDate.setInputPrompt("Select Date");
@@ -112,7 +112,7 @@ public class AppraisalLevels extends BaseUI {
 		flcolumn3 = new GERPFormLayout();
 		flcolumn4 = new GERPFormLayout();
 		flcolumn1.addComponent(tfLevelName);
-		flcolumn2.addComponent(cbapprasallvl);
+		flcolumn2.addComponent(cbApprasalLvl);
 		flcolumn3.addComponent(cbStatus);
 		hlsearchlayout.addComponent(flcolumn1);
 		hlsearchlayout.addComponent(flcolumn2);
@@ -131,9 +131,9 @@ public class AppraisalLevels extends BaseUI {
 		flcolumn4 = new GERPFormLayout();
 		flcolumn1.addComponent(tfLevelName);
 		tfLevelName.setRequired(true);
-		flcolumn1.addComponent(cbapprasallvl);
-		cbapprasallvl.setRequired(true);
-		flcolumn2.addComponent(cbapprsalyr);
+		flcolumn1.addComponent(cbApprasalLvl);
+		cbApprasalLvl.setRequired(true);
+		flcolumn2.addComponent(cbApprsalYr);
 		flcolumn2.addComponent(dfStartDate);
 		dfStartDate.setWidth("130");
 		flcolumn3.addComponent(dfEndDate);
@@ -156,7 +156,7 @@ public class AppraisalLevels extends BaseUI {
 			tblMstScrSrchRslt.removeAllItems();
 			List<AppraisalLevelsDM> list = new ArrayList<AppraisalLevelsDM>();
 			String levelname = tfLevelName.getValue().toString();
-			list = serviceAppraisalLevel.getAppraisalLevelsList(null, (String) cbapprasallvl.getValue(),
+			list = serviceAppraisalLevel.getAppraisalLevelsList(null, (String) cbApprasalLvl.getValue(),
 					levelname, (String) cbStatus.getValue(), "F");
 			recordCnt = list.size();
 			beanAppraisalLevelsDM = new BeanItemContainer<AppraisalLevelsDM>(AppraisalLevelsDM.class);
@@ -191,7 +191,7 @@ public class AppraisalLevels extends BaseUI {
 	@Override
 	protected void resetSearchDetails() {
 		tfLevelName.setValue("");
-		cbapprasallvl.setValue(null);
+		cbApprasalLvl.setValue(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		loadSrchRslt();
 	}
@@ -229,8 +229,8 @@ public class AppraisalLevels extends BaseUI {
 						.getBean();
 				cbStatus.setValue(appraisalLevel.getLevelstatus());
 				tfLevelName.setValue(appraisalLevel.getLevelname());
-				cbapprasallvl.setValue(appraisalLevel.getAppraisallevel());
-				cbapprsalyr.setValue(appraisalLevel.getAppraisalyear());
+				cbApprasalLvl.setValue(appraisalLevel.getAppraisallevel());
+				cbApprsalYr.setValue(appraisalLevel.getAppraisalyear());
 				if (appraisalLevel.getStartdate() != null) {
 					dfStartDate.setValue(appraisalLevel.getStartdate());
 				}
@@ -251,14 +251,14 @@ public class AppraisalLevels extends BaseUI {
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		tfLevelName.setComponentError(null);
-		cbapprasallvl.setComponentError(null);
+		cbApprasalLvl.setComponentError(null);
 		boolean errorflag = false;
 		if ((tfLevelName.getValue() == null) || tfLevelName.getValue().trim().length() == 0) {
 			tfLevelName.setComponentError(new UserError(GERPErrorCodes.NULL_LEVEL_NAME));
 			errorflag = true;
 		}
-		if ((cbapprasallvl.getValue() == null)) {
-			cbapprasallvl.setComponentError(new UserError(GERPErrorCodes.NULL_APPRAISAL_LEVEL));
+		if ((cbApprasalLvl.getValue() == null)) {
+			cbApprasalLvl.setComponentError(new UserError(GERPErrorCodes.NULL_APPRAISAL_LEVEL));
 			errorflag = true;
 		}
 		if ((dfStartDate.getValue() != null) || (dfEndDate.getValue() != null)) {
@@ -266,7 +266,7 @@ public class AppraisalLevels extends BaseUI {
 				dfEndDate.setComponentError(new UserError(GERPErrorCodes.DATE_OUTOFRANGE));
 				logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
 						+ "Throwing ValidationException. User data is > " + tfLevelName.getValue() + ","
-						+ cbapprsalyr.getValue());
+						+ cbApprsalYr.getValue());
 				errorflag = true;
 			}
 		}
@@ -285,11 +285,11 @@ public class AppraisalLevels extends BaseUI {
 			}
 			appraisalLevels.setCompanyid(companyid);
 			appraisalLevels.setLevelname(tfLevelName.getValue());
-			if (cbapprsalyr.getValue() != null) {
-				appraisalLevels.setAppraisalyear(cbapprsalyr.getValue().toString());
+			if (cbApprsalYr.getValue() != null) {
+				appraisalLevels.setAppraisalyear(cbApprsalYr.getValue().toString());
 			}
-			if (cbapprasallvl.getValue() != null) {
-				appraisalLevels.setAppraisallevel(cbapprasallvl.getValue().toString());
+			if (cbApprasalLvl.getValue() != null) {
+				appraisalLevels.setAppraisallevel(cbApprasalLvl.getValue().toString());
 			}
 			if (cbStatus.getValue() != null) {
 				appraisalLevels.setLevelstatus(cbStatus.getValue().toString());
@@ -317,7 +317,7 @@ public class AppraisalLevels extends BaseUI {
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		tfLevelName.setRequired(false);
-		cbapprasallvl.setRequired(false);
+		cbApprasalLvl.setRequired(false);
 		assemblsearch();
 		hlCmdBtnLayout.setVisible(true);
 		tblMstScrSrchRslt.setVisible(true);
@@ -329,10 +329,10 @@ public class AppraisalLevels extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "resetfields...");
 		tfLevelName.setValue("");
 		tfLevelName.setComponentError(null);
-		cbapprasallvl.setValue(null);
-		cbapprasallvl.setComponentError(null);
-		cbapprsalyr.setValue(null);
-		cbapprsalyr.setComponentError(null);
+		cbApprasalLvl.setValue(null);
+		cbApprasalLvl.setComponentError(null);
+		cbApprsalYr.setValue(null);
+		cbApprsalYr.setComponentError(null);
 		dfStartDate.setValue(null);
 		dfStartDate.setComponentError(null);
 		dfEndDate.setValue(null);
@@ -346,7 +346,7 @@ public class AppraisalLevels extends BaseUI {
 		int year = 1990;
 		for (i = 0; i < 50; i++) {
 			year = year + 1;
-			cbapprsalyr.addItem(year + "");
+			cbApprsalYr.addItem(year + "");
 		}
 	}
 	
@@ -359,7 +359,7 @@ public class AppraisalLevels extends BaseUI {
 			beanCompanyLookUp.setBeanIdProperty("lookupname");
 			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
 					"HC_GRDLVL"));
-			cbapprasallvl.setContainerDataSource(beanCompanyLookUp);
+			cbApprasalLvl.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

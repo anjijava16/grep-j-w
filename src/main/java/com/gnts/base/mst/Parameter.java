@@ -58,7 +58,7 @@ public class Parameter extends BaseUI {
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// User Input Components
-	private TextField tfparameterRef, tfmodulcode, tfparametervalue, tfparameterdesc;
+	private TextField tfParameterRef, tfModulcode, tfParamValue, tfParamDesc;
 	private PopupDateField dfParamStartdate, dfParamEndDate;
 	private ComboBox cbparameterstatus;
 	// Bean Container
@@ -88,14 +88,14 @@ public class Parameter extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting Parameter UI");
 		btnAdd.setVisible(false);
 		// Parameter ref text field
-		tfparameterRef = new GERPTextField("Parameter Ref");
+		tfParameterRef = new GERPTextField("Parameter Ref");
 		// Parameter Module code text field
-		tfmodulcode = new GERPTextField("Module Code");
+		tfModulcode = new GERPTextField("Module Code");
 		// Parameter Value text field
-		tfparametervalue = new GERPTextField("Param Value");
-		tfparametervalue.setMaxLength(25);
+		tfParamValue = new GERPTextField("Param Value");
+		tfParamValue.setMaxLength(25);
 		// Parameter Desc text field
-		tfparameterdesc = new GERPTextField("Param Description");
+		tfParamDesc = new GERPTextField("Param Description");
 		// Parameter Start Date text field
 		dfParamStartdate = new GERPPopupDateField("Param. Start Date");
 		dfParamStartdate.setInputPrompt("Select Date");
@@ -120,7 +120,7 @@ public class Parameter extends BaseUI {
 		// Add components for Search Layout
 		flColumn1 = new GERPFormLayout();
 		flColumn2 = new GERPFormLayout();
-		flColumn1.addComponent(tfparameterRef);
+		flColumn1.addComponent(tfParameterRef);
 		flColumn2.addComponent(cbparameterstatus);
 		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn2);
@@ -137,10 +137,10 @@ public class Parameter extends BaseUI {
 		flColumn2 = new GERPFormLayout();
 		flColumn3 = new GERPFormLayout();
 		flColumn4 = new GERPFormLayout();
-		flColumn1.addComponent(tfmodulcode);
-		flColumn1.addComponent(tfparameterRef);
-		flColumn2.addComponent(tfparameterdesc);
-		flColumn2.addComponent(tfparametervalue);
+		flColumn1.addComponent(tfModulcode);
+		flColumn1.addComponent(tfParameterRef);
+		flColumn2.addComponent(tfParamDesc);
+		flColumn2.addComponent(tfParamValue);
 		flColumn3.addComponent(dfParamStartdate);
 		flColumn3.addComponent(dfParamEndDate);
 		flColumn4.addComponent(cbparameterstatus);
@@ -157,8 +157,8 @@ public class Parameter extends BaseUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			List<ParameterDM> list = new ArrayList<ParameterDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-					+ companyid + ", " + tfparameterRef.getValue() + ", " + (String) cbparameterstatus.getValue());
-			list = serviceParameter.getParameterList(null, null, tfparameterRef.getValue(),
+					+ companyid + ", " + tfParameterRef.getValue() + ", " + (String) cbparameterstatus.getValue());
+			list = serviceParameter.getParameterList(null, null, tfParameterRef.getValue(),
 					(String) cbparameterstatus.getValue(), companyid);
 			recordCnt = list.size();
 			beanparameterDM = new BeanItemContainer<ParameterDM>(ParameterDM.class);
@@ -184,10 +184,10 @@ public class Parameter extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		setReadOnlyFalseFields();
 		dfParamStartdate.setValue(null);
-		tfmodulcode.setValue("");
-		tfparameterRef.setValue("");
-		tfparametervalue.setValue("");
-		tfparameterdesc.setValue("");
+		tfModulcode.setValue("");
+		tfParameterRef.setValue("");
+		tfParamValue.setValue("");
+		tfParamDesc.setValue("");
 		dfParamEndDate.setValue(null);
 		cbparameterstatus.setValue(cbparameterstatus.getItemIds().iterator().next());
 		setReadOnlyFalseFields();
@@ -202,20 +202,20 @@ public class Parameter extends BaseUI {
 				String editableMode = rowSelected.getItemProperty("editYn").getValue().toString();
 				parameterId = rowSelected.getItemProperty("paramId").getValue().toString();
 				setReadOnlyFalseFields();
-				tfparameterRef.setValue(rowSelected.getItemProperty("paramRef").getValue().toString());
-				tfparameterdesc.setValue(rowSelected.getItemProperty("paramDesc").getValue().toString());
-				tfparametervalue.setValue(rowSelected.getItemProperty("paramValue").getValue().toString());
-				tfmodulcode.setValue(rowSelected.getItemProperty("moduleCode").getValue().toString());
+				tfParameterRef.setValue(rowSelected.getItemProperty("paramRef").getValue().toString());
+				tfParamDesc.setValue(rowSelected.getItemProperty("paramDesc").getValue().toString());
+				tfParamValue.setValue(rowSelected.getItemProperty("paramValue").getValue().toString());
+				tfModulcode.setValue(rowSelected.getItemProperty("moduleCode").getValue().toString());
 				dfParamStartdate.setValue((Date) rowSelected.getItemProperty("paramStDate").getValue());
 				dfParamEndDate.setValue((Date) rowSelected.getItemProperty("paramEndDate").getValue());
 				cbparameterstatus.setValue(rowSelected.getItemProperty("paramStatus").getValue());
 				if (editableMode.equals("N")) {
 					setReadOnlyTrueFields();
 				} else {
-					tfparameterdesc.setReadOnly(true);
-					tfmodulcode.setReadOnly(true);
+					tfParamDesc.setReadOnly(true);
+					tfModulcode.setReadOnly(true);
 					cbparameterstatus.setReadOnly(true);
-					tfparameterRef.setReadOnly(true);
+					tfParameterRef.setReadOnly(true);
 				}
 			}
 		}
@@ -225,22 +225,22 @@ public class Parameter extends BaseUI {
 	}
 	
 	private void setReadOnlyFalseFields() {
-		tfparameterRef.setReadOnly(false);
-		tfparametervalue.setReadOnly(false);
+		tfParameterRef.setReadOnly(false);
+		tfParamValue.setReadOnly(false);
 		dfParamEndDate.setReadOnly(false);
 		dfParamStartdate.setReadOnly(false);
-		tfparameterdesc.setReadOnly(false);
-		tfmodulcode.setReadOnly(false);
+		tfParamDesc.setReadOnly(false);
+		tfModulcode.setReadOnly(false);
 		cbparameterstatus.setReadOnly(false);
 	}
 	
 	private void setReadOnlyTrueFields() {
-		tfparameterRef.setReadOnly(true);
-		tfparametervalue.setReadOnly(true);
+		tfParameterRef.setReadOnly(true);
+		tfParamValue.setReadOnly(true);
 		dfParamEndDate.setReadOnly(true);
 		dfParamStartdate.setReadOnly(true);
-		tfparameterdesc.setReadOnly(true);
-		tfmodulcode.setReadOnly(true);
+		tfParamDesc.setReadOnly(true);
+		tfModulcode.setReadOnly(true);
 		cbparameterstatus.setReadOnly(true);
 	}
 	
@@ -268,7 +268,7 @@ public class Parameter extends BaseUI {
 		hlUserInputLayout.removeAllComponents();
 		// reset the field valued to default
 		cbparameterstatus.setValue(cbparameterstatus.getItemIds().iterator().next());
-		tfparameterRef.setValue("");
+		tfParameterRef.setValue("");
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		// reload the search using the defaults
@@ -297,18 +297,18 @@ public class Parameter extends BaseUI {
 	@Override
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		tfparameterdesc.setComponentError(null);
-		if ((tfparametervalue.getValue() == null) || tfparametervalue.getValue().trim().length() == 0) {
-			tfparametervalue.setComponentError(new UserError(GERPErrorCodes.NULL_PARAMETER_VALUE));
+		tfParamDesc.setComponentError(null);
+		if ((tfParamValue.getValue() == null) || tfParamValue.getValue().trim().length() == 0) {
+			tfParamValue.setComponentError(new UserError(GERPErrorCodes.NULL_PARAMETER_VALUE));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + tfparametervalue.getValue());
+					+ "Throwing ValidationException. User data is > " + tfParamValue.getValue());
 			throw new ERPException.ValidationException();
 		}
 		if ((dfParamStartdate.getValue() != null) || (dfParamEndDate.getValue() != null)) {
 			if (dfParamStartdate.getValue().after(dfParamEndDate.getValue())) {
 				dfParamEndDate.setComponentError(new UserError(GERPErrorCodes.DATE_OUTOFRANGE));
 				logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-						+ "Throwing ValidationException. User data is > " + tfparametervalue.getValue());
+						+ "Throwing ValidationException. User data is > " + tfParamValue.getValue());
 				throw new ERPException.ValidationException();
 			}
 		}
@@ -336,10 +336,10 @@ public class Parameter extends BaseUI {
 		if (tblMstScrSrchRslt.getValue() != null) {
 			ParameterDM paramobj = beanparameterDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			paramobj.setCompanyId(companyid);
-			paramobj.setModuleCode(tfmodulcode.getValue());
-			paramobj.setParamDesc(tfparameterdesc.getValue());
-			paramobj.setParamRef(tfparameterRef.getValue());
-			paramobj.setParamValue(tfparametervalue.getValue());
+			paramobj.setModuleCode(tfModulcode.getValue());
+			paramobj.setParamDesc(tfParamDesc.getValue());
+			paramobj.setParamRef(tfParameterRef.getValue());
+			paramobj.setParamValue(tfParamValue.getValue());
 			paramobj.setParamEndDate((Date) dfParamEndDate.getValue());
 			paramobj.setParamStDate((Date) dfParamStartdate.getValue());
 			paramobj.setLastUpdatedBy(username);

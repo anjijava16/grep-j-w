@@ -56,7 +56,7 @@ import com.vaadin.ui.UI;
 
 public class EmployeeAttendence extends BaseUI {
 	// Bean creation
-	private EmpAttendenceService serviceEmpAtndnc = (EmpAttendenceService) SpringContextHelper.getBean("EmpAttendence");
+	private EmpAttendenceService serviceEmpAtten = (EmpAttendenceService) SpringContextHelper.getBean("EmpAttendence");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private AttendenceProcService serviceAttendenceProce = (AttendenceProcService) SpringContextHelper
 			.getBean("AttendenceProc");
@@ -71,7 +71,7 @@ public class EmployeeAttendence extends BaseUI {
 	private ComboBox cbStatus, cbEmpName;
 	private DateField dfAtndence, dfStartDt, dfEndDt;
 	private TextField tfReturnCount, tfLWPHrs;
-	private GERPTimeField tfPresentHr, tfOTHrs, tflateHrs, tfAbsentHr, tfLeaveHr, tfOnDutyHr, tfPermisnHr;
+	private GERPTimeField tfPresentHr, tfOTHrs, tfLateHrs, tfAbsentHr, tfLeaveHr, tfOnDutyHr, tfPermisnHr;
 	private Button btnRunAtten = new GERPButton("Save", "savebt");
 	// BeanItemContainer
 	private BeanItemContainer<EmpAttendenceDM> beanEmpAtndncDM = null;
@@ -122,7 +122,7 @@ public class EmployeeAttendence extends BaseUI {
 		// OT Hour TimeField
 		tfOTHrs = new GERPTimeField("OT Hour");
 		// Late hours TimeField
-		tflateHrs = new GERPTimeField("Late Hour");
+		tfLateHrs = new GERPTimeField("Late Hour");
 		// Absent Hour TimeField
 		tfAbsentHr = new GERPTimeField("Absent Hour");
 		// Leave Hour TimeField
@@ -222,7 +222,7 @@ public class EmployeeAttendence extends BaseUI {
 			empAttendenceDM.setStatus("Pending");
 			empAttendenceDM.setLastUpdatedBy(username);
 			empAttendenceDM.setLastUpdatedDt(new Date());
-			serviceEmpAtndnc.saveAndUpdate(empAttendenceDM);
+			serviceEmpAtten.saveAndUpdate(empAttendenceDM);
 		}
 		catch (Exception ex) {
 			logger.info(ex.getMessage());
@@ -238,7 +238,7 @@ public class EmployeeAttendence extends BaseUI {
 			if (search) {
 				list = new ArrayList<EmpAttendenceDM>();
 				if ((Long) cbEmpName.getValue() != null) {
-					list = serviceEmpAtndnc.getByStaffAttendenceList((Long) cbEmpName.getValue());
+					list = serviceEmpAtten.getByStaffAttendenceList((Long) cbEmpName.getValue());
 				}
 			} else {
 				list = serviceAttendenceProce.loadStaffAttendanceList(processId);
@@ -267,7 +267,7 @@ public class EmployeeAttendence extends BaseUI {
 		dfAtndence.setValue(null);
 		tfPresentHr.setValue(null);
 		tfOTHrs.setValue(null);
-		tflateHrs.setValue(null);
+		tfLateHrs.setValue(null);
 		tfAbsentHr.setValue(null);
 		tfLeaveHr.setValue(null);
 		tfOnDutyHr.setValue(null);
@@ -287,7 +287,7 @@ public class EmployeeAttendence extends BaseUI {
 				dfAtndence.setValue(empAttendence.getAttDt1());
 				tfPresentHr.setTime(empAttendence.getPresentHr());
 				tfOTHrs.setTime(empAttendence.getOtHrs());
-				tflateHrs.setTime(empAttendence.getLateHr());
+				tfLateHrs.setTime(empAttendence.getLateHr());
 				tfAbsentHr.setTime(empAttendence.getAbsentHr());
 				tfLeaveHr.setTime(empAttendence.getLeaveHr());
 				tfOnDutyHr.setTime(empAttendence.getOndutyHr());
@@ -414,8 +414,8 @@ public class EmployeeAttendence extends BaseUI {
 		if (tfOTHrs.getValue() != null) {
 			empAdvncObj.setOtHrs(tfOTHrs.getHorsMunites());
 		}
-		if (tflateHrs.getValue() != null) {
-			empAdvncObj.setLateHr(tflateHrs.getHorsMunites());
+		if (tfLateHrs.getValue() != null) {
+			empAdvncObj.setLateHr(tfLateHrs.getHorsMunites());
 		}
 		if (tfAbsentHr.getValue() != null) {
 			empAdvncObj.setAbsentHr(tfAbsentHr.getHorsMunites());
@@ -441,7 +441,7 @@ public class EmployeeAttendence extends BaseUI {
 		empAdvncObj.setAttProcId(attnceProcId);
 		empAdvncObj.setLastUpdatedDt(DateUtils.getcurrentdate());
 		empAdvncObj.setLastUpdatedBy(username);
-		serviceEmpAtndnc.saveAndUpdate(empAdvncObj);
+		serviceEmpAtten.saveAndUpdate(empAdvncObj);
 		resetFields();
 		staffAttendancePapulateAndConfig(true);
 	}

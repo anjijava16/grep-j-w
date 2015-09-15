@@ -51,7 +51,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public class CompanyLookup extends BaseUI {
-	private ModuleService servModuleBean = (ModuleService) SpringContextHelper.getBean("module");
+	private ModuleService serviceModule = (ModuleService) SpringContextHelper.getBean("module");
 	private LookupService serviceLookUp = (LookupService) SpringContextHelper.getBean("lookup");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
@@ -65,7 +65,7 @@ public class CompanyLookup extends BaseUI {
 	private TextField tflookupname;
 	private ComboBox cbLookupCode;
 	private ComboBox cbModuleCode;
-	private ComboBox cbstatus;
+	private ComboBox cbStatus;
 	// Adding required domain classes into BeanItemContainer
 	private BeanItemContainer<CompanyLookupDM> beansCompanyLookup = null;
 	// local variables declaration
@@ -95,7 +95,7 @@ public class CompanyLookup extends BaseUI {
 		tflookupname = new GERPTextField("Lookup Value");
 		tflookupname.setMaxLength(100);
 		// CompanyLookup status combo box
-		cbstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// LookupCode combo box of CompanyLookup
 		cbLookupCode = new GERPComboBox("Lookup Ref.");
 		cbLookupCode.setItemCaptionPropertyId("lookupdesc");
@@ -127,7 +127,7 @@ public class CompanyLookup extends BaseUI {
 		flcbModuleCodeCode.addComponent(cbModuleCode);
 		flcbLookupCodeCode.addComponent(cbLookupCode);
 		flLookupName.addComponent(tflookupname);
-		flcbStatus.addComponent(cbstatus);
+		flcbStatus.addComponent(cbStatus);
 		hlUserInputLayout.addComponent(flcbModuleCodeCode);
 		hlUserInputLayout.addComponent(flcbLookupCodeCode);
 		hlUserInputLayout.addComponent(flLookupName);
@@ -163,7 +163,7 @@ public class CompanyLookup extends BaseUI {
 			List<CompanyLookupDM> lookuplist = new ArrayList<CompanyLookupDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tflookupname.getValue() + "," + lookupcode + ","
-					+ ((String) cbstatus.getValue()));
+					+ ((String) cbStatus.getValue()));
 			if (cbLookupCode.getValue() != null) {
 				lookupcode = ((Long) cbLookupCode.getValue());
 			}
@@ -171,7 +171,7 @@ public class CompanyLookup extends BaseUI {
 				moduleId = ((Long) cbModuleCode.getValue());
 			}
 			lookuplist = serviceCompanyLookup.getCompanyLookupList(companyid, tflookupname.getValue(), lookupcode,
-					((String) cbstatus.getValue()), moduleId, "F");
+					((String) cbStatus.getValue()), moduleId, "F");
 			recordCnt = lookuplist.size();
 			beansCompanyLookup = new BeanItemContainer<CompanyLookupDM>(CompanyLookupDM.class);
 			beansCompanyLookup.addAll(lookuplist);
@@ -195,7 +195,7 @@ public class CompanyLookup extends BaseUI {
 		try {
 			List<ModuleDM> moduleList = new ArrayList<ModuleDM>();
 			moduleList.add(new ModuleDM(0L, "All Modules"));
-			moduleList.addAll(servModuleBean.getModuleList(companyid));
+			moduleList.addAll(serviceModule.getModuleList(companyid));
 			BeanContainer<Long, ModuleDM> modulebean = new BeanContainer<Long, ModuleDM>(ModuleDM.class);
 			modulebean.setBeanIdProperty("moduleId");
 			modulebean.addAll(moduleList);
@@ -242,7 +242,7 @@ public class CompanyLookup extends BaseUI {
 		tflookupname.setComponentError(null);
 		cbLookupCode.setComponentError(null);
 		cbModuleCode.setComponentError(null);
-		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	
 	// Based on the selected record, the data would be populated into user input fields in the input form
@@ -259,7 +259,7 @@ public class CompanyLookup extends BaseUI {
 				tflookupname.setValue(companyLookupDM.getLookupname());
 				cbModuleCode.setValue((Long) companyLookupDM.getModuleid());
 				cbLookupCode.setValue((Long) companyLookupDM.getLookupid());
-				cbstatus.setValue(companyLookupDM.getLookupstatus());
+				cbStatus.setValue(companyLookupDM.getLookupstatus());
 			}
 		}
 		catch (Exception e) {
@@ -292,7 +292,7 @@ public class CompanyLookup extends BaseUI {
 		tflookupname.setValue("");
 		cbModuleCode.setValue(0L);
 		cbLookupCode.setValue(0L);
-		cbstatus.setValue(cbstatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		// reload the search using the defaults
 		loadSrchRslt();
 	}
@@ -391,8 +391,8 @@ public class CompanyLookup extends BaseUI {
 			if (cbModuleCode.getValue() != null) {
 				lookupobj.setModuleid((Long) cbModuleCode.getValue());
 			}
-			if (cbstatus.getValue() != null) {
-				lookupobj.setLookupstatus((String) cbstatus.getValue());
+			if (cbStatus.getValue() != null) {
+				lookupobj.setLookupstatus((String) cbStatus.getValue());
 			}
 			lookupobj.setLastupdateddt(DateUtils.getcurrentdate());
 			lookupobj.setLastupdatedby(username);

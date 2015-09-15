@@ -41,7 +41,7 @@ import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.UI;
 
 public class UserFav extends BaseUI {
-	private UserFavService servUserfavBean = (UserFavService) SpringContextHelper.getBean("userfavourites");
+	private UserFavService serviceUserfav = (UserFavService) SpringContextHelper.getBean("userfavourites");
 	private BeanItemContainer<UserFavDM> beanUserfav = null;
 	// local variables declaration
 	private Long companyid;
@@ -91,7 +91,7 @@ public class UserFav extends BaseUI {
 				if (listUserFav != null) {
 					for (UserFavDM obj : listUserFav) {
 						if (obj.isSelected()) {
-							servUserfavBean.deleteUserfavourites(obj.getUserfavId());
+							serviceUserfav.deleteUserfavourites(obj.getUserfavId());
 							new GERPSaveNotification();
 						}
 					}
@@ -136,7 +136,7 @@ public class UserFav extends BaseUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			listUserFav = servUserfavBean.getUserFavouritesList(userId, null, "F");
+			listUserFav = serviceUserfav.getUserFavouritesList(userId, null, "F");
 			recordCnt = listUserFav.size();
 			if (chCheckall.getValue().equals(true)) {
 				List<UserFavDM> mylist = new ArrayList<UserFavDM>();

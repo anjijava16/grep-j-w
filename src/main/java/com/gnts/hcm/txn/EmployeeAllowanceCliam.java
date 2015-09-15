@@ -49,7 +49,7 @@ import com.vaadin.ui.UI;
 
 public class EmployeeAllowanceCliam extends BaseUI {
 	// Bean creation
-	private EmployeeAllowanceClaimService serviceEmpAllowanceCliam = (EmployeeAllowanceClaimService) SpringContextHelper
+	private EmployeeAllowanceClaimService serviceEmpAllowanceClaim = (EmployeeAllowanceClaimService) SpringContextHelper
 			.getBean("EmployeeAllowanceClaim");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private EmployeeAllowanceService serviceEmpAllowance = (EmployeeAllowanceService) SpringContextHelper
@@ -194,7 +194,7 @@ public class EmployeeAllowanceCliam extends BaseUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + dtPaidDt.getValue() + (String) cbStatus.getValue() + ", " + empId + ","
 					+ alwncId);
-			listAllClaim = serviceEmpAllowanceCliam.getempawclaimlist(null, (Long) cbEmpName.getValue(),
+			listAllClaim = serviceEmpAllowanceClaim.getempawclaimlist(null, (Long) cbEmpName.getValue(),
 					(Date) dfAlowncClaimDt.getValue(), (Long) cbEmpAlwncName.getValue(), "Approved", "F");
 			recordCnt = listAllClaim.size();
 			beanEmpAllowanceDM = new BeanItemContainer<EmployeeAllowanceClaimDM>(EmployeeAllowanceClaimDM.class);
@@ -419,7 +419,7 @@ public class EmployeeAllowanceCliam extends BaseUI {
 		}
 		empAllowncObj.setLastupdt(DateUtils.getcurrentdate());
 		empAllowncObj.setLastupby(username);
-		serviceEmpAllowanceCliam.saveAndUpdate(empAllowncObj);
+		serviceEmpAllowanceClaim.saveAndUpdate(empAllowncObj);
 		resetFields();
 		loadSrchRslt();
 	}

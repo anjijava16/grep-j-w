@@ -19,14 +19,12 @@ import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CityDM;
 import com.gnts.base.domain.mst.CountryDM;
-import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.domain.mst.StateDM;
 import com.gnts.base.domain.mst.VendorDM;
 import com.gnts.base.domain.mst.VendorTypeDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.CityService;
 import com.gnts.base.service.mst.CountryService;
-import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.base.service.mst.StateService;
 import com.gnts.base.service.mst.VendorService;
 import com.gnts.base.service.mst.VendorTypeService;
@@ -68,7 +66,6 @@ public class Vendor extends BaseUI {
 	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
 	private CityService serviceCity = (CityService) SpringContextHelper.getBean("city");
 	private StateService serviceState = (StateService) SpringContextHelper.getBean("mstate");
-	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	// Form layout for input controls
 	private FormLayout flColumn1, flColumn2, flColumn4, flColumn3;
 	// Parent layout for all the input controls
@@ -76,8 +73,8 @@ public class Vendor extends BaseUI {
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// Add User Input Controls
-	private TextField tfVendorName, tfVendorCode, tfContactName, tfcontactno, tfDesignation, tfVendorRating, tfPinCode,
-			tfEmail, tfRegNo, tfStNo, tfTanNo, tfPaymentTerm, tfED, tfPackingPercent, tfwarrantyType, tfHED, tfCST,
+	private TextField tfVendorName, tfVendorCode, tfContactName, tfContactno, tfDesignation, tfVendorRating, tfPinCode,
+			tfEmail, tfRegNo, tfStNo, tfTanNo, tfPaymentTerm, tfED, tfPackingPercent, tfWarrantyType, tfHED, tfCST,
 			tfDeliveryPeriod, tfCESS, tfVAT, tfFright, tfACNo, tfACType, tfBankName;
 	private TextArea taAddress, taBankAddress;
 	private CheckBox ckDutyExempt, ckCForm;
@@ -130,14 +127,10 @@ public class Vendor extends BaseUI {
 			public void blur(BlurEvent event) {
 				getVendorName();
 				try {
-					// SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId,
-					// "MMS_LOI").get(0);
-					// if (slnoObj.getAutoGenYN().equals("Y")) {
 					tfVendorCode.setReadOnly(false);
 					tfVendorCode.setValue(SerialNumberGenerator.generateSNoVEN(companyid, branchId, moduleId,
 							"BS_VNDRCD", initial));
 					tfVendorCode.setReadOnly(true);
-					// }
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -149,17 +142,17 @@ public class Vendor extends BaseUI {
 		// ContactName text fieldPUR
 		tfContactName = new GERPTextField("Contact Name");
 		// ContactName text field
-		tfcontactno = new GERPTextField("Contact Number");
-		tfcontactno.addBlurListener(new BlurListener() {
+		tfContactno = new GERPTextField("Contact Number");
+		tfContactno.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
-				tfcontactno.setComponentError(null);
-				if (tfcontactno.getValue() != null) {
-					if (!tfcontactno.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) {
-						tfcontactno.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
+				tfContactno.setComponentError(null);
+				if (tfContactno.getValue() != null) {
+					if (!tfContactno.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) {
+						tfContactno.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
 					} else {
-						tfcontactno.setComponentError(null);
+						tfContactno.setComponentError(null);
 					}
 				}
 			}
@@ -220,7 +213,7 @@ public class Vendor extends BaseUI {
 		// Packing Percent text field
 		tfPackingPercent = new GERPTextField("Packing(%)");
 		// WarrantyType text field
-		tfwarrantyType = new GERPTextField("Warranty Type");
+		tfWarrantyType = new GERPTextField("Warranty Type");
 		// HER text field
 		tfHED = new GERPTextField("HED(%)");
 		// CST text field
@@ -290,7 +283,7 @@ public class Vendor extends BaseUI {
 			flColumn1.addComponent(cbVendorTypeName);
 			flColumn1.addComponent(tfVendorCode);
 			flColumn1.addComponent(tfContactName);
-			flColumn1.addComponent(tfcontactno);
+			flColumn1.addComponent(tfContactno);
 			flColumn1.addComponent(tfDesignation);
 			flColumn1.addComponent(tfVendorRating);
 			flColumn1.addComponent(taAddress);
@@ -304,7 +297,7 @@ public class Vendor extends BaseUI {
 			flColumn2.addComponent(tfStNo);
 			flColumn2.addComponent(tfTanNo);
 			flColumn2.addComponent(tfPaymentTerm);
-			flColumn2.addComponent(tfwarrantyType);
+			flColumn2.addComponent(tfWarrantyType);
 			flColumn3.addComponent(tfED);
 			flColumn3.addComponent(tfPackingPercent);
 			flColumn3.addComponent(tfHED);
@@ -335,10 +328,10 @@ public class Vendor extends BaseUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	public void loadSrchRslt() {
+	private void loadSrchRslt() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
-		List<VendorDM> vendorList = new ArrayList<VendorDM>();
+		List<VendorDM> list = new ArrayList<VendorDM>();
 		Long cityId = null;
 		if (cbCity.getValue() != null) {
 			cityId = ((Long.valueOf(cbCity.getValue().toString())));
@@ -350,11 +343,11 @@ public class Vendor extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 				+ companyid + ", " + tfVendorName.getValue() + ", " + tfContactName.getValue()
 				+ (String) cbStatus.getValue() + ", " + cityId);
-		vendorList = serviceVendor.getVendorList(branchId, null, companyid, tfVendorName.getValue(), null, null, null,
+		list = serviceVendor.getVendorList(branchId, null, companyid, tfVendorName.getValue(), null, null, null,
 				tfContactName.getValue(), (String) cbStatus.getValue(), cityId, "F");
-		recordCnt = vendorList.size();
+		recordCnt = list.size();
 		beanVendorDM = new BeanItemContainer<VendorDM>(VendorDM.class);
-		beanVendorDM.addAll(vendorList);
+		beanVendorDM.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the Vendor. result set");
 		tblMstScrSrchRslt.setContainerDataSource(beanVendorDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "vendorId", "vendorName", "contactName", "branchName",
@@ -380,8 +373,8 @@ public class Vendor extends BaseUI {
 		tfVendorCode.setReadOnly(false);
 		tfVendorCode.setValue("");
 		cbVendorTypeName.setValue(null);
-		tfcontactno.setValue("");
-		tfcontactno.setComponentError(null);
+		tfContactno.setValue("");
+		tfContactno.setComponentError(null);
 		tfContactName.setValue("");
 		tfDesignation.setValue("");
 		tfVendorRating.setValue("");
@@ -398,7 +391,7 @@ public class Vendor extends BaseUI {
 		tfPaymentTerm.setValue("");
 		tfED.setValue("");
 		tfPackingPercent.setValue("");
-		tfwarrantyType.setValue("");
+		tfWarrantyType.setValue("");
 		tfHED.setValue("");
 		tfCST.setValue("");
 		tfDeliveryPeriod.setValue("");
@@ -413,7 +406,7 @@ public class Vendor extends BaseUI {
 		taBankAddress.setValue("");
 		tfEmail.setComponentError(null);
 		tfVendorName.setComponentError(null);
-		tfcontactno.setComponentError(null);
+		tfContactno.setComponentError(null);
 		cbVendorTypeName.setComponentError(null);
 		cbBranch.setComponentError(null);
 		cbCountry.setComponentError(null);
@@ -444,7 +437,7 @@ public class Vendor extends BaseUI {
 			tfContactName.setValue(editVendor.getContactName());
 		}
 		if (editVendor.getContactNo() != null) {
-			tfcontactno.setValue(editVendor.getContactNo());
+			tfContactno.setValue(editVendor.getContactNo());
 		}
 		if (editVendor.getDesidnation() != null) {
 			tfDesignation.setValue(editVendor.getDesidnation());
@@ -465,7 +458,7 @@ public class Vendor extends BaseUI {
 			tfPaymentTerm.setValue(editVendor.getPaymentTerm());
 		}
 		if (editVendor.getWarrentyType() != null) {
-			tfwarrantyType.setValue(editVendor.getWarrentyType());
+			tfWarrantyType.setValue(editVendor.getWarrentyType());
 		}
 		if (editVendor.getDeliveryPeriod() != null) {
 			tfDeliveryPeriod.setValue(editVendor.getDeliveryPeriod());
@@ -526,7 +519,7 @@ public class Vendor extends BaseUI {
 		cbState.setValue(Long.valueOf(editVendor.getStateId()).toString());
 		cbVendorTypeName.setValue(Long.valueOf(editVendor.getVendorTypeId()).toString());
 		cbCity.setValue(Long.valueOf(editVendor.getCityId()).toString());
-		tfcontactno.setComponentError(null);
+		tfContactno.setComponentError(null);
 	}
 	
 	// Base class implementations
@@ -594,7 +587,7 @@ public class Vendor extends BaseUI {
 		cbState.setRequired(false);
 		cbCity.setRequired(false);
 		cbVendorTypeName.setComponentError(null);
-		tfcontactno.setComponentError(null);
+		tfContactno.setComponentError(null);
 		cbBranch.setComponentError(null);
 		cbCountry.setComponentError(null);
 		cbState.setComponentError(null);
@@ -631,7 +624,7 @@ public class Vendor extends BaseUI {
 		cbCountry.setComponentError(null);
 		cbState.setComponentError(null);
 		cbCity.setComponentError(null);
-		tfcontactno.setComponentError(null);
+		tfContactno.setComponentError(null);
 		if (cbVendorTypeName.getValue() == null) {
 			cbVendorTypeName.setComponentError(new UserError(GERPErrorCodes.NULL_VENDORTYPE_NAME));
 			errorFlag = true;
@@ -688,7 +681,6 @@ public class Vendor extends BaseUI {
 			if (cbVendorTypeName.getValue() != null) {
 				vendorObj.setVendorTypeId(Long.valueOf(cbVendorTypeName.getValue().toString()));
 			}
-			// vendorObj.setVendorTypeName(cbVendorTypeName.getValue().toString());
 			if (tfPinCode.getValue() != null && tfPinCode.getValue().trim().length() > 0) {
 				vendorObj.setVendorPostcode((Long.valueOf(tfPinCode.getValue())));
 			}
@@ -702,7 +694,7 @@ public class Vendor extends BaseUI {
 				vendorObj.setCityId((Long.valueOf(cbCity.getValue().toString())));
 			}
 			vendorObj.setContactName(tfContactName.getValue());
-			vendorObj.setContactNo(tfcontactno.getValue());
+			vendorObj.setContactNo(tfContactno.getValue());
 			vendorObj.setDesidnation(tfDesignation.getValue());
 			vendorObj.setBankName(tfBankName.getValue());
 			vendorObj.setEmailId(tfEmail.getValue());
@@ -710,7 +702,7 @@ public class Vendor extends BaseUI {
 			vendorObj.setTanNo(tfTanNo.getValue());
 			vendorObj.setStNo(tfStNo.getValue());
 			vendorObj.setPaymentTerm(tfPaymentTerm.getValue());
-			vendorObj.setWarrentyType(tfwarrantyType.getValue());
+			vendorObj.setWarrentyType(tfWarrantyType.getValue());
 			vendorObj.setDeliveryPeriod(tfDeliveryPeriod.getValue());
 			if (tfFright.getValue() != null && tfFright.getValue().trim().length() > 0) {
 				vendorObj.setFreightPrnct((Long.valueOf(tfFright.getValue())));

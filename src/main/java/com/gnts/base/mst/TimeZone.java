@@ -47,7 +47,7 @@ public class TimeZone extends BaseUI {
 	 */
 	private TextField tfTimeZoneCode, tfTimeZoneDesc;
 	private FormLayout flTimeZoneCode, flTimeZoneDesc;
-	private TimeZoneService timezoneBean = (TimeZoneService) SpringContextHelper.getBean("timezone");
+	private TimeZoneService serviceTimezone = (TimeZoneService) SpringContextHelper.getBean("timezone");
 	private BeanItemContainer<TimeZoneDM> beans = null;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
@@ -107,7 +107,7 @@ public class TimeZone extends BaseUI {
 			List<TimeZoneDM> list = new ArrayList<TimeZoneDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + "," + tfTimeZoneCode.getValue() + "," + tfTimeZoneDesc.getValue());
-			list = timezoneBean.getTimeZoneList(tfTimeZoneCode.getValue(), tfTimeZoneDesc.getValue(), "F");
+			list = serviceTimezone.getTimeZoneList(tfTimeZoneCode.getValue(), tfTimeZoneDesc.getValue(), "F");
 			recordCnt = list.size();
 			beans = new BeanItemContainer<TimeZoneDM>(TimeZoneDM.class);
 			beans.addAll(list);

@@ -68,7 +68,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class AccessConfig extends BaseUI {
-	private AppScreensService appsConfigBean = (AppScreensService) SpringContextHelper.getBean("appScreens");
+	private AppScreensService serviceAppScreen = (AppScreensService) SpringContextHelper.getBean("appScreens");
 	private AccessConfigService serviceAccessConfig = (AccessConfigService) SpringContextHelper.getBean("accessconfig");
 	private FieldAccessConfigService serviceFieldAccess = (FieldAccessConfigService) SpringContextHelper
 			.getBean("fieldAccessConfig");
@@ -90,7 +90,7 @@ public class AccessConfig extends BaseUI {
 	private CheckBox chkApprove = new CheckBox("Approve");
 	private OptionGroup cbRecordLevel = new GERPOptionGroup(null, BASEConstants.M_BASE_SCRN_ACCESS_CONFIG,
 			BASEConstants.RECORD_LVL);
-	private List<AppScreensUserDM> appScreenList = new ArrayList<AppScreensUserDM>();
+	private List<AppScreensUserDM> listAppScreens = new ArrayList<AppScreensUserDM>();
 	private TreeTable tblScreenAccess = new TreeTable();
 	private Table tblFieldAccess = new Table("Field Access Level");
 	// local variables declaration
@@ -237,11 +237,11 @@ public class AccessConfig extends BaseUI {
 			tblScreenAccess.addContainerProperty("screenname", String.class, "");
 			tblScreenAccess.addContainerProperty("screenid", String.class, "");
 			if (cbRole.getValue() != null && cbBranch.getValue() != null) {
-				appScreenList = appsConfigBean.getMBaseAppscreenUserList(Long.valueOf(cbRole.getValue().toString()),
+				listAppScreens = serviceAppScreen.getMBaseAppscreenUserList(Long.valueOf(cbRole.getValue().toString()),
 						companyid, Long.valueOf(cbBranch.getValue().toString()));
-				recordCnt = appScreenList.size();
+				recordCnt = listAppScreens.size();
 				if (recordCnt == 0) {
-					for (AppScreensDM appScreensDM : appsConfigBean.getMBaseAppScreenListByUserId(null)) {
+					for (AppScreensDM appScreensDM : serviceAppScreen.getMBaseAppScreenListByUserId(null)) {
 						AccessConfigDM accessConfigDM = new AccessConfigDM();
 						accessConfigDM.setScrID(appScreensDM.getScreenId());
 						accessConfigDM.setCompanyid(companyid);
@@ -256,18 +256,17 @@ public class AccessConfig extends BaseUI {
 						accessConfigDM.setStatus("Active");
 						serviceAccessConfig.saveAccessConfig(accessConfigDM);
 					}
-					appScreenList = appsConfigBean.getMBaseAppscreenUserList(
-							Long.valueOf(cbRole.getValue().toString()), companyid,
-							Long.valueOf(cbBranch.getValue().toString()));
 				}
-				for (AppScreensUserDM mBaseAppObj : appScreenList) {
+				listAppScreens = serviceAppScreen.getMBaseAppscreenUserList(Long.valueOf(cbRole.getValue().toString()),
+						companyid, Long.valueOf(cbBranch.getValue().toString()));
+				for (AppScreensUserDM mBaseAppObj : listAppScreens) {
 					tblScreenAccess.addItem(new Object[] { mBaseAppObj.getScreendesc(),
 							mBaseAppObj.getScreenId().toString() }, mBaseAppObj.getScreenId().intValue());
 					if (mBaseAppObj.getParentId() != null) {
 						tblScreenAccess.setParent(mBaseAppObj.getScreenId().intValue(), mBaseAppObj.getParentId()
 								.intValue());
 						int count = 0;
-						for (AppScreensUserDM obj : appScreenList) {
+						for (AppScreensUserDM obj : listAppScreens) {
 							if (obj.getParentId() != null) {
 								if (mBaseAppObj.getScreenId() == obj.getParentId()) {
 									count++;

@@ -62,7 +62,7 @@ public class AttendenceApprove extends BaseUI {
 	private PayPeriodService servicePayPeriod = (PayPeriodService) SpringContextHelper.getBean("PayPeriod");
 	private AttendenceProcService serviceAttendanceProcess = (AttendenceProcService) SpringContextHelper
 			.getBean("AttendenceProc");
-	private Button btnsaveAttenProc = new GERPButton("Add", "add", this);
+	private Button btnSaveAttenProc = new GERPButton("Add", "add", this);
 	private BeanItemContainer<AttendenceProcDM> beanAttendenceProcDM = null;
 	private List<AttendenceProcDM> listAttendProc = new ArrayList<AttendenceProcDM>();
 	private Long attProcId;
@@ -112,7 +112,7 @@ public class AttendenceApprove extends BaseUI {
 				}
 			}
 		});
-		btnsaveAttenProc.setCaption("Save");
+		btnSaveAttenProc.setCaption("Save");
 		tblMstScrSrchRslt.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -120,19 +120,19 @@ public class AttendenceApprove extends BaseUI {
 			public void itemClick(ItemClickEvent event) {
 				if (tblMstScrSrchRslt.isSelected(event.getItemId())) {
 					tblMstScrSrchRslt.setImmediate(true);
-					btnsaveAttenProc.setStyleName("savebt");
+					btnSaveAttenProc.setStyleName("savebt");
 					resetFields();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
-					btnsaveAttenProc.setStyleName("savebt");
+					btnSaveAttenProc.setStyleName("savebt");
 					readonlyfalse();
 					editClient();
 					readonlytrue();
 				}
 			}
 		});
-		hlPageHdrContainter.addComponent(btnsaveAttenProc);
-		hlPageHdrContainter.setComponentAlignment(btnsaveAttenProc, Alignment.MIDDLE_RIGHT);
+		hlPageHdrContainter.addComponent(btnSaveAttenProc);
+		hlPageHdrContainter.setComponentAlignment(btnSaveAttenProc, Alignment.MIDDLE_RIGHT);
 		tfProcessPeriod = new GERPTextField("Process Period");
 		tfProcessPeriod.setWidth("170");
 		tfProcessPeriod.setReadOnly(true);
@@ -153,7 +153,7 @@ public class AttendenceApprove extends BaseUI {
 				}
 			}
 		});
-		btnsaveAttenProc.addClickListener(new ClickListener() {
+		btnSaveAttenProc.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
 			

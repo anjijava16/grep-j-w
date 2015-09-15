@@ -158,18 +158,18 @@ public class Holiday extends BaseUI {
 	private void loadSrchRslt() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			List<HolidaysDM> holidayList = new ArrayList<HolidaysDM>();
+			List<HolidaysDM> list = new ArrayList<HolidaysDM>();
 			Long branchObjId = null;
 			if (cbBranch.getValue() != null) {
 				branchObjId = (Long) cbBranch.getValue();
 			}
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfHolidayName.getValue() + ", " + cbstatus.getValue());
-			holidayList = serviceHoliday.getHolidaysList(null, tfHolidayName.getValue(), branchObjId,
+			list = serviceHoliday.getHolidaysList(null, tfHolidayName.getValue(), branchObjId,
 					(String) cbstatus.getValue(), companyid, null, "F");
-			recordCnt = holidayList.size();
+			recordCnt = list.size();
 			beanHolidayDM = new BeanItemContainer<HolidaysDM>(HolidaysDM.class);
-			beanHolidayDM.addAll(holidayList);
+			beanHolidayDM.addAll(list);
 			tblMstScrSrchRslt.setSelectable(true);
 			tblMstScrSrchRslt.setContainerDataSource(beanHolidayDM);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "holidayId", "holidayName", "branchName", "holidayDate",

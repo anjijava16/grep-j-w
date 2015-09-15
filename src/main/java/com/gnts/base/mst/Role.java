@@ -117,14 +117,14 @@ public class Role extends BaseUI {
 			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 					+ "Search Parameters are " + ":" + tfRoleName.getValue() + "," + (String) cbRoleStatus.getValue()
 					+ ", " + companyId + ",F" + "Loading Search...");
-			List<RoleDM> roleList = new ArrayList<RoleDM>();
+			List<RoleDM> list = new ArrayList<RoleDM>();
 			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 					+ "Search Parameters are " + ":" + tfRoleName.getValue() + "," + (String) cbRoleStatus.getValue()
 					+ ", " + companyId + ",F");
-			roleList = serviceRole.getRoleList(tfRoleName.getValue(), (String) cbRoleStatus.getValue(), companyId, "F");
-			recordCnt = roleList.size();
+			list = serviceRole.getRoleList(tfRoleName.getValue(), (String) cbRoleStatus.getValue(), companyId, "F");
+			recordCnt = list.size();
 			beanRoleDM = new BeanItemContainer<RoleDM>(RoleDM.class);
-			beanRoleDM.addAll(roleList);
+			beanRoleDM.addAll(list);
 			logger.info("Company ID :" + companyId + " | Login User Name : " + strLoginUserName + " > "
 					+ "Search Parameters are " + ":" + tfRoleName.getValue() + ",  Active ," + companyId + ",F"
 					+ "Got the Role result set");

@@ -59,7 +59,7 @@ public class ModuleControl extends BaseUI {
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// User layout Components
-	private TextField tfModuleCode, tfStatus, tflisence;
+	private TextField tfModuleCode, tfStatus, tfLisence;
 	private ComboBox cbStatus, cbModuleCode;
 	private PopupDateField dfLicenseendDt, dfLicensestartDt;
 	private BeanItemContainer<ModuleControlDM> beansModuleControlDM = null;
@@ -93,8 +93,8 @@ public class ModuleControl extends BaseUI {
 		tfModuleCode.setWidth("200");
 		tfStatus = new GERPTextField("Status");
 		tfStatus.setWidth("75");
-		tflisence = new GERPTextField("Lisenced?");
-		tflisence.setWidth("75");
+		tfLisence = new GERPTextField("Lisenced?");
+		tfLisence.setWidth("75");
 		// create form layouts to hold the input items
 		flModulecode = new GERPFormLayout();
 		loadSearchModulelist();
@@ -153,7 +153,7 @@ public class ModuleControl extends BaseUI {
 		fldfLicenseendDt = new GERPFormLayout();
 		flModulecode.addComponent(tfModuleCode);
 		flStatus.addComponent(tfStatus);
-		flLisenced.addComponent(tflisence);
+		flLisenced.addComponent(tfLisence);
 		fldfLicensestartDt.addComponent(dfLicensestartDt);
 		fldfLicenseendDt.addComponent(dfLicenseendDt);
 		hlUserInputLayout.addComponent(flModulecode);
@@ -225,9 +225,9 @@ public class ModuleControl extends BaseUI {
 				tfStatus.setReadOnly(true);
 			}
 			if (moduleControlDM.getLicensedyn() != null && !"null".equals(moduleControlDM.getLicensedyn())) {
-				tflisence.setReadOnly(false);
-				tflisence.setValue(moduleControlDM.getLicensedyn());
-				tflisence.setReadOnly(true);
+				tfLisence.setReadOnly(false);
+				tfLisence.setValue(moduleControlDM.getLicensedyn());
+				tfLisence.setReadOnly(true);
 			}
 			if (moduleControlDM.getModuleName() != null && !"null".equals(moduleControlDM.getModuleName())) {
 				tfModuleCode.setReadOnly(false);
@@ -330,9 +330,9 @@ public class ModuleControl extends BaseUI {
 		tfStatus.setReadOnly(false);
 		tfStatus.setValue("");
 		tfStatus.setReadOnly(true);
-		tflisence.setReadOnly(false);
-		tflisence.setValue("");
-		tflisence.setReadOnly(true);
+		tfLisence.setReadOnly(false);
+		tfLisence.setValue("");
+		tfLisence.setReadOnly(true);
 		dfLicensestartDt.setReadOnly(false);
 		dfLicensestartDt.setValue(null);
 		dfLicensestartDt.setReadOnly(true);

@@ -66,7 +66,7 @@ public class AppraisalEmpIncident extends BaseUI {
 	private BeanItemContainer<AppraisalEmpIncidentDM> beanAppraisalEmpIncidentDM = null;
 	// User Input Components
 	private ComboBox cbEmployee, cbIncidenttype, cbKPIGroup, cbIncidentstatus, cbSeverity;
-	private TextField tfTitle, tfBusinessValue, tfResponse, tfempagreed;
+	private TextField tfTitle, tfBusinessValue, tfResponse, tfEmpAgreed;
 	private TextArea taDescription, taComments;
 	private String loginUserName;
 	private Long companyId;
@@ -131,9 +131,9 @@ public class AppraisalEmpIncident extends BaseUI {
 		tfResponse = new GERPTextField("Employee Response");
 		tfResponse.setWidth("200");
 		tfResponse.setMaxLength(10);
-		tfempagreed = new GERPTextField("Employee Agreed");
-		tfempagreed.setWidth("200");
-		tfempagreed.setMaxLength(10);
+		tfEmpAgreed = new GERPTextField("Employee Agreed");
+		tfEmpAgreed.setWidth("200");
+		tfEmpAgreed.setMaxLength(10);
 		// TextAreas
 		taDescription = new GERPTextArea("Incident Desc");
 		taDescription.setWidth("150");
@@ -231,7 +231,7 @@ public class AppraisalEmpIncident extends BaseUI {
 		flcol1.addComponent(cbEmployee);
 		flcol1.addComponent(cbKPIGroup);
 		flcol1.addComponent(cbSeverity);
-		flcol1.addComponent(tfempagreed);
+		flcol1.addComponent(tfEmpAgreed);
 		flcol2.addComponent(tfTitle);
 		flcol2.addComponent(cbIncidenttype);
 		flcol2.addComponent(tfBusinessValue);
@@ -348,7 +348,7 @@ public class AppraisalEmpIncident extends BaseUI {
 					tfBusinessValue.setValue(editappempinObj.getBusValue().toString());
 				}
 				if (editappempinObj.getEmpAgreed() != null) {
-					tfempagreed.setValue(editappempinObj.getEmpAgreed().toString());
+					tfEmpAgreed.setValue(editappempinObj.getEmpAgreed().toString());
 				}
 				if (editappempinObj.getEmpResponse() != null) {
 					tfResponse.setValue(editappempinObj.getEmpResponse());
@@ -377,7 +377,7 @@ public class AppraisalEmpIncident extends BaseUI {
 		cbSeverity.setComponentError(null);
 		cbKPIGroup.setComponentError(null);
 		tfBusinessValue.setComponentError(null);
-		tfempagreed.setComponentError(null);
+		tfEmpAgreed.setComponentError(null);
 		tfResponse.setComponentError(null);
 		tfTitle.setComponentError(null);
 		Boolean errorFlag = false;
@@ -404,7 +404,7 @@ public class AppraisalEmpIncident extends BaseUI {
 		}
 		logger.warn("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Throwing ValidationException. User data is > " + tfBusinessValue.getValue() + ","
-				+ tfempagreed.getValue() + "," + cbIncidenttype.getValue() + "," + cbEmployee.getValue() + ","
+				+ tfEmpAgreed.getValue() + "," + cbIncidenttype.getValue() + "," + cbEmployee.getValue() + ","
 				+ cbKPIGroup.getValue() + "," + cbIncidentstatus.getValue() + "," + cbSeverity.getValue() + ","
 				+ tfResponse.getValue() + "," + tfTitle.getValue());
 		if (errorFlag) {
@@ -433,7 +433,7 @@ public class AppraisalEmpIncident extends BaseUI {
 			appempincidentobj.setIncidentSeverity((String) cbSeverity.getValue());
 		}
 		appempincidentobj.setBusValue(Long.valueOf(tfBusinessValue.getValue()));
-		appempincidentobj.setEmpAgreed(tfempagreed.getValue().toString());
+		appempincidentobj.setEmpAgreed(tfEmpAgreed.getValue().toString());
 		appempincidentobj.setEmpResponse(tfResponse.getValue().toString());
 		appempincidentobj.setIncidentTitle(tfTitle.getValue().toString());
 		appempincidentobj.setIncidentDes(taDescription.getValue().toString());
@@ -478,7 +478,7 @@ public class AppraisalEmpIncident extends BaseUI {
 		cbSeverity.setValue(null);
 		cbSeverity.setComponentError(null);
 		tfBusinessValue.setValue("");
-		tfempagreed.setValue("");
+		tfEmpAgreed.setValue("");
 		tfResponse.setValue("");
 		tfTitle.setValue("");
 		taDescription.setValue("");

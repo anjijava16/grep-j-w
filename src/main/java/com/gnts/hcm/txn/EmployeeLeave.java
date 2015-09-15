@@ -104,7 +104,7 @@ public class EmployeeLeave extends BaseUI {
 	private Button btnadd;
 	private HorizontalLayout hlsavecancel = new HorizontalLayout();
 	// To add Bean Item Container
-	private List<EmployeeLeaveDM> usertable = new ArrayList<EmployeeLeaveDM>();
+	private List<EmployeeLeaveDM> listEmpLeave = new ArrayList<EmployeeLeaveDM>();
 	private List<EmployeeLeaveBalanceDM> listLeaveBal = new ArrayList<EmployeeLeaveBalanceDM>();
 	private BeanItemContainer<EmployeeLeaveDM> beanLeave = null;
 	private BeanItemContainer<EmployeeLeaveBalanceDM> beanEmpLeaveBalance = null;
@@ -114,7 +114,7 @@ public class EmployeeLeave extends BaseUI {
 	private LeaveTypeService serviceLeaveType = (LeaveTypeService) SpringContextHelper.getBean("LeaveType");
 	private EmployeeLeaveBalanceService serviceLeaveBalance = (EmployeeLeaveBalanceService) SpringContextHelper
 			.getBean("EmployeeLeaveBalance");
-	private Long companyid, leavetypeid, leaveid, branchID, appScreenId, roleId;
+	private Long companyid, leavetypeid, leaveid, branchId, appScreenId, roleId;
 	// private HorizontalLayout hlSearchLayout;
 	private int total = 0;
 	private Table tblLeaveBalnce;
@@ -130,7 +130,7 @@ public class EmployeeLeave extends BaseUI {
 				+ "Inside EmployeeLeave() constructor");
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
 		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
 		buildView();
@@ -163,7 +163,7 @@ public class EmployeeLeave extends BaseUI {
 			public void valueChange(ValueChangeEvent event) {
 				Object obj = event.getProperty().getValue();
 				if (obj != null) {
-					usertable = serviceLeave.getempleaveList(leaveid, (Long) cbEmployeeName.getValue(), leavetypeid,
+					listEmpLeave = serviceLeave.getempleaveList(leaveid, (Long) cbEmployeeName.getValue(), leavetypeid,
 							(String) cbEmpStatus.getValue(), null, null, "F");
 					loadSrchRslt();
 					loadLeaveBalance();
@@ -171,7 +171,7 @@ public class EmployeeLeave extends BaseUI {
 			}
 		});
 		try {
-			ApprovalSchemaDM obj = serviceWrkOrdHdr.getReviewerId(companyid, appScreenId, branchID, roleId).get(0);
+			ApprovalSchemaDM obj = serviceWrkOrdHdr.getReviewerId(companyid, appScreenId, branchId, roleId).get(0);
 			name = obj.getApprLevel();
 			if (name.equals("Approver")) {
 				cbEmpStatus = new GERPComboBox("Status", BASEConstants.T_HCM_LEAVE_STATUS,
@@ -231,7 +231,7 @@ public class EmployeeLeave extends BaseUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
-					leavesave((Long) cbEmployeeName.getValue());
+					saveLeave((Long) cbEmployeeName.getValue());
 					new GERPSaveNotification();
 				}
 				catch (Exception e) {
@@ -420,9 +420,9 @@ public class EmployeeLeave extends BaseUI {
 					+ "loading Search Result....");
 			tblMstScrSrchRslt.removeAllItems();
 			total = 0;
-			total = usertable.size();
+			total = listEmpLeave.size();
 			beanLeave = new BeanItemContainer<EmployeeLeaveDM>(EmployeeLeaveDM.class);
-			beanLeave.addAll(usertable);
+			beanLeave.addAll(listEmpLeave);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Employee Leave. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanLeave);
@@ -548,7 +548,7 @@ public class EmployeeLeave extends BaseUI {
 			EmployeeLeaveDM employeeLeaveDM = new EmployeeLeaveDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				employeeLeaveDM = beanLeave.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				usertable.remove(employeeLeaveDM);
+				listEmpLeave.remove(employeeLeaveDM);
 			}
 			if (dfDateFrom.getValue() != null) {
 				employeeLeaveDM.setDatefrom(dfDateFrom.getValue());
@@ -578,7 +578,7 @@ public class EmployeeLeave extends BaseUI {
 			}
 			employeeLeaveDM.setLastupdatedby(username);
 			employeeLeaveDM.setLastupdateddt(DateUtils.getcurrentdate());
-			usertable.add(employeeLeaveDM);
+			listEmpLeave.add(employeeLeaveDM);
 			loadSrchRslt();
 		}
 		catch (Exception e) {
@@ -587,7 +587,7 @@ public class EmployeeLeave extends BaseUI {
 		resetField();
 	}
 	
-	public void leavesave(Long employeeid) {
+	private void saveLeave(Long employeeid) {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Employeeleave Save details......");
@@ -605,7 +605,7 @@ public class EmployeeLeave extends BaseUI {
 		}
 	}
 	
-	public Boolean validateDetail() {
+	private Boolean validateDetail() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validatating Data.....");
 		Boolean errorFlag = true;
 		cbEmployeeName.setComponentError(null);
@@ -641,7 +641,7 @@ public class EmployeeLeave extends BaseUI {
 		return errorFlag;
 	}
 	
-	public void resetField() {
+	private void resetField() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbDepartmentName.setValue(0L);
 		cbEmployeeName.setComponentError(null);

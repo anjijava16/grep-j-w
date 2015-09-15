@@ -107,8 +107,8 @@ public class Product extends BaseUI {
 	private ComboBox cbprntProdct, cbprodCtgry, cbstatus, cbCurrency, cbbrand, cbBranch, cbuom;
 	private TextArea taprodDesc, taDescription, tasrtDesc;
 	private CheckBox cbView, cbVisualizer;
-	private Button btnaddSpec = new GERPButton("Add", "addbt", this);
-	private Table tblspec = new Table();
+	private Button btnAddSpec = new GERPButton("Add", "addbt", this);
+	private Table tblProdSpec = new Table();
 	private GERPTokenField totag;
 	// Bean container
 	private BeanItemContainer<ProductDM> beanProductDM = null;
@@ -195,7 +195,7 @@ public class Product extends BaseUI {
 		tasrtDesc.setWidth("150");
 		hlprodDoc.setCaption("");
 		hlprodDoc.setMargin(true);
-		btnaddSpec.addClickListener(new ClickListener() {
+		btnAddSpec.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
 			
@@ -223,20 +223,20 @@ public class Product extends BaseUI {
 			}
 		});
 		// ClickListener for ProdSpec Tale
-		tblspec.addItemClickListener(new ItemClickListener() {
+		tblProdSpec.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblspec.isSelected(event.getItemId())) {
-					tblspec.setImmediate(true);
-					btnaddSpec.setCaption("Add");
-					btnaddSpec.setStyleName("savebt");
+				if (tblProdSpec.isSelected(event.getItemId())) {
+					tblProdSpec.setImmediate(true);
+					btnAddSpec.setCaption("Add");
+					btnAddSpec.setStyleName("savebt");
 					specResetFields();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
-					btnaddSpec.setCaption("Update");
-					btnaddSpec.setStyleName("savebt");
+					btnAddSpec.setCaption("Update");
+					btnAddSpec.setStyleName("savebt");
 					editProductspec();
 				}
 			}
@@ -270,7 +270,7 @@ public class Product extends BaseUI {
 		resetFields();
 		loadSrchRslt();
 		loadSrchspecRslt();
-		btnaddSpec.setStyleName("add");
+		btnAddSpec.setStyleName("add");
 	}
 	
 	private void assembleSearchLayout() {
@@ -326,11 +326,11 @@ public class Product extends BaseUI {
 		VerticalLayout vl = new VerticalLayout();
 		vl.addComponent(cbstatus);
 		vl.setSpacing(true);
-		vl.addComponent(btnaddSpec);
+		vl.addComponent(btnAddSpec);
 		hlcodeDesc.addComponent(vl);
 		hlcodeDesc.setSpacing(true);
 		flColumn2.addComponent(hlcodeDesc);
-		flColumn2.addComponent(tblspec);
+		flColumn2.addComponent(tblProdSpec);
 		// Formlayout3 components
 		HorizontalLayout hlimgprod = new HorizontalLayout();
 		hlimgprod.addComponent(hlProdCtgryImg);
@@ -414,22 +414,22 @@ public class Product extends BaseUI {
 	
 	private void loadSrchspecRslt() {
 		logger.info("Product Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-		tblspec.removeAllItems();
-		tblspec.setWidth("400");
-		tblspec.setPageLength((int) 10.5);
-		tblspec.setStyleName(Runo.TABLE_SMALL);
+		tblProdSpec.removeAllItems();
+		tblProdSpec.setWidth("400");
+		tblProdSpec.setPageLength((int) 10.5);
+		tblProdSpec.setStyleName(Runo.TABLE_SMALL);
 		logger.info("" + "Product Category : Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Search Parameters are " + companyid + ", " + (String) cbstatus.getValue());
 		// specList.addAll(ServiceProdSpec.getSpecList(prodId, null, "Active"));
 		recordCnt = specList.size();
 		beanProdSpecDM = new BeanItemContainer<ProductSpecificationDM>(ProductSpecificationDM.class);
 		beanProdSpecDM.addAll(specList);
-		tblspec.setPageLength(5);
-		tblspec.setFooterVisible(true);
-		tblspec.setContainerDataSource(beanProdSpecDM);
-		tblspec.setVisibleColumns(new Object[] { "speccode", "specdesc", "specstatus" });
-		tblspec.setColumnHeaders(new String[] { "Code", "Description", "Status" });
-		tblspec.setColumnFooter("specstatus", "No.of Records : " + recordCnt);
+		tblProdSpec.setPageLength(5);
+		tblProdSpec.setFooterVisible(true);
+		tblProdSpec.setContainerDataSource(beanProdSpecDM);
+		tblProdSpec.setVisibleColumns(new Object[] { "speccode", "specdesc", "specstatus" });
+		tblProdSpec.setColumnHeaders(new String[] { "Code", "Description", "Status" });
+		tblProdSpec.setColumnFooter("specstatus", "No.of Records : " + recordCnt);
 	}
 	
 	// load the BranchList
@@ -614,7 +614,7 @@ public class Product extends BaseUI {
 	private void editProductspec() {
 		try {
 			hlUserInputLayout.setVisible(true);
-			Item specrowSelected = tblspec.getItem(tblspec.getValue());
+			Item specrowSelected = tblProdSpec.getItem(tblProdSpec.getValue());
 			if (specrowSelected != null) {
 				tfcode.setValue((String) specrowSelected.getItemProperty("speccode").getValue());
 				if ((specrowSelected.getItemProperty("specdesc").getValue() != null)) {
@@ -655,7 +655,7 @@ public class Product extends BaseUI {
 		new UploadUI(hlProdCtgryImg);
 		new UploadDocumentUI(hlprodDoc);
 		specList = new ArrayList<ProductSpecificationDM>();
-		tblspec.removeAllItems();
+		tblProdSpec.removeAllItems();
 		tfcode.setValue("");
 		totag.setValue(null);
 		UI.getCurrent().getSession().setAttribute("isFileUploaded", false);
@@ -875,7 +875,7 @@ public class Product extends BaseUI {
 			productobj.setLastupdatedby(username);
 			serviceProduct.saveorUpdateProductDetails(productobj);
 			@SuppressWarnings("unchecked")
-			Collection<ProductSpecificationDM> itemIds = (Collection<ProductSpecificationDM>) tblspec
+			Collection<ProductSpecificationDM> itemIds = (Collection<ProductSpecificationDM>) tblProdSpec
 					.getVisibleItemIds();
 			for (ProductSpecificationDM save : (Collection<ProductSpecificationDM>) itemIds) {
 				save.setProdid(productobj);
@@ -897,8 +897,8 @@ public class Product extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			ProductSpecificationDM productSpec = new ProductSpecificationDM();
-			if (tblspec.getValue() != null) {
-				productSpec = beanProdSpecDM.getItem(tblspec.getValue()).getBean();
+			if (tblProdSpec.getValue() != null) {
+				productSpec = beanProdSpecDM.getItem(tblProdSpec.getValue()).getBean();
 			}
 			productSpec.setSpeccode(tfcode.getValue());
 			productSpec.setSpecdesc(taDescription.getValue().toString());

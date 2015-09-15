@@ -111,7 +111,7 @@ public class ProductBomHdr extends BaseTransUI {
 	private HorizontalLayout hlSearchLayout;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
-	private Long companyId, moduleId, branchId, bomId;
+	private Long companyId, branchId, bomId;
 	private String userName;
 	private int recordCnt = 0, recordCntBomDtl = 0;
 	private MmsComments comments;
@@ -123,7 +123,6 @@ public class ProductBomHdr extends BaseTransUI {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		moduleId = Long.valueOf(UI.getCurrent().getSession().getAttribute("moduleId").toString());
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Inside Material() constructor");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
@@ -281,9 +280,6 @@ public class ProductBomHdr extends BaseTransUI {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ "," + bomId + "," + companyId);
 			recordCntBomDtl = listBOMDtls.size();
-			System.out.println("------------>"+listBOMDtls);
-			System.out.println("------------>"+listBOMDtls.size());
-
 			beanProductBomDtl = new BeanItemContainer<ProductBomDtlDM>(ProductBomDtlDM.class);
 			beanProductBomDtl.addAll(listBOMDtls);
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "

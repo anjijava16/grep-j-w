@@ -293,14 +293,14 @@ public class Company extends BaseUI {
 	private void loadSrchRslt() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			List<CompanyDM> companyList = new ArrayList<CompanyDM>();
+			List<CompanyDM> list = new ArrayList<CompanyDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid);
-			companyList = serviceCompany.getCompanyList(tfCompanyName.getValue(), cbStatus.getValue().toString(),
+			list = serviceCompany.getCompanyList(tfCompanyName.getValue(), cbStatus.getValue().toString(),
 					companyid);
-			recordCnt = companyList.size();
+			recordCnt = list.size();
 			beansCompany = new BeanItemContainer<CompanyDM>(CompanyDM.class);
-			beansCompany.addAll(companyList);
+			beansCompany.addAll(list);
 			tblMstScrSrchRslt.setContainerDataSource(beansCompany);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "companyid", "companyname", "companycode",
 					"companyaddress", "cityName", "stateName", "countryName", "phone", "companystatus",

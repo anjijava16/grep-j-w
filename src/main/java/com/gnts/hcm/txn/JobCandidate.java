@@ -398,11 +398,6 @@ public class JobCandidate extends BaseUI {
 			cbJobtitle.setComponentError(new UserError(GERPErrorCodes.NULL_JOB_CANDIDATE));
 			errorFlag = true;
 		}
-	/*	String emailSeq = tfEMailid.getValue().toString();
-		if (!emailSeq.contains("@") || !emailSeq.contains(".")) {
-			tfEMailid.setComponentError(new UserError(GERPErrorCodes.EMAIL_VALIDATION));
-			errorFlag = true;
-		}*/
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
 		}

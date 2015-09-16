@@ -97,21 +97,21 @@ public class FoamPlan extends BaseTransUI {
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// FormPlan Hdr Components
-	private TextField tfFormplanRefNo, tfplanHdrQty, tfplnRefNo;
+	private TextField tfFormplanRefNo, tfPlanHdrQty, tfPlnRefNo;
 	private ComboBox cbBranch;
-	private DateField dfplanDt;
+	private DateField dfPlanDt;
 	private TextArea taRemarks;
 	private ComboBox cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4;
 	// FormPlan Dtl Components
-	private TextField tfplanDtlQty;
+	private TextField tfPlanDtlQty;
 	private ComboBox cbWorkorder, cbProduct, cbDtlStatus, cbClient;
 	private FormLayout flDtlCol1, flDtlCol2, flDtlCol3, flDtlCol4, flDtlCol5;
 	private List<FoamPlanDtlDM> listFoamPlanDetails = null;
 	// FormPlan Shift Components
-	private TextField tfshiftname, tfTargetQty;
+	private TextField tfShiftname, tfTargetQty;
 	private ComboBox cbSftstatus, cbEmpName;
 	private FormLayout flshiftCol1, flshiftCol2, flshiftCol3, flshiftCol4;
 	private Button btnAddDtls = new GERPButton("Add", "add", this);
@@ -158,7 +158,7 @@ public class FoamPlan extends BaseTransUI {
 				}
 			}
 		});
-		tfplnRefNo = new TextField("Plan Reference No.");
+		tfPlnRefNo = new TextField("Plan Reference No.");
 		btnAddShift.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
@@ -263,12 +263,12 @@ public class FoamPlan extends BaseTransUI {
 		cbBranch.setItemCaptionPropertyId("branchName");
 		loadBranchList();
 		// Form Plan Date
-		dfplanDt = new PopupDateField("Plan Date");
-		dfplanDt.setDateFormat("dd-MMM-yyyy");
-		dfplanDt.setWidth("130px");
+		dfPlanDt = new PopupDateField("Plan Date");
+		dfPlanDt.setDateFormat("dd-MMM-yyyy");
+		dfPlanDt.setWidth("130px");
 		// Earn amount From Text field
-		tfplanHdrQty = new GERPTextField("Planned Qty");
-		tfplanHdrQty.setValue("0");
+		tfPlanHdrQty = new GERPTextField("Planned Qty");
+		tfPlanHdrQty.setValue("0");
 		// Remarks TextArea
 		taRemarks = new TextArea("Remarks");
 		taRemarks.setHeight("75px");
@@ -281,8 +281,8 @@ public class FoamPlan extends BaseTransUI {
 		cbDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// cbDtlStatus.setWidth("140px");
 		// Shift Name
-		tfshiftname = new GERPTextField("Shift Name");
-		tfshiftname.setWidth("100px");
+		tfShiftname = new GERPTextField("Shift Name");
+		tfShiftname.setWidth("100px");
 		// Employee Name combobox
 		cbEmpName = new GERPComboBox("Employee Name");
 		cbEmpName.setItemCaptionPropertyId("fullname");
@@ -333,9 +333,9 @@ public class FoamPlan extends BaseTransUI {
 		cbProduct.setItemCaptionPropertyId("prodName");
 		cbProduct.setWidth("110");
 		// Plan Qty Textfield
-		tfplanDtlQty = new GERPTextField("Plan Qty");
-		tfplanDtlQty.setValue("0");
-		tfplanDtlQty.setWidth("100px");
+		tfPlanDtlQty = new GERPTextField("Plan Qty");
+		tfPlanDtlQty.setValue("0");
+		tfPlanDtlQty.setWidth("100px");
 		// Status ComboBox
 		cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbHdrStatus.setWidth("150");
@@ -359,10 +359,10 @@ public class FoamPlan extends BaseTransUI {
 		flHdrCol3 = new FormLayout();
 		flHdrCol4 = new FormLayout();
 		Label lbl = new Label();
-		flHdrCol1.addComponent(dfplanDt);
+		flHdrCol1.addComponent(dfPlanDt);
 		flHdrCol2.addComponent(lbl);
 		flHdrCol3.addComponent(cbHdrStatus);
-		flHdrCol4.addComponent(tfplnRefNo);
+		flHdrCol4.addComponent(tfPlnRefNo);
 		hlSearchLayout.addComponent(flHdrCol4);
 		hlSearchLayout.addComponent(flHdrCol1);
 		hlSearchLayout.addComponent(flHdrCol2);
@@ -379,8 +379,8 @@ public class FoamPlan extends BaseTransUI {
 		// flHdrCol3 = new FormLayout();
 		flHdrCol1.addComponent(cbBranch);
 		flHdrCol1.addComponent(tfFormplanRefNo);
-		flHdrCol1.addComponent(dfplanDt);
-		flHdrCol1.addComponent(tfplanHdrQty);
+		flHdrCol1.addComponent(dfPlanDt);
+		flHdrCol1.addComponent(tfPlanHdrQty);
 		flHdrCol1.addComponent(taRemarks);
 		flHdrCol1.addComponent(cbHdrStatus);
 		hlHdr = new HorizontalLayout();
@@ -392,7 +392,7 @@ public class FoamPlan extends BaseTransUI {
 		flshiftCol2 = new FormLayout();
 		flshiftCol3 = new FormLayout();
 		flshiftCol4 = new FormLayout();
-		flshiftCol1.addComponent(tfshiftname);
+		flshiftCol1.addComponent(tfShiftname);
 		flshiftCol2.addComponent(cbEmpName);
 		flshiftCol3.addComponent(tfTargetQty);
 		flshiftCol4.addComponent(cbSftstatus);
@@ -420,7 +420,7 @@ public class FoamPlan extends BaseTransUI {
 		flDtlCol1.addComponent(cbClient);
 		flDtlCol2.addComponent(cbWorkorder);
 		flDtlCol3.addComponent(cbProduct);
-		flDtlCol4.addComponent(tfplanDtlQty);
+		flDtlCol4.addComponent(tfPlanDtlQty);
 		flDtlCol5.addComponent(cbDtlStatus);
 		hlHdrslap = new HorizontalLayout();
 		hlHdrslap.addComponent(flDtlCol1);
@@ -460,8 +460,8 @@ public class FoamPlan extends BaseTransUI {
 			List<FoamPlanHdrDM> listFoamPlan = new ArrayList<FoamPlanHdrDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfFormplanRefNo.getValue() + ", " + cbHdrStatus.getValue());
-			listFoamPlan = serviceFormPlanHdr.getFormPlanHdrDetails(null, dfplanDt.getValue(), companyid,
-					(String) cbHdrStatus.getValue(), (String) tfplnRefNo.getValue());
+			listFoamPlan = serviceFormPlanHdr.getFormPlanHdrDetails(null, dfPlanDt.getValue(), companyid,
+					(String) cbHdrStatus.getValue(), (String) tfPlnRefNo.getValue());
 			recordCnt = listFoamPlan.size();
 			beanFormPlanHdrDM = new BeanItemContainer<FoamPlanHdrDM>(FoamPlanHdrDM.class);
 			beanFormPlanHdrDM.addAll(listFoamPlan);
@@ -485,7 +485,7 @@ public class FoamPlan extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			logger.info("Company ID : " + companyid + " | saveasmblPlnDtlListDetails User Name : " + username + " > "
 					+ "Search Parameters are " + companyid + ", " + cbClient.getValue() + ", "
-					+ tfplanDtlQty.getValue() + (String) cbDtlStatus.getValue() + ", " + foamplndtlid);
+					+ tfPlanDtlQty.getValue() + (String) cbDtlStatus.getValue() + ", " + foamplndtlid);
 			recordCnt = listFoamPlanDetails.size();
 			beanFormPlanDtlDM = new BeanItemContainer<FoamPlanDtlDM>(FoamPlanDtlDM.class);
 			beanFormPlanDtlDM.addAll(listFoamPlanDetails);
@@ -535,26 +535,26 @@ public class FoamPlan extends BaseTransUI {
 		tfFormplanRefNo.setValue("");
 		tfFormplanRefNo.setReadOnly(true);
 		tfFormplanRefNo.setComponentError(null);
-		dfplanDt.setValue(null);
-		tfplnRefNo.setValue("");
-		tfplanHdrQty.setValue("0");
+		dfPlanDt.setValue(null);
+		tfPlnRefNo.setValue("");
+		tfPlanHdrQty.setValue("0");
 		taRemarks.setValue("");
 		cbHdrStatus.setValue(cbHdrStatus.getItemIds().iterator().next());
 		// Foam Plan shift Resetfields
-		tfshiftname.setValue("");
+		tfShiftname.setValue("");
 		cbEmpName.setValue(null);
 		tfTargetQty.setValue("0");
 		cbDtlStatus.setValue(cbDtlStatus.getItemIds().iterator().next());
 		cbEmpName.setComponentError(null);
-		dfplanDt.setComponentError(null);
+		dfPlanDt.setComponentError(null);
 		tfTargetQty.setComponentError(null);
-		tfshiftname.setComponentError(null);
+		tfShiftname.setComponentError(null);
 		cbBranch.setComponentError(null);
 		// Foam Plan Dtls ResetFields
 		cbClient.setValue(null);
 		cbWorkorder.setValue(null);
 		cbProduct.setValue(null);
-		tfplanDtlQty.setValue("0");
+		tfPlanDtlQty.setValue("0");
 		cbSftstatus.setValue(cbSftstatus.getItemIds().iterator().next());
 		cbWorkorder.setComponentError(null);
 		cbProduct.setComponentError(null);
@@ -580,9 +580,9 @@ public class FoamPlan extends BaseTransUI {
 				tfFormplanRefNo.setValue(editFormPlan.getFormplanreffno());
 				tfFormplanRefNo.setReadOnly(true);
 				if (editFormPlan.getFormplandate() != null) {
-					dfplanDt.setValue(editFormPlan.getFormplandate1());
+					dfPlanDt.setValue(editFormPlan.getFormplandate1());
 				}
-				tfplanHdrQty.setValue(editFormPlan.getPlannedqty().toString());
+				tfPlanHdrQty.setValue(editFormPlan.getPlannedqty().toString());
 				taRemarks.setValue(editFormPlan.getRemark());
 				cbHdrStatus.setValue(editFormPlan.getFoamplnstatus());
 				listFoamPlanDetails.addAll(serviceFormPlanDtl.getFormPlanDtl(null, Long.valueOf(formplanid), null,
@@ -638,7 +638,7 @@ public class FoamPlan extends BaseTransUI {
 					}
 				}
 				if (foamPlanDtlDM.getPlannedqty() != null) {
-					tfplanDtlQty.setValue(foamPlanDtlDM.getPlannedqty().toString());
+					tfPlanDtlQty.setValue(foamPlanDtlDM.getPlannedqty().toString());
 				}
 				if (foamPlanDtlDM.getAsmplndlstatus() != null) {
 					cbDtlStatus.setValue(foamPlanDtlDM.getAsmplndlstatus());
@@ -668,7 +668,7 @@ public class FoamPlan extends BaseTransUI {
 					}
 				}
 				if (foamPlanShiftDM.getShiftName() != null) {
-					tfshiftname.setValue(foamPlanShiftDM.getShiftName());
+					tfShiftname.setValue(foamPlanShiftDM.getShiftName());
 				}
 				if (foamPlanShiftDM.getTargetqty() != null) {
 					tfTargetQty.setValue(foamPlanShiftDM.getTargetqty().toString());
@@ -705,8 +705,8 @@ public class FoamPlan extends BaseTransUI {
 	protected void resetSearchDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbHdrStatus.setValue(cbHdrStatus.getItemIds().iterator().next());
-		dfplanDt.setValue(null);
-		tfplnRefNo.setValue("");
+		dfPlanDt.setValue(null);
+		tfPlnRefNo.setValue("");
 		loadSrchRslt();
 	}
 	
@@ -723,14 +723,14 @@ public class FoamPlan extends BaseTransUI {
 		loadPlanDtlRslt();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		cbBranch.setRequired(true);
-		dfplanDt.setRequired(true);
-		tfshiftname.setRequired(true);
+		dfPlanDt.setRequired(true);
+		tfShiftname.setRequired(true);
 		cbEmpName.setRequired(true);
 		cbWorkorder.setRequired(true);
 		cbProduct.setRequired(true);
 		cbClient.setRequired(true);
 		tfTargetQty.setRequired(true);
-		tfplanDtlQty.setRequired(true);
+		tfPlanDtlQty.setRequired(true);
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
 		resetFields();
@@ -769,22 +769,22 @@ public class FoamPlan extends BaseTransUI {
 		hlUserIPContainer.removeAllComponents();
 		assembleSearchLayout();
 		cbBranch.setComponentError(null);
-		dfplanDt.setComponentError(null);
+		dfPlanDt.setComponentError(null);
 		tfFormplanRefNo.setComponentError(null);
-		tfshiftname.setComponentError(null);
+		tfShiftname.setComponentError(null);
 		cbEmpName.setComponentError(null);
 		tfTargetQty.setComponentError(null);
 		cbClient.setComponentError(null);
-		tfplanDtlQty.setComponentError(null);
+		tfPlanDtlQty.setComponentError(null);
 		cbWorkorder.setComponentError(null);
 		cbProduct.setComponentError(null);
 		cbBranch.setRequired(false);
-		dfplanDt.setRequired(false);
-		tfshiftname.setRequired(false);
+		dfPlanDt.setRequired(false);
+		tfShiftname.setRequired(false);
 		cbEmpName.setRequired(false);
 		tfTargetQty.setRequired(false);
 		cbClient.setRequired(false);
-		tfplanDtlQty.setRequired(false);
+		tfPlanDtlQty.setRequired(false);
 		cbWorkorder.setRequired(false);
 		cbProduct.setRequired(false);
 		foamplanDtlResetFields();
@@ -805,12 +805,12 @@ public class FoamPlan extends BaseTransUI {
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		hlCmdBtnLayout.setVisible(false);
 		cbBranch.setRequired(true);
-		dfplanDt.setRequired(true);
-		tfshiftname.setRequired(true);
+		dfPlanDt.setRequired(true);
+		tfShiftname.setRequired(true);
 		cbEmpName.setRequired(true);
 		tfTargetQty.setRequired(true);
 		cbClient.setRequired(true);
-		tfplanDtlQty.setRequired(true);
+		tfPlanDtlQty.setRequired(true);
 		cbWorkorder.setRequired(true);
 		cbProduct.setRequired(true);
 		tblMstScrSrchRslt.setVisible(false);
@@ -826,10 +826,10 @@ public class FoamPlan extends BaseTransUI {
 		cbClient.setValue(null);
 		cbWorkorder.setValue(null);
 		cbProduct.setValue(null);
-		tfplanDtlQty.setValue("0");
+		tfPlanDtlQty.setValue("0");
 		cbDtlStatus.setValue(cbDtlStatus.getItemIds().iterator().next());
 		cbClient.setComponentError(null);
-		tfplanDtlQty.setComponentError(null);
+		tfPlanDtlQty.setComponentError(null);
 		cbWorkorder.setComponentError(null);
 		cbProduct.setComponentError(null);
 	}
@@ -837,10 +837,10 @@ public class FoamPlan extends BaseTransUI {
 	private void foamplanShiftResetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbEmpName.setValue(null);
-		tfshiftname.setValue("");
+		tfShiftname.setValue("");
 		tfTargetQty.setValue("0");
 		cbSftstatus.setValue(cbSftstatus.getItemIds().iterator().next());
-		tfshiftname.setComponentError(null);
+		tfShiftname.setComponentError(null);
 		cbEmpName.setComponentError(null);
 		tfTargetQty.setComponentError(null);
 	}
@@ -850,12 +850,12 @@ public class FoamPlan extends BaseTransUI {
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		cbBranch.setComponentError(null);
-		dfplanDt.setComponentError(null);
-		tfshiftname.setComponentError(null);
+		dfPlanDt.setComponentError(null);
+		tfShiftname.setComponentError(null);
 		cbEmpName.setComponentError(null);
 		tfTargetQty.setComponentError(null);
 		cbClient.setComponentError(null);
-		tfplanDtlQty.setComponentError(null);
+		tfPlanDtlQty.setComponentError(null);
 		cbWorkorder.setComponentError(null);
 		cbProduct.setComponentError(null);
 		errorFlag = false;
@@ -865,10 +865,10 @@ public class FoamPlan extends BaseTransUI {
 					+ "Throwing ValidationException. User data is > " + cbBranch.getValue());
 			errorFlag = true;
 		}
-		if ((dfplanDt.getValue() == null)) {
-			dfplanDt.setComponentError(new UserError(GERPErrorCodes.NULL_ASMBL_PLAN_DT));
+		if ((dfPlanDt.getValue() == null)) {
+			dfPlanDt.setComponentError(new UserError(GERPErrorCodes.NULL_ASMBL_PLAN_DT));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + dfplanDt.getValue());
+					+ "Throwing ValidationException. User data is > " + dfPlanDt.getValue());
 			errorFlag = true;
 		}
 		if (errorFlag) {
@@ -877,7 +877,7 @@ public class FoamPlan extends BaseTransUI {
 	}
 	
 	private boolean validateDtlDetails() {
-		tfplanDtlQty.setComponentError(null);
+		tfPlanDtlQty.setComponentError(null);
 		boolean isValid = true;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		if ((cbClient.getValue() == null)) {
@@ -906,14 +906,14 @@ public class FoamPlan extends BaseTransUI {
 		}
 		Long plandtlQty;
 		try {
-			plandtlQty = Long.valueOf(tfplanDtlQty.getValue());
+			plandtlQty = Long.valueOf(tfPlanDtlQty.getValue());
 			if (plandtlQty < 0) {
-				tfplanDtlQty.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
+				tfPlanDtlQty.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				isValid = false;
 			}
 		}
 		catch (Exception e) {
-			tfplanDtlQty.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
+			tfPlanDtlQty.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			isValid = false;
 		}
 		return isValid;
@@ -935,13 +935,13 @@ public class FoamPlan extends BaseTransUI {
 			tfTargetQty.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			errorFlag = true;
 		}
-		if ((tfshiftname.getValue() == "")) {
-			tfshiftname.setComponentError(new UserError(GERPErrorCodes.NULL_SHIFT));
+		if ((tfShiftname.getValue() == "")) {
+			tfShiftname.setComponentError(new UserError(GERPErrorCodes.NULL_SHIFT));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + tfshiftname.getValue());
+					+ "Throwing ValidationException. User data is > " + tfShiftname.getValue());
 			isValid = false;
 		} else {
-			tfshiftname.setComponentError(null);
+			tfShiftname.setComponentError(null);
 		}
 		if ((cbEmpName.getValue() == null)) {
 			cbEmpName.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_NAME));
@@ -965,8 +965,8 @@ public class FoamPlan extends BaseTransUI {
 			}
 			foamPlanHdrDM.setFormplanreffno(tfFormplanRefNo.getValue());
 			foamPlanHdrDM.setBranchid((Long.valueOf(cbBranch.getValue().toString())));
-			foamPlanHdrDM.setFormplandate(dfplanDt.getValue());
-			foamPlanHdrDM.setPlannedqty(Long.valueOf(tfplanHdrQty.getValue()));
+			foamPlanHdrDM.setFormplandate(dfPlanDt.getValue());
+			foamPlanHdrDM.setPlannedqty(Long.valueOf(tfPlanHdrQty.getValue()));
 			foamPlanHdrDM.setRemark(taRemarks.getValue());
 			foamPlanHdrDM.setFoamplnstatus((String) cbHdrStatus.getValue());
 			foamPlanHdrDM.setCompanyid(companyid);
@@ -1025,7 +1025,7 @@ public class FoamPlan extends BaseTransUI {
 				foamPlanDtlDM.setWoid(((WorkOrderHdrDM) cbWorkorder.getValue()).getWorkOrdrId());
 				foamPlanDtlDM.setWoNo(((WorkOrderHdrDM) cbWorkorder.getValue()).getWorkOrdrNo());
 			}
-			foamPlanDtlDM.setPlannedqty(Long.valueOf(tfplanDtlQty.getValue()));
+			foamPlanDtlDM.setPlannedqty(Long.valueOf(tfPlanDtlQty.getValue()));
 			if (cbProduct.getValue() != null) {
 				foamPlanDtlDM.setProductid(((WorkOrderDtlDM) cbProduct.getValue()).getProdId());
 				foamPlanDtlDM.setProdName(((WorkOrderDtlDM) cbProduct.getValue()).getProdName());
@@ -1054,7 +1054,7 @@ public class FoamPlan extends BaseTransUI {
 				foamPlanShiftDM = beanFormPlanShiftDM.getItem(tblShift.getValue()).getBean();
 				listPlanShift.remove(foamPlanShiftDM);
 			}
-			foamPlanShiftDM.setShiftName(tfshiftname.getValue());
+			foamPlanShiftDM.setShiftName(tfShiftname.getValue());
 			if (cbEmpName.getValue() != null) {
 				foamPlanShiftDM.setEmployeeid(((EmployeeDM) cbEmpName.getValue()).getEmployeeid());
 				foamPlanShiftDM.setEmpname(((EmployeeDM) cbEmpName.getValue()).getFirstlastname());

@@ -91,7 +91,7 @@ public class Assembly extends BaseTransUI {
 	private BeanItemContainer<AsmblyHdrDM> beanAsmblyHdr = null;
 	private BeanItemContainer<AsmblyDtlDM> beanAsmblyDtl = null;
 	private BeanItemContainer<AsmblyShiftDM> beanAsmblyShift = null;
-	private TextField tfAsmRefNo, tfPrdctnTotlQty, tfProductQty, tfShiftName, tfAchievedQty, tfplnRefNo;
+	private TextField tfAsmRefNo, tfPrdctnTotlQty, tfProductQty, tfShiftName, tfAchievedQty, tfPlanRefNo;
 	private TextArea taRemarks;
 	private ComboBox cbPlndQty, cbHdrStatus, cbProductName, cbDtlStatus, cbEmployeeName, cbShiftStatus;
 	private DateField dfAsmDt;
@@ -145,7 +145,7 @@ public class Assembly extends BaseTransUI {
 		taRemarks = new TextArea("Remarks");
 		taRemarks.setWidth("150");
 		taRemarks.setHeight("52");
-		tfplnRefNo = new TextField("Asm. Ref. No");
+		tfPlanRefNo = new TextField("Asm. Ref. No");
 		cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbHdrStatus.setWidth("150");
 		cbHdrStatus.setNullSelectionAllowed(false);
@@ -375,7 +375,7 @@ public class Assembly extends BaseTransUI {
 		flHdrCol3 = new FormLayout();
 		flHdrCol4 = new FormLayout();
 		Label lbl = new Label();
-		flHdrCol4.addComponent(tfplnRefNo);
+		flHdrCol4.addComponent(tfPlanRefNo);
 		flHdrCol1.addComponent(dfAsmDt);
 		flHdrCol2.addComponent(lbl);
 		flHdrCol3.addComponent(cbHdrStatus);
@@ -395,7 +395,7 @@ public class Assembly extends BaseTransUI {
 			List<AsmblyHdrDM> list = new ArrayList<AsmblyHdrDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyid + ", " + cbPlndQty.getValue() + ", " + cbHdrStatus.getValue());
-			list = serviceAsmblyHdr.getAsmblyHdrDMs(null, null, (String) tfplnRefNo.getValue(), dfAsmDt.getValue(),
+			list = serviceAsmblyHdr.getAsmblyHdrDMs(null, null, (String) tfPlanRefNo.getValue(), dfAsmDt.getValue(),
 					null, (String) cbHdrStatus.getValue(), "F");
 			recordCnt = list.size();
 			beanAsmblyHdr = new BeanItemContainer<AsmblyHdrDM>(AsmblyHdrDM.class);
@@ -517,7 +517,7 @@ public class Assembly extends BaseTransUI {
 		cbHdrStatus.setValue(cbHdrStatus.getItemIds().iterator().next());
 		dfAsmDt.setValue(null);
 		dfAsmDt.setComponentError(null);
-		tfplnRefNo.setValue("");
+		tfPlanRefNo.setValue("");
 		loadSrchRslt();
 	}
 	
@@ -947,7 +947,7 @@ public class Assembly extends BaseTransUI {
 		tfPrdctnTotlQty.setValue("0");
 		tfProductQty.setValue("0");
 		tfAchievedQty.setValue("0");
-		tfplnRefNo.setValue("");
+		tfPlanRefNo.setValue("");
 		taRemarks.setValue("");
 		cbHdrStatus.setValue(cbHdrStatus.getItemIds().iterator().next());
 		listAsmDtl = new ArrayList<AsmblyDtlDM>();

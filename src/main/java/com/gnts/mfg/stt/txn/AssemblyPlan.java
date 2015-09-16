@@ -89,8 +89,8 @@ public class AssemblyPlan extends BaseTransUI {
 	private WorkOrderDtlService serviceWorkOrderDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
-	private List<AsmblyPlanDtlDM> asmblPlnDtlList = null;
-	private List<AsmblyPlanShiftDM> asmblyPlnShitftList = null;
+	private List<AsmblyPlanDtlDM> listAsmblyPlanDtls = null;
+	private List<AsmblyPlanShiftDM> listAsmblyPlanShift = null;
 	// form layout for input controls
 	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4, flDtlCol1, flDtlCol2, flDtlCol3, flDtlCol4,
 			flDtlCol5, flAsmShiftCol1, flAsmShiftCol2, flAsmShiftCol3;
@@ -119,7 +119,7 @@ public class AssemblyPlan extends BaseTransUI {
 	private BeanItemContainer<AsmblyPlanDtlDM> beanAsmblyPlanDtlDM = null;
 	private BeanItemContainer<AsmblyPlanShiftDM> beanAsmblyPlanShiftDM = null;
 	// local variables declaration
-	private Long companyid, moduleId, branchID;
+	private Long companyid, moduleId, branchId;
 	private String asmbPlnHdrId;
 	private int recordCnt = 0;
 	private int recordShiftCnt = 0;
@@ -134,7 +134,7 @@ public class AssemblyPlan extends BaseTransUI {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside AssemblyPlan() constructor");
 		// Loading the UI
@@ -464,9 +464,9 @@ public class AssemblyPlan extends BaseTransUI {
 					+ "Search Parameters are " + companyid + ", " + cbClientId.getValue() + ", "
 					+ tfPlanHdrQty.getValue() + (String) cbStatus.getValue() + ", " + asmbPlnHdrId);
 			tblAsmbPlanDtl.removeAllItems();
-			recordCnt = asmblPlnDtlList.size();
+			recordCnt = listAsmblyPlanDtls.size();
 			beanAsmblyPlanDtlDM = new BeanItemContainer<AsmblyPlanDtlDM>(AsmblyPlanDtlDM.class);
-			beanAsmblyPlanDtlDM.addAll(asmblPlnDtlList);
+			beanAsmblyPlanDtlDM.addAll(listAsmblyPlanDtls);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the AssemblyPlanslap. result set");
 			tblAsmbPlanDtl.setContainerDataSource(beanAsmblyPlanDtlDM);
@@ -485,9 +485,9 @@ public class AssemblyPlan extends BaseTransUI {
 	private void loadShiftRslt() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			recordShiftCnt = asmblyPlnShitftList.size();
+			recordShiftCnt = listAsmblyPlanShift.size();
 			beanAsmblyPlanShiftDM = new BeanItemContainer<AsmblyPlanShiftDM>(AsmblyPlanShiftDM.class);
-			beanAsmblyPlanShiftDM.addAll(asmblyPlnShitftList);
+			beanAsmblyPlanShiftDM.addAll(listAsmblyPlanShift);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the AssemblyPlan. result set");
 			tblShift.setContainerDataSource(beanAsmblyPlanShiftDM);
@@ -521,8 +521,8 @@ public class AssemblyPlan extends BaseTransUI {
 		cbHdrStatus.setValue(cbHdrStatus.getItemIds().iterator().next());
 		cbDtlStatus.setValue(cbDtlStatus.getItemIds().iterator().next());
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
-		asmblPlnDtlList = new ArrayList<AsmblyPlanDtlDM>();
-		asmblyPlnShitftList = new ArrayList<AsmblyPlanShiftDM>();
+		listAsmblyPlanDtls = new ArrayList<AsmblyPlanDtlDM>();
+		listAsmblyPlanShift = new ArrayList<AsmblyPlanShiftDM>();
 		tblAsmbPlanDtl.removeAllItems();
 		tblShift.removeAllItems();
 		recordShiftCnt = 0;
@@ -552,9 +552,9 @@ public class AssemblyPlan extends BaseTransUI {
 					taRemark.setValue(asmblyPlanHdr.getRemarks());
 				}
 				cbHdrStatus.setValue(asmblyPlanHdr.getAsmplnstatus());
-				asmblPlnDtlList.addAll(serviceAsmblyPlanDtl.getAsmPlnDtlList(null, Long.valueOf(asmbPlnHdrId), null,
+				listAsmblyPlanDtls.addAll(serviceAsmblyPlanDtl.getAsmPlnDtlList(null, Long.valueOf(asmbPlnHdrId), null,
 						null, null, (String) cbStatus.getValue(), "F"));
-				asmblyPlnShitftList.addAll(serviceAsmblyPlanShift.getAsmblyPlanShiftDtls(null,
+				listAsmblyPlanShift.addAll(serviceAsmblyPlanShift.getAsmblyPlanShiftDtls(null,
 						Long.valueOf(asmbPlnHdrId), null, null, (String) cbStatus.getValue(), "F"));
 				loadAsmbDtlList();
 				loadShiftRslt();
@@ -705,7 +705,7 @@ public class AssemblyPlan extends BaseTransUI {
 		tblAsmbPlanDtl.setVisible(true);
 		tfPlanRefNo.setReadOnly(false);
 		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STMF_APLNO").get(0);
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "STMF_APLNO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				tfPlanRefNo.setValue(slnoObj.getKeyDesc());
 				tfPlanRefNo.setReadOnly(true);
@@ -964,10 +964,10 @@ public class AssemblyPlan extends BaseTransUI {
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
 				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STMF_APLNO")
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "STMF_APLNO")
 							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "STMF_APLNO");
+						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "STMF_APLNO");
 					}
 				}
 				catch (Exception e) {
@@ -993,7 +993,7 @@ public class AssemblyPlan extends BaseTransUI {
 			AsmblyPlanDtlDM assemblyPlanDtlObj = new AsmblyPlanDtlDM();
 			if (tblAsmbPlanDtl.getValue() != null) {
 				assemblyPlanDtlObj = beanAsmblyPlanDtlDM.getItem(tblAsmbPlanDtl.getValue()).getBean();
-				asmblPlnDtlList.remove(assemblyPlanDtlObj);
+				listAsmblyPlanDtls.remove(assemblyPlanDtlObj);
 			}
 			if (cbClientId.getValue() != null) {
 				assemblyPlanDtlObj.setClientId(((ClientDM) cbClientId.getValue()).getClientId());
@@ -1013,7 +1013,7 @@ public class AssemblyPlan extends BaseTransUI {
 			}
 			assemblyPlanDtlObj.setLastupdateddate(DateUtils.getcurrentdate());
 			assemblyPlanDtlObj.setLastupdatedby(username);
-			asmblPlnDtlList.add(assemblyPlanDtlObj);
+			listAsmblyPlanDtls.add(assemblyPlanDtlObj);
 			loadAsmbDtlList();
 			btnAddDtls.setCaption("Add");
 			asmblDtlResetFields();
@@ -1030,7 +1030,7 @@ public class AssemblyPlan extends BaseTransUI {
 			AsmblyPlanShiftDM assemblyPlanShiftObj = new AsmblyPlanShiftDM();
 			if (tblShift.getValue() != null) {
 				assemblyPlanShiftObj = beanAsmblyPlanShiftDM.getItem(tblShift.getValue()).getBean();
-				asmblyPlnShitftList.remove(assemblyPlanShiftObj);
+				listAsmblyPlanShift.remove(assemblyPlanShiftObj);
 			}
 			assemblyPlanShiftObj.setShiftName(tfShiftName.getValue());
 			if (cbEmpName.getValue() != null) {
@@ -1043,7 +1043,7 @@ public class AssemblyPlan extends BaseTransUI {
 			}
 			assemblyPlanShiftObj.setLastupdateddate(DateUtils.getcurrentdate());
 			assemblyPlanShiftObj.setLastupdatedby(username);
-			asmblyPlnShitftList.add(assemblyPlanShiftObj);
+			listAsmblyPlanShift.add(assemblyPlanShiftObj);
 			loadShiftRslt();
 			asmbPlnHdrId = null;
 			btnAddShift.setCaption("Add");
@@ -1062,7 +1062,7 @@ public class AssemblyPlan extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Branch Search...");
 			BeanContainer<Long, BranchDM> beanBranchDM = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanBranchDM.setBeanIdProperty("branchId");
-			beanBranchDM.addAll(serviceBranch.getBranchList(branchID, null, null, "Active", companyid, "P"));
+			beanBranchDM.addAll(serviceBranch.getBranchList(branchId, null, null, "Active", companyid, "P"));
 			cbBranch.setContainerDataSource(beanBranchDM);
 		}
 		catch (Exception e) {
@@ -1139,7 +1139,7 @@ public class AssemblyPlan extends BaseTransUI {
 			AsmblyPlanShiftDM removeShift = new AsmblyPlanShiftDM();
 			if (tblShift.getValue() != null) {
 				removeShift = beanAsmblyPlanShiftDM.getItem(tblShift.getValue()).getBean();
-				asmblyPlnShitftList.remove(removeShift);
+				listAsmblyPlanShift.remove(removeShift);
 				asmblShiftResetFields();
 				loadShiftRslt();
 			}
@@ -1154,7 +1154,7 @@ public class AssemblyPlan extends BaseTransUI {
 			AsmblyPlanDtlDM removeShift = new AsmblyPlanDtlDM();
 			if (tblAsmbPlanDtl.getValue() != null) {
 				removeShift = beanAsmblyPlanDtlDM.getItem(tblAsmbPlanDtl.getValue()).getBean();
-				asmblPlnDtlList.remove(removeShift);
+				listAsmblyPlanDtls.remove(removeShift);
 				asmblDtlResetFields();
 				loadAsmbDtlList();
 			}

@@ -23,6 +23,7 @@ import com.gnts.die.domain.txn.DieCompletionDtlDM;
 import com.gnts.die.domain.txn.DieCompletionHdrDM;
 import com.gnts.die.domain.txn.DieRequestDM;
 import com.gnts.die.domain.txn.DieSectionDM;
+import com.gnts.die.domain.txn.DieSectionDtlDM;
 import com.gnts.die.domain.txn.MoldTrailReqDtlDM;
 import com.gnts.die.domain.txn.MoldTrailReqHdrDM;
 import com.gnts.die.service.txn.DieBOMDtlService;
@@ -30,6 +31,7 @@ import com.gnts.die.service.txn.DieBOMHdrService;
 import com.gnts.die.service.txn.DieCompletionDtlService;
 import com.gnts.die.service.txn.DieCompletionHdrService;
 import com.gnts.die.service.txn.DieRequestService;
+import com.gnts.die.service.txn.DieSectionDtlService;
 import com.gnts.die.service.txn.DieSectionService;
 import com.gnts.die.service.txn.MoldTrailReqDtlService;
 import com.gnts.die.service.txn.MoldTrailReqHdrService;
@@ -93,6 +95,8 @@ public class DieRequest extends BaseTransUI {
 	private SmsEnqHdrService serviceEnqHeader = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private DieRequestService serviceDieRequest = (DieRequestService) SpringContextHelper.getBean("dieRequest");
 	private DieSectionService serviceDieSection = (DieSectionService) SpringContextHelper.getBean("dieSection");
+	private DieSectionDtlService serviceDieSectionDtls = (DieSectionDtlService) SpringContextHelper
+			.getBean("dieSectionDtls");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private SmsEnquiryDtlService serviceEnqDetail = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
@@ -118,6 +122,7 @@ public class DieRequest extends BaseTransUI {
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
 	private BeanItemContainer<DieRequestDM> beanDieRequest = null;
+	private BeanItemContainer<DieSectionDtlDM> beanDieSectionDtl = null;
 	private BeanItemContainer<MoldTrailReqDtlDM> beanMoldTrailReqDtl = null;
 	private BeanItemContainer<DieCompletionDtlDM> beanDieCompletionDtl = null;
 	private BeanItemContainer<DieBOMDtlDM> beanDieBOMDtl = null;
@@ -139,10 +144,13 @@ public class DieRequest extends BaseTransUI {
 	private Long companyid, moduleId, branchId;
 	private int recordCnt = 0;
 	// for die section
-	private GERPTextField tfDieModel, tfWorkNature;
-	private GERPComboBox cbRegisterby, cbReceivedby;
-	private GERPPopupDateField dfDieSecRefDate;
+	private GERPTextField tfDieModel, tfWorkNature, tfVersionNo;
+	private GERPComboBox cbRegisterby, cbReceivedby, cbAttendby, cbApprovBy, cbDieSecStatus;
+	private PopupDateField dfDieSecRefDate, dfAttendDate, dfApprovDate;
 	private GERPTextArea taTrailComments, taCmtsRectified;
+	private GERPTable tblDieSecDtls = new GERPTable();
+	private Button btnAddDieSection = new GERPButton("Add", "add");
+	private List<DieSectionDtlDM> listDieSectionDtl = new ArrayList<DieSectionDtlDM>();
 	// for Mold trail request
 	private GERPTextField tfMTRefNumber;
 	private GERPPopupDateField dfMTRefDate;
@@ -253,18 +261,30 @@ public class DieRequest extends BaseTransUI {
 		cbRegisterby.setItemCaptionPropertyId("firstname");
 		cbReceivedby = new GERPComboBox("Received by");
 		cbReceivedby.setItemCaptionPropertyId("firstname");
-		loadEmployeeList();
 		tfDieModel = new GERPTextField("Die Model");
 		tfDieModel.setWidth("130");
 		tfWorkNature = new GERPTextField("Work Nature");
-		dfDieSecRefDate = new GERPPopupDateField("Date");
+		dfDieSecRefDate = new PopupDateField("Date");
 		dfDieSecRefDate.setWidth("110");
 		taTrailComments = new GERPTextArea("Trail Performance & Comments(by Roto)");
+		taTrailComments.setRequired(true);
 		taTrailComments.setWidth("984");
-		taTrailComments.setHeight("150px");
+		taTrailComments.setHeight("50px");
 		taCmtsRectified = new GERPTextArea("Comments Rectified");
+		taCmtsRectified.setRequired(true);
 		taCmtsRectified.setWidth("984");
-		taCmtsRectified.setHeight("150px");
+		taCmtsRectified.setHeight("50px");
+		tfVersionNo = new GERPTextField("Version");
+		tfVersionNo.setRequired(true);
+		cbAttendby = new GERPComboBox("Attended by");
+		cbAttendby.setItemCaptionPropertyId("firstname");
+		cbApprovBy = new GERPComboBox("Approved by");
+		cbApprovBy.setItemCaptionPropertyId("firstname");
+		loadEmployeeList();
+		cbDieSecStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		dfAttendDate = new PopupDateField("Attened Date");
+		dfApprovDate = new PopupDateField("Approved Date");
+		tblDieSecDtls.setPageLength(3);
 		// for mold section
 		tfMTRefNumber = new GERPTextField("Ref. Number");
 		dfMTRefDate = new GERPPopupDateField("Date");
@@ -307,8 +327,10 @@ public class DieRequest extends BaseTransUI {
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
 		resetFields();
+		resetDieSectionDetails();
 		loadSrchRslt();
 		loadTrailRequestDetails();
+		loadDieSectionDetails();
 		loadDieCompletion();
 		loadDieBillofMaterial();
 		btnAddMoldTrial.addClickListener(new ClickListener() {
@@ -320,6 +342,17 @@ public class DieRequest extends BaseTransUI {
 				saveMoldTrialDetails();
 			}
 		});
+		btnAddDieSection.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				if (validateDieSectionDetails()) {
+					saveDieSectionDetails();
+				}
+			}
+		});
 		btnAddDieCompl.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -327,6 +360,19 @@ public class DieRequest extends BaseTransUI {
 			public void buttonClick(ClickEvent event) {
 				// TODO Auto-generated method stub
 				saveDieCompletionDtl();
+			}
+		});
+		tblDieSecDtls.addItemClickListener(new ItemClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				if (tblDieSecDtls.isSelected(event.getItemId())) {
+					resetDieSectionDetails();
+				} else {
+					((AbstractSelect) event.getSource()).select(event.getItemId());
+					editDieSectionDetails();
+				}
 			}
 		});
 		tblTrailRequest.addItemClickListener(new ItemClickListener() {
@@ -472,8 +518,30 @@ public class DieRequest extends BaseTransUI {
 				addComponent(new FormLayout(dfDieSecRefDate));
 			}
 		});
-		vlDieSection.addComponent(taTrailComments);
-		vlDieSection.addComponent(taCmtsRectified);
+		vlDieSection.addComponent(GERPPanelGenerator.createPanel(new VerticalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setMargin(true);
+				setSpacing(true);
+				addComponent(new HorizontalLayout() {
+					private static final long serialVersionUID = 1L;
+					{
+						setSpacing(true);
+						addComponent(tfVersionNo);
+						addComponent(cbAttendby);
+						addComponent(dfAttendDate);
+						addComponent(cbApprovBy);
+						addComponent(dfApprovDate);
+						addComponent(cbDieSecStatus);
+						addComponent(btnAddDieSection);
+						setComponentAlignment(btnAddDieSection, Alignment.BOTTOM_CENTER);
+					}
+				});
+				addComponent(taTrailComments);
+				addComponent(taCmtsRectified);
+				addComponent(tblDieSecDtls);
+			}
+		}));
 		tbDieRequest.addTab(vlDieSection, "Die Section");
 		// for mold trial request
 		vlMoldTrialRequest = new VerticalLayout();
@@ -591,6 +659,18 @@ public class DieRequest extends BaseTransUI {
 		}
 	}
 	
+	private void loadDieSectionDetails() {
+		tblDieSecDtls.removeAllItems();
+		beanDieSectionDtl = new BeanItemContainer<DieSectionDtlDM>(DieSectionDtlDM.class);
+		beanDieSectionDtl.addAll(listDieSectionDtl);
+		tblDieSecDtls.setContainerDataSource(beanDieSectionDtl);
+		tblDieSecDtls.setVisibleColumns(new Object[] { "versionNo", "trailComments", "commentsRectified",
+				"lastUpdatedDate", "lastUpdatedBy" });
+		tblDieSecDtls.setColumnHeaders(new String[] { "Version", "Trail Performance Comments(By Rotto)",
+				"Comments Rectified", "Updated On", "Updated By" });
+		tblDieSecDtls.setColumnWidth("inputDetail", 350);
+	}
+	
 	private void loadDieCompletion() {
 		try {
 			tblDieCompletion.removeAllItems();
@@ -691,14 +771,22 @@ public class DieRequest extends BaseTransUI {
 		try {
 			List<EmployeeDM> empList = serviceEmployee.getEmployeeList(null, null, null, null, companyid, null, null,
 					null, null, "P");
-			BeanContainer<Long, EmployeeDM> beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-			beanInitiatedBy.setBeanIdProperty("employeeid");
-			beanInitiatedBy.addAll(empList);
-			cbReceivedby.setContainerDataSource(beanInitiatedBy);
-			beanInitiatedBy = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
-			beanInitiatedBy.setBeanIdProperty("employeeid");
-			beanInitiatedBy.addAll(empList);
-			cbRegisterby.setContainerDataSource(beanInitiatedBy);
+			BeanContainer<Long, EmployeeDM> beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(empList);
+			cbReceivedby.setContainerDataSource(beanEmployee);
+			beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(empList);
+			cbRegisterby.setContainerDataSource(beanEmployee);
+			beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(empList);
+			cbApprovBy.setContainerDataSource(beanEmployee);
+			beanEmployee = new BeanContainer<Long, EmployeeDM>(EmployeeDM.class);
+			beanEmployee.setBeanIdProperty("employeeid");
+			beanEmployee.addAll(empList);
+			cbAttendby.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
 			logger.info("load Employee details" + e);
@@ -1047,13 +1135,17 @@ public class DieRequest extends BaseTransUI {
 		dieSectionDM.setRegisterBy((Long) cbRegisterby.getValue());
 		dieSectionDM.setReceiveBy((Long) cbReceivedby.getValue());
 		dieSectionDM.setRefDate(dfDieSecRefDate.getValue());
-		dieSectionDM.setTrailComments(taTrailComments.getValue());
-		dieSectionDM.setCommentsRectified(taCmtsRectified.getValue());
 		dieSectionDM.setStatus("Active");
 		dieSectionDM.setLastUpdatedBy(username);
 		dieSectionDM.setLastUpdatedDate(DateUtils.getcurrentdate());
 		serviceDieSection.saveOrUpdateDetails(dieSectionDM);
 		dieSectionId = dieSectionDM.getDieSecId();
+		@SuppressWarnings("unchecked")
+		Collection<DieSectionDtlDM> itemIds = (Collection<DieSectionDtlDM>) tblDieSecDtls.getVisibleItemIds();
+		for (DieSectionDtlDM dieSectionDtlDM : (Collection<DieSectionDtlDM>) itemIds) {
+			dieSectionDtlDM.setDieSecId(dieSectionId);
+			serviceDieSectionDtls.saveOrUpdateDetails(dieSectionDtlDM);
+		}
 	}
 	
 	private Boolean validateDieSection() throws ValidationException {
@@ -1065,6 +1157,49 @@ public class DieRequest extends BaseTransUI {
 			throw new ERPException.ValidationException();
 		}
 		return isvalid;
+	}
+	
+	private void saveDieSectionDetails() {
+		// TODO Auto-generated method stub
+		DieSectionDtlDM dieSectionDtl = new DieSectionDtlDM();
+		if (tblDieSecDtls.getValue() != null) {
+			dieSectionDtl = beanDieSectionDtl.getItem(tblDieSecDtls.getValue()).getBean();
+		}
+		dieSectionDtl.setDieSecId(dieSectionId);
+		if (tfVersionNo.getValue() != null) {
+			dieSectionDtl.setVersionNo(Long.valueOf(tfVersionNo.getValue()));
+		}
+		dieSectionDtl.setCommentsRectified(taCmtsRectified.getValue());
+		dieSectionDtl.setTrailComments(taTrailComments.getValue());
+		dieSectionDtl.setApprovedBy((Long) cbApprovBy.getValue());
+		dieSectionDtl.setApprovedDate(dfApprovDate.getValue());
+		dieSectionDtl.setAttendedBy((Long) cbAttendby.getValue());
+		dieSectionDtl.setAttendedDate(dfAttendDate.getValue());
+		dieSectionDtl.setLastUpdatedBy(username);
+		dieSectionDtl.setLastUpdatedDate(DateUtils.getcurrentdate());
+		listDieSectionDtl.add(dieSectionDtl);
+		loadDieSectionDetails();
+		resetDieSectionDetails();
+	}
+	
+	private Boolean validateDieSectionDetails() {
+		Boolean isValid = true;
+		taCmtsRectified.setComponentError(null);
+		taTrailComments.setComponentError(null);
+		tfVersionNo.setComponentError(null);
+		if (tfVersionNo.getValue() == null || tfVersionNo.getValue().trim().length() == 0) {
+			tfVersionNo.setComponentError(new UserError(""));
+			isValid = false;
+		}
+		if (taCmtsRectified.getValue() == null || taCmtsRectified.getValue().trim().length() == 0) {
+			taCmtsRectified.setComponentError(new UserError(""));
+			isValid = false;
+		}
+		if (taTrailComments.getValue() == null || taTrailComments.getValue().trim().length() == 0) {
+			taTrailComments.setComponentError(new UserError(""));
+			isValid = false;
+		}
+		return isValid;
 	}
 	
 	@Override
@@ -1102,6 +1237,21 @@ public class DieRequest extends BaseTransUI {
 		catch (Exception e) {
 			logger.info(e.getMessage());
 		}
+		listDieSectionDtl = new ArrayList<DieSectionDtlDM>();
+		loadDieSectionDetails();
+		listDieBOMDtl = new ArrayList<DieBOMDtlDM>();
+		loadDieBillofMaterial();
+		listDieComplDetail = new ArrayList<DieCompletionDtlDM>();
+		loadDieCompletion();
+		listMoldTrailDetail = new ArrayList<MoldTrailReqDtlDM>();
+		loadTrailRequestDetails();
+		resetDieSectionDetails();
+		resetDieBOMDetails();
+		resetDieCompleteDetails();
+		resetMoldReqDetails();
+		tfVersionNo.setReadOnly(false);
+		tfVersionNo.setValue(listDieSectionDtl.size() + 1 + "");
+		tfVersionNo.setReadOnly(true);
 	}
 	
 	@Override
@@ -1192,12 +1342,31 @@ public class DieRequest extends BaseTransUI {
 		tfWorkNature.setValue(dieSectionDM.getWorkNature());
 		cbRegisterby.setValue(dieSectionDM.getRegisterBy());
 		cbReceivedby.setValue(dieSectionDM.getReceiveBy());
-		if (dieSectionDM.getTrailComments() != null) {
-			taTrailComments.setValue(dieSectionDM.getTrailComments());
+		listDieSectionDtl = serviceDieSectionDtls.getDieSectionDtlList(null, dieSectionId, null, null, null, "F");
+		loadDieSectionDetails();
+		tfVersionNo.setReadOnly(false);
+		tfVersionNo.setValue(listDieSectionDtl.size() + 1 + "");
+		tfVersionNo.setReadOnly(true);
+	}
+	
+	private void editDieSectionDetails() {
+		// TODO Auto-generated method stub
+		DieSectionDtlDM dieSectionDtl = beanDieSectionDtl.getItem(tblDieSecDtls.getValue()).getBean();
+		if (dieSectionDtl.getVersionNo() != null) {
+			tfVersionNo.setReadOnly(false);
+			tfVersionNo.setValue(dieSectionDtl.getVersionNo().toString());
+			tfVersionNo.setReadOnly(true);
 		}
-		if (dieSectionDM.getCommentsRectified() != null) {
-			taCmtsRectified.setValue(dieSectionDM.getCommentsRectified());
+		if (dieSectionDtl.getCommentsRectified() != null) {
+			taCmtsRectified.setValue(dieSectionDtl.getCommentsRectified());
 		}
+		if (dieSectionDtl.getTrailComments() != null) {
+			taTrailComments.setValue(dieSectionDtl.getTrailComments());
+		}
+		cbApprovBy.setValue(dieSectionDtl.getApprovedBy());
+		cbAttendby.setValue(dieSectionDtl.getAttendedBy());
+		dfApprovDate.setValue(dieSectionDtl.getApprovedDate());
+		dfAttendDate.setValue(dieSectionDtl.getAttendedDate());
 	}
 	
 	@Override
@@ -1262,6 +1431,21 @@ public class DieRequest extends BaseTransUI {
 		tfBOMMatSize.setValue("");
 		tfBOMQty.setValue("0");
 		tfBOMRemarks.setValue("");
+	}
+	
+	private void resetDieSectionDetails() {
+		taCmtsRectified.setComponentError(null);
+		taTrailComments.setComponentError(null);
+		tfVersionNo.setComponentError(null);
+		tfVersionNo.setReadOnly(false);
+		tfVersionNo.setValue(listDieSectionDtl.size() + 1 + "");
+		tfVersionNo.setReadOnly(true);
+		taCmtsRectified.setValue("");
+		taTrailComments.setValue("");
+		dfApprovDate.setValue(null);
+		dfAttendDate.setValue(null);
+		cbApprovBy.setValue(null);
+		cbAttendby.setValue(null);
 	}
 	
 	@Override

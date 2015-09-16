@@ -83,14 +83,14 @@ import com.vaadin.ui.VerticalLayout;
 public class Pulverizer extends BaseTransUI {
 	private static final long serialVersionUID = 1L;
 	private Logger logger = Logger.getLogger(Pulverizer.class);
-	private PulvizHdrService Pulvizhdrservice = (PulvizHdrService) SpringContextHelper.getBean("PulverizerHdr");
-	private BranchService servicebranch = (BranchService) SpringContextHelper.getBean("mbranch");
-	private ExtrudersHdrService extrudservice = (ExtrudersHdrService) SpringContextHelper.getBean("extruderHdr");
-	private AssetDetailsService serviceassetdetails = (AssetDetailsService) SpringContextHelper.getBean("assetDetails");
-	private PulvizDtlService pulvizDtlservice = (PulvizDtlService) SpringContextHelper.getBean("PulverizerDtl");
+	private PulvizHdrService servicePulvizHdr = (PulvizHdrService) SpringContextHelper.getBean("PulverizerHdr");
+	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
+	private ExtrudersHdrService serviceExtruHdr = (ExtrudersHdrService) SpringContextHelper.getBean("extruderHdr");
+	private AssetDetailsService serviceAssetDtls = (AssetDetailsService) SpringContextHelper.getBean("assetDetails");
+	private PulvizDtlService servicePulvizDtls = (PulvizDtlService) SpringContextHelper.getBean("PulverizerDtl");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private String username;
-	private Long EmployeeId, extId;
+	private Long employeeId, extId;
 	private Long companyid, branchid, assetId, moduleid, brnchid;
 	private HorizontalLayout hlsearchlayout;
 	private HorizontalLayout hluserInputlayoutHdr = new HorizontalLayout();
@@ -133,7 +133,7 @@ public class Pulverizer extends BaseTransUI {
 		loadBranchlist();
 		cbExtrudRefNo = new GERPComboBox("Extrud Ref.No");
 		cbExtrudRefNo.setItemCaptionPropertyId("extRefNo");
-		loadextudersrefno();
+		loadExtruHdrDetails();
 		tfLotNumber = new GERPTextField("Lot No");
 		tfOPMaterial = new GERPTextField("OP Material");
 		cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
@@ -324,7 +324,7 @@ public class Pulverizer extends BaseTransUI {
 				brnchid = ((Long) cbBranchName.getValue());
 			}
 			List<PulvizHdrDM> listPulvizHdr = new ArrayList<PulvizHdrDM>();
-			listPulvizHdr = Pulvizhdrservice.getPulvizHdrDetails(null, brnchid, (String) tfPulRefNumber.getValue(),
+			listPulvizHdr = servicePulvizHdr.getPulvizHdrDetails(null, brnchid, (String) tfPulRefNumber.getValue(),
 					(Date) dfPulvizDate.getValue(), (String) cbHdrStatus.getValue(), "F");
 			recordCnt = listPulvizHdr.size();
 			beanPulvizHdrDM = new BeanItemContainer<PulvizHdrDM>(PulvizHdrDM.class);
@@ -402,7 +402,7 @@ public class Pulverizer extends BaseTransUI {
 				pulvizDtlDM.setMchnend(tfTimeOut.getHorsMunites());
 			}
 			pulvizDtlDM.setRemark(taDtlRemarks.getValue());
-			pulvizDtlDM.setPreparedby(EmployeeId);
+			pulvizDtlDM.setPreparedby(employeeId);
 			pulvizDtlDM.setReviewby(null);
 			pulvizDtlDM.setActionedby(null);
 			if (cbDtlStatus.getValue() != null) {
@@ -425,7 +425,7 @@ public class Pulverizer extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading Branchlist");
 			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanbranch.setBeanIdProperty("branchId");
-			beanbranch.addAll(servicebranch.getBranchList(brnchid, branchName, null, "Active", companyid, "F"));
+			beanbranch.addAll(serviceBranch.getBranchList(brnchid, branchName, null, "Active", companyid, "F"));
 			cbBranchName.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
@@ -433,13 +433,13 @@ public class Pulverizer extends BaseTransUI {
 		}
 	}
 	
-	private void loadextudersrefno() {
+	private void loadExtruHdrDetails() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading Extrud refno");
 			BeanContainer<Long, ExtrudersHdrDM> beanextrud = new BeanContainer<Long, ExtrudersHdrDM>(
 					ExtrudersHdrDM.class);
 			beanextrud.setBeanIdProperty("extId");
-			beanextrud.addAll(extrudservice.getExtruderList(extId, companyid, brnchid, null, null, null, null, null,
+			beanextrud.addAll(serviceExtruHdr.getExtruderList(extId, companyid, brnchid, null, null, null, null, null,
 					"Active", "F"));
 			cbExtrudRefNo.setContainerDataSource(beanextrud);
 		}
@@ -454,8 +454,7 @@ public class Pulverizer extends BaseTransUI {
 					+ "Loading pulviz Reference No...");
 			BeanItemContainer<AssetDetailsDM> beanassetdetails = new BeanItemContainer<AssetDetailsDM>(
 					AssetDetailsDM.class);
-			beanassetdetails.addAll(serviceassetdetails
-					.getAssetDetailList(null, assetId, "PUL", null, null, null, null));
+			beanassetdetails.addAll(serviceAssetDtls.getAssetDetailList(null, assetId, "PUL", null, null, null, null));
 			cbMachineName.setContainerDataSource(beanassetdetails);
 		}
 		catch (Exception e) {
@@ -535,7 +534,7 @@ public class Pulverizer extends BaseTransUI {
 		editPulvizDetail();
 	}
 	
-	public void editPulvizHdr() {
+	private void editPulvizHdr() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Editing the selected record");
@@ -561,7 +560,7 @@ public class Pulverizer extends BaseTransUI {
 				}
 				taInstruction.setValue(pulvizHdrDM.getInstruction());
 				tblPulvizDtl.removeAllItems();
-				listPulverDetails.addAll(pulvizDtlservice.getPulvizDtlDetails(null, (Long.valueOf(pulvizid)), null,
+				listPulverDetails.addAll(servicePulvizDtls.getPulvizDtlDetails(null, (Long.valueOf(pulvizid)), null,
 						null, "F"));
 			}
 			loadPulverizerDetails();
@@ -629,13 +628,13 @@ public class Pulverizer extends BaseTransUI {
 			pulvizHdrDM.setLastupdateddate(DateUtils.getcurrentdate());
 			pulvizHdrDM.setLastupdatedby(username);
 			validatePulverizerDetails();
-			Pulvizhdrservice.saveorupdatePulvizHdr(pulvizHdrDM);
+			servicePulvizHdr.saveorupdatePulvizHdr(pulvizHdrDM);
 			pulvizid = pulvizHdrDM.getPulvizid();
 			@SuppressWarnings("unchecked")
 			Collection<PulvizDtlDM> itemids = (Collection<PulvizDtlDM>) tblPulvizDtl.getVisibleItemIds();
 			for (PulvizDtlDM save : (Collection<PulvizDtlDM>) itemids) {
 				save.setPulvizid(Long.valueOf(pulvizHdrDM.getPulvizid().toString()));
-				pulvizDtlservice.saveOrUpdatepulvizDtl(save);
+				servicePulvizDtls.saveOrUpdatepulvizDtl(save);
 			}
 			hluserInputlayout.setMargin(false);
 			if (tblMstScrSrchRslt.getValue() == null) {

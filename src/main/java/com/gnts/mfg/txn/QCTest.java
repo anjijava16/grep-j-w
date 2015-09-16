@@ -113,12 +113,12 @@ public class QCTest extends BaseTransUI {
 	private Long companyid;
 	private Logger logger = Logger.getLogger(QCTestType.class);
 	private FormLayout flOdrHdrColumn1, flOdrHdrColumn2, flOdrHdrColumn3, flOdrHdrColumn4;
-	private TextField tfInSpecNo, tfPrdSlNo, tfSamplTst, tfQtyFailed, tfQcReslt;
-	private ComboBox cbBranch, cbReceipt, cbMaterial, cbTestType, cbTestedBy, cbProduct, cbProductDrg, cbQcHdrStatus;
+	private TextField tfInSpecNo,tfSamplTst, tfQtyFailed, tfQcReslt;
+	private ComboBox cbBranch, cbReceipt, cbMaterial, cbTestType, cbTestedBy,cbQcHdrStatus;
 	private PopupDateField pdInspectionDt;
 	private CheckBox chVisl, chFitmnt;
 	private TextArea taTstRemarks, taObserv;
-	//
+	//cbProduct, cbProductDrg, tfPrdSlNo, 
 	private Button btnSaveTst;
 	private Table tblQcDtlTbl;
 	private ComboBox cbTstSpec, cbQcTstDtlStatus;
@@ -216,7 +216,6 @@ public class QCTest extends BaseTransUI {
 				tfInSpecNo.setReadOnly(false);
 			}
 		});
-		tfPrdSlNo = new GERPTextField("Product SL.No");
 		tfSamplTst = new GERPTextField("Samples Tested");
 		tfQtyFailed = new GERPTextField("Failed Qty");
 		tfQcReslt = new GERPTextField("QC Result");
@@ -235,6 +234,7 @@ public class QCTest extends BaseTransUI {
 		cbTestedBy = new GERPComboBox("Tested by");
 		cbTestedBy.setItemCaptionPropertyId("firstlastname");
 		loadTestByList();
+		/*tfPrdSlNo = new GERPTextField("Product SL.No");
 		cbProduct = new GERPComboBox("Product");
 		cbProduct.setItemCaptionPropertyId("prodname");
 		loadProductList();
@@ -248,10 +248,11 @@ public class QCTest extends BaseTransUI {
 				loadProductDrgCodeList();
 				cbProductDrg.setImmediate(true);
 			}
-		});
+		});*/
 		cbQcHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbQcHdrStatus.setValue(cbQcHdrStatus.getItemIds().iterator().next());
 		chVisl = new CheckBox("Visual OK");
+		chVisl.setRequired(true);
 		chVisl.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -262,6 +263,7 @@ public class QCTest extends BaseTransUI {
 			}
 		});
 		chFitmnt = new CheckBox("Fitment OK");
+		chFitmnt.setRequired(true);
 		chFitmnt.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -272,15 +274,18 @@ public class QCTest extends BaseTransUI {
 			}
 		});
 		taQcRemarks = new GERPTextArea("Remarks");
-		taQcRemarks.setHeight("50");
+		taQcRemarks.setHeight("35");
+		taQcRemarks.setWidth("200");
 		taObserv = new GERPTextArea("Observation");
-		taObserv.setHeight("50");
+		taObserv.setHeight("35");
+		taObserv.setWidth("200");
 		//
 		cbTstSpec = new GERPComboBox("Specification");
 		cbTstSpec.setItemCaptionPropertyId("tstSpec");
 		loadTestSpecList();
 		cbQcTstDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbQcTstDtlStatus.setValue(cbQcTstDtlStatus.getItemIds().iterator().next());
+		
 		tfTstSpecReslt = new GERPTextField("Result");
 		taTstRemarks = new GERPTextArea("Remarks");
 		taTstRemarks.setHeight("75");
@@ -313,7 +318,7 @@ public class QCTest extends BaseTransUI {
 		// Adding components into form layouts for QCTest UI search layout
 		flOdrHdrColumn1.addComponent(tfInSpecNo);
 		flOdrHdrColumn2.addComponent(cbBranch);
-		flOdrHdrColumn3.addComponent(cbProduct);
+	//	flOdrHdrColumn3.addComponent(cbProduct);
 		flOdrHdrColumn4.addComponent(cbQcHdrStatus);
 		// Adding form layouts into search layout for QCTest UI search mode
 		hlSearchLayout.addComponent(flOdrHdrColumn1);
@@ -340,8 +345,10 @@ public class QCTest extends BaseTransUI {
 		flOdrHdrColumn4 = new FormLayout();
 		cbBranch.setRequired(true);
 		cbMaterial.setRequired(true);
-		cbProduct.setRequired(true);
+	/*	cbProduct.setRequired(true);
 		cbProductDrg.setRequired(true);
+		tfPrdSlNo.setRequired(true);*/
+
 		cbReceipt.setRequired(true);
 		cbTestedBy.setRequired(true);
 		cbTestType.setRequired(true);
@@ -350,22 +357,21 @@ public class QCTest extends BaseTransUI {
 		tfSamplTst.setRequired(true);
 		tfQtyFailed.setRequired(true);
 		tfQcReslt.setRequired(true);
-		tfPrdSlNo.setRequired(true);
 		tfTstSpecReslt.setRequired(true);
 		// adding components into first column in form layout1
 		flOdrHdrColumn1.addComponent(tfInSpecNo);
 		flOdrHdrColumn1.addComponent(pdInspectionDt);
 		flOdrHdrColumn1.addComponent(cbBranch);
 		flOdrHdrColumn1.addComponent(cbReceipt);
-		flOdrHdrColumn1.addComponent(cbMaterial);
+		flOdrHdrColumn2.addComponent(cbMaterial);
 		// adding components into second column in form layout2
 		flOdrHdrColumn2.addComponent(cbTestedBy);
 		flOdrHdrColumn2.addComponent(cbTestType);
-		flOdrHdrColumn2.addComponent(cbProduct);
+/*		flOdrHdrColumn2.addComponent(cbProduct);
 		flOdrHdrColumn2.addComponent(cbProductDrg);
-		flOdrHdrColumn2.addComponent(tfPrdSlNo);
+		flOdrHdrColumn2.addComponent(tfPrdSlNo);*/
 		//
-		flOdrHdrColumn3.addComponent(tfSamplTst);
+		flOdrHdrColumn2.addComponent(tfSamplTst);
 		flOdrHdrColumn3.addComponent(tfQtyFailed);
 		flOdrHdrColumn3.addComponent(chVisl);
 		flOdrHdrColumn3.addComponent(chFitmnt);
@@ -374,6 +380,7 @@ public class QCTest extends BaseTransUI {
 		//
 		flOdrHdrColumn4.addComponent(taObserv);
 		flOdrHdrColumn4.addComponent(taQcRemarks);
+		cbQcHdrStatus.setWidth("200");
 		flOdrHdrColumn4.addComponent(cbQcHdrStatus);
 		// adding components into fourth column in form layout3
 		flOdrDtlColumn1 = new FormLayout();
@@ -435,7 +442,7 @@ public class QCTest extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyid);
 			listQcTstHdr = serviceQcTstHdr.getQcTestHdrDetails(null, companyid, (Long) cbBranch.getValue(),
-					(Long) cbProduct.getValue(), (String) tfInSpecNo.getValue(), (String) cbQcHdrStatus.getValue());
+					null, (String) tfInSpecNo.getValue(), (String) cbQcHdrStatus.getValue());
 			recordCnt = listQcTstHdr.size();
 			beanQcTstHdr = new BeanItemContainer<QcTestHdrDM>(QcTestHdrDM.class);
 			beanQcTstHdr.addAll(listQcTstHdr);
@@ -506,7 +513,7 @@ public class QCTest extends BaseTransUI {
 		}
 	}
 	
-	private void loadProductDrgCodeList() {
+	/*private void loadProductDrgCodeList() {
 		try {
 			BeanContainer<Long, ProductDrawingDM> beanProdDrg = new BeanContainer<Long, ProductDrawingDM>(
 					ProductDrawingDM.class);
@@ -518,9 +525,9 @@ public class QCTest extends BaseTransUI {
 		catch (Exception e) {
 			logger.info(e.getMessage());
 		}
-	}
+	}*/
 	
-	private void loadProductList() {
+	/*private void loadProductList() {
 		try {
 			BeanContainer<Long, ProductDM> beanProd = new BeanContainer<Long, ProductDM>(ProductDM.class);
 			beanProd.setBeanIdProperty("prodid");
@@ -531,7 +538,7 @@ public class QCTest extends BaseTransUI {
 			logger.info(e.getMessage());
 		}
 	}
-	
+	*/
 	private void loadReceiptlist() {
 		try {
 			BeanContainer<Long, PoReceiptHdrDM> beanReceipt = new BeanContainer<Long, PoReceiptHdrDM>(
@@ -606,10 +613,12 @@ public class QCTest extends BaseTransUI {
 		cbBranch.setValue(null);
 		cbMaterial.setComponentError(null);
 		cbMaterial.setValue(null);
-		cbProduct.setComponentError(null);
+/*		cbProduct.setComponentError(null);
 		cbProduct.setValue(null);
 		cbProductDrg.setComponentError(null);
 		cbProductDrg.setValue(null);
+		tfPrdSlNo.setComponentError(null);
+		tfPrdSlNo.setValue("");*/
 		chFitmnt.setValue(false);
 		cbTestedBy.setComponentError(null);
 		cbTestedBy.setValue(null);
@@ -620,8 +629,7 @@ public class QCTest extends BaseTransUI {
 		chVisl.setValue(false);
 		cbReceipt.setComponentError(null);
 		cbReceipt.setValue(null);
-		tfPrdSlNo.setComponentError(null);
-		tfPrdSlNo.setValue("");
+		
 		tfQcReslt.setComponentError(null);
 		tfQcReslt.setReadOnly(false);
 		tfQcReslt.setValue("");
@@ -653,10 +661,12 @@ public class QCTest extends BaseTransUI {
 				tfInSpecNo.setReadOnly(true);
 				cbReceipt.setValue(qcTestHdrDM.getReceiptid());
 				cbTestType.setValue(qcTestHdrDM.getQctesttypeid().toString());
-				cbProduct.setValue(qcTestHdrDM.getProductid());
+			/*	cbProduct.setValue(qcTestHdrDM.getProductid());
 				if (qcTestHdrDM.getProdserlno() != null) {
 					tfPrdSlNo.setValue(qcTestHdrDM.getProdserlno());
 				}
+				cbProductDrg.setValue(qcTestHdrDM.getProddrawgid().toString());*/
+
 				if (qcTestHdrDM.getSamplestested() != null) {
 					tfSamplTst.setValue(Long.valueOf(qcTestHdrDM.getSamplestested()).toString());
 				}
@@ -682,7 +692,6 @@ public class QCTest extends BaseTransUI {
 				if (qcTestHdrDM.getQcobervations() != null) {
 					taObserv.setValue(qcTestHdrDM.getQcobervations());
 				}
-				cbProductDrg.setValue(qcTestHdrDM.getProddrawgid().toString());
 				cbQcHdrStatus.setValue(qcTestHdrDM.getQcteststatus());
 				listQcTstDtl = serviceQcTstDtl
 						.getQcTestDtlDetails(null, Long.valueOf(testTypeId), null, null, "Active");
@@ -771,8 +780,10 @@ public class QCTest extends BaseTransUI {
 		hlUserIPContainer.removeAllComponents();
 		cbBranch.setRequired(false);
 		cbMaterial.setRequired(false);
-		cbProduct.setRequired(false);
+		/*cbProduct.setRequired(false);
 		cbProductDrg.setRequired(false);
+		tfPrdSlNo.setRequired(false);
+*/
 		cbReceipt.setRequired(false);
 		cbTestedBy.setRequired(false);
 		cbTestType.setRequired(false);
@@ -783,7 +794,6 @@ public class QCTest extends BaseTransUI {
 		tfSamplTst.setRequired(false);
 		tfQtyFailed.setRequired(false);
 		tfQcReslt.setRequired(false);
-		tfPrdSlNo.setRequired(false);
 		hlCmdBtnLayout.setVisible(true);
 		tblMstScrSrchRslt.setVisible(true);
 		hlCmdBtnLayout.setVisible(true);
@@ -860,7 +870,7 @@ public class QCTest extends BaseTransUI {
 		} else {
 			cbTestType.setComponentError(null);
 		}
-		if (cbProduct.getValue() == null) {
+		/*if (cbProduct.getValue() == null) {
 			cbProduct.setComponentError(new UserError(GERPErrorCodes.NULL_QC_PRODUCT));
 			errorFlag = true;
 		} else {
@@ -877,7 +887,7 @@ public class QCTest extends BaseTransUI {
 			errorFlag = true;
 		} else {
 			tfPrdSlNo.setComponentError(null);
-		}
+		}*/
 		if (tfQcReslt.getValue() == "" || tfQcReslt.getValue() == null || tfQcReslt.getValue().trim().length() == 0) {
 			tfQcReslt.setComponentError(new UserError(GERPErrorCodes.NULL_QC_RESULT));
 			errorFlag = true;
@@ -931,9 +941,9 @@ public class QCTest extends BaseTransUI {
 			qcTestHdr.setMaterialid((Long) cbMaterial.getValue());
 			qcTestHdr.setTestedby((Long) cbTestedBy.getValue());
 			qcTestHdr.setQctesttypeid(Long.valueOf((String) cbTestType.getValue()));
-			qcTestHdr.setProductid(Long.valueOf(cbProduct.getValue().toString()));
+	/*		qcTestHdr.setProductid(Long.valueOf(cbProduct.getValue().toString()));
 			qcTestHdr.setProddrawgid(Long.valueOf(cbProductDrg.getValue().toString()));
-			qcTestHdr.setProdserlno((String) tfPrdSlNo.getValue());
+			qcTestHdr.setProdserlno((String) tfPrdSlNo.getValue());*/
 			qcTestHdr.setSamplestested(Long.valueOf(tfSamplTst.getValue()));
 			qcTestHdr.setQtyfailed(Long.valueOf(tfQtyFailed.getValue()));
 			if (chFitmnt.getValue().equals(true)) {
@@ -1047,7 +1057,7 @@ public class QCTest extends BaseTransUI {
 	@Override
 	protected void resetSearchDetails() {
 		cbBranch.setValue(null);
-		cbProduct.setValue(null);
+		//cbProduct.setValue(null);
 		tfInSpecNo.setValue("");
 		cbQcHdrStatus.setValue(cbQcHdrStatus.getItemIds().iterator().next());
 		loadSrchRslt();

@@ -17,6 +17,9 @@ package com.gnts.mfg.stt.txn;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -61,6 +64,8 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
@@ -150,6 +155,14 @@ public class Pulverizer extends BaseTransUI {
 		tfOutput = new GERPTextField("Output");
 		tfBalanceQty = new GERPTextField("Bal Qty");
 		tfOEE = new GERPTextField("OEE");
+		tfOEE.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				getOeePercentage();
+			}
+		});
 		tfBalancePercnt = new GERPTextField("Bal Prcnt");
 		taDtlRemarks = new GERPTextArea("Remark");
 		taDtlRemarks.setHeight("45");
@@ -887,6 +900,19 @@ public class Pulverizer extends BaseTransUI {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	private void getOeePercentage() {
+		try {
+			BigDecimal outPutOty = (new BigDecimal(tfOutput.getValue()).divide(new BigDecimal("800"), 2,
+					RoundingMode.HALF_UP)).multiply(new BigDecimal("50"));
+			BigDecimal time = tfTimeIn.getHorsMunitesinBigDecimal()
+					.subtract(tfTimeOut.getHorsMunitesinBigDecimal())
+					.divide(new BigDecimal("8.00"), 2, RoundingMode.HALF_UP);
+			tfOEE.setValue(outPutOty.multiply(time).round(new MathContext(2)).toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

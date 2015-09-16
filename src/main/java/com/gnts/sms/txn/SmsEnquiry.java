@@ -1052,7 +1052,7 @@ public class SmsEnquiry extends BaseTransUI {
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
-		// try {
+		try {
 		// validationForEnqDetails();
 		SmsEnqHdrDM enqHdrDM = new SmsEnqHdrDM();
 		if (tblMstScrSrchRslt.getValue() != null) {
@@ -1114,6 +1114,11 @@ public class SmsEnquiry extends BaseTransUI {
 		clientId=enqHdrDM.getClientId();
 		enqDtlresetFields();
 		enqSpecResetfields();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	// This function is used for save the Sales Enquiry details for temporary

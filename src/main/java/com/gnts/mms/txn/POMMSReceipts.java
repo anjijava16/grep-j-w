@@ -41,15 +41,12 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.domain.txn.MaterialLedgerDM;
 import com.gnts.mms.domain.txn.MaterialStockDM;
 import com.gnts.mms.domain.txn.MmsPoDtlDM;
-import com.gnts.mms.domain.txn.MmsQuoteHdrDM;
 import com.gnts.mms.domain.txn.POHdrDM;
 import com.gnts.mms.domain.txn.PoReceiptDtlDM;
 import com.gnts.mms.domain.txn.PoReceiptHdrDM;
-import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.MaterialLedgerService;
 import com.gnts.mms.service.txn.MaterialStockService;
 import com.gnts.mms.service.txn.MmsPoDtlService;
@@ -74,6 +71,8 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
@@ -91,7 +90,6 @@ public class POMMSReceipts extends BaseTransUI {
 	private MaterialLedgerService serviceLedger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
 	private MaterialStockService serviceMaterialStock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
-	private IndentHdrService serviceIndent = (IndentHdrService) SpringContextHelper.getBean("IndentHdr");
 	private POHdrService serviceMMSPOHdr = (POHdrService) SpringContextHelper.getBean("pohdr");
 	private MmsPoDtlService serviceMMSPODtls = (MmsPoDtlService) SpringContextHelper.getBean("mmspoDtl");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
@@ -112,11 +110,11 @@ public class POMMSReceipts extends BaseTransUI {
 	private FormLayout flHdr1, flHdr2, flHdr3, flHdr4;
 	// PODtl Recepits Components
 	private ComboBox cbMaterial, cbMaterialUOM, cbDtlStatus;
-	private TextField tfReceiptqty, tfRejectqty;
+	private TextField tfAcceptQty, tfPOQty, tfRejectqty;
 	private TextArea taRejectReason;
 	private Table tblReceiptDtl = new GERPTable();
 	private List<PoReceiptDtlDM> listPOReceipts = null;
-	private FormLayout flDtl1, flDtl2, flDtl3, flDtl4, flDtl5;
+	private FormLayout flDtl1, flDtl2, flDtl3, flDtl4;
 	// Bean Container
 	private BeanItemContainer<PoReceiptHdrDM> beanPoReceiptHdrDM = null;
 	private BeanItemContainer<PoReceiptDtlDM> beanPoReceiptDtlDM = null;
@@ -207,7 +205,9 @@ public class POMMSReceipts extends BaseTransUI {
 					MmsPoDtlDM materialDM = (MmsPoDtlDM) cbMaterial.getValue();
 					cbMaterialUOM.setValue(materialDM.getMaterialuom());
 					if (materialDM.getPoqty() != null) {
-						tfReceiptqty.setValue(materialDM.getPoqty().toString());
+						tfPOQty.setReadOnly(false);
+						tfPOQty.setValue(materialDM.getReqQty().toString());
+						tfPOQty.setReadOnly(true);
 					}
 				}
 			}
@@ -216,12 +216,46 @@ public class POMMSReceipts extends BaseTransUI {
 		cbMaterialUOM.setItemCaptionPropertyId("lookupname");
 		cbMaterialUOM.setWidth("150");
 		loadUomList();
-		tfReceiptqty = new GERPTextField("Receipt Qty");
-		tfReceiptqty.setValue("0");
-		tfReceiptqty.setWidth("150");
+		tfAcceptQty = new GERPTextField("Accepted Qty");
+		tfAcceptQty.setValue("0");
+		tfAcceptQty.setWidth("150");
+		tfAcceptQty.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (tfPOQty.getValue() != null) {
+					
+					if (tfAcceptQty.getValue().compareTo(tfPOQty.getValue()) > 0) {
+						Notification.show("Value Exceeds PO Quantity",
+								"Accept value is larger than PO Quantity.Kindly refer PO Qty", Type.WARNING_MESSAGE);
+						tfAcceptQty.setValue("0");
+					}
+				}
+			}
+		});
+		tfPOQty = new GERPTextField("Receipt Qty");
+		tfPOQty.setValue("0");
+		tfPOQty.setWidth("150");
 		tfRejectqty = new GERPTextField("Reject Qty");
 		tfRejectqty.setValue("0");
-		tfReceiptqty.setWidth("150");
+		tfRejectqty.setWidth("150");
+		tfRejectqty.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (tfPOQty.getValue() != null) {
+					if (tfRejectqty.getValue().compareTo(tfPOQty.getValue()) > 0) {
+						Notification.show("Value Exceeds PO Quantity",
+								"Reject value is larger than PO Quantity.Kindly refer PO Qty", Type.WARNING_MESSAGE);
+						tfRejectqty.setValue("0");
+					}
+				}
+			}
+		});
 		cbDtlStatus = new GERPComboBox("Status", BASEConstants.T_MMS_PO_RECEIPTS_DTL, BASEConstants.PORECDTL_STATUS);
 		cbDtlStatus.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -242,7 +276,7 @@ public class POMMSReceipts extends BaseTransUI {
 		cbHdrStatus.setWidth("150");
 		taRejectReason = new TextArea("Reject Reason");
 		taRejectReason.setWidth("150");
-		taRejectReason.setHeight("30");
+		taRejectReason.setHeight("70");
 		hlSearchLayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
@@ -343,25 +377,22 @@ public class POMMSReceipts extends BaseTransUI {
 		hlHdr.addComponent(flHdr4);
 		hlHdr.setSpacing(true);
 		hlHdr.setMargin(true);
-		HorizontalLayout hlDtl1 = new HorizontalLayout();
+		new HorizontalLayout();
 		// Adding Purchase Order Receipt Dtl components
 		// Add components for User Input Layout
 		flDtl1 = new FormLayout();
 		flDtl2 = new FormLayout();
 		flDtl3 = new FormLayout();
 		flDtl4 = new FormLayout();
-		flDtl5 = new FormLayout();
 		flDtl1.addComponent(cbMaterial);
-		flDtl1.addComponent(tfReceiptqty);
+		flDtl1.addComponent(tfPOQty);
+		flDtl2.addComponent(tfAcceptQty);
 		flDtl2.addComponent(tfRejectqty);
 		flDtl2.addComponent(cbMaterialUOM);
-		taRejectReason.setHeight("50");
 		flDtl3.addComponent(taRejectReason);
 		flDtl4.addComponent(cbDtlStatus);
-		flDtl4.addComponent(hlDtl1);
-		hlDtl1.addComponent(btnadd);
-		hlDtl1.addComponent(btndelete);
-		flDtl5.addComponent(hlevdDoc);
+		flDtl4.addComponent(btnadd);
+		flDtl4.addComponent(btndelete);
 		HorizontalLayout hldTL = new HorizontalLayout();
 		hldTL.addComponent(flDtl1);
 		hldTL.addComponent(flDtl2);
@@ -602,7 +633,7 @@ public class POMMSReceipts extends BaseTransUI {
 				}
 				cbMaterialUOM.setValue(receiptDtlDM.getMaterialUOM());
 				if (receiptDtlDM.getReceiptqty() != null) {
-					tfReceiptqty.setValue(receiptDtlDM.getReceiptqty().toString());
+					tfAcceptQty.setValue(receiptDtlDM.getReceiptqty().toString());
 				}
 				if (receiptDtlDM.getRejectqty() != null) {
 					tfRejectqty.setValue(receiptDtlDM.getRejectqty().toString());
@@ -669,7 +700,7 @@ public class POMMSReceipts extends BaseTransUI {
 		dfvendorDt.setRequired(true);
 		dfvendorInvDt.setRequired(true);
 		cbHdrStatus.setRequired(true);
-		tfReceiptqty.setRequired(true);
+		tfAcceptQty.setRequired(true);
 		tfRejectqty.setRequired(true);
 		resetFields();
 		tfLotNo.setReadOnly(false);
@@ -705,7 +736,7 @@ public class POMMSReceipts extends BaseTransUI {
 		dfReceiptDate.setRequired(true);
 		dfvendorDt.setRequired(true);
 		dfvendorInvDt.setRequired(true);
-		tfReceiptqty.setRequired(true);
+		tfAcceptQty.setRequired(true);
 		tfRejectqty.setRequired(true);
 		editReceiptDetail();
 		editReceiptHdr();
@@ -942,8 +973,8 @@ public class POMMSReceipts extends BaseTransUI {
 				receiptDtlObj.setRejectqty(Long.valueOf(tfRejectqty.getValue()));
 			}
 			receiptDtlObj.setRejectreason(taRejectReason.getValue().toString());
-			if (tfReceiptqty.getValue() != null && tfReceiptqty.getValue().trim().length() > 0) {
-				receiptDtlObj.setReceiptqty(Long.valueOf(tfReceiptqty.getValue()));
+			if (tfAcceptQty.getValue() != null && tfAcceptQty.getValue().trim().length() > 0) {
+				receiptDtlObj.setReceiptqty(Long.valueOf(tfAcceptQty.getValue()));
 			}
 			if (cbDtlStatus.getValue() != null) {
 				receiptDtlObj.setReceiptstatus((cbDtlStatus.getValue().toString()));
@@ -1017,9 +1048,10 @@ public class POMMSReceipts extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbMaterial.setValue(null);
 		taRejectReason.setValue("");
-		tfReceiptqty.setValue("0");
-		tfReceiptqty.setComponentError(null);
-		tfReceiptqty.setValue("0");
+		tfAcceptQty.setValue("0");
+		tfAcceptQty.setComponentError(null);
+		tfAcceptQty.setValue("0");
+		tfPOQty.setValue("0");
 		tfRejectqty.setValue("0");
 		tfRejectqty.setComponentError(null);
 		tfRejectqty.setValue("0");

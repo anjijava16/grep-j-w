@@ -15,6 +15,7 @@ import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.txn.SmsEnquiry;
 import com.gnts.stt.dsn.service.txn.ECRequestService;
+import com.gnts.stt.mfg.domain.txn.EnquiryWorkflowDM;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -38,7 +39,7 @@ public class DashbordDesignView implements ClickListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Long companyId;
+	private Long companyId, branchId;
 	private Label lblDashboardTitle;
 	private Button btnEnquiryCount = new Button("100", this);
 	private Button btnEnquiryWorkflow = new Button("125", this);
@@ -47,7 +48,7 @@ public class DashbordDesignView implements ClickListener {
 	private Button btnWOCount = new Button("7", this);
 	private Button btnProductCount = new Button("17", this);
 	private Button btnClientCount = new Button("22", this);
-	private Button btnNotify = new Button();
+	private Button btnNotify;
 	private Window notificationsWindow;
 	private SmsEnqHdrService serviceenqhdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
@@ -55,21 +56,26 @@ public class DashbordDesignView implements ClickListener {
 	private ProductService ServiceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private VerticalLayout clMainLayout;
 	private HorizontalLayout hlHeader;
+	int countnotify = 0;
 	
 	public DashbordDesignView() {
 		Long.valueOf(UI.getCurrent().getSession().getAttribute("branchId").toString());
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		hlHeader = (HorizontalLayout) UI.getCurrent().getSession().getAttribute("hlLayout");
 		buildView(clMainLayout, hlHeader);
 	}
 	
 	private void buildView(VerticalLayout clMainLayout, HorizontalLayout hlHeader) {
+		countnotify = serviceenqhdr.getSmsEnqHdrList(companyId, null, branchId, null, "Approved", "P", null, null)
+				.size();
+		btnNotify = new Button(countnotify + "");
 		btnNotify.setHtmlContentAllowed(true);
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("dashdesign");
-		btnEnquiryCount.setCaption(serviceenqhdr.getSMSEnquiryListCount(null, null, null, null, "Approved", null, null, null)
-				.toString());
+		btnEnquiryCount.setCaption(serviceenqhdr.getSMSEnquiryListCount(null, null, null, null, "Approved", null, null,
+				null).toString());
 		btnClientCount.setCaption(serviceClients.getClientDetailscount(companyId, null, "Active", null).toString());
 		btnProductCount.setCaption(ServiceProduct.getProductscount(companyId, null, "Active", null).toString());
 		btnECRequest.setCaption(serviceECRequest.getProductscount(null, null, null, null).toString());
@@ -136,9 +142,7 @@ public class DashbordDesignView implements ClickListener {
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Sales Enquiry");
 			UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", false);
-
 			UI.getCurrent().getSession().setAttribute("IS_ENQ_WF", true);
-			
 			new SmsEnquiry();
 		}
 		if (event.getButton() == btnEnquiryWorkflow) {
@@ -186,13 +190,13 @@ public class DashbordDesignView implements ClickListener {
 		VerticalLayout notificationsLayout = new VerticalLayout();
 		notificationsLayout.setMargin(true);
 		notificationsLayout.setSpacing(true);
-		final Panel panel = new Panel("Notifications");
+		final Panel panel = new Panel("Notifications(<font color=red><font size=3>"+ countnotify+ "</font></font color>) ");
 		notificationsLayout.addComponent(panel);
 		List<SmsEnqHdrDM> smsEnqHdrList = new ArrayList<SmsEnqHdrDM>();
 		SmsEnqHdrDM smspohdr = new SmsEnqHdrDM();
 		smspohdr.getEnquiryStatus();
 		smsEnqHdrList.add(smspohdr);
-		smsEnqHdrList = serviceenqhdr.getSmsEnqHdrList(null, null, null, null, "Progress", "F", null, null);
+		smsEnqHdrList = serviceenqhdr.getSmsEnqHdrList(null, null, null, null, "Approved", "F", null, null);
 		FormLayout fmlayout = new FormLayout();
 		VerticalLayout hrLayout = new VerticalLayout();
 		for (SmsEnqHdrDM n : smsEnqHdrList) {

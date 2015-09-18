@@ -373,7 +373,7 @@ public class Employee extends BaseUI {
 			
 			public void blur(BlurEvent event) {
 				tfPhonenumber.setComponentError(null);
-				if (tfPhonenumber.getValue() != null) {
+				if (tfPhonenumber.getValue() != "" & tfPhonenumber.getValue() != null) {
 					if (!tfPhonenumber.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) {
 						tfPhonenumber.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
 					} else {
@@ -1422,10 +1422,10 @@ public class Employee extends BaseUI {
 		beanEmployeedtls.addAll(employeedtlsList);
 		tblempdtls.setSelectable(true);
 		tblempdtls.setContainerDataSource(beanEmployeedtls);
-		tblempdtls.setVisibleColumns(new Object[] { "birthplace", "maritalstatus", "statusreason",
-				"lastupdateddate", "lastupdatedby" });
-		tblempdtls.setColumnHeaders(new String[] { "Birth Place", "Marital Status", "Reason",
-				"Last Updated Date", "Last Updated By" });
+		tblempdtls.setVisibleColumns(new Object[] { "birthplace", "maritalstatus", "statusreason", "lastupdateddate",
+				"lastupdatedby" });
+		tblempdtls.setColumnHeaders(new String[] { "Birth Place", "Marital Status", "Reason", "Last Updated Date",
+				"Last Updated By" });
 		tblempdtls.setColumnAlignment("employeedtsid", Align.RIGHT);
 		tblempdtls.setColumnFooter("lastupdatedby", "No.of Records : " + recordcntempdtls);
 	}
@@ -2425,8 +2425,12 @@ public class Employee extends BaseUI {
 			tfEmployeeCode.setReadOnly(true);
 			tfFirstName.setValue(employeeDM.getFirstname());
 			tfLastName.setValue(employeeDM.getLastname());
-			tfPhonenumber.setValue(employeeDM.getPrimaryphone());
-			tfEmailid.setValue(employeeDM.getPrimaryemail());
+			if (employeeDM.getPrimaryphone() != "" && employeeDM.getPrimaryphone() != null) {
+				tfPhonenumber.setValue(employeeDM.getPrimaryphone());
+			}
+			if (employeeDM.getPrimaryemail() != "" && employeeDM.getPrimaryphone() != null) {
+				tfEmailid.setValue(employeeDM.getPrimaryemail());
+			}
 			cbEmpStatus.setValue(employeeDM.getEmpstatus());
 			cbGender.setValue(employeeDM.getGender());
 			cbDepartment.setValue((Long) employeeDM.getDeptid());
@@ -2735,7 +2739,7 @@ public class Employee extends BaseUI {
 		tfEmployeeCode.setValue("");
 		tfFirstName.setValue("");
 		cbEmpStatus.setValue(cbEmpStatus.getItemIds().iterator().next());
-		cbDepartment.setValue(0L);
+		cbDepartment.setValue(null);
 		loadSrchRslt();
 	}
 	
@@ -2800,7 +2804,9 @@ public class Employee extends BaseUI {
 		loadsrcidentities(false);
 		loadsrchEmpdtls(false);
 		// reset the input controls to default value
-		 cbDepartment.removeItem(0L);
+		cbDepartment.removeItem(0L);
+		tfEmployeeCode.setReadOnly(true);
+
 	}
 	
 	@Override
@@ -2822,7 +2828,6 @@ public class Employee extends BaseUI {
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		assembleUserInputLayout();
 		// Add Blur Listener for Edit Layout
-		
 		tfEmployeeCode.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -2875,7 +2880,7 @@ public class Employee extends BaseUI {
 		dfDateofJoin.setComponentError(null);
 		cbBranch.setComponentError(null);
 		cbCountry.setComponentError(null);
-		//tfPhonenumber.setComponentError(null);
+		// tfPhonenumber.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		if ((tfEmployeeCode.getValue() == null) || tfEmployeeCode.getValue().trim().length() == 0) {
@@ -2913,15 +2918,7 @@ public class Employee extends BaseUI {
 			cbCountry.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_COUNTRY));
 			errorFlag = true;
 		}
-	/*	if (tfPhonenumber.getValue().toString() == null) {
-			tfPhonenumber.setComponentError(new UserError(GERPErrorCodes.NULL_PHONE_NUMBER));
-			// errorFlag = true;
-		} else if (tfPhonenumber.getValue() != null) {
-			if (!tfPhonenumber.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) {
-				tfPhonenumber.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
-				errorFlag = true;
-			}
-		}*/
+	
 		if (dfDateofBirth.getValue() == null) {
 			dfDateofBirth.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_DOB));
 			// errorFlag = true;
@@ -2956,7 +2953,6 @@ public class Employee extends BaseUI {
 		cbempdtlsnationalid.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-	
 		if ((cbempdtlsemptypeid.getValue() == null)) {
 			cbempdtlsemptypeid.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_DTLS_TYPE));
 			errorFlag = true;
@@ -3290,12 +3286,12 @@ public class Employee extends BaseUI {
 				empdtlsobj = beanEmployeedtls.getItem(tblempdtls.getValue()).getBean();
 				employeedtlsList.remove(empdtlsobj);
 			}
-			if(cbempdtlscandid.getValue()!=null){
-			empdtlsobj.setCandidateid(((JobCandidateDM) cbempdtlscandid.getValue()).getCandidateId());
-			empdtlsobj.setCandidatename(((JobCandidateDM) cbempdtlscandid.getValue()).getFirstName() + " "
-					+ ((JobCandidateDM) cbempdtlscandid.getValue()).getLastName() + " " + "("
-					+ ((JobCandidateDM) cbempdtlscandid.getValue()).getCandidateId() + ")");}
-			
+			if (cbempdtlscandid.getValue() != null) {
+				empdtlsobj.setCandidateid(((JobCandidateDM) cbempdtlscandid.getValue()).getCandidateId());
+				empdtlsobj.setCandidatename(((JobCandidateDM) cbempdtlscandid.getValue()).getFirstName() + " "
+						+ ((JobCandidateDM) cbempdtlscandid.getValue()).getLastName() + " " + "("
+						+ ((JobCandidateDM) cbempdtlscandid.getValue()).getCandidateId() + ")");
+			}
 			empdtlsobj.setBirthplace((String) tfempdtlsbirthplace.getValue().toString());
 			empdtlsobj.setPfno((String) tfempdtlsPFno.getValue().toString());
 			empdtlsobj.setEsino((String) tfempdtlsESIno.getValue().toString());
@@ -3551,10 +3547,12 @@ public class Employee extends BaseUI {
 		// empObj.setEmployeecode(tfEmployeeCode.getValue().toString());
 		empObj.setFirstname(tfFirstName.getValue().toString());
 		empObj.setLastname(tfLastName.getValue().toString());
-		if(tfPhonenumber.getValue()!=""){
-		empObj.setPrimaryphone(tfPhonenumber.getValue().toString());}
-		if(tfEmailid.getValue()!=""){
-		empObj.setPrimaryemail(tfEmailid.getValue().toString());}
+		if (tfPhonenumber.getValue() != "") {
+			empObj.setPrimaryphone(tfPhonenumber.getValue());
+		}
+		if (tfEmailid.getValue() != "") {
+			empObj.setPrimaryemail(tfEmailid.getValue());
+		}
 		if (cbGender.getValue() != null) {
 			empObj.setGender(((String) cbGender.getValue()));
 		}
@@ -3625,9 +3623,9 @@ public class Employee extends BaseUI {
 		for (EmployeeDtlsDM saveemployeedtls : (Collection<EmployeeDtlsDM>) empdtlsitemids) {
 			saveemployeedtls.setEmployeeid(Long.valueOf(empObj.getEmployeeid()));
 			servempdtls.saveorupdateEmployeeDtls(saveemployeedtls);
-			serviceEmployeeEarning.updateRevicedSalary(empObj.getEmployeeid(), "E","Inactive");
-			serviceEmployeeEarning.updateRevicedSalary(empObj.getEmployeeid(), "D","Inactive");
-			serviceEmployeeEarning.updateRevicedSalary(empObj.getEmployeeid(), "A","Inactive");
+			serviceEmployeeEarning.updateRevicedSalary(empObj.getEmployeeid(), "E", "Inactive");
+			serviceEmployeeEarning.updateRevicedSalary(empObj.getEmployeeid(), "D", "Inactive");
+			serviceEmployeeEarning.updateRevicedSalary(empObj.getEmployeeid(), "A", "Inactive");
 			// for employee earinngs
 			try {
 				insertEmployeeGradeEarning(empObj.getEmployeeid(), saveemployeedtls.getGradeid());
@@ -3721,6 +3719,8 @@ public class Employee extends BaseUI {
 		empeduResetfields();
 		empdepnResetfields();
 		empidentitiesResetfields();
+		tfEmployeeCode.setReadOnly(true);
+
 	}
 	
 	/*
@@ -3934,7 +3934,6 @@ public class Employee extends BaseUI {
 		tblMstScrSrchRslt.setPageLength(15);
 		tfFirstName.setRequired(false);
 		cbDepartment.setRequired(false);
-		cbDepartment.setValue(0L);
 		tfPhonenumber.setRequired(false);
 		tblMstScrSrchRslt.setVisible(true);
 		hlCmdBtnLayout.setVisible(true);
@@ -3951,6 +3950,8 @@ public class Employee extends BaseUI {
 		empdepnResetfields();
 		empidentitiesResetfields();
 		loadSrchRslt();
+		cbDepartment.setValue(0L);
+		tfEmployeeCode.setReadOnly(false);
 	}
 	
 	@Override
@@ -3964,7 +3965,7 @@ public class Employee extends BaseUI {
 		dfDateofBirth.setValue(null);
 		dfDateofJoin.setValue(null);
 		cbBranch.setValue(null);
-		cbDepartment.setValue(0L);
+		cbDepartment.setValue(null);
 		cbManager.setValue(null);
 		cbCountry.setValue(null);
 		cbGender.setValue(null);
@@ -4003,7 +4004,6 @@ public class Employee extends BaseUI {
 		tblempiden.removeAllItems();
 		UI.getCurrent().getSession().setAttribute("isFileUploaded", false);
 		tfEmployeeCode.setReadOnly(false);
-
 	}
 	
 	@SuppressWarnings("unused")
@@ -4033,8 +4033,7 @@ public class Employee extends BaseUI {
 			}
 			EmployeeEarningDM staffearnPojo = new EmployeeEarningDM();
 			if (isFlat.equals("Percent") && onBasicGross.equalsIgnoreCase("GROSS")) {
-				
-				System.out.println("Arun Jeyaraj "+minValueByBasic);
+				System.out.println("Arun Jeyaraj " + minValueByBasic);
 				earningAmount = new BigDecimal(calculateEarnAmount(earnPercent, minValueByBasic));
 				totalGrossAmt = totalGrossAmt.subtract(earningAmount);
 				tatolGrossearnAmount = tatolGrossearnAmount.add(earningAmount);
@@ -4051,10 +4050,8 @@ public class Employee extends BaseUI {
 				serviceEmployeeEarning.saveAndUpdate(staffearnPojo);
 			}
 			if (isFlat.equals("Percent") && onBasicGross.equalsIgnoreCase("BASIC")) {
-				
 				earningAmount = new BigDecimal(calculateEarnAmount(earnPercent, basicAmount));
-				System.out.println("Arun Jeyaraj "+minValueByBasic);
-
+				System.out.println("Arun Jeyaraj " + minValueByBasic);
 				totalGrossAmt = totalGrossAmt.subtract(earningAmount);
 				tatolGrossearnAmount = tatolGrossearnAmount.add(earningAmount);
 				staffearnPojo.setEmployeeid(employeeid);
@@ -4112,17 +4109,13 @@ public class Employee extends BaseUI {
 		Long minValueByGross = null;
 		Long minBypercentFTA = null;
 		Long minByVAluesFTA = null;
-
 		Long minValueByBasicFTA = null;
-		
 		Long earnpercentBASIC = serviceDeduction.getMinValueByGradeid(gradeid);
-		minBypercentFTA=serviceDeduction.getMinValueByGradeidfta(gradeid);
-
+		minBypercentFTA = serviceDeduction.getMinValueByGradeidfta(gradeid);
 		minValueByGross = serviceDeduction.getMinValueByGradeidOnGross(gradeid);
 		minValueByBasic = Long.valueOf(Math.round(minValueByGross * earnpercentBASIC) / 100);
-		minByVAluesFTA=Long.valueOf(Math.round(minValueByGross * minBypercentFTA) / 100);
-		minValueByBasicFTA = minValueByBasic+minByVAluesFTA;
-		
+		minByVAluesFTA = Long.valueOf(Math.round(minValueByGross * minBypercentFTA) / 100);
+		minValueByBasicFTA = minValueByBasic + minByVAluesFTA;
 		for (GradeDeductionDM pojo : list) {
 			Long dednid = pojo.getDednId();
 			String isFlat = pojo.getIsFlatPer();

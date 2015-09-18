@@ -14,6 +14,7 @@
  */
 package com.gnts.mfg.txn;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -273,6 +274,14 @@ public class WorkOrderPlan extends BaseTransUI {
 				}
 			}
 		});
+		tfWrkOdrPlnQty = new GERPTextField("WO.Plan.Qty");
+		tfWrkOdrPlnQty.setWidth("110");
+		tfWrkOdrPlnQty.addBlurListener(new BlurListener() {
+			@Override
+			public void blur(BlurEvent event) {
+				loadSrchWrkOdrPlnMtrlDtlRslt(false);
+			}
+		});
 		cbWorkOrderNo = new GERPComboBox("WO.No");
 		cbWorkOrderNo.setItemCaptionPropertyId("workOrdrNo");
 		cbWorkOrderNo.setWidth("140");
@@ -294,8 +303,6 @@ public class WorkOrderPlan extends BaseTransUI {
 		cbPlanDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		tfProductName = new GERPTextField("Product Name");
 		tfProductName.setWidth("130");
-		tfWrkOdrPlnQty = new GERPTextField("WO.Plan.Qty");
-		tfWrkOdrPlnQty.setWidth("110");
 		tblWrkOrdPlnDtl = new GERPTable();
 		tblWrkOrdPlnDtl.setPageLength(5);
 		tblWrkOrdPlnDtl.setWidth("100%");
@@ -332,6 +339,21 @@ public class WorkOrderPlan extends BaseTransUI {
 					btnsaveWrkOdrPlDtl.setStyleName("savebt");
 					editWorkOrderPlnDtlDetails();
 					btnDtleWrkDtl.setEnabled(true);
+					loadSrchWrkOdrPlnMtrlDtlRslt(true);
+				}
+			}
+		});
+		tblMstScrSrchRslt.addItemClickListener(new ItemClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				if (tblMstScrSrchRslt.isSelected(event.getItemId())) {
+					tblMstScrSrchRslt.setImmediate(true);
+					btnEdit.setEnabled(false);
+				} else {
+					((AbstractSelect) event.getSource()).select(event.getItemId());
+					btnEdit.setEnabled(false);
 				}
 			}
 		});
@@ -355,6 +377,7 @@ public class WorkOrderPlan extends BaseTransUI {
 		loadSrchRslt();
 		loadSrchWrkOdrPlnDtlRslt();
 		loadSrchWrkOdrPlnMtrlDtlRslt(false);
+		btnEdit.setEnabled(false);
 	}
 	
 	private void assembleSearchLayout() {
@@ -514,9 +537,15 @@ public class WorkOrderPlan extends BaseTransUI {
 				List<WorkOrderPlanMtrlDtlDM> workOrdMtrllList = new ArrayList<WorkOrderPlanMtrlDtlDM>();
 				for (ProductBomDtlDM obj : wrkOrdPlnMtrlList) {
 					WorkOrderPlanMtrlDtlDM list = new WorkOrderPlanMtrlDtlDM();
+					Long totalReqQty = 0L;
+					Long reqQtty = 0L;
+					if (tfWrkOdrPlnQty.getValue() != "") {
+						reqQtty = Long.valueOf(tfWrkOdrPlnQty.getValue());
+						totalReqQty = Long.valueOf(tfWrkOdrPlnQty.getValue()) * obj.getMaterialQty();
+					}
 					list.setMtrlId(obj.getMaterialId());
 					list.setMtrlName(obj.getMaterialName());
-					list.setRequiredQty(obj.getMaterialQty());
+					list.setRequiredQty(totalReqQty);
 					list.setCurrentStock(serviceMaterialStock
 							.getMaterialStockList(obj.getMaterialId(), companyid, null, null, null, null, "F").get(0)
 							.getEffectiveStock());

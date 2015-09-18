@@ -239,8 +239,8 @@ public class JobCandidate extends BaseUI {
 			BeanContainer<Long, JobVaccancyDM> beanJobVaccancyDM = new BeanContainer<Long, JobVaccancyDM>(
 					JobVaccancyDM.class);
 			beanJobVaccancyDM.setBeanIdProperty("vaccancyId");
-			beanJobVaccancyDM.addAll(serviceJobVaccancy.getJobVaccancyList(null, (String) cbJobtitle.getValue(), null,
-					null, null, null, null, null));
+			beanJobVaccancyDM.addAll(serviceJobVaccancy.getJobVaccancyList(null, null, null,
+					null, null, null, null, "P"));
 			cbJobtitle.setContainerDataSource(beanJobVaccancyDM);
 		}
 		catch (Exception e) {
@@ -331,6 +331,7 @@ public class JobCandidate extends BaseUI {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				JobCandidateDM jobCandidateDM = beanJobCandidateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				if (jobCandidateDM.getJobtitle() != null) {
+					System.out.println("------------->"+jobCandidateDM.getJobtitle().toString());
 					cbJobtitle.setValue(jobCandidateDM.getJobtitle());
 				}
 				if ((jobCandidateDM.getFirstName() != null)) {
@@ -393,7 +394,7 @@ public class JobCandidate extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		boolean errorFlag = false;
 		cbJobtitle.setComponentError(null);
-		//tfEMailid.setComponentError(null);
+		// tfEMailid.setComponentError(null);
 		if ((cbJobtitle.getValue() == null)) {
 			cbJobtitle.setComponentError(new UserError(GERPErrorCodes.NULL_JOB_CANDIDATE));
 			errorFlag = true;
@@ -414,8 +415,12 @@ public class JobCandidate extends BaseUI {
 			jobcandidateobj.setVaccancyid((Long) cbJobtitle.getValue());
 			jobcandidateobj.setFirstName(tfFirstname.getValue().toString());
 			jobcandidateobj.setLastName(tfLastname.getValue().toString());
-			jobcandidateobj.setEmail(tfEMailid.getValue().toString());
-			jobcandidateobj.setContactNo(tfContactno.getValue().toString());
+			if (tfEMailid.getValue() != "" && tfEMailid.getValue() != null) {
+				jobcandidateobj.setEmail(tfEMailid.getValue());
+			}
+			if (tfContactno.getValue() != "" && tfContactno.getValue() != null) {
+				jobcandidateobj.setContactNo(tfContactno.getValue());
+			}
 			jobcandidateobj.setWorkExp(cbWrkExp.getValue().toString());
 			jobcandidateobj.setExpYear(tfWrkExpYr.getValue());
 			jobcandidateobj.setExpDesc(tfWrkExpDesc.getValue());

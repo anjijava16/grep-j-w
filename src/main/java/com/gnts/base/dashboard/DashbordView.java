@@ -93,7 +93,7 @@ public class DashbordView implements ClickListener {
 	private void buildView(VerticalLayout clMainLayout, HorizontalLayout hlHeader) {
 		enquiryWorkflowDM = serviceWorkflow.getEnqWorkflowList(null, null, "Active", null, null);
 		for (EnquiryWorkflowDM n : enquiryWorkflowDM) {
-			countnotify = serviceEnquiry.getSmsEnqHdrList(companyId, n.getEnquiryId(), branchId, null, "Approved", "F",
+			countnotify = serviceEnquiry.getSmsEnqHdrList(companyId, n.getEnquiryId(), branchId, null, "Approved", "P",
 					null, null).size();
 		}
 		btnNotify = new Button(countnotify+"");

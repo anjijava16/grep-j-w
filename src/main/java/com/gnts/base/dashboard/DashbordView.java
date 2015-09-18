@@ -89,7 +89,6 @@ public class DashbordView implements ClickListener {
 		buildView(clMainLayout, hlHeader);
 	}
 	
-	@SuppressWarnings("deprecation")
 	private void buildView(VerticalLayout clMainLayout, HorizontalLayout hlHeader) {
 		enquiryWorkflowDM = serviceWorkflow.getEnqWorkflowList(null, null, "Active", null, null);
 		for (EnquiryWorkflowDM n : enquiryWorkflowDM) {
@@ -290,30 +289,27 @@ public class DashbordView implements ClickListener {
 		FormLayout fmlayout = new FormLayout();
 		VerticalLayout hrLayout = new VerticalLayout();
 		for (EnquiryWorkflowDM n : enquiryWorkflowDM) {
-			for (SmsEnqHdrDM m : serviceEnquiry.getSmsEnqHdrList(companyId, n.getEnquiryId(), branchId, null,
-					"Approved", "F", null, null)) {
-				hrLayout.addStyleName("notification-item");
-				if (enquiryWorkflowDM.size() > 0) {
-					Label titleLabel = new Label("\n"
-							+ "<table style=width:100%><tr><td><small>Status : </small><font color=blue><font size=4>"
-							+ n.getStatus()
-							+ "</font></font color></td><td><small>WorkFlow Id : </small><font color=green>"
-							+ n.getEnqWorkflowId() + "</font></td></tr></table>", ContentMode.HTML);
-					Label titleLabel1 = new Label("<small>Enquiry No: </small><font color=green>" + n.getEnquiryRef()
-							+ "</font>", ContentMode.HTML);
-					Label titleLabel3 = new Label("<small>Initiator Name : </small><font color=red>"
-							+ n.getInitiatorName() + "</font>", ContentMode.HTML);
-					Label titleLabel4 = new Label("<small>Alloted Name : </small><font color=red>" + n.getPendingName()
-							+ "</font>", ContentMode.HTML);
-					Label titleLabel5 = new Label("<HR size=3 color=red>", ContentMode.HTML);
-					titleLabel.addStyleName("notification-title");
-					fmlayout.addComponents(titleLabel);
-					fmlayout.addComponents(titleLabel1);
-					fmlayout.addComponent(titleLabel3);
-					fmlayout.addComponent(titleLabel4);
-					fmlayout.addComponent(titleLabel5);
-					hrLayout.addComponent(fmlayout);
-				}
+			hrLayout.addStyleName("notification-item");
+			if (enquiryWorkflowDM.size() > 0) {
+				Label titleLabel = new Label("\n"
+						+ "<table style=width:100%><tr><td><small>Status : </small><font color=blue><font size=4>"
+						+ n.getStatus()
+						+ "</font></font color></td><td><small>WorkFlow Id : </small><font color=green>"
+						+ n.getEnqWorkflowId() + "</font></td></tr></table>", ContentMode.HTML);
+				Label titleLabel1 = new Label("<small>Enquiry No: </small><font color=green>" + n.getEnquiryRef()
+						+ "</font>", ContentMode.HTML);
+				Label titleLabel3 = new Label("<small>Initiator Name : </small><font color=red>"
+						+ n.getInitiatorName() + "</font>", ContentMode.HTML);
+				Label titleLabel4 = new Label("<small>Alloted Name : </small><font color=red>" + n.getPendingName()
+						+ "</font>", ContentMode.HTML);
+				Label titleLabel5 = new Label("<HR size=3 color=red>", ContentMode.HTML);
+				titleLabel.addStyleName("notification-title");
+				fmlayout.addComponents(titleLabel);
+				fmlayout.addComponents(titleLabel1);
+				fmlayout.addComponent(titleLabel3);
+				fmlayout.addComponent(titleLabel4);
+				fmlayout.addComponent(titleLabel5);
+				hrLayout.addComponent(fmlayout);
 			}
 		}
 		notificationsLayout.addComponent(hrLayout);

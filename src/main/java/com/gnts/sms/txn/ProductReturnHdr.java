@@ -104,7 +104,7 @@ public class ProductReturnHdr extends BaseUI {
 	private HorizontalLayout hlimage = new HorizontalLayout();
 	private ComboBox cbDtlStatus = new GERPComboBox("Status", BASEConstants.T_SMS_PRODUCT_RETURN_HDR,
 			BASEConstants.INV_STATUS);
-	private Button btnaddreturndtl = new GERPButton("Add", "addbt", this);
+	private Button btnAddReturnDtl = new GERPButton("Add", "addbt", this);
 	private Table tblProdRetDetails = new GERPTable();
 	private List<ProductReturnDtlDM> listProdReturn = new ArrayList<ProductReturnDtlDM>();
 	private BeanItemContainer<ProductReturnHdrDM> beanProdReturn = null;
@@ -185,8 +185,8 @@ public class ProductReturnHdr extends BaseUI {
 		taRtrnRemarks = new TextArea("Return Remark");
 		taRtrnRemarks.setWidth("150");
 		taRtrnRemarks.setHeight("50");
-		btnaddreturndtl.setStyleName("add");
-		btnaddreturndtl.addClickListener(new ClickListener() {
+		btnAddReturnDtl.setStyleName("add");
+		btnAddReturnDtl.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 6551953728534136363L;
 			
 			@Override
@@ -211,14 +211,14 @@ public class ProductReturnHdr extends BaseUI {
 			public void itemClick(ItemClickEvent event) {
 				if (tblProdRetDetails.isSelected(event.getItemId())) {
 					tblProdRetDetails.setImmediate(true);
-					btnaddreturndtl.setCaption("Add");
-					btnaddreturndtl.setStyleName("savebt");
+					btnAddReturnDtl.setCaption("Add");
+					btnAddReturnDtl.setStyleName("savebt");
 					btndelete.setEnabled(false);
 					prodretdtlsResetfields();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
-					btnaddreturndtl.setCaption("Update");
-					btnaddreturndtl.setStyleName("savebt");
+					btnAddReturnDtl.setCaption("Update");
+					btnAddReturnDtl.setStyleName("savebt");
 					btndelete.setEnabled(true);
 					editProductReturnDtl();
 				}
@@ -276,7 +276,7 @@ public class ProductReturnHdr extends BaseUI {
 		VerticalLayout vlstatus = new VerticalLayout();
 		Label labadd = new Label();
 		Label labadd1 = new Label();
-		vlstatus.addComponent(btnaddreturndtl);
+		vlstatus.addComponent(btnAddReturnDtl);
 		vlstatus.addComponent(btndelete);
 		hl1.setSpacing(true);
 		hl1.setMargin(true);
@@ -683,7 +683,7 @@ public class ProductReturnHdr extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting the Employee Bank UI controls");
 		cbStockType.setValue(null);
-		btnaddreturndtl.setCaption("add");
+		btnAddReturnDtl.setCaption("add");
 		cbProduct.setValue(null);
 		tfReturnQty.setValue("");
 		taRtrnRemarks.setValue("");

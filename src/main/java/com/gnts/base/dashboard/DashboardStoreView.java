@@ -146,7 +146,7 @@ public class DashboardStoreView implements ClickListener {
 				});
 			}
 		}, "ledgerreports");
-		tblMaterialStock.setPageLength(7);
+		tblMaterialStock.setHeight("260px");
 		tblIndent.setHeight("250px");
 		tblMaterialInward.setHeight("450px");
 		tblMaterialInward.setWidth("510px");

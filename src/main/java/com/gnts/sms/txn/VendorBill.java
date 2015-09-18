@@ -120,7 +120,7 @@ public class VendorBill extends BaseTransUI {
 	// BeanItem container
 	private BeanItemContainer<VendorBillHdrDM> beanVendorBillHdr = null;
 	private BeanItemContainer<VendorBillDtlDM> beanVendorBillDtl = null;
-	private List<VendorBillDtlDM> vendorDtlList = new ArrayList<VendorBillDtlDM>();
+	private List<VendorBillDtlDM> listVendorBillDtls = new ArrayList<VendorBillDtlDM>();
 	// local variables declaration
 	private String username;
 	private Long companyid;
@@ -586,12 +586,12 @@ public class VendorBill extends BaseTransUI {
 	private void loadVendorDtl() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			recordCnt = vendorDtlList.size();
+			recordCnt = listVendorBillDtls.size();
 			tblVendorBillDtl.setPageLength(5);
 			beanVendorBillDtl = new BeanItemContainer<VendorBillDtlDM>(VendorBillDtlDM.class);
-			beanVendorBillDtl.addAll(vendorDtlList);
+			beanVendorBillDtl.addAll(listVendorBillDtls);
 			BigDecimal sum = new BigDecimal("0");
-			for (VendorBillDtlDM obj : vendorDtlList) {
+			for (VendorBillDtlDM obj : listVendorBillDtls) {
 				if (obj.getBasicValue() != null) {
 					sum = sum.add(obj.getBasicValue());
 				}
@@ -765,7 +765,7 @@ public class VendorBill extends BaseTransUI {
 				ckPdcRqu.setValue(false);
 			}
 			cbStatus.setValue(vendorBillHdrDM.getStatus());
-			vendorDtlList = servicevendorBillDtl.getsaveVendorBillDtlList(null, billId, null, null);
+			listVendorBillDtls = servicevendorBillDtl.getsaveVendorBillDtlList(null, billId, null, null);
 		}
 		loadVendorDtl();
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, billId, null, null, null,
@@ -1088,7 +1088,7 @@ public class VendorBill extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		try {
 			int count = 0;
-			for (VendorBillDtlDM vendorBillDtlDM : vendorDtlList) {
+			for (VendorBillDtlDM vendorBillDtlDM : listVendorBillDtls) {
 				if (vendorBillDtlDM.getProductId() == ((PurchasePODtlDM) cbProduct.getValue()).getProductId()) {
 					count++;
 					break;
@@ -1098,7 +1098,7 @@ public class VendorBill extends BaseTransUI {
 				VendorBillDtlDM vendorDtlDtlobj = new VendorBillDtlDM();
 				if (tblVendorBillDtl.getValue() != null) {
 					vendorDtlDtlobj = beanVendorBillDtl.getItem(tblVendorBillDtl.getValue()).getBean();
-					vendorDtlList.remove(vendorDtlDtlobj);
+					listVendorBillDtls.remove(vendorDtlDtlobj);
 				}
 				vendorDtlDtlobj.setProductId(((PurchasePODtlDM) cbProduct.getValue()).getProductId());
 				vendorDtlDtlobj.setProductName(((PurchasePODtlDM) cbProduct.getValue()).getProductName());
@@ -1128,7 +1128,7 @@ public class VendorBill extends BaseTransUI {
 				vendorDtlDtlobj.setDebitNoteVal((Long.valueOf(tfDebitValue.getValue())));
 				vendorDtlDtlobj.setLastupdateddt(DateUtils.getcurrentdate());
 				vendorDtlDtlobj.setLastupdatedby(username);
-				vendorDtlList.add(vendorDtlDtlobj);
+				listVendorBillDtls.add(vendorDtlDtlobj);
 				loadVendorDtl();
 				getCalculatedValues();
 			} else {
@@ -1265,7 +1265,7 @@ public class VendorBill extends BaseTransUI {
 		cbBranch.setComponentError(null);
 		cbBranch.setValue(branchId);
 		ckPdcRqu.setValue(false);
-		vendorDtlList = new ArrayList<VendorBillDtlDM>();
+		listVendorBillDtls = new ArrayList<VendorBillDtlDM>();
 		tblVendorBillDtl.removeAllItems();
 		new UploadDocumentUI(hlPODoc);
 		cbPONumber.setComponentError(null);
@@ -1351,7 +1351,7 @@ public class VendorBill extends BaseTransUI {
 		VendorBillDtlDM vendorBillDtlDM = new VendorBillDtlDM();
 		if (tblVendorBillDtl.getValue() != null) {
 			vendorBillDtlDM = beanVendorBillDtl.getItem(tblVendorBillDtl.getValue()).getBean();
-			vendorDtlList.remove(vendorBillDtlDM);
+			listVendorBillDtls.remove(vendorBillDtlDM);
 			vendorBillResetFields();
 			loadVendorDtl();
 			btndelete.setEnabled(false);

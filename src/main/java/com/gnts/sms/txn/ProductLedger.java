@@ -45,8 +45,8 @@ public class ProductLedger extends BaseUI {
 	private FormLayout fl1, fl2, fl3, fl4;
 	// User Input Fields for Product Ledger
 	private ComboBox cbBranch, cbProduct, cbStockType;
-	private TextField tfOpenqty, tfInOutFlag, tfInOutQty, tfCloseQty, tfRefno, tfIsLatest, tfRemarks;
-	private PopupDateField dfProdLedgDt, dfRefdate;
+	private TextField tfOpenqty, tfInOutFlag, tfInOutQty, tfCloseQty, tfRefNo, tfIsLatest, tfRemarks;
+	private PopupDateField dfProdLedgDt, dfRefDate;
 	private BeanItemContainer<ProductLedgerDM> beanProdLedger = null;
 	// Search control layout
 	private GERPAddEditHLayout hlSearLayout;
@@ -95,12 +95,12 @@ public class ProductLedger extends BaseUI {
 		tfInOutQty.setWidth("150");
 		tfCloseQty = new GERPTextField("Close Quantity");
 		tfCloseQty.setWidth("150");
-		tfRefno = new GERPTextField("Reference No");
-		tfRefno.setWidth("150");
+		tfRefNo = new GERPTextField("Reference No");
+		tfRefNo.setWidth("150");
 		dfProdLedgDt = new GERPPopupDateField("Product Ledger Date");
 		dfProdLedgDt.setWidth("130");
-		dfRefdate = new GERPPopupDateField("Reference Date");
-		dfRefdate.setWidth("130");
+		dfRefDate = new GERPPopupDateField("Reference Date");
+		dfRefDate.setWidth("130");
 		tfIsLatest = new GERPTextField("Latest");
 		tfIsLatest.setWidth("150");
 		tfRemarks = new GERPTextField("Reference Remark");
@@ -158,8 +158,8 @@ public class ProductLedger extends BaseUI {
 		fl2.addComponent(tfInOutFlag);
 		fl3.addComponent(tfInOutQty);
 		fl3.addComponent(tfCloseQty);
-		fl3.addComponent(tfRefno);
-		fl4.addComponent(dfRefdate);
+		fl3.addComponent(tfRefNo);
+		fl4.addComponent(dfRefDate);
 		fl4.addComponent(tfIsLatest);
 		fl4.addComponent(tfRemarks);
 		hlUserInputLayout.addComponent(fl1);
@@ -277,9 +277,9 @@ public class ProductLedger extends BaseUI {
 			tfInOutFlag.setValue(productLedgerDM.getInoutFlag());
 			tfInOutQty.setValue(productLedgerDM.getInoutFQty().toString());
 			tfCloseQty.setValue(productLedgerDM.getCloseQty().toString());
-			tfRefno.setValue(productLedgerDM.getReferenceNo());
+			tfRefNo.setValue(productLedgerDM.getReferenceNo());
 			dfProdLedgDt.setValue(productLedgerDM.getProductledgeDate());
-			dfRefdate.setValue(productLedgerDM.getReferenceDate());
+			dfRefDate.setValue(productLedgerDM.getReferenceDate());
 			tfIsLatest.setValue(productLedgerDM.getIsLatest());
 			tfRemarks.setValue(productLedgerDM.getReferenceRemark());
 		}
@@ -316,9 +316,9 @@ public class ProductLedger extends BaseUI {
 		tfInOutFlag.setValue("");
 		tfInOutQty.setValue("");
 		tfCloseQty.setValue("");
-		tfRefno.setValue("");
+		tfRefNo.setValue("");
 		dfProdLedgDt.setValue(null);
-		dfRefdate.setValue(null);
+		dfRefDate.setValue(null);
 		tfIsLatest.setValue("");
 		tfRemarks.setValue("");
 	}

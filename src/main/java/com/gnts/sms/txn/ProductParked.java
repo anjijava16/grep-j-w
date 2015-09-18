@@ -59,11 +59,11 @@ public class ProductParked extends BaseUI {
 	// User Input Components
 	private TextField tfParkedQty, tfUsedQty, tfBalQty, tfRefNo;
 	private ComboBox cbStockType;
-	private ComboBox cbProduct, cbBranch, cbStockTypese;
+	private ComboBox cbProduct, cbBranch;
 	private PopupDateField dfParkedDate, dfRefDate;
 	private TextArea taRemarks;
 	// Bean Container
-	private BeanItemContainer<ProductParkedStockDM> beanProductParkedStockDM = null;
+	private BeanItemContainer<ProductParkedStockDM> beanProdParkedStockDM = null;
 	// Local variables
 	private Long companyid;
 	private String username;
@@ -105,10 +105,6 @@ public class ProductParked extends BaseUI {
 		cbStockType.addItem("new");
 		cbStockType.addItem("scrap");
 		cbStockType.addItem("Refurbish");
-		cbStockTypese = new GERPComboBox("Stock Type");
-		cbStockTypese.addItem("new");
-		cbStockTypese.addItem("scrap");
-		cbStockTypese.addItem("Refurbish");
 		tfParkedQty = new TextField("Parked Qty");
 		tfUsedQty = new TextField("Used Qty");
 		tfBalQty = new TextField("Balance Qty");
@@ -157,7 +153,7 @@ public class ProductParked extends BaseUI {
 		flColumn1.addComponent(dfParkedDate);
 		flColumn1.addComponent(cbBranch);
 		flColumn1.addComponent(cbProduct);
-		flColumn2.addComponent(cbStockTypese);
+		flColumn2.addComponent(cbStockType);
 		flColumn2.addComponent(tfParkedQty);
 		flColumn2.addComponent(tfUsedQty);
 		flColumn3.addComponent(tfBalQty);
@@ -173,13 +169,13 @@ public class ProductParked extends BaseUI {
 	
 	private void viewLogger() {
 		if (tblMstScrSrchRslt.getValue() != null) {
-			ProductParkedStockDM productParkedStockDM = beanProductParkedStockDM.getItem(tblMstScrSrchRslt.getValue())
+			ProductParkedStockDM productParkedStockDM = beanProdParkedStockDM.getItem(tblMstScrSrchRslt.getValue())
 					.getBean();
 			setReadOnlyFalseFields();
 			cbProduct.setValue(productParkedStockDM.getProductId());
 			cbBranch.setValue(productParkedStockDM.getBranchId());
 			dfParkedDate.setValue(productParkedStockDM.getParkedDate());
-			cbStockTypese.setValue(productParkedStockDM.getStockType().toString());
+			cbStockType.setValue(productParkedStockDM.getStockType().toString());
 			tfParkedQty.setValue(productParkedStockDM.getParkedQty().toString());
 			tfUsedQty.setValue(productParkedStockDM.getUsedQty().toString());
 			tfBalQty.setValue(productParkedStockDM.getBalanceQty().toString());
@@ -194,7 +190,7 @@ public class ProductParked extends BaseUI {
 		cbProduct.setReadOnly(false);
 		cbBranch.setReadOnly(false);
 		dfParkedDate.setReadOnly(false);
-		cbStockTypese.setReadOnly(false);
+		cbStockType.setReadOnly(false);
 		tfParkedQty.setReadOnly(false);
 		tfUsedQty.setReadOnly(false);
 		tfBalQty.setReadOnly(false);
@@ -207,7 +203,7 @@ public class ProductParked extends BaseUI {
 		cbProduct.setReadOnly(true);
 		cbBranch.setReadOnly(true);
 		dfParkedDate.setReadOnly(true);
-		cbStockTypese.setReadOnly(true);
+		cbStockType.setReadOnly(true);
 		tfParkedQty.setReadOnly(true);
 		tfUsedQty.setReadOnly(true);
 		tfBalQty.setReadOnly(true);
@@ -224,11 +220,11 @@ public class ProductParked extends BaseUI {
 		list = serviceProductParkedStock.getProductParkedStockList((Long) cbProduct.getValue(), null,
 				(Long) cbBranch.getValue(), (String) cbStockType.getValue(), "F");
 		recordCnt = list.size();
-		beanProductParkedStockDM = new BeanItemContainer<ProductParkedStockDM>(ProductParkedStockDM.class);
-		beanProductParkedStockDM.addAll(list);
+		beanProdParkedStockDM = new BeanItemContainer<ProductParkedStockDM>(ProductParkedStockDM.class);
+		beanProdParkedStockDM.addAll(list);
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Got the Ratesetting. result set");
-		tblMstScrSrchRslt.setContainerDataSource(beanProductParkedStockDM);
+		tblMstScrSrchRslt.setContainerDataSource(beanProdParkedStockDM);
 		tblMstScrSrchRslt.setVisibleColumns(new Object[] { "parkProductStockId", "branchName", "prodname", "stockType",
 				"lastUpdateddt", "lastUpdatedby" });
 		tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Product Name", "Stock Type",
@@ -365,6 +361,5 @@ public class ProductParked extends BaseUI {
 		tfRefNo.setValue("");
 		tfUsedQty.setValue("");
 		taRemarks.setValue("");
-		cbStockTypese.setValue(null);
 	}
 }

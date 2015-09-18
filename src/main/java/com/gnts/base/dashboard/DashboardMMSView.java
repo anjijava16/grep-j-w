@@ -19,7 +19,6 @@ import com.gnts.mms.service.txn.POHdrService;
 import com.gnts.mms.txn.LetterofIntent;
 import com.gnts.mms.txn.MaterialEnquiry;
 import com.gnts.mms.txn.MaterialQuote;
-import com.gnts.mms.txn.MaterialVendorBill;
 import com.gnts.mms.txn.MmsPurchaseOrder;
 import com.gnts.mms.txn.POMMSReceipts;
 import com.vaadin.data.util.BeanItem;
@@ -47,17 +46,18 @@ public class DashboardMMSView implements ClickListener {
 	private Button btnEnquiryCount = new Button("11 Nos.", this);
 	private Button btnQuotationCount = new Button("15 Nos.", this);
 	private Button btnOrdersCount = new Button("13 Nos.", this);
-	private Button btnLOI = new Button("17 Nos.", this);
+	private Button btnBillsCount = new Button("17 Nos.", this);
 	private Button btnReceiptsCount = new Button("16 Nos.", this);
 	private Button btnAddMaterial = new Button("+  Add Material", this);
 	private Button btnAddVendor = new Button("+ Add Vendor", this);
+	private Button btnShowHide = new Button("Show/Hide", this);
 	private MaterialStockService servicematerialstock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
 	private MmsEnqHdrService serviceMmsEnqHdr = (MmsEnqHdrService) SpringContextHelper.getBean("MmsEnqHdr");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private POHdrService servicepohdr = (POHdrService) SpringContextHelper.getBean("pohdr");
 	private Logger logger = Logger.getLogger(DashboardMMSView.class);
-	private Table tblMstScrSrchRslt = new Table();
+	private Table tblMaterialStock = new Table();
 	private Table tblPaymentPending = new Table();
 	private Table tblDeliveryPending = new Table();
 	private Table tblEnquiry = new Table();
@@ -87,23 +87,25 @@ public class DashboardMMSView implements ClickListener {
 		btnEnquiryCount.setStyleName(Runo.BUTTON_LINK);
 		btnQuotationCount.setStyleName(Runo.BUTTON_LINK);
 		btnOrdersCount.setStyleName(Runo.BUTTON_LINK);
-		btnLOI.setStyleName(Runo.BUTTON_LINK);
+		btnBillsCount.setStyleName(Runo.BUTTON_LINK);
 		btnReceiptsCount.setStyleName(Runo.BUTTON_LINK);
 		btnAddMaterial.setStyleName(Runo.BUTTON_LINK);
 		btnAddVendor.setStyleName(Runo.BUTTON_LINK);
+		btnShowHide.setStyleName(Runo.BUTTON_LINK);
 		btnAddMaterial.setHtmlContentAllowed(true);
 		custom.addComponent(btnEnquiryCount, "enquiry");
 		custom.addComponent(btnQuotationCount, "quotation");
 		custom.addComponent(btnOrdersCount, "purchaseorder");
 		custom.addComponent(btnReceiptsCount, "receipts");
-		custom.addComponent(btnLOI, "loipur");
-		custom.addComponent(tblMstScrSrchRslt, "stockDetails");
+		custom.addComponent(btnBillsCount, "vendorbills");
+		custom.addComponent(tblMaterialStock, "stockDetails");
 		custom.addComponent(tblEnquiry, "enquirytable");
 		custom.addComponent(btnAddMaterial, "addmaterial");
 		custom.addComponent(tblPaymentPending, "paymenttable");
 		custom.addComponent(tblDeliveryPending, "deliverypending");
 		custom.addComponent(btnAddVendor, "addVendor");
-		tblMstScrSrchRslt.setHeight("300px");
+		custom.addComponent(btnShowHide, "showhide");
+		tblMaterialStock.setHeight("300px");
 		tblEnquiry.setHeight("250px");
 		tblPaymentPending.setHeight("450px");
 		tblPaymentPending.setWidth("510px");
@@ -113,28 +115,29 @@ public class DashboardMMSView implements ClickListener {
 		loadEnquiryList();
 		loadPaymentPendingDetails();
 		loadDeliveryDetails();
+		tblPaymentPending.setVisible(false);
+		tblDeliveryPending.setVisible(false);
 	}
 	
 	private void loadStockDetails() {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
-			tblMstScrSrchRslt.removeAllItems();
+			tblMaterialStock.removeAllItems();
 			BeanItemContainer<MaterialStockDM> beanmaterialstock = new BeanItemContainer<MaterialStockDM>(
 					MaterialStockDM.class);
 			beanmaterialstock.addAll(servicematerialstock.getMaterialStockList(null, companyId, null, null, null, null,
 					"F"));
-			tblMstScrSrchRslt.setContainerDataSource(beanmaterialstock);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "materialName", "stockType", "currentStock",
+			tblMaterialStock.setContainerDataSource(beanmaterialstock);
+			tblMaterialStock.setVisibleColumns(new Object[] { "materialName", "stockType", "currentStock",
 					"parkedStock", "effectiveStock" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Material", "Stock Type", "Curr. Stock", "Parked",
+			tblMaterialStock.setColumnHeaders(new String[] { "Material", "Stock Type", "Curr. Stock", "Parked",
 					"Eff. Stock" });
-			tblMstScrSrchRslt.setColumnWidth("materialName", 150);
-			tblMstScrSrchRslt.setColumnWidth("currentStock", 75);
-			tblMstScrSrchRslt.setColumnWidth("effectiveStock", 70);
-			tblMstScrSrchRslt.setColumnWidth("parkedStock", 70);
-			tblMstScrSrchRslt.setColumnWidth("stockType", 70);
-			tblMstScrSrchRslt.setHeightUndefined();
-			tblMstScrSrchRslt.addGeneratedColumn("materialName", new ColumnGenerator() {
+			tblMaterialStock.setColumnWidth("materialName", 150);
+			tblMaterialStock.setColumnWidth("currentStock", 75);
+			tblMaterialStock.setColumnWidth("effectiveStock", 70);
+			tblMaterialStock.setColumnWidth("parkedStock", 70);
+			tblMaterialStock.setColumnWidth("stockType", 70);
+			tblMaterialStock.addGeneratedColumn("materialName", new ColumnGenerator() {
 				private static final long serialVersionUID = 1L;
 				
 				@Override
@@ -178,8 +181,8 @@ public class DashboardMMSView implements ClickListener {
 			BeanItemContainer<MmsEnqHdrDM> beanMmsEnqHdrDM = new BeanItemContainer<MmsEnqHdrDM>(MmsEnqHdrDM.class);
 			beanMmsEnqHdrDM.addAll(serviceMmsEnqHdr.getMmsEnqHdrList(companyId, null, null, null, null, "P"));
 			tblEnquiry.setContainerDataSource(beanMmsEnqHdrDM);
-			tblEnquiry.setVisibleColumns(new Object[] { "enquiryNo", "enquiryStatus","enqRemark" });
-			tblEnquiry.setColumnHeaders(new String[] { "Enquiry No", "Status","Remarks" });
+			tblEnquiry.setVisibleColumns(new Object[] { "enquiryNo", "enquiryStatus", "enqRemark" });
+			tblEnquiry.setColumnHeaders(new String[] { "Enquiry No", "Status", "Remarks" });
 			tblEnquiry.setColumnWidth("enquiryNo", 160);
 			tblEnquiry.setColumnWidth("enquiryStatus", 120);
 			tblEnquiry.setColumnWidth("enqRemark", 160);
@@ -300,48 +303,50 @@ public class DashboardMMSView implements ClickListener {
 			UI.getCurrent().getSession().setAttribute("screenName", "Material Enquiry");
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new MaterialEnquiry();
-		}
-		if (event.getButton() == btnQuotationCount) {
+		} else if (event.getButton() == btnQuotationCount) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Material Quotation");
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new MaterialQuote();
-		}
-		if (event.getButton() == btnOrdersCount) {
+		} else if (event.getButton() == btnOrdersCount) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Material Purchase Orders");
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new MmsPurchaseOrder();
-		}
-		if (event.getButton() == btnLOI) {
+		} else if (event.getButton() == btnBillsCount) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
-			UI.getCurrent().getSession().setAttribute("screenName", "Letter of Indent");
+			UI.getCurrent().getSession().setAttribute("screenName", "Letter of Intent");
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new LetterofIntent();
-		}
-		if (event.getButton() == btnReceiptsCount) {
+		} else if (event.getButton() == btnReceiptsCount) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Material Receipts");
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new POMMSReceipts();
-		}
-		if (event.getButton() == btnAddMaterial) {
+		} else if (event.getButton() == btnAddMaterial) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Material");
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new Material();
-		}
-		if (event.getButton() == btnAddVendor) {
+		} else if (event.getButton() == btnAddVendor) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Vendor");
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new Vendor();
+		} else if (event.getButton() == btnShowHide) {
+			if (tblPaymentPending.isVisible()) {
+				tblPaymentPending.setVisible(false);
+				tblDeliveryPending.setVisible(false);
+			} else {
+				tblPaymentPending.setVisible(true);
+				tblDeliveryPending.setVisible(true);
+			}
 		}
 	}
 }

@@ -34,7 +34,7 @@ public class ProductStock extends BaseUI {
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	// User Input Fields for Product Stock
-	private ComboBox cbBranch, cbProduct, cbStocktype;
+	private ComboBox cbBranch, cbProduct, cbStockType;
 	private BeanItemContainer<ProductStockDM> beanProductStock = null;
 	private FormLayout fl1, fl2, fl3;
 	private GERPAddEditHLayout hlSearLayout;
@@ -69,10 +69,10 @@ public class ProductStock extends BaseUI {
 		cbProduct = new GERPComboBox("Product Name");
 		cbProduct.setItemCaptionPropertyId("prodname");
 		loadProduct();
-		cbStocktype = new GERPComboBox("Stock Type");
-		cbStocktype.addItem("new");
-		cbStocktype.addItem("scrap");
-		cbStocktype.addItem("Refurbish");
+		cbStockType = new GERPComboBox("Stock Type");
+		cbStockType.addItem("new");
+		cbStockType.addItem("scrap");
+		cbStockType.addItem("Refurbish");
 		hlSearLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearLayout));
 		assembleSearchLayout();
@@ -92,7 +92,7 @@ public class ProductStock extends BaseUI {
 		fl3 = new FormLayout();
 		fl1.addComponent(cbBranch);
 		fl2.addComponent(cbProduct);
-		fl3.addComponent(cbStocktype);
+		fl3.addComponent(cbStockType);
 		hlSearLayout.addComponent(fl1);
 		hlSearLayout.addComponent(fl2);
 		hlSearLayout.addComponent(fl3);
@@ -135,7 +135,7 @@ public class ProductStock extends BaseUI {
 			tblMstScrSrchRslt.removeAllItems();
 			List<ProductStockDM> listProductstock = new ArrayList<ProductStockDM>();
 			listProductstock = serviceProdStock.getProductStockList((Long) cbProduct.getValue(),
-					(String) cbStocktype.getValue(), productStockId, (Long) cbBranch.getValue(), "F");
+					(String) cbStockType.getValue(), productStockId, (Long) cbBranch.getValue(), "F");
 			recordcnt = listProductstock.size();
 			beanProductStock = new BeanItemContainer<ProductStockDM>(ProductStockDM.class);
 			beanProductStock.addAll(listProductstock);
@@ -176,7 +176,7 @@ public class ProductStock extends BaseUI {
 	protected void resetSearchDetails() {
 		cbBranch.setValue(branchId);
 		cbProduct.setValue(0L);
-		cbStocktype.setValue(null);
+		cbStockType.setValue(null);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		loadSrchRslt();
@@ -212,6 +212,6 @@ public class ProductStock extends BaseUI {
 	protected void resetFields() {
 		cbBranch.setValue(branchId);
 		cbProduct.setValue(0L);
-		cbStocktype.setValue(null);
+		cbStockType.setValue(null);
 	}
 }

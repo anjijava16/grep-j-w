@@ -431,7 +431,7 @@ public class Branch extends BaseUI {
 			cbStateName.setComponentError(new UserError(GERPErrorCodes.NULL_COMPANY_STATE));
 			errorFlag = true;
 		}
-		if (tfPhoneNo.getValue() != null) {
+		if (tfPhoneNo.getValue() != "" && tfPhoneNo.getValue() != null) {
 			if (!tfPhoneNo.getValue().matches("^\\+?[0-9. ()-]{10,25}$")) {
 				tfPhoneNo.setComponentError(new UserError(GERPErrorCodes.PHONE_NUMBER_VALIDATION));
 				errorFlag = true;

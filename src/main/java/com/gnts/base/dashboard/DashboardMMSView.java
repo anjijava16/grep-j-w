@@ -46,7 +46,7 @@ public class DashboardMMSView implements ClickListener {
 	private Button btnEnquiryCount = new Button("11 Nos.", this);
 	private Button btnQuotationCount = new Button("15 Nos.", this);
 	private Button btnOrdersCount = new Button("13 Nos.", this);
-	private Button btnBillsCount = new Button("17 Nos.", this);
+	private Button btnLOI = new Button("17 Nos.", this);
 	private Button btnReceiptsCount = new Button("16 Nos.", this);
 	private Button btnAddMaterial = new Button("+  Add Material", this);
 	private Button btnAddVendor = new Button("+ Add Vendor", this);
@@ -87,7 +87,7 @@ public class DashboardMMSView implements ClickListener {
 		btnEnquiryCount.setStyleName(Runo.BUTTON_LINK);
 		btnQuotationCount.setStyleName(Runo.BUTTON_LINK);
 		btnOrdersCount.setStyleName(Runo.BUTTON_LINK);
-		btnBillsCount.setStyleName(Runo.BUTTON_LINK);
+		btnLOI.setStyleName(Runo.BUTTON_LINK);
 		btnReceiptsCount.setStyleName(Runo.BUTTON_LINK);
 		btnAddMaterial.setStyleName(Runo.BUTTON_LINK);
 		btnAddVendor.setStyleName(Runo.BUTTON_LINK);
@@ -97,7 +97,7 @@ public class DashboardMMSView implements ClickListener {
 		custom.addComponent(btnQuotationCount, "quotation");
 		custom.addComponent(btnOrdersCount, "purchaseorder");
 		custom.addComponent(btnReceiptsCount, "receipts");
-		custom.addComponent(btnBillsCount, "vendorbills");
+		custom.addComponent(btnLOI, "loipur");
 		custom.addComponent(tblMaterialStock, "stockDetails");
 		custom.addComponent(tblEnquiry, "enquirytable");
 		custom.addComponent(btnAddMaterial, "addmaterial");
@@ -315,7 +315,7 @@ public class DashboardMMSView implements ClickListener {
 			UI.getCurrent().getSession().setAttribute("screenName", "Material Purchase Orders");
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new MmsPurchaseOrder();
-		} else if (event.getButton() == btnBillsCount) {
+		} else if (event.getButton() == btnLOI) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Letter of Intent");

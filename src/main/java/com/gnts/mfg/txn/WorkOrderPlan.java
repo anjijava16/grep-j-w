@@ -14,7 +14,6 @@
  */
 package com.gnts.mfg.txn;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -339,24 +338,10 @@ public class WorkOrderPlan extends BaseTransUI {
 					btnsaveWrkOdrPlDtl.setStyleName("savebt");
 					editWorkOrderPlnDtlDetails();
 					btnDtleWrkDtl.setEnabled(true);
-					loadSrchWrkOdrPlnMtrlDtlRslt(true);
 				}
 			}
 		});
-		tblMstScrSrchRslt.addItemClickListener(new ItemClickListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (tblMstScrSrchRslt.isSelected(event.getItemId())) {
-					tblMstScrSrchRslt.setImmediate(true);
-					btnEdit.setEnabled(false);
-				} else {
-					((AbstractSelect) event.getSource()).select(event.getItemId());
-					btnEdit.setEnabled(false);
-				}
-			}
-		});
+	
 		try {
 			ApprovalSchemaDM obj = serviceWorkOrderPlanHdr.getReviewerId(companyid, appScreenId, branchId, roleId).get(
 					0);
@@ -377,7 +362,22 @@ public class WorkOrderPlan extends BaseTransUI {
 		loadSrchRslt();
 		loadSrchWrkOdrPlnDtlRslt();
 		loadSrchWrkOdrPlnMtrlDtlRslt(false);
-		btnEdit.setEnabled(false);
+		hlUserIPContainer.setVisible(true);
+		hlUserIPContainer.setEnabled(true);
+		hlSrchContainer.setVisible(false);
+		btnPrint.setVisible(true);
+		btnSave.setVisible(true);
+		btnCancel.setVisible(true);
+		btnSearch.setVisible(false);
+		btnReset.setVisible(false);
+		btnAuditRecords.setEnabled(false);
+		btnAdd.setEnabled(false);
+		hlUserIPContainer.removeAllComponents();
+		lblNotification.setIcon(null);
+		lblNotification.setCaption("");
+		// Dummy implementation, actual will be implemented in extended
+		// class
+		addDetails();
 	}
 	
 	private void assembleSearchLayout() {
@@ -771,6 +771,8 @@ public class WorkOrderPlan extends BaseTransUI {
 		loadSrchWrkOdrPlnDtlRslt();
 		comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
 		hlDocumentLayout.removeAllComponents();
+		workOdrPlnMtrlDtlList = new ArrayList<WorkOrderPlanMtrlDtlDM>();
+		tblWOPlanMaterials.removeAllItems();
 	}
 	
 	// reset the input controls to default value
@@ -814,6 +816,7 @@ public class WorkOrderPlan extends BaseTransUI {
 		editWorkOrderPlnDtlDetails();
 		loadSrchWrkOdrPlnDtlRslt();
 		loadSrchWrkOdrPlnMtrlDtlRslt(true);
+		btnSave.setVisible(false);
 	}
 	
 	@Override
@@ -906,11 +909,7 @@ public class WorkOrderPlan extends BaseTransUI {
 					logger.info(e.getMessage());
 				}
 			}
-			// comment.s
-			wrkOdrPlnDtlresetFields();
-			resetFields();
-			loadSrchRslt();
-			loadSrchWrkOdrPlnDtlRslt();
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -930,15 +929,15 @@ public class WorkOrderPlan extends BaseTransUI {
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assembleSearchLayout();
+		wrkOdrPlnDtlresetFields();
+		resetFields();
+		loadSrchRslt();
 		hlCmdBtnLayout.setVisible(true);
 		tfPlanNo.setReadOnly(false);
 		tblMstScrSrchRslt.setVisible(true);
 		tblWrkOrdPlnDtl.setVisible(false);
 		tblWOPlanMaterials.setVisible(false);
 		tblWOPlanMaterials.removeAllItems();
-		wrkOdrPlnDtlresetFields();
-		resetFields();
-		loadSrchRslt();
 	}
 	
 	@Override
@@ -968,6 +967,7 @@ public class WorkOrderPlan extends BaseTransUI {
 		cbEnquiryNumber.setValue(null);
 		cbWorkOrderNo.setContainerDataSource(null);
 		cbProductName.setContainerDataSource(null);
+		woPlnHdr=0L;
 	}
 	
 	private boolean validateWOPrddtl() {

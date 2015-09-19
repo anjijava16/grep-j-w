@@ -51,25 +51,6 @@ public class SerialNumberGenerator {
 		return serialnumber;
 	}
 	
-/*	public static String generateVendorCode(Long companyid, Long branchid, String vendortype, String refkey,
-			String vendorname) {
-		String serialnumber = "";
-		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "BS_VNDRCD").get(0);
-			logger.info("Serial No Generation  Data...===>" + companyid + "," + branchid + "," + vendortype);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + vendortype
-						+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey() + slnoObj.getSuffixCncat()
-						+ slnoObj.getCurrSeqNo();
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		logger.info("serialnumber--->" + serialnumber);
-		return serialnumber;
-	}*/
-	
 	public static String generateseralcallNumber(Long companyid, Long branchid, Long moduleid, String refkey,
 			Long clientid) {
 		String serialnumber = "";
@@ -107,6 +88,7 @@ public class SerialNumberGenerator {
 		logger.info("serialnumber--->" + serialnumber);
 		return serialnumber;
 	}
+	
 	public static String generateSNoLOI(Long companyid, Long branchid, Long moduleid, String refkey) {
 		String serialnumber = "";
 		try {
@@ -123,14 +105,32 @@ public class SerialNumberGenerator {
 		logger.info("serialnumber--->" + serialnumber);
 		return serialnumber;
 	}
-	public static String generateSNoVEN(Long companyid, Long branchid, Long moduleid, String refkey,String venCode) {
+	
+	public static String generateSNoEnqNo(Long companyid, Long branchid, Long moduleid, String refkey) {
+		String serialnumber = "";
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "MM_ENQRYNO").get(0);
+			logger.info("Serial No Generation  Data...===>" + companyid + "," + branchid + "," + moduleid);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + "EQ-" + slnoObj.getCurrSeqNo()
+						+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey();
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		logger.info("serialnumber--->" + serialnumber);
+		return serialnumber;
+	}
+	
+	public static String generateSNoVEN(Long companyid, Long branchid, Long moduleid, String refkey, String venCode) {
 		String serialnumber = "";
 		try {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "BS_VNDRCD").get(0);
 			logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
-				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + venCode
-						+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey();
+				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + venCode + slnoObj.getPrefixCncat()
+						+ slnoObj.getSuffixKey()+String.format("03d",slnoObj.getCurrSeqNo().intValue());
 			}
 		}
 		catch (Exception e) {

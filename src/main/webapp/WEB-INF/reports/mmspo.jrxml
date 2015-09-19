@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="mmspo" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
-	<property name="ireport.zoom" value="1.3310000000000004"/>
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="247"/>
+	<property name="ireport.y" value="391"/>
 	<style name="Crosstab Data Text" hAlign="Center"/>
 	<parameter name="ENQID" class="java.lang.String"/>
 	<queryString>
@@ -10,24 +10,24 @@
   hdr.po_date,
   hdr.po_remark,
   hdr.basic_total,
-  hdr.packing_prcnt,
-  hdr.packing_value,
+  decode (hdr.packing_prcnt,0,'---',hdr.packing_prcnt) packing_prcnt,
+  decode (hdr.packing_value,0,'---',hdr.packing_value) packing_value,
   hdr.sub_total,
-  hdr.vat_prcnt,
-  hdr.vat_value,
-  hdr.cst_prcnt,
-  hdr.cst_value,
+  decode (hdr.vat_prcnt,0,'---',hdr.vat_prcnt) vat_prcnt,
+  decode (hdr.vat_value,0,'---',hdr.vat_value) vat_value,
+  decode (hdr.cst_prcnt,0,'---',hdr.cst_prcnt) cst_prcnt,
+  decode (hdr.cst_value,0,'---',hdr.cst_value) cst_value,
   hdr.sub_tax_total,
-  hdr.freight_prcnt,
-  hdr.freight_value,
-  hdr.others_prcnt,
-  hdr.others_value,
-  hdr.ed_prcnt,
-  hdr.ed_value,
-  hdr.cess_prcnt,
-  hdr.cess_value,
-  hdr.hed_prcnt,
-  hdr.hed_value,
+  decode (hdr.freight_prcnt,0,'---',hdr.freight_prcnt) freight_prcnt,
+  decode (hdr.freight_value,0,'---',hdr.freight_value) freight_value,
+  decode (hdr.others_prcnt,0,'---',hdr.others_prcnt) others_prcnt,
+  decode (hdr.others_value,0,'---',hdr.others_value) others_value,
+  decode (hdr.ed_prcnt,0,'---',hdr.ed_prcnt) ed_prcnt,
+  decode (hdr.ed_value,0,'---',hdr.ed_value) ed_value,
+  decode (hdr.cess_prcnt,0,'---',hdr.cess_prcnt) cess_prcnt,
+  decode (hdr.cess_value,0,'---',hdr.cess_value) cess_value,
+  decode (hdr.hed_prcnt,0,'---',hdr.hed_prcnt) hed_prcnt,
+  decode (hdr.hed_value,0,'---',hdr.hed_value) hed_value,
   hdr.grand_total,
   v.vendor_name,
   v.vendor_address,
@@ -55,24 +55,24 @@ AND hdr.po_id    =$P{ENQID}]]>
 	<field name="PO_DATE" class="java.sql.Timestamp"/>
 	<field name="PO_REMARK" class="java.lang.String"/>
 	<field name="BASIC_TOTAL" class="java.math.BigDecimal"/>
-	<field name="PACKING_PRCNT" class="java.math.BigDecimal"/>
-	<field name="PACKING_VALUE" class="java.math.BigDecimal"/>
+	<field name="PACKING_PRCNT" class="java.lang.String"/>
+	<field name="PACKING_VALUE" class="java.lang.String"/>
 	<field name="SUB_TOTAL" class="java.math.BigDecimal"/>
-	<field name="VAT_PRCNT" class="java.math.BigDecimal"/>
-	<field name="VAT_VALUE" class="java.math.BigDecimal"/>
-	<field name="CST_PRCNT" class="java.math.BigDecimal"/>
-	<field name="CST_VALUE" class="java.math.BigDecimal"/>
+	<field name="VAT_PRCNT" class="java.lang.String"/>
+	<field name="VAT_VALUE" class="java.lang.String"/>
+	<field name="CST_PRCNT" class="java.lang.String"/>
+	<field name="CST_VALUE" class="java.lang.String"/>
 	<field name="SUB_TAX_TOTAL" class="java.math.BigDecimal"/>
-	<field name="FREIGHT_PRCNT" class="java.math.BigDecimal"/>
-	<field name="FREIGHT_VALUE" class="java.math.BigDecimal"/>
-	<field name="OTHERS_PRCNT" class="java.math.BigDecimal"/>
-	<field name="OTHERS_VALUE" class="java.math.BigDecimal"/>
-	<field name="ED_PRCNT" class="java.math.BigDecimal"/>
-	<field name="ED_VALUE" class="java.math.BigDecimal"/>
-	<field name="CESS_PRCNT" class="java.math.BigDecimal"/>
-	<field name="CESS_VALUE" class="java.math.BigDecimal"/>
-	<field name="HED_PRCNT" class="java.math.BigDecimal"/>
-	<field name="HED_VALUE" class="java.math.BigDecimal"/>
+	<field name="FREIGHT_PRCNT" class="java.lang.String"/>
+	<field name="FREIGHT_VALUE" class="java.lang.String"/>
+	<field name="OTHERS_PRCNT" class="java.lang.String"/>
+	<field name="OTHERS_VALUE" class="java.lang.String"/>
+	<field name="ED_PRCNT" class="java.lang.String"/>
+	<field name="ED_VALUE" class="java.lang.String"/>
+	<field name="CESS_PRCNT" class="java.lang.String"/>
+	<field name="CESS_VALUE" class="java.lang.String"/>
+	<field name="HED_PRCNT" class="java.lang.String"/>
+	<field name="HED_VALUE" class="java.lang.String"/>
 	<field name="GRAND_TOTAL" class="java.math.BigDecimal"/>
 	<field name="VENDOR_NAME" class="java.lang.String"/>
 	<field name="VENDOR_ADDRESS" class="java.lang.String"/>

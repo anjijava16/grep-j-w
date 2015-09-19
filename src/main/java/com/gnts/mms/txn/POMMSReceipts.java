@@ -227,7 +227,7 @@ public class POMMSReceipts extends BaseTransUI {
 				// TODO Auto-generated method stub
 				if (tfPOQty.getValue() != null) {
 					
-					if (tfAcceptQty.getValue().compareTo(tfPOQty.getValue()) > 0) {
+					if (Long.valueOf(tfAcceptQty.getValue())>(Long.valueOf(tfPOQty.getValue()))) {
 						Notification.show("Value Exceeds PO Quantity",
 								"Accept value is larger than PO Quantity.Kindly refer PO Qty", Type.WARNING_MESSAGE);
 						tfAcceptQty.setValue("0");
@@ -248,7 +248,7 @@ public class POMMSReceipts extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				if (tfPOQty.getValue() != null) {
-					if (tfRejectqty.getValue().compareTo(tfPOQty.getValue()) > 0) {
+					if (Long.valueOf(tfRejectqty.getValue())+Long.valueOf(tfAcceptQty.getValue())>Long.valueOf(tfPOQty.getValue())) {
 						Notification.show("Value Exceeds PO Quantity",
 								"Reject value is larger than PO Quantity.Kindly refer PO Qty", Type.WARNING_MESSAGE);
 						tfRejectqty.setValue("0");

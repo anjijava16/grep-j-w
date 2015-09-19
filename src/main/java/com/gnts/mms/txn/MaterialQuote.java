@@ -1,5 +1,4 @@
 /**
- * File Name 		: MaterialQuote.java 
  * Description 		: this class is used for add/edit MaterialQuote  details. 
  * Author 			: Arun Jeyaraj R
  * Date 			:  Oct 18, 2014
@@ -103,7 +102,7 @@ public class MaterialQuote extends BaseTransUI {
 	// // User Input Components for Quote Details
 	private ComboBox cbBranch, cbStatus, cbEnqNo;
 	private TextField tfQuoteRef, tfQuoteVersion, tfBasictotal, tfpackingPer, tfPackingValue;
-	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
+	private TextField tfSubTotal, tfDutyTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
 	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
 	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal, tfUomTemp;
 	private TextArea tapaymetTerms, taFreightTerms, taWarrentyTerms, taDelTerms;
@@ -179,7 +178,7 @@ public class MaterialQuote extends BaseTransUI {
 		cbVendorname.setWidth("150");
 		tfUomTemp = new TextField();
 		tfUomTemp.setWidth("50");
-		tfUomTemp.setHeight("23");
+		tfUomTemp.setHeight("21");
 		tfUomTemp.setReadOnly(true);
 		/* modified */
 		cbEnqNo = new ComboBox("Enquiry No");
@@ -223,9 +222,11 @@ public class MaterialQuote extends BaseTransUI {
 		tfQuoteVersion = new TextField("Quote Version");
 		tfQuoteVersion.setWidth("145");
 		tfBasictotal = new TextField("Basic total");
-		tfBasictotal.setWidth("145");
+		tfBasictotal.setWidth("150");
 		tfSubTotal = new TextField("Sub Total");
-		tfSubTotal.setWidth("145");
+		tfSubTotal.setWidth("150");
+		tfDutyTotal = new TextField("Duty Total");
+		tfDutyTotal.setWidth("150");
 		tfpackingPer = new TextField();
 		tfpackingPer.setWidth("30");
 		tfPackingValue = new TextField();
@@ -248,9 +249,9 @@ public class MaterialQuote extends BaseTransUI {
 		tfCessValue = new TextField();
 		tfCessValue.setWidth("120");
 		tfSubTaxTotal = new TextField("Sub Tax Total");
+		tfSubTaxTotal.setWidth("150");
 		tfCstValue = new TextField();
 		tfCstValue.setWidth("120");
-		tfSubTaxTotal.setWidth("145");
 		tfCstPer = new TextField();
 		tfCstPer.setWidth("30");
 		tfCstValue.setImmediate(true);
@@ -263,7 +264,7 @@ public class MaterialQuote extends BaseTransUI {
 		tfOtherPer = new TextField();
 		tfOtherPer.setWidth("30");
 		tfOtherValue = new TextField();
-		tfOtherValue.setWidth("125");
+		tfOtherValue.setWidth("120");
 		tapaymetTerms = new TextArea("Payment Terms");
 		tapaymetTerms.setWidth("150");
 		tapaymetTerms.setHeight("30");
@@ -355,7 +356,7 @@ public class MaterialQuote extends BaseTransUI {
 		cbUom = new ComboBox();
 		cbUom.setItemCaptionPropertyId("lookupname");
 		cbUom.setWidth("50");
-		cbUom.setHeight("23");
+		cbUom.setHeight("21");
 		loadUomList();
 		tfUnitRate = new TextField("Unit Rate");
 		tfUnitRate.setWidth("80");
@@ -373,7 +374,7 @@ public class MaterialQuote extends BaseTransUI {
 		tfBasicValue.setValue("0");
 		taQuoteRemark = new TextArea("Remarks");
 		taQuoteRemark.setWidth("130");
-		taQuoteRemark.setHeight("24");
+		taQuoteRemark.setHeight("50");
 		btnsavepurQuote.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
@@ -496,19 +497,13 @@ public class MaterialQuote extends BaseTransUI {
 		pp.setCaption("Packing(%)");
 		flColumn2.addComponent(pp);
 		flColumn2.setComponentAlignment(pp, Alignment.TOP_LEFT);
+		flColumn2.addComponent(tfSubTotal);
 		HorizontalLayout ed = new HorizontalLayout();
 		ed.addComponent(tfEDPer);
 		ed.addComponent(tfEDValue);
 		ed.setCaption("ED");
 		flColumn2.addComponent(ed);
 		flColumn2.setComponentAlignment(ed, Alignment.TOP_LEFT);
-		flColumn2.addComponent(tfSubTotal);
-		HorizontalLayout vp = new HorizontalLayout();
-		vp.addComponent(tfVatPer);
-		vp.addComponent(tfVatValue);
-		vp.setCaption("VAT");
-		flColumn2.addComponent(vp);
-		flColumn2.setComponentAlignment(vp, Alignment.TOP_LEFT);
 		HorizontalLayout hed = new HorizontalLayout();
 		hed.addComponent(tfHEDPer);
 		hed.addComponent(tfHEDValue);
@@ -521,13 +516,20 @@ public class MaterialQuote extends BaseTransUI {
 		cess.setCaption("CESS");
 		flColumn2.addComponent(cess);
 		flColumn2.setComponentAlignment(cess, Alignment.TOP_LEFT);
+		flColumn2.addComponent(tfDutyTotal);
+		HorizontalLayout vp = new HorizontalLayout();
+		vp.addComponent(tfVatPer);
+		vp.addComponent(tfVatValue);
+		vp.setCaption("VAT");
+		flColumn2.addComponent(vp);
+		flColumn2.setComponentAlignment(vp, Alignment.TOP_LEFT);
 		HorizontalLayout cst = new HorizontalLayout();
 		cst.addComponent(tfCstPer);
 		cst.addComponent(tfCstValue);
 		cst.setCaption("CST");
 		flColumn2.addComponent(cst);
 		flColumn2.setComponentAlignment(cst, Alignment.TOP_LEFT);
-		flColumn2.addComponent(tfSubTaxTotal);
+		flColumn3.addComponent(tfSubTaxTotal);
 		HorizontalLayout frght = new HorizontalLayout();
 		frght.addComponent(tfFreightPer);
 		frght.addComponent(tfFreightValue);
@@ -578,10 +580,10 @@ public class MaterialQuote extends BaseTransUI {
 		hlAvuom.setCaption("Quote Qty");
 		flDtlColumn2.addComponent(hlAvuom);
 		flDtlColumn3.addComponent(tfUnitRate);
-		flDtlColumn4.addComponent(tfBasicValue);
-		flDtlColumn5.addComponent(taQuoteRemark);
-		flDtlColumn6.addComponent(btnsavepurQuote);
-		flDtlColumn6.addComponent(btndelete);
+		flDtlColumn3.addComponent(tfBasicValue);
+		flDtlColumn4.addComponent(taQuoteRemark);
+		flDtlColumn5.addComponent(btnsavepurQuote);
+		flDtlColumn5.addComponent(btndelete);
 		HorizontalLayout hlMmsQuotDtl = new HorizontalLayout();
 		hlMmsQuotDtl.addComponent(flDtlColumn1);
 		hlMmsQuotDtl.addComponent(flDtlColumn2);
@@ -666,7 +668,7 @@ public class MaterialQuote extends BaseTransUI {
 			tblMatQuDtl.setContainerDataSource(beanQuoteDtl);
 			tblMatQuDtl.setVisibleColumns(new Object[] { "materialname", "quoteqty", "reqQty", "unitrate",
 					"basicvalue", "lastupdateddt", "lastupdatedby" });
-			tblMatQuDtl.setColumnHeaders(new String[] { "Material Name", "Quote Qty", "Required Qty", "UnitRate",
+			tblMatQuDtl.setColumnHeaders(new String[] { "Material Name", "Enquiry Qty", "Quote Qty", "UnitRate",
 					"Basic Value", "Last Updated Date", "Last Updated By" });
 			tblMatQuDtl.setColumnFooter("lastupdatedby", "No.of Records : " + recordCnt);
 		}
@@ -817,6 +819,9 @@ public class MaterialQuote extends BaseTransUI {
 				tfSubTotal.setReadOnly(false);
 				tfSubTotal.setValue(quoteHdr.getSubTotal().toString());
 				tfSubTotal.setReadOnly(true);
+				tfDutyTotal.setReadOnly(false);
+				tfDutyTotal.setValue(quoteHdr.getDutyTotal().toString());
+				tfDutyTotal.setReadOnly(true);
 				tfVatPer.setValue(quoteHdr.getVatPrcnt().toString());
 				tfVatValue.setReadOnly(false);
 				tfVatValue.setValue(quoteHdr.getVatValue().toString());
@@ -1011,6 +1016,7 @@ public class MaterialQuote extends BaseTransUI {
 		resetFields();
 		tfBasictotal.setReadOnly(true);
 		tfSubTotal.setReadOnly(true);
+		tfDutyTotal.setReadOnly(true);
 		tfSubTaxTotal.setReadOnly(true);
 		tfGrandtotal.setReadOnly(true);
 		tfVatValue.setReadOnly(true);
@@ -1144,6 +1150,7 @@ public class MaterialQuote extends BaseTransUI {
 				quoteHdr.setPackingValue(new BigDecimal(tfPackingValue.getValue()));
 			}
 			quoteHdr.setSubTotal(new BigDecimal(tfSubTotal.getValue()));
+			quoteHdr.setDutyTotal(new BigDecimal(tfDutyTotal.getValue()));
 			quoteHdr.setVatPrcnt(((new BigDecimal(tfVatPer.getValue()))));
 			if (tfVatValue.getValue() != null && tfVatValue.getValue().trim().length() > 0) {
 				quoteHdr.setVatValue((new BigDecimal(tfVatValue.getValue())));
@@ -1363,6 +1370,8 @@ public class MaterialQuote extends BaseTransUI {
 		tfSubTotal.setValue("0");
 		tfSubTaxTotal.setReadOnly(false);
 		tfSubTaxTotal.setValue("0");
+		tfDutyTotal.setReadOnly(false);
+		tfDutyTotal.setValue("0");
 		tfQuoteVersion.setReadOnly(false);
 		tfQuoteVersion.setValue("1");
 		tfQuoteVersion.setReadOnly(true);
@@ -1456,31 +1465,36 @@ public class MaterialQuote extends BaseTransUI {
 		tfPackingValue.setValue(packingvalue.toString());
 		tfPackingValue.setReadOnly(true);
 		BigDecimal subtotal = packingvalue.add(basictotal);
+		tfSubTotal.setReadOnly(false);
+		tfSubTotal.setValue(subtotal.toString());
+		tfSubTotal.setReadOnly(true);
+		BigDecimal dutytotal = new BigDecimal(tfDutyTotal.getValue());
 		BigDecimal edValue = gerPercentageValue(new BigDecimal(tfEDPer.getValue()), subtotal);
 		tfEDValue.setReadOnly(false);
 		tfEDValue.setValue(edValue.toString());
 		tfEDValue.setReadOnly(true);
-		subtotal = edValue.add(subtotal);
-		tfSubTotal.setReadOnly(false);
-		tfSubTotal.setValue(subtotal.toString());
-		tfSubTotal.setReadOnly(true);
+		BigDecimal hedValue = gerPercentageValue(new BigDecimal(tfHEDPer.getValue()), edValue);
+		tfHEDValue.setReadOnly(false);
+		tfHEDValue.setValue(hedValue.toString());
+		tfHEDValue.setReadOnly(true);
+		BigDecimal cessval = gerPercentageValue(new BigDecimal(tfCessPer.getValue()), edValue);
+		tfCessValue.setReadOnly(false);
+		tfCessValue.setValue(cessval.toString());
+		tfCessValue.setReadOnly(true);
+		dutytotal = cessval.add(hedValue).add(edValue);
+		subtotal = dutytotal.add(subtotal);
+		tfDutyTotal.setReadOnly(false);
+		tfDutyTotal.setValue(subtotal.toString());
+		tfDutyTotal.setReadOnly(true);
 		BigDecimal vatvalue = gerPercentageValue(new BigDecimal(tfVatPer.getValue()), subtotal);
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue(vatvalue.toString());
 		tfVatValue.setReadOnly(true);
-		BigDecimal hedValue = gerPercentageValue(new BigDecimal(tfHEDPer.getValue()), subtotal);
-		tfHEDValue.setReadOnly(false);
-		tfHEDValue.setValue(hedValue.toString());
-		tfHEDValue.setReadOnly(true);
-		BigDecimal cessval = gerPercentageValue(new BigDecimal(tfCessPer.getValue()), subtotal);
-		tfCessValue.setReadOnly(false);
-		tfCessValue.setValue(cessval.toString());
-		tfCessValue.setReadOnly(true);
 		BigDecimal cstval = gerPercentageValue(new BigDecimal(tfCstPer.getValue()), subtotal);
 		tfCstValue.setReadOnly(false);
 		tfCstValue.setValue(cstval.toString());
 		tfCstValue.setReadOnly(true);
-		BigDecimal csttotal = vatvalue.add(hedValue).add(cessval).add(cstval);
+		BigDecimal csttotal = vatvalue.add(cstval);
 		BigDecimal subtaxTotal = subtotal.add(csttotal);
 		tfSubTaxTotal.setReadOnly(false);
 		tfSubTaxTotal.setValue(subtaxTotal.toString());

@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="mmsenquiry" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
 	<property name="ireport.zoom" value="1.331000000000002"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="55"/>
+	<property name="ireport.y" value="192"/>
 	<style name="Crosstab Data Text" hAlign="Center"/>
 	<parameter name="ENQID" class="java.lang.Long">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
@@ -189,25 +189,18 @@ and hdr.enquiry_id =$P{ENQID}]]>
 				<reportElement uuid="76a02524-2015-4e7f-adf6-cfd3033089c2" x="0" y="-2" width="554" height="25"/>
 			</rectangle>
 			<staticText>
-				<reportElement uuid="e0721ddf-ea12-4f12-aa0c-9397c764f277" x="35" y="0" width="138" height="20"/>
+				<reportElement uuid="e0721ddf-ea12-4f12-aa0c-9397c764f277" x="35" y="0" width="153" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Item Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="d224f18b-5d68-4c4a-89f1-8857fc44690c" x="391" y="0" width="164" height="20"/>
+				<reportElement uuid="d224f18b-5d68-4c4a-89f1-8857fc44690c" x="279" y="0" width="255" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[Remarks]]></text>
-			</staticText>
-			<staticText>
-				<reportElement uuid="976f5332-5924-4a97-9dfb-fe1812ebb582" x="173" y="1" width="130" height="20"/>
-				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Specification]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="b305570d-e399-441b-b78e-5341803dfc71" x="0" y="0" width="32" height="20"/>
@@ -217,11 +210,11 @@ and hdr.enquiry_id =$P{ENQID}]]>
 				<text><![CDATA[S. No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="303" y="0" width="84" height="20"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
+				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="192" y="0" width="84" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Rate / Unit]]></text>
+				<text><![CDATA[Quantity]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -236,27 +229,24 @@ and hdr.enquiry_id =$P{ENQID}]]>
 				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="cb900cb3-64c0-4135-a97a-fb8104e2b022" x="35" y="1" width="138" height="20"/>
+				<reportElement uuid="cb900cb3-64c0-4135-a97a-fb8104e2b022" x="35" y="1" width="153" height="20"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{MATERAIL_NAME}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="fc70ce21-f1de-439e-b56c-9272374dccf9" x="303" y="1" width="84" height="20"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{ENQUIRY_QTY}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement uuid="31ff895d-ab25-4c86-8109-18d310c7f9ca" x="173" y="1" width="130" height="20"/>
+				<reportElement uuid="31ff895d-ab25-4c86-8109-18d310c7f9ca" x="279" y="0" width="255" height="20"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{REMARKS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="fc70ce21-f1de-439e-b56c-9272374dccf9" x="192" y="1" width="84" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ENQUIRY_QTY}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
 	<columnFooter>
 		<band height="146" splitType="Stretch">
-			<rectangle>
-				<reportElement uuid="3b4188b5-a73e-4405-9154-602089c7a408" x="0" y="1" width="554" height="144"/>
-			</rectangle>
 			<line>
 				<reportElement uuid="1ac04e8c-3ee1-4c12-9883-8f1d8385a4df" x="1" y="0" width="555" height="1"/>
 			</line>

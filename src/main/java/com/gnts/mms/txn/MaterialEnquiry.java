@@ -59,6 +59,7 @@ import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.MMSVendorDtlService;
 import com.gnts.mms.service.txn.MmsEnqDtlService;
 import com.gnts.mms.service.txn.MmsEnqHdrService;
+import com.gnts.saarc.util.SerialNumberGenerator;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -324,6 +325,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		lbl = new Label(" ");
 		hlMmsEnqHDR.addComponent(lbl);
 		hlMmsEnqHDR.addComponent(flMmsEnqHdr4);
+		tfEnqNo.setReadOnly(true);
 		hlMmsEnqHDR.setSpacing(true);
 		hlMmsEnqHDR.setMargin(true);
 		// Adding MmsEnqDtl components
@@ -393,10 +395,10 @@ public class MaterialEnquiry extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the MaterialEnquiry. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanMmsEnqHdrDM);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "branchName", "enquiryNo","enqRemark", "enquiryStatus",
-					"lastUpdateddt", "lastUpdatedby" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Enquiry No","Remarks","Status",
-					"Last Updated Date", "Last Updated By" });
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "enquiryId", "branchName", "enquiryNo", "enqRemark",
+					"enquiryStatus", "lastUpdateddt", "lastUpdatedby" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Branch Name", "Enquiry No", "Remarks",
+					"Status", "Last Updated Date", "Last Updated By" });
 			tblMstScrSrchRslt.setColumnAlignment("enquiryId", Align.RIGHT);
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 			tblMstScrSrchRslt.setPageLength(13);
@@ -609,6 +611,19 @@ public class MaterialEnquiry extends BaseTransUI {
 		lsMaterial.setRequired(true);
 		resetFields();
 		tfEnqNo.setReadOnly(false);
+		try {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO").get(0);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				tfEnqNo.setReadOnly(false);
+				tfEnqNo.setValue(SerialNumberGenerator.generateSNoEnqNo(companyid, branchId, moduleId, "MM_ENQRYNO"));
+				tfEnqNo.setReadOnly(true);
+			} else {
+				tfEnqNo.setReadOnly(false);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null);
 	}
 	
@@ -620,6 +635,9 @@ public class MaterialEnquiry extends BaseTransUI {
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
 		tblMmsEnqDtl.setVisible(true);
+		if (tfEnqNo.getValue() == null || tfEnqNo.getValue().trim().length() == 0) {
+			tfEnqNo.setReadOnly(false);
+		}
 		cbBranch.setRequired(true);
 		lsVendorName.setRequired(true);
 		resetFields();
@@ -654,6 +672,18 @@ public class MaterialEnquiry extends BaseTransUI {
 						+ "Throwing ValidationException. User data is > " + dfEnqDate.getValue());
 				errorFlag = true;
 			}
+		}
+		if ((tfEnqNo.getValue() == null) || tfEnqNo.getValue().trim().length() == 0) {
+			List<SlnoGenDM> slnoList = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO");
+			for (SlnoGenDM slnoObj : slnoList) {
+				if (slnoObj.getAutoGenYN().equals("N")) {
+					tfEnqNo.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_CODE));
+					errorFlag = true;
+				}
+			}
+		} else {
+			tfEnqNo.setComponentError(null);
+			errorFlag = false;
 		}
 		if (tblMmsEnqDtl.size() == 0) {
 			cbUom.setComponentError(new UserError(GERPErrorCodes.NULL_ENQUIRY_QTY));

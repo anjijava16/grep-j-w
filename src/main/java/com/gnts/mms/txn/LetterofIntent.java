@@ -103,7 +103,7 @@ public class LetterofIntent extends BaseTransUI {
 	private ComboBox cbQuotation, cbVendor, cbMatName, cbUom;
 	private TextArea taRemarks, tfDtlRemarks;
 	private TextField tfCstValue, tfSubTaxTotal, tfEDValue, tfHEDValue, tfCessValue, tfVatValue, tfBasictotal,
-			tfPackingValue, tfSubTotal, tfBasicValue;
+			tfPackingValue, tfSubTotal, tfDutyTotal, tfBasicValue;
 	private TextField tfFreightValue, tfOtherValue, tfGrandtotal, tfpackingPer, tfVatPer, tfEDPer, tfHEDPer, tfCessPer,
 			tfCstPer, tfFreightPer, tfOtherPer;
 	private Table tblLOIDetail;
@@ -200,7 +200,7 @@ public class LetterofIntent extends BaseTransUI {
 		});
 		cbUom = new ComboBox();
 		cbUom.setItemCaptionPropertyId("lookupname");
-		cbUom.setWidth("60");
+		cbUom.setWidth("70");
 		cbUom.setHeight("18");
 		cbUom.setReadOnly(true);
 		loadMaterialUOMList();
@@ -223,7 +223,6 @@ public class LetterofIntent extends BaseTransUI {
 		tfSubject = new GERPTextField("Subject");
 		tfUnitprice = new GERPTextField("Unit Price");
 		tfUnitprice.setWidth("150");
-	
 		tfDtlRemarks = new TextArea("Remarks");
 		tfDtlRemarks.setWidth("150px");
 		tfDtlRemarks.setHeight("50px");
@@ -236,12 +235,12 @@ public class LetterofIntent extends BaseTransUI {
 		loadVendorNameList();
 		// Expected Date field
 		taRemarks = new TextArea("Remarks");
-		taRemarks.setWidth("110px");
-		taRemarks.setHeight("50px");
+		taRemarks.setWidth("150");
+		taRemarks.setHeight("30");
 		taRemarks.setNullRepresentation("");
 		// Dtl Status ComboBox
 		cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		cbHdrStatus.setWidth("90px");
+		cbHdrStatus.setWidth("150");
 		// Indent Detail
 		// Material Name combobox
 		cbMatName = new ComboBox("Material Name");
@@ -269,41 +268,43 @@ public class LetterofIntent extends BaseTransUI {
 		tfpackingPer = new GERPNumberField();
 		tfpackingPer.setWidth("30");
 		tfPackingValue = new GERPNumberField();
-		tfPackingValue.setWidth("124");
+		tfPackingValue.setWidth("120");
 		tfEDPer = new GERPNumberField();
 		tfEDPer.setWidth("30");
 		tfEDValue = new GERPNumberField();
-		tfEDValue.setWidth("124");
+		tfEDValue.setWidth("120");
 		tfHEDPer = new GERPNumberField();
 		tfHEDPer.setWidth("30");
 		tfHEDValue = new GERPNumberField();
-		tfHEDValue.setWidth("124");
+		tfHEDValue.setWidth("120");
 		tfCessPer = new GERPNumberField();
 		tfCessPer.setWidth("30");
 		tfCessValue = new GERPNumberField();
-		tfCessValue.setWidth("124");
+		tfCessValue.setWidth("120");
 		tfCstPer = new GERPNumberField();
 		tfCstPer.setWidth("30");
 		tfCstValue = new GERPNumberField();
-		tfCstValue.setWidth("124");
+		tfCstValue.setWidth("120");
 		tfFreightPer = new GERPNumberField();
 		tfFreightPer.setWidth("30");
 		tfOtherPer = new GERPNumberField();
 		tfOtherPer.setWidth("30");
 		tfSubTotal = new GERPNumberField("Sub Total");
 		tfSubTotal.setWidth("150");
+		tfDutyTotal = new GERPNumberField("Duty Total");
+		tfDutyTotal.setWidth("150");
 		tfVatValue = new GERPNumberField();
-		tfVatValue.setWidth("124");
+		tfVatValue.setWidth("120");
 		tfVatPer = new GERPNumberField();
 		tfVatPer.setWidth("30");
 		tfCstValue = new GERPNumberField();
-		tfCstValue.setWidth("124");
+		tfCstValue.setWidth("120");
 		tfSubTaxTotal = new GERPNumberField("Sub Tax Total");
 		tfSubTaxTotal.setWidth("150");
 		tfFreightValue = new GERPNumberField();
-		tfFreightValue.setWidth("124");
+		tfFreightValue.setWidth("120");
 		tfOtherValue = new GERPNumberField();
-		tfOtherValue.setWidth("124");
+		tfOtherValue.setWidth("120");
 		tfGrandtotal = new GERPNumberField("Grand Total");
 		tfGrandtotal.setWidth("150");
 		tfBasicValue = new TextField("Basic value");
@@ -355,42 +356,39 @@ public class LetterofIntent extends BaseTransUI {
 		flIndentCol3.setMargin(true);
 		flIndentCol1.addComponent(tfSubject);
 		flIndentCol2.addComponent(taRemarks);
-		taRemarks.setWidth("155");
 		flIndentCol2.addComponent(tfBasictotal);
-		tfBasictotal.setWidth("155");
 		HorizontalLayout pv = new HorizontalLayout();
 		pv.addComponent(tfpackingPer);
 		pv.addComponent(tfPackingValue);
 		pv.setCaption("Packing");
 		flIndentCol2.addComponent(pv);
 		flIndentCol2.setComponentAlignment(pv, Alignment.TOP_LEFT);
+		flIndentCol2.addComponent(tfSubTotal);
 		HorizontalLayout ed = new HorizontalLayout();
 		ed.addComponent(tfEDPer);
 		ed.addComponent(tfEDValue);
 		ed.setCaption("ED");
 		flIndentCol2.addComponent(ed);
 		flIndentCol2.setComponentAlignment(ed, Alignment.TOP_LEFT);
-		flIndentCol3.addComponent(tfSubTotal);
-		tfSubTotal.setWidth("155");
-		HorizontalLayout vp = new HorizontalLayout();
-		vp.addComponent(tfVatPer);
-		vp.addComponent(tfVatValue);
-		vp.setCaption("VAT");
-		flIndentCol3.addComponent(vp);
-		flIndentCol3.setComponentAlignment(vp, Alignment.TOP_LEFT);
 		HorizontalLayout hed = new HorizontalLayout();
 		hed.addComponent(tfHEDPer);
 		hed.addComponent(tfHEDValue);
 		hed.setCaption("HED");
 		flIndentCol3.addComponent(hed);
 		flIndentCol3.setComponentAlignment(hed, Alignment.TOP_LEFT);
-		flIndentCol3.addComponent(hed);
 		HorizontalLayout cess = new HorizontalLayout();
 		cess.addComponent(tfCessPer);
 		cess.addComponent(tfCessValue);
 		cess.setCaption("CESS");
 		flIndentCol3.addComponent(cess);
 		flIndentCol3.setComponentAlignment(cess, Alignment.TOP_LEFT);
+		flIndentCol3.addComponent(tfDutyTotal);
+		HorizontalLayout vp = new HorizontalLayout();
+		vp.addComponent(tfVatPer);
+		vp.addComponent(tfVatValue);
+		vp.setCaption("VAT");
+		flIndentCol3.addComponent(vp);
+		flIndentCol3.setComponentAlignment(vp, Alignment.TOP_LEFT);
 		HorizontalLayout cst = new HorizontalLayout();
 		cst.addComponent(tfCstPer);
 		cst.addComponent(tfCstValue);
@@ -398,7 +396,7 @@ public class LetterofIntent extends BaseTransUI {
 		flIndentCol3.addComponent(cst);
 		flIndentCol3.setComponentAlignment(cst, Alignment.TOP_LEFT);
 		flIndentCol4.addComponent(tfSubTaxTotal);
-		tfSubTaxTotal.setWidth("155");
+		tfSubTaxTotal.setWidth("150");
 		HorizontalLayout frgt = new HorizontalLayout();
 		frgt.addComponent(tfFreightPer);
 		frgt.addComponent(tfFreightValue);
@@ -412,9 +410,7 @@ public class LetterofIntent extends BaseTransUI {
 		flIndentCol4.addComponent(other);
 		flIndentCol4.setComponentAlignment(other, Alignment.TOP_LEFT);
 		flIndentCol4.addComponent(tfGrandtotal);
-		tfGrandtotal.setWidth("155");
 		flIndentCol4.addComponent(cbHdrStatus);
-		cbHdrStatus.setWidth("155");
 		HorizontalLayout hlTax = new HorizontalLayout();
 		hlTax.addComponent(flIndentCol1);
 		hlTax.addComponent(flIndentCol2);
@@ -580,6 +576,8 @@ public class LetterofIntent extends BaseTransUI {
 		tfVatValue.setValue("0");
 		tfSubTotal.setReadOnly(false);
 		tfSubTotal.setValue("0");
+		tfDutyTotal.setReadOnly(false);
+		tfDutyTotal.setValue("0");
 		tfSubTaxTotal.setReadOnly(false);
 		tfSubTaxTotal.setValue("0");
 		tfPackingValue.setReadOnly(false);
@@ -623,6 +621,9 @@ public class LetterofIntent extends BaseTransUI {
 			tfSubTotal.setReadOnly(false);
 			tfSubTotal.setValue(loiHeaderDM.getSubTotal().toString());
 			tfSubTotal.setReadOnly(true);
+			tfDutyTotal.setReadOnly(false);
+			tfDutyTotal.setValue(loiHeaderDM.getDutyTotal().toString());
+			tfDutyTotal.setReadOnly(true);
 			tfEDPer.setReadOnly(false);
 			tfEDPer.setValue(loiHeaderDM.getEdPrcnt().toString());
 			tfEDPer.setReadOnly(true);
@@ -775,12 +776,8 @@ public class LetterofIntent extends BaseTransUI {
 		// reset the input controls to default value
 		try {
 			tfLOINumber.setReadOnly(false);
-			// SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MMS_LOI").get(0);
-			// if (slnoObj.getAutoGenYN().equals("Y")) {
-			tfLOINumber.setReadOnly(false);
 			tfLOINumber.setValue(SerialNumberGenerator.generateSNoLOI(companyid, branchId, moduleId, "MM_NPONO"));
 			tfLOINumber.setReadOnly(true);
-			// }
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -853,6 +850,7 @@ public class LetterofIntent extends BaseTransUI {
 		cbUom.setValue(null);
 		cbUom.setReadOnly(true);
 		cbUom.setComponentError(null);
+		tfUnitprice.setReadOnly(false);
 		tfUnitprice.setValue("0");
 		tfBasicValue.setValue("0");
 		cbDtlStatus.setValue(cbDtlStatus.getItemIds().iterator().next());
@@ -945,6 +943,7 @@ public class LetterofIntent extends BaseTransUI {
 			loiHeaderDM.setPackingPrcnt((Long.valueOf(tfpackingPer.getValue())));
 			loiHeaderDM.setPackingVL(new BigDecimal(tfPackingValue.getValue()));
 			loiHeaderDM.setSubTotal(new BigDecimal(tfSubTotal.getValue()));
+			loiHeaderDM.setDutyTotal(new BigDecimal(tfDutyTotal.getValue()));
 			loiHeaderDM.setVatPrcnt(new BigDecimal(tfVatPer.getValue()));
 			loiHeaderDM.setVatValue(new BigDecimal(tfVatValue.getValue()));
 			loiHeaderDM.setCstPrcnt((new BigDecimal(tfCstPer.getValue())));
@@ -1117,31 +1116,36 @@ public class LetterofIntent extends BaseTransUI {
 		tfPackingValue.setValue(packingvalue.toString());
 		tfPackingValue.setReadOnly(true);
 		BigDecimal subtotal = packingvalue.add(basictotal);
+		tfSubTotal.setReadOnly(false);
+		tfSubTotal.setValue(subtotal.toString());
+		tfSubTotal.setReadOnly(true);
+		BigDecimal dutytotal = new BigDecimal(tfDutyTotal.getValue());
 		BigDecimal edValue = getPercentageValue(new BigDecimal(tfEDPer.getValue()), subtotal);
 		tfEDValue.setReadOnly(false);
 		tfEDValue.setValue(edValue.toString());
 		tfEDValue.setReadOnly(true);
-		subtotal = edValue.add(subtotal);
-		tfSubTotal.setReadOnly(false);
-		tfSubTotal.setValue(subtotal.toString());
-		tfSubTotal.setReadOnly(true);
+		BigDecimal hedValue = getPercentageValue(new BigDecimal(tfHEDPer.getValue()), edValue);
+		tfHEDValue.setReadOnly(false);
+		tfHEDValue.setValue(hedValue.toString());
+		tfHEDValue.setReadOnly(true);
+		BigDecimal cessval = getPercentageValue(new BigDecimal(tfCessPer.getValue()), edValue);
+		tfCessValue.setReadOnly(false);
+		tfCessValue.setValue(cessval.toString());
+		tfCessValue.setReadOnly(true);
+		dutytotal = cessval.add(hedValue).add(edValue);
+		subtotal = dutytotal.add(subtotal);
+		tfDutyTotal.setReadOnly(false);
+		tfDutyTotal.setValue(subtotal.toString());
+		tfDutyTotal.setReadOnly(true);
 		BigDecimal vatvalue = getPercentageValue(new BigDecimal(tfVatPer.getValue()), subtotal);
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue(vatvalue.toString());
 		tfVatValue.setReadOnly(true);
-		BigDecimal hedValue = getPercentageValue(new BigDecimal(tfHEDPer.getValue()), subtotal);
-		tfHEDValue.setReadOnly(false);
-		tfHEDValue.setValue(hedValue.toString());
-		tfHEDValue.setReadOnly(true);
-		BigDecimal cessval = getPercentageValue(new BigDecimal(tfCessPer.getValue()), subtotal);
-		tfCessValue.setReadOnly(false);
-		tfCessValue.setValue(cessval.toString());
-		tfCessValue.setReadOnly(true);
 		BigDecimal cstval = getPercentageValue(new BigDecimal(tfCstPer.getValue()), subtotal);
 		tfCstValue.setReadOnly(false);
 		tfCstValue.setValue(cstval.toString());
 		tfCstValue.setReadOnly(true);
-		BigDecimal csttotal = vatvalue.add(hedValue).add(cessval).add(cstval);
+		BigDecimal csttotal = vatvalue.add(cstval);
 		BigDecimal subtaxTotal = subtotal.add(csttotal);
 		tfSubTaxTotal.setReadOnly(false);
 		tfSubTaxTotal.setValue(subtaxTotal.toString());
@@ -1193,6 +1197,9 @@ public class LetterofIntent extends BaseTransUI {
 			tfSubTotal.setReadOnly(false);
 			tfSubTotal.setValue(((MmsQuoteHdrDM) cbQuotation.getValue()).getSubTotal().toString());
 			tfSubTotal.setReadOnly(true);
+			tfDutyTotal.setReadOnly(false);
+			tfDutyTotal.setValue(((MmsQuoteHdrDM) cbQuotation.getValue()).getDutyTotal().toString());
+			tfDutyTotal.setReadOnly(true);
 			tfVatPer.setReadOnly(false);
 			tfVatPer.setValue(((MmsQuoteHdrDM) cbQuotation.getValue()).getVatPrcnt().toString());
 			tfVatPer.setReadOnly(true);

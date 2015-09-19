@@ -299,6 +299,7 @@ public class DieRequest extends BaseTransUI {
 		tfDCRefNumber = new GERPTextField("Report Number");
 		dfDCRefDate = new GERPPopupDateField("Date");
 		cbDCDescription = new GERPComboBox("Description");
+		cbDCDescription.setWidth("200");
 		loadDCDescriptions();
 		cbDCResult = new GERPComboBox("Result");
 		loadDCResults();

@@ -125,7 +125,7 @@ public class WorkOrderPlan extends BaseTransUI {
 	private CheckBox chIsRequired;
 	private TextField tfProductName, tfWrkOdrPlnQty;
 	private Table tblWrkOrdPlnDtl;
-	private Button btnsaveWrkOdrPlDtl;
+	private Button btnSaveWrkOdrPlDtl;
 	// User Input Components for WO.Plan Material
 	private Table tblWOPlanMaterials;
 	private TextField tfRequiredQty;
@@ -133,8 +133,8 @@ public class WorkOrderPlan extends BaseTransUI {
 	private BeanItemContainer<WorkOrderPlanHdrDM> beanWrkOdrPlnHdr = null;
 	private BeanItemContainer<WorkOrderPlanProdDtlDM> beanWrkOdrPlnPrdDtl = null;
 	private BeanItemContainer<WorkOrderPlanMtrlDtlDM> beanWrkOdrPlnMtrlDtl = null;
-	private List<WorkOrderPlanMtrlDtlDM> workOdrPlnMtrlDtlList = null;
-	private List<WorkOrderPlanProdDtlDM> workOdrPlnPrdDtlList;
+	private List<WorkOrderPlanMtrlDtlDM> listWorkOdrPlnMtrlDtl = null;
+	private List<WorkOrderPlanProdDtlDM> listWorkOdrPlnPrdDtl;
 	// local variables declaration
 	private String username;
 	private Long companyid, employeeId, moduleId, branchId, appScreenId, roleId;
@@ -276,6 +276,8 @@ public class WorkOrderPlan extends BaseTransUI {
 		tfWrkOdrPlnQty = new GERPTextField("WO.Plan.Qty");
 		tfWrkOdrPlnQty.setWidth("110");
 		tfWrkOdrPlnQty.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
 			@Override
 			public void blur(BlurEvent event) {
 				loadSrchWrkOdrPlnMtrlDtlRslt(false);
@@ -308,9 +310,9 @@ public class WorkOrderPlan extends BaseTransUI {
 		tblWOPlanMaterials = new GERPTable();
 		tblWOPlanMaterials.setPageLength(15);
 		tblWOPlanMaterials.setWidth("100%");
-		btnsaveWrkOdrPlDtl = new GERPButton("Add", "add", this);
-		btnsaveWrkOdrPlDtl.setVisible(true);
-		btnsaveWrkOdrPlDtl.addClickListener(new ClickListener() {
+		btnSaveWrkOdrPlDtl = new GERPButton("Add", "add", this);
+		btnSaveWrkOdrPlDtl.setVisible(true);
+		btnSaveWrkOdrPlDtl.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
 			
@@ -328,14 +330,14 @@ public class WorkOrderPlan extends BaseTransUI {
 			public void itemClick(ItemClickEvent event) {
 				if (tblWrkOrdPlnDtl.isSelected(event.getItemId())) {
 					tblWrkOrdPlnDtl.setImmediate(true);
-					btnsaveWrkOdrPlDtl.setCaption("Add");
-					btnsaveWrkOdrPlDtl.setStyleName("savebt");
+					btnSaveWrkOdrPlDtl.setCaption("Add");
+					btnSaveWrkOdrPlDtl.setStyleName("savebt");
 					wrkOdrPlnDtlresetFields();
 					btnDtleWrkDtl.setEnabled(false);
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
-					btnsaveWrkOdrPlDtl.setCaption("Update");
-					btnsaveWrkOdrPlDtl.setStyleName("savebt");
+					btnSaveWrkOdrPlDtl.setCaption("Update");
+					btnSaveWrkOdrPlDtl.setStyleName("savebt");
 					editWorkOrderPlnDtlDetails();
 					btnDtleWrkDtl.setEnabled(true);
 				}
@@ -439,7 +441,7 @@ public class WorkOrderPlan extends BaseTransUI {
 		flOdrDtlColumn1.addComponent(tfProductName);
 		flOdrDtlColumn2.addComponent(tfWrkOdrPlnQty);
 		flOdrDtlColumn2.addComponent(cbPlanDtlStatus);
-		flOdrDtlColumn3.addComponent(btnsaveWrkOdrPlDtl);
+		flOdrDtlColumn3.addComponent(btnSaveWrkOdrPlDtl);
 		flOdrDtlColumn3.addComponent(btnDtleWrkDtl);
 		// adding form layouts into user input layouts
 		hlWrkOdrHdr = new HorizontalLayout();
@@ -507,9 +509,9 @@ public class WorkOrderPlan extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid);
-			int recorddtlCnt = workOdrPlnPrdDtlList.size();
+			int recorddtlCnt = listWorkOdrPlnPrdDtl.size();
 			beanWrkOdrPlnPrdDtl = new BeanItemContainer<WorkOrderPlanProdDtlDM>(WorkOrderPlanProdDtlDM.class);
-			beanWrkOdrPlnPrdDtl.addAll(workOdrPlnPrdDtlList);
+			beanWrkOdrPlnPrdDtl.addAll(listWorkOdrPlnPrdDtl);
 			tblWrkOrdPlnDtl.setContainerDataSource(beanWrkOdrPlnPrdDtl);
 			tblWrkOrdPlnDtl.setVisibleColumns(new Object[] { "prodName", "productName", "wrkOrdPlnQty",
 					"wrkOrdPlnStatus" });
@@ -538,9 +540,7 @@ public class WorkOrderPlan extends BaseTransUI {
 				for (ProductBomDtlDM obj : wrkOrdPlnMtrlList) {
 					WorkOrderPlanMtrlDtlDM list = new WorkOrderPlanMtrlDtlDM();
 					Long totalReqQty = 0L;
-					Long reqQtty = 0L;
 					if (tfWrkOdrPlnQty.getValue() != "") {
-						reqQtty = Long.valueOf(tfWrkOdrPlnQty.getValue());
 						totalReqQty = Long.valueOf(tfWrkOdrPlnQty.getValue()) * obj.getMaterialQty();
 					}
 					list.setMtrlId(obj.getMaterialId());
@@ -556,12 +556,12 @@ public class WorkOrderPlan extends BaseTransUI {
 				beanWrkOdrPlnMtrlDtl.addAll(workOrdMtrllList);
 				tblWOPlanMaterials.setContainerDataSource(beanWrkOdrPlnMtrlDtl);
 			} else {
-				workOdrPlnMtrlDtlList = serviceWorkOrderPlanMtrlDtl.getWrkOrdPlnMtrlDtlDetails(null, null, woPlnHdr,
+				listWorkOdrPlnMtrlDtl = serviceWorkOrderPlanMtrlDtl.getWrkOrdPlnMtrlDtlDetails(null, null, woPlnHdr,
 						null);
-				recordCntmrl = workOdrPlnMtrlDtlList.size();
+				recordCntmrl = listWorkOdrPlnMtrlDtl.size();
 				beanWrkOdrPlnMtrlDtl = new BeanItemContainer<WorkOrderPlanMtrlDtlDM>(WorkOrderPlanMtrlDtlDM.class);
-				beanWrkOdrPlnMtrlDtl.addAll(workOdrPlnMtrlDtlList);
-				for (WorkOrderPlanMtrlDtlDM workOrderPlanMtrlDtlDM : workOdrPlnMtrlDtlList) {
+				beanWrkOdrPlnMtrlDtl.addAll(listWorkOdrPlnMtrlDtl);
+				for (WorkOrderPlanMtrlDtlDM workOrderPlanMtrlDtlDM : listWorkOdrPlnMtrlDtl) {
 					if (workOrderPlanMtrlDtlDM.getWoMtrlStatus().equals("Active")) {
 						workOrderPlanMtrlDtlDM.setWoMtrlStatus("true");
 					} else {
@@ -637,7 +637,7 @@ public class WorkOrderPlan extends BaseTransUI {
 					taPlanRemrks.setValue(workOrderPlanHdr.getPlanRemarks());
 				}
 				cbPlanStatus.setValue(workOrderPlanHdr.getWorkStatus());
-				workOdrPlnPrdDtlList = serviceWorkOrderPlanProdDtl.getWorkOrderPlanDtlList(null, woPlnHdr, "Active");
+				listWorkOdrPlnPrdDtl = serviceWorkOrderPlanProdDtl.getWorkOrderPlanDtlList(null, woPlnHdr, "Active");
 			}
 			comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
 			comment.loadsrch(true, null, companyid, null, null, null, Long.valueOf(woPlnHdr));
@@ -762,7 +762,7 @@ public class WorkOrderPlan extends BaseTransUI {
 		catch (Exception e) {
 			logger.info(e.getMessage());
 		}
-		btnsaveWrkOdrPlDtl.setCaption("Add");
+		btnSaveWrkOdrPlDtl.setCaption("Add");
 		tblWrkOrdPlnDtl.setVisible(true);
 		tblWOPlanMaterials.setVisible(true);
 		tblMstScrSrchRslt.setVisible(false);
@@ -771,7 +771,7 @@ public class WorkOrderPlan extends BaseTransUI {
 		loadSrchWrkOdrPlnDtlRslt();
 		comment = new Comments(vlTableForm, companyid, null, null, null, null, commentby);
 		hlDocumentLayout.removeAllComponents();
-		workOdrPlnMtrlDtlList = new ArrayList<WorkOrderPlanMtrlDtlDM>();
+		listWorkOdrPlnMtrlDtl = new ArrayList<WorkOrderPlanMtrlDtlDM>();
 		tblWOPlanMaterials.removeAllItems();
 	}
 	
@@ -960,8 +960,8 @@ public class WorkOrderPlan extends BaseTransUI {
 		cbPlanStatus.setValue(null);
 		cbPlanStatus.setComponentError(null);
 		cbPlanStatus.setRequired(false);
-		workOdrPlnPrdDtlList = new ArrayList<WorkOrderPlanProdDtlDM>();
-		workOdrPlnMtrlDtlList = new ArrayList<WorkOrderPlanMtrlDtlDM>();
+		listWorkOdrPlnPrdDtl = new ArrayList<WorkOrderPlanProdDtlDM>();
+		listWorkOdrPlnMtrlDtl = new ArrayList<WorkOrderPlanMtrlDtlDM>();
 		tblWOPlanMaterials.removeAllItems();
 		tblWrkOrdPlnDtl.removeAllItems();
 		cbEnquiryNumber.setValue(null);
@@ -995,7 +995,7 @@ public class WorkOrderPlan extends BaseTransUI {
 			WorkOrderPlanProdDtlDM wrkOrdplnPrdDtl = new WorkOrderPlanProdDtlDM();
 			if (tblWrkOrdPlnDtl.getValue() != null) {
 				wrkOrdplnPrdDtl = beanWrkOdrPlnPrdDtl.getItem(tblWrkOrdPlnDtl.getValue()).getBean();
-				workOdrPlnPrdDtlList.remove(wrkOrdplnPrdDtl);
+				listWorkOdrPlnPrdDtl.remove(wrkOrdplnPrdDtl);
 			}
 			wrkOrdplnPrdDtl.setProductId(((WorkOrderDtlDM) cbProductName.getValue()).getProdId());
 			wrkOrdplnPrdDtl.setProductName(tfProductName.getValue());
@@ -1004,10 +1004,10 @@ public class WorkOrderPlan extends BaseTransUI {
 			wrkOrdplnPrdDtl.setWrkOrdPlnStatus((String) cbPlanDtlStatus.getValue());
 			wrkOrdplnPrdDtl.setLastUpdatedDt(DateUtils.getcurrentdate());
 			wrkOrdplnPrdDtl.setLastUpdatedBy(username);
-			workOdrPlnPrdDtlList.add(wrkOrdplnPrdDtl);
+			listWorkOdrPlnPrdDtl.add(wrkOrdplnPrdDtl);
 			wrkOdrPlnDtlresetFields();
 			loadSrchWrkOdrPlnDtlRslt();
-			btnsaveWrkOdrPlDtl.setCaption("Add");
+			btnSaveWrkOdrPlDtl.setCaption("Add");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1020,7 +1020,7 @@ public class WorkOrderPlan extends BaseTransUI {
 			WorkOrderPlanProdDtlDM workOrderPlanProdDtlDM = new WorkOrderPlanProdDtlDM();
 			if (tblWrkOrdPlnDtl.getValue() != null) {
 				workOrderPlanProdDtlDM = beanWrkOdrPlnPrdDtl.getItem(tblWrkOrdPlnDtl.getValue()).getBean();
-				workOdrPlnPrdDtlList.remove(workOrderPlanProdDtlDM);
+				listWorkOdrPlnPrdDtl.remove(workOrderPlanProdDtlDM);
 				wrkOdrPlnDtlresetFields();
 				tblWrkOrdPlnDtl.setValue("");
 				loadSrchWrkOdrPlnDtlRslt();

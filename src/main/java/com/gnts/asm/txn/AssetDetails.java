@@ -363,11 +363,9 @@ public class AssetDetails extends BaseTransUI {
 		vlUserInput.addComponent(tabSheet);
 		vlUserInput.setWidth("1180");
 		hlUserInputLayout.addComponent(vlUserInput);
-		hlUserInputLayout.setSizeFull();
-		hlUserInputLayout.setWidth("100%");
+		hlUserInputLayout.setWidth("98%");
 		hlUserInputLayout.setSizeUndefined();
 		hlUserInputLayout.setSpacing(true);
-		hlUserInputLayout.setMargin(true);
 		// build search layout
 	}
 	

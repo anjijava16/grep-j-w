@@ -59,7 +59,11 @@ import com.gnts.mms.domain.txn.DcHdrDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.DCDtlService;
 import com.gnts.mms.service.txn.DcHdrService;
+import com.gnts.sms.domain.txn.ProductLedgerDM;
+import com.gnts.sms.domain.txn.ProductStockDM;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
+import com.gnts.sms.service.txn.ProductLedgerService;
+import com.gnts.sms.service.txn.ProductStockService;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -105,6 +109,9 @@ public class DC extends BaseTransUI {
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private ClientContactsService serviceClntContact = (ClientContactsService) SpringContextHelper
 			.getBean("clientContact");
+	private ProductLedgerService serviceProdLedger = (ProductLedgerService) SpringContextHelper
+			.getBean("productledger");
+	private ProductStockService serviceProdStock = (ProductStockService) SpringContextHelper.getBean("productstock");
 	private List<DCDtlDM> listDCDetails = null;
 	// form layout for input controls
 	private FormLayout flDCCol1, flDCCol2, flDCCol3, flColumn4, flDCIssueDtlCol1, flDCIssueDtlCol2, flDCIssueDtlCol3,
@@ -136,7 +143,7 @@ public class DC extends BaseTransUI {
 	// local variables declaration
 	private String pkDCId;
 	private Long dcHdrId;
-	private Long companyid, moduleId, branchID;
+	private Long companyid, moduleId, branchId;
 	private Long issueId, employeeId;
 	private int recordCnt = 0;
 	private int recordCntDtl = 0;
@@ -154,7 +161,7 @@ public class DC extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		employeeId = (Long) UI.getCurrent().getSession().getAttribute("employeeId");
 		moduleId = 9L;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside DC() constructor");
@@ -259,7 +266,6 @@ public class DC extends BaseTransUI {
 						cbEnquiry.setRequired(true);
 						cbGoodsType.removeAllItems();
 						cbGoodsType.addItem("Product");
-
 					} else if (cbDCType.getValue().equals("Store")) {
 						cbVendor.setValue(cbVendor.getValue());
 						cbClients.setEnabled(false);
@@ -546,10 +552,10 @@ public class DC extends BaseTransUI {
 			beanDcHdrDM.addAll(dcHdrList);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Got the DC. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanDcHdrDM);
-			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "dcNo", "dcType", "dcTypeRNR",
-					"techPerson", "commPerson", "dcStatus" });
-			tblMstScrSrchRslt.setColumnHeaders(new String[] { "DC No", "Department", "DC Type",
-					"Technical Person", "Commercial Person", "Status" });
+			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "dcNo", "dcType", "dcTypeRNR", "techPerson",
+					"commPerson", "dcStatus" });
+			tblMstScrSrchRslt.setColumnHeaders(new String[] { "DC No", "Department", "DC Type", "Technical Person",
+					"Commercial Person", "Status" });
 			tblMstScrSrchRslt.setColumnAlignment("dcId", Align.RIGHT);
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedby", "No.of Records : " + recordCnt);
 		}
@@ -764,7 +770,7 @@ public class DC extends BaseTransUI {
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		tblDCDetails.setVisible(true);
 		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MM_DCNO").get(0);
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_DCNO").get(0);
 			tfDcNo.setReadOnly(false);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				tfDcNo.setValue(slnoObj.getKeyDesc());
@@ -981,7 +987,7 @@ public class DC extends BaseTransUI {
 			}
 			dcHdrDM.setDcNo(tfDcNo.getValue());
 			dcHdrDM.setCompanyId(companyid);
-			dcHdrDM.setBranchId(branchID);
+			dcHdrDM.setBranchId(branchId);
 			if (cbwindTechPers.getValue() != null) {
 				dcHdrDM.setTechPerson(cbwindTechPers.getValue().toString());
 			}
@@ -1017,12 +1023,93 @@ public class DC extends BaseTransUI {
 			for (DCDtlDM saveDtl : (Collection<DCDtlDM>) colPlanDtls) {
 				saveDtl.setDcId(dcHdrDM.getDcId());
 				serviceDCDtlHdr.saveOrUpdate(saveDtl);
+				try {
+					if (cbGoodsType.getValue() != null && cbGoodsType.getValue().equals("Product")) {
+						ProductLedgerDM productLedgerDM = null;
+						try {
+							productLedgerDM = serviceProdLedger.getProductLedgerList(saveDtl.getProductId(), "New",
+									null, branchId, "Y", "F").get(0);
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+						if (productLedgerDM == null) {
+							ProductLedgerDM ledgerDM = new ProductLedgerDM();
+							ledgerDM.setProductledgeDate(new Date());
+							ledgerDM.setCompanyId(companyid);
+							ledgerDM.setBranchId(branchId);
+							ledgerDM.setProductId(saveDtl.getProductId());
+							ledgerDM.setStockType("New");
+							ledgerDM.setOpenQty(0L);
+							ledgerDM.setInoutFlag("O");
+							ledgerDM.setInoutFQty(saveDtl.getDcQty());
+							ledgerDM.setCloseQty(ledgerDM.getOpenQty() - saveDtl.getDcQty());
+							ledgerDM.setReferenceNo(dcHdrDM.getDcNo());
+							ledgerDM.setReferenceDate(dcHdrDM.getDcDate1());
+							ledgerDM.setIsLatest("Y");
+							ledgerDM.setReferenceRemark(dcHdrDM.getRemarks());
+							ledgerDM.setLastUpdatedby(username);
+							ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
+							serviceProdLedger.saveorupdateLedggerdetails(ledgerDM);
+						} else {
+							ProductLedgerDM ledgerDM = new ProductLedgerDM();
+							ledgerDM.setProductledgeDate(new Date());
+							ledgerDM.setCompanyId(companyid);
+							ledgerDM.setBranchId(branchId);
+							ledgerDM.setProductId(saveDtl.getProductId());
+							ledgerDM.setStockType("New");
+							ledgerDM.setOpenQty(productLedgerDM.getCloseQty());
+							ledgerDM.setInoutFlag("O");
+							ledgerDM.setInoutFQty(saveDtl.getDcQty());
+							ledgerDM.setCloseQty(ledgerDM.getOpenQty() - saveDtl.getDcQty());
+							ledgerDM.setReferenceNo(dcHdrDM.getDcNo());
+							ledgerDM.setReferenceDate(dcHdrDM.getDcDate1());
+							ledgerDM.setIsLatest("Y");
+							ledgerDM.setReferenceRemark(dcHdrDM.getRemarks());
+							ledgerDM.setLastUpdatedby(username);
+							ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
+							serviceProdLedger.saveorupdateLedggerdetails(ledgerDM);
+							productLedgerDM.setIsLatest("N");
+							serviceProdLedger.saveorupdateLedggerdetails(productLedgerDM);
+						}
+						ProductStockDM productStockDM = null;
+						try {
+							productStockDM = serviceProdStock.getProductStockList(saveDtl.getProductId(), "New", null,
+									branchId, "F").get(0);
+						}
+						catch (Exception e) {
+						}
+						if (productStockDM == null) {
+							ProductStockDM productStockDM1 = new ProductStockDM();
+							productStockDM1.setCompanyId(companyid);
+							productStockDM1.setBranchId(branchId);
+							productStockDM1.setProductId(saveDtl.getProductId());
+							productStockDM1.setStockType("New");
+							productStockDM1.setCurrentStock(0L - saveDtl.getDcQty());
+							productStockDM1.setParkedStock(0L);
+							productStockDM1.setEffectiveStock(0L - saveDtl.getDcQty());
+							productStockDM1.setLastUpdatedby(username);
+							productStockDM1.setLastUpdateddt(DateUtils.getcurrentdate());
+							serviceProdStock.saveorupdateproductstockdetails(productStockDM1);
+						} else {
+							productStockDM.setCurrentStock(productStockDM.getCurrentStock() - saveDtl.getDcQty());
+							productStockDM.setEffectiveStock(productStockDM.getEffectiveStock() - saveDtl.getDcQty());
+							productStockDM.setLastUpdatedby(username);
+							productStockDM.setLastUpdateddt(DateUtils.getcurrentdate());
+							serviceProdStock.saveorupdateproductstockdetails(productStockDM);
+						}
+					}
+				}
+				catch (Exception e) {
+					logger.info(e.getMessage());
+				}
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
 				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "MM_DCNO").get(0);
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_DCNO").get(
+							0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "MM_DCNO");
+						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_DCNO");
 					}
 				}
 				catch (Exception e) {

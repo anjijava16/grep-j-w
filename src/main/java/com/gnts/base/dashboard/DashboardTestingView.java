@@ -41,10 +41,10 @@ public class DashboardTestingView implements ClickListener {
 	private Button btnOthers = new Button("0 Nos.", this);
 	private Table tblMaterialStock = new Table();
 	private Table tblMaterialInward = new Table();
-	private MaterialStockService servicematerialstock = (MaterialStockService) SpringContextHelper
+	private MaterialStockService serviceMatStock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
-	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
+	private MaterialLedgerService serviceMatLedger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
 	private Logger logger = Logger.getLogger(DashboardTestingView.class);
 	private Long companyId;
 	
@@ -94,7 +94,7 @@ public class DashboardTestingView implements ClickListener {
 			tblMaterialStock.removeAllItems();
 			BeanItemContainer<MaterialStockDM> beanmaterialstock = new BeanItemContainer<MaterialStockDM>(
 					MaterialStockDM.class);
-			beanmaterialstock.addAll(servicematerialstock.getMaterialStockList(null, companyId, null, null, null, null,
+			beanmaterialstock.addAll(serviceMatStock.getMaterialStockList(null, companyId, null, null, null, null,
 					"F"));
 			tblMaterialStock.setContainerDataSource(beanmaterialstock);
 			tblMaterialStock.setVisibleColumns(new Object[] { "materialName", "stockType", "currentStock",
@@ -145,7 +145,7 @@ public class DashboardTestingView implements ClickListener {
 	private void loadMaterialInwardDetails() {
 		try {
 			tblMaterialInward.removeAllItems();
-			List<MaterialLedgerDM> materiallist = serviceledger.getMaterialLedgerList(null, null, null, null, null,
+			List<MaterialLedgerDM> materiallist = serviceMatLedger.getMaterialLedgerList(null, null, null, null, null,
 					"I", null, "F");
 			BeanItemContainer<MaterialLedgerDM> beanmatrlledger = new BeanItemContainer<MaterialLedgerDM>(
 					MaterialLedgerDM.class);

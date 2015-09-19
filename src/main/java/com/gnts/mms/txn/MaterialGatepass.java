@@ -90,7 +90,6 @@ public class MaterialGatepass extends BaseTransUI {
 	private GatepassHdrService serviceGatepass = (GatepassHdrService) SpringContextHelper.getBean("gatepasshdr");
 	private GatepassDtlService servicegatepassdtl = (GatepassDtlService) SpringContextHelper.getBean("gatepassdtl");
 	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
-	private DcHdrService servicedc = (DcHdrService) SpringContextHelper.getBean("DCHdr");
 	private DcHdrService serviceDCHdr = (DcHdrService) SpringContextHelper.getBean("DCHdr");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
@@ -100,11 +99,11 @@ public class MaterialGatepass extends BaseTransUI {
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private BeanItemContainer<GatepassHdrDM> beanGatePassHdr;
 	private BeanItemContainer<GatepassDtlDM> beanGatePassDtl;
-	private TextField tfVendorname, tfpersonname, tfGatePassNo, tfGatePassQty, tfReturnQty;
-	private ComboBox cbGatepasstype, cbVendor, cbgatestatus, cbModeTransport, cbVendorDCNo, cbGoods, cbGoodsUom,
-			cbGoodsType, cbMaterial, cbProduct, cbdtlstatus, cbDC;
-	private PopupDateField dtlead, dfReturndate, dfGatepassDt;
-	private TextArea taRemarks, taHdrremarks, tavendoraddres, tagoodsdesc;
+	private TextField tfVendorname, tfPersonName, tfGatePassNo, tfGatePassQty, tfReturnQty;
+	private ComboBox cbGatepasstype, cbVendor, cbGateStatus, cbModeTransport, cbVendorDCNo, cbGoods, cbGoodsUom,
+			cbGoodsType, cbMaterial, cbProduct, cbDtlStatus, cbDC;
+	private PopupDateField dfLeadDt, dfReturndate, dfGatepassDt;
+	private TextArea taRemarks, taHdrRemarks, taVendorAddres, taGoodsDesc;
 	private FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4, fldtl1, fldtl2, fldtl3, fldtl4;
 	private HorizontalLayout hlsearch, hlInput, hluserinput;
 	private HorizontalLayout hluserinputlayout = new HorizontalLayout();
@@ -134,7 +133,7 @@ public class MaterialGatepass extends BaseTransUI {
 	
 	private void buildview() {
 		btndelete.setEnabled(false);
-		tfpersonname = new GERPTextField("Person");
+		tfPersonName = new GERPTextField("Person");
 		tfVendorname = new GERPTextField("Through");
 		tfGatePassQty = new TextField();
 		tfGatePassQty.setValue("0");
@@ -220,10 +219,10 @@ public class MaterialGatepass extends BaseTransUI {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (cbGatepasstype.getValue() == ("Returnable")) {
-					cbgatestatus.setValue("Pending");
+					cbGateStatus.setValue("Pending");
 				} else {
 					if (cbGatepasstype.getValue() == ("NonReturnable")) {
-						cbgatestatus.setValue("Delivered");
+						cbGateStatus.setValue("Delivered");
 					}
 				}
 			}
@@ -244,7 +243,7 @@ public class MaterialGatepass extends BaseTransUI {
 					if ((vendordm.getVendorAddress().toString() != null)
 							&& (vendordm.getcountryID().toString() != null)
 							&& (vendordm.getStateId().toString() != null) && (vendordm.getCityId().toString() != null)) {
-						tavendoraddres.setValue((vendordm.getVendorAddress().toString()) + "\n"
+						taVendorAddres.setValue((vendordm.getVendorAddress().toString()) + "\n"
 								+ (vendordm.getCityName().toString()) + "\n" + (vendordm.getStateName()).toString()
 								+ "\n" + (vendordm.getCountryName().toString()) + "-"
 								+ (vendordm.getVendorPostcode().toString()));
@@ -270,21 +269,21 @@ public class MaterialGatepass extends BaseTransUI {
 		cbModeTransport = new GERPComboBox("Mode of Transport");
 		cbModeTransport.setItemCaptionPropertyId("lookupname");
 		loadlookupdetails();
-		cbgatestatus = new GERPComboBox("Status", BASEConstants.T_MMS_GATEPASS_HDR, BASEConstants.GATE_STATUS);
-		cbgatestatus.setWidth("150px");
-		cbdtlstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_COLUMN, BASEConstants.M_GENERIC_TABLE);
-		cbdtlstatus.setWidth("140px");
+		cbGateStatus = new GERPComboBox("Status", BASEConstants.T_MMS_GATEPASS_HDR, BASEConstants.GATE_STATUS);
+		cbGateStatus.setWidth("150px");
+		cbDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_COLUMN, BASEConstants.M_GENERIC_TABLE);
+		cbDtlStatus.setWidth("140px");
 		cbVendorDCNo = new GERPComboBox("DC No");
 		cbVendorDCNo.setItemCaptionPropertyId("dcNo");
 		loaddcdetails();
 		dfGatepassDt = new GERPPopupDateField("Gate Pass Date");
 		dfGatepassDt.setDateFormat("dd-MMM-yyyy");
-		dtlead = new GERPPopupDateField("Lead Date");
+		dfLeadDt = new GERPPopupDateField("Lead Date");
 		dfReturndate = new GERPPopupDateField("Return Date");
 		taRemarks = new GERPTextArea("Remarks");
-		taHdrremarks = new GERPTextArea("Remarks");
-		tavendoraddres = new GERPTextArea("Vendor Address");
-		tagoodsdesc = new GERPTextArea("Goods Description");
+		taHdrRemarks = new GERPTextArea("Remarks");
+		taVendorAddres = new GERPTextArea("Vendor Address");
+		taGoodsDesc = new GERPTextArea("Goods Description");
 		tfGatePassNo = new GERPTextField("GatePass No");
 		btnAddDtl = new GERPButton("Add", "add", this);
 		btnAddDtl.addClickListener(new ClickListener() {
@@ -342,7 +341,7 @@ public class MaterialGatepass extends BaseTransUI {
 		flcolumn2.addComponent(cbGatepasstype);
 		flcolumn2.setSpacing(true);
 		flcolumn2.setMargin(true);
-		flcolumn3.addComponent(cbgatestatus);
+		flcolumn3.addComponent(cbGateStatus);
 		hlsearch.addComponent(flcolumn1);
 		hlsearch.addComponent(flcolumn2);
 		hlsearch.addComponent(flcolumn3);
@@ -364,17 +363,17 @@ public class MaterialGatepass extends BaseTransUI {
 		flcolumn1.addComponent(cbVendor);
 		tfVendorname.setRequired(true);
 		flcolumn1.addComponent(tfVendorname);
-		flcolumn2.addComponent(tavendoraddres);
-		tavendoraddres.setHeight("120");
-		flcolumn3.addComponent(dtlead);
+		flcolumn2.addComponent(taVendorAddres);
+		taVendorAddres.setHeight("120");
+		flcolumn3.addComponent(dfLeadDt);
 		flcolumn3.setSizeUndefined();
 		flcolumn3.setSpacing(true);
 		flcolumn3.addComponent(dfReturndate);
 		flcolumn3.addComponent(cbModeTransport);
-		flcolumn4.addComponent(tfpersonname);
-		flcolumn4.addComponent(taHdrremarks);
-		flcolumn4.addComponent(cbgatestatus);
-		taHdrremarks.setHeight("70");
+		flcolumn4.addComponent(tfPersonName);
+		flcolumn4.addComponent(taHdrRemarks);
+		flcolumn4.addComponent(cbGateStatus);
+		taHdrRemarks.setHeight("70");
 		flcolumn4.setSizeUndefined();
 		flcolumn4.setSpacing(true);
 		hlInput = new HorizontalLayout();
@@ -409,13 +408,13 @@ public class MaterialGatepass extends BaseTransUI {
 		fldtl2.addComponent(hlQtyUom);
 		fldtl2.setComponentAlignment(hlQtyUom, Alignment.TOP_LEFT);
 		// cbgoodsuom.setRequired(true);
-		tagoodsdesc.setHeight("50");
-		fldtl2.addComponent(tagoodsdesc);
+		taGoodsDesc.setHeight("50");
+		fldtl2.addComponent(taGoodsDesc);
 		taRemarks.setHeight("50");
 		fldtl3.addComponent(taRemarks);
 		fldtl3.addComponent(tfReturnQty);
-		fldtl4.addComponent(cbdtlstatus);
-		cbdtlstatus.setWidth("150");
+		fldtl4.addComponent(cbDtlStatus);
+		cbDtlStatus.setWidth("150");
 		fldtl4.addComponent(btnAddDtl);
 		fldtl4.addComponent(btndelete);
 		hluserinput = new HorizontalLayout();
@@ -449,7 +448,7 @@ public class MaterialGatepass extends BaseTransUI {
 			List<GatepassHdrDM> list = new ArrayList<GatepassHdrDM>();
 			beanGatePassHdr = new BeanItemContainer<GatepassHdrDM>(GatepassHdrDM.class);
 			list = serviceGatepass.getGatepassHdrList(companyId, dfGatepassDt.getValue(),
-					(String) cbGatepasstype.getValue(), null, null, vendorId, (String) cbgatestatus.getValue(),
+					(String) cbGatepasstype.getValue(), null, null, vendorId, (String) cbGateStatus.getValue(),
 					(String) tfGatePassNo.getValue(), "F");
 			recordCnt = list.size();
 			beanGatePassHdr.addAll(list);
@@ -470,8 +469,8 @@ public class MaterialGatepass extends BaseTransUI {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			logger.info("Company ID : " + companyId + " | saveindentDtlListDetails User Name : " + userName + " > "
-					+ "Search Parameters are " + companyId + ", " + tfpersonname.getValue() + ", "
-					+ tfVendorname.getValue() + (String) cbdtlstatus.getValue());
+					+ "Search Parameters are " + companyId + ", " + tfPersonName.getValue() + ", "
+					+ tfVendorname.getValue() + (String) cbDtlStatus.getValue());
 			recordCnt = listGatePassDtls.size();
 			beanGatePassDtl = new BeanItemContainer<GatepassDtlDM>(GatepassDtlDM.class);
 			beanGatePassDtl.addAll(listGatePassDtls);
@@ -582,7 +581,7 @@ public class MaterialGatepass extends BaseTransUI {
 		try {
 			BeanContainer<Long, DcHdrDM> beanDC = new BeanContainer<Long, DcHdrDM>(DcHdrDM.class);
 			beanDC.setBeanIdProperty("dcId");
-			beanDC.addAll(servicedc.getMmsDcHdrList(null, null, companyId, null, null, null, null, null, "Active", "F"));
+			beanDC.addAll(serviceDCHdr.getMmsDcHdrList(null, null, companyId, null, null, null, null, null, "Active", "F"));
 			cbDC.setContainerDataSource(beanDC);
 		}
 		catch (Exception e) {
@@ -610,7 +609,7 @@ public class MaterialGatepass extends BaseTransUI {
 		tfVendorname.setValue("");
 		dfGatepassDt.setValue(null);
 		cbGatepasstype.setValue(null);
-		cbgatestatus.setValue(cbgatestatus.getItemIds().iterator().next());
+		cbGateStatus.setValue(cbGateStatus.getItemIds().iterator().next());
 		loadSrchRslt();
 		// resetFields();
 	}
@@ -682,14 +681,14 @@ public class MaterialGatepass extends BaseTransUI {
 					}
 				}
 				tfVendorname.setValue(editHdrIndent.getVendorName());
-				tfpersonname.setValue(editHdrIndent.getPersonName());
+				tfPersonName.setValue(editHdrIndent.getPersonName());
 				cbVendorDCNo.setValue(editHdrIndent.getVendorDcno());
-				taHdrremarks.setValue(editHdrIndent.getRemarks());
+				taHdrRemarks.setValue(editHdrIndent.getRemarks());
 				dfGatepassDt.setValue(editHdrIndent.getGatepassDtInt());
-				tavendoraddres.setValue(editHdrIndent.getVendorAddress());
-				dtlead.setValue(editHdrIndent.getLeadDate());
+				taVendorAddres.setValue(editHdrIndent.getVendorAddress());
+				dfLeadDt.setValue(editHdrIndent.getLeadDate());
 				dfReturndate.setValue(editHdrIndent.getReturnDate());
-				cbgatestatus.setValue(editHdrIndent.getGatepassStatus());
+				cbGateStatus.setValue(editHdrIndent.getGatepassStatus());
 				editHdrIndent.setLastUpdatedDt(DateUtils.getcurrentdate());
 				editHdrIndent.setLastUpdatedBy(userName);
 				listGatePassDtls.addAll(servicegatepassdtl.getGatepassDtlList(null, gatePassId, null, null, null,
@@ -747,12 +746,12 @@ public class MaterialGatepass extends BaseTransUI {
 					tfReturnQty.setValue(gatepassDtlDM.getReturnqty().toString());
 				}
 				if (gatepassDtlDM.getGoodsDesc() != null) {
-					tagoodsdesc.setValue(gatepassDtlDM.getGoodsDesc());
+					taGoodsDesc.setValue(gatepassDtlDM.getGoodsDesc());
 				}
 				if (gatepassDtlDM.getReturnremarks() != null) {
 					taRemarks.setValue(gatepassDtlDM.getReturnremarks());
 				}
-				cbdtlstatus.setValue(gatepassDtlDM.getStatus());
+				cbDtlStatus.setValue(gatepassDtlDM.getStatus());
 			}
 		}
 		catch (Exception e) {
@@ -820,8 +819,8 @@ public class MaterialGatepass extends BaseTransUI {
 		cbGoodsUom.setReadOnly(true);
 		cbMaterial.setValue(null);
 		cbProduct.setValue(null);
-		tagoodsdesc.setValue("");
-		cbdtlstatus.setValue(cbdtlstatus.getItemIds().iterator().next());
+		taGoodsDesc.setValue("");
+		cbDtlStatus.setValue(cbDtlStatus.getItemIds().iterator().next());
 		taRemarks.setValue("");
 		tfReturnQty.setValue("0");
 		btnAddDtl.setComponentError(null);
@@ -842,14 +841,14 @@ public class MaterialGatepass extends BaseTransUI {
 			gatepasshdr.setModeOfTrans((String) cbModeTransport.getValue());
 			gatepasshdr.setVendorId(Long.valueOf(((VendorDM) cbVendor.getValue()).getVendorId().toString()));
 			gatepasshdr.setVendorName(tfVendorname.getValue());
-			gatepasshdr.setPersonName(tfpersonname.getValue());
+			gatepasshdr.setPersonName(tfPersonName.getValue());
 			gatepasshdr.setVendorDcno((String) cbVendorDCNo.getValue());
-			gatepasshdr.setVendorAddress(tavendoraddres.getValue().toString());
-			gatepasshdr.setLeadDate(dtlead.getValue());
+			gatepasshdr.setVendorAddress(taVendorAddres.getValue().toString());
+			gatepasshdr.setLeadDate(dfLeadDt.getValue());
 			gatepasshdr.setGatepassDt(dfGatepassDt.getValue());
 			gatepasshdr.setReturnDate(dfReturndate.getValue());
-			gatepasshdr.setRemarks(taHdrremarks.getValue());
-			gatepasshdr.setGatepassStatus((String) cbgatestatus.getValue());
+			gatepasshdr.setRemarks(taHdrRemarks.getValue());
+			gatepasshdr.setGatepassStatus((String) cbGateStatus.getValue());
 			gatepasshdr.setLastUpdatedDt(DateUtils.getcurrentdate());
 			gatepasshdr.setLastUpdatedBy(userName);
 			serviceGatepass.saveorUpdateGatepassHdrDetails(gatepasshdr);
@@ -899,7 +898,7 @@ public class MaterialGatepass extends BaseTransUI {
 				dtlpass.setProductid(((ProductDM) cbProduct.getValue()).getProdid());
 				dtlpass.setProductname(((ProductDM) cbProduct.getValue()).getProdname());
 			}
-			dtlpass.setGoodsDesc(tagoodsdesc.getValue().toString());
+			dtlpass.setGoodsDesc(taGoodsDesc.getValue().toString());
 			if (tfGatePassQty.getValue().toString().trim().length() > 0) {
 				dtlpass.setGatepassquanty(Long.valueOf(tfGatePassQty.getValue()));
 			}
@@ -912,7 +911,7 @@ public class MaterialGatepass extends BaseTransUI {
 				cbGoodsUom.setReadOnly(true);
 			}
 			dtlpass.setReturnremarks(taRemarks.getValue());
-			dtlpass.setStatus((String) cbdtlstatus.getValue());
+			dtlpass.setStatus((String) cbDtlStatus.getValue());
 			dtlpass.setLastupdatedt(DateUtils.getcurrentdate());
 			dtlpass.setLastupdatedBy(userName);
 			listGatePassDtls.add(dtlpass);
@@ -956,15 +955,15 @@ public class MaterialGatepass extends BaseTransUI {
 		cbVendor.setValue(null);
 		cbVendor.setComponentError(null);
 		tfVendorname.setValue("");
-		tavendoraddres.setValue("");
+		taVendorAddres.setValue("");
 		cbVendorDCNo.setValue(null);
-		dtlead.setValue(null);
+		dfLeadDt.setValue(null);
 		dfReturndate.setValue(null);
 		cbModeTransport.setValue(null);
-		tfpersonname.setValue("");
-		taHdrremarks.setValue("");
+		tfPersonName.setValue("");
+		taHdrRemarks.setValue("");
 		cbGatepasstype.setComponentError(null);
-		cbgatestatus.setValue(cbgatestatus.getItemIds().iterator().next());
+		cbGateStatus.setValue(cbGateStatus.getItemIds().iterator().next());
 		listGatePassDtls = new ArrayList<GatepassDtlDM>();
 		tblGatepassDetails.removeAllItems();
 	}

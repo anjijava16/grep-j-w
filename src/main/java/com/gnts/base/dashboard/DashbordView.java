@@ -72,7 +72,7 @@ public class DashbordView implements ClickListener {
 	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper
 			.getBean("enquiryWorkflow");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
-	private ProductService ServiceProduct = (ProductService) SpringContextHelper.getBean("Product");
+	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private VerticalLayout clMainLayout;
 	private HorizontalLayout hlHeader;
 	private Table tblStatus = new Table();
@@ -110,7 +110,7 @@ public class DashbordView implements ClickListener {
 		btnInvoiceCount.setCaption(serviceInvoiceHdr.getSmsInvoiceHeadercount(null, null, companyId, null, null, null,
 				null, null).toString());
 		btnClientCount.setCaption(serviceClients.getClientDetailscount(companyId, null, "Active", null).toString());
-		btnProductCount.setCaption(ServiceProduct.getProductscount(companyId, null, "Active", null).toString());
+		btnProductCount.setCaption(serviceProduct.getProductscount(companyId, null, "Active", null).toString());
 		// btnEnquiryCount.setStyleName(Runo.BUTTON_LINK);
 		btnEnquiryCount.setStyleName("borderless-colored");
 		btnQuotationCount.setStyleName("borderless-colored");

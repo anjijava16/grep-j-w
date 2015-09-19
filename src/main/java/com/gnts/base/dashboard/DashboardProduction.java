@@ -25,7 +25,7 @@ public class DashboardProduction implements ClickListener {
 	private Button btnMoldTrialReq = new Button("13 Nos.", this);
 	private Button btnDieCompletion = new Button("17 Nos.", this);
 	private Button btnBOM = new Button("16 Nos.", this);
-	private Button btnservicecall = new Button("16 Nos.", this);
+	private Button btnServiceCall = new Button("16 Nos.", this);
 
 	public DashboardProduction() {
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
@@ -48,14 +48,14 @@ public class DashboardProduction implements ClickListener {
 		btnMoldTrialReq.setStyleName(Runo.BUTTON_LINK);
 		btnDieCompletion.setStyleName(Runo.BUTTON_LINK);
 		btnBOM.setStyleName(Runo.BUTTON_LINK);
-		btnservicecall.setStyleName(Runo.BUTTON_LINK);
+		btnServiceCall.setStyleName(Runo.BUTTON_LINK);
 
 		custom.addComponent(btnProductOverview, "enquiry");
 		custom.addComponent(btnDieSection, "quotation");
 		custom.addComponent(btnMoldTrialReq, "purchaseorder");
 		custom.addComponent(btnBOM, "receipts");
 		custom.addComponent(btnDieCompletion, "vendorbills");
-		custom.addComponent(btnservicecall, "serviceform");
+		custom.addComponent(btnServiceCall, "serviceform");
 
 		custom.addComponent(new CalendarMonthly("DIE_SCHEDULE"), "maintaincedtls");
 	}
@@ -97,7 +97,7 @@ public class DashboardProduction implements ClickListener {
 			UI.getCurrent().getSession().setAttribute("moduleId", 17L);
 			new DieRequest();
 		}
-		if (event.getButton() == btnservicecall) {
+		if (event.getButton() == btnServiceCall) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", false);

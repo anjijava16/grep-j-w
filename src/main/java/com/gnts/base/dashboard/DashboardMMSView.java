@@ -51,11 +51,11 @@ public class DashboardMMSView implements ClickListener {
 	private Button btnAddMaterial = new Button("+  Add Material", this);
 	private Button btnAddVendor = new Button("+ Add Vendor", this);
 	private Button btnShowHide = new Button("Show/Hide", this);
-	private MaterialStockService servicematerialstock = (MaterialStockService) SpringContextHelper
+	private MaterialStockService serviceMatStock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
 	private MmsEnqHdrService serviceMmsEnqHdr = (MmsEnqHdrService) SpringContextHelper.getBean("MmsEnqHdr");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
-	private POHdrService servicepohdr = (POHdrService) SpringContextHelper.getBean("pohdr");
+	private POHdrService servicePOHdr = (POHdrService) SpringContextHelper.getBean("pohdr");
 	private Logger logger = Logger.getLogger(DashboardMMSView.class);
 	private Table tblMaterialStock = new Table();
 	private Table tblPaymentPending = new Table();
@@ -125,7 +125,7 @@ public class DashboardMMSView implements ClickListener {
 			tblMaterialStock.removeAllItems();
 			BeanItemContainer<MaterialStockDM> beanmaterialstock = new BeanItemContainer<MaterialStockDM>(
 					MaterialStockDM.class);
-			beanmaterialstock.addAll(servicematerialstock.getMaterialStockList(null, companyId, null, null, null, null,
+			beanmaterialstock.addAll(serviceMatStock.getMaterialStockList(null, companyId, null, null, null, null,
 					"F"));
 			tblMaterialStock.setContainerDataSource(beanmaterialstock);
 			tblMaterialStock.setVisibleColumns(new Object[] { "materialName", "stockType", "currentStock",
@@ -228,7 +228,7 @@ public class DashboardMMSView implements ClickListener {
 		try {
 			tblPaymentPending.removeAllItems();
 			BeanItemContainer<POHdrDM> beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
-			beanpohdr.addAll(servicepohdr.getPOHdrList(companyId, null, null, null, null, null, null, "P"));
+			beanpohdr.addAll(servicePOHdr.getPOHdrList(companyId, null, null, null, null, null, null, "P"));
 			tblPaymentPending.setContainerDataSource(beanpohdr);
 			tblPaymentPending.setVisibleColumns(new Object[] { "pono", "vendorName", "balancePayAmount" });
 			tblPaymentPending.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Balance Amount(Rs.)" });
@@ -266,7 +266,7 @@ public class DashboardMMSView implements ClickListener {
 		try {
 			tblDeliveryPending.removeAllItems();
 			BeanItemContainer<POHdrDM> beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
-			beanpohdr.addAll(servicepohdr.getPOHdrList(companyId, null, null, null, null, null, null, "P"));
+			beanpohdr.addAll(servicePOHdr.getPOHdrList(companyId, null, null, null, null, null, null, "P"));
 			tblDeliveryPending.setContainerDataSource(beanpohdr);
 			tblDeliveryPending.setVisibleColumns(new Object[] { "pono", "vendorName", "expDate" });
 			tblDeliveryPending.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Delivery Date" });

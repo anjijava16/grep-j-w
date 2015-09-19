@@ -205,7 +205,7 @@ public class ProductLedger extends BaseUI {
 			tblMstScrSrchRslt.removeAllItems();
 			List<ProductLedgerDM> listProductLedger = new ArrayList<ProductLedgerDM>();
 			listProductLedger = serviceProductLedger.getProductLedgerList((Long) cbProduct.getValue(),
-					(String) cbStockType.getValue(), productledgeId, (Long) cbBranch.getValue(), "F");
+					(String) cbStockType.getValue(), productledgeId, (Long) cbBranch.getValue(), null, "F");
 			recordcnt = listProductLedger.size();
 			beanProdLedger = new BeanItemContainer<ProductLedgerDM>(ProductLedgerDM.class);
 			beanProdLedger.addAll(listProductLedger);

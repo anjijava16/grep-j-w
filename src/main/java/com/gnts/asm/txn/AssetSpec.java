@@ -155,10 +155,9 @@ public class AssetSpec implements ClickListener {
 		lblspace = new Label();
 		// Initialization for table panel components
 		tblMstScrSrchRslt = new Table();
-		tblMstScrSrchRslt.setSizeFull();
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.setColumnCollapsingAllowed(true);
-		tblMstScrSrchRslt.setPageLength(7);
+		tblMstScrSrchRslt.setPageLength(3);
 		tblMstScrSrchRslt.setStyleName(Runo.TABLE_SMALL);
 		tblMstScrSrchRslt.setWidth("800");
 		tblMstScrSrchRslt.setImmediate(true);

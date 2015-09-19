@@ -91,7 +91,7 @@ public class Indent extends BaseTransUI {
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private DepartmentService serviceDepartmant = (DepartmentService) SpringContextHelper.getBean("department");
-	private List<IndentDtlDM> indentDtlList = null;
+	private List<IndentDtlDM> listIndentDtls = null;
 	// form layout for input controls
 	private FormLayout flIndentCol1, flIndentCol2, flIndentCol3, flIndentCol4, flIndentCol5, flIndentDtlCol1,
 			flIndentDtlCol2;
@@ -401,9 +401,9 @@ public class Indent extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | saveindentDtlListDetails User Name : " + username + " > "
 					+ "Search Parameters are " + companyid + ", " + tfIndQty.getValue() + ", "
 					+ (String) cbDtlStatus.getValue());
-			recordCnt = indentDtlList.size();
+			recordCnt = listIndentDtls.size();
 			beanIndentDtlDM = new BeanItemContainer<IndentDtlDM>(IndentDtlDM.class);
-			beanIndentDtlDM.addAll(indentDtlList);
+			beanIndentDtlDM.addAll(listIndentDtls);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblIndentDtl.setContainerDataSource(beanIndentDtlDM);
@@ -453,7 +453,7 @@ public class Indent extends BaseTransUI {
 		cbBranchId.setComponentError(null);
 		cbMatName.setComponentError(null);
 		tfIndQty.setComponentError(null);
-		indentDtlList = new ArrayList<IndentDtlDM>();
+		listIndentDtls = new ArrayList<IndentDtlDM>();
 		tblIndentDtl.removeAllItems();
 	}
 	
@@ -480,7 +480,7 @@ public class Indent extends BaseTransUI {
 				dfExpDt.setValue(editHdrIndent.getExpectedDate());
 				taRemarks.setValue(editHdrIndent.getIndentRemarks());
 				cbIndStatus.setValue(editHdrIndent.getIndentStatus());
-				indentDtlList.addAll(serviceIndentDtl.getIndentDtlDMList(null, indentHdrId, null, null, "F"));
+				listIndentDtls.addAll(serviceIndentDtl.getIndentDtlDMList(null, indentHdrId, null, null, "F"));
 			}
 			loadIndentDtl();
 			comments = new MmsComments(vlTableForm, null, companyid, null, null, null, null, indentHdrId, null, null,
@@ -795,7 +795,7 @@ public class Indent extends BaseTransUI {
 			String[] split = cbMatName.getValue().toString().replaceAll("\\[", "").replaceAll("\\]", "").split(",");
 			for (String obj : split) {
 				if (obj.trim().length() > 0) {
-					for (IndentDtlDM indentDtlDM : indentDtlList) {
+					for (IndentDtlDM indentDtlDM : listIndentDtls) {
 						if (indentDtlDM.getMaterialId() == Long.valueOf(obj.trim())) {
 							count++;
 							break;
@@ -808,7 +808,7 @@ public class Indent extends BaseTransUI {
 						IndentDtlDM indentDtlObj = new IndentDtlDM();
 						if (tblIndentDtl.getValue() != null) {
 							indentDtlObj = beanIndentDtlDM.getItem(tblIndentDtl.getValue()).getBean();
-							indentDtlList.remove(indentDtlObj);
+							listIndentDtls.remove(indentDtlObj);
 						}
 						UI.getCurrent().getSession().setAttribute("indqty", Long.valueOf(tfIndQty.getValue()));
 						if (cbMatName.getValue() != null) {
@@ -829,7 +829,7 @@ public class Indent extends BaseTransUI {
 						}
 						indentDtlObj.setLastUpdatedDt(DateUtils.getcurrentdate());
 						indentDtlObj.setLastUpdatedBy(username);
-						indentDtlList.add(indentDtlObj);
+						listIndentDtls.add(indentDtlObj);
 						loadIndentDtl();
 						btnAddDtl.setCaption("Add");
 						count = 0;
@@ -902,7 +902,7 @@ public class Indent extends BaseTransUI {
 			IndentDtlDM save = new IndentDtlDM();
 			if (tblIndentDtl.getValue() != null) {
 				save = beanIndentDtlDM.getItem(tblIndentDtl.getValue()).getBean();
-				indentDtlList.remove(save);
+				listIndentDtls.remove(save);
 				IndentDtlresetField();
 				loadIndentDtl();
 				btndelete.setEnabled(false);

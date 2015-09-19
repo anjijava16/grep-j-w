@@ -45,6 +45,10 @@ import com.gnts.mfg.service.txn.SignOffDtlService;
 import com.gnts.mfg.service.txn.SignoffHdrService;
 import com.gnts.mfg.service.txn.WorkOrderDtlService;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
+import com.gnts.sms.domain.txn.ProductLedgerDM;
+import com.gnts.sms.domain.txn.ProductStockDM;
+import com.gnts.sms.service.txn.ProductLedgerService;
+import com.gnts.sms.service.txn.ProductStockService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -103,6 +107,9 @@ public class SignOff extends BaseTransUI {
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private SlnoGenService serviceSLNo = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private QATestHdrService serviceQATestHdr = (QATestHdrService) SpringContextHelper.getBean("qatesthdr");
+	private ProductLedgerService serviceProdLedger = (ProductLedgerService) SpringContextHelper
+			.getBean("productledger");
+	private ProductStockService serviceProdStock = (ProductStockService) SpringContextHelper.getBean("productstock");
 	private FormLayout flTstHdr1, flTstHdr2, flTstHdr3, flTstHdr4;
 	private FormLayout flTstDtl1, flTstDtl2, flTstDtl3, flTstDtl4, flTstDtl5;
 	private VerticalLayout hlDocumentLayout = new VerticalLayout();
@@ -741,9 +748,9 @@ public class SignOff extends BaseTransUI {
 			signOffHdrId = signOffHdr.getQasignoffid();
 			@SuppressWarnings("unchecked")
 			Collection<SignOffDtlDM> itemIds = (Collection<SignOffDtlDM>) tblSignOffDtl.getVisibleItemIds();
-			for (SignOffDtlDM save : (Collection<SignOffDtlDM>) itemIds) {
-				save.setQaSignHdrId(Long.valueOf(signOffHdr.getQasignoffid()));
-				serviceSignoffDtl.saveSignoffDtl(save);
+			for (SignOffDtlDM saveDtl : (Collection<SignOffDtlDM>) itemIds) {
+				saveDtl.setQaSignHdrId(Long.valueOf(signOffHdr.getQasignoffid()));
+				serviceSignoffDtl.saveSignoffDtl(saveDtl);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
 				try {
@@ -751,6 +758,83 @@ public class SignOff extends BaseTransUI {
 							0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSLNo.updateNextSequenceNumber(companyId, branchId, moduleId, "MF_BATCHNO");
+					}
+				}
+				catch (Exception e) {
+				}
+				try {
+					ProductLedgerDM productLedgerDM = null;
+					try {
+						productLedgerDM = serviceProdLedger.getProductLedgerList(signOffHdr.getProductid(), "New",
+								null, branchId, "Y", "F").get(0);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					if (productLedgerDM == null) {
+						ProductLedgerDM ledgerDM = new ProductLedgerDM();
+						ledgerDM.setProductledgeDate(new Date());
+						ledgerDM.setCompanyId(companyId);
+						ledgerDM.setBranchId(branchId);
+						ledgerDM.setProductId(signOffHdr.getProductid());
+						ledgerDM.setStockType("New");
+						ledgerDM.setOpenQty(0L);
+						ledgerDM.setInoutFlag("I");
+						ledgerDM.setInoutFQty(signOffHdr.getBatchqty());
+						ledgerDM.setCloseQty(ledgerDM.getOpenQty() + signOffHdr.getBatchqty());
+						ledgerDM.setReferenceNo(signOffHdr.getBatchno());
+						ledgerDM.setReferenceDate(signOffHdr.getBatchdate1());
+						ledgerDM.setIsLatest("Y");
+						ledgerDM.setReferenceRemark(signOffHdr.getBatchremarks());
+						ledgerDM.setLastUpdatedby(userName);
+						ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
+						serviceProdLedger.saveorupdateLedggerdetails(ledgerDM);
+					} else {
+						ProductLedgerDM ledgerDM = new ProductLedgerDM();
+						ledgerDM.setProductledgeDate(new Date());
+						ledgerDM.setCompanyId(companyId);
+						ledgerDM.setBranchId(branchId);
+						ledgerDM.setProductId(signOffHdr.getProductid());
+						ledgerDM.setStockType("New");
+						ledgerDM.setOpenQty(productLedgerDM.getCloseQty());
+						ledgerDM.setInoutFlag("I");
+						ledgerDM.setInoutFQty(signOffHdr.getBatchqty());
+						ledgerDM.setCloseQty(ledgerDM.getOpenQty() + signOffHdr.getBatchqty());
+						ledgerDM.setReferenceNo(signOffHdr.getBatchno());
+						ledgerDM.setReferenceDate(signOffHdr.getBatchdate1());
+						ledgerDM.setIsLatest("Y");
+						ledgerDM.setReferenceRemark(signOffHdr.getBatchremarks());
+						ledgerDM.setLastUpdatedby(userName);
+						ledgerDM.setLastUpdateddt(DateUtils.getcurrentdate());
+						serviceProdLedger.saveorupdateLedggerdetails(ledgerDM);
+						productLedgerDM.setIsLatest("N");
+						serviceProdLedger.saveorupdateLedggerdetails(productLedgerDM);
+					}
+					ProductStockDM productStockDM = null;
+					try {
+						productStockDM = serviceProdStock.getProductStockList(signOffHdr.getProductid(), "New", null,
+								branchId, "F").get(0);
+					}
+					catch (Exception e) {
+					}
+					if (productStockDM == null) {
+						ProductStockDM productStockDM1 = new ProductStockDM();
+						productStockDM1.setCompanyId(companyId);
+						productStockDM1.setBranchId(branchId);
+						productStockDM1.setProductId(signOffHdr.getProductid());
+						productStockDM1.setStockType("New");
+						productStockDM1.setCurrentStock(signOffHdr.getBatchqty());
+						productStockDM1.setParkedStock(0L);
+						productStockDM1.setEffectiveStock(signOffHdr.getBatchqty());
+						productStockDM1.setLastUpdatedby(userName);
+						productStockDM1.setLastUpdateddt(DateUtils.getcurrentdate());
+						serviceProdStock.saveorupdateproductstockdetails(productStockDM1);
+					} else {
+						productStockDM.setCurrentStock(productStockDM.getCurrentStock() + signOffHdr.getBatchqty());
+						productStockDM.setEffectiveStock(productStockDM.getEffectiveStock()+signOffHdr.getBatchqty());
+						productStockDM.setLastUpdatedby(userName);
+						productStockDM.setLastUpdateddt(DateUtils.getcurrentdate());
+						serviceProdStock.saveorupdateproductstockdetails(productStockDM);
 					}
 				}
 				catch (Exception e) {

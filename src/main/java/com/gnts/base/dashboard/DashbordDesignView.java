@@ -15,7 +15,6 @@ import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.txn.SmsEnquiry;
 import com.gnts.stt.dsn.service.txn.ECRequestService;
-import com.gnts.stt.mfg.domain.txn.EnquiryWorkflowDM;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -50,10 +49,10 @@ public class DashbordDesignView implements ClickListener {
 	private Button btnClientCount = new Button("22", this);
 	private Button btnNotify;
 	private Window notificationsWindow;
-	private SmsEnqHdrService serviceenqhdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
+	private SmsEnqHdrService serviceEnqHdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private ECRequestService serviceECRequest = (ECRequestService) SpringContextHelper.getBean("ecRequest");
-	private ProductService ServiceProduct = (ProductService) SpringContextHelper.getBean("Product");
+	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private VerticalLayout clMainLayout;
 	private HorizontalLayout hlHeader;
 	int countnotify = 0;
@@ -68,16 +67,16 @@ public class DashbordDesignView implements ClickListener {
 	}
 	
 	private void buildView(VerticalLayout clMainLayout, HorizontalLayout hlHeader) {
-		countnotify = serviceenqhdr.getSmsEnqHdrList(companyId, null, branchId, null, "Approved", "P", null, null)
+		countnotify = serviceEnqHdr.getSmsEnqHdrList(companyId, null, branchId, null, "Approved", "P", null, null)
 				.size();
 		btnNotify = new Button(countnotify + "");
 		btnNotify.setHtmlContentAllowed(true);
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("dashdesign");
-		btnEnquiryCount.setCaption(serviceenqhdr.getSMSEnquiryListCount(null, null, null, null, "Approved", null, null,
+		btnEnquiryCount.setCaption(serviceEnqHdr.getSMSEnquiryListCount(null, null, null, null, "Approved", null, null,
 				null).toString());
 		btnClientCount.setCaption(serviceClients.getClientDetailscount(companyId, null, "Active", null).toString());
-		btnProductCount.setCaption(ServiceProduct.getProductscount(companyId, null, "Active", null).toString());
+		btnProductCount.setCaption(serviceProduct.getProductscount(companyId, null, "Active", null).toString());
 		btnECRequest.setCaption(serviceECRequest.getProductscount(null, null, null, null).toString());
 		btnEnquiryCount.setStyleName("borderless-colored");
 		btnEnquiryWorkflow.setStyleName("borderless-colored");
@@ -196,7 +195,7 @@ public class DashbordDesignView implements ClickListener {
 		SmsEnqHdrDM smspohdr = new SmsEnqHdrDM();
 		smspohdr.getEnquiryStatus();
 		smsEnqHdrList.add(smspohdr);
-		smsEnqHdrList = serviceenqhdr.getSmsEnqHdrList(null, null, null, null, "Approved", "F", null, null);
+		smsEnqHdrList = serviceEnqHdr.getSmsEnqHdrList(null, null, null, null, "Approved", "F", null, null);
 		FormLayout fmlayout = new FormLayout();
 		VerticalLayout hrLayout = new VerticalLayout();
 		for (SmsEnqHdrDM n : smsEnqHdrList) {

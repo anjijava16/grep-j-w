@@ -82,7 +82,7 @@ public class IndentIssueReturn extends BaseUI {
 	// Dtl Status ComboBox
 	private ComboBox cbIndStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
-	private TextField tfReturnQty, tfissueqty;
+	private TextField tfReturnQty, tfIssueQty;
 	private ComboBox cbMatName, cbIssueName, cbReturnReason, cbStockType;
 	private TextArea taRemarks;
 	private BeanItemContainer<IndentIssueReturnDM> beanIndentIssueReturnDM = null;
@@ -155,7 +155,7 @@ public class IndentIssueReturn extends BaseUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				if (cbMatName.getValue() != null) {
-					tfissueqty.setValue(Long.valueOf(((IndentDtlDM) cbMatName.getValue()).getIndentQty())
+					tfIssueQty.setValue(Long.valueOf(((IndentDtlDM) cbMatName.getValue()).getIndentQty())
 							- Long.valueOf(((IndentDtlDM) cbMatName.getValue()).getBalenceQty()) + "");
 				}
 			}
@@ -165,7 +165,7 @@ public class IndentIssueReturn extends BaseUI {
 		cbReturnReason.setItemCaptionPropertyId("lookupname");
 		loadReturnReason();
 		// Return Qty.GERPTextField
-		tfissueqty = new GERPTextField("Balance Qty");
+		tfIssueQty = new GERPTextField("Balance Qty");
 		tfReturnQty = new GERPTextField("Return Qty.");
 		tfReturnQty.setValue("0");
 		// Indent No text field
@@ -201,7 +201,7 @@ public class IndentIssueReturn extends BaseUI {
 		flColumn4 = new FormLayout();
 		fltaxCol1.addComponent(cbIssueName);
 		fltaxCol1.addComponent(cbMatName);
-		fltaxCol2.addComponent(tfissueqty);
+		fltaxCol2.addComponent(tfIssueQty);
 		fltaxCol2.addComponent(cbReturnReason);
 		fltaxCol3.addComponent(tfReturnQty);
 		fltaxCol3.addComponent(cbStockType);
@@ -268,7 +268,7 @@ public class IndentIssueReturn extends BaseUI {
 		cbIssueName.setValue(null);
 		cbStockType.setValue(null);
 		taRemarks.setValue("");
-		tfissueqty.setValue("");
+		tfIssueQty.setValue("");
 		cbMatName.setValue(null);
 		cbMatName.setComponentError(null);
 		cbReturnReason.setValue(null);
@@ -474,7 +474,7 @@ public class IndentIssueReturn extends BaseUI {
 	protected void saveDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 		IndentIssueReturnDM indentObj = new IndentIssueReturnDM();
-		if (Long.valueOf(tfissueqty.getValue()) >= Long.valueOf(tfReturnQty.getValue())) {
+		if (Long.valueOf(tfIssueQty.getValue()) >= Long.valueOf(tfReturnQty.getValue())) {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				indentObj = beanIndentIssueReturnDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
@@ -502,7 +502,7 @@ public class IndentIssueReturn extends BaseUI {
 					indentObj.getMaterialId(), indqty);
 		} else {
 			tfReturnQty.setComponentError(new UserError("Enter Issue qty greater than Indent qty \n Balance Qty="
-					+ Long.valueOf(tfissueqty.getValue())));
+					+ Long.valueOf(tfIssueQty.getValue())));
 		}
 		IndentIssueReturnDM save = new IndentIssueReturnDM();
 		try {

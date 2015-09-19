@@ -119,7 +119,7 @@ public class WorkOrder extends BaseTransUI {
 	private TextField tfPlanRefNo, tfEnquiryNumber, tfMoldTime, tfPlanTime, tfRotoTime, tfFoamTime;
 	private TextArea taWrkOdrHdrRemarks;
 	private PopupDateField dfWrkOdrDate;
-	private OptionGroup workordtype = new OptionGroup("");
+	private OptionGroup opWorkordtype = new OptionGroup("");
 	private OptionGroup opPONumbers = new OptionGroup("");
 	private ComboBox cbBranchName, cbClientName, cbWrkOdrType, cbPONumber, cbWorkderStatus, cbEnquiryNumber;
 	// BeanItem container of TestGroupDM
@@ -169,10 +169,10 @@ public class WorkOrder extends BaseTransUI {
 	}
 	
 	private void buildView() {
-		workordtype.addItems("Self", "Enquiry");
-		workordtype.setValue("Enquiry");
-		workordtype.setImmediate(true);
-		workordtype.addValueChangeListener(new ValueChangeListener() {
+		opWorkordtype.addItems("Self", "Enquiry");
+		opWorkordtype.setValue("Enquiry");
+		opWorkordtype.setImmediate(true);
+		opWorkordtype.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
@@ -561,7 +561,7 @@ public class WorkOrder extends BaseTransUI {
 		// adding components into first column in form layout1
 		flOdrHdrColumn1.addComponent(tfPlanRefNo);
 		flOdrHdrColumn1.addComponent(cbWrkOdrType);
-		flOdrHdrColumn1.addComponent(workordtype);
+		flOdrHdrColumn1.addComponent(opWorkordtype);
 		flOdrHdrColumn1.addComponent(cbBranchName);
 		flOdrHdrColumn2.addComponent(cbEnquiryNumber);
 		flOdrHdrColumn2.addComponent(cbClientName);
@@ -825,7 +825,7 @@ public class WorkOrder extends BaseTransUI {
 				}
 				ogPriority.setValue(workOrderHdrDM.getPriority());
 				ogMaterialUsage.setValue(workOrderHdrDM.getMaterialUsage());
-				workordtype.setValue(workOrderHdrDM.getIsSelf());
+				opWorkordtype.setValue(workOrderHdrDM.getIsSelf());
 				opPONumbers.setValue(workOrderHdrDM.getIsLOI());
 				if (workOrderHdrDM.getWorkOrdrSts().equals("Approved")) {
 					cbWorkderStatus.setReadOnly(false);
@@ -1059,7 +1059,7 @@ public class WorkOrder extends BaseTransUI {
 		} else {
 			cbBranchName.setComponentError(null);
 		}
-		if (workordtype.getValue().toString().equalsIgnoreCase("Enquiry")) {
+		if (opWorkordtype.getValue().toString().equalsIgnoreCase("Enquiry")) {
 			if ((cbClientName.getValue() == null)) {
 				cbClientName.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_HDR_CLNT_NM));
 				errorFlag = true;
@@ -1125,7 +1125,7 @@ public class WorkOrder extends BaseTransUI {
 			wrkOdHdr.setLastUpdatedBy(username);
 			wrkOdHdr.setEnquiryId(Long.valueOf(cbEnquiryNumber.getValue().toString()));
 			wrkOdHdr.setIsLOI(opPONumbers.getValue().toString());
-			wrkOdHdr.setIsSelf(workordtype.getValue().toString());
+			wrkOdHdr.setIsSelf(opWorkordtype.getValue().toString());
 			serviceWrkOrdHdr.saveOrUpdateWrkOdrHdrDetails(wrkOdHdr);
 			wrkOdrHdrId = wrkOdHdr.getWorkOrdrId();
 			@SuppressWarnings("unchecked")
@@ -1312,10 +1312,10 @@ public class WorkOrder extends BaseTransUI {
 	}
 	
 	private void changeworkorderstatus() {
-		if (workordtype.getValue() != null) {
-			if (workordtype.getValue().toString().equalsIgnoreCase("Self")) {
+		if (opWorkordtype.getValue() != null) {
+			if (opWorkordtype.getValue().toString().equalsIgnoreCase("Self")) {
 				cbClientName.setRequired(false);
-			} else if (workordtype.getValue().toString().equalsIgnoreCase("Enquiry")) {
+			} else if (opWorkordtype.getValue().toString().equalsIgnoreCase("Enquiry")) {
 				cbClientName.setRequired(true);
 			}
 		}

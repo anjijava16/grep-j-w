@@ -51,8 +51,7 @@ public class DashboardMMSView implements ClickListener {
 	private Button btnAddMaterial = new Button("+  Add Material", this);
 	private Button btnAddVendor = new Button("+ Add Vendor", this);
 	private Button btnShowHide = new Button("Show/Hide", this);
-	private MaterialStockService serviceMatStock = (MaterialStockService) SpringContextHelper
-			.getBean("materialstock");
+	private MaterialStockService serviceMatStock = (MaterialStockService) SpringContextHelper.getBean("materialstock");
 	private MmsEnqHdrService serviceMmsEnqHdr = (MmsEnqHdrService) SpringContextHelper.getBean("MmsEnqHdr");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private POHdrService servicePOHdr = (POHdrService) SpringContextHelper.getBean("pohdr");
@@ -125,8 +124,8 @@ public class DashboardMMSView implements ClickListener {
 			tblMaterialStock.removeAllItems();
 			BeanItemContainer<MaterialStockDM> beanmaterialstock = new BeanItemContainer<MaterialStockDM>(
 					MaterialStockDM.class);
-			beanmaterialstock.addAll(serviceMatStock.getMaterialStockList(null, companyId, null, null, null, null,
-					"F"));
+			beanmaterialstock
+					.addAll(serviceMatStock.getMaterialStockList(null, companyId, null, null, null, null, "F"));
 			tblMaterialStock.setContainerDataSource(beanmaterialstock);
 			tblMaterialStock.setVisibleColumns(new Object[] { "materialName", "stockType", "currentStock",
 					"parkedStock", "effectiveStock" });
@@ -218,6 +217,39 @@ public class DashboardMMSView implements ClickListener {
 					}
 				}
 			});
+			tblEnquiry.addGeneratedColumn("enquiryNo", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<MmsEnqHdrDM> item = (BeanItem<MmsEnqHdrDM>) source.getItem(itemId);
+					final MmsEnqHdrDM enqHdrDM = (MmsEnqHdrDM) item.getBean();
+					HorizontalLayout hlLayout = new HorizontalLayout();
+					Button btnView = new Button("View");
+					btnView.addClickListener(new ClickListener() {
+						private static final long serialVersionUID = 1L;
+						
+						@Override
+						public void buttonClick(ClickEvent event) {
+							// TODO Auto-generated method stub
+							clMainLayout.removeAllComponents();
+							hlHeader.removeAllComponents();
+							UI.getCurrent().getSession().setAttribute("screenName", "Material Enquiry");
+							UI.getCurrent().getSession().setAttribute("moduleId", 9L);
+							new MaterialEnquiry(enqHdrDM.getEnquiryId());
+						}
+					});
+					btnView.setStyleName("view");
+					hlLayout.addComponent(btnView);
+					if (enqHdrDM.getEnquiryNo() != null) {
+						hlLayout.addComponent(new Label(enqHdrDM.getEnquiryNo()));
+					} else {
+						hlLayout.addComponent(new Label("------------"));
+					}
+					return hlLayout;
+				}
+			});
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -270,8 +302,8 @@ public class DashboardMMSView implements ClickListener {
 			tblDeliveryPending.setContainerDataSource(beanpohdr);
 			tblDeliveryPending.setVisibleColumns(new Object[] { "pono", "vendorName", "expDate" });
 			tblDeliveryPending.setColumnHeaders(new String[] { "PO Number", "Vendor Name", "Delivery Date" });
-			tblDeliveryPending.setColumnWidth("pono", 150);
-			tblDeliveryPending.setColumnWidth("vendorName", 150);
+			tblDeliveryPending.setColumnWidth("pono", 135);
+			tblDeliveryPending.setColumnWidth("vendorName", 135);
 			tblDeliveryPending.addGeneratedColumn("expDate", new ColumnGenerator() {
 				private static final long serialVersionUID = 1L;
 				
@@ -279,14 +311,34 @@ public class DashboardMMSView implements ClickListener {
 				public Object generateCell(Table source, Object itemId, Object columnId) {
 					@SuppressWarnings("unchecked")
 					BeanItem<POHdrDM> item = (BeanItem<POHdrDM>) source.getItem(itemId);
-					POHdrDM emp = (POHdrDM) item.getBean();
-					if (emp.getExpDate1().after(new Date())) {
-						return new Label("<p style='color:#6CD4BD;font-size:14px;align=right'>" + emp.getExpDate()
-								+ "</p>", ContentMode.HTML);
+					final POHdrDM poHdrDM = (POHdrDM) item.getBean();
+					HorizontalLayout hlLayout = new HorizontalLayout();
+					Button btnView = new Button("View");
+					btnView.addClickListener(new ClickListener() {
+						private static final long serialVersionUID = 1L;
+						
+						@Override
+						public void buttonClick(ClickEvent event) {
+							// TODO Auto-generated method stub
+							clMainLayout.removeAllComponents();
+							hlHeader.removeAllComponents();
+							UI.getCurrent().getSession().setAttribute("screenName", "Material Purchase Orders");
+							UI.getCurrent().getSession().setAttribute("moduleId", 9L);
+							new MmsPurchaseOrder(poHdrDM.getPoId());
+						}
+					});
+					btnView.setStyleName("view");
+					if (poHdrDM.getExpDate1().after(new Date())) {
+						hlLayout.addComponent(new Label("<p style='color:#6CD4BD;font-size:14px;align=right'>"
+								+ poHdrDM.getExpDate() + "</p>", ContentMode.HTML));
 					} else {
-						return new Label("<p style='color:#E26666;font-size:14px;align=right'>" + emp.getExpDate()
-								+ "</p>", ContentMode.HTML);
+						hlLayout.addComponent(new Label("<p style='color:#E26666;font-size:14px;align=right'>"
+								+ poHdrDM.getExpDate() + "</p>", ContentMode.HTML));
 					}
+					hlLayout.setSpacing(true);
+					hlLayout.addComponent(btnView);
+					hlLayout.setComponentAlignment(btnView, Alignment.MIDDLE_RIGHT);
+					return hlLayout;
 				}
 			});
 		}

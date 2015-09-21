@@ -128,10 +128,43 @@ public class MaterialGatepass extends BaseTransUI {
 		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		// Loading the UI
-		buildview();
+		buildview(true);
 	}
 	
-	private void buildview() {
+	public MaterialGatepass(Long gatePassId) {
+		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+				+ "Inside MaterialGatepass() constructor");
+		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
+		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
+		// Loading the UI
+		buildview(false);
+		this.gatePassId = gatePassId;
+		cbGateStatus.setValue(null);
+		loadSrchRslt();
+		tblMstScrSrchRslt.setValue(tblMstScrSrchRslt.getItemIds().iterator().next());
+		hlUserIPContainer.setVisible(true);
+		hlUserIPContainer.setEnabled(true);
+		hlSrchContainer.setVisible(false);
+		btnPrint.setVisible(true);
+		btnSave.setVisible(true);
+		btnCancel.setVisible(true);
+		btnSearch.setVisible(false);
+		btnEdit.setEnabled(false);
+		btnAdd.setEnabled(false);
+		btnReset.setVisible(false);
+		btnScreenName.setVisible(true);
+		btnAuditRecords.setEnabled(true);
+		lblNotification.setIcon(null);
+		lblNotification.setCaption("");
+		hlUserIPContainer.removeAllComponents();
+		// Dummy implementation, actual will be implemented in extended
+		// class
+		editDetails();
+	}
+	
+	private void buildview(Boolean isLoadFullList) {
 		btndelete.setEnabled(false);
 		tfPersonName = new GERPTextField("Person");
 		tfVendorname = new GERPTextField("Through");
@@ -325,7 +358,9 @@ public class MaterialGatepass extends BaseTransUI {
 		assemblesearchlayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearch));
 		resetFields();
-		loadSrchRslt();
+		if (isLoadFullList) {
+			loadSrchRslt();
+		}
 		loadDtlList();
 	}
 	
@@ -448,7 +483,7 @@ public class MaterialGatepass extends BaseTransUI {
 			List<GatepassHdrDM> list = new ArrayList<GatepassHdrDM>();
 			beanGatePassHdr = new BeanItemContainer<GatepassHdrDM>(GatepassHdrDM.class);
 			list = serviceGatepass.getGatepassHdrList(companyId, dfGatepassDt.getValue(),
-					(String) cbGatepasstype.getValue(), null, null, vendorId, (String) cbGateStatus.getValue(),
+					(String) cbGatepasstype.getValue(), gatePassId, null, vendorId, (String) cbGateStatus.getValue(),
 					(String) tfGatePassNo.getValue(), "F");
 			recordCnt = list.size();
 			beanGatePassHdr.addAll(list);
@@ -581,7 +616,8 @@ public class MaterialGatepass extends BaseTransUI {
 		try {
 			BeanContainer<Long, DcHdrDM> beanDC = new BeanContainer<Long, DcHdrDM>(DcHdrDM.class);
 			beanDC.setBeanIdProperty("dcId");
-			beanDC.addAll(serviceDCHdr.getMmsDcHdrList(null, null, companyId, null, null, null, null, null, "Active", "F"));
+			beanDC.addAll(serviceDCHdr.getMmsDcHdrList(null, null, companyId, null, null, null, null, null, "Active",
+					"F"));
 			cbDC.setContainerDataSource(beanDC);
 		}
 		catch (Exception e) {
@@ -942,6 +978,7 @@ public class MaterialGatepass extends BaseTransUI {
 		cbGatepasstype.setRequired(false);
 		cbVendor.setRequired(false);
 		resetFields();
+		gatePassId = null;
 		loadSrchRslt();
 	}
 	

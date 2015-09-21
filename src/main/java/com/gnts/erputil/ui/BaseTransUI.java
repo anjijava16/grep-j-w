@@ -67,7 +67,7 @@ abstract public class BaseTransUI implements ClickListener {
 	// Other local components and variables
 	String screenName = "";
 	public Label lblNotification;
-	private Button btnScreenName;
+	public Button btnScreenName;
 	// CSVExprter declaration
 	protected CSVExporter csvExporter = new CSVExporter();
 	private Window wndReportPopup = new Window();

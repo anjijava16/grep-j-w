@@ -93,9 +93,9 @@ public class MaterialEnquiry extends BaseTransUI {
 	private MmsEnqDtlService serviceMmsEnqDtl = (MmsEnqDtlService) SpringContextHelper.getBean("MmsEnqDtl");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private MMSVendorDtlService serviceMMSVendordtl = (MMSVendorDtlService) SpringContextHelper.getBean("mmsVendorDtl");
-	private IndentHdrService serviceindent = (IndentHdrService) SpringContextHelper.getBean("IndentHdr");
-	private MaterialService servicematerial = (MaterialService) SpringContextHelper.getBean("material");
+	private MMSVendorDtlService serviceVendorDtl = (MMSVendorDtlService) SpringContextHelper.getBean("mmsVendorDtl");
+	private IndentHdrService serviceIndent = (IndentHdrService) SpringContextHelper.getBean("IndentHdr");
+	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
@@ -110,7 +110,7 @@ public class MaterialEnquiry extends BaseTransUI {
 	// User Input Components for Purchase Enquire Details
 	private Button btnaddDtl = new GERPButton("Add", "addbt", this);
 	// User Input Fields for Purchase Enquire Header
-	private ComboBox cbBranch, cbEnqStatus, cbindentno;
+	private ComboBox cbBranch, cbEnqStatus, cbIndentNo;
 	private TextField tfEnqNo;
 	private TextArea taEnqRem;
 	private PopupDateField dfEnqDate, dfDueDate;
@@ -154,10 +154,47 @@ public class MaterialEnquiry extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside MaterialEnquiry() constructor");
 		// Loading the UI
-		buildView();
+		buildView(true);
 	}
 	
-	private void buildView() {
+	public MaterialEnquiry(Long enquiryId) {
+		// Get the logged in user name and company id from the session
+		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
+		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
+		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Inside MaterialEnquiry() constructor");
+		// Loading the UI
+		buildView(false);
+		this.enquiryId = enquiryId;
+		cbEnqStatus.setValue(null);
+		loadSrchRslt();
+		tblMstScrSrchRslt.setValue(tblMstScrSrchRslt.getItemIds().iterator().next());
+		hlUserIPContainer.setVisible(true);
+		hlUserIPContainer.setEnabled(true);
+		hlSrchContainer.setVisible(false);
+		btnPrint.setVisible(true);
+		btnSave.setVisible(true);
+		btnCancel.setVisible(true);
+		btnSearch.setVisible(false);
+		btnEdit.setEnabled(false);
+		btnAdd.setEnabled(false);
+		btnReset.setVisible(false);
+		btnScreenName.setVisible(true);
+		btnAuditRecords.setEnabled(true);
+		lblNotification.setIcon(null);
+		lblNotification.setCaption("");
+		hlUserIPContainer.removeAllComponents();
+		// Dummy implementation, actual will be implemented in extended
+		// class
+		editDetails();
+	}
+	
+	private void buildView(Boolean isLoadFullList) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting MaterialEnquiry UI");
 		// Initialization for Material Enquire Details user input components
 		tfEnqNo = new TextField("Enquiry No");
@@ -209,7 +246,7 @@ public class MaterialEnquiry extends BaseTransUI {
 						.split(",");
 				for (String obj : split) {
 					if (obj.trim().length() > 0) {
-						cbUom.setValue(servicematerial
+						cbUom.setValue(serviceMaterial
 								.getMaterialList(Long.valueOf(obj.trim()), companyid, null, null, null, null, null,
 										null, null, "F").get(0).getMaterialUOM());
 					}
@@ -221,9 +258,9 @@ public class MaterialEnquiry extends BaseTransUI {
 		loadUomList();
 		cbUom.setWidth("67");
 		cbUom.setHeight("18");
-		cbindentno = new ComboBox("Indent No");
-		cbindentno.setItemCaptionPropertyId("indentNo");
-		cbindentno.setWidth("150");
+		cbIndentNo = new ComboBox("Indent No");
+		cbIndentNo.setItemCaptionPropertyId("indentNo");
+		cbIndentNo.setWidth("150");
 		loadindent();
 		lsVendorName = new ListSelect("Vendor Name ");
 		lsVendorName.setItemCaptionPropertyId("vendorName");
@@ -235,7 +272,9 @@ public class MaterialEnquiry extends BaseTransUI {
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		resetFields();
-		loadSrchRslt();
+		if (isLoadFullList) {
+			loadSrchRslt();
+		}
 		loadMatDtl();
 		btnaddDtl.setStyleName("add");
 		btnaddDtl.addClickListener(new ClickListener() {
@@ -312,7 +351,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		flMmsEnqHdr4 = new FormLayout();
 		flMmsEnqHdr1.addComponent(tfEnqNo);
 		flMmsEnqHdr1.addComponent(cbBranch);
-		flMmsEnqHdr1.addComponent(cbindentno);
+		flMmsEnqHdr1.addComponent(cbIndentNo);
 		flMmsEnqHdr2.addComponent(lsVendorName);
 		flMmsEnqHdr3.addComponent(dfEnqDate);
 		flMmsEnqHdr3.addComponent(dfDueDate);
@@ -387,8 +426,8 @@ public class MaterialEnquiry extends BaseTransUI {
 			List<MmsEnqHdrDM> list = new ArrayList<MmsEnqHdrDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + cbBranch.getValue() + ", " + cbEnqStatus.getValue());
-			list = serviceMmsEnqHdr.getMmsEnqHdrList(companyid, null, tfEnqNo.getValue(), (Long) cbBranch.getValue(),
-					(String) cbEnqStatus.getValue(), username);
+			list = serviceMmsEnqHdr.getMmsEnqHdrList(companyid, enquiryId, tfEnqNo.getValue(),
+					(Long) cbBranch.getValue(), (String) cbEnqStatus.getValue(), username);
 			recordCnt = list.size();
 			beanMmsEnqHdrDM = new BeanItemContainer<MmsEnqHdrDM>(MmsEnqHdrDM.class);
 			beanMmsEnqHdrDM.addAll(list);
@@ -480,7 +519,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		tfEnqNo.setValue("");
 		tfEnqQty.setValue("0");
 		cbEnqStatus.setValue(null);
-		cbindentno.setValue(null);
+		cbIndentNo.setValue(null);
 		listEnqDetails = new ArrayList<MmsEnqDtlDM>();
 		tblMmsEnqDtl.removeAllItems();
 		cbBranch.setValue(branchId);
@@ -507,10 +546,10 @@ public class MaterialEnquiry extends BaseTransUI {
 				tfEnqNo.setValue(enqHdrDM.getEnquiryNo());
 				dfEnqDate.setValue(enqHdrDM.getEnquiryDate());
 				dfDueDate.setValue(enqHdrDM.getDueDate());
-				for (MMSVendorDtlDM enquiryVendorDtlDM : serviceMMSVendordtl.getmaterialvdrdtl(null, enquiryId, null)) {
+				for (MMSVendorDtlDM enquiryVendorDtlDM : serviceVendorDtl.getmaterialvdrdtl(null, enquiryId, null)) {
 					lsVendorName.select(enquiryVendorDtlDM.getVendorid());
 				}
-				cbindentno.setValue(enqHdrDM.getIndentId());
+				cbIndentNo.setValue(enqHdrDM.getIndentId());
 				if (enqHdrDM.getEnquiryStatus() != null) {
 					cbEnqStatus.setValue(enqHdrDM.getEnquiryStatus());
 				}
@@ -745,7 +784,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		matEnqobj.setBranchId((Long) cbBranch.getValue());
 		matEnqobj.setDueDate((Date) dfDueDate.getValue());
 		matEnqobj.setEnquiryDate((Date) dfEnqDate.getValue());
-		matEnqobj.setIndentId((Long) cbindentno.getValue());
+		matEnqobj.setIndentId((Long) cbIndentNo.getValue());
 		matEnqobj.setEnquiryStatus(((String) cbEnqStatus.getValue()));
 		matEnqobj.setPreparedBy(employeeId);
 		matEnqobj.setLastUpdateddt(DateUtils.getcurrentdate());
@@ -758,7 +797,7 @@ public class MaterialEnquiry extends BaseTransUI {
 				MMSVendorDtlDM enqvendtl = new MMSVendorDtlDM();
 				enqvendtl.setEnqid(matEnqobj.getEnquiryId());
 				enqvendtl.setVendorid(Long.valueOf(obj.trim()));
-				serviceMMSVendordtl.save(enqvendtl);
+				serviceVendorDtl.save(enqvendtl);
 			}
 		}
 		@SuppressWarnings("unchecked")
@@ -812,7 +851,7 @@ public class MaterialEnquiry extends BaseTransUI {
 						}
 						if (lsMaterial.getValue() != null) {
 							enqDtlObj.setMaterialid(Long.valueOf(obj.trim()));
-							enqDtlObj.setMaterialName(servicematerial
+							enqDtlObj.setMaterialName(serviceMaterial
 									.getMaterialList(Long.valueOf(obj.trim()), null, null, null, null, null, null,
 											null, null, "P").get(0).getMaterialName());
 						}
@@ -863,6 +902,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		lsVendorName.setRequired(false);
 		enqDtlresetFields();
 		resetFields();
+		enquiryId = null;
 		loadSrchRslt();
 	}
 	
@@ -879,7 +919,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		try {
 			BeanContainer<Long, MaterialDM> beanVendor = new BeanContainer<Long, MaterialDM>(MaterialDM.class);
 			beanVendor.setBeanIdProperty("materialId");
-			beanVendor.addAll(servicematerial.getMaterialList(null, companyid, null, null, null, null, null, null,
+			beanVendor.addAll(serviceMaterial.getMaterialList(null, companyid, null, null, null, null, null, null,
 					"Active", "P"));
 			lsMaterial.setContainerDataSource(beanVendor);
 		}
@@ -893,9 +933,9 @@ public class MaterialEnquiry extends BaseTransUI {
 		try {
 			BeanContainer<Long, IndentHdrDM> beanIndent = new BeanContainer<Long, IndentHdrDM>(IndentHdrDM.class);
 			beanIndent.setBeanIdProperty("indentId");
-			beanIndent.addAll(serviceindent.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null,
+			beanIndent.addAll(serviceIndent.getMmsIndentHdrList(null, null, null, companyid, null, null, null, null,
 					null, "F"));
-			cbindentno.setContainerDataSource(beanIndent);
+			cbIndentNo.setContainerDataSource(beanIndent);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

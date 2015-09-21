@@ -31,6 +31,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.themes.ValoTheme;
 
 public class DashbordDesignView implements ClickListener {
@@ -189,7 +190,8 @@ public class DashbordDesignView implements ClickListener {
 		VerticalLayout notificationsLayout = new VerticalLayout();
 		notificationsLayout.setMargin(true);
 		notificationsLayout.setSpacing(true);
-		final Panel panel = new Panel("Notifications(<font color=red><font size=3>"+ countnotify+ "</font></font color>) ");
+		final Panel panel = new Panel("Notifications(<font color=red><font size=3>" + countnotify
+				+ "</font></font color>) ");
 		notificationsLayout.addComponent(panel);
 		List<SmsEnqHdrDM> smsEnqHdrList = new ArrayList<SmsEnqHdrDM>();
 		SmsEnqHdrDM smspohdr = new SmsEnqHdrDM();
@@ -198,7 +200,7 @@ public class DashbordDesignView implements ClickListener {
 		smsEnqHdrList = serviceEnqHdr.getSmsEnqHdrList(null, null, null, null, "Approved", "F", null, null);
 		FormLayout fmlayout = new FormLayout();
 		VerticalLayout hrLayout = new VerticalLayout();
-		for (SmsEnqHdrDM n : smsEnqHdrList) {
+		for (final SmsEnqHdrDM n : smsEnqHdrList) {
 			hrLayout.addStyleName("notification-item");
 			Label titleLabel = new Label("\n" + "<small>Status : </small><b><font color=blue><font size=4>"
 					+ n.getEnquiryStatus() + "</font></b>", ContentMode.HTML);
@@ -214,11 +216,30 @@ public class DashbordDesignView implements ClickListener {
 				titleLabel3 = new Label("<small>Remarks : </small><font color=red> ------- </font>", ContentMode.HTML);
 			}
 			Label titleLabel4 = new Label("<HR size=3 color=red>", ContentMode.HTML);
+			Button btnView = new Button("View");
+			btnView.setStyleName(Runo.BUTTON_LINK);
+			btnView.addClickListener(new ClickListener() {
+				private static final long serialVersionUID = -6583995149292138830L;
+				
+				@Override
+				public void buttonClick(ClickEvent event) {
+					// TODO Auto-generated method stub
+					clMainLayout.removeAllComponents();
+					hlHeader.removeAllComponents();
+					UI.getCurrent().getSession().setAttribute("screenName", "Sales Enquiry");
+					UI.getCurrent().getSession().setAttribute("moduleId", 13L);
+					UI.getCurrent().getSession().setAttribute("IS_ENQ_WF", true);
+					UI.getCurrent().getSession().setAttribute("IS_MARK_FRM", false);
+					new SmsEnquiry(n.getEnquiryId());
+					notificationsWindow.close();
+				}
+			});
 			titleLabel.addStyleName("notification-title");
 			fmlayout.addComponents(titleLabel);
 			fmlayout.addComponents(titleLabel1);
 			fmlayout.addComponents(titleLabel2);
 			fmlayout.addComponent(titleLabel3);
+			fmlayout.addComponent(btnView);
 			fmlayout.addComponent(titleLabel4);
 			hrLayout.addComponent(fmlayout);
 		}

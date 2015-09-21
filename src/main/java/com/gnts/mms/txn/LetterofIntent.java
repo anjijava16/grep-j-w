@@ -78,7 +78,7 @@ public class LetterofIntent extends BaseTransUI {
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
-	private MmsQuoteDtlService serviceMmsQuoteDtlService = (MmsQuoteDtlService) SpringContextHelper
+	private MmsQuoteDtlService serviceQuoteDtl = (MmsQuoteDtlService) SpringContextHelper
 			.getBean("mmsquotedtl");
 	private MmsQuoteHdrService serviceMmsQuoteHdr = (MmsQuoteHdrService) SpringContextHelper.getBean("mmsquotehdr");
 	private List<LOIDetailsDM> indentDtlList = null;
@@ -1047,7 +1047,7 @@ public class LetterofIntent extends BaseTransUI {
 	private void loadMaterialList() {
 		try {
 			BeanItemContainer<MmsQuoteDtlDM> beanpodtl = new BeanItemContainer<MmsQuoteDtlDM>(MmsQuoteDtlDM.class);
-			beanpodtl.addAll(serviceMmsQuoteDtlService.getmmsquotedtllist(null,
+			beanpodtl.addAll(serviceQuoteDtl.getmmsquotedtllist(null,
 					((MmsQuoteHdrDM) cbQuotation.getValue()).getQuoteId(), null, null, null));
 			cbMatName.setContainerDataSource(beanpodtl);
 		}

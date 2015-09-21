@@ -16,7 +16,7 @@ public class Database {
 	public static Connection getConnection() {
 		try {
 			Class.forName("oracle.jdbc.OracleDriver");
-			Connection con = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.66:1521:XE", "erp", "saarc");
+			Connection con = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.2:1521:XE", "erp", "saarc");
 			System.out.println("Test----1");
 			return con;
 		}

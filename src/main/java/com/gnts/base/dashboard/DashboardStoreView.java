@@ -229,7 +229,7 @@ public class DashboardStoreView implements ClickListener {
 					"indentRemarks" });
 			tblIndent.setColumnHeaders(new String[] { "Indent No", "Date", "Status", "Raised by", "Purpose" });
 			tblIndent.setColumnAlignment("indentNo", Align.RIGHT);
-			tblIndent.setColumnWidth("indentRemarks", 175);
+			tblIndent.setColumnWidth("indentRemarks", 140);
 			tblIndent.addGeneratedColumn("indentStatus", new ColumnGenerator() {
 				private static final long serialVersionUID = 1L;
 				
@@ -252,6 +252,39 @@ public class DashboardStoreView implements ClickListener {
 								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
 										+ emp.getIndentStatus() + "</h1>", ContentMode.HTML);
 					}
+				}
+			});
+			tblIndent.addGeneratedColumn("indentNo", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<IndentHdrDM> item = (BeanItem<IndentHdrDM>) source.getItem(itemId);
+					final IndentHdrDM indentHdrDM = (IndentHdrDM) item.getBean();
+					HorizontalLayout hlLayout = new HorizontalLayout();
+					Button btnView = new Button("View");
+					btnView.addClickListener(new ClickListener() {
+						private static final long serialVersionUID = 1L;
+						
+						@Override
+						public void buttonClick(ClickEvent event) {
+							// TODO Auto-generated method stub
+							clMainLayout.removeAllComponents();
+							hlHeader.removeAllComponents();
+							UI.getCurrent().getSession().setAttribute("screenName", "Indent");
+							UI.getCurrent().getSession().setAttribute("moduleId", 9L);
+							new Indent(indentHdrDM.getIndentId());
+						}
+					});
+					btnView.setStyleName("view");
+					hlLayout.addComponent(btnView);
+					if (indentHdrDM.getIndentNo() != null) {
+						hlLayout.addComponent(new Label(indentHdrDM.getIndentNo()));
+					} else {
+						hlLayout.addComponent(new Label("------------"));
+					}
+					return hlLayout;
 				}
 			});
 		}
@@ -309,12 +342,11 @@ public class DashboardStoreView implements ClickListener {
 					"Pending", null, "F");
 			beanGatePassHdr.addAll(listGatepass);
 			tblGatepass.setContainerDataSource(beanGatePassHdr);
-			tblGatepass.setVisibleColumns(new Object[] { "gatepassId", "gatepassDt", "gatepassType", "returnDate",
+			tblGatepass.setVisibleColumns(new Object[] { "gatepassNo", "gatepassDt", "gatepassType", "returnDate",
 					"gatepassStatus", "lastUpdatedDt", "lastUpdatedBy" });
-			tblGatepass.setColumnHeaders(new String[] { "Ref.No", "Gate Pass Date ", "Gate Pass Type", "Return Date",
-					"Status", "Updated Date", "Updated By" });
+			tblGatepass.setColumnHeaders(new String[] { "Gatepass No.", "Gate Pass Date ", "Gate Pass Type",
+					"Return Date", "Status", "Updated Date", "Updated By" });
 			tblGatepass.setPageLength(13);
-			tblGatepass.setColumnAlignment("gatepassId", Align.RIGHT);
 			tblGatepass.addGeneratedColumn("gatepassStatus", new ColumnGenerator() {
 				private static final long serialVersionUID = 1L;
 				
@@ -336,6 +368,41 @@ public class DashboardStoreView implements ClickListener {
 								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
 										+ gatepassHdrDM.getGatepassStatus() + "</h1>", ContentMode.HTML);
 					}
+				}
+			});
+			tblGatepass.addGeneratedColumn("lastUpdatedBy", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<GatepassHdrDM> item = (BeanItem<GatepassHdrDM>) source.getItem(itemId);
+					final GatepassHdrDM gatepassHdrDM = (GatepassHdrDM) item.getBean();
+					HorizontalLayout hlLayout = new HorizontalLayout();
+					hlLayout.setSpacing(true);
+					Button btnView = new Button("View");
+					btnView.addClickListener(new ClickListener() {
+						private static final long serialVersionUID = 1L;
+						
+						@Override
+						public void buttonClick(ClickEvent event) {
+							// TODO Auto-generated method stub
+							clMainLayout.removeAllComponents();
+							hlHeader.removeAllComponents();
+							UI.getCurrent().getSession().setAttribute("screenName", "Gatepass");
+							UI.getCurrent().getSession().setAttribute("moduleId", 9L);
+							new MaterialGatepass(gatepassHdrDM.getGatepassId());
+						}
+					});
+					btnView.setStyleName("view");
+					if (gatepassHdrDM.getLastUpdatedBy() != null) {
+						hlLayout.addComponent(new Label(gatepassHdrDM.getLastUpdatedBy()));
+					} else {
+						hlLayout.addComponent(new Label("------------"));
+					}
+					hlLayout.addComponent(btnView);
+					hlLayout.setComponentAlignment(btnView, Alignment.MIDDLE_RIGHT);
+					return hlLayout;
 				}
 			});
 		}

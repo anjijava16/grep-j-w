@@ -139,10 +139,44 @@ public class Indent extends BaseTransUI {
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside Indent() constructor");
 		// Loading the UI
-		buildView();
+		buildView(true);
 	}
 	
-	private void buildView() {
+	public Indent(Long indentHdrId) {
+		// Get the logged in user name and company id from the session
+		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
+		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		employeeId = (Long) UI.getCurrent().getSession().getAttribute("employeeId");
+		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Inside Indent() constructor");
+		// Loading the UI
+		buildView(false);
+		this.indentHdrId = indentHdrId;
+		cbIndStatus.setValue(null);
+		loadSrchRslt();
+		tblMstScrSrchRslt.setValue(tblMstScrSrchRslt.getItemIds().iterator().next());
+		hlUserIPContainer.setVisible(true);
+		hlUserIPContainer.setEnabled(true);
+		hlSrchContainer.setVisible(false);
+		btnPrint.setVisible(true);
+		btnSave.setVisible(true);
+		btnCancel.setVisible(true);
+		btnSearch.setVisible(false);
+		btnEdit.setEnabled(false);
+		btnAdd.setEnabled(false);
+		btnReset.setVisible(false);
+		btnScreenName.setVisible(true);
+		btnAuditRecords.setEnabled(true);
+		lblNotification.setIcon(null);
+		lblNotification.setCaption("");
+		hlUserIPContainer.removeAllComponents();
+		// Dummy implementation, actual will be implemented in extended
+		// class
+		editDetails();
+	}
+	
+	private void buildView(Boolean isLoadFullList) {
 		// Initialization for work order Details user input components
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting Indent UI");
 		btnAddDtl.setStyleName("add");
@@ -171,7 +205,7 @@ public class Indent extends BaseTransUI {
 					btnAddDtl.setCaption("Add");
 					btnAddDtl.setStyleName("savebt");
 					btndelete.setEnabled(false);
-					IndentDtlresetField();
+					indentDtlresetField();
 				} else {
 					((AbstractSelect) event.getSource()).select(event.getItemId());
 					btnAddDtl.setCaption("Update");
@@ -269,7 +303,9 @@ public class Indent extends BaseTransUI {
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		resetFields();
-		loadSrchRslt();
+		if (isLoadFullList) {
+			loadSrchRslt();
+		}
 		loadIndentDtl();
 		btnAddDtl.setStyleName("add");
 	}
@@ -375,7 +411,7 @@ public class Indent extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfIndNo.getValue() + ", " + cbIndStatus.getValue());
 			list = serviceIndentHdr.getMmsIndentHdrList(tfIndNo.getValue(), (String) cbIndType.getValue(), null, null,
-					null, null, null, null, (String) cbIndStatus.getValue(), "F");
+					indentHdrId, null, null, null, (String) cbIndStatus.getValue(), "F");
 			recordCnt = list.size();
 			beanIndentHdrDM = new BeanItemContainer<IndentHdrDM>(IndentHdrDM.class);
 			beanIndentHdrDM.addAll(list);
@@ -409,8 +445,7 @@ public class Indent extends BaseTransUI {
 			tblIndentDtl.setContainerDataSource(beanIndentDtlDM);
 			tblIndentDtl.setVisibleColumns(new Object[] { "materialName", "materialUOM", "indentQty", "balenceQty",
 					"status" });
-			tblIndentDtl.setColumnHeaders(new String[] { "Material Name", "Material UOM", "Indent Qty", "Balance Qty",
-					"Status" });
+			tblIndentDtl.setColumnHeaders(new String[] { "Material Name", "UOM", "Indent Qty", "Bal. Qty", "Status" });
 			tblIndentDtl.setColumnFooter("status", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
@@ -571,7 +606,7 @@ public class Indent extends BaseTransUI {
 		cbMatName.setRequired(true);
 		tfIndQty.setValue("0");
 		resetFields();
-		IndentDtlresetField();
+		indentDtlresetField();
 		loadIndentDtl();
 		assembleInputUserLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
@@ -620,11 +655,12 @@ public class Indent extends BaseTransUI {
 		cbBranchId.setRequired(false);
 		cbMatName.setRequired(false);
 		tfIndNo.setReadOnly(false);
-		IndentDtlresetField();
+		indentDtlresetField();
 		hlCmdBtnLayout.setVisible(true);
 		tblIndentDtl.removeAllItems();
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
+		indentHdrId = null;
 		loadSrchRslt();
 	}
 	
@@ -648,7 +684,7 @@ public class Indent extends BaseTransUI {
 	}
 	
 	// reset the input values to IndentDtl
-	private void IndentDtlresetField() {
+	private void indentDtlresetField() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbMatName.setValue(null);
 		tfIndQty.setValue("0");
@@ -838,7 +874,7 @@ public class Indent extends BaseTransUI {
 					}
 				}
 			}
-			IndentDtlresetField();
+			indentDtlresetField();
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -903,7 +939,7 @@ public class Indent extends BaseTransUI {
 			if (tblIndentDtl.getValue() != null) {
 				save = beanIndentDtlDM.getItem(tblIndentDtl.getValue()).getBean();
 				listIndentDtls.remove(save);
-				IndentDtlresetField();
+				indentDtlresetField();
 				loadIndentDtl();
 				btndelete.setEnabled(false);
 			}

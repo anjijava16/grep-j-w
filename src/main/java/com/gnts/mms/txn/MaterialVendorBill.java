@@ -688,48 +688,86 @@ public class MaterialVendorBill extends BaseTransUI {
 					taRemark.setValue(vendorBillHdrDM.getBillRemark().toString());
 				}
 				tfBasictotal.setReadOnly(false);
-				tfBasictotal.setValue(vendorBillHdrDM.getBasicTotal().toString());
+				if (vendorBillHdrDM.getBasicTotal() != null) {
+					tfBasictotal.setValue(vendorBillHdrDM.getBasicTotal().toString());
+				}
 				tfBasictotal.setReadOnly(true);
-				tfpackingPer.setValue(vendorBillHdrDM.getPackingPrcnt().toString());
+				if (vendorBillHdrDM.getPackingPrcnt() != null) {
+					tfpackingPer.setValue(vendorBillHdrDM.getPackingPrcnt().toString());
+				}
 				tfPaclingValue.setReadOnly(false);
-				tfPaclingValue.setValue(vendorBillHdrDM.getPackingPrcnt().toString());
+				if (vendorBillHdrDM.getPackingPrcnt() != null) {
+					tfPaclingValue.setValue(vendorBillHdrDM.getPackingPrcnt().toString());
+				}
 				tfPaclingValue.setReadOnly(true);
 				tfSubTotal.setReadOnly(false);
-				tfSubTotal.setValue(vendorBillHdrDM.getSubTotal().toString());
+				if (vendorBillHdrDM.getSubTotal() != null) {
+					tfSubTotal.setValue(vendorBillHdrDM.getSubTotal().toString());
+				}
 				tfSubTotal.setReadOnly(true);
-				tfVatPer.setValue(vendorBillHdrDM.getVatPrcnt().toString());
+				if (vendorBillHdrDM.getVatPrcnt() != null) {
+					tfVatPer.setValue(vendorBillHdrDM.getVatPrcnt().toString());
+				}
 				tfVatValue.setReadOnly(false);
-				tfVatValue.setValue(vendorBillHdrDM.getVatValue().toString());
+				if (vendorBillHdrDM.getVatValue() != null) {
+					tfVatValue.setValue(vendorBillHdrDM.getVatValue().toString());
+				}
 				tfVatValue.setReadOnly(true);
-				tfEDPer.setValue(vendorBillHdrDM.getEdPrcnt().toString());
+				if (vendorBillHdrDM.getEdPrcnt() != null) {
+					tfEDPer.setValue(vendorBillHdrDM.getEdPrcnt().toString());
+				}
 				tfEDValue.setReadOnly(false);
-				tfEDValue.setValue(vendorBillHdrDM.getEdValue().toString());
+				if (vendorBillHdrDM.getEdValue() != null) {
+					tfEDValue.setValue(vendorBillHdrDM.getEdValue().toString());
+				}
 				tfEDValue.setReadOnly(true);
-				tfHEDPer.setValue(vendorBillHdrDM.getHedPrcnt().toString());
+				if (vendorBillHdrDM.getHedPrcnt() != null) {
+					tfHEDPer.setValue(vendorBillHdrDM.getHedPrcnt().toString());
+				}
 				tfHEDValue.setReadOnly(false);
-				tfHEDValue.setValue(vendorBillHdrDM.getHedValue().toString());
+				if (vendorBillHdrDM.getHedValue() != null) {
+					tfHEDValue.setValue(vendorBillHdrDM.getHedValue().toString());
+				}
 				tfHEDValue.setReadOnly(true);
-				tfCessPer.setValue(vendorBillHdrDM.getCessPrcnt().toString());
+				if (vendorBillHdrDM.getCessPrcnt() != null) {
+					tfCessPer.setValue(vendorBillHdrDM.getCessPrcnt().toString());
+				}
 				tfCessValue.setReadOnly(false);
-				tfCessValue.setValue(vendorBillHdrDM.getCessValue().toString());
+				if (vendorBillHdrDM.getCessValue() != null) {
+					tfCessValue.setValue(vendorBillHdrDM.getCessValue().toString());
+				}
 				tfCessValue.setReadOnly(true);
-				tfCstPer.setValue(vendorBillHdrDM.getCstPrcnt().toString());
+				if (vendorBillHdrDM.getCstPrcnt() != null) {
+					tfCstPer.setValue(vendorBillHdrDM.getCstPrcnt().toString());
+				}
 				tfCstValue.setReadOnly(false);
-				tfCstValue.setValue(vendorBillHdrDM.getCstValue().toString());
+				if (vendorBillHdrDM.getCstValue() != null) {
+					tfCstValue.setValue(vendorBillHdrDM.getCstValue().toString());
+				}
 				tfCstValue.setReadOnly(true);
 				tfSubTaxTotal.setReadOnly(false);
-				tfSubTaxTotal.setValue(vendorBillHdrDM.getSubTaxTotal().toString());
+				if (vendorBillHdrDM.getSubTaxTotal() != null) {
+					tfSubTaxTotal.setValue(vendorBillHdrDM.getSubTaxTotal().toString());
+				}
 				tfSubTaxTotal.setReadOnly(true);
-				tfFreightPer.setValue(vendorBillHdrDM.getFreightPrcnt().toString());
+				if (vendorBillHdrDM.getFreightPrcnt() != null) {
+					tfFreightPer.setValue(vendorBillHdrDM.getFreightPrcnt().toString());
+				}
 				tfFreightValue.setReadOnly(false);
 				tfFreightValue.setValue(vendorBillHdrDM.getFreightValue().toString());
 				tfFreightValue.setReadOnly(true);
-				tfOtherPer.setValue((vendorBillHdrDM.getOtherPrcnt().toString()));
+				if (vendorBillHdrDM.getOtherPrcnt() != null) {
+					tfOtherPer.setValue((vendorBillHdrDM.getOtherPrcnt().toString()));
+				}
 				tfOtherValue.setReadOnly(false);
-				tfOtherValue.setValue((vendorBillHdrDM.getOtherValue().toString()));
+				if (vendorBillHdrDM.getOtherValue() != null) {
+					tfOtherValue.setValue((vendorBillHdrDM.getOtherValue().toString()));
+				}
 				tfOtherValue.setReadOnly(true);
 				tfGrandtotal.setReadOnly(false);
-				tfGrandtotal.setValue(vendorBillHdrDM.getGrantTotal().toString());
+				if (vendorBillHdrDM.getGrantTotal() != null) {
+					tfGrandtotal.setValue(vendorBillHdrDM.getGrantTotal().toString());
+				}
 				tfGrandtotal.setReadOnly(true);
 				if (vendorBillHdrDM.getPaymentTerms() != null) {
 					tfpaymetTerms.setValue(vendorBillHdrDM.getPaymentTerms());
@@ -809,10 +847,14 @@ public class MaterialVendorBill extends BaseTransUI {
 					tfrejectQty.setValue(vendorBillDtlDM.getRejectQty().toString());
 				}
 				tfUnitRate.setReadOnly(false);
-				tfUnitRate.setValue(vendorBillDtlDM.getUnitRate().toString());
+				if (vendorBillDtlDM.getUnitRate() != null) {
+					tfUnitRate.setValue(vendorBillDtlDM.getUnitRate().toString());
+				}
 				tfUnitRate.setReadOnly(true);
 				tfBasicValue.setReadOnly(false);
-				tfBasicValue.setValue(vendorBillDtlDM.getBasicValue().toString());
+				if (vendorBillDtlDM.getBasicValue() != null) {
+					tfBasicValue.setValue(vendorBillDtlDM.getBasicValue().toString());
+				}
 				tfBasicValue.setReadOnly(true);
 				cbMatUom.setReadOnly(false);
 				cbMatUom.setValue(vendorBillDtlDM.getMaterialUom());

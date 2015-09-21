@@ -178,10 +178,48 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside PurchasePO() constructor");
 		// Loading the PO UI
-		buildView();
+		buildView(true);
 	}
 	
-	private void buildView() {
+	public MmsPurchaseOrder(Long poId) {
+		// Get the logged in user name and company id from the session
+		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
+		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		// StateId = Long.valueOf(UI.getCurrent().getSession().getAttribute("stateId").toString());
+		moduleId = 9L;
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
+		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
+				+ "Inside PurchasePO() constructor");
+		// Loading the PO UI
+		buildView(false);
+		this.poId = poId;
+		cbStatus.setValue(null);
+		loadSrchRslt();
+		tblMstScrSrchRslt.setValue(tblMstScrSrchRslt.getItemIds().iterator().next());
+		hlUserIPContainer.setVisible(true);
+		hlUserIPContainer.setEnabled(true);
+		hlSrchContainer.setVisible(false);
+		btnPrint.setVisible(true);
+		btnSave.setVisible(true);
+		btnCancel.setVisible(true);
+		btnSearch.setVisible(false);
+		btnEdit.setEnabled(false);
+		btnAdd.setEnabled(false);
+		btnReset.setVisible(false);
+		btnScreenName.setVisible(true);
+		btnAuditRecords.setEnabled(true);
+		lblNotification.setIcon(null);
+		lblNotification.setCaption("");
+		hlUserIPContainer.removeAllComponents();
+		// Dummy implementation, actual will be implemented in extended
+		// class
+		editDetails();
+	}
+	
+	private void buildView(Boolean isLoadFullList) {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting Tax UI");
 		// Initialization for PurchasePO Details user input components
 		cbQuoteRef = new GERPComboBox("Quote Ref No.");
@@ -490,7 +528,9 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		assembleSearchLayout();
 		resetFields();
-		loadSrchRslt();
+		if (isLoadFullList) {
+			loadSrchRslt();
+		}
 		loadPODetails();
 		btnsavepurQuote.setStyleName("add");
 	}
@@ -798,7 +838,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 		tblMstScrSrchRslt.removeAllItems();
 		List<POHdrDM> pohdrlist = new ArrayList<POHdrDM>();
-		pohdrlist = servicepohdr.getPOHdrList(companyid, null, (Long) cbBranch.getValue(), null,
+		pohdrlist = servicepohdr.getPOHdrList(companyid, poId, (Long) cbBranch.getValue(), null,
 				(String) cbStatus.getValue(), (String) cbpoType.getValue(), tfPONo.getValue(), "F");
 		recordcnt = pohdrlist.size();
 		beanpohdr = new BeanItemContainer<POHdrDM>(POHdrDM.class);
@@ -993,69 +1033,113 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				dfExpDt.setValue(poHdrDM.getExpDate1());
 				taRemark.setValue(poHdrDM.getPoRemark());
 				tfvendorCode.setValue(poHdrDM.getVendorCode());
-				tfversionNo.setValue(poHdrDM.getVersionNo().toString());
+				if (poHdrDM.getVersionNo() != null) {
+					tfversionNo.setValue(poHdrDM.getVersionNo().toString());
+				}
 				tfBasictotal.setReadOnly(false);
-				tfBasictotal.setValue(poHdrDM.getBasicTotal().toString());
+				if (poHdrDM.getBasicTotal() != null) {
+					tfBasictotal.setValue(poHdrDM.getBasicTotal().toString());
+				}
 				tfBasictotal.setReadOnly(true);
 				tfpackingPer.setReadOnly(false);
-				tfpackingPer.setValue(poHdrDM.getPackingPrcnt().toString());
+				if (poHdrDM.getPackingPrcnt() != null) {
+					tfpackingPer.setValue(poHdrDM.getPackingPrcnt().toString());
+				}
 				tfpackingPer.setReadOnly(true);
 				tfPackingValue.setReadOnly(false);
-				tfPackingValue.setValue(poHdrDM.getPackingVL().toString());
+				if (poHdrDM.getPackingVL() != null) {
+					tfPackingValue.setValue(poHdrDM.getPackingVL().toString());
+				}
 				tfPackingValue.setReadOnly(true);
 				tfSubTotal.setReadOnly(false);
-				tfSubTotal.setValue(poHdrDM.getSubTotal().toString());
+				if (poHdrDM.getSubTotal() != null) {
+					tfSubTotal.setValue(poHdrDM.getSubTotal().toString());
+				}
 				tfSubTotal.setReadOnly(true);
 				tfDutyTotal.setReadOnly(false);
-				tfDutyTotal.setValue(poHdrDM.getDutyTotal().toString());
+				if (poHdrDM.getDutyTotal() != null) {
+					tfDutyTotal.setValue(poHdrDM.getDutyTotal().toString());
+				}
 				tfDutyTotal.setReadOnly(true);
 				tfEDPer.setReadOnly(false);
-				tfEDPer.setValue(poHdrDM.getEdPrcnt().toString());
+				if (poHdrDM.getEdPrcnt() != null) {
+					tfEDPer.setValue(poHdrDM.getEdPrcnt().toString());
+				}
 				tfEDPer.setReadOnly(true);
 				tfEDValue.setReadOnly(false);
-				tfEDValue.setValue(poHdrDM.getEdValue().toString());
+				if (poHdrDM.getEdValue() != null) {
+					tfEDValue.setValue(poHdrDM.getEdValue().toString());
+				}
 				tfEDValue.setReadOnly(true);
 				tfHEDPer.setReadOnly(false);
-				tfHEDPer.setValue(poHdrDM.getHedPrcnt().toString());
+				if (poHdrDM.getHedPrcnt() != null) {
+					tfHEDPer.setValue(poHdrDM.getHedPrcnt().toString());
+				}
 				tfHEDPer.setReadOnly(true);
 				tfHEDValue.setReadOnly(false);
-				tfHEDValue.setValue(poHdrDM.getHedValue().toString());
+				if (poHdrDM.getHedValue() != null) {
+					tfHEDValue.setValue(poHdrDM.getHedValue().toString());
+				}
 				tfHEDValue.setReadOnly(true);
 				tfCessPer.setReadOnly(false);
-				tfCessPer.setValue(poHdrDM.getCessPrcnt().toString());
+				if (poHdrDM.getCessPrcnt() != null) {
+					tfCessPer.setValue(poHdrDM.getCessPrcnt().toString());
+				}
 				tfCessPer.setReadOnly(true);
 				tfCessValue.setReadOnly(false);
-				tfCessValue.setValue(poHdrDM.getCessValue().toString());
+				if (poHdrDM.getCessValue() != null) {
+					tfCessValue.setValue(poHdrDM.getCessValue().toString());
+				}
 				tfCessValue.setReadOnly(true);
 				tfVatPer.setReadOnly(false);
-				tfVatPer.setValue(poHdrDM.getVatPrcnt().toString());
+				if (poHdrDM.getVatPrcnt() != null) {
+					tfVatPer.setValue(poHdrDM.getVatPrcnt().toString());
+				}
 				tfVatPer.setReadOnly(true);
 				tfVatValue.setReadOnly(false);
-				tfVatValue.setValue(poHdrDM.getVatValue().toString());
+				if (poHdrDM.getVatValue() != null) {
+					tfVatValue.setValue(poHdrDM.getVatValue().toString());
+				}
 				tfVatValue.setReadOnly(true);
 				tfCstPer.setReadOnly(false);
-				tfCstPer.setValue(poHdrDM.getCstPrcnt().toString());
+				if (poHdrDM.getCstPrcnt() != null) {
+					tfCstPer.setValue(poHdrDM.getCstPrcnt().toString());
+				}
 				tfCstPer.setReadOnly(true);
 				tfCstValue.setReadOnly(false);
-				tfCstValue.setValue(poHdrDM.getCstValue().toString());
+				if (poHdrDM.getCstValue() != null) {
+					tfCstValue.setValue(poHdrDM.getCstValue().toString());
+				}
 				tfCstValue.setReadOnly(true);
 				tfSubTaxTotal.setReadOnly(false);
-				tfSubTaxTotal.setValue(poHdrDM.getSubTaxTotal().toString());
+				if (poHdrDM.getSubTaxTotal() != null) {
+					tfSubTaxTotal.setValue(poHdrDM.getSubTaxTotal().toString());
+				}
 				tfSubTaxTotal.setReadOnly(true);
 				tfFreightPer.setReadOnly(false);
-				tfFreightPer.setValue(poHdrDM.getFrgtPrcnt().toString());
+				if (poHdrDM.getFrgtPrcnt() != null) {
+					tfFreightPer.setValue(poHdrDM.getFrgtPrcnt().toString());
+				}
 				tfFreightPer.setReadOnly(true);
 				tfFreightValue.setReadOnly(false);
-				tfFreightValue.setValue(poHdrDM.getFrgtValue().toString());
+				if (poHdrDM.getFrgtValue() != null) {
+					tfFreightValue.setValue(poHdrDM.getFrgtValue().toString());
+				}
 				tfFreightValue.setReadOnly(true);
 				tfOtherPer.setReadOnly(false);
-				tfOtherPer.setValue((poHdrDM.getOthersPrcnt().toString()));
+				if (poHdrDM.getOthersPrcnt() != null) {
+					tfOtherPer.setValue((poHdrDM.getOthersPrcnt().toString()));
+				}
 				tfOtherPer.setReadOnly(true);
 				tfOtherValue.setReadOnly(false);
-				tfOtherValue.setValue((poHdrDM.getOthersValue().toString()));
+				if (poHdrDM.getOthersValue() != null) {
+					tfOtherValue.setValue((poHdrDM.getOthersValue().toString()));
+				}
 				tfOtherValue.setReadOnly(true);
 				tfGrandtotal.setReadOnly(false);
-				tfGrandtotal.setValue(poHdrDM.getGrandTotal().toString());
+				if (poHdrDM.getGrandTotal() != null) {
+					tfGrandtotal.setValue(poHdrDM.getGrandTotal().toString());
+				}
 				tfGrandtotal.setReadOnly(true);
 				if (poHdrDM.getPaymentTerms() != null) {
 					tfPaymentTerms.setValue(poHdrDM.getPaymentTerms().toString());
@@ -1120,8 +1204,8 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	private void editPODtl() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Editing the selected record");
 		if (tblPODetails.getValue() != null) {
-			MmsPoDtlDM editmmspodtllist = beanpodtl.getItem(tblPODetails.getValue()).getBean();
-			Long matid = editmmspodtllist.getMaterialid();
+			MmsPoDtlDM poDtlDM = beanpodtl.getItem(tblPODetails.getValue()).getBean();
+			Long matid = poDtlDM.getMaterialid();
 			Collection<?> matids = cbMaterial.getItemIds();
 			for (Iterator<?> iterator = matids.iterator(); iterator.hasNext();) {
 				Object itemId = (Object) iterator.next();
@@ -1133,35 +1217,45 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				}
 			}
 			tfQuoteQnty.setReadOnly(false);
-			if (editmmspodtllist.getReqQty() != null) {
-				tfQuoteQnty.setValue(editmmspodtllist.getReqQty().toString());
+			if (poDtlDM.getReqQty() != null) {
+				tfQuoteQnty.setValue(poDtlDM.getReqQty().toString());
 			}
-			if (editmmspodtllist.getDiscountPer() != null) {
-				tfDiscountPer.setValue(editmmspodtllist.getDiscountPer().toString());
+			if (poDtlDM.getDiscountPer() != null) {
+				tfDiscountPer.setValue(poDtlDM.getDiscountPer().toString());
 			}
-			if (editmmspodtllist.getDiscountVal() != null) {
-				tfDiscountRate.setValue(editmmspodtllist.getDiscountVal().toString());
+			if (poDtlDM.getDiscountVal() != null) {
+				tfDiscountRate.setValue(poDtlDM.getDiscountVal().toString());
 			}
 			tfQuoteQnty.setReadOnly(true);
 			tfPOQty.setReadOnly(false);
-			if (editmmspodtllist.getReqQty() != null) {
-				tfPOQty.setValue(editmmspodtllist.getReqQty().toString());
+			if (poDtlDM.getReqQty() != null) {
+				tfPOQty.setValue(poDtlDM.getReqQty().toString());
 			}
-			tfUnitRate.setValue(editmmspodtllist.getUnitrate().toString());
+			if (poDtlDM.getUnitrate() != null) {
+				tfUnitRate.setValue(poDtlDM.getUnitrate().toString());
+			}
 			cbMatUom.setReadOnly(false);
-			cbMatUom.setValue(editmmspodtllist.getMaterialuom());
+			cbMatUom.setValue(poDtlDM.getMaterialuom());
 			cbMatUom.setReadOnly(true);
 			tfBasicValue.setReadOnly(false);
-			tfBasicValue.setValue(editmmspodtllist.getBasicvalue().toString());
+			if (poDtlDM.getBasicvalue() != null) {
+				tfBasicValue.setValue(poDtlDM.getBasicvalue().toString());
+			}
 			tfBasicValue.setReadOnly(true);
 			tfDiscountPer.setReadOnly(false);
-			tfDiscountPer.setValue(editmmspodtllist.getDiscountPer().toString());
+			if (poDtlDM.getDiscountPer() != null) {
+				tfDiscountPer.setValue(poDtlDM.getDiscountPer().toString());
+			}
 			tfDiscountPer.setReadOnly(true);
 			tfDiscountRate.setReadOnly(false);
-			tfDiscountRate.setValue(editmmspodtllist.getDiscountVal().toString());
+			if (poDtlDM.getDiscountVal() != null) {
+				tfDiscountRate.setValue(poDtlDM.getDiscountVal().toString());
+			}
 			tfDiscountRate.setReadOnly(true);
-			taPODtlRemark.setValue(editmmspodtllist.getRemarks());
-			cbPODtlStatus.setValue(editmmspodtllist.getPodtlstatus());
+			if (poDtlDM.getRemarks() != null) {
+				taPODtlRemark.setValue(poDtlDM.getRemarks());
+			}
+			cbPODtlStatus.setValue(poDtlDM.getPodtlstatus());
 		}
 	}
 	
@@ -1510,6 +1604,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfUnitRate.setRequired(false);
 		resetFields();
 		resetDetailsFields();
+		poId = null;
 		loadSrchRslt();
 	}
 	

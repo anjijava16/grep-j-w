@@ -47,6 +47,8 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
@@ -64,7 +66,8 @@ public class Generator extends BaseTransUI {
 	private Logger logger = Logger.getLogger(Generator.class);
 	// User Input Fields for Generator
 	private TextField tfDiselOpenBal, tfGenTotalTime, tfDiselConsBal, tfVolts, tfAmps, tfRpmHz, tfDiselCloseBal,
-			tfDiselPurLtrs, tfOtherUseLtrs, tfLtrPerHours, tfMachineServRemain, tfOneLtrCost, tfTotalCost, tfTotalTime;
+			tfDiselPurLtrs, tfOtherUseLtrs, tfLtrPerHours, tfMachineServRemain, tfOneLtrCost, tfTotalCost,
+			tfSessionTime;
 	private PopupDateField dfRefDate, dfRefEndDate;
 	private GERPTimeField tfGenStartTime, tfGenStopTime;
 	private ComboBox cbAssetName;
@@ -101,7 +104,15 @@ public class Generator extends BaseTransUI {
 		// EC Request Components Definition
 		tfDiselOpenBal = new GERPTextField("Disel Open Balance");
 		tfGenTotalTime = new GERPTextField("Generator Total time");
-		loadGenTotalTime();
+		tfGenTotalTime.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				getGenSetTime();
+			}
+		});
 		tfDiselConsBal = new TextField("Disel Consuption Balance");
 		tfDiselConsBal.setReadOnly(false);
 		tfDiselConsBal.addValueChangeListener(new ValueChangeListener() {
@@ -152,6 +163,15 @@ public class Generator extends BaseTransUI {
 		});
 		tfLtrPerHours = new GERPTextField("Liter per Hour");
 		tfMachineServRemain = new GERPTextField("Service Remainder");
+		tfMachineServRemain.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				getServiceTime();
+			}
+		});
 		tfOneLtrCost = new GERPTextField("One Liter Cost");
 		tfOneLtrCost.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -162,14 +182,12 @@ public class Generator extends BaseTransUI {
 				getTotLtrCost();
 			}
 		});
-		tfTotalTime = new GERPTextField("Session Time");
-		tfTotalTime.addBlurListener(new BlurListener() {
+		tfSessionTime = new GERPTextField("Session Time");
+		tfMachineServRemain.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void blur(BlurEvent event) {
-				tfGenTotalTime.setValue((new BigDecimal(tfTotalTime.getValue())).add(
-						new BigDecimal(tfGenTotalTime.getValue())).toString());
 				// TODO Auto-generated method stub
 			}
 		});
@@ -209,7 +227,7 @@ public class Generator extends BaseTransUI {
 				// TODO Auto-generated method stub
 				try {
 					loadAssetDetails();
-					getGenSetTotalTime();
+					getGenSetTime();
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -219,14 +237,6 @@ public class Generator extends BaseTransUI {
 		});
 		loadAssetList();
 		dfRefDate = new GERPPopupDateField("Start Date");
-		dfRefDate.addBlurListener(new BlurListener() {
-			private static final long serialVersionUID = 1L;
-			
-			public void blur(BlurEvent event) {
-				// TODO Auto-generated method stub
-				getGenSetTotalTime();
-			}
-		});
 		dfRefEndDate = new GERPPopupDateField("End Date");
 		cbStatus.setWidth("150");
 		hlsearchlayout = new GERPAddEditHLayout();
@@ -237,46 +247,15 @@ public class Generator extends BaseTransUI {
 		btnPrint.setVisible(true);
 	}
 	
-	private void getGenSetTotalTime() {
-		// TODO Auto-generated method stub
-		try {
-			for (GeneratorDM generatorDM : serviceGenerator.getGeneratorDetailList(companyid, branchId, null,
-					(Long) cbAssetName.getValue(), dfRefDate.getValue(), null, null, addDays(dfRefDate.getValue(), 1))) {
-				tfGenTotalTime.setValue(generatorDM.getGenTotalTime().toString());
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			logger.info(e.getMessage());
-		}
-	}
-	
-	private void loadGenTotalTime() {
-		GeneratorDM generatorDM = null;
-		try {
-			generatorDM = serviceGenerator.getGeneratorDetailList(companyid, branchId, null, null, null, null, "Y",
-					null).get(0);
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
-		try {
-			tfGenTotalTime.setValue(generatorDM.getGenTotalTime().toString());
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
-	}
-	
 	private void getTotalHours() {
 		try {
 			// TODO Auto-generated method stub
 			if (tfGenStartTime.getValue() != null && tfGenStopTime.getValue() != null) {
 				if (tfGenStartTime.getHorsMunitesinBigDecimal().compareTo(tfGenStopTime.getHorsMunitesinBigDecimal()) < 0) {
-					tfTotalTime.setValue(tfGenStartTime.getHorsMunitesinBigDecimal()
+					tfSessionTime.setValue(tfGenStartTime.getHorsMunitesinBigDecimal()
 							.subtract(tfGenStopTime.getHorsMunitesinBigDecimal()).abs().toString());
 				} else {
-					tfTotalTime.setValue("0.0");
+					tfSessionTime.setValue("0.0");
 				}
 			}
 		}
@@ -324,10 +303,10 @@ public class Generator extends BaseTransUI {
 	private void getLiterHour() {
 		try {
 			// TODO Auto-generated method stub
-			if (tfTotalTime.getValue() != null && tfDiselConsBal.getValue() != null) {
+			if (tfSessionTime.getValue() != null && tfDiselConsBal.getValue() != null) {
 				tfLtrPerHours.setReadOnly(false);
 				tfLtrPerHours.setValue((new BigDecimal(tfDiselConsBal.getValue())).divide(
-						new BigDecimal(tfTotalTime.getValue())).toString());
+						new BigDecimal(tfSessionTime.getValue())).toString());
 				tfLtrPerHours.setReadOnly(true);
 			} else {
 				tfLtrPerHours.setValue("0");
@@ -370,7 +349,7 @@ public class Generator extends BaseTransUI {
 		flcol1.addComponent(cbAssetName);
 		flcol1.addComponent(tfGenStartTime);
 		flcol1.addComponent(tfGenStopTime);
-		flcol2.addComponent(tfTotalTime);
+		flcol2.addComponent(tfSessionTime);
 		flcol2.addComponent(tfGenTotalTime);
 		flcol2.addComponent(tfVolts);
 		flcol2.addComponent(tfAmps);
@@ -417,7 +396,7 @@ public class Generator extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + null + "," + tfDiselOpenBal.getValue() + ", " + (String) cbStatus.getValue());
 			list = serviceGenerator.getGeneratorDetailList(companyid, branchId, null, (Long) cbAssetName.getValue(),
-					dfRefDate.getValue(), (String) cbStatus.getValue(), null, dfRefEndDate.getValue());
+					dfRefDate.getValue(), (String) cbStatus.getValue(), null, null, dfRefEndDate.getValue());
 			recordCnt = list.size();
 			beanGenerator = new BeanItemContainer<GeneratorDM>(GeneratorDM.class);
 			beanGenerator.addAll(list);
@@ -425,7 +404,7 @@ public class Generator extends BaseTransUI {
 					+ "Got the ECReq. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanGenerator);
 			tblMstScrSrchRslt.setVisibleColumns(new Object[] { "gensetId", "assetName", "gensetDate", "genOnTime",
-					"getOffTime", "totalTime", "genTotalTime", "status", "lastupdateddt", "lastupdatedby" });
+					"getOffTime", "sessionTime", "genTotalTime", "status", "lastupdateddt", "lastupdatedby" });
 			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Asset Name", "Date", "On Time", "Off Time",
 					"Session Time", "Total Time", "Status", "Last Updated date", "Last Updated by" });
 			tblMstScrSrchRslt.setColumnAlignment("gensetId", Align.RIGHT);
@@ -466,14 +445,16 @@ public class Generator extends BaseTransUI {
 				dfRefDate.setValue(generatorDM.getGensetDate1());
 				tfGenStartTime.setTime(generatorDM.getGenOnTime());
 				tfGenStopTime.setTime(generatorDM.getGetOffTime());
-				tfTotalTime.setValue(generatorDM.getTotalTime());
+				tfSessionTime.setValue(generatorDM.getSessionTime().toString());
 				if (generatorDM.getDiselOpenBalance() != null) {
 					tfDiselOpenBal.setValue(generatorDM.getDiselOpenBalance().toString());
 				}
 				if (generatorDM.getConsuptionBalance() != null) {
 					tfDiselConsBal.setValue(generatorDM.getConsuptionBalance().toString());
 				}
-				tfGenTotalTime.setValue(generatorDM.getTotalTime());
+				tfGenTotalTime.setReadOnly(false);
+				tfGenTotalTime.setValue(generatorDM.getGenTotalTime().toString());
+				tfGenTotalTime.setReadOnly(true);
 				if (generatorDM.getVolts() != null) {
 					tfVolts.setValue(generatorDM.getVolts().toString());
 				}
@@ -499,9 +480,11 @@ public class Generator extends BaseTransUI {
 					tfLtrPerHours.setValue(generatorDM.getLiterPerHour().toString());
 					tfLtrPerHours.setReadOnly(true);
 				}
+				tfMachineServRemain.setReadOnly(false);
 				if (generatorDM.getMachineServiceRemain() != null) {
 					tfMachineServRemain.setValue(generatorDM.getMachineServiceRemain().toString());
 				}
+				tfMachineServRemain.setReadOnly(true);
 				if (generatorDM.getOneLiterCost() != null) {
 					tfOneLtrCost.setValue(generatorDM.getOneLiterCost().toString());
 				}
@@ -528,7 +511,9 @@ public class Generator extends BaseTransUI {
 		generatorDM.setAssetId((Long) cbAssetName.getValue());
 		generatorDM.setGensetDate(dfRefDate.getValue());
 		generatorDM.setDiselOpenBalance(new BigDecimal(tfDiselOpenBal.getValue()));
+		tfGenTotalTime.setReadOnly(false);
 		generatorDM.setGenTotalTime(new BigDecimal(tfGenTotalTime.getValue()));
+		tfGenTotalTime.setReadOnly(true);
 		generatorDM.setConsuptionBalance(new BigDecimal(tfDiselConsBal.getValue()));
 		generatorDM.setVolts(new BigDecimal(tfVolts.getValue()));
 		generatorDM.setAmps(new BigDecimal(tfAmps.getValue()));
@@ -541,14 +526,17 @@ public class Generator extends BaseTransUI {
 		tfLtrPerHours.setReadOnly(false);
 		generatorDM.setLiterPerHour(new BigDecimal(tfLtrPerHours.getValue()));
 		tfLtrPerHours.setReadOnly(true);
+		tfMachineServRemain.setReadOnly(false);
 		generatorDM.setMachineServiceRemain(new BigDecimal(tfMachineServRemain.getValue()));
+		tfMachineServRemain.setReadOnly(true);
 		generatorDM.setOneLiterCost(new BigDecimal(tfOneLtrCost.getValue()));
 		generatorDM.setTotalCost(new BigDecimal(tfTotalCost.getValue()));
 		generatorDM.setGenOnTime(tfGenStartTime.getHorsMunites());
 		generatorDM.setGetOffTime(tfGenStopTime.getHorsMunites());
-		generatorDM.setTotalTime(tfTotalTime.getValue());
+		generatorDM.setSessionTime(new BigDecimal(tfSessionTime.getValue()));
 		generatorDM.setRunningMachineDetails(taRunningMachineDtl.getValue());
 		generatorDM.setRemarks(taRemarks.getValue());
+		generatorDM.setIsLatest("Y");
 		generatorDM.setStatus((String) cbStatus.getValue());
 		generatorDM.setLastupdatedby(username);
 		generatorDM.setCompanyId(companyid);
@@ -645,9 +633,11 @@ public class Generator extends BaseTransUI {
 		dfRefDate.setValue(null);
 		tfGenStartTime.setValue(null);
 		tfGenStopTime.setValue(null);
-		tfTotalTime.setValue("0");
+		tfSessionTime.setValue("0");
 		tfDiselOpenBal.setValue("0");
+		tfGenTotalTime.setReadOnly(false);
 		tfGenTotalTime.setValue("0");
+		tfGenTotalTime.setReadOnly(true);
 		tfDiselConsBal.setReadOnly(false);
 		tfDiselConsBal.setValue("0");
 		tfVolts.setValue("0");
@@ -661,7 +651,9 @@ public class Generator extends BaseTransUI {
 		tfLtrPerHours.setReadOnly(false);
 		tfLtrPerHours.setValue("0");
 		tfLtrPerHours.setReadOnly(true);
+		tfMachineServRemain.setReadOnly(false);
 		tfMachineServRemain.setValue("");
+		tfMachineServRemain.setReadOnly(true);
 		tfTotalCost.setValue("0");
 		tfOneLtrCost.setReadOnly(false);
 		tfOneLtrCost.setValue("0");
@@ -745,11 +737,7 @@ public class Generator extends BaseTransUI {
 	private void loadAssetDetails() {
 		try {
 			GeneratorDM generatorDM = serviceGenerator.getGeneratorDetailList(companyid, branchId, null,
-					(Long) cbAssetName.getValue(), dfRefDate.getValue(), null, "Y", addDays(dfRefDate.getValue(), 1))
-					.get(0);
-			if (generatorDM.getGenTotalTime() != null) {
-				tfGenTotalTime.setValue(generatorDM.getGenTotalTime().toString());
-			}
+					(Long) cbAssetName.getValue(), dfRefDate.getValue(), "Active", null, "Y", null).get(0);
 			if (generatorDM.getDiselCloseBalance() != null) {
 				tfDiselOpenBal.setValue(generatorDM.getDiselCloseBalance().toString());
 			}
@@ -765,6 +753,46 @@ public class Generator extends BaseTransUI {
 			if (generatorDM.getOneLiterCost() != null) {
 				tfOneLtrCost.setValue(generatorDM.getOneLiterCost().toString());
 			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void getServiceTime() {
+		try {
+			if (Double.valueOf(tfMachineServRemain.getValue()) > 0) {
+				tfMachineServRemain.setReadOnly(false);
+				tfMachineServRemain.setValue(new BigDecimal(tfMachineServRemain.getValue()).subtract(
+						new BigDecimal(tfSessionTime.getValue())).toString());
+				tfMachineServRemain.setReadOnly(true);
+			} else {
+				tfMachineServRemain.setReadOnly(false);
+				tfMachineServRemain.setRequired(true);
+				tfMachineServRemain.setValue("");
+				Notification.show("Enter the Next Service in Hours.", Type.WARNING_MESSAGE);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void getGenSetTime() {
+		try {
+			GeneratorDM generatorDM = serviceGenerator.getGeneratorDetailList(companyid, branchId, null,
+					(Long) cbAssetName.getValue(), dfRefDate.getValue(), "Active", "X", "Y", null).get(0);
+			if (generatorDM.getGenTotalTime() != null) {
+				tfGenTotalTime.setReadOnly(false);
+				tfGenTotalTime.setValue((new BigDecimal(tfSessionTime.getValue())).add((generatorDM.getGenTotalTime()))
+						.toString());
+				tfGenTotalTime.setReadOnly(true);
+			}
+			tfMachineServRemain.setReadOnly(false);
+			if (generatorDM.getMachineServiceRemain() != null) {
+				tfMachineServRemain.setValue(generatorDM.getMachineServiceRemain().toString());
+			}
+			tfMachineServRemain.setReadOnly(true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

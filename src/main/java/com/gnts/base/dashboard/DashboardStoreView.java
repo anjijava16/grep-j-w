@@ -15,12 +15,15 @@ import com.gnts.mms.domain.txn.GatepassHdrDM;
 import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.domain.txn.MaterialLedgerDM;
 import com.gnts.mms.domain.txn.MaterialStockDM;
+import com.gnts.mms.domain.txn.PoReceiptDtlDM;
+import com.gnts.mms.domain.txn.PoReceiptHdrDM;
 import com.gnts.mms.mst.Material;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.GatepassHdrService;
 import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.MaterialLedgerService;
 import com.gnts.mms.service.txn.MaterialStockService;
+import com.gnts.mms.service.txn.PoReceiptHdrService;
 import com.gnts.mms.txn.DC;
 import com.gnts.mms.txn.Indent;
 import com.gnts.mms.txn.IndentIssue;
@@ -28,9 +31,13 @@ import com.gnts.mms.txn.IndentIssueReturn;
 import com.gnts.mms.txn.MaterialGatepass;
 import com.gnts.mms.txn.MaterialLedger;
 import com.gnts.mms.txn.MaterialStock;
+import com.gnts.mms.txn.POMMSReceipts;
+import com.gnts.sms.txn.SmsEnquiry;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -38,15 +45,20 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
+import com.vaadin.ui.themes.ValoTheme;
 
 public class DashboardStoreView implements ClickListener {
 	private static final long serialVersionUID = 1L;
@@ -63,23 +75,31 @@ public class DashboardStoreView implements ClickListener {
 	private Button btnLedgerInReport = new Button("Inward", this);
 	private Button btnLedgerOutReport = new Button("Outward", this);
 	private Button btnGatepass = new Button("11 Nos", this);
+	private Button btnMaterialReceipt = new Button("15 Nos", this);
 	private Button btnDC = new Button("10 Nos", this);
+	int countnotify = 0;
+	private Button btnNotify = new Button(countnotify + "");
+	List<PoReceiptHdrDM> poReceiptHdrDM = new ArrayList<PoReceiptHdrDM>();
 	private IndentHdrService serviceIndentHdr = (IndentHdrService) SpringContextHelper.getBean("IndentHdr");
 	private MaterialStockService servicematerialstock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
 	private MaterialLedgerService serviceledger = (MaterialLedgerService) SpringContextHelper.getBean("materialledger");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private GatepassHdrService serviceGatepass = (GatepassHdrService) SpringContextHelper.getBean("gatepasshdr");
+	private PoReceiptHdrService servicePoReceipt = (PoReceiptHdrService) SpringContextHelper.getBean("poreceipthdr");
 	private Logger logger = Logger.getLogger(DashboardStoreView.class);
+	private Window notificationsWindow;
 	private Table tblMaterialStock = new Table();
 	private Table tblMaterialInward = new Table();
 	private Table tblMaterialOutward = new Table();
 	private Table tblIndent = new Table();
 	private Table tblGatepass = new Table();
 	private ComboBox cbMaterial;
-	private Long companyId;
+	private Long companyId, branchId;
 	
 	public DashboardStoreView() {
+		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		clMainLayout = (VerticalLayout) UI.getCurrent().getSession().getAttribute("clLayout");
 		hlHeader = (HorizontalLayout) UI.getCurrent().getSession().getAttribute("hlLayout");
 		try {
@@ -91,14 +111,29 @@ public class DashboardStoreView implements ClickListener {
 	}
 	
 	private void buildView(VerticalLayout clMainLayout, HorizontalLayout hlHeader) {
+		btnNotify.setHtmlContentAllowed(true);
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("storedashboard");
+		btnIntentCount.setStyleName("borderless-colored");
+		btnIntentIssueCount.setStyleName("borderless-colored");
+		btnIntentReturnCount.setStyleName("borderless-colored");
+		btnLedgerCount.setStyleName("borderless-colored");
+		btnStockCount.setStyleName("borderless-colored");
+		btnMaterialReceipt.setStyleName("borderless-colored");
+		btnGatepass.setStyleName("borderless-colored");
+		btnMaterialReceipt.setStyleName("borderless-colored");
+		btnNotify.setIcon(new ThemeResource("img/download.png"));
+		btnNotify =new Button();
 		clMainLayout.removeAllComponents();
 		lblDashboardTitle = new Label();
 		lblDashboardTitle.setContentMode(ContentMode.HTML);
 		lblDashboardTitle.setValue("&nbsp;&nbsp;<b> Inventory Management Dashboard</b>");
 		hlHeader.addComponent(lblDashboardTitle);
 		hlHeader.setComponentAlignment(lblDashboardTitle, Alignment.MIDDLE_LEFT);
+		hlHeader.addComponent(btnNotify);
+		hlHeader.setComponentAlignment(btnNotify, Alignment.TOP_RIGHT);
+		hlHeader.addComponent(lblDashboardTitle);
+		hlHeader.setComponentAlignment(lblDashboardTitle, Alignment.TOP_RIGHT);
 		clMainLayout.addComponent(custom);
 		btnIntentCount.setStyleName(Runo.BUTTON_LINK);
 		btnIntentIssueCount.setStyleName(Runo.BUTTON_LINK);
@@ -106,18 +141,22 @@ public class DashboardStoreView implements ClickListener {
 		btnLedgerCount.setStyleName(Runo.BUTTON_LINK);
 		btnStockCount.setStyleName(Runo.BUTTON_LINK);
 		btnAddMaterial.setStyleName(Runo.BUTTON_LINK);
+		btnMaterialReceipt.setStyleName(Runo.BUTTON_LINK);
 		btnGatepass.setStyleName(Runo.BUTTON_LINK);
 		btnDC.setStyleName(Runo.BUTTON_LINK);
 		btnStockReport.setStyleName(Runo.BUTTON_LINK);
 		btnLedgerInReport.setStyleName(Runo.BUTTON_LINK);
 		btnLedgerOutReport.setStyleName(Runo.BUTTON_LINK);
 		btnAddMaterial.setHtmlContentAllowed(true);
+		VerticalLayout root = new VerticalLayout();
+		root.addComponent(buildHeader());
 		custom.addComponent(btnIntentCount, "enquiry");
 		custom.addComponent(btnIntentIssueCount, "quotation");
 		custom.addComponent(btnIntentReturnCount, "purchaseorder");
 		custom.addComponent(btnStockCount, "stock");
 		custom.addComponent(btnLedgerCount, "ledger");
 		custom.addComponent(tblMaterialStock, "stockDetails");
+		custom.addComponent(btnMaterialReceipt, "materialReceipt");
 		custom.addComponent(tblIndent, "enquirytable");
 		custom.addComponent(btnAddMaterial, "addmaterial");
 		custom.addComponent(tblMaterialInward, "paymenttable");
@@ -159,6 +198,32 @@ public class DashboardStoreView implements ClickListener {
 		loadMaterialInwardDetails();
 		loadDeliveryDetails();
 		loadMaterialGatepass();
+	}
+	
+	private Component buildHeader() {
+		HorizontalLayout header = new HorizontalLayout();
+		header.addStyleName("viewheader");
+		header.setSpacing(true);
+		btnNotify = buildNotificationsButton();
+		HorizontalLayout tools = new HorizontalLayout(btnNotify);
+		tools.setSpacing(true);
+		tools.addStyleName("toolbar");
+		return header;
+	}
+	
+	private Button buildNotificationsButton() {
+		btnNotify.addClickListener(new ClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				openNotificationsPopup(event);
+			}
+		});
+		return btnNotify;
 	}
 	
 	private void loadStockDetails() {
@@ -462,6 +527,13 @@ public class DashboardStoreView implements ClickListener {
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
 			new MaterialStock();
 		}
+		if (event.getButton() == btnMaterialReceipt) {
+			clMainLayout.removeAllComponents();
+			hlHeader.removeAllComponents();
+			UI.getCurrent().getSession().setAttribute("screenName", "Material Receipt");
+			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
+			new POMMSReceipts();
+		}
 		if (event.getButton() == btnAddMaterial) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
@@ -552,6 +624,86 @@ public class DashboardStoreView implements ClickListener {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private void openNotificationsPopup(final ClickEvent event) {
+		VerticalLayout notificationsLayout = new VerticalLayout();
+		notificationsLayout.setMargin(true);
+		notificationsLayout.setSpacing(true);
+		poReceiptHdrDM = servicePoReceipt.getPoReceiptsHdrList(companyId, null, null, branchId, null, null, null);
+		final Panel panel = new Panel("Notifications(<font color=red><font size=3>" + countnotify
+				+ "</font></font color>) ");
+		notificationsLayout.addComponent(panel);
+		FormLayout fmlayout = new FormLayout();
+		VerticalLayout hrLayout = new VerticalLayout();
+		for (PoReceiptHdrDM n : poReceiptHdrDM) {
+			hrLayout.addStyleName("notification-item");
+			if (poReceiptHdrDM.size() > 0) {
+				Label titleLabel = new Label("\n"
+						+ "<table style=width:100%><tr><td><small>Status : </small><font color=blue><font size=4>"
+						+ n.getProjectStatus()
+						+ "</font></font color></td><td><small>WorkFlow Id : </small><font color=green>" + n.getPoId()
+						+ "</font></td></tr></table>", ContentMode.HTML);
+				Label titleLabel1 = new Label("<small>Enquiry No: </small><font color=green>" + n.getLotNo()
+						+ "</font>", ContentMode.HTML);
+				Label titleLabel3 = new Label("<small>Initiator Name : </small><font color=red>" + n.getReceiptDate()
+						+ "</font>", ContentMode.HTML);
+				Label titleLabel4 = new Label("<small>Alloted Name : </small><font color=red>" + n.getLastUpdatedBy()
+						+ "</font>", ContentMode.HTML);
+				Label titleLabel5 = new Label("<HR size=3 color=red>", ContentMode.HTML);
+				titleLabel.addStyleName("notification-title");
+				fmlayout.addComponents(titleLabel);
+				fmlayout.addComponent(titleLabel3);
+				fmlayout.addComponent(titleLabel1);
+				fmlayout.addComponent(titleLabel4);
+				fmlayout.addComponent(titleLabel5);
+				hrLayout.addComponent(fmlayout);
+			}
+		}
+		notificationsLayout.addComponent(hrLayout);
+		HorizontalLayout footer = new HorizontalLayout();
+		footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+		footer.setWidth("100%");
+		Button showAll = new Button("View All Notifications", new ClickListener() {
+			/**
+		 * 
+		 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				clMainLayout.removeAllComponents();
+				hlHeader.removeAllComponents();
+				new POMMSReceipts();
+				notificationsWindow.close();
+			}
+		});
+		showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+		showAll.addStyleName(ValoTheme.BUTTON_SMALL);
+		footer.addComponent(showAll);
+		footer.setComponentAlignment(showAll, Alignment.TOP_CENTER);
+		notificationsLayout.addComponent(footer);
+		if (notificationsWindow == null) {
+			notificationsWindow = new Window();
+			notificationsWindow.setWidthUndefined();
+			notificationsWindow.addStyleName("notifications");
+			notificationsWindow.setClosable(false);
+			notificationsWindow.setResizable(false);
+			notificationsWindow.setDraggable(true);
+			notificationsWindow.setCloseShortcut(KeyCode.ESCAPE, null);
+			notificationsWindow.setContent(notificationsLayout);
+			notificationsWindow.setHeightUndefined();
+		}
+		if (!notificationsWindow.isAttached()) {
+			notificationsWindow.setPositionX(event.getClientX() - 200);
+			notificationsWindow.setPositionY(event.getClientY());
+			notificationsWindow.setHeight("400");
+			notificationsWindow.setWidth("300");
+			UI.getCurrent().addWindow(notificationsWindow);
+			notificationsWindow.focus();
+		} else {
+			notificationsWindow.close();
 		}
 	}
 }

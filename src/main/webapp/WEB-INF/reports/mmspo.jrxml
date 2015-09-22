@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="mmspo" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="391"/>
+	<property name="ireport.y" value="322"/>
 	<style name="Crosstab Data Text" hAlign="Center"/>
 	<parameter name="ENQID" class="java.lang.String"/>
 	<queryString>
@@ -28,6 +28,7 @@
   decode (hdr.cess_value,0,'---',hdr.cess_value) cess_value,
   decode (hdr.hed_prcnt,0,'---',hdr.hed_prcnt) hed_prcnt,
   decode (hdr.hed_value,0,'---',hdr.hed_value) hed_value,
+
   hdr.grand_total,
   v.vendor_name,
   v.vendor_address,
@@ -38,7 +39,8 @@
   hdr.freight_terms,
   hdr.delivery_terms,
   m.materail_name,
-  dtl.po_qty ||' '|| dtl.material_uom rate_uom,
+  dtl.required_qty ||' '|| dtl.material_uom rate_uom,
+  dtl.unit_rate||' / '||dtl.discount_val ||' ('|| dtl.discount_per ||')' rate_discount,
   dtl.unit_rate,
   dtl.basic_value,
   ltrim(pkg_app_utils.fn_amount_to_words(ROUND(hdr.grand_total,2))) amt_words
@@ -49,7 +51,7 @@ FROM t_mms_po_hdr hdr,
 WHERE hdr.po_id  = dtl.po_id
 AND v.vendor_id  = hdr.vendor_id
 AND m.material_id=dtl.material_id
-AND hdr.po_id    =$P{ENQID}]]>
+AND hdr.po_id    =22100]]>
 	</queryString>
 	<field name="PO_NO" class="java.lang.String"/>
 	<field name="PO_DATE" class="java.sql.Timestamp"/>
@@ -84,6 +86,7 @@ AND hdr.po_id    =$P{ENQID}]]>
 	<field name="DELIVERY_TERMS" class="java.lang.String"/>
 	<field name="MATERAIL_NAME" class="java.lang.String"/>
 	<field name="RATE_UOM" class="java.lang.String"/>
+	<field name="RATE_DISCOUNT" class="java.lang.String"/>
 	<field name="UNIT_RATE" class="java.math.BigDecimal"/>
 	<field name="BASIC_VALUE" class="java.math.BigDecimal"/>
 	<field name="AMT_WORDS" class="java.lang.String"/>
@@ -225,7 +228,7 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<reportElement uuid="8f46f420-f4b8-46c0-ab18-2d839227ef0e" x="0" y="21" width="555" height="1"/>
 			</line>
 			<staticText>
-				<reportElement uuid="e0721ddf-ea12-4f12-aa0c-9397c764f277" x="35" y="0" width="187" height="20"/>
+				<reportElement uuid="e0721ddf-ea12-4f12-aa0c-9397c764f277" x="35" y="0" width="148" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
@@ -239,13 +242,6 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<text><![CDATA[Total Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="976f5332-5924-4a97-9dfb-fe1812ebb582" x="233" y="1" width="66" height="20"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Quantity]]></text>
-			</staticText>
-			<staticText>
 				<reportElement uuid="b305570d-e399-441b-b78e-5341803dfc71" x="0" y="0" width="32" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font isBold="true"/>
@@ -253,11 +249,25 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<text><![CDATA[S. No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="315" y="0" width="92" height="20"/>
+				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="241" y="0" width="136" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rate / Discounted (DiscountRs)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="378" y="0" width="53" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Rate / Unit]]></text>
+				<text><![CDATA[Rate ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="976f5332-5924-4a97-9dfb-fe1812ebb582" x="193" y="0" width="47" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantity]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -269,7 +279,7 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="cb900cb3-64c0-4135-a97a-fb8104e2b022" x="35" y="1" width="187" height="20"/>
+				<reportElement uuid="cb900cb3-64c0-4135-a97a-fb8104e2b022" x="35" y="1" width="148" height="20"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{MATERAIL_NAME}]]></textFieldExpression>
 			</textField>
@@ -279,14 +289,19 @@ AND hdr.po_id    =$P{ENQID}]]>
 				<textFieldExpression><![CDATA[$F{BASIC_VALUE}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="a427184f-5f48-4a03-9b18-b83ad2a66968" x="315" y="3" width="92" height="18"/>
-				<textElement textAlignment="Center"/>
-				<textFieldExpression><![CDATA[$F{UNIT_RATE}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement uuid="883623d0-15ff-43c9-8bc9-ca76282d52d5" x="233" y="2" width="66" height="20"/>
+				<reportElement uuid="883623d0-15ff-43c9-8bc9-ca76282d52d5" x="193" y="0" width="47" height="20"/>
 				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$F{RATE_UOM}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="94e2f8d4-4723-497b-a669-b89bc0929dda" x="242" y="0" width="135" height="20"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{RATE_DISCOUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="a945ae50-37ca-4c99-ae22-d792e9888c1a" x="377" y="1" width="54" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{UNIT_RATE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

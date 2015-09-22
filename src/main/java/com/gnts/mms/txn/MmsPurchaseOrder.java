@@ -74,7 +74,9 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
@@ -455,14 +457,6 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfPOQty = new TextField();
 		tfPOQty.setWidth("100");
 		tfPOQty.setValue("0");
-		tfPOQty.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				calculateBasicvalue();
-			}
-		});
 		tfUomTemp = new TextField();
 		tfUomTemp.setWidth("50");
 		tfUomTemp.setHeight("20");
@@ -470,6 +464,16 @@ public class MmsPurchaseOrder extends BaseTransUI {
 		tfBasicValue = new TextField("Basic value");
 		tfBasicValue.setWidth("100");
 		tfBasicValue.setValue("0");
+		tfBasicValue.addBlurListener(new BlurListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			public void blur(BlurEvent event) {
+				calculateDisBasicvalue();
+			}
+		});
 		taPODtlRemark = new TextArea("Remark");
 		taPODtlRemark.setWidth("150");
 		taPODtlRemark.setHeight("50");
@@ -803,6 +807,11 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			}
 			try {
 				tfWarrentyTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getWarrantyTerms().toString());
+			}
+			catch (Exception e) {
+			}
+			try {
+				tfDelTerms.setValue(((MmsQuoteHdrDM) cbQuoteRef.getValue()).getDeliveryTerms().toString());
 			}
 			catch (Exception e) {
 			}
@@ -1563,7 +1572,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 				poDtlDM.setDiscountPer(Long.valueOf(tfDiscountPer.getValue()));
 				tfDiscountPer.setReadOnly(true);
 				tfDiscountRate.setReadOnly(false);
-				poDtlDM.setDiscountPer(Long.valueOf(tfDiscountRate.getValue()));
+				poDtlDM.setDiscountVal(Long.valueOf(tfDiscountRate.getValue()));
 				tfDiscountRate.setReadOnly(true);
 				poDtlDM.setRemarks(taPODtlRemark.getValue());
 				if (cbPODtlStatus.getValue() != null) {
@@ -1825,22 +1834,13 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	private void calculateDisBasicvalue() {
 		// TODO Auto-generated method stub
 		try {
-			if (tfDiscountRate.getValue() != null) {
+			if (tfDiscountRate.getValue() != null && Long.valueOf(tfDiscountRate.getValue()) != 0) {
 				tfBasicValue.setReadOnly(false);
 				tfBasicValue.setValue("");
 				tfBasicValue.setValue((new BigDecimal(tfPOQty.getValue())).multiply(
 						new BigDecimal(tfDiscountRate.getValue())).toString());
 				tfBasicValue.setReadOnly(true);
-			}
-		}
-		catch (Exception e) {
-		}
-	}
-	
-	private void calculateBasicvalue() {
-		// TODO Auto-generated method stub
-		try {
-			if (tfDiscountRate.getValue() != null) {
+			} else {
 				tfBasicValue.setReadOnly(false);
 				tfUnitRate.setReadOnly(false);
 				tfBasicValue.setValue("");

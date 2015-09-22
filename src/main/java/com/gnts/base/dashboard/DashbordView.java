@@ -13,6 +13,7 @@ import com.gnts.hcm.txn.ServiceCallForm;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.mfg.txn.WorkOrder;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
+import com.gnts.sms.service.txn.ServiceCallFormService;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsInvoiceHdrService;
 import com.gnts.sms.service.txn.SmsPOHdrService;
@@ -58,11 +59,13 @@ public class DashbordView implements ClickListener {
 	private Button btnInvoiceCount = new Button("55", this);
 	private Button btnWOCount = new Button("7", this);
 	private Button btnProductCount = new Button("17", this);
-	private Button btnClientCount = new Button("22", this);
+	private Button btnServCallForm = new Button("22", this);
 	private Button btnEnquiryDocs = new Button("Documents", this);
 	private Button btnDieRequest = new Button("10", this);
 	private Button btnNotify;
 	private Window notificationsWindow;
+	private ServiceCallFormService serviveCallFormService = (ServiceCallFormService) SpringContextHelper
+			.getBean("sercallForm");
 	private SmsEnqHdrService serviceEnquiry = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private SmsQuoteHdrService servicesmsQuoteHdr = (SmsQuoteHdrService) SpringContextHelper.getBean("smsquotehdr");
 	private SmsPOHdrService servicePurchaseOrd = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
@@ -99,17 +102,17 @@ public class DashbordView implements ClickListener {
 		btnNotify.setIcon(new ThemeResource("img/download.png"));
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("dashmarket");
-		btnEnquiryCount.setCaption(serviceEnquiry.getSMSEnquiryListCount(null, null, null, null, "Progress", null,
+		btnEnquiryCount.setCaption(serviceEnquiry.getSMSEnquiryListCount(companyId, null, branchId, null, "Progress", null,
 				null, null).toString());
-		btnQuotationCount.setCaption(servicesmsQuoteHdr.getSMSQuoteCount(null, null, null, null, null, null, null)
+		btnQuotationCount.setCaption(servicesmsQuoteHdr.getSMSQuoteCount(companyId, null, branchId, "Progress", null, null, null)
 				.toString());
-		btnPOCount.setCaption(servicePurchaseOrd.getSMSPOListCount(null, null, companyId, null, null, null, null, null)
+		btnPOCount.setCaption(servicePurchaseOrd.getSMSPOListCount(null, null, companyId, branchId, null, null, "Progress", null)
 				.toString());
 		btnWOCount.setCaption(serviceWrkOrdHdr
-				.getWorkOrderHDRcount(null, null, companyId, null, null, null, null, null).toString());
-		btnInvoiceCount.setCaption(serviceInvoiceHdr.getSmsInvoiceHeadercount(null, null, companyId, null, null, null,
+				.getWorkOrderHDRcount(null, null, companyId, branchId, null, null, "Pending", null).toString());
+		btnInvoiceCount.setCaption(serviceInvoiceHdr.getSmsInvoiceHeadercount(null, null, companyId, branchId, null, null,
 				null, null).toString());
-		btnClientCount.setCaption(serviceClients.getClientDetailscount(companyId, null, "Active", null).toString());
+		btnServCallForm.setCaption(serviveCallFormService.getserviceCallFormcount(companyId, branchId, null, "S").toString());
 		btnProductCount.setCaption(serviceProduct.getProductscount(companyId, null, "Active", null).toString());
 		// btnEnquiryCount.setStyleName(Runo.BUTTON_LINK);
 		btnEnquiryCount.setStyleName("borderless-colored");
@@ -118,7 +121,7 @@ public class DashbordView implements ClickListener {
 		btnInvoiceCount.setStyleName("borderless-colored");
 		btnWOCount.setStyleName("borderless-colored");
 		btnProductCount.setStyleName("borderless-coloredbig");
-		btnClientCount.setStyleName("borderless-coloredbig");
+		btnServCallForm.setStyleName("borderless-coloredbig");
 		btnEnquiryDocs.setStyleName("borderless-coloredmed");
 		btnDieRequest.setStyleName("borderless-coloredbig");
 		VerticalLayout root = new VerticalLayout();
@@ -138,7 +141,7 @@ public class DashbordView implements ClickListener {
 		custom.addComponent(btnInvoiceCount, "invoicecount");
 		custom.addComponent(btnWOCount, "workordercount");
 		custom.addComponent(btnProductCount, "productCount");
-		custom.addComponent(btnClientCount, "clientCount");
+		custom.addComponent(btnServCallForm, "clientCount");
 		custom.addComponent(btnEnquiryDocs, "enquirydocuments");
 		custom.addComponent(btnDieRequest, "dieRequest");
 		custom.addComponent(new CalendarMonthly("WO_SCHEDULE"), "marketcalender");
@@ -224,7 +227,7 @@ public class DashbordView implements ClickListener {
 			UI.getCurrent().getSession().setAttribute("screenName", "Product");
 			new Product();
 		}
-		if (event.getButton() == btnClientCount) {
+		if (event.getButton() == btnServCallForm) {
 			clMainLayout.removeAllComponents();
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("IS_PROD_FRM", false);

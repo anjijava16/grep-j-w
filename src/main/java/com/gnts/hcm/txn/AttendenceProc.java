@@ -415,6 +415,7 @@ public class AttendenceProc extends BaseUI {
 				@Override
 				public void execute(Connection connection) throws SQLException {
 					// TODO Auto-generated method stub
+					try{
 					SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yy");
 					SimpleDateFormat format2 = new SimpleDateFormat("dd-MMM-yyyy");
 					Date date = null;
@@ -444,6 +445,39 @@ public class AttendenceProc extends BaseUI {
 					System.out.println("funationStatus-->" + funationStatus);
 					System.out.println("errorMsg-->" + errorMsg);
 					connection.close();
+					}catch(Exception e){
+						SimpleDateFormat format1 = new SimpleDateFormat("dd-MMM-yy");
+						SimpleDateFormat format2 = new SimpleDateFormat("dd-MMM-yyyy");
+						Date date = null;
+						Date enddt = null;
+						try {
+							date = format2.parse(startDate);
+							enddt = format2.parse(endDate);
+						}
+						catch (java.text.ParseException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						statement = connection
+								.prepareCall("{ ? = call pkg_hcm_core.fn_calc_staff_attend (?,?,?,?,?,?,?,?) }");
+						statement.registerOutParameter(1, Types.VARCHAR);
+						statement.setLong(2, payPeriodId);
+						statement.setLong(3, (Long) cbEmployeeName.getValue());
+						statement.setLong(4, (Long) cbBranch.getValue());
+						statement.setString(5, format1.format(date));
+						statement.setString(6, format1.format(enddt));
+						statement.setLong(7, companyId);
+						statement.setString(8, userName);
+						statement.registerOutParameter(9, Types.VARCHAR);
+						statement.execute();
+						funationStatus = statement.getString(1);
+						errorMsg = statement.getString(9);
+						System.out.println("funationStatus-->" + funationStatus);
+						System.out.println("errorMsg-->" + errorMsg);
+						connection.close();
+						e.printStackTrace();
+						logger.info(e.getMessage());
+						}
 				}
 			});
 			cbPayPeried.setComponentError(null);

@@ -213,7 +213,7 @@ public class SmsEnquiry extends BaseTransUI {
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside SmsEnquiry() constructor");
-		buildview();
+		buildview(true);
 	}
 	
 	public SmsEnquiry(Long enquiryId) {
@@ -226,7 +226,7 @@ public class SmsEnquiry extends BaseTransUI {
 			moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Inside SmsEnquiry() constructor");
-			buildview();
+			buildview(false);
 			this.enquiryId = enquiryId;
 			loadSrchRslt();
 			tblMstScrSrchRslt.setValue(tblMstScrSrchRslt.getItemIds().iterator().next());
@@ -253,7 +253,7 @@ public class SmsEnquiry extends BaseTransUI {
 		}
 	}
 	
-	private void buildview() {
+	private void buildview(Boolean isLoadFullList) {
 		logger.info("CompanyId" + companyid + "username" + username + "painting Sales Enquiry UI");
 		// Sales Enquiry Header Components Definition
 		tfClntName.setRequired(true);
@@ -522,7 +522,9 @@ public class SmsEnquiry extends BaseTransUI {
 			logger.info(e.getMessage());
 		}
 		resetFields();
-		loadSrchRslt();
+		if (isLoadFullList) {
+			loadSrchRslt();
+		}
 		// Document Components
 	}
 	
@@ -1467,7 +1469,7 @@ public class SmsEnquiry extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(true);
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
-		enquiryId=null;
+		enquiryId = null;
 		loadSrchRslt();
 		cbBranch.setRequired(false);
 		tfEnquiryNo.setReadOnly(false);

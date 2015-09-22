@@ -76,9 +76,9 @@ public class AssetDetails extends BaseTransUI {
 	private TextField tfAssetName, tfCategoryId, tfSerialNo, tfMfgSerialNo, tfAssetLocation, tfPurchaseValue,
 			tfservicerequire, tfInvoiceNo, tfSalvageValue, tfLifeInYears, tfLifeInMonths, tfLicenseInfo;
 	private PopupDateField dtPurchaseDate, dtWarrentyDate, dtLastServiceDate, dtNextServiceDate;
-	private ComboBox cbAssetStatus, cbAssetType, cbBrandId, cbDeptId, cbbranch, cbCategory, cbAction, cbReview;
+	private ComboBox cbAssetStatus, cbAssetType, cbBrand, cbDept, cbBranch, cbCategory, cbAction, cbReview;
 	private Button btnSave, btnCancel, btnHome;
-	private TextArea tfAssetDetailDesc, tfRemarks, tawarrentdesc;
+	private TextArea tfAssetDetailDesc, tfRemarks, taWarrentyDesc;
 	// Declaration for button
 	private Button btnEdit;
 	// VerticalLayout vlAssetDetails = new VerticalLayout();
@@ -92,7 +92,7 @@ public class AssetDetails extends BaseTransUI {
 			.getBean("assetDetails");
 	private AssetBrandService serviceBrand = (AssetBrandService) SpringContextHelper.getBean("assetBrand");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
-	private DepartmentService servicedepartmant = (DepartmentService) SpringContextHelper.getBean("department");
+	private DepartmentService serviceDepartmant = (DepartmentService) SpringContextHelper.getBean("department");
 	private AssetCategoryService serviceAsset = (AssetCategoryService) SpringContextHelper.getBean("assetCategory");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private int recordCnt;
@@ -184,41 +184,41 @@ public class AssetDetails extends BaseTransUI {
 			}
 		});
 		// Used to Load Brand Name in Combo box
-		cbBrandId = new GERPComboBox("Brand Name");
-		cbBrandId.setWidth("148");
-		cbBrandId.setNullSelectionAllowed(false);
-		cbBrandId.setItemCaptionPropertyId("brandname");
+		cbBrand = new GERPComboBox("Brand Name");
+		cbBrand.setWidth("148");
+		cbBrand.setNullSelectionAllowed(false);
+		cbBrand.setItemCaptionPropertyId("brandname");
 		loadBrandDetails();
-		cbBrandId.addBlurListener(new BlurListener() {
+		cbBrand.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
-				cbBrandId.setComponentError(null);
-				if (cbBrandId.getValue() != null) {
-					cbBrandId.setComponentError(null);
+				cbBrand.setComponentError(null);
+				if (cbBrand.getValue() != null) {
+					cbBrand.setComponentError(null);
 				}
 			}
 		});
 		// Used to Load Region Name in Combo box
-		cbDeptId = new GERPComboBox("Department Name");
-		cbDeptId.setWidth("148");
-		cbDeptId.setNullSelectionAllowed(false);
-		cbDeptId.setItemCaptionPropertyId("deptname");
+		cbDept = new GERPComboBox("Department Name");
+		cbDept.setWidth("148");
+		cbDept.setNullSelectionAllowed(false);
+		cbDept.setItemCaptionPropertyId("deptname");
 		loadDepartment();
-		cbDeptId.addBlurListener(new BlurListener() {
+		cbDept.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
-				cbDeptId.setComponentError(null);
-				if (cbDeptId.getValue() != null) {
-					cbDeptId.setComponentError(null);
+				cbDept.setComponentError(null);
+				if (cbDept.getValue() != null) {
+					cbDept.setComponentError(null);
 				}
 			}
 		});
 		//
-		cbbranch = new GERPComboBox("Branch");
-		cbbranch.setWidth("148");
-		cbbranch.setItemCaptionPropertyId("branchName");
+		cbBranch = new GERPComboBox("Branch");
+		cbBranch.setWidth("148");
+		cbBranch.setItemCaptionPropertyId("branchName");
 		loadBranchList();
 		tfSerialNo = new GERPTextField("Serial No.");
 		tfMfgSerialNo = new GERPTextField("MFG.Serial No.");
@@ -258,8 +258,8 @@ public class AssetDetails extends BaseTransUI {
 		// Initialization for tfRemarks
 		tfRemarks = new GERPTextArea("Remarks");
 		tfRemarks.setWidth("148");
-		tawarrentdesc = new GERPTextArea("Warrenty Description");
-		tawarrentdesc.setWidth("148");
+		taWarrentyDesc = new GERPTextArea("Warrenty Description");
+		taWarrentyDesc.setWidth("148");
 		tabSheet = new TabSheet();
 		vlAssetSpec = new VerticalLayout();
 		vlOwnDetails = new VerticalLayout();
@@ -292,8 +292,8 @@ public class AssetDetails extends BaseTransUI {
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		flColumn1.addComponent(tfAssetName);
-		flColumn2.addComponent(cbBrandId);
-		flColumn3.addComponent(cbDeptId);
+		flColumn2.addComponent(cbBrand);
+		flColumn3.addComponent(cbDept);
 		flColumn4.addComponent(cbAssetStatus);
 		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn2);
@@ -316,16 +316,16 @@ public class AssetDetails extends BaseTransUI {
 		tfAssetName.setRequired(true);
 		flColumn1.addComponent(cbAssetType);
 		cbAssetType.setRequired(true);
-		flColumn1.addComponent(cbbranch);
+		flColumn1.addComponent(cbBranch);
 		flColumn1.addComponent(tfAssetDetailDesc);
-		flColumn1.addComponent(cbBrandId);
-		cbBrandId.setRequired(true);
+		flColumn1.addComponent(cbBrand);
+		cbBrand.setRequired(true);
 		flColumn1.addComponent(cbCategory);
 		flColumn1.setSpacing(true);
 		flColumn1.setMargin(true);
 		cbCategory.setRequired(true);
-		flColumn2.addComponent(cbDeptId);
-		cbDeptId.setRequired(true);
+		flColumn2.addComponent(cbDept);
+		cbDept.setRequired(true);
 		flColumn2.addComponent(tfAssetLocation);
 		flColumn2.addComponent(tfSerialNo);
 		flColumn2.addComponent(tfMfgSerialNo);
@@ -339,7 +339,7 @@ public class AssetDetails extends BaseTransUI {
 		flColumn3.addComponent(dtLastServiceDate);
 		flColumn3.addComponent(dtNextServiceDate);
 		flColumn3.addComponent(dtWarrentyDate);
-		flColumn3.addComponent(tawarrentdesc);
+		flColumn3.addComponent(taWarrentyDesc);
 		flColumn3.addComponent(tfLicenseInfo);
 		flColumn4.addComponent(tfLifeInYears);
 		flColumn4.addComponent(tfLifeInMonths);
@@ -375,7 +375,7 @@ public class AssetDetails extends BaseTransUI {
 			BeanContainer<Long, AssetBrandDM> beanbrand = new BeanContainer<Long, AssetBrandDM>(AssetBrandDM.class);
 			beanbrand.setBeanIdProperty("brandid");
 			beanbrand.addAll(serviceBrand.getAssetBrandList(companyid, null, "Active", "P"));
-			cbBrandId.setContainerDataSource(beanbrand);
+			cbBrand.setContainerDataSource(beanbrand);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -387,8 +387,8 @@ public class AssetDetails extends BaseTransUI {
 		try {
 			BeanContainer<Long, DepartmentDM> beandept = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 			beandept.setBeanIdProperty("deptid");
-			beandept.addAll(servicedepartmant.getDepartmentList(companyid, null, "Active", "P"));
-			cbDeptId.setContainerDataSource(beandept);
+			beandept.addAll(serviceDepartmant.getDepartmentList(companyid, null, "Active", "P"));
+			cbDept.setContainerDataSource(beandept);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -401,7 +401,7 @@ public class AssetDetails extends BaseTransUI {
 			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanbranch.setBeanIdProperty("branchId");
 			beanbranch.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
-			cbbranch.setContainerDataSource(beanbranch);
+			cbBranch.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -448,7 +448,7 @@ public class AssetDetails extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfAssetName.getValue() + ",");
 			listAssetDetail = serviceAssetDetail.getAssetDetailList(companyid, null, tfAssetName.getValue(),
-					(Long) cbBrandId.getValue(), (Long) cbDeptId.getValue(), null, ((String) cbAssetStatus.getValue()));
+					(Long) cbBrand.getValue(), (Long) cbDept.getValue(), null, ((String) cbAssetStatus.getValue()));
 			recordCnt = listAssetDetail.size();
 			beanAssetdetail = new BeanItemContainer<AssetDetailsDM>(AssetDetailsDM.class);
 			beanAssetdetail.addAll(listAssetDetail);
@@ -477,9 +477,9 @@ public class AssetDetails extends BaseTransUI {
 				assetId = assetDetailsDM.getAssetId();
 				tfAssetName.setValue(assetDetailsDM.getAssetName());
 				cbAssetType.setValue(assetDetailsDM.getAssetType());
-				cbBrandId.setValue(assetDetailsDM.getBrandId());
-				cbDeptId.setValue(assetDetailsDM.getDeptId());
-				cbbranch.setValue(assetDetailsDM.getBranchId());
+				cbBrand.setValue(assetDetailsDM.getBrandId());
+				cbDept.setValue(assetDetailsDM.getDeptId());
+				cbBranch.setValue(assetDetailsDM.getBranchId());
 				if (assetDetailsDM.getAssetdetails() != null && !"null".equals(assetDetailsDM.getAssetdetails())) {
 					tfAssetDetailDesc.setValue(assetDetailsDM.getAssetdetails());
 				}
@@ -504,7 +504,7 @@ public class AssetDetails extends BaseTransUI {
 					tfRemarks.setValue(assetDetailsDM.getRemarks());
 				}
 				if (assetDetailsDM.getWarrentydesc() != null && !"null".equals(assetDetailsDM.getWarrentydesc())) {
-					tawarrentdesc.setValue(assetDetailsDM.getWarrentydesc());
+					taWarrentyDesc.setValue(assetDetailsDM.getWarrentydesc());
 				}
 				cbCategory.setValue(assetDetailsDM.getCatgryId());
 				tfservicerequire.setValue(assetDetailsDM.getServicereqd());
@@ -591,11 +591,11 @@ public class AssetDetails extends BaseTransUI {
 		} else {
 			tfAssetLocation.setComponentError(null);
 		}
-		if ((cbBrandId.getValue() == null)) {
-			cbBrandId.setComponentError(new UserError(GERPErrorCodes.NULL_ASST_BRAND_NAME));
+		if ((cbBrand.getValue() == null)) {
+			cbBrand.setComponentError(new UserError(GERPErrorCodes.NULL_ASST_BRAND_NAME));
 			errorflag = true;
 		} else {
-			cbBrandId.setComponentError(null);
+			cbBrand.setComponentError(null);
 		}
 		if ((cbCategory.getValue() == null)) {
 			cbCategory.setComponentError(new UserError(GERPErrorCodes.NULL_CATGRY_NAME));
@@ -603,11 +603,11 @@ public class AssetDetails extends BaseTransUI {
 		} else {
 			cbCategory.setComponentError(null);
 		}
-		if ((cbDeptId.getValue() == null)) {
-			cbDeptId.setComponentError(new UserError(GERPErrorCodes.NULL_DEPT_NAME));
+		if ((cbDept.getValue() == null)) {
+			cbDept.setComponentError(new UserError(GERPErrorCodes.NULL_DEPT_NAME));
 			errorflag = true;
 		} else {
-			cbDeptId.setComponentError(null);
+			cbDept.setComponentError(null);
 		}
 		if (errorflag) {
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
@@ -627,17 +627,17 @@ public class AssetDetails extends BaseTransUI {
 			assetDetailsDM.setAssetName(tfAssetName.getValue());
 			assetDetailsDM.setAssetdetails(tfAssetDetailDesc.getValue());
 			assetDetailsDM.setAssetType(cbAssetType.getValue().toString());
-			if (cbBrandId.getValue() != null) {
-				assetDetailsDM.setBrandId(Long.valueOf(cbBrandId.getValue().toString()));
+			if (cbBrand.getValue() != null) {
+				assetDetailsDM.setBrandId(Long.valueOf(cbBrand.getValue().toString()));
 			}
-			if (cbbranch.getValue() != null) {
-				assetDetailsDM.setBranchId(Long.valueOf(cbbranch.getValue().toString()));
+			if (cbBranch.getValue() != null) {
+				assetDetailsDM.setBranchId(Long.valueOf(cbBranch.getValue().toString()));
 			}
-			if (cbDeptId.getValue() != null) {
-				assetDetailsDM.setDeptId(Long.valueOf(cbDeptId.getValue().toString()));
+			if (cbDept.getValue() != null) {
+				assetDetailsDM.setDeptId(Long.valueOf(cbDept.getValue().toString()));
 			}
 			assetDetailsDM.setCatgryId((String) cbCategory.getValue());
-			assetDetailsDM.setWarrentydesc(tawarrentdesc.getValue());
+			assetDetailsDM.setWarrentydesc(taWarrentyDesc.getValue());
 			assetDetailsDM.setServicereqd(tfservicerequire.getValue());
 			assetDetailsDM.setSerialno(tfSerialNo.getValue());
 			assetDetailsDM.setMfgserialno(tfMfgSerialNo.getValue());
@@ -726,17 +726,17 @@ public class AssetDetails extends BaseTransUI {
 		tfRemarks.setValue("");
 		cbAction.setValue(null);
 		cbReview.setValue(null);
-		tawarrentdesc.setValue("");
+		taWarrentyDesc.setValue("");
 		cbAssetStatus.setValue(cbAssetStatus.getItemIds().iterator().next());
 		cbAssetType.setValue(null);
 		cbAssetType.setComponentError(null);
-		cbBrandId.setValue(null);
-		cbBrandId.setRequired(false);
-		cbBrandId.setComponentError(null);
-		cbbranch.setValue(cbbranch.getItemIds().iterator().next());
-		cbDeptId.setValue(null);
-		cbDeptId.setRequired(false);
-		cbDeptId.setComponentError(null);
+		cbBrand.setValue(null);
+		cbBrand.setRequired(false);
+		cbBrand.setComponentError(null);
+		cbBranch.setValue(cbBranch.getItemIds().iterator().next());
+		cbDept.setValue(null);
+		cbDept.setRequired(false);
+		cbDept.setComponentError(null);
 		dtLastServiceDate.setValue(null);
 		dtNextServiceDate.setValue(null);
 		btnSave.setCaption("Save");

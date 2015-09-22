@@ -105,7 +105,7 @@ public class POMMSReceipts extends BaseTransUI {
 	private GERPComboBox cbBranch, cbDocType, cbHdrStatus, cbIndentNo, cbPoNo;
 	private GERPTextField tfLotNo, tfVendorDcNo, tfVenInvNo;
 	private TextArea taRecepitRemark;
-	private PopupDateField dfReceiptDate, dfvendorDt, dfvendorInvDt;
+	private PopupDateField dfReceiptDate, dfVendorDocDt, dfVendorInvDt;
 	private CheckBox chkBillRaised;
 	private FormLayout flHdr1, flHdr2, flHdr3, flHdr4;
 	// PODtl Recepits Components
@@ -181,13 +181,13 @@ public class POMMSReceipts extends BaseTransUI {
 		cbDocType.addItem("Invoice");
 		tfLotNo = new GERPTextField("LotNo.");
 		tfVendorDcNo = new GERPTextField("Vendor Doc No.");
-		dfvendorDt = new GERPPopupDateField("Vendor Document Date");
-		dfvendorDt.setInputPrompt("Select Date");
-		dfvendorDt.setDateFormat("dd-MMM-yyyy");
+		dfVendorDocDt = new GERPPopupDateField("Vendor Document Date");
+		dfVendorDocDt.setInputPrompt("Select Date");
+		dfVendorDocDt.setDateFormat("dd-MMM-yyyy");
 		tfVenInvNo = new GERPTextField("Vendor Invoice No.");
-		dfvendorInvDt = new GERPPopupDateField("Vendor Invoice Date");
-		dfvendorInvDt.setInputPrompt("Select Date");
-		dfvendorInvDt.setDateFormat("dd-MMM-yyyy");
+		dfVendorInvDt = new GERPPopupDateField("Vendor Invoice Date");
+		dfVendorInvDt.setInputPrompt("Select Date");
+		dfVendorInvDt.setDateFormat("dd-MMM-yyyy");
 		taRecepitRemark = new GERPTextArea("Remarks");
 		taRecepitRemark.setHeight("50");
 		chkBillRaised = new CheckBox("Bill Raised?");
@@ -360,10 +360,10 @@ public class POMMSReceipts extends BaseTransUI {
 		flHdr1.addComponent(dfReceiptDate);
 		flHdr1.addComponent(cbDocType);
 		flHdr1.addComponent(tfLotNo);
-		flHdr2.addComponent(dfvendorDt);
+		flHdr2.addComponent(dfVendorDocDt);
 		flHdr2.addComponent(tfVendorDcNo);
 		flHdr2.addComponent(cbIndentNo);
-		flHdr2.addComponent(dfvendorInvDt);
+		flHdr2.addComponent(dfVendorInvDt);
 		flHdr2.addComponent(tfVenInvNo);
 		flHdr3.addComponent(taRecepitRemark);
 		flHdr3.addComponent(cbHdrStatus);
@@ -567,7 +567,7 @@ public class POMMSReceipts extends BaseTransUI {
 					tfVendorDcNo.setValue(poReceiptHdrDM.getVendordcNo());
 				}
 				if (poReceiptHdrDM.getVendorDate() != null) {
-					dfvendorDt.setValue(poReceiptHdrDM.getVendorDate());
+					dfVendorDocDt.setValue(poReceiptHdrDM.getVendorDate());
 				}
 				if (poReceiptHdrDM.getReceiptdocType() != null) {
 					cbDocType.setValue(poReceiptHdrDM.getReceiptdocType());
@@ -579,7 +579,7 @@ public class POMMSReceipts extends BaseTransUI {
 					tfVenInvNo.setValue(poReceiptHdrDM.getVendorinvoiceNo());
 				}
 				if (poReceiptHdrDM.getVendorinvoiceDate() != null) {
-					dfvendorInvDt.setValue(poReceiptHdrDM.getVendorinvoiceDate());
+					dfVendorInvDt.setValue(poReceiptHdrDM.getVendorinvoiceDate());
 				}
 				if (poReceiptHdrDM.getReceiptRemark() != null) {
 					taRecepitRemark.setValue(poReceiptHdrDM.getReceiptRemark());
@@ -697,8 +697,8 @@ public class POMMSReceipts extends BaseTransUI {
 		cbMaterialUOM.setRequired(true);
 		cbPoNo.setRequired(true);
 		dfReceiptDate.setRequired(true);
-		dfvendorDt.setRequired(true);
-		dfvendorInvDt.setRequired(true);
+		dfVendorDocDt.setRequired(true);
+		dfVendorInvDt.setRequired(true);
 		cbHdrStatus.setRequired(true);
 		tfAcceptQty.setRequired(true);
 		tfRejectqty.setRequired(true);
@@ -734,8 +734,8 @@ public class POMMSReceipts extends BaseTransUI {
 		cbPoNo.setRequired(true);
 		cbHdrStatus.setRequired(true);
 		dfReceiptDate.setRequired(true);
-		dfvendorDt.setRequired(true);
-		dfvendorInvDt.setRequired(true);
+		dfVendorDocDt.setRequired(true);
+		dfVendorInvDt.setRequired(true);
 		tfAcceptQty.setRequired(true);
 		tfRejectqty.setRequired(true);
 		editReceiptDetail();
@@ -748,8 +748,8 @@ public class POMMSReceipts extends BaseTransUI {
 		cbBranch.setComponentError(null);
 		cbPoNo.setComponentError(null);
 		dfReceiptDate.setComponentError(null);
-		dfvendorDt.setComponentError(null);
-		dfvendorInvDt.setComponentError(null);
+		dfVendorDocDt.setComponentError(null);
+		dfVendorInvDt.setComponentError(null);
 		cbHdrStatus.setComponentError(null);
 		Boolean errorFlag = false;
 		if ((cbBranch.getValue() == null)) {
@@ -764,12 +764,12 @@ public class POMMSReceipts extends BaseTransUI {
 			dfReceiptDate.setComponentError(new UserError(GERPErrorCodes.NULL_REGECT_REASON));
 			errorFlag = true;
 		}
-		if (dfvendorDt.getValue() == null) {
-			dfvendorDt.setComponentError(new UserError(GERPErrorCodes.NULL_REGECT_REASON));
+		if (dfVendorDocDt.getValue() == null) {
+			dfVendorDocDt.setComponentError(new UserError(GERPErrorCodes.NULL_REGECT_REASON));
 			errorFlag = true;
 		}
-		if (dfvendorInvDt.getValue() == null) {
-			dfvendorInvDt.setComponentError(new UserError(GERPErrorCodes.NULL_REGECT_REASON));
+		if (dfVendorInvDt.getValue() == null) {
+			dfVendorInvDt.setComponentError(new UserError(GERPErrorCodes.NULL_REGECT_REASON));
 			errorFlag = true;
 		}
 		if (cbHdrStatus.getValue() == null) {
@@ -824,11 +824,11 @@ public class POMMSReceipts extends BaseTransUI {
 				recepithdrObj.setReceiptdocType(cbDocType.getValue().toString());
 			}
 			recepithdrObj.setReceiptDate((Date) dfReceiptDate.getValue());
-			recepithdrObj.setVendorDate((Date) dfvendorDt.getValue());
+			recepithdrObj.setVendorDate((Date) dfVendorDocDt.getValue());
 			recepithdrObj.setVendordcNo(tfVendorDcNo.getValue());
 			recepithdrObj.setIndentId((Long) cbIndentNo.getValue());
 			recepithdrObj.setVendorinvoiceNo(tfVenInvNo.getValue().toString());
-			recepithdrObj.setVendorinvoiceDate((Date) dfvendorInvDt.getValue());
+			recepithdrObj.setVendorinvoiceDate((Date) dfVendorInvDt.getValue());
 			recepithdrObj.setReceiptRemark((taRecepitRemark.getValue()));
 			if (chkBillRaised.getValue().equals(true)) {
 				recepithdrObj.setBillraisedYN("Y");
@@ -1033,12 +1033,12 @@ public class POMMSReceipts extends BaseTransUI {
 		tfVendorDcNo.setValue("");
 		cbIndentNo.setValue(null);
 		taRecepitRemark.setValue("");
-		dfvendorDt.setValue(null);
+		dfVendorDocDt.setValue(null);
 		dfReceiptDate.setValue(null);
-		dfvendorInvDt.setValue(null);
+		dfVendorInvDt.setValue(null);
 		dfReceiptDate.setComponentError(null);
-		dfvendorDt.setComponentError(null);
-		dfvendorInvDt.setComponentError(null);
+		dfVendorDocDt.setComponentError(null);
+		dfVendorInvDt.setComponentError(null);
 		new UploadDocumentUI(hlevdDoc);
 		new UploadDocumentUI(hlrefDoc);
 	}

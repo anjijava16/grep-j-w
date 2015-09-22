@@ -2,6 +2,7 @@ package com.gnts.erputil.ui;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -80,11 +81,24 @@ public class UploadDocumentUI implements Serializable {
 				try {
 					File f = new File(event.getFilename());
 					String name = f.getName();
+					@SuppressWarnings("resource")
+					FileInputStream fis = new FileInputStream(file);
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					byte[] buf = new byte[1024];
+					try {
+						for (int readNum; (readNum = fis.read(buf)) != -1;) {
+							bos.write(buf, 0, readNum); // no doubt here is 0
+						}
+					}
+					catch (Exception ex) {
+					}
+					UI.getCurrent().getSession().setAttribute("UPLOAD_FILE_NAME", event.getFilename());
+					UI.getCurrent().getSession().setAttribute("UPLOAD_FILE_BYTE", bos.toByteArray());
+					UI.getCurrent().getSession().setAttribute("IS_DOC_UPLOAD", true);
 					UI.getCurrent().getSession().setAttribute("uploadedFilePath", f.getAbsolutePath());
 					UI.getCurrent().getSession().setAttribute("uploadedDocumentName", name);
-					
 					lblFileName.setValue(name);
-									imgPanel.removeAllComponents();
+					imgPanel.removeAllComponents();
 					FileResource fRes = new FileResource(file);
 					fRes.setCacheTime(10);
 					embedded = new Embedded(null, fRes);
@@ -97,7 +111,6 @@ public class UploadDocumentUI implements Serializable {
 					imgPanel.setComponentAlignment(embedded, Alignment.MIDDLE_CENTER);
 					imgPanel.setWidth("320");
 					imgPanel.setHeight("150");
-					
 				}
 				catch (Exception e) {
 					Notification.show("", " File Format is incorrect", Type.ERROR_MESSAGE);
@@ -132,16 +145,19 @@ public class UploadDocumentUI implements Serializable {
 				os.reset(); // If re-uploading
 				return os;
 			}
-		};
+		}
+		;
 		final ImageReceiver receiver = new ImageReceiver();
 		upload.setReceiver(receiver);
-		
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void displaycertificate(byte[] certificate) {
 		imgPanel.removeAllComponents();
 		if (certificate != null && !"null".equals(certificate)) {
+			UI.getCurrent().getSession().setAttribute("UPLOAD_FILE_NAME", certificate);
+			UI.getCurrent().getSession().setAttribute("UPLOAD_FILE_BYTE", "Document.pdf");
+			UI.getCurrent().getSession().setAttribute("IS_DOC_UPLOAD", true);
 			File someFile = new File(basepath1);
 			FileOutputStream fos;
 			try {

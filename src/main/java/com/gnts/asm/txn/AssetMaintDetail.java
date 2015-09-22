@@ -79,15 +79,15 @@ public class AssetMaintDetail extends BaseTransUI {
 	// pagination
 	private int recordCnt = 0;
 	private String userName;
-	private Long companyId, moduleId, employeeId;
+	private Long companyId, employeeId, assetMainId;
 	// Main Field Components
-	private ComboBox cbStatus, cbMaintType, cbservicetype, cbAssetName, cbattenby, cbprepare, cbreviewby, cbMaint,
+	private ComboBox cbStatus, cbMaintType, cbServiceType, cbAssetName, cbAttenBy, cbPrepareBy, cbReviewBy, cbMaintSched,
 			cbServiceby, cbCause;
 	private TabSheet tabasset;
 	private TextField tfAssetName;
-	private PopupDateField dfCompleteDate, dfServicedate, dfmainSchedule;
+	private PopupDateField dfCompleteDate, dfServicedate, dfMainSchedule;
 	private TextArea taMaintDetails, taProblemDesc;
-	private GERPTimeField tfmaintime, tfcompletetime;
+	private GERPTimeField tfMainTime, tfCompleteTime;
 	// Initialization Logger
 	private Logger logger = Logger.getLogger(AssetMaintDetail.class);
 	private AssetMaintSchedService serviceMaintSched = (AssetMaintSchedService) SpringContextHelper
@@ -108,11 +108,43 @@ public class AssetMaintDetail extends BaseTransUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 				+ "Inside AssetMaintDetail() constructor");
 		// Loading the UI
-		buildView();
+		buildView(true);
+	}
+	
+	public AssetMaintDetail(Long assetMainId) {
+		// Get the logged in user name and company id from the session
+		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
+		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
+		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
+		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
+				+ "Inside AssetMaintDetail() constructor");
+		// Loading the UI
+		buildView(false);
+		this.assetMainId = assetMainId;
+		loadSearchRslt();
+		tblMstScrSrchRslt.setValue(tblMstScrSrchRslt.getItemIds().iterator().next());
+		hlUserIPContainer.setVisible(true);
+		hlUserIPContainer.setEnabled(true);
+		hlSrchContainer.setVisible(false);
+		btnPrint.setVisible(true);
+		btnSave.setVisible(true);
+		btnCancel.setVisible(true);
+		btnSearch.setVisible(false);
+		btnEdit.setEnabled(false);
+		btnAdd.setEnabled(false);
+		btnReset.setVisible(false);
+		btnScreenName.setVisible(true);
+		btnAuditRecords.setEnabled(true);
+		lblNotification.setIcon(null);
+		lblNotification.setCaption("");
+		hlUserIPContainer.removeAllComponents();
+		// Dummy implementation, actual will be implemented in extended
+		// class
+		editDetails();
 	}
 	
 	// Loading BuildView Components
-	private void buildView() {
+	private void buildView(Boolean isLoadFullList) {
 		// comboBox for AssetName
 		cbAssetName = new GERPComboBox("Asset Name");
 		cbAssetName.setWidth("160");
@@ -132,57 +164,55 @@ public class AssetMaintDetail extends BaseTransUI {
 		cbMaintType = new GERPComboBox("Maintenance Type", BASEConstants.T_AMS_ASST_MAINT_DTLS,
 				BASEConstants.MAINT_TYPE);
 		cbMaintType.setWidth("160");
-		cbservicetype = new GERPComboBox("Service Type", BASEConstants.T_AMS_ASST_MAINT_DTLS, BASEConstants.SERVICE_TYP);
-		cbservicetype.setWidth("160");
+		cbServiceType = new GERPComboBox("Service Type", BASEConstants.T_AMS_ASST_MAINT_DTLS, BASEConstants.SERVICE_TYP);
+		cbServiceType.setWidth("160");
 		// comboBox for PreparedBy
-		cbprepare = new GERPComboBox("Prepared by");
-		cbprepare.setWidth("160");
-		cbprepare.setItemCaptionPropertyId("firstname");
+		cbPrepareBy = new GERPComboBox("Prepared by");
+		cbPrepareBy.setWidth("160");
+		cbPrepareBy.setItemCaptionPropertyId("firstname");
 		loadEmployeeList();
 		// comboBox for AttendedBy
-		cbattenby = new GERPComboBox("Attended by");
-		cbattenby.setWidth("160");
-		cbattenby.setItemCaptionPropertyId("firstname");
+		cbAttenBy = new GERPComboBox("Attended by");
+		cbAttenBy.setWidth("160");
+		cbAttenBy.setItemCaptionPropertyId("firstname");
 		loadEmployeeList();
 		cbCause = new GERPComboBox("Caused by");
 		cbCause.setWidth("160");
 		cbCause.setItemCaptionPropertyId("lookupname");
 		loadlookuplist();
-		cbreviewby = new GERPComboBox("Reviewed by");
-		cbreviewby.setWidth("160");
-		cbreviewby.setItemCaptionPropertyId("firstname");
+		cbReviewBy = new GERPComboBox("Reviewed by");
+		cbReviewBy.setWidth("160");
+		cbReviewBy.setItemCaptionPropertyId("firstname");
 		loadEmployeeList();
 		cbServiceby = new GERPComboBox("Service by");
 		cbServiceby.setWidth("160");
 		cbServiceby.setNullSelectionAllowed(false);
 		cbServiceby.setItemCaptionPropertyId("vendorName");
-		loadvendorlist();
+		loadVendorList();
 		// comboBox for Maintenance Desription
-		cbMaint = new GERPComboBox("Maintenance Desription ");
-		cbMaint.setWidth("160");
-		cbMaint.setItemCaptionPropertyId("maintaindescription");
-		cbMaint.addBlurListener(new BlurListener() {
+		cbMaintSched = new GERPComboBox("Maintenance Desription ");
+		cbMaintSched.setWidth("160");
+		cbMaintSched.setItemCaptionPropertyId("maintaindescription");
+		cbMaintSched.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
-				cbMaint.setComponentError(null);
-				if (cbMaint.getValue() != null) {
-					cbMaint.setComponentError(null);
+				cbMaintSched.setComponentError(null);
+				if (cbMaintSched.getValue() != null) {
+					cbMaintSched.setComponentError(null);
 				}
 			}
 		});
-		loadmainDescriptionName();
+		loadMainSchedDesc();
 		// PopUpDateField for CompleteDate
 		dfCompleteDate = new GERPPopupDateField("Complete Date");
-		dfCompleteDate.setDateFormat("dd-MMM-yyyy");
-		dfCompleteDate.setWidth("110");
+		dfCompleteDate.setWidth("140");
 		// PopUpDateField for ServiceDate
 		dfServicedate = new GERPPopupDateField("Service Date");
-		dfServicedate.setDateFormat("dd-MMM-yyyy");
 		dfServicedate.setWidth("140");
 		// PopUpDateField for MainSchedule
-		dfmainSchedule = new GERPPopupDateField("Maintain Schedule");
-		dfmainSchedule.setWidth("140");
+		dfMainSchedule = new GERPPopupDateField("Maintain Schedule");
+		dfMainSchedule.setWidth("140");
 		cbStatus = new GERPComboBox("Status", BASEConstants.T_AMS_ASST_MAINT_DTLS, BASEConstants.MAINT_STS);
 		cbStatus.setItemCaptionPropertyId("desc");
 		cbStatus.setWidth("160");
@@ -192,14 +222,17 @@ public class AssetMaintDetail extends BaseTransUI {
 		taProblemDesc = new GERPTextArea("Problem Desc.");
 		taProblemDesc.setWidth("900");
 		taProblemDesc.setHeight("80");
-		tfmaintime = new GERPTimeField("MaintainTime");
-		tfcompletetime = new GERPTimeField("Completion Time");
+		tfMainTime = new GERPTimeField("MaintainTime");
+		tfCompleteTime = new GERPTimeField("Completion Time");
+		
 		tabasset = new TabSheet();
 		tabasset.setSizeFull();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
 		assembleSearchLayout();
 		resetFields();
-		loadsearchrslt();
+		if (isLoadFullList) {
+			loadSearchRslt();
+		}
 		btnPrint.setVisible(true);
 	}
 	
@@ -233,17 +266,17 @@ public class AssetMaintDetail extends BaseTransUI {
 		// add the user input items into appropriate form layout
 		flColumn1.addComponent(cbAssetName);
 		cbAssetName.setRequired(true);
+		cbMaintType.setRequired(true);
 		flColumn1.addComponent(cbMaintType);
-		flColumn1.addComponent(cbMaint);
-		cbMaint.setRequired(true);
-		flColumn1.addComponent(dfmainSchedule);
-		flColumn2.addComponent(tfmaintime);
-		flColumn2.addComponent(tfcompletetime);
-		flColumn2.addComponent(dfCompleteDate);
+		flColumn1.addComponent(cbMaintSched);
+		flColumn2.addComponent(dfMainSchedule);
+		flColumn2.addComponent(tfMainTime);
+		flColumn2.addComponent(tfCompleteTime);
+		flColumn3.addComponent(dfCompleteDate);
 		flColumn3.addComponent(dfServicedate);
-		flColumn3.addComponent(cbservicetype);
+		flColumn3.addComponent(cbServiceType);
 		flColumn3.setMargin(true);
-		flColumn3.addComponent(cbServiceby);
+		flColumn4.addComponent(cbServiceby);
 		flColumn4.addComponent(cbCause);
 		flColumn4.addComponent(cbStatus);
 		// add the user input items into appropriate Horizontal layout
@@ -267,14 +300,14 @@ public class AssetMaintDetail extends BaseTransUI {
 	}
 	
 	// get the search result from DB based on the search parameters
-	private void loadsearchrslt() {
+	private void loadSearchRslt() {
 		try {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			List<AssetMaintDetailDM> listAssetDetails = new ArrayList<AssetMaintDetailDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyId + ", " + cbAssetName.getValue() + ", " + (String) cbStatus.getValue());
-			listAssetDetails = serviceAssetMaintDetails.getAssetMaintDetailList(null, (Long) cbAssetName.getValue(),
-					(String) cbMaintType.getValue(), null, (String) cbStatus.getValue());
+			listAssetDetails = serviceAssetMaintDetails.getAssetMaintDetailList(assetMainId,
+					(Long) cbAssetName.getValue(), (String) cbMaintType.getValue(), null, (String) cbStatus.getValue());
 			recordCnt = listAssetDetails.size();
 			beanMaintDetail = new BeanItemContainer<AssetMaintDetailDM>(AssetMaintDetailDM.class);
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
@@ -290,6 +323,7 @@ public class AssetMaintDetail extends BaseTransUI {
 			logger.error("error during loadsearch on the table, The Error is ----->");
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			logger.info(e.getMessage());
 		}
 	}
@@ -310,13 +344,13 @@ public class AssetMaintDetail extends BaseTransUI {
 	}
 	
 	// this method use to Load AssetNamelist inside of ComboBox
-	private void loadmainDescriptionName() {
+	private void loadMainSchedDesc() {
 		try {
 			BeanContainer<Long, AssetMaintSchedDM> beanMaintSched = new BeanContainer<Long, AssetMaintSchedDM>(
 					AssetMaintSchedDM.class);
 			beanMaintSched.setBeanIdProperty("maintId");
 			beanMaintSched.addAll(serviceMaintSched.getMaintScheduleList(null, null, null, "Active", null, null));
-			cbMaint.setContainerDataSource(beanMaintSched);
+			cbMaintSched.setContainerDataSource(beanMaintSched);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -324,7 +358,7 @@ public class AssetMaintDetail extends BaseTransUI {
 	}
 	
 	// this method use to Load Vendor Name list inside of ComboBox
-	private void loadvendorlist() {
+	private void loadVendorList() {
 		try {
 			BeanContainer<String, VendorDM> beanvendor = new BeanContainer<String, VendorDM>(VendorDM.class);
 			beanvendor.setBeanIdProperty("vendorId");
@@ -343,7 +377,7 @@ public class AssetMaintDetail extends BaseTransUI {
 			BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
 					CompanyLookupDM.class);
 			beanlook.setBeanIdProperty("lookupname");
-			beanlook.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "AM_MNTCAUS"));
+			beanlook.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, null, "Active", "AM_MNTCAUS"));
 			cbCause.setContainerDataSource(beanlook);
 		}
 		catch (Exception e) {
@@ -358,7 +392,7 @@ public class AssetMaintDetail extends BaseTransUI {
 			beanEmployee.setBeanIdProperty("employeeid");
 			beanEmployee.addAll(serviceEmployee.getEmployeeList(null, null, null, "Active", companyId, employeeId,
 					null, null, null, "P"));
-			cbprepare.setContainerDataSource(beanEmployee);
+			cbPrepareBy.setContainerDataSource(beanEmployee);
 		}
 		catch (Exception e) {
 			logger.info("load Employee details" + e);
@@ -374,8 +408,8 @@ public class AssetMaintDetail extends BaseTransUI {
 					cbAssetName.setValue(assetMaintDetailDM.getAssetId());
 				}
 				cbMaintType.setValue(assetMaintDetailDM.getMaintenanceType());
-				cbservicetype.setValue(assetMaintDetailDM.getServiceType());
-				cbMaint.setValue(assetMaintDetailDM.getAssetMaintSchdId());
+				cbServiceType.setValue(assetMaintDetailDM.getServiceType());
+				cbMaintSched.setValue(assetMaintDetailDM.getAssetMaintSchdId());
 				cbCause.setValue(assetMaintDetailDM.getCausedBy());
 				if (assetMaintDetailDM.getMaintDetails() != null
 						&& !"null".equals(assetMaintDetailDM.getMaintDetails())) {
@@ -384,18 +418,19 @@ public class AssetMaintDetail extends BaseTransUI {
 				cbServiceby.setValue(assetMaintDetailDM.getServiceBy());
 				dfServicedate.setValue(assetMaintDetailDM.getNextserviceDt());
 				if (assetMaintDetailDM.getMaintenancetime() != null) {
-					tfmaintime.setTime(assetMaintDetailDM.getMaintenancetime());
+					tfMainTime.setTime(assetMaintDetailDM.getMaintenancetime());
 				}
 				if (assetMaintDetailDM.getCompletedTime() != null) {
-					tfcompletetime.setTime(assetMaintDetailDM.getCompletedTime());
+					tfCompleteTime.setTime(assetMaintDetailDM.getCompletedTime());
 				}
 				dfCompleteDate.setValue(assetMaintDetailDM.getCompleteddt());
-				dfmainSchedule.setValue(assetMaintDetailDM.getMaintenanceDt());
+				dfMainSchedule.setValue(assetMaintDetailDM.getMaintenanceDt());
 				taProblemDesc.setValue(assetMaintDetailDM.getProblemDescription());
 				cbStatus.setValue(assetMaintDetailDM.getMaintStatus());
 			}
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			logger.info(e.getMessage());
 		}
 	}
@@ -404,7 +439,7 @@ public class AssetMaintDetail extends BaseTransUI {
 	// BaseUI searchDetails() implementation
 	protected void searchDetails() throws NoDataFoundException {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + " Invoking search");
-		loadsearchrslt();
+		loadSearchRslt();
 		if (recordCnt == 0) {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
 					+ "No data for the search. throwing ERPException.NoDataFoundException");
@@ -421,7 +456,7 @@ public class AssetMaintDetail extends BaseTransUI {
 				+ "Resetting search fields and reloading the result");
 		cbAssetName.setValue(null);
 		resetFields();
-		loadsearchrslt();
+		loadSearchRslt();
 	}
 	
 	@Override
@@ -445,12 +480,14 @@ public class AssetMaintDetail extends BaseTransUI {
 	protected void validateDetails() throws ValidationException {
 		boolean errorflag = false;
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Validating Data ");
+		cbMaintType.setComponentError(null);
+		cbAssetName.setComponentError(null);
 		if ((cbAssetName.getValue() == null)) {
 			cbAssetName.setComponentError(new UserError(GERPErrorCodes.NULL_ASSET_NAME));
 			errorflag = true;
 		}
-		if ((cbMaint.getValue() == null)) {
-			cbMaint.setComponentError(new UserError(GERPErrorCodes.NULL_ASSET_MAINTENANCE));
+		if ((cbMaintType.getValue() == null)) {
+			cbMaintType.setComponentError(new UserError(GERPErrorCodes.NULL_ASSET_MAINTENANCE));
 			errorflag = true;
 		}
 		if (errorflag) {
@@ -477,24 +514,24 @@ public class AssetMaintDetail extends BaseTransUI {
 			if (cbMaintType.getValue() != null) {
 				assetMaintDetailDM.setMaintenanceType(cbMaintType.getValue().toString());
 			}
-			if (tfmaintime.getValue() != null) {
-				assetMaintDetailDM.setMaintenancetime(tfmaintime.getHorsMunites().toString());
+			if (tfMainTime.getValue() != null) {
+				assetMaintDetailDM.setMaintenancetime(tfMainTime.getHorsMunites().toString());
 			}
 			if (dfServicedate.getValue() != null) {
 				assetMaintDetailDM.setNextserviceDt(dfServicedate.getValue());
 			}
-			if (dfmainSchedule.getValue() != null) {
-				assetMaintDetailDM.setMaintenanceDt(dfmainSchedule.getValue());
+			if (dfMainSchedule.getValue() != null) {
+				assetMaintDetailDM.setMaintenanceDt(dfMainSchedule.getValue());
 			}
-			if (cbMaint.getValue() != null) {
-				assetMaintDetailDM.setAssetMaintSchdId((Long) cbMaint.getValue());
+			if (cbMaintSched.getValue() != null) {
+				assetMaintDetailDM.setAssetMaintSchdId((Long) cbMaintSched.getValue());
 			}
 			assetMaintDetailDM.setMaintStatus((String) cbStatus.getValue());
 			if (dfCompleteDate.getValue() != null) {
 				assetMaintDetailDM.setCompleteddt(dfCompleteDate.getValue());
 			}
-			if (tfcompletetime.getValue() != null) {
-				assetMaintDetailDM.setCompletedTime(tfcompletetime.getHorsMunites());
+			if (tfCompleteTime.getValue() != null) {
+				assetMaintDetailDM.setCompletedTime(tfCompleteTime.getHorsMunites());
 			}
 			assetMaintDetailDM.setPreparedBy(employeeId);
 			assetMaintDetailDM.setAttendedBy(null);
@@ -505,15 +542,15 @@ public class AssetMaintDetail extends BaseTransUI {
 			if (cbServiceby.getValue() != null) {
 				assetMaintDetailDM.setServiceBy(String.valueOf(cbServiceby.getValue()));
 			}
-			if (cbservicetype.getValue() != null) {
-				assetMaintDetailDM.setServiceType(cbservicetype.getValue().toString());
+			if (cbServiceType.getValue() != null) {
+				assetMaintDetailDM.setServiceType(cbServiceType.getValue().toString());
 			}
 			assetMaintDetailDM.setProblemDescription(taProblemDesc.getValue());
 			assetMaintDetailDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 			assetMaintDetailDM.setLastUpdatedBy(userName);
 			serviceAssetMaintDetails.saveOrUpdateAssetMaintDetail(assetMaintDetailDM);
 			resetFields();
-			loadsearchrslt();
+			loadSearchRslt();
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -535,31 +572,35 @@ public class AssetMaintDetail extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(true);
 		tblMstScrSrchRslt.setVisible(true);
 		cbAssetName.setRequired(false);
+		cbMaintType.setRequired(false);
 		resetFields();
+		assetMainId = null;
+		loadSearchRslt();
 	}
 	
 	// Reset the field values to default values
 	@Override
 	protected void resetFields() {
 		cbMaintType.setValue(null);
-		cbservicetype.setValue(null);
-		cbprepare.setValue(null);
-		cbreviewby.setValue(null);
+		cbServiceType.setValue(null);
+		cbPrepareBy.setValue(null);
+		cbReviewBy.setValue(null);
 		cbServiceby.setValue(null);
-		cbattenby.setValue(null);
+		cbAttenBy.setValue(null);
 		cbCause.setValue(null);
 		cbAssetName.setValue(null);
 		cbAssetName.setComponentError(null);
-		cbMaint.setValue(null);
-		cbMaint.setComponentError(null);
+		cbMaintSched.setValue(null);
+		cbMaintSched.setComponentError(null);
 		taMaintDetails.setValue("");
 		taProblemDesc.setValue("");
-		tfmaintime.setValue(null);
+		tfMainTime.setValue(null);
 		dfCompleteDate.setValue(null);
 		dfServicedate.setValue(null);
-		dfmainSchedule.setValue(null);
-		tfcompletetime.setValue(null);
+		dfMainSchedule.setValue(null);
+		tfCompleteTime.setValue(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+		cbMaintType.setComponentError(null);
 	}
 	
 	@Override

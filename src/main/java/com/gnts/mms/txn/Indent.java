@@ -154,8 +154,10 @@ public class Indent extends BaseTransUI {
 		buildView(false);
 		this.indentHdrId = indentHdrId;
 		cbIndStatus.setValue(null);
-		loadSrchRslt();
-		tblMstScrSrchRslt.setValue(tblMstScrSrchRslt.getItemIds().iterator().next());
+		if (indentHdrId != 0L) {
+			loadSrchRslt();
+			tblMstScrSrchRslt.setValue(tblMstScrSrchRslt.getItemIds().iterator().next());
+		}
 		hlUserIPContainer.setVisible(true);
 		hlUserIPContainer.setEnabled(true);
 		hlSrchContainer.setVisible(false);
@@ -173,7 +175,12 @@ public class Indent extends BaseTransUI {
 		hlUserIPContainer.removeAllComponents();
 		// Dummy implementation, actual will be implemented in extended
 		// class
-		editDetails();
+		if (indentHdrId != 0L) {
+			editDetails();
+		} else {
+			addDetails();
+			cbIndType.setValue("Store Indent");
+		}
 	}
 	
 	private void buildView(Boolean isLoadFullList) {

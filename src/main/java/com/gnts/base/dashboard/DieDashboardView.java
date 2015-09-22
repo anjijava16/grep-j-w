@@ -1,9 +1,7 @@
 package com.gnts.base.dashboard;
 
 import org.apache.log4j.Logger;
-import com.gnts.asm.domain.txn.AssetMaintDetailDM;
 import com.gnts.asm.domain.txn.GeneratorDM;
-import com.gnts.asm.service.txn.AssetMaintDetailService;
 import com.gnts.asm.service.txn.GeneratorService;
 import com.gnts.die.txn.DieRequest;
 import com.gnts.die.txn.DieTimesheet;
@@ -40,12 +38,9 @@ public class DieDashboardView implements ClickListener {
 	private Button btnMoldTrialReq = new Button("13 Nos.", this);
 	private Button btnDieCompletion = new Button("17 Nos.", this);
 	private Button btnTimesheet = new Button("0 Nos.", this);
-	private AssetMaintDetailService serviceAssetMaintDetails = (AssetMaintDetailService) SpringContextHelper
-			.getBean("assetMaintDetails");
 	private MmsEnqHdrService serviceMmsEnqHdr = (MmsEnqHdrService) SpringContextHelper.getBean("MmsEnqHdr");
 	private GeneratorService serviceGenerator = (GeneratorService) SpringContextHelper.getBean("generator");
 	private Logger logger = Logger.getLogger(DashboardMMSView.class);
-	private Table tblAssetMaint = new Table();
 	private Table tblEnquiry = new Table();
 	private Long companyId, branchId;
 	private VerticalLayout vlGensetOilStatus = new VerticalLayout();
@@ -82,46 +77,11 @@ public class DieDashboardView implements ClickListener {
 		custom.addComponent(btnMoldTrialReq, "purchaseorder");
 		custom.addComponent(btnTimesheet, "receipts");
 		custom.addComponent(btnDieCompletion, "vendorbills");
-		custom.addComponent(tblAssetMaint, "stockDetails");
 		custom.addComponent(vlGensetOilStatus, "gensetoilchk");
 		custom.addComponent(new CalendarMonthly("DIE_SCHEDULE"), "maintaincedtls");
-		tblAssetMaint.setHeight("300px");
-		tblAssetMaint.setWidth("99%");
 		tblEnquiry.setHeight("250px");
-		loadMaintainceDetails();
 		loadEnquiryList();
 		loadGensetDetails();
-	}
-	
-	private void loadMaintainceDetails() {
-		try {
-			logger.info("Company ID : " + companyId + " | User Name : > " + "Loading Search...");
-			tblAssetMaint.removeAllItems();
-			BeanItemContainer<AssetMaintDetailDM> beanAssetMaint = new BeanItemContainer<AssetMaintDetailDM>(
-					AssetMaintDetailDM.class);
-			beanAssetMaint.addAll(serviceAssetMaintDetails.getAssetMaintDetailList(null, null, null, null, "Pending"));
-			tblAssetMaint.setContainerDataSource(beanAssetMaint);
-			tblAssetMaint.setVisibleColumns(new Object[] { "assetName", "maintenanceType", "problemDescription",
-					"lastUpdatedDt", "lastUpdatedBy" });
-			tblAssetMaint.setColumnHeaders(new String[] { "Asset Name", "Type", "Problem", "Raised on", "Raised by" });
-			tblAssetMaint.setColumnWidth("problemDescription", 400);
-			tblAssetMaint.addGeneratedColumn("problemDescription", new ColumnGenerator() {
-				private static final long serialVersionUID = 1L;
-				
-				@Override
-				public Object generateCell(Table source, Object itemId, Object columnId) {
-					@SuppressWarnings("unchecked")
-					BeanItem<AssetMaintDetailDM> item = (BeanItem<AssetMaintDetailDM>) source.getItem(itemId);
-					AssetMaintDetailDM emp = (AssetMaintDetailDM) item.getBean();
-					return new Label(
-							"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#E26666;font-size:12px'>"
-									+ emp.getProblemDescription() + "</h1>", ContentMode.HTML);
-				}
-			});
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
 	}
 	
 	// Load Purchase Header
@@ -177,7 +137,7 @@ public class DieDashboardView implements ClickListener {
 		try {
 			vlGensetOilStatus.setSpacing(true);
 			for (GeneratorDM generatorDM : serviceGenerator.getGeneratorDetailList(companyId, branchId, null, null,
-					null, null, "Y", null)) {
+					null, null, null, "Y", null)) {
 				Label lbl = new Label(generatorDM.getAssetName()
 						+ " disel closing balance is   <span style='color:red;font-size:15px'>"
 						+ generatorDM.getDiselCloseBalance() + " Ltrs.</span>", ContentMode.HTML);

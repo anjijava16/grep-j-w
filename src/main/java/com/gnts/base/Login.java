@@ -791,7 +791,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 			hlScreenName.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Indent");
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
-			new Indent();
+			new Indent(0L);
 		}
 		if (imgHelp == event.getComponent()) {
 			/*

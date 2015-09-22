@@ -11,8 +11,6 @@
  */
 package com.gnts.mms.txn;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -33,10 +31,10 @@ import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
 import com.gnts.erputil.components.GERPComboBox;
 import com.gnts.erputil.components.GERPFormLayout;
+import com.gnts.erputil.components.GERPNumberField;
 import com.gnts.erputil.components.GERPPanelGenerator;
 import com.gnts.erputil.components.GERPPopupDateField;
 import com.gnts.erputil.components.GERPTable;
-import com.gnts.erputil.constants.GERPConstants;
 import com.gnts.erputil.constants.GERPErrorCodes;
 import com.gnts.erputil.exceptions.ERPException;
 import com.gnts.erputil.exceptions.ERPException.NoDataFoundException;
@@ -101,16 +99,17 @@ public class MaterialQuote extends BaseTransUI {
 	private FormLayout flDtlColumn1, flDtlColumn2, flDtlColumn3, flDtlColumn4, flDtlColumn5;
 	// // User Input Components for Quote Details
 	private ComboBox cbBranch, cbStatus, cbEnqNo;
-	private TextField tfQuoteRef, tfQuoteVersion, tfBasictotal, tfpackingPer, tfPackingValue;
-	private TextField tfSubTotal, tfDutyTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
-	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
-	private TextField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal, tfUomTemp;
+	private TextField tfQuoteRef, tfQuoteVersion, tfUomTemp;
+	private GERPNumberField tfSubTotal, tfDutyTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
+	private GERPNumberField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
+	private GERPNumberField tfFreightPer, tfFreightValue, tfOtherPer, tfOtherValue, tfGrandtotal, tfBasictotal,
+			tfpackingPer, tfPackingValue;
 	private TextArea tapaymetTerms, taFreightTerms, taWarrentyTerms, taDelTerms;
 	private TextArea taRemark;
 	private PopupDateField dfQuoteDt, dfvalidDt;
 	private CheckBox ckdutyexm, ckPdcRqu, ckCformRqu;
 	private Button btnsavepurQuote = new GERPButton("Add", "addbt", this);
-	private VerticalLayout hlquoteDoc = new VerticalLayout();
+	private VerticalLayout vlDocument = new VerticalLayout();
 	// QuoteDtl components
 	private ComboBox cbMaterial, cbUom;
 	private TextField tfQuoteQunt, tfUnitRate, tfBasicValue, tfReqdQty;
@@ -119,7 +118,6 @@ public class MaterialQuote extends BaseTransUI {
 	// BeanItem container
 	private BeanItemContainer<MmsQuoteHdrDM> beanQuoteHdr = null;
 	private BeanItemContainer<MmsQuoteDtlDM> beanQuoteDtl = null;
-	// private BeanItemContainer<MmsQuoteHdrDM> beanSmsPurEnqHdrDM = null;
 	private List<MmsQuoteDtlDM> listQuoteDtls = new ArrayList<MmsQuoteDtlDM>();
 	// local variables declaration
 	private String username;
@@ -130,9 +128,8 @@ public class MaterialQuote extends BaseTransUI {
 	private HorizontalLayout hlUserInputLayout = new GERPAddEditHLayout();
 	private GERPTable tblMatQuDtl;
 	private int recordCnt = 0;
-	private Long QuoteId;
+	private Long quoteId;
 	private Long employeeId;
-	private File file;
 	private Long roleId;
 	private Long branchId;
 	private Long screenId;
@@ -140,7 +137,6 @@ public class MaterialQuote extends BaseTransUI {
 	private Long quoteid;
 	private MmsComments comments;
 	private VerticalLayout vlTableForm = new VerticalLayout();
-	public static boolean filevalue1 = false;
 	// Initialize logger
 	private Logger logger = Logger.getLogger(MaterialQuote.class);
 	private Button btndelete = new GERPButton("Delete", "delete", this);
@@ -221,49 +217,49 @@ public class MaterialQuote extends BaseTransUI {
 		taRemark.setHeight("50");
 		tfQuoteVersion = new TextField("Quote Version");
 		tfQuoteVersion.setWidth("145");
-		tfBasictotal = new TextField("Basic total");
+		tfBasictotal = new GERPNumberField("Basic total");
 		tfBasictotal.setWidth("150");
-		tfSubTotal = new TextField("Sub Total");
+		tfSubTotal = new GERPNumberField("Sub Total");
 		tfSubTotal.setWidth("150");
-		tfDutyTotal = new TextField("Duty Total");
+		tfDutyTotal = new GERPNumberField("Duty Total");
 		tfDutyTotal.setWidth("150");
-		tfpackingPer = new TextField();
+		tfpackingPer = new GERPNumberField();
 		tfpackingPer.setWidth("30");
-		tfPackingValue = new TextField();
+		tfPackingValue = new GERPNumberField();
 		tfPackingValue.setWidth("120");
 		tfPackingValue.setImmediate(true);
-		tfVatPer = new TextField();
+		tfVatPer = new GERPNumberField();
 		tfVatPer.setWidth("30");
-		tfVatValue = new TextField();
+		tfVatValue = new GERPNumberField();
 		tfVatValue.setWidth("120");
-		tfEDPer = new TextField();
+		tfEDPer = new GERPNumberField();
 		tfEDPer.setWidth("30");
-		tfEDValue = new TextField();
+		tfEDValue = new GERPNumberField();
 		tfEDValue.setWidth("120");
-		tfHEDPer = new TextField();
+		tfHEDPer = new GERPNumberField();
 		tfHEDPer.setWidth("30");
-		tfHEDValue = new TextField();
+		tfHEDValue = new GERPNumberField();
 		tfHEDValue.setWidth("120");
-		tfCessPer = new TextField();
+		tfCessPer = new GERPNumberField();
 		tfCessPer.setWidth("30");
-		tfCessValue = new TextField();
+		tfCessValue = new GERPNumberField();
 		tfCessValue.setWidth("120");
-		tfSubTaxTotal = new TextField("Sub Tax Total");
+		tfSubTaxTotal = new GERPNumberField("Sub Tax Total");
 		tfSubTaxTotal.setWidth("150");
-		tfCstValue = new TextField();
+		tfCstValue = new GERPNumberField();
 		tfCstValue.setWidth("120");
-		tfCstPer = new TextField();
+		tfCstPer = new GERPNumberField();
 		tfCstPer.setWidth("30");
 		tfCstValue.setImmediate(true);
-		tfGrandtotal = new TextField("Grand Total");
+		tfGrandtotal = new GERPNumberField("Grand Total");
 		tfGrandtotal.setWidth("150");
-		tfFreightPer = new TextField();
+		tfFreightPer = new GERPNumberField();
 		tfFreightPer.setWidth("30");
-		tfFreightValue = new TextField();
+		tfFreightValue = new GERPNumberField();
 		tfFreightValue.setWidth("120");
-		tfOtherPer = new TextField();
+		tfOtherPer = new GERPNumberField();
 		tfOtherPer.setWidth("30");
-		tfOtherValue = new TextField();
+		tfOtherValue = new GERPNumberField();
 		tfOtherValue.setWidth("120");
 		tapaymetTerms = new TextArea("Payment Terms");
 		tapaymetTerms.setWidth("150");
@@ -551,7 +547,8 @@ public class MaterialQuote extends BaseTransUI {
 		flColumn4.addComponent(ckdutyexm);
 		flColumn4.addComponent(ckCformRqu);
 		flColumn4.addComponent(ckPdcRqu);
-		flColumn4.addComponent(hlquoteDoc);
+		flColumn4.addComponent(vlDocument);
+		new UploadDocumentUI(vlDocument);
 		HorizontalLayout hlHdr = new HorizontalLayout();
 		hlHdr.addComponent(flColumn1);
 		hlHdr.addComponent(flColumn2);
@@ -792,10 +789,10 @@ public class MaterialQuote extends BaseTransUI {
 			hlCmdBtnLayout.setVisible(false);
 			hlUserInputLayout.setVisible(true);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected QuoteId -> "
-					+ QuoteId);
+					+ quoteId);
 			if (tblMstScrSrchRslt.getValue() != null) {
 				MmsQuoteHdrDM quoteHdr = beanQuoteHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				QuoteId = quoteHdr.getQuoteId();
+				quoteId = quoteHdr.getQuoteId();
 				cbBranch.setValue(quoteHdr.getBranchId());
 				cbEnqNo.setValue(quoteHdr.getEnquiryNo());
 				tfQuoteRef.setReadOnly(false);
@@ -942,19 +939,21 @@ public class MaterialQuote extends BaseTransUI {
 						cbEnqNo.setValue(itemId);
 					}
 				}
-				if (quoteHdr.getQuoteDoc() != null) {
-					byte[] certificate = quoteHdr.getQuoteDoc();
-					UploadDocumentUI test = new UploadDocumentUI(hlquoteDoc);
-					test.displaycertificate(certificate);
-				} else {
-					new UploadDocumentUI(hlquoteDoc);
+				UploadDocumentUI documentUI = new UploadDocumentUI(vlDocument);
+				try {
+					documentUI.displaycertificate(serviceQuoteHdr
+							.getMmsQuoteHdrList(null, quoteHdr.getQuoteId(), null, null, null, null, null, "P").get(0)
+							.getQuoteDoc());
 				}
-				listQuoteDtls = serviceQuoteDtls.getmmsquotedtllist(null, QuoteId, null, null, null);
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+				listQuoteDtls = serviceQuoteDtls.getmmsquotedtllist(null, quoteId, null, null, null);
 			}
 			loadMatDtl();
-			comments = new MmsComments(vlTableForm, null, companyid, null, null, QuoteId, null, null, null, null,
+			comments = new MmsComments(vlTableForm, null, companyid, null, null, quoteId, null, null, null, null,
 					status);
-			comments.loadsrch(true, null, null, null, null, QuoteId, null, null, null, null);
+			comments.loadsrch(true, null, null, null, null, quoteId, null, null, null, null);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -1070,7 +1069,7 @@ public class MaterialQuote extends BaseTransUI {
 		tfOtherValue.setReadOnly(true);
 		loadMatDtl();
 		assembleInputUserLayout();
-		new UploadDocumentUI(hlquoteDoc);
+		UI.getCurrent().getSession().setAttribute("IS_DOC_UPLOAD", false);
 		try {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_QN ").get(0);
 			tfQuoteRef.setReadOnly(true);
@@ -1174,6 +1173,9 @@ public class MaterialQuote extends BaseTransUI {
 			dtlValidation();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			MmsQuoteHdrDM quoteHdr = new MmsQuoteHdrDM();
+			if (tblMstScrSrchRslt.getValue() != null) {
+				quoteHdr = beanQuoteHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			}
 			quoteHdr.setQuoteRef(tfQuoteRef.getValue());
 			quoteHdr.setVendorid((Long) cbVendorname.getValue());
 			quoteHdr.setBranchId((Long) cbBranch.getValue());
@@ -1252,12 +1254,18 @@ public class MaterialQuote extends BaseTransUI {
 			quoteHdr.setActionedBy(null);
 			quoteHdr.setLastupdateddt(DateUtils.getcurrentdate());
 			quoteHdr.setLastupdatedby(username);
-			file = new File(GERPConstants.DOCUMENT_PATH);
-			FileInputStream fio = new FileInputStream(file);
-			byte fileContents[] = new byte[(int) file.length()];
-			fio.read(fileContents);
-			fio.close();
-			quoteHdr.setQuoteDoc(fileContents);
+			Boolean isDocUploaded = false;
+			try {
+				isDocUploaded = (Boolean) UI.getCurrent().getSession().getAttribute("IS_DOC_UPLOAD");
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (isDocUploaded) {
+				byte[] uploadedDoc = (byte[]) UI.getCurrent().getSession().getAttribute("UPLOAD_FILE_BYTE");
+				System.out.println(uploadedDoc);
+				quoteHdr.setQuoteDoc(uploadedDoc);
+			}
 			serviceQuoteHdr.saveOrUpdateMmsQuoteHdr(quoteHdr);
 			@SuppressWarnings("unchecked")
 			Collection<MmsQuoteDtlDM> itemIds = (Collection<MmsQuoteDtlDM>) tblMatQuDtl.getVisibleItemIds();
@@ -1357,6 +1365,7 @@ public class MaterialQuote extends BaseTransUI {
 		cbBranch.setRequired(false);
 		cbEnqNo.setRequired(false);
 		tfUnitRate.setRequired(false);
+		UI.getCurrent().getSession().setAttribute("IS_DOC_UPLOAD", false);
 		resetFields();
 		resetDetailsFields();
 		loadSrchRslt();
@@ -1473,7 +1482,7 @@ public class MaterialQuote extends BaseTransUI {
 		taFreightTerms.setValue("");
 		listQuoteDtls = new ArrayList<MmsQuoteDtlDM>();
 		tblMatQuDtl.removeAllItems();
-		new UploadDocumentUI(hlquoteDoc);
+		new UploadDocumentUI(vlDocument);
 		cbBranch.setValue(branchId);
 		cbStatus.setValue(null);
 		setPercentZero();

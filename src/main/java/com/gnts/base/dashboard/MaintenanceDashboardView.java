@@ -127,6 +127,41 @@ public class MaintenanceDashboardView implements ClickListener {
 									+ emp.getProblemDescription() + "</h1>", ContentMode.HTML);
 				}
 			});
+			tblAssetMaint.addGeneratedColumn("lastUpdatedBy", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<AssetMaintDetailDM> item = (BeanItem<AssetMaintDetailDM>) source.getItem(itemId);
+					final AssetMaintDetailDM assetMain = (AssetMaintDetailDM) item.getBean();
+					HorizontalLayout hlLayout = new HorizontalLayout();
+					Button btnView = new Button("View");
+					btnView.addClickListener(new ClickListener() {
+						private static final long serialVersionUID = 1L;
+						
+						@Override
+						public void buttonClick(ClickEvent event) {
+							// TODO Auto-generated method stub
+							clMainLayout.removeAllComponents();
+							hlHeader.removeAllComponents();
+							UI.getCurrent().getSession().setAttribute("screenName", "Maintenance Details");
+							UI.getCurrent().getSession().setAttribute("moduleId", 9L);
+							new AssetMaintDetail(assetMain.getMaintId());
+						}
+					});
+					btnView.setStyleName("view");
+					if (assetMain.getLastUpdatedBy() != null) {
+						hlLayout.addComponent(new Label(assetMain.getLastUpdatedBy()));
+					} else {
+						hlLayout.addComponent(new Label("------------"));
+					}
+					hlLayout.addComponent(btnView);
+					hlLayout.setComponentAlignment(btnView, Alignment.MIDDLE_RIGHT);
+					hlLayout.setSpacing(true);
+					return hlLayout;
+				}
+			});
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -186,7 +221,7 @@ public class MaintenanceDashboardView implements ClickListener {
 		try {
 			vlGensetOilStatus.setSpacing(true);
 			for (GeneratorDM generatorDM : serviceGenerator.getGeneratorDetailList(companyId, branchId, null, null,
-					null, null, "Y", null)) {
+					null, null, null, "Y", null)) {
 				Label lbl = new Label(generatorDM.getAssetName()
 						+ " disel closing balance is   <span style='color:red;font-size:15px'>"
 						+ generatorDM.getDiselCloseBalance() + " Ltrs.</span>", ContentMode.HTML);

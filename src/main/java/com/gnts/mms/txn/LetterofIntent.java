@@ -61,8 +61,10 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -78,13 +80,12 @@ public class LetterofIntent extends BaseTransUI {
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
-	private MmsQuoteDtlService serviceQuoteDtl = (MmsQuoteDtlService) SpringContextHelper
-			.getBean("mmsquotedtl");
+	private MmsQuoteDtlService serviceQuoteDtl = (MmsQuoteDtlService) SpringContextHelper.getBean("mmsquotedtl");
 	private MmsQuoteHdrService serviceMmsQuoteHdr = (MmsQuoteHdrService) SpringContextHelper.getBean("mmsquotehdr");
 	private List<LOIDetailsDM> indentDtlList = null;
 	// form layout for input controls
 	private FormLayout flIndentCol1, flIndentCol2, flIndentCol3, flIndentCol4, flIndentDtlCol1, flIndentDtlCol2,
-			flIndentDtlCol3, flIndentDtlCol4;
+			flIndentDtlCol3, flIndentDtlCol4, flIndentDtlCol5;
 	// Parent layout for all the input controls
 	private HorizontalLayout hlUserInputLayout = new HorizontalLayout();
 	private VerticalLayout hlIndentDtl = new VerticalLayout();
@@ -105,7 +106,7 @@ public class LetterofIntent extends BaseTransUI {
 	private TextField tfCstValue, tfSubTaxTotal, tfEDValue, tfHEDValue, tfCessValue, tfVatValue, tfBasictotal,
 			tfPackingValue, tfSubTotal, tfDutyTotal, tfBasicValue;
 	private TextField tfFreightValue, tfOtherValue, tfGrandtotal, tfpackingPer, tfVatPer, tfEDPer, tfHEDPer, tfCessPer,
-			tfCstPer, tfFreightPer, tfOtherPer;
+			tfCstPer, tfFreightPer, tfOtherPer, tfDiscountRate, tfDiscountPer;
 	private Table tblLOIDetail;
 	private BeanItemContainer<LOIHeaderDM> beanIndentHdrDM = null;
 	private BeanItemContainer<LOIDetailsDM> beanIndentDtlDM = null;
@@ -220,9 +221,32 @@ public class LetterofIntent extends BaseTransUI {
 			}
 		});
 		loadQuoteNoList();
+		tfDiscountRate = new TextField("Discounted");
+		tfDiscountRate.setWidth("75");
+		tfDiscountRate.setValue("0");
+		tfDiscountPer = new TextField("Discount Value");
+		tfDiscountPer.setWidth("150");
+		tfDiscountPer.setValue("0");
+		tfDiscountPer.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (Long.valueOf((tfUnitprice.getValue())) > Long.valueOf(tfDiscountPer.getValue())
+						&& Long.valueOf(tfDiscountPer.getValue()) != 0) {
+					calculateDiscount();
+				} else {
+					if (cbMatName != null && tfIntQty.getValue() != "0") {
+						Notification.show("Value Exceeds", "Discount Value is greater than Unit Rate.",
+								Type.WARNING_MESSAGE);
+						tfDiscountPer.setValue("0");
+					}
+				}
+			}
+		});
 		tfSubject = new GERPTextField("Subject");
 		tfUnitprice = new GERPTextField("Unit Price");
-		tfUnitprice.setWidth("150");
+		tfUnitprice.setWidth("75");
 		tfDtlRemarks = new TextArea("Remarks");
 		tfDtlRemarks.setWidth("150px");
 		tfDtlRemarks.setHeight("50px");
@@ -243,8 +267,9 @@ public class LetterofIntent extends BaseTransUI {
 		cbHdrStatus.setWidth("150");
 		// Indent Detail
 		// Material Name combobox
-		cbMatName = new ComboBox("Material Name");
+		cbMatName = new ComboBox("Material");
 		cbMatName.setItemCaptionPropertyId("materialname");
+		cbMatName.setWidth("200");
 		cbMatName.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -424,6 +449,7 @@ public class LetterofIntent extends BaseTransUI {
 		flIndentDtlCol2 = new FormLayout();
 		flIndentDtlCol3 = new FormLayout();
 		flIndentDtlCol4 = new FormLayout();
+		flIndentDtlCol5 = new FormLayout();
 		flIndentDtlCol1.addComponent(cbMatName);
 		HorizontalLayout hlQtyUom = new HorizontalLayout();
 		hlQtyUom.addComponent(tfIntQty);
@@ -431,14 +457,19 @@ public class LetterofIntent extends BaseTransUI {
 		hlQtyUom.setCaption("Qty");
 		flIndentDtlCol1.addComponent(hlQtyUom);
 		// flIndentDtlCol1.setComponentAlignment(hlQtyUom, Alignment.TOP_LEFT);
-		flIndentDtlCol2.addComponent(tfUnitprice);
-		flIndentDtlCol2.addComponent(tfBasicValue);
-		flIndentDtlCol3.addComponent(tfDtlRemarks);
-		flIndentDtlCol4.addComponent(cbDtlStatus);
+		HorizontalLayout hlRate = new HorizontalLayout();
+		hlRate.addComponent(tfUnitprice);
+		hlRate.addComponent(tfDiscountRate);
+		hlRate.setCaption("Rate");
+		flIndentDtlCol2.addComponent(hlRate);
+		flIndentDtlCol3.addComponent(tfDiscountPer);
+		flIndentDtlCol3.addComponent(tfBasicValue);
+		flIndentDtlCol4.addComponent(tfDtlRemarks);
+		flIndentDtlCol5.addComponent(cbDtlStatus);
 		HorizontalLayout addDelete = new HorizontalLayout();
 		addDelete.addComponent(btnAddDtl);
 		addDelete.addComponent(btndelete);
-		flIndentDtlCol4.addComponent(addDelete);
+		flIndentDtlCol5.addComponent(addDelete);
 		flIndentDtlCol2.setMargin(true);
 		flIndentDtlCol2.setSpacing(true);
 		hlIndentDtl.addComponent(new HorizontalLayout() {
@@ -448,6 +479,7 @@ public class LetterofIntent extends BaseTransUI {
 				addComponent(flIndentDtlCol2);
 				addComponent(flIndentDtlCol3);
 				addComponent(flIndentDtlCol4);
+				addComponent(flIndentDtlCol5);
 			}
 		});
 		hlIndentDtl.addComponent(tblLOIDetail);
@@ -723,6 +755,16 @@ public class LetterofIntent extends BaseTransUI {
 			if (editDtl.getRemarks() != null) {
 				tfDtlRemarks.setValue(editDtl.getRemarks());
 			}
+			tfDiscountPer.setReadOnly(false);
+			if (editDtl.getDiscountPer() != null) {
+				tfDiscountPer.setValue(editDtl.getDiscountPer().toString());
+			}
+			tfDiscountPer.setReadOnly(true);
+			tfDiscountRate.setReadOnly(false);
+			if (editDtl.getDiscountVal() != null) {
+				tfDiscountRate.setValue(editDtl.getDiscountVal().toString());
+			}
+			tfDiscountRate.setReadOnly(true);
 		}
 	}
 	
@@ -855,6 +897,11 @@ public class LetterofIntent extends BaseTransUI {
 		tfBasicValue.setValue("0");
 		cbDtlStatus.setValue(cbDtlStatus.getItemIds().iterator().next());
 		btnAddDtl.setCaption("Add");
+		tfDiscountRate.setReadOnly(false);
+		tfDiscountRate.setValue("0");
+		tfDiscountRate.setReadOnly(true);
+		tfDiscountPer.setReadOnly(false);
+		tfDiscountPer.setValue("0");
 	}
 	
 	// validation for Detail table
@@ -1009,6 +1056,12 @@ public class LetterofIntent extends BaseTransUI {
 				indentDtlObj.setQty(Long.valueOf(tfIntQty.getValue()));
 				indentDtlObj.setUnitRate(new BigDecimal(tfUnitprice.getValue()));
 				indentDtlObj.setBasicvalue(new BigDecimal(tfBasicValue.getValue()));
+				tfDiscountPer.setReadOnly(false);
+				indentDtlObj.setDiscountPer(Long.valueOf(tfDiscountPer.getValue()));
+				tfDiscountPer.setReadOnly(true);
+				tfDiscountRate.setReadOnly(false);
+				indentDtlObj.setDiscountVal(Long.valueOf(tfDiscountRate.getValue()));
+				tfDiscountRate.setReadOnly(true);
 				indentDtlObj.setRemarks(tfDtlRemarks.getValue());
 				indentDtlObj.setStatus((String) cbDtlStatus.getValue());
 				indentDtlObj.setLastUpdatedDt(DateUtils.getcurrentdate());
@@ -1169,19 +1222,6 @@ public class LetterofIntent extends BaseTransUI {
 		return (percent.multiply(value).divide(new BigDecimal("100"))).setScale(2, RoundingMode.CEILING);
 	}
 	
-	private void calculateBasicvalue() {
-		// TODO Auto-generated method stub
-		try {
-			tfBasicValue.setReadOnly(false);
-			tfBasicValue.setValue("");
-			tfBasicValue.setValue((new BigDecimal(tfIntQty.getValue()))
-					.multiply(new BigDecimal(tfUnitprice.getValue())).toString());
-			tfBasicValue.setReadOnly(true);
-		}
-		catch (Exception e) {
-		}
-	}
-	
 	private void loadQuoteDetails() {
 		try {
 			// TODO Auto-generated method stub
@@ -1251,6 +1291,57 @@ public class LetterofIntent extends BaseTransUI {
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
+		}
+	}
+	
+	private void calculateBasicvalue() {
+		// TODO Auto-generated method stub
+		try {
+			tfBasicValue.setReadOnly(false);
+			tfBasicValue.setValue("");
+			tfBasicValue.setValue((new BigDecimal(tfIntQty.getValue()))
+					.multiply(new BigDecimal(tfUnitprice.getValue())).toString());
+			tfBasicValue.setReadOnly(true);
+		}
+		catch (Exception e) {
+		}
+	}
+	
+	private void calculateDiscount() {
+		// TODO Auto-generated method stub
+		try {
+			tfDiscountRate.setReadOnly(false);
+			tfDiscountRate.setValue("");
+			tfDiscountRate.setValue((new BigDecimal(tfUnitprice.getValue())).subtract(
+					new BigDecimal(tfDiscountPer.getValue())).toString());
+			tfDiscountRate.setReadOnly(true);
+			calculateDisBasicvalue();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void calculateDisBasicvalue() {
+		// TODO Auto-generated method stub
+		try {
+			if (tfDiscountRate.getValue() != null && Long.valueOf(tfDiscountRate.getValue()) != 0) {
+				tfBasicValue.setReadOnly(false);
+				tfBasicValue.setValue("");
+				tfBasicValue.setValue((new BigDecimal(tfIntQty.getValue())).multiply(
+						new BigDecimal(tfDiscountRate.getValue())).toString());
+				tfBasicValue.setReadOnly(true);
+			} else {
+				tfBasicValue.setReadOnly(false);
+				tfUnitprice.setReadOnly(false);
+				tfBasicValue.setValue("");
+				tfBasicValue.setValue((new BigDecimal(tfIntQty.getValue())).multiply(
+						new BigDecimal(tfUnitprice.getValue())).toString());
+				tfBasicValue.setReadOnly(true);
+				tfUnitprice.setReadOnly(true);
+			}
+		}
+		catch (Exception e) {
 		}
 	}
 }

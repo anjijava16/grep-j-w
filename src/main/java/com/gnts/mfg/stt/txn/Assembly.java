@@ -173,7 +173,7 @@ public class Assembly extends BaseTransUI {
 			}
 		});
 		tblAsmShift = new Table();
-		tblAsmShift.setPageLength(4);
+		tblAsmShift.setHeight("136px");
 		tblAsmShift.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			

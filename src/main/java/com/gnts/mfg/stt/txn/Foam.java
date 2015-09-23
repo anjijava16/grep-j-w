@@ -164,7 +164,7 @@ public class Foam extends BaseTransUI {
 			}
 		});
 		tblFoamShift = new Table();
-		tblFoamShift.setPageLength(4);
+		tblFoamShift.setHeight("155px");
 		tblFoamShift.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -250,7 +250,7 @@ public class Foam extends BaseTransUI {
 		loadEmployeeList();
 		// TargetQty TextField
 		tfTargetQty = new GERPTextField("Achieved Qty");
-		tfTargetQty.setWidth("120");
+		tfTargetQty.setWidth("150");
 		tfTargetQty.setValue("0");
 		// Client Id ComboBox
 		// Product Name ComboBox
@@ -264,6 +264,7 @@ public class Foam extends BaseTransUI {
 		tfPlanDtlQty.setWidth("100px");
 		// Status ComboBox
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		cbStatus.setWidth("150");
 		hlSearchLayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));

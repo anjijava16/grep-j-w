@@ -219,7 +219,7 @@ public class FoamPlan extends BaseTransUI {
 		tblShift = new Table();
 		tblShift.setSelectable(true);
 		tblShift.setWidth("99%");
-		tblShift.setPageLength(6);
+		tblShift.setHeight("186px");
 		tblShift.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			

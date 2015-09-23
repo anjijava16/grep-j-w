@@ -94,10 +94,11 @@ public class Extruder extends BaseTransUI {
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private MaterialStockService serviceMaterialStock = (MaterialStockService) SpringContextHelper
 			.getBean("materialstock");
-	private CompanyLookupService servicecompany = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
-	private List<ExtrudersDtlDM> extrudersDtlList = new ArrayList<ExtrudersDtlDM>();
-	private List<ExtrudersMtrlDM> extrudersMtrlList = null;
-	private List<ExtrudersTempDM> extrudersTempList = null;
+	private CompanyLookupService serviceCompLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
+	private List<ExtrudersDtlDM> listExtrDtls = new ArrayList<ExtrudersDtlDM>();
+	private List<ExtrudersMtrlDM> listExtrMaterial = null;
+	private List<ExtrudersTempDM> listExtrTemp = null;
 	// form layout for input controls
 	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4, flHdrCol6, flMtrlCol1, flTempCol1, flExtDtlCol1,
 			flExtDtlCol2;
@@ -124,7 +125,7 @@ public class Extruder extends BaseTransUI {
 	private TextArea taInstruct, taRemark;
 	private ComboBox cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
-	private Table tblExtrDtl, tblMtrl, tblTemp;
+	private Table tblExtrDtl, tblExtrMtrl, tblExtrTemp;
 	private BeanItemContainer<ExtrudersHdrDM> beanExtrudersHdrDM = null;
 	private BeanItemContainer<ExtrudersDtlDM> beanExtrudersDtlDM = null;
 	private BeanItemContainer<ExtrudersMtrlDM> beanExtrudersMtrlDM = null;
@@ -220,15 +221,15 @@ public class Extruder extends BaseTransUI {
 				}
 			}
 		});
-		tblMtrl = new GERPTable();
-		tblMtrl.setPageLength(4);
-		tblMtrl.addItemClickListener(new ItemClickListener() {
+		tblExtrMtrl = new GERPTable();
+		tblExtrMtrl.setPageLength(4);
+		tblExtrMtrl.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblMtrl.isSelected(event.getItemId())) {
-					tblMtrl.setImmediate(true);
+				if (tblExtrMtrl.isSelected(event.getItemId())) {
+					tblExtrMtrl.setImmediate(true);
 					btnAddMtrl.setCaption("Add");
 					btnAddMtrl.setStyleName("savebt");
 					extMtrlResetFields();
@@ -240,15 +241,15 @@ public class Extruder extends BaseTransUI {
 				}
 			}
 		});
-		tblTemp = new GERPTable();
-		tblTemp.setPageLength(4);
-		tblTemp.addItemClickListener(new ItemClickListener() {
+		tblExtrTemp = new GERPTable();
+		tblExtrTemp.setPageLength(4);
+		tblExtrTemp.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (tblTemp.isSelected(event.getItemId())) {
-					tblTemp.setImmediate(true);
+				if (tblExtrTemp.isSelected(event.getItemId())) {
+					tblExtrTemp.setImmediate(true);
 					btnAddTemp.setCaption("Add");
 					btnAddTemp.setStyleName("savebt");
 					asmblTempResetFields();
@@ -545,7 +546,7 @@ public class Extruder extends BaseTransUI {
 		vlMtrl.addComponent(hlMtrlbtn);
 		vlMtrl.setComponentAlignment(hlMtrlbtn, Alignment.TOP_RIGHT);
 		vlMtrl.addComponent(lblSpc2);
-		vlMtrl.addComponent(tblMtrl);
+		vlMtrl.addComponent(tblExtrMtrl);
 		// Adding Temp Components
 		flTempCol1 = new FormLayout();
 		flTempCol1.addComponent(cbZoneName);
@@ -562,7 +563,7 @@ public class Extruder extends BaseTransUI {
 		hlTemp.addComponent(flTempCol1);
 		hlTemp.setMargin(true);
 		vlTemp.addComponent(hlTemp);
-		vlTemp.addComponent(tblTemp);
+		vlTemp.addComponent(tblExtrTemp);
 		hlDtlAdMtrlAdTemp = new HorizontalLayout();
 		hlDtlAdMtrlAdTemp.addComponent(GERPPanelGenerator.createPanel(vlDtl));
 		hlDtlAdMtrlAdTemp.addComponent(GERPPanelGenerator.createPanel(vlMtrl));
@@ -581,17 +582,17 @@ public class Extruder extends BaseTransUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
-			List<ExtrudersHdrDM> extHdrList = new ArrayList<ExtrudersHdrDM>();
+			List<ExtrudersHdrDM> list = new ArrayList<ExtrudersHdrDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfExtRefNo.getValue() + ", " + cbHdrStatus.getValue());
 			if (cbMachineName.getValue() != null) {
 			}
-			extHdrList = serviceExtruderHrd.getExtruderList(null, companyid, null, (Long) cbMachineName.getValue(),
+			list = serviceExtruderHrd.getExtruderList(null, companyid, null, (Long) cbMachineName.getValue(),
 					(String) tfExTPlnRef.getValue(), dfExtDt.getValue(), null, null, (String) cbHdrStatus.getValue(),
 					"F");
-			recordCnt = extHdrList.size();
+			recordCnt = list.size();
 			beanExtrudersHdrDM = new BeanItemContainer<ExtrudersHdrDM>(ExtrudersHdrDM.class);
-			beanExtrudersHdrDM.addAll(extHdrList);
+			beanExtrudersHdrDM.addAll(list);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the AssemblyPlan. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanExtrudersHdrDM);
@@ -613,14 +614,14 @@ public class Extruder extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
 			logger.info("Company ID : " + companyid + " | saveExtDtl User Name : " + username + " > "
 					+ "Search Parameters are " + companyid + ", " + (String) cbMtrlStatus.getValue() + ", " + extHdrId);
-			recordDtlCnt = extrudersDtlList.size();
+			recordDtlCnt = listExtrDtls.size();
 			beanExtrudersDtlDM = new BeanItemContainer<ExtrudersDtlDM>(ExtrudersDtlDM.class);
-			beanExtrudersDtlDM.addAll(extrudersDtlList);
+			beanExtrudersDtlDM.addAll(listExtrDtls);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Extruderslap. result set");
 			tblExtrDtl.setContainerDataSource(beanExtrudersDtlDM);
-			tblExtrDtl.setVisibleColumns(new Object[] { "extDtlId", "inputQty", "outQty", "oeePrnct", "chrgStTime",
-					"chrgEdTime", "totalTime" });
+			tblExtrDtl.setVisibleColumns(new Object[] { "inputQty", "outQty", "oeePrnct", "chrgStTime", "chrgEdTime",
+					"totalTime" });
 			tblExtrDtl.setColumnWidth("extDtlId", 60);
 			tblExtrDtl.setColumnWidth("", 85);
 			tblExtrDtl.setColumnWidth("outQty", 60);
@@ -628,9 +629,9 @@ public class Extruder extends BaseTransUI {
 			tblExtrDtl.setColumnWidth("chrgStTime", 70);
 			tblExtrDtl.setColumnWidth("chrgEdTime", 80);
 			tblExtrDtl.setColumnWidth("", 80);
-			tblExtrDtl.setColumnHeaders(new String[] { "Ref.Id", "I/P Qty.", "O/P Qty.", "OEE %", "Start Time",
-					"End Time", "Total Time" });
-			tblExtrDtl.setColumnFooter("chrgEdTime", "Records :" + recordDtlCnt);
+			tblExtrDtl.setColumnHeaders(new String[] { "I/P Qty.", "O/P Qty.", "OEE %", "Start Time", "End Time",
+					"Total Time" });
+			tblExtrDtl.setColumnFooter("totalTime", "Records :" + recordDtlCnt);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -640,16 +641,16 @@ public class Extruder extends BaseTransUI {
 	private void loadMtrlRslt() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			recordMtrlCnt = extrudersMtrlList.size();
+			recordMtrlCnt = listExtrMaterial.size();
 			beanExtrudersMtrlDM = new BeanItemContainer<ExtrudersMtrlDM>(ExtrudersMtrlDM.class);
-			beanExtrudersMtrlDM.addAll(extrudersMtrlList);
+			beanExtrudersMtrlDM.addAll(listExtrMaterial);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Extruder. result set");
-			tblMtrl.setContainerDataSource(beanExtrudersMtrlDM);
-			tblMtrl.setVisibleColumns(new Object[] { "extDtlId", "materialName", "stockType" });
-			tblMtrl.setColumnHeaders(new String[] { "Dtl.RefId", "Material Name", "Stock Type" });
-			tblMtrl.setColumnAlignment("extDtlId", Align.RIGHT);
-			tblMtrl.setColumnFooter("stockType", "Records :" + recordMtrlCnt);
+			tblExtrMtrl.setContainerDataSource(beanExtrudersMtrlDM);
+			tblExtrMtrl.setVisibleColumns(new Object[] { "extDtlId", "materialName", "stockType" });
+			tblExtrMtrl.setColumnHeaders(new String[] { "Dtl.RefId", "Material Name", "Stock Type" });
+			tblExtrMtrl.setColumnAlignment("extDtlId", Align.RIGHT);
+			tblExtrMtrl.setColumnFooter("stockType", "Records :" + recordMtrlCnt);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -659,16 +660,16 @@ public class Extruder extends BaseTransUI {
 	private void loadTempRslt() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			recordTempCnt = extrudersTempList.size();
+			recordTempCnt = listExtrTemp.size();
 			beanExtrudersTempDM = new BeanItemContainer<ExtrudersTempDM>(ExtrudersTempDM.class);
-			beanExtrudersTempDM.addAll(extrudersTempList);
+			beanExtrudersTempDM.addAll(listExtrTemp);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Extruder. result set");
-			tblTemp.setContainerDataSource(beanExtrudersTempDM);
-			tblTemp.setVisibleColumns(new Object[] { "extDtlId", "zoneName", "temprValue" });
-			tblTemp.setColumnHeaders(new String[] { "Dtl.RefId", "Zone Name", "Temp. Value" });
-			tblTemp.setColumnAlignment("extDtlId", Align.RIGHT);
-			tblTemp.setColumnFooter("temprValue", "Records :" + recordTempCnt);
+			tblExtrTemp.setContainerDataSource(beanExtrudersTempDM);
+			tblExtrTemp.setVisibleColumns(new Object[] { "extDtlId", "zoneName", "temprValue" });
+			tblExtrTemp.setColumnHeaders(new String[] { "Dtl.RefId", "Zone Name", "Temp. Value" });
+			tblExtrTemp.setColumnAlignment("extDtlId", Align.RIGHT);
+			tblExtrTemp.setColumnFooter("temprValue", "Records :" + recordTempCnt);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -717,12 +718,12 @@ public class Extruder extends BaseTransUI {
 		cbMaterial.setComponentError(null);
 		cbTempStatus.setValue(cbTempStatus.getItemIds().iterator().next());
 		// Initializing temporary List
-		extrudersDtlList = new ArrayList<ExtrudersDtlDM>();
-		extrudersMtrlList = new ArrayList<ExtrudersMtrlDM>();
-		extrudersTempList = new ArrayList<ExtrudersTempDM>();
+		listExtrDtls = new ArrayList<ExtrudersDtlDM>();
+		listExtrMaterial = new ArrayList<ExtrudersMtrlDM>();
+		listExtrTemp = new ArrayList<ExtrudersTempDM>();
 		tblExtrDtl.removeAllItems();
-		tblMtrl.removeAllItems();
-		tblTemp.removeAllItems();
+		tblExtrMtrl.removeAllItems();
+		tblExtrTemp.removeAllItems();
 	}
 	
 	// Method to edit the values from table into fields to update process
@@ -749,7 +750,7 @@ public class Extruder extends BaseTransUI {
 				taInstruct.setValue(extrudersHdrDM.getInstruction());
 				cbMaterial.setValue(extrudersHdrDM.getOpMaterialId());
 				cbHdrStatus.setValue(extrudersHdrDM.getStatus());
-				extrudersDtlList = serviceExtruderDtl.getExtrudersDtlList(null, null, extHdrId, null, null, null, null,
+				listExtrDtls = serviceExtruderDtl.getExtrudersDtlList(null, null, extHdrId, null, null, null, null,
 						null, null, (String) cbDtlStatus.getValue(), "F");
 			}
 			loadAsmbDtlList();
@@ -791,10 +792,10 @@ public class Extruder extends BaseTransUI {
 				if (extrudersDtlDM.getStatus() != null) {
 					cbDtlStatus.setValue(extrudersDtlDM.getStatus());
 				}
-				extrudersMtrlList = serviceExtruderMtrl.getExtMtrlList(null, extrudersDtlDM.getExtDtlId(), null, null,
+				listExtrMaterial = serviceExtruderMtrl.getExtMtrlList(null, extrudersDtlDM.getExtDtlId(), null, null,
 						null, "Active", "F");
-				extrudersTempList = serviceExtruderTemp.getExtTempDetails(null, extrudersDtlDM.getExtDtlId(), null,
-						null, "Active", "F");
+				listExtrTemp = serviceExtruderTemp.getExtTempDetails(null, extrudersDtlDM.getExtDtlId(), null, null,
+						"Active", "F");
 			}
 			loadMtrlRslt();
 			loadTempRslt();
@@ -807,9 +808,9 @@ public class Extruder extends BaseTransUI {
 	private void editExtrMtrl() {
 		try {
 			hlUserInputLayout.setVisible(true);
-			if (tblMtrl.getValue() != null) {
+			if (tblExtrMtrl.getValue() != null) {
 				ExtrudersMtrlDM extrudersMtrlDM = new ExtrudersMtrlDM();
-				extrudersMtrlDM = beanExtrudersMtrlDM.getItem(tblMtrl.getValue()).getBean();
+				extrudersMtrlDM = beanExtrudersMtrlDM.getItem(tblExtrMtrl.getValue()).getBean();
 				extrudersMtrlDM.getExtMtrlId();
 				Long matId = extrudersMtrlDM.getMaterialId();
 				Collection<?> empColId = cbMatName.getItemIds();
@@ -838,9 +839,9 @@ public class Extruder extends BaseTransUI {
 	private void editExtrTemp() {
 		try {
 			hlUserInputLayout.setVisible(true);
-			if (tblTemp.getValue() != null) {
+			if (tblExtrTemp.getValue() != null) {
 				ExtrudersTempDM extrudersTempDM = new ExtrudersTempDM();
-				extrudersTempDM = beanExtrudersTempDM.getItem(tblTemp.getValue()).getBean();
+				extrudersTempDM = beanExtrudersTempDM.getItem(tblExtrTemp.getValue()).getBean();
 				extrudersTempDM.getExtTmprId();
 				cbZoneName.setValue(extrudersTempDM.getZoneName());
 				tfTempValue.setValue(extrudersTempDM.getTemprValue());
@@ -922,8 +923,8 @@ public class Extruder extends BaseTransUI {
 			logger.info(e.getMessage());
 		}
 		tblExtrDtl.setVisible(true);
-		tblMtrl.setVisible(true);
-		tblTemp.setVisible(true);
+		tblExtrMtrl.setVisible(true);
+		tblExtrTemp.setVisible(true);
 		loadAsmbDtlList();
 		loadMtrlRslt();
 		loadTempRslt();
@@ -954,8 +955,8 @@ public class Extruder extends BaseTransUI {
 		tfOeePerc.setRequired(false);
 		hlCmdBtnLayout.setVisible(true);
 		tblExtrDtl.removeAllItems();
-		tblMtrl.removeAllItems();
-		tblTemp.removeAllItems();
+		tblExtrMtrl.removeAllItems();
+		tblExtrTemp.removeAllItems();
 		tblMstScrSrchRslt.setVisible(true);
 		resetFields();
 		asmblDtlResetFields();
@@ -1013,7 +1014,7 @@ public class Extruder extends BaseTransUI {
 			BeanContainer<String, CompanyLookupDM> beanlook = new BeanContainer<String, CompanyLookupDM>(
 					CompanyLookupDM.class);
 			beanlook.setBeanIdProperty("lookupname");
-			beanlook.addAll(servicecompany.getCompanyLookUpByLookUp(companyid, moduleId, "Active", "MP_ZONNAME"));
+			beanlook.addAll(serviceCompLookup.getCompanyLookUpByLookUp(companyid, moduleId, "Active", "MP_ZONNAME"));
 			cbZoneName.setContainerDataSource(beanlook);
 		}
 		catch (Exception e) {
@@ -1168,7 +1169,7 @@ public class Extruder extends BaseTransUI {
 		} else {
 			cbZoneName.setComponentError(null);
 		}
-		if (tfTempValue.getValue() == null && ((String) cbZoneName.getValue()).trim().length() == 0) {
+		if (tfTempValue.getValue() == null || tfTempValue.getValue().trim().length() == 0) {
 			tfTempValue.setComponentError(new UserError(GERPErrorCodes.NULL_TEMP));
 			isValid = false;
 		} else {
@@ -1214,13 +1215,13 @@ public class Extruder extends BaseTransUI {
 				serviceExtruderDtl.saveOrUpdate(save);
 			}
 			@SuppressWarnings("unchecked")
-			Collection<ExtrudersMtrlDM> colMtrl = ((Collection<ExtrudersMtrlDM>) tblMtrl.getVisibleItemIds());
+			Collection<ExtrudersMtrlDM> colMtrl = ((Collection<ExtrudersMtrlDM>) tblExtrMtrl.getVisibleItemIds());
 			for (ExtrudersMtrlDM saveMtrl : (Collection<ExtrudersMtrlDM>) colMtrl) {
 				saveMtrl.setExtId(extruderObj.getExtId());
 				serviceExtruderMtrl.saveOrUpdate(saveMtrl);
 			}
 			@SuppressWarnings("unchecked")
-			Collection<ExtrudersTempDM> colExtTemp = ((Collection<ExtrudersTempDM>) tblTemp.getVisibleItemIds());
+			Collection<ExtrudersTempDM> colExtTemp = ((Collection<ExtrudersTempDM>) tblExtrTemp.getVisibleItemIds());
 			for (ExtrudersTempDM saveTemp : (Collection<ExtrudersTempDM>) colExtTemp) {
 				serviceExtruderTemp.saveAndUpdate(saveTemp);
 			}
@@ -1279,7 +1280,7 @@ public class Extruder extends BaseTransUI {
 			extruderDtlObj.setStatus(((String) cbDtlStatus.getValue()));
 			extruderDtlObj.setLastUpdatedDt((DateUtils.getcurrentdate()));
 			extruderDtlObj.setLastUpdatedBy(username);
-			extrudersDtlList.add(extruderDtlObj);
+			listExtrDtls.add(extruderDtlObj);
 			loadAsmbDtlList();
 			btnAddDtls.setCaption("Add");
 		}
@@ -1295,8 +1296,8 @@ public class Extruder extends BaseTransUI {
 			ExtrudersDtlDM extrudersDtlDM = new ExtrudersDtlDM();
 			extrudersDtlDM = beanExtrudersDtlDM.getItem(tblExtrDtl.getValue()).getBean();
 			ExtrudersMtrlDM extMtrlObj = new ExtrudersMtrlDM();
-			if (tblMtrl.getValue() != null) {
-				extMtrlObj = beanExtrudersMtrlDM.getItem(tblMtrl.getValue()).getBean();
+			if (tblExtrMtrl.getValue() != null) {
+				extMtrlObj = beanExtrudersMtrlDM.getItem(tblExtrMtrl.getValue()).getBean();
 			}
 			if (cbMatName.getValue() != null) {
 				extMtrlObj.setMaterialId(((MaterialDM) cbMatName.getValue()).getMaterialId());
@@ -1311,7 +1312,7 @@ public class Extruder extends BaseTransUI {
 			extMtrlObj.setStatus("Active");
 			extMtrlObj.setLastUpdatedDt(DateUtils.getcurrentdate());
 			extMtrlObj.setLastUpdatedBy(username);
-			extrudersMtrlList.add(extMtrlObj);
+			listExtrMaterial.add(extMtrlObj);
 			loadMtrlRslt();
 			btnAddMtrl.setCaption("Add");
 		}
@@ -1325,10 +1326,12 @@ public class Extruder extends BaseTransUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Saving Data... ");
 			ExtrudersDtlDM extrudersDtlDM = new ExtrudersDtlDM();
-			extrudersDtlDM = beanExtrudersDtlDM.getItem(tblExtrDtl.getValue()).getBean();
+			if (tblExtrDtl.getValue() != null) {
+				extrudersDtlDM = beanExtrudersDtlDM.getItem(tblExtrDtl.getValue()).getBean();
+			}
 			ExtrudersTempDM extruderTempObj = new ExtrudersTempDM();
-			if (tblTemp.getValue() != null) {
-				extruderTempObj = beanExtrudersTempDM.getItem(tblTemp.getValue()).getBean();
+			if (tblExtrTemp.getValue() != null) {
+				extruderTempObj = beanExtrudersTempDM.getItem(tblExtrTemp.getValue()).getBean();
 			}
 			extruderTempObj.setExtDtlId(extrudersDtlDM.getExtDtlId());
 			extruderTempObj.setZoneName((String) cbZoneName.getValue());
@@ -1336,11 +1339,12 @@ public class Extruder extends BaseTransUI {
 			extruderTempObj.setStatus("Active");
 			extruderTempObj.setLastUpdatedDt(DateUtils.getcurrentdate());
 			extruderTempObj.setLastUpdatedBy(username);
-			extrudersTempList.add(extruderTempObj);
+			listExtrTemp.add(extruderTempObj);
 			loadTempRslt();
 			btnAddTemp.setCaption("Add");
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			logger.info(e.getMessage());
 		}
 		asmblTempResetFields();
@@ -1409,7 +1413,7 @@ public class Extruder extends BaseTransUI {
 		try {
 			if (tblExtrDtl.getValue() != null) {
 				ExtrudersDtlDM extrudersDtlDM = beanExtrudersDtlDM.getItem(tblExtrDtl.getValue()).getBean();
-				extrudersDtlList.remove(extrudersDtlDM);
+				listExtrDtls.remove(extrudersDtlDM);
 				asmblDtlResetFields();
 				loadAsmbDtlList();
 			}
@@ -1421,14 +1425,14 @@ public class Extruder extends BaseTransUI {
 	
 	private void deleteMtrlDetails() {
 		try {
-			if (tblMtrl.getValue() != null) {
-				ExtrudersMtrlDM extrudersMtrlDM = beanExtrudersMtrlDM.getItem(tblMtrl.getValue()).getBean();
+			if (tblExtrMtrl.getValue() != null) {
+				ExtrudersMtrlDM extrudersMtrlDM = beanExtrudersMtrlDM.getItem(tblExtrMtrl.getValue()).getBean();
 				if (extrudersMtrlDM.getExtMtrlId() == null) {
-					extrudersMtrlList.remove(extrudersMtrlDM);
+					listExtrMaterial.remove(extrudersMtrlDM);
 				} else {
 					extrudersMtrlDM.setStatus("Inactive");
 					serviceExtruderMtrl.saveOrUpdate(extrudersMtrlDM);
-					extrudersMtrlList.remove(extrudersMtrlDM);
+					listExtrMaterial.remove(extrudersMtrlDM);
 				}
 				extMtrlResetFields();
 				loadMtrlRslt();
@@ -1442,14 +1446,14 @@ public class Extruder extends BaseTransUI {
 	private void deleteZoneDetails() {
 		try {
 			ExtrudersTempDM extrudersTempDM = new ExtrudersTempDM();
-			if (tblTemp.getValue() != null) {
-				extrudersTempDM = beanExtrudersTempDM.getItem(tblTemp.getValue()).getBean();
+			if (tblExtrTemp.getValue() != null) {
+				extrudersTempDM = beanExtrudersTempDM.getItem(tblExtrTemp.getValue()).getBean();
 				if (extrudersTempDM.getExtTmprId() == null) {
-					extrudersTempList.remove(extrudersTempDM);
+					listExtrTemp.remove(extrudersTempDM);
 				} else {
 					extrudersTempDM.setStatus("Inactive");
 					serviceExtruderTemp.saveAndUpdate(extrudersTempDM);
-					extrudersTempList.remove(extrudersTempDM);
+					listExtrTemp.remove(extrudersTempDM);
 				}
 				asmblTempResetFields();
 				loadTempRslt();
@@ -1519,6 +1523,7 @@ public class Extruder extends BaseTransUI {
 			e.printStackTrace();
 		}
 	}
+	
 	private void getTotalHours() {
 		try {
 			// TODO Auto-generated method stub

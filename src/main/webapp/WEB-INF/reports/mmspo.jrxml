@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="mmspo" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="322"/>
+	<property name="ireport.y" value="363"/>
 	<style name="Crosstab Data Text" hAlign="Center"/>
 	<parameter name="ENQID" class="java.lang.String"/>
 	<queryString>
@@ -39,9 +39,12 @@
   hdr.freight_terms,
   hdr.delivery_terms,
   m.materail_name,
-  dtl.required_qty ||' '|| dtl.material_uom rate_uom,
-  dtl.unit_rate||' / '||dtl.discount_val ||' ('|| dtl.discount_per ||')' rate_discount,
+  dtl.required_qty ||' '|| dtl.material_uom qty_uom,
   dtl.unit_rate,
+
+decode (dtl.discount_val,0,'---',dtl.discount_val) discount_val,
+
+decode (dtl.discount_per,0,'---',dtl.discount_per) discount_per,
   dtl.basic_value,
   ltrim(pkg_app_utils.fn_amount_to_words(ROUND(hdr.grand_total,2))) amt_words
 FROM t_mms_po_hdr hdr,
@@ -85,9 +88,10 @@ AND hdr.po_id    =22100]]>
 	<field name="FREIGHT_TERMS" class="java.lang.String"/>
 	<field name="DELIVERY_TERMS" class="java.lang.String"/>
 	<field name="MATERAIL_NAME" class="java.lang.String"/>
-	<field name="RATE_UOM" class="java.lang.String"/>
-	<field name="RATE_DISCOUNT" class="java.lang.String"/>
+	<field name="QTY_UOM" class="java.lang.String"/>
 	<field name="UNIT_RATE" class="java.math.BigDecimal"/>
+	<field name="DISCOUNT_VAL" class="java.lang.String"/>
+	<field name="DISCOUNT_PER" class="java.lang.String"/>
 	<field name="BASIC_VALUE" class="java.math.BigDecimal"/>
 	<field name="AMT_WORDS" class="java.lang.String"/>
 	<background>
@@ -249,25 +253,32 @@ AND hdr.po_id    =22100]]>
 				<text><![CDATA[S. No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="241" y="0" width="136" height="20"/>
+				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="244" y="0" width="53" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Rate / Discounted (DiscountRs)]]></text>
+				<text><![CDATA[Rate]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="378" y="0" width="53" height="20"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Rate ]]></text>
-			</staticText>
-			<staticText>
-				<reportElement uuid="976f5332-5924-4a97-9dfb-fe1812ebb582" x="193" y="0" width="47" height="20"/>
+				<reportElement uuid="976f5332-5924-4a97-9dfb-fe1812ebb582" x="184" y="0" width="57" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Quantity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="299" y="0" width="64" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Discount Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7fe3c8e9-b4a2-4ea2-b4d0-91a04551e5d2" x="365" y="0" width="65" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Discounted Rate]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -289,19 +300,24 @@ AND hdr.po_id    =22100]]>
 				<textFieldExpression><![CDATA[$F{BASIC_VALUE}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="883623d0-15ff-43c9-8bc9-ca76282d52d5" x="193" y="0" width="47" height="20"/>
+				<reportElement uuid="39ec32a3-e776-4410-ab91-0a975b628b80" x="244" y="0" width="53" height="20"/>
 				<textElement textAlignment="Center"/>
-				<textFieldExpression><![CDATA[$F{RATE_UOM}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement uuid="94e2f8d4-4723-497b-a669-b89bc0929dda" x="242" y="0" width="135" height="20"/>
-				<textElement textAlignment="Center"/>
-				<textFieldExpression><![CDATA[$F{RATE_DISCOUNT}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement uuid="a945ae50-37ca-4c99-ae22-d792e9888c1a" x="377" y="1" width="54" height="20"/>
-				<textElement/>
 				<textFieldExpression><![CDATA[$F{UNIT_RATE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="7a060684-5524-4142-bfd1-744c2e943649" x="184" y="1" width="57" height="20"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{QTY_UOM}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="aa7343a3-1e33-44ef-8543-52a282e0b501" x="299" y="1" width="64" height="20"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{DISCOUNT_PER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="18fc1f31-752c-490a-b490-ae0b92c0f408" x="365" y="1" width="65" height="20"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{DISCOUNT_VAL}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

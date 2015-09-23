@@ -91,7 +91,7 @@ public class Pulverizer extends BaseTransUI {
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private String username;
 	private Long employeeId, extId;
-	private Long companyid, branchid, assetId, moduleid, brnchid;
+	private Long companyid, branchid, assetId, moduleid;
 	private HorizontalLayout hlsearchlayout;
 	private HorizontalLayout hluserInputlayoutHdr = new HorizontalLayout();
 	private HorizontalLayout hluserInputlayoutDtl = new HorizontalLayout();
@@ -127,7 +127,7 @@ public class Pulverizer extends BaseTransUI {
 	}
 	
 	private void buidview() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "building appraisallevel UI");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "building Pulverizer UI");
 		cbBranchName = new GERPComboBox("Branch Name");
 		cbBranchName.setItemCaptionPropertyId("branchName");
 		loadBranchlist();
@@ -323,12 +323,12 @@ public class Pulverizer extends BaseTransUI {
 			if (cbBranchName.getValue() != null) {
 				brnchid = ((Long) cbBranchName.getValue());
 			}
-			List<PulvizHdrDM> listPulvizHdr = new ArrayList<PulvizHdrDM>();
-			listPulvizHdr = servicePulvizHdr.getPulvizHdrDetails(null, brnchid, (String) tfPulRefNumber.getValue(),
+			List<PulvizHdrDM> list = new ArrayList<PulvizHdrDM>();
+			list = servicePulvizHdr.getPulvizHdrDetails(null, brnchid, (String) tfPulRefNumber.getValue(),
 					(Date) dfPulvizDate.getValue(), (String) cbHdrStatus.getValue(), "F");
-			recordCnt = listPulvizHdr.size();
+			recordCnt = list.size();
 			beanPulvizHdrDM = new BeanItemContainer<PulvizHdrDM>(PulvizHdrDM.class);
-			beanPulvizHdrDM.addAll(listPulvizHdr);
+			beanPulvizHdrDM.addAll(list);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the PulvizerHdr result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanPulvizHdrDM);
@@ -425,7 +425,7 @@ public class Pulverizer extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "loading Branchlist");
 			BeanContainer<Long, BranchDM> beanbranch = new BeanContainer<Long, BranchDM>(BranchDM.class);
 			beanbranch.setBeanIdProperty("branchId");
-			beanbranch.addAll(serviceBranch.getBranchList(brnchid, branchName, null, "Active", companyid, "F"));
+			beanbranch.addAll(serviceBranch.getBranchList(branchid, branchName, null, "Active", companyid, "F"));
 			cbBranchName.setContainerDataSource(beanbranch);
 		}
 		catch (Exception e) {
@@ -439,7 +439,7 @@ public class Pulverizer extends BaseTransUI {
 			BeanContainer<Long, ExtrudersHdrDM> beanextrud = new BeanContainer<Long, ExtrudersHdrDM>(
 					ExtrudersHdrDM.class);
 			beanextrud.setBeanIdProperty("extId");
-			beanextrud.addAll(serviceExtruHdr.getExtruderList(extId, companyid, brnchid, null, null, null, null, null,
+			beanextrud.addAll(serviceExtruHdr.getExtruderList(extId, companyid, branchid, null, null, null, null, null,
 					"Active", "F"));
 			cbExtrudRefNo.setContainerDataSource(beanextrud);
 		}

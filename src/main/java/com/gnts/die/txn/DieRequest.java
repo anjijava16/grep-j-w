@@ -611,9 +611,12 @@ public class DieRequest extends BaseTransUI {
 			}
 		}));
 		tbDieRequest.addTab(vlDieCompletion, "Die Completion Report");
+		tbDieRequest.addTab(vlTableForm, "Comments");
+
 		hlUserIPContainer.addComponent(tbDieRequest);
 		tblMstScrSrchRslt.setVisible(false);
 		hlCmdBtnLayout.setVisible(false);
+		
 		// for disable tabs
 		if (UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ") != null
 				&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_DIE_ENQ")) {
@@ -854,7 +857,12 @@ public class DieRequest extends BaseTransUI {
 					tbDieRequest.setSelectedTab(vlBillofMaterial);
 				}
 			}
+			comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
+					status,dieRequestId);
+			comments.loadsrch(true, null, null, null, null, null, null, null, null, null, null, null, null,dieRequestId);
+			
 		}
+		
 		catch (Exception e) {
 			logger.info(e.getMessage());
 		}
@@ -1360,9 +1368,7 @@ public class DieRequest extends BaseTransUI {
 		tfVersionNo.setReadOnly(false);
 		tfVersionNo.setValue(listDieSectionDtl.size() + 1 + "");
 		tfVersionNo.setReadOnly(true);
-		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				status,null);
-		comments.loadsrch(true, null, null, null, null, null, null, null, null, null, null, null, null,null);
+
 	}
 	
 	private void editDieSectionDetails() {

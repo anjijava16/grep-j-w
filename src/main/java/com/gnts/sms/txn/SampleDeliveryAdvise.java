@@ -465,8 +465,8 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 		}
 		loadSDADetails(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, sdaHeaderId, null, null,
-				null, status);
-		comments.loadsrch(true, null, null, null, null, null, null, null, sdaHeaderId, null, null, null, null);
+				null, status,null);
+		comments.loadsrch(true, null, null, null, null, null, null, null, sdaHeaderId, null, null, null, null,null);
 	}
 	
 	// Method to edit the values from table into fields to update process for Sales Enquiry Detail
@@ -639,7 +639,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 		}
 		tblSDADetails.setVisible(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null);
+				null,null);
 	}
 	
 	@Override

@@ -1224,7 +1224,7 @@ public class SmsInvoice extends BaseTransUI {
 		}
 		loadInvoiceDtl();
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null,
-				invoiceId, status);
+				invoiceId, status,null);
 	}
 	
 	private void editInvoiceDtl() {
@@ -1341,7 +1341,7 @@ public class SmsInvoice extends BaseTransUI {
 		tblInvoicDtl.setVisible(true);
 		lblNotification.setValue("");
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null);
+				null,null);
 	}
 	
 	@Override

@@ -513,8 +513,8 @@ public class PurchaseEnquiry extends BaseUI {
 			}
 			loadPurDtl();
 			comments = new SmsComments(vlTableForm, null, companyid, enquiryId, null, null, null, null, null, null,
-					null, null, status);
-			comments.loadsrch(true, null, null, enquiryId, null, null, null, null, null, null, null, null, null);
+					null, null, status,null);
+			comments.loadsrch(true, null, null, enquiryId, null, null, null, null, null, null, null, null, null,null);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -618,7 +618,7 @@ public class PurchaseEnquiry extends BaseUI {
 			logger.info(e.getMessage());
 		}
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null);
+				null,null);
 	}
 	
 	@Override

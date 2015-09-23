@@ -1193,7 +1193,7 @@ public class SalesQuote extends BaseTransUI {
 		}
 		loadQuotationDetailList();
 		comments = new SmsComments(vlTableForm, null, null, null, null, null, null, null, null, quoteId, null, null,
-				status);
+				status,null);
 	}
 	
 	// Reset the selected row's data into Sales Quote Detail input components
@@ -1470,7 +1470,7 @@ public class SalesQuote extends BaseTransUI {
 			e.printStackTrace();
 		}
 		comments = new SmsComments(vlTableForm, null, companyid, null, quoteId, null, null, null, null, null, null,
-				null, null);
+				null, null,null);
 		cbEnqNo.setRequired(true);
 		// for load Technical and Commercial Terms
 		addDefaultCommercialTerms();
@@ -1505,7 +1505,7 @@ public class SalesQuote extends BaseTransUI {
 		editQuoteDtl();
 		loadCommmercialTerms(true);
 		loadTechnicalTerms(true);
-		comments.loadsrch(true, null, null, null, quoteId, null, null, null, null, null, null, null, null);
+		comments.loadsrch(true, null, null, null, quoteId, null, null, null, null, null, null, null, null,null);
 		comments.editcommentDetails();
 		btnPrintbackquote.setVisible(true);
 	}

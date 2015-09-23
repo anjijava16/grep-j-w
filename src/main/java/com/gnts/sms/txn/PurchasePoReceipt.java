@@ -577,8 +577,8 @@ public class PurchasePoReceipt extends BaseTransUI {
 		}
 		loadReceiptDtl();
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, receiptId, null, null, null, null,
-				null, status);
-		comments.loadsrch(true, null, null, null, null, null, receiptId, null, null, null, null, null, null);
+				null, status,null);
+		comments.loadsrch(true, null, null, null, null, null, receiptId, null, null, null, null, null, null,null);
 	}
 	
 	private void editReceiptDetail() {
@@ -667,7 +667,7 @@ public class PurchasePoReceipt extends BaseTransUI {
 			logger.info(e.getMessage());
 		}
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null);
+				null,null);
 	}
 	
 	@Override

@@ -405,8 +405,8 @@ public class ECRequest extends BaseTransUI {
 			cbStatus.setValue(ecRequestDM.getStatus());
 		}
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, ecrid, null, null, null,
-				status);
-		comments.loadsrch(true, null, null, null, null, null, null, null, ecrid, null, null, null, null);
+				status,null);
+		comments.loadsrch(true, null, null, null, null, null, null, null, ecrid, null, null, null, null,null);
 	}
 	
 	@Override
@@ -499,7 +499,7 @@ public class ECRequest extends BaseTransUI {
 			logger.info(e.getMessage());
 		}
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null);
+				null,null);
 	}
 	
 	@Override

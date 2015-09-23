@@ -856,10 +856,10 @@ public class PurchaseQuote extends BaseUI {
 		}
 		loadQuoteDtl();
 		comments = new SmsComments(vlTableForm, null, companyid, null, quoteId, null, null, null, null, null, null,
-				null, status);
-		comments.loadsrch(true, null, null, null, null, quoteId, null, null, null, null, null, null, null);
+				null, status,null);
+		comments.loadsrch(true, null, null, null, null, quoteId, null, null, null, null, null, null, null,null);
 		comments.commentList = serviceComment.getSmsCommentsList(null, null, null, quoteId, null, null, null, null,
-				null, null, null, null);
+				null, null, null, null,null);
 	}
 	
 	private void editQuoteDtl() {
@@ -962,7 +962,7 @@ public class PurchaseQuote extends BaseUI {
 		tblPurQuDtl.setVisible(true);
 		lblNotification.setValue("");
 		comments = new SmsComments(vlTableForm, null, companyid, null, quoteId, null, null, null, null, null, null,
-				null, null);
+				null, null,null);
 	}
 	
 	@Override
@@ -986,7 +986,7 @@ public class PurchaseQuote extends BaseUI {
 		resetFields();
 		editQuoteDtl();
 		editQuoteHdr();
-		comments.loadsrch(true, null, null, null, quoteId, null, null, null, null, null, null, null, null);
+		comments.loadsrch(true, null, null, null, quoteId, null, null, null, null, null, null, null, null,null);
 		comments.editcommentDetails();
 	}
 	

@@ -62,6 +62,7 @@ import com.gnts.sms.domain.txn.SmsEnqHdrDM;
 import com.gnts.sms.domain.txn.SmsEnquiryDtlDM;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsEnquiryDtlService;
+import com.gnts.sms.txn.SmsComments;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -114,6 +115,9 @@ public class DieRequest extends BaseTransUI {
 	private DieBOMDtlService serviceDieBOMDtl = (DieBOMDtlService) SpringContextHelper.getBean("dieBOMDtl");
 	// Initialize the logger
 	private Logger logger = Logger.getLogger(DieRequest.class);
+	private SmsComments comments;
+	private String status;
+
 	// User Input Fields for Die Request
 	private PopupDateField dfRefDate, dfCompletionDate;
 	private GERPComboBox cbEnquiry, cbProduct, cbNewDie;
@@ -138,6 +142,8 @@ public class DieRequest extends BaseTransUI {
 	private VerticalLayout vlMoldTrialRequest;
 	private VerticalLayout vlDieCompletion;
 	private VerticalLayout vlBillofMaterial;
+	private VerticalLayout vlTableForm = new VerticalLayout();
+
 	// local variables declaration
 	private Long dieRequestId, dieSectionId = null, moldRequestId = null, dieCompletionId = null, dieBOMId = null;
 	private String username;
@@ -916,6 +922,7 @@ public class DieRequest extends BaseTransUI {
 				saveDieCompletion();
 			}
 		}
+
 		catch (Exception e) {
 			logger.info(e.getMessage());
 		}
@@ -1125,6 +1132,8 @@ public class DieRequest extends BaseTransUI {
 				logger.info(e.getMessage());
 			}
 		}
+		comments.saveDieReqId(dieRequestDM.getDieReqId(), null);
+
 	}
 	
 	private void saveDieSection() {
@@ -1253,6 +1262,8 @@ public class DieRequest extends BaseTransUI {
 		tfVersionNo.setReadOnly(false);
 		tfVersionNo.setValue(listDieSectionDtl.size() + 1 + "");
 		tfVersionNo.setReadOnly(true);
+		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
+				null,null);
 	}
 	
 	@Override
@@ -1271,6 +1282,7 @@ public class DieRequest extends BaseTransUI {
 		editDieRequest();
 		try {
 			editDieSection();
+			
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -1348,6 +1360,9 @@ public class DieRequest extends BaseTransUI {
 		tfVersionNo.setReadOnly(false);
 		tfVersionNo.setValue(listDieSectionDtl.size() + 1 + "");
 		tfVersionNo.setReadOnly(true);
+		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
+				status,null);
+		comments.loadsrch(true, null, null, null, null, null, null, null, null, null, null, null, null,null);
 	}
 	
 	private void editDieSectionDetails() {

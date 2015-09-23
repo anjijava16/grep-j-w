@@ -371,8 +371,8 @@ public class ECNote extends BaseTransUI {
 			cbStatus.setValue(ecNoteDM.getStatus());
 		}
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, ecnid, null, null, null,
-				status);
-		comments.loadsrch(true, null, null, null, null, null, null, null, ecnid, null, null, null, null);
+				status,null);
+		comments.loadsrch(true, null, null, null, null, null, null, null, ecnid, null, null, null, null,null);
 	}
 	
 	@Override
@@ -456,7 +456,7 @@ public class ECNote extends BaseTransUI {
 			e.printStackTrace();
 		}
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null);
+				null,null);
 	}
 	
 	@Override

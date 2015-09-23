@@ -65,7 +65,7 @@ public class SmsComments implements ClickListener {
 	
 	public SmsComments(VerticalLayout vlTableForm, Long commentId, Long companyId, Long PurEnquiryId, Long purQuoteID,
 			Long poId, Long receiptId, Long billId, Long SalesEnqId, Long salesQuoteId, Long salesPoId, Long InvoiceId,
-			String status) {
+			String status,Long dieReqId) {
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		empId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
@@ -155,7 +155,7 @@ public class SmsComments implements ClickListener {
 		vlComments.addComponent(tblClntComments);
 		vlTableForm.addComponent(vlComments);
 		tblClntComments.setVisible(true);
-		loadsrch(false, null, null, null, null, null, null, null, null, null, null, null, null);
+		loadsrch(false, null, null, null, null, null, null, null, null, null, null, null, null,null);
 	}
 	
 	public void editcommentDetails() {
@@ -181,10 +181,10 @@ public class SmsComments implements ClickListener {
 	 */
 	public void loadsrch(boolean fromdb, Long commentId, Long companyId, Long PurEnquiryId, Long purQuoteID, Long poId,
 			Long receiptId, Long billId, Long SalesEnqId, Long salesQuoteId, Long salesPoId, Long InvoiceId,
-			Long commenedBy) {
+			Long commenedBy,Long dieReqId) {
 		if (fromdb) {
 			commentList = serviceComment.getSmsCommentsList(commentId, companyId, PurEnquiryId, purQuoteID, poId,
-					receiptId, billId, SalesEnqId, salesQuoteId, salesPoId, InvoiceId, null);
+					receiptId, billId, SalesEnqId, salesQuoteId, salesPoId, InvoiceId, null,dieReqId);
 		}
 		try {
 			tblClntComments.removeAllItems();
@@ -235,7 +235,7 @@ public class SmsComments implements ClickListener {
 			if (taComments.isValid()) {
 				commentList.add(saveClntComments);
 				resetfields();
-				loadsrch(false, null, null, null, null, null, null, null, null, null, null, null, null);
+				loadsrch(false, null, null, null, null, null, null, null, null, null, null, null, null,null);
 			}
 			btnSave.setCaption("Add");
 		}
@@ -289,6 +289,15 @@ public class SmsComments implements ClickListener {
 		Collection<SmsCommentsDM> itemIds = (Collection<SmsCommentsDM>) tblClntComments.getVisibleItemIds();
 		for (SmsCommentsDM saveSalesEnq : (Collection<SmsCommentsDM>) itemIds) {
 			saveSalesEnq.setSalesEnqId(salesEnqId);
+			saveSalesEnq.setUserActiopn(status);
+			serviceComment.saveOrUpdateComments(saveSalesEnq);
+		}
+	}
+	public void saveDieReqId(Long dieReqId, String status) {
+		@SuppressWarnings("unchecked")
+		Collection<SmsCommentsDM> itemIds = (Collection<SmsCommentsDM>) tblClntComments.getVisibleItemIds();
+		for (SmsCommentsDM saveSalesEnq : (Collection<SmsCommentsDM>) itemIds) {
+			saveSalesEnq.setDieReqId(dieReqId);
 			saveSalesEnq.setUserActiopn(status);
 			serviceComment.saveOrUpdateComments(saveSalesEnq);
 		}

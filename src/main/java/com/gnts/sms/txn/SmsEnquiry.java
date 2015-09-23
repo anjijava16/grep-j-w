@@ -978,8 +978,8 @@ public class SmsEnquiry extends BaseTransUI {
 		loadEnquirySpec(false, null);
 		new EnquiryWorkflow(hlEnquiryWorkflow, enquiryId, username, clientId);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, enquiryId, null, null,
-				null, status);
-		comments.loadsrch(true, null, null, null, null, null, null, null, enquiryId, null, null, null, null);
+				null, status,null);
+		comments.loadsrch(true, null, null, null, null, null, null, null, enquiryId, null, null, null, null,null);
 		try {
 			new TestingDocuments(hlDocumentLayout, enquiryId.toString(), "DR");
 		}
@@ -1277,7 +1277,7 @@ public class SmsEnquiry extends BaseTransUI {
 		tblspec.setVisible(true);
 		tblEnqDetails.setVisible(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null);
+				null,null);
 		hlDocumentLayout.removeAllComponents();
 		tblspec.removeAllItems();
 	}

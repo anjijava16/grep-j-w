@@ -878,10 +878,10 @@ public class PurchasePO extends BaseUI {
 		}
 		loadPurDtl();
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, poId, null, null, null, null, null, null,
-				status);
-		comments.loadsrch(true, null, null, null, null, poId, null, null, null, null, null, null, null);
+				status,null);
+		comments.loadsrch(true, null, null, null, null, poId, null, null, null, null, null, null, null,null);
 		comments.commentList = serviceComment.getSmsCommentsList(null, null, null, null, poId, null, null, null, null,
-				null, null, null);
+				null, null, null,null);
 		System.out.println("PoID=>" + poId);
 	}
 	
@@ -991,7 +991,7 @@ public class PurchasePO extends BaseUI {
 		btnSavepurQuote.setCaption("Add");
 		tblPurDetails.setVisible(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null);
+				null,null);
 	}
 	
 	@Override
@@ -1013,7 +1013,7 @@ public class PurchasePO extends BaseUI {
 		resetFields();
 		editPODtl();
 		editPOHdr();
-		comments.loadsrch(true, null, null, null, null, poId, null, null, null, null, null, null, null);
+		comments.loadsrch(true, null, null, null, null, poId, null, null, null, null, null, null, null,null);
 	}
 	
 	@Override

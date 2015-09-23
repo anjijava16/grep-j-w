@@ -1248,10 +1248,10 @@ public class SalesPO extends BaseTransUI  {
 		loadPODetails();
 		loadPOAcceptParamDetails(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, poid, null,
-				status);
-		comments.loadsrch(true, null, null, null, null, poid, null, null, null, null, null, null, null);
+				status,null);
+		comments.loadsrch(true, null, null, null, null, poid, null, null, null, null, null, null, null,null);
 		comments.commentList = serviceComment.getSmsCommentsList(null, null, null, null, poid, null, null, null, null,
-				null, null, null);
+				null, null, null,null);
 	}
 	
 	private void editPODtl() {
@@ -1395,7 +1395,7 @@ public class SalesPO extends BaseTransUI  {
 		tblSmsAccept.setVisible(true);
 		cbBranch.setValue(branchId);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null);
+				null,null);
 		loadPOAcceptParamDetails(false);
 	}
 	
@@ -1420,7 +1420,7 @@ public class SalesPO extends BaseTransUI  {
 		resetFields();
 		editPOHdr();
 		getCalculatedValues();
-		comments.loadsrch(true, null, null, null, null, null, null, null, null, null, poid, null, null);
+		comments.loadsrch(true, null, null, null, null, null, null, null, null, null, poid, null, null,null);
 	}
 	
 	@Override

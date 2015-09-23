@@ -769,7 +769,7 @@ public class VendorBill extends BaseTransUI {
 		}
 		loadVendorDtl();
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, billId, null, null, null,
-				null, status);
+				null, status,null);
 	}
 	
 	private void editVendorBillDtl() {
@@ -876,7 +876,7 @@ public class VendorBill extends BaseTransUI {
 		tblVendorBillDtl.setVisible(true);
 		loadVendorDtl();
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null);
+				null,null);
 	}
 	
 	@Override

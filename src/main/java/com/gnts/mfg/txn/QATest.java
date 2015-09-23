@@ -363,7 +363,7 @@ public class QATest extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyid);
 			listQcTstHdr = serviceQATstHdr.getQaTestHdrDetails(null, companyid, (String) tfInspectionNo.getValue(),
-					(Long) cbClient.getValue(), (Long) cbProduct.getValue(), (String) cbQThdrStatus.getValue());
+					(Long) cbClient.getValue(), (Long) cbProduct.getValue(), (String) cbQThdrStatus.getValue(),null,null);
 			recordCnt = listQcTstHdr.size();
 			beanQATstHdr = new BeanItemContainer<QATestHdrDM>(QATestHdrDM.class);
 			beanQATstHdr.addAll(listQcTstHdr);

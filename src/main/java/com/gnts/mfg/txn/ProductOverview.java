@@ -50,11 +50,7 @@ import com.gnts.sms.service.txn.SmsInvoiceHdrService;
 import com.gnts.sms.service.txn.SmsPOHdrService;
 import com.gnts.sms.service.txn.SmsQuoteHdrService;
 import com.gnts.stt.mfg.domain.txn.EnquiryWorkflowDM;
-import com.gnts.stt.mfg.domain.txn.RotoCheckDtlDM;
-import com.gnts.stt.mfg.domain.txn.RotoPlanDtlDM;
 import com.gnts.stt.mfg.service.txn.EnquiryWorkflowService;
-import com.gnts.stt.mfg.service.txn.RotoCheckDtlService;
-import com.gnts.stt.mfg.service.txn.RotoPlanDtlService;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Sizeable.Unit;
@@ -87,7 +83,8 @@ public class ProductOverview implements ClickListener {
 	private static final long serialVersionUID = 1L;
 	private VerticalLayout hlPageRootContainter = (VerticalLayout) UI.getCurrent().getSession()
 			.getAttribute("clLayout");
-	private RotoCheckDtlService serviceRotoCheckDtl = (RotoCheckDtlService) SpringContextHelper.getBean("rotocheckdtl");
+	// private RotoCheckDtlService serviceRotoCheckDtl = (RotoCheckDtlService)
+	// SpringContextHelper.getBean("rotocheckdtl");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private SmsEnqHdrService serviceEnquiryHdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private SmsEnquiryDtlService serviceEnqDetail = (SmsEnquiryDtlService) SpringContextHelper.getBean("SmsEnquiryDtl");
@@ -97,7 +94,7 @@ public class ProductOverview implements ClickListener {
 			.getBean("SmsEnquirySpec");
 	private SmsInvoiceHdrService serviceInvoiceHdr = (SmsInvoiceHdrService) SpringContextHelper
 			.getBean("smsInvoiceheader");
-	private RotoPlanDtlService serviceRotoplandtl = (RotoPlanDtlService) SpringContextHelper.getBean("rotoplandtl");
+	// private RotoPlanDtlService serviceRotoplandtl = (RotoPlanDtlService) SpringContextHelper.getBean("rotoplandtl");
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper
 			.getBean("enquiryWorkflow");
@@ -274,9 +271,6 @@ public class ProductOverview implements ClickListener {
 		accordion.addTab(new TextField(), "Testing Information", null);
 		accordion.addTab(vlTestLayout, "Signoff Information", null);
 		hlPageRootContainter.addComponent(accordion);
-		loadEnquirySpec(null, null);
-		getEnqWorkflowDetails(null);
-		getQATestHeaderDetails(null, null);
 		tfSerialNumber.focus();
 	}
 	
@@ -742,19 +736,19 @@ public class ProductOverview implements ClickListener {
 		// TODO Auto-generated method stub
 		setReadOnlyFalse();
 		resetFields();
-		RotoCheckDtlDM rotoCheckDtlDM = null;
+		QATestHdrDM qaTestHdrDM = null;
 		Long poid = null;
 		try {
-			rotoCheckDtlDM = serviceRotoCheckDtl.getRotoCheckDtlDetatils(null, null, tfSerialNumber.getValue(), null,
-					"P").get(0);
+			qaTestHdrDM = serviceQATstHdr.getQaTestHdrDetails(null, null, null, null, null, null,
+					tfSerialNumber.getValue().trim(), null).get(0);
 		}
 		catch (Exception e) {
-			logger.info(e.getMessage());
+			e.printStackTrace();
 		}
-		if (rotoCheckDtlDM != null) {
+		if (qaTestHdrDM != null) {
 			ProductDM productDM = null;
 			try {
-				productDM = serviceProduct.getProductList(rotoCheckDtlDM.getProductId(), null, null, null, null, null,
+				productDM = serviceProduct.getProductList(null, qaTestHdrDM.getProductid(), null, null, null, null,
 						null, "F").get(0);
 			}
 			catch (Exception e) {
@@ -777,15 +771,44 @@ public class ProductOverview implements ClickListener {
 				taProductDesc.setValue(productDM.getProddesc());
 				taProductShortDesc.setValue(productDM.getShortdesc());
 				try {
-					RotoPlanDtlDM rotoPlanDtlDM = serviceRotoplandtl.getRotoPlanDtlList(null,
-							rotoCheckDtlDM.getRotoid(), null, rotoCheckDtlDM.getProductId(), null).get(0);
 					try {
 						WorkOrderHdrDM workOrderHdrDM = serviceWrkOrdHdr.getWorkOrderHDRList(null, null, null, null,
-								null, null, "F", rotoPlanDtlDM.getWoId(), null, null, null, null).get(0);
-						loadEnquiryDetails(workOrderHdrDM.getEnquiryId(), rotoCheckDtlDM.getProductId());
-						getEnqWorkflowDetails(workOrderHdrDM.getEnquiryId());
-						getQATestHeaderDetails(workOrderHdrDM.getWorkOrdrId(), rotoCheckDtlDM.getProductId());
-						getQCTestDetails(workOrderHdrDM.getWorkOrdrId());
+								null, null, "F", qaTestHdrDM.getWoid(), null, null, null, null).get(0);
+						try {
+							loadEnquiryDetails(workOrderHdrDM.getEnquiryId(), qaTestHdrDM.getProductid());
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+							logger.info(e.getMessage());
+						}
+						try {
+							getEnqWorkflowDetails(workOrderHdrDM.getEnquiryId());
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+							logger.info(e.getMessage());
+						}
+						try {
+							getQATestHeaderDetails(workOrderHdrDM.getWorkOrdrId(), qaTestHdrDM.getProductid());
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+							logger.info(e.getMessage());
+						}
+						try {
+							getQCTestDetails(workOrderHdrDM.getWorkOrdrId());
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+							logger.info(e.getMessage());
+						}
+						try {
+							loadEnquirySpec(workOrderHdrDM.getEnquiryId(), qaTestHdrDM.getProductid());
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+							logger.info(e.getMessage());
+						}
 						try {
 							getQuoteDetails(workOrderHdrDM.getEnquiryId());
 						}
@@ -846,13 +869,13 @@ public class ProductOverview implements ClickListener {
 		}
 	}
 	
-	private void loadEnquirySpec(Long enquiryId, Long enqDtlId) {
+	private void loadEnquirySpec(Long enquiryId, Long prodid) {
 		try {
 			// for enquiry specification
 			tblEnquirySpec.removeAllItems();
 			List<SmsEnquirySpecDM> listEnqSepec = new ArrayList<SmsEnquirySpecDM>();
-			if (enquiryId != null && enqDtlId != null) {
-				listEnqSepec = serviceEnqSpec.getsmsenquiryspecList(null, enquiryId, enqDtlId, null, null,null);
+			if (enquiryId != null && prodid != null) {
+				listEnqSepec = serviceEnqSpec.getsmsenquiryspecList(null, enquiryId, null, null, prodid, null);
 			}
 			BeanItemContainer<SmsEnquirySpecDM> beanpec = new BeanItemContainer<SmsEnquirySpecDM>(
 					SmsEnquirySpecDM.class);
@@ -892,11 +915,11 @@ public class ProductOverview implements ClickListener {
 		}
 	}
 	
-	private void getQATestHeaderDetails(Long workOrdNumber, Long productId) {
+	private void getQATestHeaderDetails(Long woid, Long productId) {
 		try {
 			List<QATestHdrDM> listQcTstHdr = new ArrayList<QATestHdrDM>();
-			if (productId != null && workOrdNumber != null) {
-				listQcTstHdr = serviceQATstHdr.getQaTestHdrDetails(null, null, null, null, productId, null);
+			if (productId != null && woid != null) {
+				listQcTstHdr = serviceQATstHdr.getQaTestHdrDetails(null, null, null, null, productId, null, null, woid);
 			}
 			BeanItemContainer<QATestHdrDM> beanQATstHdr = new BeanItemContainer<QATestHdrDM>(QATestHdrDM.class);
 			beanQATstHdr.addAll(listQcTstHdr);
@@ -916,7 +939,7 @@ public class ProductOverview implements ClickListener {
 	private void getQCTestDetails(Long woOrdId) {
 		try {
 			List<QcTestHdrDM> listQcTstHdr = new ArrayList<QcTestHdrDM>();
-			listQcTstHdr = serviceQcTstHdr.getQcTestHdrDetails(null, null, null, null, null, null);
+			listQcTstHdr = serviceQcTstHdr.getQcTestHdrDetails(woOrdId, null, null, null, null, null);
 			BeanItemContainer<QcTestHdrDM> beanQcTstHdr = new BeanItemContainer<QcTestHdrDM>(QcTestHdrDM.class);
 			beanQcTstHdr.addAll(listQcTstHdr);
 			tblQCTestDetails.setContainerDataSource(beanQcTstHdr);

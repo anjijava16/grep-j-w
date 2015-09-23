@@ -238,7 +238,7 @@ public class SignOff extends BaseTransUI {
 					tfProductSlNo.setReadOnly(false);
 					tfProductSlNo.setValue((serviceQATestHdr.getQaTestHdrDetails(
 							((QATestHdrDM) cbInspectionNo.getValue()).getQatestHdrid(), companyId, null, null, null,
-							"Active").get(0).getProdslno()));
+							"Active",null,null).get(0).getProdslno()));
 					tfProductSlNo.setReadOnly(true);
 				}
 			}
@@ -532,7 +532,7 @@ public class SignOff extends BaseTransUI {
 	private void loadInspectionNo() {
 		try {
 			BeanItemContainer<QATestHdrDM> beanQATestHdr = new BeanItemContainer<QATestHdrDM>(QATestHdrDM.class);
-			beanQATestHdr.addAll(serviceQATestHdr.getQaTestHdrDetails(null, companyId, null, null, null, "Active"));
+			beanQATestHdr.addAll(serviceQATestHdr.getQaTestHdrDetails(null, companyId, null, null, null, "Active",null,null));
 			cbInspectionNo.setContainerDataSource(beanQATestHdr);
 		}
 		catch (Exception e) {

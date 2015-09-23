@@ -73,7 +73,7 @@ public class RotoCheck extends BaseTransUI {
 	private BeanItemContainer<RotohdrDM> beanRotohdrDM = null;
 	private BeanItemContainer<RotoDtlDM> beanRotoDtls = null;
 	private BeanItemContainer<RotoArmDM> beanRotoArmDM = null;
-	private List<RotoCheckDtlDM> listRotoCheckDtlDetails = new ArrayList<RotoCheckDtlDM>();
+	private List<RotoCheckDtlDM> listRotoCheckDtls = new ArrayList<RotoCheckDtlDM>();
 	private Table tblRotoDetails, tblRotoArm;
 	// Search Control Layout
 	private HorizontalLayout hlHdr = new HorizontalLayout();
@@ -87,11 +87,11 @@ public class RotoCheck extends BaseTransUI {
 	// Roto Dtl Components
 	private FormLayout flDtlCol1, flDtlCol2, flDtlCol3;
 	// Roto Arm Components
-	private Button btnAddDtls = new GERPButton("Add", "Addbt", this);
-	private Button btnAddArm = new GERPButton("Add", "Addbt", this);
+	private Button btnAddDtls = new GERPButton("Add", "add", this);
+	private Button btnAddArm = new GERPButton("Add", "add", this);
 	private Button btndelete = new GERPButton("Delete", "delete", this);
 	private Button btnArmDelete = new GERPButton("Delete", "delete", this);
-	private Button btnsavepurQuote = new GERPButton("Add", "addbt", this);
+	private Button btnSaveChkDtls = new GERPButton("Add", "add", this);
 	private GERPPopupDateField dfRotoDt;
 	private GERPTextField tfRotoRef, tfPlanedQty, tfProdQty;
 	private GERPComboBox cbBranch, cbPlanRef;
@@ -108,7 +108,7 @@ public class RotoCheck extends BaseTransUI {
 	private GERPComboBox cbArmNo;
 	private TextArea tfRemarksDtl;
 	private String username;
-	private Long companyid, branchID, moduleId;
+	private Long companyid, branchId, moduleId;
 	private Long rotodtlid;
 	private Long rotoid;
 	private int recordCnt = 0;
@@ -123,7 +123,7 @@ public class RotoCheck extends BaseTransUI {
 		// Get the logged in user name and company id from the session
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside AssemblyPlan() constructor");
@@ -282,9 +282,9 @@ public class RotoCheck extends BaseTransUI {
 		tfCoolTot = new GERPTextField("Cooling Total");
 		tfCoolTot.setWidth("120");
 		tftempZ1 = new GERPTextField("Z1");
-		tftempZ1.setWidth("100");
+		tftempZ1.setWidth("120");
 		tftempZ2 = new GERPTextField("Z2");
-		tftempZ2.setWidth("100");
+		tftempZ2.setWidth("120");
 		tftempZ3 = new GERPTextField("Z3");
 		tftempZ3.setWidth("100");
 		tfBoxModel = new GERPTextField("Box Model");
@@ -302,17 +302,16 @@ public class RotoCheck extends BaseTransUI {
 		tfBoxWgBot = new GERPTextField("Box.Wg Bottom");
 		tfBoxWgBot.setWidth("100");
 		tfBoxWgTotal = new GERPTextField("Box.Wg Total");
-		tfBoxWgTotal.setWidth("130");
+		tfBoxWgTotal.setWidth("100");
 		tfCycles = new GERPTextField("Cycles");
-		tfCycles.setWidth("130");
+		tfCycles.setWidth("100");
 		tfKgCm = new GERPTextField("Kg/Cm3");
-		tfKgCm.setWidth("130");
+		tfKgCm.setWidth("100");
 		tfEmpNo = new GERPTextField("No.of Emp.");
-		tfEmpNo.setWidth("130");
+		tfEmpNo.setWidth("100");
 		tfRemarksDtl = new GERPTextArea("Remarks");
 		tfRemarksDtl.setWidth("130");
-		tfRemarksDtl.setHeight("25px");
-		btnsavepurQuote.addClickListener(new ClickListener() {
+		btnSaveChkDtls.addClickListener(new ClickListener() {
 			// Click Listener for Add and Update
 			private static final long serialVersionUID = 6551953728534136363L;
 			
@@ -385,28 +384,28 @@ public class RotoCheck extends BaseTransUI {
 		flArmCol1.addComponent(tmOvenOff);
 		flArmCol1.addComponent(tfOvenTotal);
 		flArmCol1.addComponent(tmCharOn);
-		flArmCol2.addComponent(tmCharOff);
+		flArmCol1.addComponent(tmCharOff);
 		flArmCol2.addComponent(tfCharTot);
 		flArmCol2.addComponent(tmCoolOn);
 		flArmCol2.addComponent(tmCoolOff);
 		flArmCol2.addComponent(tfCoolTot);
-		flArmCol3.addComponent(tftempZ1);
-		flArmCol3.addComponent(tftempZ2);
+		flArmCol2.addComponent(tftempZ1);
+		flArmCol2.addComponent(tftempZ2);
 		flArmCol3.addComponent(tftempZ3);
 		flArmCol3.addComponent(tfBoxModel);
 		flArmCol3.addComponent(tfBoxSerial);
-		flArmCol4.addComponent(tfPwdTop);
-		flArmCol4.addComponent(tfPwdBot);
-		flArmCol4.addComponent(tfPowTotal);
+		flArmCol3.addComponent(tfPwdTop);
+		flArmCol3.addComponent(tfPwdBot);
+		flArmCol3.addComponent(tfPowTotal);
 		flArmCol4.addComponent(tfBoxWgTop);
 		flArmCol4.addComponent(tfBoxWgBot);
-		flArmCol5.addComponent(tfBoxWgTotal);
-		flArmCol5.addComponent(tfCycles);
-		flArmCol5.addComponent(tfKgCm);
-		flArmCol5.addComponent(tfEmpNo);
+		flArmCol4.addComponent(tfBoxWgTotal);
+		flArmCol4.addComponent(tfCycles);
+		flArmCol4.addComponent(tfKgCm);
+		flArmCol4.addComponent(tfEmpNo);
 		flArmCol5.addComponent(tfRemarksDtl);
 		flArmCol5.addComponent(cbDtlStatus);
-		flArmCol5.addComponent(btnsavepurQuote);
+		flArmCol5.addComponent(btnSaveChkDtls);
 		hlArm = new HorizontalLayout();
 		hlArm.setSpacing(true);
 		hlArm.addComponent(flArmCol1);
@@ -577,7 +576,7 @@ public class RotoCheck extends BaseTransUI {
 		btnAddArm.setCaption("Add");
 		tfRotoRef.setReadOnly(false);
 		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STT_MF_RTONO").get(0);
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "STT_MF_RTONO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				tfRotoRef.setValue(slnoObj.getKeyDesc());
 				tfRotoRef.setReadOnly(true);
@@ -740,10 +739,10 @@ public class RotoCheck extends BaseTransUI {
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
 				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchID, moduleId, "STT_MF_RTONO")
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "STT_MF_RTONO")
 							.get(0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchID, moduleId, "STT_MF_RTONO");
+						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "STT_MF_RTONO");
 					}
 				}
 				catch (Exception e) {
@@ -868,7 +867,7 @@ public class RotoCheck extends BaseTransUI {
 			rotocheckdtlDM.setLastupdatedby(username);
 			rotocheckdtlDM.setLastupdateddate(DateUtils.getcurrentdate());
 			rotocheckdtlDM.setRotoChkDtlStatus(cbDtlStatus.getValue().toString());
-			listRotoCheckDtlDetails.add(rotocheckdtlDM);
+			listRotoCheckDtls.add(rotocheckdtlDM);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

@@ -317,7 +317,7 @@ public class RotoPlan extends BaseTransUI {
 		tfPlanHdrQty.setWidth("130px");
 		// Remarks TextArea
 		taRemark = new TextArea("Remarks");
-		taRemark.setHeight("95px");
+		taRemark.setHeight("160px");
 		// Status ComboBox
 		cbDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		// Shift Name TextField
@@ -431,7 +431,7 @@ public class RotoPlan extends BaseTransUI {
 			tblArmDtls.setVisibleColumns(new Object[] { "workOrdrNo", "prodname", "armNo", "noOfcycle" });
 			tblArmDtls.setColumnHeaders(new String[] { "WO No", "Product Name", "Arm No", "No Of Cycle" });
 			tblArmDtls.setColumnAlignment("rotoplanarmId", Align.RIGHT);
-			tblArmDtls.setColumnFooter("prodname", "No.of Records : " + recordCnt);
+			tblArmDtls.setColumnFooter("noOfcycle", "No.of Records : " + recordCnt);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -578,7 +578,6 @@ public class RotoPlan extends BaseTransUI {
 		vlHrdAndDtlAndShift = new VerticalLayout();
 		vlHrdAndDtlAndShift.addComponent(hlHdrAndShift);
 		vlHrdAndDtlAndShift.addComponent(hlarmAndDtl);
-		vlHrdAndDtlAndShift.setSpacing(true);
 		hlUserInputLayout.addComponent(vlHrdAndDtlAndShift);
 		hlUserInputLayout.setSizeUndefined();
 		hlUserInputLayout.setWidth("100%");

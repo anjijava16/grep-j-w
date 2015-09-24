@@ -140,8 +140,8 @@ public class SmsEnquiry extends BaseTransUI {
 	private ComboBox cdProduct, cdEnqDtlstatus;
 	private TextField custprodcode, tfEnqQty;
 	private TextArea tarequmentdesc, tacustproddesc;
-	private GERPTextField tfCustomField1 = new GERPTextField("Part Number");
-	private GERPTextField tfCustomField2 = new GERPTextField("Drawing Number");
+	private GERPTextField partNumber = new GERPTextField("Part Number");
+	private GERPTextField drawNumber = new GERPTextField("Drawing Number");
 	private Table tblEnqDetails = new GERPTable();
 	private BeanItemContainer<SmsEnquiryDtlDM> beandtl = null;
 	// commom data
@@ -615,8 +615,8 @@ public class SmsEnquiry extends BaseTransUI {
 		fldtl5 = new FormLayout();
 		fldtl1.addComponent(cdProduct);
 		fldtl1.addComponent(tfEnqQty);
-		fldtl1.addComponent(tfCustomField1);
-		fldtl1.addComponent(tfCustomField2);
+		fldtl1.addComponent(partNumber);
+		fldtl1.addComponent(drawNumber);
 		// fldtl3.addComponent(custprodcode);
 		fldtl2.addComponent(tacustproddesc);
 		fldtl3.addComponent(tarequmentdesc);
@@ -1019,10 +1019,10 @@ public class SmsEnquiry extends BaseTransUI {
 				tacustproddesc.setValue(enquiryDtlDM.getCustproddesc().toString());
 			}
 			if (enquiryDtlDM.getCustomField1() != null) {
-				tfCustomField1.setValue(enquiryDtlDM.getCustomField1());
+				partNumber.setValue(enquiryDtlDM.getCustomField1());
 			}
 			if (enquiryDtlDM.getCustomField2() != null) {
-				tfCustomField2.setValue(enquiryDtlDM.getCustomField2());
+				drawNumber.setValue(enquiryDtlDM.getCustomField2());
 			}
 			listEnqSpec = new ArrayList<SmsEnquirySpecDM>();
 			tblspec.removeAllItems();
@@ -1055,8 +1055,8 @@ public class SmsEnquiry extends BaseTransUI {
 		tarequmentdesc.setValue("");
 		tacustproddesc.setValue("");
 		tfEnqQty.setValue("0");
-		tfCustomField1.setValue("");
-		tfCustomField2.setValue("");
+		partNumber.setValue("");
+		drawNumber.setValue("");
 		cdEnqDtlstatus.setValue(cdEnqDtlstatus.getItemIds().iterator().next());
 		cdProduct.setComponentError(null);
 		tfEnqQty.setComponentError(null);
@@ -1179,8 +1179,8 @@ public class SmsEnquiry extends BaseTransUI {
 			if (cdEnqDtlstatus.getValue() != null) {
 				smsEnquiryDtlDM.setEnquitydtlstatus((cdEnqDtlstatus.getValue().toString()));
 			}
-			smsEnquiryDtlDM.setCustomField1(tfCustomField1.getValue());
-			smsEnquiryDtlDM.setCustomField2(tfCustomField2.getValue());
+			smsEnquiryDtlDM.setCustomField1(partNumber.getValue());
+			smsEnquiryDtlDM.setCustomField2(drawNumber.getValue());
 			smsEnquiryDtlDM.setLastupdateddt(DateUtils.getcurrentdate());
 			smsEnquiryDtlDM.setLastupdatedby(username);
 			enqdtlList.add(smsEnquiryDtlDM);

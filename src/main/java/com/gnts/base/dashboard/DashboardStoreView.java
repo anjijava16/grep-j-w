@@ -32,7 +32,6 @@ import com.gnts.mms.txn.MaterialGatepass;
 import com.gnts.mms.txn.MaterialLedger;
 import com.gnts.mms.txn.MaterialStock;
 import com.gnts.mms.txn.POMMSReceipts;
-import com.gnts.sms.txn.SmsEnquiry;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -497,6 +496,7 @@ public class DashboardStoreView implements ClickListener {
 			hlHeader.removeAllComponents();
 			UI.getCurrent().getSession().setAttribute("screenName", "Indent");
 			UI.getCurrent().getSession().setAttribute("moduleId", 9L);
+			UI.getCurrent().getSession().setAttribute("IS_IND_STORE", true);
 			new Indent();
 		}
 		if (event.getButton() == btnIntentIssueCount) {

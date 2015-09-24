@@ -130,7 +130,38 @@ public class SerialNumberGenerator {
 			logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + venCode + slnoObj.getPrefixCncat()
-						+ slnoObj.getSuffixKey()+String.format("03d",slnoObj.getCurrSeqNo().intValue());
+						+ slnoObj.getSuffixKey() + String.format("03d", slnoObj.getCurrSeqNo().intValue());
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		logger.info("serialnumber--->" + serialnumber);
+		return serialnumber;
+	}
+	
+	public static String generateIndNo(Long companyid, Long branchid, Long moduleid, String refkey, String indType) {
+		String serialnumber = "";
+		try {
+			System.out.println("==================================================>"+indType);
+			if (indType == "P") {
+				System.out.println("==================================P================>"+indType);
+
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "MM_INDNOP").get(0);
+				logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
+				if (slnoObj.getAutoGenYN().equals("Y")) {
+					serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + indType
+							+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey() + "/" + slnoObj.getCurrSeqNo();
+				}
+			} else {
+				System.out.println("==================================S================>"+indType);
+
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "MM_INDNO").get(0);
+				logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
+				if (slnoObj.getAutoGenYN().equals("Y")) {
+					serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + indType
+							+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey() + "/" + slnoObj.getCurrSeqNo();
+				}
 			}
 		}
 		catch (Exception e) {

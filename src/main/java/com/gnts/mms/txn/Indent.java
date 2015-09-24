@@ -25,11 +25,9 @@ import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.DepartmentDM;
-import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.DepartmentService;
-import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
@@ -54,6 +52,7 @@ import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.IndentDtlService;
 import com.gnts.mms.service.txn.IndentHdrService;
+import com.gnts.saarc.util.SerialNumberGenerator;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -88,7 +87,6 @@ public class Indent extends BaseTransUI {
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private DepartmentService serviceDepartmant = (DepartmentService) SpringContextHelper.getBean("department");
 	private List<IndentDtlDM> listIndentDtls = null;
@@ -126,7 +124,7 @@ public class Indent extends BaseTransUI {
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Tax.class);
-	private String status;
+	private String status, indType = null;
 	private static final long serialVersionUID = 1L;
 	
 	// Constructor received the parameters from Login UI class
@@ -175,12 +173,9 @@ public class Indent extends BaseTransUI {
 		hlUserIPContainer.removeAllComponents();
 		// Dummy implementation, actual will be implemented in extended
 		// class
-		if (indentHdrId != 0L) {
-			editDetails();
-		} else {
-			addDetails();
-			cbIndType.setValue("Store Indent");
-		}
+		/*
+		 * if (indentHdrId != 0L) { editDetails(); } else { addDetails(); cbIndType.setValue("Store Indent"); }
+		 */
 	}
 	
 	private void buildView(Boolean isLoadFullList) {
@@ -345,14 +340,14 @@ public class Indent extends BaseTransUI {
 		flIndentCol4 = new FormLayout();
 		flIndentCol5 = new FormLayout();
 		flIndentCol1.addComponent(cbBranchId);
-		flIndentCol1.addComponent(tfIndNo);
-		flIndentCol2.addComponent(dfIndDate);
-		flIndentCol2.addComponent(dfExpDt);
-		flIndentCol4.addComponent(cbIndType);
-		flIndentCol4.addComponent(cbDepartment);
+		flIndentCol1.addComponent(cbIndType);
+		flIndentCol2.addComponent(tfIndNo);
+		flIndentCol2.addComponent(cbDepartment);
+		flIndentCol3.addComponent(dfIndDate);
+		flIndentCol3.addComponent(dfExpDt);
 		flIndentCol3.setSpacing(true);
 		flIndentCol3.setMargin(true);
-		flIndentCol3.addComponent(taRemarks);
+		flIndentCol4.addComponent(taRemarks);
 		taRemarks.setWidth("140");
 		flIndentCol5.addComponent(cbIndStatus);
 		cbIndStatus.setWidth("130");
@@ -481,9 +476,11 @@ public class Indent extends BaseTransUI {
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
+		cbIndType.setReadOnly(false);
 		cbIndType.setValue(null);
 		dfIndDate.setValue(new Date());
 		dfExpDt.setValue(DateUtils.addDays(new Date(), 7));
+		cbDepartment.setReadOnly(false);
 		cbDepartment.setValue(null);
 		tfIndNo.setReadOnly(false);
 		tfIndNo.setValue("");
@@ -497,6 +494,28 @@ public class Indent extends BaseTransUI {
 		tfIndQty.setComponentError(null);
 		listIndentDtls = new ArrayList<IndentDtlDM>();
 		tblIndentDtl.removeAllItems();
+		dfExpDt.setEnabled(true);
+		try {
+			if (UI.getCurrent().getSession().getAttribute("IS_IND_STORE") != null
+					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_IND_STORE")) {
+				dfExpDt.setValue(dfIndDate.getValue());
+				cbIndType.setValue("Purchase Indent");
+				cbDepartment.setValue("Store");
+				dfExpDt.setEnabled(false);
+				cbIndType.setReadOnly(true);
+				cbDepartment.setReadOnly(true);
+				UI.getCurrent().getSession().setAttribute("", true);
+			} else {
+				cbIndType.setReadOnly(false);
+				cbDepartment.setReadOnly(false);
+				cbIndType.setValue("Store Indent");
+				cbIndType.setReadOnly(true);
+				cbDepartment.setValue(null);
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 	
 	// Method to edit the values from table into fields to update process
@@ -513,12 +532,16 @@ public class Indent extends BaseTransUI {
 				tfIndNo.setReadOnly(false);
 				tfIndNo.setValue(editHdrIndent.getIndentNo());
 				tfIndNo.setReadOnly(true);
+				cbIndType.setReadOnly(false);
 				cbIndType.setValue(editHdrIndent.getIndentType());
 				if (editHdrIndent.getIndentDate() != null) {
 					dfIndDate.setValue(editHdrIndent.getIndentDate1());
 				}
+				cbIndType.setReadOnly(true);
 				cbBranchId.setValue(editHdrIndent.getBranchId());
+				cbDepartment.setReadOnly(false);
 				cbDepartment.setValue(editHdrIndent.getDeptid());
+				cbDepartment.setReadOnly(true);
 				dfExpDt.setValue(editHdrIndent.getExpectedDate());
 				taRemarks.setValue(editHdrIndent.getIndentRemarks());
 				cbIndStatus.setValue(editHdrIndent.getIndentStatus());
@@ -595,7 +618,9 @@ public class Indent extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		tfIndNo.setValue("");
 		tfIndNo.setReadOnly(false);
+		cbIndType.setReadOnly(false);
 		cbIndType.setValue(null);
+		cbIndType.setReadOnly(true);
 		cbIndStatus.setValue(cbIndStatus.getItemIds().iterator().next());
 		loadSrchRslt();
 	}
@@ -624,13 +649,21 @@ public class Indent extends BaseTransUI {
 		tblIndentDtl.setVisible(true);
 		tfIndNo.setReadOnly(false);
 		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNO").get(0);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfIndNo.setValue(slnoObj.getKeyDesc());
+			cbIndType.setReadOnly(false);
+			if (cbIndType.getValue() == "Store Indent") {
+				indType = "S";
+				tfIndNo.setReadOnly(false);
+				tfIndNo.setValue(SerialNumberGenerator
+						.generateIndNo(companyid, branchId, moduleId, "MM_INDNO", indType));
 				tfIndNo.setReadOnly(true);
 			} else {
+				indType = "P";
 				tfIndNo.setReadOnly(false);
+				tfIndNo.setValue(SerialNumberGenerator.generateIndNo(companyid, branchId, moduleId, "MM_INDNOP",
+						indType));
+				tfIndNo.setReadOnly(true);
 			}
+			cbIndType.setReadOnly(true);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -653,12 +686,12 @@ public class Indent extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		hlUserIPContainer.removeAllComponents();
 		assembleSearchLayout();
+		cbIndType.setReadOnly(false);
 		cbIndType.setComponentError(null);
 		dfIndDate.setComponentError(null);
 		cbBranchId.setComponentError(null);
 		cbMatName.setComponentError(null);
 		tfIndQty.setComponentError(null);
-		cbIndType.setRequired(false);
 		cbBranchId.setRequired(false);
 		cbMatName.setRequired(false);
 		tfIndNo.setReadOnly(false);
@@ -675,6 +708,7 @@ public class Indent extends BaseTransUI {
 	@Override
 	protected void editDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Adding new record...");
+		cbIndType.setReadOnly(false);
 		cbIndType.setRequired(true);
 		cbBranchId.setRequired(true);
 		cbMatName.setRequired(true);
@@ -746,17 +780,18 @@ public class Indent extends BaseTransUI {
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
 		Boolean errorFlag = false;
-		if ((tfIndNo.getValue() == null) || tfIndNo.getValue().trim().length() == 0) {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO").get(0);
-			if (slnoObj.getAutoGenYN().equals("N")) {
-				tfIndNo.setComponentError(new UserError(GERPErrorCodes.NULL_INDENT_NO));
-				errorFlag = true;
-			}
-		}
+		/*
+		 * if ((tfIndNo.getValue() == null) || tfIndNo.getValue().trim().length() == 0) { SlnoGenDM slnoObj =
+		 * serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO").get(0); if
+		 * (slnoObj.getAutoGenYN().equals("N")) { tfIndNo.setComponentError(new
+		 * UserError(GERPErrorCodes.NULL_INDENT_NO)); errorFlag = true; } }
+		 */
+		cbIndType.setReadOnly(false);
 		if (cbIndType.getValue() == null) {
 			cbIndType.setComponentError(new UserError(GERPErrorCodes.NULL_INDENT_TYPE));
 			errorFlag = true;
 		}
+		cbIndType.setReadOnly(true);
 		if (cbBranchId.getValue() == null) {
 			cbBranchId.setComponentError(new UserError(GERPErrorCodes.NULL_BRACH_NAME));
 			errorFlag = true;
@@ -783,11 +818,15 @@ public class Indent extends BaseTransUI {
 			}
 			indentObj.setIndentNo(tfIndNo.getValue());
 			indentObj.setCompanyId(companyid);
+			cbIndType.setReadOnly(false);
 			indentObj.setIndentType((String) cbIndType.getValue());
+			cbIndType.setReadOnly(true);
 			indentObj.setIndentDate((Date) dfIndDate.getValue());
 			indentObj.setExpectedDate((Date) dfExpDt.getValue());
 			indentObj.setBranchId((Long.valueOf(cbBranchId.getValue().toString())));
+			cbDepartment.setReadOnly(false);
 			indentObj.setDeptid((Long.valueOf(cbDepartment.getValue().toString())));
+			cbDepartment.setReadOnly(true);
 			indentObj.setRaisedBy(employeeId);
 			indentObj.setPreparedBy(employeeId);
 			indentObj.setReviewedBy(employeeId);
@@ -806,21 +845,22 @@ public class Indent extends BaseTransUI {
 				saveDtl.setIndentHdrId(Long.valueOf(indentObj.getIndentId()));
 				serviceIndentDtl.saveorUpdate(saveDtl);
 			}
-			if (tblMstScrSrchRslt.getValue() == null) {
-				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNO")
-							.get(0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_INDNO");
-					}
+			try {
+				cbIndType.setReadOnly(false);
+				if (cbIndType.getValue() == "Store Indent") {
+					indType = "S";
+					tfIndNo.setValue(SerialNumberGenerator.generateIndNo(companyid, branchId, moduleId, "MM_INDNO",
+							indType));
+				} else {
+					indType = "P";
+					tfIndNo.setValue(SerialNumberGenerator.generateIndNo(companyid, branchId, moduleId, "MM_INDNOP",
+							indType));
 				}
-				catch (Exception e) {
-					logger.info(e.getMessage());
-				}
+				cbIndType.setReadOnly(true);
 			}
-			tfIndNo.setReadOnly(false);
-			tfIndNo.setValue(indentObj.getIndentNo());
-			tfIndNo.setReadOnly(true);
+			catch (Exception e) {
+				logger.info(e.getMessage());
+			}
 			comments.saveindent(indentObj.getIndentId(), indentObj.getIndentStatus());
 			loadSrchRslt();
 			loadIndentDtl();
@@ -927,12 +967,14 @@ public class Indent extends BaseTransUI {
 	 */
 	private void loadDepartmentList() {
 		try {
+			cbDepartment.setReadOnly(false);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Loading Department Search...");
 			BeanContainer<Long, DepartmentDM> beanDepartment = new BeanContainer<Long, DepartmentDM>(DepartmentDM.class);
 			beanDepartment.setBeanIdProperty("deptid");
 			beanDepartment.addAll(serviceDepartmant.getDepartmentList(companyid, null, "Active", "P"));
 			cbDepartment.setContainerDataSource(beanDepartment);
+			cbDepartment.setReadOnly(true);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

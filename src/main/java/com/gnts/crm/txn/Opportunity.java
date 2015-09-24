@@ -82,9 +82,9 @@ public class Opportunity extends BaseUI {
 	 * UI Components
 	 */
 	private TextField tfOppertName, tfWinProb, tfBusinessValue;
-	private ComboBox cbClient, cbEmployee, cbOppertType, cbCampaign, cbSearchOppertStatus;
+	private ComboBox cbClient, cbEmployee, cbOppertType, cbCampaign, cbStatus;
 	private TextArea taRemarks;
-	private PopupDateField closingDt;
+	private PopupDateField dfClosingDt;
 	private BeanItemContainer<OppertunitiesDM> beanClntOppertunity = new BeanItemContainer<OppertunitiesDM>(
 			OppertunitiesDM.class);
 	private Long moduleId, oppertunityId, employeeId;
@@ -118,9 +118,9 @@ public class Opportunity extends BaseUI {
 				}
 			}
 		});
-		cbSearchOppertStatus = new GERPComboBox("Status");
-		cbSearchOppertStatus.setItemCaptionPropertyId("lookupname");
-		cbSearchOppertStatus.setWidth("150");
+		cbStatus = new GERPComboBox("Status");
+		cbStatus.setItemCaptionPropertyId("lookupname");
+		cbStatus.setWidth("150");
 		loadoppertstatus();
 		/**
 		 * add fields to form Layout
@@ -147,9 +147,9 @@ public class Opportunity extends BaseUI {
 		cbClient.setItemCaptionPropertyId("clientName");
 		cbClient.setWidth(strWidth);
 		loadClientsDetails();
-		closingDt = new PopupDateField("Close Date");
-		closingDt.setDateFormat("dd-MMM-yyyy");
-		closingDt.setWidth(strWidth);
+		dfClosingDt = new PopupDateField("Close Date");
+		dfClosingDt.setDateFormat("dd-MMM-yyyy");
+		dfClosingDt.setWidth(strWidth);
 		cbEmployee = new GERPComboBox("Assigned To");
 		cbEmployee.setItemCaptionPropertyId("firstname");
 		cbEmployee.setWidth(strWidth);
@@ -178,7 +178,7 @@ public class Opportunity extends BaseUI {
 		formLayout3 = new FormLayout();
 		formLayout1.addComponent(tfOppertName);
 		formLayout2.addComponent(cbClient);
-		formLayout3.addComponent(cbSearchOppertStatus);
+		formLayout3.addComponent(cbStatus);
 		hlSearchLayout.addComponent(formLayout1);
 		hlSearchLayout.addComponent(formLayout2);
 		hlSearchLayout.addComponent(formLayout3);
@@ -200,11 +200,11 @@ public class Opportunity extends BaseUI {
 		cbOppertType.setRequired(true);
 		formLayout1.addComponent(cbCampaign);
 		formLayout2.addComponent(cbClient);
-		formLayout2.addComponent(closingDt);
+		formLayout2.addComponent(dfClosingDt);
 		formLayout2.addComponent(cbEmployee);
 		formLayout3.addComponent(tfWinProb);
 		formLayout3.addComponent(tfBusinessValue);
-		formLayout3.addComponent(cbSearchOppertStatus);
+		formLayout3.addComponent(cbStatus);
 		formLayout4.addComponent(taRemarks);
 		HorizontalLayout hlInput = new HorizontalLayout();
 		hlInput.setMargin(true);
@@ -233,7 +233,7 @@ public class Opportunity extends BaseUI {
 			tblMstScrSrchRslt.removeAllItems();
 			List<OppertunitiesDM> listOppertunities = new ArrayList<OppertunitiesDM>();
 			listOppertunities = serviceOppertunity.getClientOppertunityDetails(companyId, null, (Long) cbClient
-					.getValue(), null, tfOppertName.getValue(), cbSearchOppertStatus.getValue().toString());
+					.getValue(), null, tfOppertName.getValue(), cbStatus.getValue().toString());
 			total = listOppertunities.size();
 			beanClntOppertunity.addAll(listOppertunities);
 			tblMstScrSrchRslt.setSelectable(true);
@@ -278,7 +278,7 @@ public class Opportunity extends BaseUI {
 					taRemarks.setValue(oppertunitiesDM.getRemarks());
 				}
 				try {
-					closingDt.setValue(oppertunitiesDM.getClosingDate1());
+					dfClosingDt.setValue(oppertunitiesDM.getClosingDate1());
 				}
 				catch (Exception e) {
 					logger.info("convert closing date to date" + e);
@@ -331,7 +331,7 @@ public class Opportunity extends BaseUI {
 					CompanyLookupDM.class);
 			beanlookup.setBeanIdProperty("lookupname");
 			beanlookup.addAll(serviceCompany.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "CM_OPRSTAT"));
-			cbSearchOppertStatus.setContainerDataSource(beanlookup);
+			cbStatus.setContainerDataSource(beanlookup);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -393,7 +393,7 @@ public class Opportunity extends BaseUI {
 				+ "Resetting search fields and reloading the result");
 		// reload the search using the defaults
 		tfOppertName.setValue("");
-		cbSearchOppertStatus.setValue(cbSearchOppertStatus.getItemIds().iterator().next());
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		resetFields();
 		loadSrchRslt();
 	}
@@ -473,9 +473,9 @@ public class Opportunity extends BaseUI {
 			if (tfWinProb.getValue().toString().trim().length() > 0) {
 				oppertunitiesDM.setWinProbability(Long.valueOf(tfWinProb.getValue()));
 			}
-			oppertunitiesDM.setOppertunityStatus(cbSearchOppertStatus.getValue().toString());
-			if (cbSearchOppertStatus.getValue().equals("Won") || cbSearchOppertStatus.getValue().equals("Lost")) {
-				closingDt.setValue(DateUtils.getcurrentdate());
+			oppertunitiesDM.setOppertunityStatus(cbStatus.getValue().toString());
+			if (cbStatus.getValue().equals("Won") || cbStatus.getValue().equals("Lost")) {
+				dfClosingDt.setValue(DateUtils.getcurrentdate());
 			}
 			oppertunitiesDM.setLastUpdatedBy(userName);
 			oppertunitiesDM.setLastUpdatedDt(DateUtils.getcurrentdate());
@@ -528,7 +528,7 @@ public class Opportunity extends BaseUI {
 		tfWinProb.setValue("");
 		tfBusinessValue.setValue("");
 		cbCampaign.setComponentError(null);
-		cbSearchOppertStatus.setValue(cbSearchOppertStatus.getItemIds().iterator().next());
-		closingDt.setValue(null);
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+		dfClosingDt.setValue(null);
 	}
 }

@@ -94,7 +94,7 @@ public class ClientCases extends BaseTransUI {
 	/**
 	 * UI Components
 	 */
-	private TextField tfCaseTitle, tfCaseResult, tfEffortDays, tfSearchTitle, tfpartNo, tfDrgNo;
+	private TextField tfCaseTitle, tfCaseResult, tfEffortDays, tfSearchTitle, tfPartNo, tfDrgNo;
 	private ComboBox cbClient, cbEmployee, cbCaseCategory, cbPriority, cbSevrity, cbClntCaseStatus, cbEnquiryNo,
 			cbWONo, cbPONo, cbProduct;
 	private TextArea taCaseDesc;
@@ -156,13 +156,13 @@ public class ClientCases extends BaseTransUI {
 				if (cbProduct.getValue() != null) {
 					try {
 						if (((SmsPODtlDM) cbProduct.getValue()).getCustomField1() != null) {
-							tfpartNo.setReadOnly(false);
-							tfpartNo.setValue(((SmsPODtlDM) cbProduct.getValue()).getCustomField1());
-							tfpartNo.setReadOnly(true);
+							tfPartNo.setReadOnly(false);
+							tfPartNo.setValue(((SmsPODtlDM) cbProduct.getValue()).getCustomField1());
+							tfPartNo.setReadOnly(true);
 						} else {
-							tfpartNo.setReadOnly(false);
-							tfpartNo.setValue("");
-							tfpartNo.setReadOnly(true);
+							tfPartNo.setReadOnly(false);
+							tfPartNo.setValue("");
+							tfPartNo.setReadOnly(true);
 						}
 						if (((SmsPODtlDM) cbProduct.getValue()).getCustomField2() != null) {
 							tfDrgNo.setReadOnly(false);
@@ -269,8 +269,8 @@ public class ClientCases extends BaseTransUI {
 		cbClntCaseStatus.setItemCaptionPropertyId("desc");
 		tfSearchTitle = new GERPTextField("Case Title");
 		tfSearchTitle.setWidth(strWidth);
-		tfpartNo = new GERPTextField("Part No.");
-		tfpartNo.setWidth(strWidth);
+		tfPartNo = new GERPTextField("Part No.");
+		tfPartNo.setWidth(strWidth);
 		tfDrgNo = new GERPTextField("Drg No.");
 		tfDrgNo.setWidth(strWidth);
 		hlSearchLayout = new GERPAddEditHLayout();
@@ -312,10 +312,10 @@ public class ClientCases extends BaseTransUI {
 		flColumn1.addComponent(cbWONo);
 		flColumn2.addComponent(cbPONo);
 		flColumn2.addComponent(cbProduct);
-		flColumn2.addComponent(tfpartNo);
+		flColumn2.addComponent(tfPartNo);
 		flColumn2.addComponent(tfDrgNo);
 		tfDrgNo.setReadOnly(true);
-		tfpartNo.setReadOnly(true);
+		tfPartNo.setReadOnly(true);
 		cbClient.setRequired(true);
 		flColumn1.addComponent(tfCaseTitle);
 		tfCaseTitle.setRequired(true);
@@ -393,11 +393,11 @@ public class ClientCases extends BaseTransUI {
 				cbClient.setValue(clientCasesDM.getClientId());
 				cbPONo.setValue(clientCasesDM.getPoid());
 				cbWONo.setValue(clientCasesDM.getWoId());
-				tfpartNo.setReadOnly(false);
+				tfPartNo.setReadOnly(false);
 				tfDrgNo.setReadOnly(false);
-				tfpartNo.setValue(clientCasesDM.getPartno());
+				tfPartNo.setValue(clientCasesDM.getPartno());
 				tfDrgNo.setValue(clientCasesDM.getDrgno());
-				tfpartNo.setReadOnly(true);
+				tfPartNo.setReadOnly(true);
 				tfDrgNo.setReadOnly(true);
 				Long prodid = clientCasesDM.getProdid();
 				Collection<?> prodids = cbProduct.getItemIds();
@@ -641,11 +641,11 @@ public class ClientCases extends BaseTransUI {
 			clientCasesDM.setBranchId(branchId);
 			clientCasesDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 			clientCasesDM.setProdid(((SmsPODtlDM) cbProduct.getValue()).getProductid());
-			tfpartNo.setReadOnly(false);
+			tfPartNo.setReadOnly(false);
 			tfDrgNo.setReadOnly(false);
-			clientCasesDM.setPartno(tfpartNo.getValue());
+			clientCasesDM.setPartno(tfPartNo.getValue());
 			clientCasesDM.setDrgno(tfDrgNo.getValue());
-			tfpartNo.setReadOnly(true);
+			tfPartNo.setReadOnly(true);
 			tfDrgNo.setReadOnly(true);
 			clientCasesDM.setWoId((Long) cbWONo.getValue());
 			serviceCase.saveClientCasesDetails(clientCasesDM);
@@ -699,11 +699,11 @@ public class ClientCases extends BaseTransUI {
 		cbProduct.setValue(null);
 		cbProduct.setContainerDataSource(null);
 		cbWONo.setValue(null);
-		tfpartNo.setReadOnly(false);
+		tfPartNo.setReadOnly(false);
 		tfDrgNo.setReadOnly(false);
-		tfpartNo.setValue("");
+		tfPartNo.setValue("");
 		tfDrgNo.setValue("");
-		tfpartNo.setReadOnly(true);
+		tfPartNo.setReadOnly(true);
 		tfDrgNo.setReadOnly(true);
 		cbClient.setContainerDataSource(null);
 		cbPONo.setContainerDataSource(null);

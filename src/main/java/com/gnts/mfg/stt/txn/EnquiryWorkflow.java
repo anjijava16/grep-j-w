@@ -108,7 +108,7 @@ public class EnquiryWorkflow implements ClickListener {
 		btnDeleteWorkflow.setVisible(false);
 		// TODO Auto-generated method stub
 		tblEnquiryWorkflow.setWidth("1100");
-		tblEnquiryWorkflow.setPageLength(8);
+		tblEnquiryWorkflow.setPageLength(5);
 		tblEnquiryWorkflow.setSelectable(true);
 		taWorkflowRequest.setHeight("50px");
 		cbInitiatedBy.setRequired(true);

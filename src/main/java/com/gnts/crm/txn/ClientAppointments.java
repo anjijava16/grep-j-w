@@ -112,8 +112,8 @@ public class ClientAppointments extends BaseUI {
 	private ComboBox cbTypeofContact, cbLead, cbClient, cbCampaign, cbCase, cbEmployee, cbContact, cbMeetingType,
 			cbPriority, cbMeetingStatus, cbPreviewAppoint, cbOppertunity;
 	private TabSheet tabAppointment;
-	private PopupDateField dueDate;
-	private PopupDateField scheduleDt;
+	private PopupDateField dfDueDate;
+	private PopupDateField dfScheduleDt;
 	private EmployeeDM employee;
 	private CompanyLookupDM typeLookUp;
 	private BeanItemContainer<ClientAppointmentsDM> beanAppointment = null;
@@ -399,24 +399,24 @@ public class ClientAppointments extends BaseUI {
 		taMeetRemarks = new GERPTextArea("Remarks");
 		taMeetRemarks.setWidth("145");
 		taMeetRemarks.setHeight("100px");
-		scheduleDt = new GERPPopupDateField("Schedule Date");
-		scheduleDt.setDateFormat("dd-MMM-yyyy");
-		scheduleDt.setLenient(true);
-		scheduleDt.setResolution(Resolution.MINUTE);
-		scheduleDt.addValidator(new DateValidation("Invalid date entered"));
-		scheduleDt.addBlurListener(new BlurListener() {
+		dfScheduleDt = new GERPPopupDateField("Schedule Date");
+		dfScheduleDt.setDateFormat("dd-MMM-yyyy");
+		dfScheduleDt.setLenient(true);
+		dfScheduleDt.setResolution(Resolution.MINUTE);
+		dfScheduleDt.addValidator(new DateValidation("Invalid date entered"));
+		dfScheduleDt.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
 			public void blur(BlurEvent event) {
-				scheduleDt.setComponentError(null);
-				if (scheduleDt.getValue() != null) {
-					scheduleDt.setComponentError(null);
+				dfScheduleDt.setComponentError(null);
+				if (dfScheduleDt.getValue() != null) {
+					dfScheduleDt.setComponentError(null);
 				}
 			}
 		});
-		dueDate = new GERPPopupDateField("Due Date");
-		dueDate.setDateFormat("dd-MMM-yyyy");
-		dueDate.setImmediate(true);
+		dfDueDate = new GERPPopupDateField("Due Date");
+		dfDueDate.setDateFormat("dd-MMM-yyyy");
+		dfDueDate.setImmediate(true);
 		cbMeetingType = new GERPComboBox("Meeting Type");
 		cbMeetingType.setItemCaptionPropertyId("lookupname");
 		cbMeetingType.setNullSelectionAllowed(false);
@@ -460,7 +460,7 @@ public class ClientAppointments extends BaseUI {
 		flColumn4 = new FormLayout();
 		flColumn1.addComponent(cbClient);
 		flColumn2.addComponent(cbLead);
-		flColumn3.addComponent(scheduleDt);
+		flColumn3.addComponent(dfScheduleDt);
 		flColumn2.setSpacing(true);
 		flColumn2.setMargin(true);
 		flColumn4.addComponent(cbMeetingStatus);
@@ -495,8 +495,8 @@ public class ClientAppointments extends BaseUI {
 		flColumn1.addComponent(cbCase);
 		flColumn1.addComponent(cbOppertunity);
 		flColumn1.addComponent(cbEmployee);
-		flColumn1.addComponent(scheduleDt);
-		flColumn1.addComponent(dueDate);
+		flColumn1.addComponent(dfScheduleDt);
+		flColumn1.addComponent(dfDueDate);
 		flColumn2.setSpacing(true);
 		flColumn2.setMargin(true);
 		flColumn2.addComponent(taObjectives);
@@ -531,7 +531,7 @@ public class ClientAppointments extends BaseUI {
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Loading Search...");
 			tblMstScrSrchRslt.removeAllItems();
 			List<ClientAppointmentsDM> appointList = new ArrayList<ClientAppointmentsDM>();
-			Date Scheduledt = scheduleDt.getValue();
+			Date Scheduledt = dfScheduleDt.getValue();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyId + ", " + ",");
 			appointList = serviceAppointment.getAppointmentDetailList(companyId, null, (Long) cbLead.getValue(),
@@ -593,8 +593,8 @@ public class ClientAppointments extends BaseUI {
 				cbPriority.setValue(appointmentsDM.getPriority());
 				cbPreviewAppoint.setValue(appointmentsDM.getPrevAppointmentId());
 				cbEmployee.setValue(appointmentsDM.getOwnerId());
-				scheduleDt.setValue(appointmentsDM.getScheduleDtInt());
-				dueDate.setValue(appointmentsDM.getDueDateDt());
+				dfScheduleDt.setValue(appointmentsDM.getScheduleDtInt());
+				dfDueDate.setValue(appointmentsDM.getDueDateDt());
 				cbMeetingStatus.setValue(appointmentsDM.getMeetingStatus());
 			}
 		}
@@ -795,7 +795,7 @@ public class ClientAppointments extends BaseUI {
 	
 	@Override
 	protected void addDetails() {
-		scheduleDt.setRequired(true);
+		dfScheduleDt.setRequired(true);
 		taObjectives.setRequired(true);
 		cbMeetingStatus.setRequired(true);
 		cbMeetingType.setRequired(true);
@@ -808,7 +808,7 @@ public class ClientAppointments extends BaseUI {
 	
 	@Override
 	protected void editDetails() {
-		scheduleDt.setRequired(true);
+		dfScheduleDt.setRequired(true);
 		taObjectives.setRequired(true);
 		cbMeetingStatus.setRequired(true);
 		cbMeetingType.setRequired(true);
@@ -842,8 +842,8 @@ public class ClientAppointments extends BaseUI {
 		} else {
 			cbMeetingStatus.setComponentError(null);
 		}
-		if (scheduleDt.getValue() == null) {
-			scheduleDt.setComponentError(new UserError(GERPErrorCodes.NULL_MEETING_SCHEDULE_DT));
+		if (dfScheduleDt.getValue() == null) {
+			dfScheduleDt.setComponentError(new UserError(GERPErrorCodes.NULL_MEETING_SCHEDULE_DT));
 			errorflag = true;
 		} else {
 			cbMeetingStatus.setComponentError(null);
@@ -854,14 +854,14 @@ public class ClientAppointments extends BaseUI {
 		} else {
 			cbTypeofContact.setComponentError(null);
 		}
-		if ((scheduleDt.getValue() != null) || (dueDate.getValue() != null)) {
-			if (scheduleDt.getValue().after(dueDate.getValue())) {
-				dueDate.setComponentError(new UserError(GERPErrorCodes.CRM_DATE_OUTOFRANGE));
+		if ((dfScheduleDt.getValue() != null) || (dfDueDate.getValue() != null)) {
+			if (dfScheduleDt.getValue().after(dfDueDate.getValue())) {
+				dfDueDate.setComponentError(new UserError(GERPErrorCodes.CRM_DATE_OUTOFRANGE));
 				logger.warn("Company ID : " + companyId + " | User Name : " + userName + " > "
-						+ "Throwing ValidationException. User data is > " + scheduleDt.getValue());
+						+ "Throwing ValidationException. User data is > " + dfScheduleDt.getValue());
 				errorflag = true;
 			} else {
-				dueDate.setComponentError(null);
+				dfDueDate.setComponentError(null);
 			}
 		}
 		if (errorflag) {
@@ -894,8 +894,8 @@ public class ClientAppointments extends BaseUI {
 			if (cbEmployee.getValue() != null) {
 				appointment.setOwnerId((Long) cbEmployee.getValue());
 			}
-			appointment.setScheduleDt(scheduleDt.getValue());
-			appointment.setDueDate(dueDate.getValue());
+			appointment.setScheduleDt(dfScheduleDt.getValue());
+			appointment.setDueDate(dfDueDate.getValue());
 			if (appointment.getPrevAppointmentId() != null) {
 				appointment.setPrevAppointmentId((Long) cbPreviewAppoint.getValue());
 			}
@@ -937,13 +937,13 @@ public class ClientAppointments extends BaseUI {
 	
 	@Override
 	protected void cancelDetails() {
-		scheduleDt.setRequired(false);
+		dfScheduleDt.setRequired(false);
 		taObjectives.setRequired(false);
 		cbMeetingStatus.setRequired(false);
 		cbMeetingType.setRequired(false);
 		cbTypeofContact.setRequired(false);
 		cbMeetingStatus.setComponentError(null);
-		scheduleDt.setComponentError(null);
+		dfScheduleDt.setComponentError(null);
 		taObjectives.setComponentError(null);
 		cbMeetingType.setComponentError(null);
 		cbTypeofContact.setComponentError(null);
@@ -979,10 +979,10 @@ public class ClientAppointments extends BaseUI {
 		cbTypeofContact.setComponentError(null);
 		cbPriority.setValue(null);
 		cbPriority.setComponentError(null);
-		scheduleDt.setValue(null);
-		scheduleDt.setComponentError(null);
-		dueDate.setValue(null);
-		dueDate.setComponentError(null);
+		dfScheduleDt.setValue(null);
+		dfScheduleDt.setComponentError(null);
+		dfDueDate.setValue(null);
+		dfDueDate.setComponentError(null);
 		cbPreviewAppoint.setValue(null);
 		cbOppertunity.setValue(null);
 		cbPriority.setValue(cbPriority.getItemIds().iterator().next());

@@ -55,8 +55,8 @@ public class ClientCategory extends BaseUI {
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// User Input Components
-	private TextField tfClntcatName;
-	private ComboBox cbClntcatStatus;
+	private TextField tfCategryName;
+	private ComboBox cbStatus;
 	// Bean Container
 	private BeanItemContainer<ClientCategoryDM> beanClentCat = null;
 	// local variables declaration
@@ -83,19 +83,19 @@ public class ClientCategory extends BaseUI {
 	private void buildview() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting ClientCategory UI");
 		// ClientCategory Name text field
-		tfClntcatName = new GERPTextField("Category Name");
-		tfClntcatName.setRequired(false);
-		tfClntcatName.setMaxLength(25);
+		tfCategryName = new GERPTextField("Category Name");
+		tfCategryName.setRequired(false);
+		tfCategryName.setMaxLength(25);
 		// ClientCategory status combo box
 		// populate the status combo box
-		cbClntcatStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		cbClntcatStatus.setWidth("100");
+		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		cbStatus.setWidth("100");
 		// create form layouts to hold the input items
 		flClntcatName = new FormLayout();
 		flClntcatStatus = new FormLayout();
 		// add the user input items into appropriate form layout
-		flClntcatName.addComponent(tfClntcatName);
-		flClntcatStatus.addComponent(cbClntcatStatus);
+		flClntcatName.addComponent(tfCategryName);
+		flClntcatStatus.addComponent(cbStatus);
 		// add the form layouts into user input layout
 		hlUserInputLayout.setSpacing(true);
 		hlUserInputLayout.addComponent(flClntcatName);
@@ -125,9 +125,9 @@ public class ClientCategory extends BaseUI {
 			tblMstScrSrchRslt.removeAllItems();
 			List<ClientCategoryDM> listClientCate = new ArrayList<ClientCategoryDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
-					+ companyid + ", " + tfClntcatName.getValue() + ", " + (String) cbClntcatStatus.getValue());
-			listClientCate = serviceClientCat.getCrmClientCategoryList(companyid, tfClntcatName.getValue(),
-					(String) cbClntcatStatus.getValue(), "F");
+					+ companyid + ", " + tfCategryName.getValue() + ", " + (String) cbStatus.getValue());
+			listClientCate = serviceClientCat.getCrmClientCategoryList(companyid, tfCategryName.getValue(),
+					(String) cbStatus.getValue(), "F");
 			recordCnt = listClientCate.size();
 			beanClentCat = new BeanItemContainer<ClientCategoryDM>(ClientCategoryDM.class);
 			beanClentCat.addAll(listClientCate);
@@ -150,9 +150,9 @@ public class ClientCategory extends BaseUI {
 	@Override
 	protected void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		tfClntcatName.setValue("");
-		tfClntcatName.setComponentError(null);
-		cbClntcatStatus.setValue(cbClntcatStatus.getItemIds().iterator().next());
+		tfCategryName.setValue("");
+		tfCategryName.setComponentError(null);
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	
 	// Based on the selected record, the data would be populated into user input
@@ -167,8 +167,8 @@ public class ClientCategory extends BaseUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Selected Clientcat. Id -> " + clientCategoryId);
 			if (sltedRcd != null) {
-				tfClntcatName.setValue(sltedRcd.getItemProperty("clientCatName").getValue().toString());
-				cbClntcatStatus.setValue(sltedRcd.getItemProperty("clientCatStatus").getValue().toString());
+				tfCategryName.setValue(sltedRcd.getItemProperty("clientCatName").getValue().toString());
+				cbStatus.setValue(sltedRcd.getItemProperty("clientCatStatus").getValue().toString());
 			}
 		}
 		catch (Exception e) {
@@ -197,8 +197,8 @@ public class ClientCategory extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
-		cbClntcatStatus.setValue(cbClntcatStatus.getItemIds().iterator().next());
-		tfClntcatName.setValue("");
+		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
+		tfCategryName.setValue("");
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
 		// reload the search using the defaults
@@ -212,7 +212,7 @@ public class ClientCategory extends BaseUI {
 		// same container
 		hlUserIPContainer.removeAllComponents();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		tfClntcatName.setRequired(true);
+		tfCategryName.setRequired(true);
 		tblMstScrSrchRslt.setValue(null);
 		// reset the input controls to default value
 		resetFields();
@@ -230,7 +230,7 @@ public class ClientCategory extends BaseUI {
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Canceling action ");
 		assembleSearchLayout();
-		tfClntcatName.setRequired(false);
+		tfCategryName.setRequired(false);
 		tblMstScrSrchRslt.setValue(null);
 		resetFields();
 	}
@@ -240,18 +240,18 @@ public class ClientCategory extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Invoking Edit record ");
 		hlUserIPContainer.removeAllComponents();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
-		tfClntcatName.setRequired(true);
+		tfCategryName.setRequired(true);
 		editClientCategory();
 	}
 	
 	@Override
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		tfClntcatName.setComponentError(null);
-		if ((tfClntcatName.getValue() == null) || tfClntcatName.getValue().trim().length() == 0) {
-			tfClntcatName.setComponentError(new UserError(GERPErrorCodes.NULL_CLNT_CATGRY_NAME));
+		tfCategryName.setComponentError(null);
+		if ((tfCategryName.getValue() == null) || tfCategryName.getValue().trim().length() == 0) {
+			tfCategryName.setComponentError(new UserError(GERPErrorCodes.NULL_CLNT_CATGRY_NAME));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + tfClntcatName.getValue());
+					+ "Throwing ValidationException. User data is > " + tfCategryName.getValue());
 			throw new ERPException.ValidationException();
 		}
 	}
@@ -264,9 +264,9 @@ public class ClientCategory extends BaseUI {
 			clntcatobj = beanClentCat.getItem(tblMstScrSrchRslt.getValue()).getBean();
 		}
 		clntcatobj.setCompanyId(companyid);
-		clntcatobj.setClientCatName(tfClntcatName.getValue().toString());
-		if (cbClntcatStatus.getValue() != null) {
-			clntcatobj.setClientCatStatus(cbClntcatStatus.getValue().toString());
+		clntcatobj.setClientCatName(tfCategryName.getValue().toString());
+		if (cbStatus.getValue() != null) {
+			clntcatobj.setClientCatStatus(cbStatus.getValue().toString());
 		}
 		clntcatobj.setLastUpdatedDt(DateUtils.getcurrentdate());
 		clntcatobj.setLastUpdatedBy(username);

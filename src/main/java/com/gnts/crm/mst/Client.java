@@ -100,7 +100,7 @@ public class Client extends BaseUI {
 	private HorizontalLayout hlInput;
 	private VerticalLayout hlUserInput;
 	// User Input Components
-	private TextField tfClntName, tfRevenue, tfpostcd, tfPhone, tfFax, tfEmail, tfWebsite, tfClntcode;
+	private TextField tfClntName, tfRevenue, tfPostCode, tfPhone, tfFax, tfEmail, tfWebsite, tfClntcode;
 	private TextArea taClntAddrss, tfotherDetails;
 	private ComboBox cbClntCategory, cbClntSubCategory, cbCampaign, cbLeads, cbAssignedto, cbClientrate, cbCountry,
 			cbState, cbCity, cbclntindustry, cbClntStatus;
@@ -164,9 +164,9 @@ public class Client extends BaseUI {
 		tfRevenue.setWidth("150");
 		tfRevenue.setMaxLength(24);
 		// post code text Field
-		tfpostcd = new GERPTextField("Post Code");
-		tfpostcd.setRequired(false);
-		tfpostcd.setMaxLength(25);
+		tfPostCode = new GERPTextField("Post Code");
+		tfPostCode.setRequired(false);
+		tfPostCode.setMaxLength(25);
 		// phone number text Field
 		tfPhone = new GERPTextField("Phone Number");
 		tfPhone.setRequired(true);
@@ -338,7 +338,7 @@ public class Client extends BaseUI {
 		formLayout2.addComponent(cbCountry);
 		formLayout2.addComponent(cbState);
 		formLayout2.addComponent(cbCity);
-		formLayout3.addComponent(tfpostcd);
+		formLayout3.addComponent(tfPostCode);
 		formLayout3.addComponent(tfPhone);
 		formLayout3.addComponent(tfEmail);
 		cbCountry.setRequired(true);
@@ -542,7 +542,7 @@ public class Client extends BaseUI {
 		tfEmail.setComponentError(null);
 		tfFax.setValue("");
 		tfotherDetails.setValue("");
-		tfpostcd.setValue("");
+		tfPostCode.setValue("");
 		tfPhone.setValue("");
 		tfPhone.setComponentError(null);
 		tfRevenue.setValue("0");
@@ -596,7 +596,7 @@ public class Client extends BaseUI {
 				tfEmail.setValue(clientDM.getEmailId());
 				tfFax.setValue(clientDM.getFaxNo());
 				tfPhone.setValue(clientDM.getPhoneNo());
-				tfpostcd.setValue(clientDM.getPostalCode());
+				tfPostCode.setValue(clientDM.getPostalCode());
 				tfWebsite.setValue(clientDM.getWebsite());
 				tfotherDetails.setValue(clientDM.getOtherDetails());
 				cbCountry.setValue((clientDM.getCountryId()));
@@ -764,7 +764,7 @@ public class Client extends BaseUI {
 				clientDM.setRevenue(Long.valueOf(tfRevenue.getValue()));
 			}
 			clientDM.setAssignedTo((Long) cbAssignedto.getValue());
-			clientDM.setPostalCode(tfpostcd.getValue());
+			clientDM.setPostalCode(tfPostCode.getValue());
 			clientDM.setPhoneNo(tfPhone.getValue());
 			clientDM.setFaxNo(tfFax.getValue());
 			clientDM.setEmailId(tfEmail.getValue());

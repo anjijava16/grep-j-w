@@ -77,8 +77,8 @@ public class Campaign extends BaseUI {
 	private static final long serialVersionUID = 1L;
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
-	private CurrencyService servicebeanCurrency = (CurrencyService) SpringContextHelper.getBean("currency");
-	private CompanyLookupService servicecompanyLookup = (CompanyLookupService) SpringContextHelper
+	private CurrencyService serviceCurrency = (CurrencyService) SpringContextHelper.getBean("currency");
+	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private CampaignService serviceCampaign = (CampaignService) SpringContextHelper.getBean("clientCampaign");
 	private CompanyService serviceCompany = (CompanyService) SpringContextHelper.getBean("companyBean");
@@ -95,12 +95,12 @@ public class Campaign extends BaseUI {
 	/**
 	 * UI Components
 	 */
-	private TextField tfProduct, tfcampaign, tfTagetAudieance, tfTargetSize, tfExptdBudget, tfExpRevenue,
+	private TextField tfProduct, tfCampaignName, tfTagetAudieance, tfTargetSize, tfExptdBudget, tfExpRevenue,
 			tfExpSalesCount, tfExpResepCount, tfExpRoi, tfActualBudget, tfAcualRev, tfActSalesCount,
 			tfActResponseCount, tfActRoi;
-	private ComboBox cbCampaignType, cbEmployee, cbCurrencyName, cbproduct, cbstatus, cbAction, cbReview;
+	private ComboBox cbCampaignType, cbEmployee, cbCurrencyName, cbProduct, cbStatus, cbAction, cbReview;
 	private TextArea taComments;
-	private PopupDateField dtCampaignStart, dtCampaignEnd, searchCampaignDt;
+	private PopupDateField dfCampaignStart, dfCampaignEnd, searchCampaignDt;
 	private BeanItemContainer<CampaignDM> beanCampaign = null;
 	private Long moduleId, clntCampaignId, employeeid;
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
@@ -154,12 +154,12 @@ public class Campaign extends BaseUI {
 		cbAction.setItemCaptionPropertyId("firstname");
 		cbReview.setWidth(strWidth);
 		cbReview.setItemCaptionPropertyId("firstname");
-		dtCampaignStart = new GERPPopupDateField("Start Date");
-		dtCampaignStart.setRequired(true);
-		dtCampaignStart.setDateFormat("dd-MMM-yyyy");
-		dtCampaignEnd = new GERPPopupDateField("End Date");
-		dtCampaignEnd.setDateFormat("dd-MMM-yyyy");
-		dtCampaignEnd.setRequired(true);
+		dfCampaignStart = new GERPPopupDateField("Start Date");
+		dfCampaignStart.setRequired(true);
+		dfCampaignStart.setDateFormat("dd-MMM-yyyy");
+		dfCampaignEnd = new GERPPopupDateField("End Date");
+		dfCampaignEnd.setDateFormat("dd-MMM-yyyy");
+		dfCampaignEnd.setRequired(true);
 		cbCampaignType = new GERPComboBox("Campaign Type");
 		cbCampaignType.setItemCaptionPropertyId("lookupname");
 		cbCampaignType.setWidth(strWidth);
@@ -185,10 +185,10 @@ public class Campaign extends BaseUI {
 		cbCurrencyName.setWidth(strWidth);
 		cbCurrencyName.setImmediate(true);
 		loadCurrencyList();
-		tfcampaign = new GERPTextField("Campaign Name");
-		tfcampaign.setMaxLength(45);
-		tfcampaign.setWidth(strWidth);
-		tfcampaign.addBlurListener(new BlurListener() {
+		tfCampaignName = new GERPTextField("Campaign Name");
+		tfCampaignName.setMaxLength(45);
+		tfCampaignName.setWidth(strWidth);
+		tfCampaignName.addBlurListener(new BlurListener() {
 			/**
 			 * 
 			 */
@@ -196,20 +196,20 @@ public class Campaign extends BaseUI {
 			
 			@Override
 			public void blur(BlurEvent event) {
-				tfcampaign.setComponentError(null);
-				if (tfcampaign.getValue() != null) {
-					tfcampaign.setComponentError(null);
+				tfCampaignName.setComponentError(null);
+				if (tfCampaignName.getValue() != null) {
+					tfCampaignName.setComponentError(null);
 				}
 			}
 		});
-		cbproduct = new GERPComboBox("Product Name");
-		cbproduct.setWidth(strWidth);
-		cbproduct.setItemCaptionPropertyId("prodname");
+		cbProduct = new GERPComboBox("Product Name");
+		cbProduct.setWidth(strWidth);
+		cbProduct.setItemCaptionPropertyId("prodname");
 		loadProductList();
 		tfProduct = new GERPTextField("Product");
 		tfProduct.setMaxLength(40);
 		tfProduct.setWidth(strWidth);
-		cbproduct.addValueChangeListener(new ValueChangeListener() {
+		cbProduct.addValueChangeListener(new ValueChangeListener() {
 			/**
 			 * 
 			 */
@@ -217,8 +217,8 @@ public class Campaign extends BaseUI {
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (cbproduct.getValue() != null) {
-					tfProduct.setValue(((ProductDM) cbproduct.getValue()).getProdname());
+				if (cbProduct.getValue() != null) {
+					tfProduct.setValue(((ProductDM) cbProduct.getValue()).getProdname());
 				}
 			}
 		});
@@ -256,9 +256,9 @@ public class Campaign extends BaseUI {
 		try {
 			ApprovalSchemaDM obj = serviceWrkOrdHdr.getReviewerId(companyId, appScreenId, branchID, roleId).get(0);
 			if (obj.getApprLevel().equals("Reviewer")) {
-				cbstatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_RV_STATUS);
+				cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_RV_STATUS);
 			} else {
-				cbstatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_AP_STATUS);
+				cbStatus = new GERPComboBox("Status", BASEConstants.T_MFG_WORKORDER_HDR, BASEConstants.WO_AP_STATUS);
 			}
 		}
 		catch (Exception e) {
@@ -274,18 +274,18 @@ public class Campaign extends BaseUI {
 	
 	private void assembleSearchLayout() {
 		hlSearchLayout.removeAllComponents();
-		dtCampaignStart.setRequired(false);
-		dtCampaignEnd.setRequired(false);
+		dfCampaignStart.setRequired(false);
+		dfCampaignEnd.setRequired(false);
 		flColumn1 = new FormLayout();
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		flColumn5 = new FormLayout();
 		flColumn1.addComponent(tfProduct);
-		flColumn2.addComponent(tfcampaign);
+		flColumn2.addComponent(tfCampaignName);
 		flColumn2.setSpacing(true);
 		flColumn4.addComponent(cbCampaignType);
-		flColumn5.addComponent(cbstatus);
+		flColumn5.addComponent(cbStatus);
 		hlSearchLayout.addComponent(flColumn1);
 		hlSearchLayout.addComponent(flColumn2);
 		hlSearchLayout.addComponent(lblspace);
@@ -298,24 +298,24 @@ public class Campaign extends BaseUI {
 	private void assembleUserInputLayout() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Assembling search layout");
 		// add the form layouts into user input layout
-		dtCampaignEnd.setRequired(true);
-		dtCampaignStart.setRequired(true);
+		dfCampaignEnd.setRequired(true);
+		dfCampaignStart.setRequired(true);
 		hlUserInputLayout.removeAllComponents();
 		hlInput.removeAllComponents();
 		flColumn1 = new FormLayout();
 		flColumn2 = new FormLayout();
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
-		flColumn1.addComponent(tfcampaign);
-		tfcampaign.setRequired(true);
-		flColumn1.addComponent(dtCampaignStart);
-		flColumn1.addComponent(dtCampaignEnd);
+		flColumn1.addComponent(tfCampaignName);
+		tfCampaignName.setRequired(true);
+		flColumn1.addComponent(dfCampaignStart);
+		flColumn1.addComponent(dfCampaignEnd);
 		flColumn1.addComponent(cbEmployee);
 		flColumn1.addComponent(cbCampaignType);
 		cbCampaignType.setRequired(true);
 		flColumn1.addComponent(tfTagetAudieance);
 		flColumn1.addComponent(cbCurrencyName);
-		flColumn2.addComponent(cbproduct);
+		flColumn2.addComponent(cbProduct);
 		flColumn2.addComponent(tfProduct);
 		flColumn2.addComponent(tfTargetSize);
 		//
@@ -371,7 +371,7 @@ public class Campaign extends BaseUI {
 		flColumn4.setComponentAlignment(hlActROI, Alignment.TOP_LEFT);
 		//
 		flColumn4.addComponent(taComments);
-		flColumn4.addComponent(cbstatus);
+		flColumn4.addComponent(cbStatus);
 		hlInput.setMargin(true);
 		VerticalLayout hlUserInput = new VerticalLayout();
 		hlInput.setWidth("1200");
@@ -395,9 +395,9 @@ public class Campaign extends BaseUI {
 	}
 	
 	private void hluserInputReadonlyTrue() {
-		tfcampaign.setReadOnly(true);
-		dtCampaignStart.setReadOnly(true);
-		dtCampaignStart.setReadOnly(true);
+		tfCampaignName.setReadOnly(true);
+		dfCampaignStart.setReadOnly(true);
+		dfCampaignStart.setReadOnly(true);
 		cbEmployee.setReadOnly(true);
 		cbCampaignType.setReadOnly(true);
 		tfTagetAudieance.setReadOnly(true);
@@ -415,21 +415,21 @@ public class Campaign extends BaseUI {
 		tfActSalesCount.setReadOnly(true);
 		taComments.setReadOnly(true);
 		tfActResponseCount.setReadOnly(true);
-		cbproduct.setReadOnly(true);
-		cbstatus.setReadOnly(true);
+		cbProduct.setReadOnly(true);
+		cbStatus.setReadOnly(true);
 		cbAction.setReadOnly(true);
 		cbReview.setReadOnly(true);
 	}
 	
 	private void hluserInputReadonlyFalse() {
-		tfcampaign.setReadOnly(false);
-		dtCampaignStart.setReadOnly(false);
-		dtCampaignEnd.setReadOnly(false);
+		tfCampaignName.setReadOnly(false);
+		dfCampaignStart.setReadOnly(false);
+		dfCampaignEnd.setReadOnly(false);
 		cbEmployee.setReadOnly(false);
 		cbCampaignType.setReadOnly(false);
 		tfTagetAudieance.setReadOnly(false);
 		cbCurrencyName.setReadOnly(false);
-		cbproduct.setReadOnly(false);
+		cbProduct.setReadOnly(false);
 		tfProduct.setReadOnly(false);
 		tfTargetSize.setReadOnly(false);
 		tfExptdBudget.setReadOnly(false);
@@ -443,8 +443,8 @@ public class Campaign extends BaseUI {
 		taComments.setReadOnly(false);
 		tfActSalesCount.setReadOnly(false);
 		tfActResponseCount.setReadOnly(false);
-		cbproduct.setReadOnly(false);
-		cbstatus.setReadOnly(false);
+		cbProduct.setReadOnly(false);
+		cbStatus.setReadOnly(false);
 		cbAction.setReadOnly(false);
 		cbReview.setReadOnly(false);
 	}
@@ -454,8 +454,8 @@ public class Campaign extends BaseUI {
 			tblMstScrSrchRslt.removeAllItems();
 			List<CampaignDM> listCampaign = new ArrayList<CampaignDM>();
 			listCampaign = serviceCampaign.getCampaignDetailList(companyId, null, null,
-					(String) cbCampaignType.getValue(), (String) tfProduct.getValue(), (String) tfcampaign.getValue(),
-					null, ((String) cbstatus.getValue()), "F");
+					(String) cbCampaignType.getValue(), (String) tfProduct.getValue(), (String) tfCampaignName.getValue(),
+					null, ((String) cbStatus.getValue()), "F");
 			recordCnt = listCampaign.size();
 			beanCampaign = new BeanItemContainer<CampaignDM>(CampaignDM.class);
 			beanCampaign.addAll(listCampaign);
@@ -516,22 +516,22 @@ public class Campaign extends BaseUI {
 				if (campaignDM.getExptdBudget() != null && !"null".equals(campaignDM.getExptdBudget())) {
 					tfExptdBudget.setValue(campaignDM.getExptdBudget().toString());
 				}
-				dtCampaignStart.setValue(campaignDM.getCampaignStartDateInt());
-				dtCampaignEnd.setValue(campaignDM.getCampaignEndDateInt());
-				tfcampaign.setValue(campaignDM.getCampaignname());
+				dfCampaignStart.setValue(campaignDM.getCampaignStartDateInt());
+				dfCampaignEnd.setValue(campaignDM.getCampaignEndDateInt());
+				tfCampaignName.setValue(campaignDM.getCampaignname());
 				tfProduct.setValue(campaignDM.getProductId().toString());
 				cbCurrencyName.setValue(campaignDM.getCcyid());
 				cbCampaignType.setValue(campaignDM.getCampaignType().toString());
-				cbproduct.setValue(campaignDM.getProductId());
+				cbProduct.setValue(campaignDM.getProductId());
 				Long prodid = campaignDM.getProductId();
-				Collection<?> prodids = cbproduct.getItemIds();
+				Collection<?> prodids = cbProduct.getItemIds();
 				for (Iterator<?> iteratorclient = prodids.iterator(); iteratorclient.hasNext();) {
 					Object itemIdClient = (Object) iteratorclient.next();
-					BeanItem<?> itemclient = (BeanItem<?>) cbproduct.getItem(itemIdClient);
+					BeanItem<?> itemclient = (BeanItem<?>) cbProduct.getItem(itemIdClient);
 					// Get the actual bean and use the data
 					ProductDM prodObj = (ProductDM) itemclient.getBean();
 					if (prodid != null && prodid.equals(prodObj.getProdid())) {
-						cbproduct.setValue(itemIdClient);
+						cbProduct.setValue(itemIdClient);
 					}
 				}
 				Collection<?> collEmp = cbReview.getItemIds();
@@ -570,8 +570,8 @@ public class Campaign extends BaseUI {
 				if (campaignDM.getComments() != null && !"null".equals(campaignDM.getComments())) {
 					taComments.setValue(campaignDM.getComments());
 				}
-				cbstatus.setValue(campaignDM.getStatus());
-				if (cbstatus.getValue().equals("Approved") || cbstatus.getValue().equals("Closed")) {
+				cbStatus.setValue(campaignDM.getStatus());
+				if (cbStatus.getValue().equals("Approved") || cbStatus.getValue().equals("Closed")) {
 					hluserInputReadonlyTrue();
 				}
 				comment = new Comments(vlCommetTblLayout, employeeid, null, null, null, null, campaingnId, null);
@@ -593,7 +593,7 @@ public class Campaign extends BaseUI {
 			for (CompanyDM company : companyList) {
 				getCcyid = company.getCcyid();
 			}
-			List<CurrencyDM> getCurrencylist = servicebeanCurrency.getCurrencyList(getCcyid, null, null, "Active", "F");
+			List<CurrencyDM> getCurrencylist = serviceCurrency.getCurrencyList(getCcyid, null, null, "Active", "F");
 			for (CurrencyDM currency : getCurrencylist) {
 				currencysymbol = currency.getCcysymbol();
 			}
@@ -630,7 +630,7 @@ public class Campaign extends BaseUI {
 			BeanItemContainer<ProductDM> beanproduct = new BeanItemContainer<ProductDM>(ProductDM.class);
 			beanproduct.addAll(serviceProduct
 					.getProductList(companyId, null, null, prodName, "Active", null, null, "P"));
-			cbproduct.setContainerDataSource(beanproduct);
+			cbProduct.setContainerDataSource(beanproduct);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -660,7 +660,7 @@ public class Campaign extends BaseUI {
 			BeanContainer<String, CompanyLookupDM> beanCompLookUp = new BeanContainer<String, CompanyLookupDM>(
 					CompanyLookupDM.class);
 			beanCompLookUp.setBeanIdProperty("lookupname");
-			beanCompLookUp.addAll(servicecompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
+			beanCompLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active",
 					"CM_CAMPTYE"));
 			cbCampaignType.setContainerDataSource(beanCompLookUp);
 		}
@@ -689,7 +689,7 @@ public class Campaign extends BaseUI {
 				+ "Resetting search fields and reloading the result");
 		// reset the field valued to default
 		resetFields();
-		cbstatus.setValue(null);
+		cbStatus.setValue(null);
 		loadSrchRslt();
 	}
 	
@@ -721,25 +721,25 @@ public class Campaign extends BaseUI {
 		boolean errorflag = false;
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Validating Data ");
 		tfProduct.setComponentError(null);
-		if ((tfcampaign.getValue() == null) || tfcampaign.getValue().trim().length() == 0) {
-			tfcampaign.setComponentError(new UserError(GERPErrorCodes.NULL_CAMPAIGN_NAME));
+		if ((tfCampaignName.getValue() == null) || tfCampaignName.getValue().trim().length() == 0) {
+			tfCampaignName.setComponentError(new UserError(GERPErrorCodes.NULL_CAMPAIGN_NAME));
 			errorflag = true;
 		} else {
-			tfcampaign.setComponentError(null);
+			tfCampaignName.setComponentError(null);
 		}
-		if (dtCampaignStart.getValue() == null) {
-			dtCampaignStart.setComponentError(new UserError(GERPErrorCodes.NULL_CAMPAIGN_DATE));
+		if (dfCampaignStart.getValue() == null) {
+			dfCampaignStart.setComponentError(new UserError(GERPErrorCodes.NULL_CAMPAIGN_DATE));
 			errorflag = true;
 		} else {
-			dtCampaignStart.setComponentError(null);
+			dfCampaignStart.setComponentError(null);
 		}
-		if ((dtCampaignEnd.getValue() != null) || (dtCampaignEnd.getValue() != null)) {
-			if (dtCampaignStart.getValue().after(dtCampaignEnd.getValue())) {
-				dtCampaignEnd.setComponentError(new UserError(GERPErrorCodes.CRM_DATE_OUTOFRANGE));
+		if ((dfCampaignEnd.getValue() != null) || (dfCampaignEnd.getValue() != null)) {
+			if (dfCampaignStart.getValue().after(dfCampaignEnd.getValue())) {
+				dfCampaignEnd.setComponentError(new UserError(GERPErrorCodes.CRM_DATE_OUTOFRANGE));
 				errorflag = true;
 			}
 		} else {
-			dtCampaignEnd.setComponentError(null);
+			dfCampaignEnd.setComponentError(null);
 		}
 		if (cbCampaignType.getValue() == null) {
 			cbCampaignType.setComponentError(new UserError(GERPErrorCodes.NULL_CAMPAIGN_TYPE));
@@ -747,7 +747,7 @@ public class Campaign extends BaseUI {
 		}
 		if (errorflag) {
 			logger.warn("Company ID : " + companyId + " | User Name :  "
-					+ "Throwing ValidationException. User data is > " + tfProduct.getValue() + tfcampaign.getValue());
+					+ "Throwing ValidationException. User data is > " + tfProduct.getValue() + tfCampaignName.getValue());
 			throw new ERPException.ValidationException();
 		}
 	}
@@ -763,8 +763,8 @@ public class Campaign extends BaseUI {
 			if (cbEmployee.getValue() != null) {
 				campaignDM.setCampaignOwner((Long) cbEmployee.getValue());
 			}
-			campaignDM.setCampaignStartDate(dtCampaignStart.getValue());
-			campaignDM.setCampaignEndDate(dtCampaignEnd.getValue());
+			campaignDM.setCampaignStartDate(dfCampaignStart.getValue());
+			campaignDM.setCampaignEndDate(dfCampaignEnd.getValue());
 			if (cbCurrencyName.getValue() != null) {
 				campaignDM.setCcyid((Long) cbCurrencyName.getValue());
 			}
@@ -804,14 +804,14 @@ public class Campaign extends BaseUI {
 			if (tfExpSalesCount.getValue() != null && tfExpSalesCount.getValue().trim().length() > 0) {
 				campaignDM.setExptdSalesCount(Long.valueOf(tfExpSalesCount.getValue()));
 			}
-			if (cbproduct.getValue() != null) {
-				campaignDM.setProductId(((ProductDM) cbproduct.getValue()).getProdid());
+			if (cbProduct.getValue() != null) {
+				campaignDM.setProductId(((ProductDM) cbProduct.getValue()).getProdid());
 			}
 			campaignDM.setProductName(tfProduct.getValue());
-			if (cbstatus.getValue() != null) {
-				campaignDM.setStatus(cbstatus.getValue().toString());
+			if (cbStatus.getValue() != null) {
+				campaignDM.setStatus(cbStatus.getValue().toString());
 			}
-			campaignDM.setCampaignname(tfcampaign.getValue());
+			campaignDM.setCampaignname(tfCampaignName.getValue());
 			campaignDM.setCompanyId(companyId);
 			campaignDM.setLastUpdatedBy(userName);
 			campaignDM.setLastUpdatedDt(DateUtils.getcurrentdate());
@@ -852,7 +852,7 @@ public class Campaign extends BaseUI {
 	protected void cancelDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Canceling action ");
 		hlCmdBtnLayout.setVisible(true);
-		tfcampaign.setRequired(false);
+		tfCampaignName.setRequired(false);
 		hluserInputReadonlyFalse();
 		hlUserIPContainer.removeAllComponents();
 		assembleSearchLayout();
@@ -865,8 +865,8 @@ public class Campaign extends BaseUI {
 	
 	@Override
 	protected void resetFields() {
-		tfcampaign.setValue("");
-		tfcampaign.setComponentError(null);
+		tfCampaignName.setValue("");
+		tfCampaignName.setComponentError(null);
 		tfActResponseCount.setValue("");
 		tfActRoi.setValue("0");
 		tfActSalesCount.setValue("");
@@ -886,15 +886,15 @@ public class Campaign extends BaseUI {
 		cbReview.setValue(null);
 		cbAction.setValue(null);
 		cbEmployee.setValue(null);
-		cbproduct.setValue(null);
-		cbproduct.setComponentError(null);
-		dtCampaignStart.setValue(null);
-		dtCampaignEnd.setValue(null);
+		cbProduct.setValue(null);
+		cbProduct.setComponentError(null);
+		dfCampaignStart.setValue(null);
+		dfCampaignEnd.setValue(null);
 		searchCampaignDt.setValue(null);
 		cbCurrencyName.setValue(cbCurrencyName.getItemIds().iterator().next());
 		cbCampaignType.setValue(null);
 		cbCampaignType.setComponentError(null);
-		cbstatus.setValue(null);
+		cbStatus.setValue(null);
 		tfTagetAudieance.setValue("");
 		tfTargetSize.setValue("");
 	}

@@ -819,7 +819,7 @@ public class Login extends UI implements ItemClickListener, MouseEvents.ClickLis
 		return now.getTime();
 	}
 	
-	public static long daysBetween(Calendar startDate, Calendar endDate) {
+	private long daysBetween(Calendar startDate, Calendar endDate) {
 		Calendar date = (Calendar) startDate.clone();
 		long daysBetween = 0;
 		while (date.before(endDate)) {

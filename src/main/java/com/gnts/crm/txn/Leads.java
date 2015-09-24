@@ -96,8 +96,8 @@ public class Leads extends BaseUI {
 	 */
 	private TextField tfFirstName, tfLastName, tfDesignation, tfCompanyName, tfNoOfEmp, tfPostalCode, tfWebsite,
 			tfEmailId, tfPhoneNo, tfRevenue;
-	private TextArea taAddress, taremarks;
-	private ComboBox cbCampaign, cbClientCat, cbLeadStatus, cbCity, cbState, cbCountry, cbcurrency, cblead;
+	private TextArea taAddress, taRemarks;
+	private ComboBox cbCampaign, cbClientCat, cbLeadStatus, cbCity, cbState, cbCountry, cbCurrency, cbLead;
 	private int recordCnt = 0;
 	private BeanItemContainer<LeadsDM> beanLead = null;
 	// Declare local variables
@@ -145,11 +145,11 @@ public class Leads extends BaseUI {
 		});
 		tfLastName = new GERPTextField("Last Name");
 		tfLastName.setValue("");
-		cblead = new GERPComboBox("LeadSource");
+		cbLead = new GERPComboBox("LeadSource");
 		loadLookUpList();
 		// Remarks textArea
-		taremarks = new GERPTextArea("Remarks");
-		taremarks.setMaxLength(100);
+		taRemarks = new GERPTextArea("Remarks");
+		taRemarks.setMaxLength(100);
 		// Designation text field
 		tfDesignation = new GERPTextField("Designation");
 		tfDesignation.setMaxLength(30);
@@ -260,9 +260,9 @@ public class Leads extends BaseUI {
 		cbCity.setNullSelectionAllowed(false);
 		cbCity.setWidth(strWidth);
 		loadCityList();
-		cbcurrency = new GERPComboBox("Currency Name");
-		cbcurrency.setItemCaptionPropertyId("ccyname");
-		cbcurrency.setWidth(strWidth);
+		cbCurrency = new GERPComboBox("Currency Name");
+		cbCurrency.setItemCaptionPropertyId("ccyname");
+		cbCurrency.setWidth(strWidth);
 		loadCurrencyList();
 		// build search layout
 		hlSearchLayout = new GERPAddEditHLayout();
@@ -320,11 +320,11 @@ public class Leads extends BaseUI {
 		flColumn3.addComponent(cbState);
 		flColumn3.addComponent(cbCity);
 		flColumn3.addComponent(tfPostalCode);
-		flColumn3.addComponent(cblead);
+		flColumn3.addComponent(cbLead);
 		flColumn3.addComponent(tfRevenue);
-		flColumn4.addComponent(cbcurrency);
+		flColumn4.addComponent(cbCurrency);
 		flColumn4.addComponent(cbClientCat);
-		flColumn4.addComponent(taremarks);
+		flColumn4.addComponent(taRemarks);
 		flColumn4.addComponent(cbLeadStatus);
 		HorizontalLayout hlInput = new HorizontalLayout();
 		hlInput.setMargin(true);
@@ -367,7 +367,7 @@ public class Leads extends BaseUI {
 			BeanContainer<Long, CurrencyDM> beancurency = new BeanContainer<Long, CurrencyDM>(CurrencyDM.class);
 			beancurency.setBeanIdProperty("ccyid");
 			beancurency.addAll(serviceCurrencey.getCurrencyList(null, null, null, "Active", "P"));
-			cbcurrency.setContainerDataSource(beancurency);
+			cbCurrency.setContainerDataSource(beancurency);
 		}
 		catch (Exception e) {
 			logger.info("Loading null values in loadCurrencyList() function------>>>>" + e);
@@ -381,7 +381,7 @@ public class Leads extends BaseUI {
 			beanCompanylookup.setBeanIdProperty("lookupname");
 			beanCompanylookup.addAll(serviceCompany.getCompanyLookUpByLookUp(companyid, moduleId, "Active",
 					"CM_LEADSRC"));
-			cblead.setContainerDataSource(beanCompanylookup);
+			cbLead.setContainerDataSource(beanCompanylookup);
 		}
 		catch (Exception e) {
 			logger.info("load company look up details" + e);
@@ -498,7 +498,7 @@ public class Leads extends BaseUI {
 				tfCompanyName.setValue(leadsDM.getCompanyName());
 				tfFirstName.setValue(leadsDM.getFirstName());
 				taAddress.setValue(leadsDM.getAddress());
-				taremarks.setValue(leadsDM.getRemarks());
+				taRemarks.setValue(leadsDM.getRemarks());
 				tfLastName.setValue(leadsDM.getLastName());
 				tfDesignation.setValue(leadsDM.getDesignation());
 				if (leadsDM.getNoOfEmployees() != null && !"null".equals(leadsDM.getNoOfEmployees())) {
@@ -506,13 +506,13 @@ public class Leads extends BaseUI {
 				}
 				tfPhoneNo.setValue(leadsDM.getPhoneNo());
 				tfPostalCode.setValue(leadsDM.getPostalCode());
-				cblead.setValue(leadsDM.getLeadSource());
+				cbLead.setValue(leadsDM.getLeadSource());
 				tfEmailId.setValue(leadsDM.getEmailId());
 				if (leadsDM.getRevenue() != null) {
 					tfRevenue.setValue(leadsDM.getRevenue().toString());
 				}
 				tfWebsite.setValue(leadsDM.getWebsite());
-				cbcurrency.setValue(leadsDM.getCcyId());
+				cbCurrency.setValue(leadsDM.getCcyId());
 				cbClientCat.setValue(leadsDM.getClientCatId());
 				cbCampaign.setValue(leadsDM.getCompaignId());
 				cbCountry.setValue((leadsDM.getCountryId()));
@@ -636,11 +636,11 @@ public class Leads extends BaseUI {
 			if (tfNoOfEmp.getValue().toString().trim().length() > 0) {
 				leadsDM.setNoOfEmployees(Long.valueOf(tfNoOfEmp.getValue()));
 			}
-			leadsDM.setRemarks(taremarks.getValue());
+			leadsDM.setRemarks(taRemarks.getValue());
 			leadsDM.setAddress(taAddress.getValue());
 			leadsDM.setPhoneNo(tfPhoneNo.getValue());
 			leadsDM.setPostalCode(tfPostalCode.getValue());
-			leadsDM.setLeadSource((String) cblead.getValue());
+			leadsDM.setLeadSource((String) cbLead.getValue());
 			leadsDM.setPhoneNo(leadsDM.getPhoneNo());
 			if (tfRevenue.getValue() != null) {
 				leadsDM.setRevenue(Long.valueOf(tfRevenue.getValue()));
@@ -651,8 +651,8 @@ public class Leads extends BaseUI {
 			if (cbCountry.getValue() != null) {
 				leadsDM.setCountryId((Long) cbCountry.getValue());
 			}
-			if (cbcurrency.getValue() != null) {
-				leadsDM.setCcyId((Long) cbcurrency.getValue());
+			if (cbCurrency.getValue() != null) {
+				leadsDM.setCcyId((Long) cbCurrency.getValue());
 			}
 			logger.info(" (Long) cbCountryName.getValue() is > " + cbCountry.getValue());
 			if (cbState.getValue() != null) {
@@ -708,8 +708,8 @@ public class Leads extends BaseUI {
 		tfFirstName.setComponentError(null);
 		tfCompanyName.setValue("");
 		tfCompanyName.setComponentError(null);
-		cblead.setValue(null);
-		taremarks.setValue("");
+		cbLead.setValue(null);
+		taRemarks.setValue("");
 		tfLastName.setValue("");
 		tfRevenue.setValue("");
 		tfDesignation.setValue("");
@@ -729,7 +729,7 @@ public class Leads extends BaseUI {
 		cbCity.setValue(null);
 		cbCampaign.setValue(null);
 		cbClientCat.setValue(null);
-		cbcurrency.setValue(null);
+		cbCurrency.setValue(null);
 		cbLeadStatus.setValue(null);
 		cbCountry.setValue(cbCountry.getItemIds().iterator().next());
 	}

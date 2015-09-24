@@ -331,7 +331,6 @@ public class JobCandidate extends BaseUI {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				JobCandidateDM jobCandidateDM = beanJobCandidateDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				if (jobCandidateDM.getJobtitle() != null) {
-					System.out.println("------------->"+jobCandidateDM.getJobtitle().toString());
 					cbJobtitle.setValue(jobCandidateDM.getJobtitle());
 				}
 				if ((jobCandidateDM.getFirstName() != null)) {

@@ -18,8 +18,6 @@
  */
 package com.gnts.hcm.txn;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +45,6 @@ import com.gnts.hcm.service.txn.OrgPoliciesService;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
-import com.vaadin.server.VaadinService;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -74,7 +71,6 @@ public class OrgPolicies extends BaseUI {
 	private VerticalLayout vlDocument;
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
-	private String basepath1, basepath;
 	private String userName;
 	private Long companyId, moduleId;
 	private int recordCnt = 0;
@@ -85,15 +81,13 @@ public class OrgPolicies extends BaseUI {
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		moduleId = Long.valueOf(UI.getCurrent().getSession().getAttribute("moduleId").toString());
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > "
-				+ "Inside Material() constructor");
+				+ "Inside OrgPolicies () constructor");
 		buildView();
 	}
 	
 	private void buildView() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Painting OrgPolicies UI");
 		// OrgPolicies Components Definition
-		basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-		basepath1 = basepath + "/VAADIN/themes/gerp/img/Document.pdf";
 		tfPolicyName = new GERPTextField("Policy Name");
 		tfPolicyName.setWidth("200");
 		cbPolicyGroup = new GERPComboBox("Policy Group");
@@ -282,12 +276,12 @@ public class OrgPolicies extends BaseUI {
 				if ((orgPoliciesDM.getPolicystatus()) != null) {
 					cbPolicyStatus.setValue(orgPoliciesDM.getPolicystatus());
 				}
-				if (orgPoliciesDM.getPolicydoc() != null) {
-					byte[] certificate = orgPoliciesDM.getPolicydoc();
-					UploadDocumentUI test = new UploadDocumentUI(vlDocument);
-					test.displaycertificate(certificate);
-				} else {
-					new UploadDocumentUI(vlDocument);
+				UploadDocumentUI documentUI = new UploadDocumentUI(vlDocument);
+				try {
+					documentUI.displaycertificate(orgPoliciesDM.getPolicydoc());
+				}
+				catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -331,12 +325,18 @@ public class OrgPolicies extends BaseUI {
 		if (cbPolicyStatus.getValue() != null) {
 			orgPoliciesDM.setPolicystatus((String) cbPolicyStatus.getValue());
 		}
-		File file = new File(basepath1);
-		FileInputStream fin = new FileInputStream(file);
-		byte fileContent[] = new byte[(int) file.length()];
-		fin.read(fileContent);
-		fin.close();
-		orgPoliciesDM.setPolicydoc(fileContent);
+		Boolean isDocUploaded = false;
+		try {
+			isDocUploaded = (Boolean) UI.getCurrent().getSession().getAttribute("IS_DOC_UPLOAD");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (isDocUploaded) {
+			byte[] uploadedDoc = (byte[]) UI.getCurrent().getSession().getAttribute("UPLOAD_FILE_BYTE");
+			System.out.println(uploadedDoc);
+			orgPoliciesDM.setPolicydoc(uploadedDoc);
+		}
 		orgPoliciesDM.setLastupdateddt(DateUtils.getcurrentdate());
 		orgPoliciesDM.setLastupdatedby(userName);
 		serviceOrgPolicies.saveorUpdateOrgPoliciesDetails(orgPoliciesDM);

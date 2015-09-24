@@ -80,11 +80,11 @@ public class ClientContacts extends BaseUI {
 	/**
 	 * UI Components
 	 */
-	private TextField tfContactName, tfDesignation, tftechperson, tfcommercialper, tfPhoneNo, tfMobileno, tfEmailId,
+	private TextField tfContactName, tfDesignation, tfTechPerson, tfCommPerson, tfPhoneNo, tfMobileno, tfEmailId,
 			tfCityname, tfCountry;
 	private ComboBox cbClient, cbStatus, cbClienSalut;
 	private BeanItemContainer<ClientsContactsDM> beanclntcontact = null;
-	private OptionGroup ogpersontype = new OptionGroup("");
+	private OptionGroup ogPersonType = new OptionGroup("");
 	private Long clientId, moduleId, clntContactId, employeeid;
 	private int recordCnt = 0;
 	private Logger logger = Logger.getLogger(ClientContacts.class);
@@ -102,8 +102,8 @@ public class ClientContacts extends BaseUI {
 	}
 	
 	private void buildview() {
-		ogpersontype.addItems("Technical Person", "Commercial Person");
-		ogpersontype.setValue("Technical Person");
+		ogPersonType.addItems("Technical Person", "Commercial Person");
+		ogPersonType.setValue("Technical Person");
 		tfContactName = new GERPTextField("Contact person");
 		tfContactName.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
@@ -119,10 +119,10 @@ public class ClientContacts extends BaseUI {
 		tfContactName.setWidth(strWidth);
 		tfDesignation = new GERPTextField("Designation");
 		tfDesignation.setWidth(strWidth);
-		tftechperson = new GERPTextField("Technical Person");
-		tftechperson.setWidth(strWidth);
-		tfcommercialper = new GERPTextField("Commercial Person");
-		tfcommercialper.setWidth(strWidth);
+		tfTechPerson = new GERPTextField("Technical Person");
+		tfTechPerson.setWidth(strWidth);
+		tfCommPerson = new GERPTextField("Commercial Person");
+		tfCommPerson.setWidth(strWidth);
 		tfDesignation.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -290,7 +290,7 @@ public class ClientContacts extends BaseUI {
 		formLayout1.addComponent(tfContactName);
 		tfContactName.setRequired(true);
 		formLayout1.addComponent(tfDesignation);
-		formLayout1.addComponent(ogpersontype);
+		formLayout1.addComponent(ogPersonType);
 		formLayout1.addComponent(cbClient);
 		formLayout1.addComponent(tfCityname);
 		formLayout1.addComponent(tfCountry);
@@ -351,7 +351,7 @@ public class ClientContacts extends BaseUI {
 				tfContactName.setValue(clientsContactsDM.getContactName());
 				tfDesignation.setValue(clientsContactsDM.getDesignation());
 				if (clientsContactsDM.getTechPerson() != null) {
-					ogpersontype.setValue(clientsContactsDM.getTechPerson());
+					ogPersonType.setValue(clientsContactsDM.getTechPerson());
 				}
 				cbClient.setValue(clientsContactsDM.getClientId());
 				cbClienSalut.setValue(clientsContactsDM.getContactSalut());
@@ -462,8 +462,8 @@ public class ClientContacts extends BaseUI {
 			}
 			contactobj.setContactName(tfContactName.getValue());
 			contactobj.setDesignation(tfDesignation.getValue());
-			if (ogpersontype.getValue() != null) {
-				contactobj.setTechPerson(ogpersontype.getValue().toString());
+			if (ogPersonType.getValue() != null) {
+				contactobj.setTechPerson(ogPersonType.getValue().toString());
 			}
 			if (cbClient.getValue() != null) {
 				contactobj.setClientId((Long) cbClient.getValue());
@@ -530,8 +530,8 @@ public class ClientContacts extends BaseUI {
 		tfContactName.setComponentError(null);
 		tfDesignation.setValue("");
 		tfDesignation.setComponentError(null);
-		tftechperson.setValue("");
-		tfcommercialper.setComponentError(null);
+		tfTechPerson.setValue("");
+		tfCommPerson.setComponentError(null);
 		cbClient.setValue(null);
 		cbClient.setRequired(false);
 		cbClienSalut.setValue(null);
@@ -542,7 +542,7 @@ public class ClientContacts extends BaseUI {
 		tfPhoneNo.setValue("");
 		tfPhoneNo.setComponentError(null);
 		hllayoutimage.removeAllComponents();
-		ogpersontype.setValue("Technical Person");
+		ogPersonType.setValue("Technical Person");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		UI.getCurrent().getSession().setAttribute("isFileUploaded", false);
 	}

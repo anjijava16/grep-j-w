@@ -150,14 +150,14 @@ public class ClientSubCategory extends BaseUI {
 	private void loadSrchRslt() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Search...");
-			List<ClientSubCategoryDM> subCatList = new ArrayList<ClientSubCategoryDM>();
+			List<ClientSubCategoryDM> list = new ArrayList<ClientSubCategoryDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfSubCateName.getValue() + ", " + (String) cbClntSubcatStatus.getValue());
-			subCatList = serviceClientSubCategory.getClientSubCategoryList(companyid, null, tfSubCateName.getValue(),
+			list = serviceClientSubCategory.getClientSubCategoryList(companyid, null, tfSubCateName.getValue(),
 					(String) cbClntSubcatStatus.getValue(), (Long) cbClientCat.getValue(), "P");
-			recordCnt = subCatList.size();
+			recordCnt = list.size();
 			beanSubCategoryDM = new BeanItemContainer<ClientSubCategoryDM>(ClientSubCategoryDM.class);
-			beanSubCategoryDM.addAll(subCatList);
+			beanSubCategoryDM.addAll(list);
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the ClientSubCategory. result set");
 			tblMstScrSrchRslt.setContainerDataSource(beanSubCategoryDM);

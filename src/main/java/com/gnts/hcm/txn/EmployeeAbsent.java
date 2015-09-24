@@ -66,10 +66,10 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 	// Declaration for add and edit panel components
 	private CheckBox cbAbsentlwpmark;
 	private PopupDateField dfAbsentdate;
-	private GERPTimeField tfAbsentstarthours, tfAbsentendhours;
-	private TextField tfAbsenttotalhours;
-	private TextArea taAbsentremarks;
-	private ComboBox cbAbsentstatus;
+	private GERPTimeField tfAbsentStartHours, tfAbsentEndHours;
+	private TextField tfAbsentTotalHours;
+	private TextArea taAbsentRemarks;
+	private ComboBox cbAbsentStatus;
 	// for Search
 	private Button btnSearch, btnReset;
 	// Declaration for add and edit panel
@@ -111,11 +111,11 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 		dfAbsentdate.setDateFormat("dd-MMM-yyyy");
 		dfAbsentdate.setRequired(true);
 		// Initialization for tfAbsentstarthours
-		tfAbsentstarthours = new GERPTimeField("Start Hours");
-		tfAbsentstarthours.setRequired(true);
+		tfAbsentStartHours = new GERPTimeField("Start Hours");
+		tfAbsentStartHours.setRequired(true);
 		// Initialization for tfAbsentendhours
-		tfAbsentendhours = new GERPTimeField("End Hours");
-		tfAbsentendhours.addValueChangeListener(new Property.ValueChangeListener() {
+		tfAbsentEndHours = new GERPTimeField("End Hours");
+		tfAbsentEndHours.addValueChangeListener(new Property.ValueChangeListener() {
 			/**
 			 * 
 			 */
@@ -123,30 +123,30 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 			
 			public void valueChange(ValueChangeEvent event) {
 				try {
-					tfAbsenttotalhours.setReadOnly(false);
-					tfAbsenttotalhours.setValue(timediff(tfAbsentstarthours.getHorsMunitesinLong(),
-							tfAbsentendhours.getHorsMunitesinLong()));
-					tfAbsenttotalhours.setReadOnly(true);
+					tfAbsentTotalHours.setReadOnly(false);
+					tfAbsentTotalHours.setValue(timediff(tfAbsentStartHours.getHorsMunitesinLong(),
+							tfAbsentEndHours.getHorsMunitesinLong()));
+					tfAbsentTotalHours.setReadOnly(true);
 				}
 				catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
-		tfAbsentendhours.setRequired(true);
+		tfAbsentEndHours.setRequired(true);
 		// Initialization for tfAbsenttotalhours
-		tfAbsenttotalhours = new GERPTextField("Total Hours");
-		tfAbsenttotalhours.setWidth("120");
-		tfAbsenttotalhours.setRequired(true);
+		tfAbsentTotalHours = new GERPTextField("Total Hours");
+		tfAbsentTotalHours.setWidth("120");
+		tfAbsentTotalHours.setRequired(true);
 		// Initialization for cbAbsentlwpmark
 		cbAbsentlwpmark = new CheckBox("LWP");
 		// Initialization for taAbsentremarks
-		taAbsentremarks = new GERPTextArea("Remarks");
-		taAbsentremarks.setWidth("170");
-		taAbsentremarks.setHeight("55");
+		taAbsentRemarks = new GERPTextArea("Remarks");
+		taAbsentRemarks.setWidth("170");
+		taAbsentRemarks.setHeight("55");
 		// Initialization for cbabsentstatus
-		cbAbsentstatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
-		cbAbsentstatus.setItemCaptionPropertyId("desc");
+		cbAbsentStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
+		cbAbsentStatus.setItemCaptionPropertyId("desc");
 		btnSearch = new Button("Search", this);
 		btnSearch.setStyleName("searchbt");
 		btnReset = new Button("Reset", this);
@@ -215,12 +215,12 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 		flColumn3 = new FormLayout();
 		flColumn4 = new FormLayout();
 		flColumn1.addComponent(dfAbsentdate);
-		flColumn1.addComponent(tfAbsenttotalhours);
-		flColumn2.addComponent(tfAbsentstarthours);
-		flColumn2.addComponent(tfAbsentendhours);
-		flColumn3.addComponent(taAbsentremarks);
+		flColumn1.addComponent(tfAbsentTotalHours);
+		flColumn2.addComponent(tfAbsentStartHours);
+		flColumn2.addComponent(tfAbsentEndHours);
+		flColumn3.addComponent(taAbsentRemarks);
 		flColumn4.addComponent(cbAbsentlwpmark);
-		flColumn4.addComponent(cbAbsentstatus);
+		flColumn4.addComponent(cbAbsentStatus);
 		HorizontalLayout hlInput = new HorizontalLayout();
 		hlInput.setSpacing(true);
 		hlInput.setMargin(true);
@@ -296,16 +296,16 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				EmployeeAbsentDM absent = beans.getItem(tblMstScrSrchRslt.getValue()).getBean();
 				dfAbsentdate.setValue(absent.getAbsentdte());
-				tfAbsentstarthours.setTime(absent.getStarthours());
-				tfAbsentendhours.setTime(absent.getEndhours());
-				tfAbsenttotalhours.setValue(absent.getTotalhours().toString());
+				tfAbsentStartHours.setTime(absent.getStarthours());
+				tfAbsentEndHours.setTime(absent.getEndhours());
+				tfAbsentTotalHours.setValue(absent.getTotalhours().toString());
 				if (absent.getLwpmark().equals("Y")) {
 					cbAbsentlwpmark.setValue(true);
 				} else {
 					cbAbsentlwpmark.setValue(false);
 				}
-				taAbsentremarks.setValue(absent.getAbsentremarks());
-				cbAbsentstatus.setValue(absent.getAbsentstatus());
+				taAbsentRemarks.setValue(absent.getAbsentremarks());
+				cbAbsentStatus.setValue(absent.getAbsentstatus());
 			}
 		}
 		catch (Exception e) {
@@ -324,25 +324,25 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 			if (dfAbsentdate.getValue() != null) {
 				saveAbsent.setAbsentdate(dfAbsentdate.getValue());
 			}
-			if (tfAbsentstarthours.getValue() != null) {
-				saveAbsent.setStarthours(tfAbsentstarthours.getHorsMunites());
+			if (tfAbsentStartHours.getValue() != null) {
+				saveAbsent.setStarthours(tfAbsentStartHours.getHorsMunites());
 			}
-			if (tfAbsentendhours.getValue() != null) {
-				saveAbsent.setEndhours(tfAbsentendhours.getHorsMunites());
+			if (tfAbsentEndHours.getValue() != null) {
+				saveAbsent.setEndhours(tfAbsentEndHours.getHorsMunites());
 			}
-			if (tfAbsenttotalhours.getValue() != null) {
-				saveAbsent.setTotalhours((new BigDecimal(tfAbsenttotalhours.getValue())));
+			if (tfAbsentTotalHours.getValue() != null) {
+				saveAbsent.setTotalhours((new BigDecimal(tfAbsentTotalHours.getValue())));
 			}
 			if (cbAbsentlwpmark.getValue() == null || cbAbsentlwpmark.getValue().equals(false)) {
 				saveAbsent.setLwpmark("N");
 			} else {
 				saveAbsent.setLwpmark("Y");
 			}
-			if (taAbsentremarks.getValue() != null) {
-				saveAbsent.setAbsentremarks(taAbsentremarks.getValue());
+			if (taAbsentRemarks.getValue() != null) {
+				saveAbsent.setAbsentremarks(taAbsentRemarks.getValue());
 			}
-			if (cbAbsentstatus.getValue() != null) {
-				saveAbsent.setAbsentstatus(cbAbsentstatus.getValue().toString());
+			if (cbAbsentStatus.getValue() != null) {
+				saveAbsent.setAbsentstatus(cbAbsentStatus.getValue().toString());
 			}
 			saveAbsent.setEmployeeid(employeeid);
 			saveAbsent.setLastupdatedby(username);
@@ -379,23 +379,23 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 				+ "Validating EmployeeAbsent Details.....");
 		boolean errorFlag = true;
 		dfAbsentdate.setComponentError(null);
-		tfAbsentstarthours.setComponentError(null);
-		tfAbsentendhours.setComponentError(null);
-		tfAbsenttotalhours.setComponentError(null);
+		tfAbsentStartHours.setComponentError(null);
+		tfAbsentEndHours.setComponentError(null);
+		tfAbsentTotalHours.setComponentError(null);
 		if (dfAbsentdate.getValue() == null) {
 			dfAbsentdate.setComponentError(new UserError(GERPErrorCodes.NULL_ABST_ABDATE));
 			errorFlag = false;
 		}
-		if (tfAbsentstarthours.getValue() == null) {
-			tfAbsentstarthours.setComponentError(new UserError(GERPErrorCodes.NULL_ABST_STRHOUR));
+		if (tfAbsentStartHours.getValue() == null) {
+			tfAbsentStartHours.setComponentError(new UserError(GERPErrorCodes.NULL_ABST_STRHOUR));
 			errorFlag = false;
 		}
-		if (tfAbsentendhours.getValue() == null) {
-			tfAbsentendhours.setComponentError(new UserError(GERPErrorCodes.NULL_ABST_EDHOUR));
+		if (tfAbsentEndHours.getValue() == null) {
+			tfAbsentEndHours.setComponentError(new UserError(GERPErrorCodes.NULL_ABST_EDHOUR));
 			errorFlag = false;
 		}
-		if ((tfAbsenttotalhours.getValue() == null) || tfAbsenttotalhours.getValue().trim().length() == 0) {
-			tfAbsenttotalhours.setComponentError(new UserError(GERPErrorCodes.NULL_ABST_TOTHOUR));
+		if ((tfAbsentTotalHours.getValue() == null) || tfAbsentTotalHours.getValue().trim().length() == 0) {
+			tfAbsentTotalHours.setComponentError(new UserError(GERPErrorCodes.NULL_ABST_TOTHOUR));
 			errorFlag = false;
 		}
 		return errorFlag;
@@ -404,20 +404,20 @@ public class EmployeeAbsent extends VerticalLayout implements ClickListener {
 	public void resetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Reseting Fields.....");
 		dfAbsentdate.setValue(null);
-		tfAbsentstarthours.setValue(null);
-		tfAbsentendhours.setValue(null);
-		tfAbsenttotalhours.setReadOnly(false);
-		tfAbsenttotalhours.setValue(null);
-		tfAbsenttotalhours.setReadOnly(true);
+		tfAbsentStartHours.setValue(null);
+		tfAbsentEndHours.setValue(null);
+		tfAbsentTotalHours.setReadOnly(false);
+		tfAbsentTotalHours.setValue(null);
+		tfAbsentTotalHours.setReadOnly(true);
 		cbAbsentlwpmark.setValue(null);
-		taAbsentremarks.setValue("");
+		taAbsentRemarks.setValue("");
 		btnadd.setCaption("Add");
 		btnadd.setStyleName("add");
 		dfAbsentdate.setComponentError(null);
-		tfAbsentstarthours.setComponentError(null);
-		tfAbsentendhours.setComponentError(null);
-		tfAbsenttotalhours.setComponentError(null);
-		cbAbsentstatus.setValue(cbAbsentstatus.getItemIds().iterator().next());
+		tfAbsentStartHours.setComponentError(null);
+		tfAbsentEndHours.setComponentError(null);
+		tfAbsentTotalHours.setComponentError(null);
+		cbAbsentStatus.setValue(cbAbsentStatus.getItemIds().iterator().next());
 	}
 	
 	@Override

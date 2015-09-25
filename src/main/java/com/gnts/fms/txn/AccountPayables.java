@@ -70,7 +70,7 @@ public class AccountPayables extends BaseUI {
 	// Input Fields
 	private ComboBox cbBranchName = new GERPComboBox("Branch Name");
 	private PopupDateField dfEntryDate = new GERPPopupDateField("Entry Date");
-	private ComboBox cbAccountReference = new GERPComboBox("Account Ref.");
+	private ComboBox cbAccountRef = new GERPComboBox("Account Ref.");
 	private TextField tfBillNo = new GERPTextField("Bill Number");
 	private PopupDateField dfBillDate = new GERPPopupDateField("Bill Date");
 	private TextField tfInvoiceAmt = new GERPTextField("Invoice Amt.");
@@ -107,7 +107,7 @@ public class AccountPayables extends BaseUI {
 	private void buildView() {
 		cbBranchName.setItemCaptionPropertyId("branchName");
 		loadBranchList();
-		cbAccountReference.setItemCaptionPropertyId("accountname");
+		cbAccountRef.setItemCaptionPropertyId("accountname");
 		loadAccountTypeList();
 		cbStatus.setWidth("120");
 		hlSearchLayout = new GERPAddEditHLayout();
@@ -152,7 +152,7 @@ public class AccountPayables extends BaseUI {
 		flFormLayout1.setSpacing(true);
 		flFormLayout1.addComponent(cbBranchName);
 		flFormLayout1.addComponent(dfEntryDate);
-		flFormLayout1.addComponent(cbAccountReference);
+		flFormLayout1.addComponent(cbAccountRef);
 		flFormLayout2 = new FormLayout();
 		flFormLayout2.setSpacing(true);
 		flFormLayout2.addComponent(tfBillNo);
@@ -225,7 +225,7 @@ public class AccountPayables extends BaseUI {
 		try {
 			BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
 			bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
-			cbAccountReference.setContainerDataSource(bean);
+			cbAccountRef.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -247,16 +247,16 @@ public class AccountPayables extends BaseUI {
 				// For select account number
 				if (accountPayablesDM.getAccountId() != null) {
 					Long accid = accountPayablesDM.getAccountId();
-					Collection<?> accids = cbAccountReference.getItemIds();
+					Collection<?> accids = cbAccountRef.getItemIds();
 					for (Iterator<?> iterator = accids.iterator(); iterator.hasNext();) {
 						Object itemid = (Object) iterator.next();
-						BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemid);
+						BeanItem<?> item = (BeanItem<?>) cbAccountRef.getItem(itemid);
 						AccountsDM edit = (AccountsDM) item.getBean();
 						if (accid != null && accid.equals(edit.getAccountId())) {
-							cbAccountReference.setValue(itemid);
+							cbAccountRef.setValue(itemid);
 							break;
 						} else {
-							cbAccountReference.setValue(null);
+							cbAccountRef.setValue(null);
 						}
 					}
 				}
@@ -317,9 +317,9 @@ public class AccountPayables extends BaseUI {
 	@Override
 	protected void addDetails() {
 		logger.info("Company ID :" + companyId + " | User Name : " + loginUserName + " > " + "Adding new record...");
-		cbAccountReference.setComponentError(null);
+		cbAccountRef.setComponentError(null);
 		cbBranchName.setRequired(true);
-		cbAccountReference.setRequired(true);
+		cbAccountRef.setRequired(true);
 		// remove the components in the search layout and input controls in the same container
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
@@ -331,7 +331,7 @@ public class AccountPayables extends BaseUI {
 	protected void editDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Invoking Edit record ");
 		cbBranchName.setRequired(true);
-		cbAccountReference.setRequired(true);
+		cbAccountRef.setRequired(true);
 		// cbActionedBy.setRequired(true);
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
@@ -342,14 +342,14 @@ public class AccountPayables extends BaseUI {
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Validating Data ");
 		cbBranchName.setComponentError(null);
-		cbAccountReference.setComponentError(null);
+		cbAccountRef.setComponentError(null);
 		Boolean errorFlag = false;
 		if ((cbBranchName.getValue() == null)) {
 			cbBranchName.setComponentError(new UserError(GERPErrorCodes.BRANCH_NAME));
 			errorFlag = true;
 		}
-		if (cbAccountReference.getValue() == null) {
-			cbAccountReference.setComponentError(new UserError(GERPErrorCodes.NULL_FMS_ACCOUNT_REF));
+		if (cbAccountRef.getValue() == null) {
+			cbAccountRef.setComponentError(new UserError(GERPErrorCodes.NULL_FMS_ACCOUNT_REF));
 			errorFlag = true;
 		}
 		if (errorFlag) {
@@ -368,7 +368,7 @@ public class AccountPayables extends BaseUI {
 			accountPayablesDM.setCompanyId(companyId);
 			accountPayablesDM.setBranchId((Long) cbBranchName.getValue());
 			accountPayablesDM.setEntryDate(dfEntryDate.getValue());
-			accountPayablesDM.setAccountId(((AccountsDM) cbAccountReference.getValue()).getAccountId());
+			accountPayablesDM.setAccountId(((AccountsDM) cbAccountRef.getValue()).getAccountId());
 			accountPayablesDM.setBillNo(tfBillNo.getValue());
 			accountPayablesDM.setBillDate(dfBillDate.getValue());
 			BigDecimal transamount = new BigDecimal("0");
@@ -377,7 +377,7 @@ public class AccountPayables extends BaseUI {
 			if (tfInvoiceAmt.getValue() != null) {
 				try {
 					transamount = new BigDecimal(tfInvoiceAmt.getValue());
-					accountbalance = ((AccountsDM) cbAccountReference.getValue()).getCurrentBalance();
+					accountbalance = ((AccountsDM) cbAccountRef.getValue()).getCurrentBalance();
 				}
 				catch (Exception e) {
 				}
@@ -396,7 +396,7 @@ public class AccountPayables extends BaseUI {
 			accountPayablesDM.setLastUpadatedBy(loginUserName);
 			accountPayablesDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 			serviceAccountPayables.saveDetails(accountPayablesDM);
-			serviceAccountPayables.updateAccountBalance(((AccountsDM) cbAccountReference.getValue()).getAccountId(),
+			serviceAccountPayables.updateAccountBalance(((AccountsDM) cbAccountRef.getValue()).getAccountId(),
 					closebalance, null);
 			resetSearchDetails();
 			resetFields();
@@ -433,7 +433,7 @@ public class AccountPayables extends BaseUI {
 		// reset the field valued to default
 		cbBranchName.setValue(null);
 		dfEntryDate.setValue(new Date());
-		cbAccountReference.setValue(null);
+		cbAccountRef.setValue(null);
 		tfBillNo.setValue("");
 		dfBillDate.setValue(null);
 		tfInvoiceAmt.setValue("0");

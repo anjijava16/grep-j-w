@@ -355,7 +355,7 @@ public class ProductReturnHdr extends BaseUI {
 					SmsInvoiceHdrDM.class);
 			beaninvoiece.setBeanIdProperty("invoiceId");
 			beaninvoiece.addAll(serviceInvoiceHdr.getSmsInvoiceHeaderList(null, null, null, null, null, null,
-					companyid, "P"));
+					companyid,null, "P"));
 			cbInvoice.setContainerDataSource(beaninvoiece);
 		}
 		catch (Exception e) {

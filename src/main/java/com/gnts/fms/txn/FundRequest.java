@@ -67,7 +67,7 @@ public class FundRequest extends BaseUI {
 	private AccountsService serviceAccounttype = (AccountsService) SpringContextHelper.getBean("accounts");
 	// Input Fields
 	private PopupDateField dfFundReqDt = new GERPPopupDateField("Fund Req. Date");
-	private ComboBox cbAccountReference = new GERPComboBox("Account Ref.");
+	private ComboBox cbAccountRef = new GERPComboBox("Account Ref.");
 	private ComboBox cbBranchName = new GERPComboBox("Branch Name");
 	private TextField tfReqAmt = new GERPTextField("Request Amt.");
 	private TextField tfReqDtl = new GERPTextField("Request Dtls.");
@@ -101,7 +101,7 @@ public class FundRequest extends BaseUI {
 	private void buildView() {
 		cbBranchName.setItemCaptionPropertyId("branchName");
 		loadBranchList();
-		cbAccountReference.setItemCaptionPropertyId("accountname");
+		cbAccountRef.setItemCaptionPropertyId("accountname");
 		loadAccountTypeList();
 		cbStatus.setWidth("120");
 		hlSearchLayout = new GERPAddEditHLayout();
@@ -146,7 +146,7 @@ public class FundRequest extends BaseUI {
 		flFormLayout1.addComponent(cbBranchName);
 		flFormLayout2 = new FormLayout();
 		flFormLayout2.setSpacing(true);
-		flFormLayout2.addComponent(cbAccountReference);
+		flFormLayout2.addComponent(cbAccountRef);
 		flFormLayout2.addComponent(tfReqAmt);
 		flFormLayout3 = new FormLayout();
 		flFormLayout3.addComponent(tfReqDtl);
@@ -213,7 +213,7 @@ public class FundRequest extends BaseUI {
 		try {
 			BeanItemContainer<AccountsDM> bean = new BeanItemContainer<AccountsDM>(AccountsDM.class);
 			bean.addAll(serviceAccounttype.getAccountsList(companyId, null, null, "Active", null, null, null));
-			cbAccountReference.setContainerDataSource(bean);
+			cbAccountRef.setContainerDataSource(bean);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -229,14 +229,14 @@ public class FundRequest extends BaseUI {
 					dfFundReqDt.setValue(fundRequestDM.getFundrqsrDt());
 				}
 				Long accid = fundRequestDM.getAccountId();
-				Collection<?> accids = cbAccountReference.getItemIds();
+				Collection<?> accids = cbAccountRef.getItemIds();
 				for (Iterator<?> iterator = accids.iterator(); iterator.hasNext();) {
 					Object itemId = (Object) iterator.next();
-					BeanItem<?> item = (BeanItem<?>) cbAccountReference.getItem(itemId);
+					BeanItem<?> item = (BeanItem<?>) cbAccountRef.getItem(itemId);
 					// Get the actual bean and use the data
 					AccountsDM st = (AccountsDM) item.getBean();
 					if (accid != null && accid.equals(st.getAccountId())) {
-						cbAccountReference.setValue(itemId);
+						cbAccountRef.setValue(itemId);
 					}
 				}
 				if (fundRequestDM.getBranchId() != null) {
@@ -283,8 +283,8 @@ public class FundRequest extends BaseUI {
 	@Override
 	protected void addDetails() {
 		logger.info("Company ID :" + companyId + " | User Name : " + loginUserName + " > " + "Adding new record...");
-		cbAccountReference.setRequired(true);
-		cbAccountReference.setComponentError(null);
+		cbAccountRef.setRequired(true);
+		cbAccountRef.setComponentError(null);
 		cbBranchName.setRequired(true);
 		// remove the components in the search layout and input controls in the same container
 		assembleUserInputLayout();
@@ -296,7 +296,7 @@ public class FundRequest extends BaseUI {
 	@Override
 	protected void editDetails() {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Invoking Edit record ");
-		cbAccountReference.setRequired(true);
+		cbAccountRef.setRequired(true);
 		cbBranchName.setRequired(true);
 		assembleUserInputLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
@@ -307,14 +307,14 @@ public class FundRequest extends BaseUI {
 	protected void validateDetails() throws ValidationException {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > " + "Validating Data ");
 		cbBranchName.setComponentError(null);
-		cbAccountReference.setComponentError(null);
+		cbAccountRef.setComponentError(null);
 		Boolean errorFlag = false;
 		if (cbBranchName.getValue() == null) {
 			cbBranchName.setComponentError(new UserError(GERPErrorCodes.BRANCH_NAME));
 			errorFlag = true;
 		}
-		if (cbAccountReference.getValue() == null) {
-			cbAccountReference.setComponentError(new UserError(GERPErrorCodes.NULL_FMS_ACCOUNT_REF));
+		if (cbAccountRef.getValue() == null) {
+			cbAccountRef.setComponentError(new UserError(GERPErrorCodes.NULL_FMS_ACCOUNT_REF));
 			errorFlag = true;
 		}
 		if (errorFlag) {
@@ -331,8 +331,8 @@ public class FundRequest extends BaseUI {
 				fundReqobj = beansFundRequestDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			fundReqobj.setFundrqsrDt(dfFundReqDt.getValue());
-			if (cbAccountReference.getValue() != null) {
-				fundReqobj.setAccountId(((AccountsDM) cbAccountReference.getValue()).getAccountId());
+			if (cbAccountRef.getValue() != null) {
+				fundReqobj.setAccountId(((AccountsDM) cbAccountRef.getValue()).getAccountId());
 			}
 			fundReqobj.setCompanyId(companyId);
 			fundReqobj.setBranchId((Long) cbBranchName.getValue());
@@ -386,7 +386,7 @@ public class FundRequest extends BaseUI {
 		logger.info("Company ID : " + companyId + " | User Name : " + loginUserName + " > "
 				+ "Resetting search fields and reloading the result");
 		dfFundReqDt.setValue(null);
-		cbAccountReference.setValue(null);
+		cbAccountRef.setValue(null);
 		cbBranchName.setValue(null);
 		cbBranchName.setComponentError(null);
 		tfReqAmt.setValue("");

@@ -195,7 +195,6 @@ public class SmsInvoice extends BaseTransUI {
 		cbClient = new GERPComboBox("Client Name");
 		cbClient.setItemCaptionPropertyId("clientName");
 		cbClient.setWidth("116");
-		
 		btndelete.setEnabled(false);
 		btndelete.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -511,9 +510,9 @@ public class SmsInvoice extends BaseTransUI {
 					} else {
 						tfCustomField2.setValue("");
 					}
-					Notification.show(""+((SmsPODtlDM) cbProduct.getValue()).getPdcValue());
+					Notification.show("" + ((SmsPODtlDM) cbProduct.getValue()).getPdcValue());
 					if (((SmsPODtlDM) cbProduct.getValue()).getPdcValue() != null) {
-						tfdtlPDC.setValue(((SmsPODtlDM) cbProduct.getValue()).getPdcValue()+"");
+						tfdtlPDC.setValue(((SmsPODtlDM) cbProduct.getValue()).getPdcValue() + "");
 					} else {
 						tfdtlPDC.setValue("");
 					}
@@ -875,7 +874,7 @@ public class SmsInvoice extends BaseTransUI {
 					+ companyid + ", " + cbBranch.getValue() + ", " + cbStatus.getValue());
 			list = serviceInvoiceHdr.getSmsInvoiceHeaderList(null, (Long) cbClient.getValue(),
 					(Long) cbBranch.getValue(), (String) cbStatus.getValue(), (Long) cbPONumber.getValue(),
-					tfInvNo.getValue(), null, "F");
+					tfInvNo.getValue(), null, null, "F");
 			recordCnt = list.size();
 			beanInvoiceHdr = new BeanItemContainer<SmsInvoiceHdrDM>(SmsInvoiceHdrDM.class);
 			beanInvoiceHdr.addAll(list);
@@ -918,7 +917,6 @@ public class SmsInvoice extends BaseTransUI {
 			tfPDCCharges.setReadOnly(false);
 			tfPDCCharges.setValue(sumPdc.toString());
 			tfPDCCharges.setReadOnly(true);
-		
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 					+ "Got the Taxslap. result set");
 			tblInvoicDtl.setContainerDataSource(beanInvoiceDtl);
@@ -1224,7 +1222,7 @@ public class SmsInvoice extends BaseTransUI {
 		}
 		loadInvoiceDtl();
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null,
-				invoiceId, status,null);
+				invoiceId, status, null);
 	}
 	
 	private void editInvoiceDtl() {
@@ -1268,8 +1266,6 @@ public class SmsInvoice extends BaseTransUI {
 			if (invoiceDtlDM.getPdcValue() != null) {
 				tfdtlPDC.setValue(invoiceDtlDM.getPdcValue().toString());
 			}
-			
-			
 		}
 	}
 	
@@ -1341,7 +1337,7 @@ public class SmsInvoice extends BaseTransUI {
 		tblInvoicDtl.setVisible(true);
 		lblNotification.setValue("");
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null,null);
+				null, null);
 	}
 	
 	@Override
@@ -1700,8 +1696,8 @@ public class SmsInvoice extends BaseTransUI {
 		}
 		chkCformReq.setValue(false);
 		try {
-			tfCstPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "CST", "Active", "F").get(0)
-					.getTaxprnct().toString());
+			tfCstPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "CST", "Active", "F").get(0).getTaxprnct()
+					.toString());
 		}
 		catch (Exception e) {
 			tfCstPer.setValue("0");
@@ -1726,8 +1722,8 @@ public class SmsInvoice extends BaseTransUI {
 		tfVatValue.setReadOnly(false);
 		tfVatValue.setValue("0");
 		try {
-			tfVatPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "VAT", "Active", "F").get(0)
-					.getTaxprnct().toString());
+			tfVatPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "VAT", "Active", "F").get(0).getTaxprnct()
+					.toString());
 		}
 		catch (Exception e) {
 			tfVatPer.setValue("0");
@@ -1756,8 +1752,8 @@ public class SmsInvoice extends BaseTransUI {
 		tfHEDValue.setReadOnly(false);
 		tfHEDValue.setValue("0");
 		try {
-			tfHEDPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "HED", "Active", "F").get(0)
-					.getTaxprnct().toString());
+			tfHEDPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "HED", "Active", "F").get(0).getTaxprnct()
+					.toString());
 		}
 		catch (Exception e) {
 			tfHEDPer.setValue("0");

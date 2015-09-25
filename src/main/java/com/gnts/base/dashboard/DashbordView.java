@@ -5,14 +5,17 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.mst.Product;
 import com.gnts.base.service.mst.ProductService;
-import com.gnts.crm.service.mst.ClientService;
 import com.gnts.die.txn.DieRequest;
 import com.gnts.dsn.stt.txn.DesignDocuments;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.hcm.txn.ServiceCallForm;
+import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.service.txn.WorkOrderHdrService;
 import com.gnts.mfg.txn.WorkOrder;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
+import com.gnts.sms.domain.txn.SmsInvoiceHdrDM;
+import com.gnts.sms.domain.txn.SmsPOHdrDM;
+import com.gnts.sms.domain.txn.SmsQuoteHdrDM;
 import com.gnts.sms.service.txn.ServiceCallFormService;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.sms.service.txn.SmsInvoiceHdrService;
@@ -67,22 +70,20 @@ public class DashbordView implements ClickListener {
 	private ServiceCallFormService serviveCallFormService = (ServiceCallFormService) SpringContextHelper
 			.getBean("sercallForm");
 	private SmsEnqHdrService serviceEnquiry = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
-	private SmsQuoteHdrService servicesmsQuoteHdr = (SmsQuoteHdrService) SpringContextHelper.getBean("smsquotehdr");
+	private SmsQuoteHdrService serviceQuoteHdr = (SmsQuoteHdrService) SpringContextHelper.getBean("smsquotehdr");
 	private SmsPOHdrService servicePurchaseOrd = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
 	private WorkOrderHdrService serviceWrkOrdHdr = (WorkOrderHdrService) SpringContextHelper.getBean("workOrderHdr");
 	private SmsInvoiceHdrService serviceInvoiceHdr = (SmsInvoiceHdrService) SpringContextHelper
 			.getBean("smsInvoiceheader");
 	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper
 			.getBean("enquiryWorkflow");
-	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private VerticalLayout clMainLayout;
 	private HorizontalLayout hlHeader;
 	private Table tblStatus = new Table();
 	private Logger logger = Logger.getLogger(DashbordView.class);
-	List<SmsEnqHdrDM> smsEnqHdrDM = new ArrayList<SmsEnqHdrDM>();
-	List<EnquiryWorkflowDM> enquiryWorkflowDM = new ArrayList<EnquiryWorkflowDM>();
-	int countnotify = 0;
+	private List<EnquiryWorkflowDM> enquiryWorkflowDM = new ArrayList<EnquiryWorkflowDM>();
+	private int countnotify = 0;
 	
 	public DashbordView() {
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
@@ -94,25 +95,24 @@ public class DashbordView implements ClickListener {
 	
 	private void buildView(VerticalLayout clMainLayout, HorizontalLayout hlHeader) {
 		enquiryWorkflowDM = serviceWorkflow.getEnqWorkflowList(null, null, "Active", null, null);
-		for (EnquiryWorkflowDM n : enquiryWorkflowDM) {
-			countnotify = serviceEnquiry.getSmsEnqHdrList(companyId,null, branchId, null, "Approved", "P",
-					null, null).size();
-		}
-		btnNotify = new Button(countnotify+"");
+		countnotify = serviceEnquiry.getSmsEnqHdrList(companyId, null, branchId, null, "Approved", "P", null, null)
+				.size();
+		btnNotify = new Button(countnotify + "");
 		btnNotify.setIcon(new ThemeResource("img/download.png"));
 		hlHeader.removeAllComponents();
 		CustomLayout custom = new CustomLayout("dashmarket");
-		btnEnquiryCount.setCaption(serviceEnquiry.getSMSEnquiryListCount(companyId, null, branchId, null, "Progress", null,
+		btnEnquiryCount.setCaption(serviceEnquiry.getSMSEnquiryListCount(companyId, null, branchId, null, "Progress",
+				null, null, null).toString());
+		btnQuotationCount.setCaption(serviceQuoteHdr.getSMSQuoteCount(companyId, null, branchId, "Progress", null,
 				null, null).toString());
-		btnQuotationCount.setCaption(servicesmsQuoteHdr.getSMSQuoteCount(companyId, null, branchId, "Progress", null, null, null)
+		btnPOCount.setCaption(servicePurchaseOrd.getSMSPOListCount(null, null, companyId, branchId, null, null,
+				"Progress", null).toString());
+		btnWOCount.setCaption(serviceWrkOrdHdr.getWorkOrderHDRcount(null, null, companyId, branchId, null, null,
+				"Pending", null).toString());
+		btnInvoiceCount.setCaption(serviceInvoiceHdr.getSmsInvoiceHeadercount(null, null, companyId, branchId, null,
+				null, null, null).toString());
+		btnServCallForm.setCaption(serviveCallFormService.getserviceCallFormcount(companyId, branchId, null, "S")
 				.toString());
-		btnPOCount.setCaption(servicePurchaseOrd.getSMSPOListCount(null, null, companyId, branchId, null, null, "Progress", null)
-				.toString());
-		btnWOCount.setCaption(serviceWrkOrdHdr
-				.getWorkOrderHDRcount(null, null, companyId, branchId, null, null, "Pending", null).toString());
-		btnInvoiceCount.setCaption(serviceInvoiceHdr.getSmsInvoiceHeadercount(null, null, companyId, branchId, null, null,
-				null, null).toString());
-		btnServCallForm.setCaption(serviveCallFormService.getserviceCallFormcount(companyId, branchId, null, "S").toString());
 		btnProductCount.setCaption(serviceProduct.getProductscount(companyId, null, "Active", null).toString());
 		// btnEnquiryCount.setStyleName(Runo.BUTTON_LINK);
 		btnEnquiryCount.setStyleName("borderless-colored");
@@ -276,6 +276,98 @@ public class DashbordView implements ClickListener {
 							ContentMode.HTML);
 				}
 			});
+			tblStatus.addGeneratedColumn("companyId", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<SmsEnqHdrDM> item = (BeanItem<SmsEnqHdrDM>) source.getItem(itemId);
+					SmsEnqHdrDM emp = (SmsEnqHdrDM) item.getBean();
+					VerticalLayout vlLayout = new VerticalLayout();
+					for (SmsQuoteHdrDM quoteHdr : serviceQuoteHdr.getSmsQuoteHdrList(null, null, null, null, null,
+							null, "P", emp.getEnquiryId())) {
+						vlLayout.addComponent(new Label("<font>" + quoteHdr.getQuoteNumber() + " - "
+								+ quoteHdr.getStatus() + "</font>", ContentMode.HTML));
+					}
+					if (vlLayout.getComponentCount() == 0) {
+						vlLayout.addComponent(new Label("-------"));
+					}
+					return vlLayout;
+				}
+			});
+			tblStatus.addGeneratedColumn("branchId", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<SmsEnqHdrDM> item = (BeanItem<SmsEnqHdrDM>) source.getItem(itemId);
+					SmsEnqHdrDM enq = (SmsEnqHdrDM) item.getBean();
+					VerticalLayout vlLayout = new VerticalLayout();
+					for (SmsPOHdrDM quoteHdr : servicePurchaseOrd.getSmspohdrList(null, null, null, null, null, null,
+							null, "P", enq.getEnquiryId())) {
+						String status = quoteHdr.getPostatus();
+						if (quoteHdr.getPostatus() == null) {
+							status = "-----";
+						}
+						vlLayout.addComponent(new Label("<font>" + quoteHdr.getPoid() + " - " + status + "</font>",
+								ContentMode.HTML));
+					}
+					if (vlLayout.getComponentCount() == 0) {
+						vlLayout.addComponent(new Label("-------"));
+					}
+					return vlLayout;
+				}
+			});
+			tblStatus.addGeneratedColumn("enquiryNo", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<SmsEnqHdrDM> item = (BeanItem<SmsEnqHdrDM>) source.getItem(itemId);
+					SmsEnqHdrDM enq = (SmsEnqHdrDM) item.getBean();
+					VerticalLayout vlLayout = new VerticalLayout();
+					for (SmsInvoiceHdrDM quoteHdr : serviceInvoiceHdr.getSmsInvoiceHeaderList(null, null, branchId,
+							null, null, null, companyId, enq.getEnquiryId(), "P")) {
+						String status = quoteHdr.getStatus();
+						if (quoteHdr.getStatus() == null) {
+							status = "-----";
+						}
+						vlLayout.addComponent(new Label(
+								"<font>" + quoteHdr.getInvoiceId() + " - " + status + "</font>", ContentMode.HTML));
+					}
+					if (vlLayout.getComponentCount() == 0) {
+						vlLayout.addComponent(new Label("-------"));
+					}
+					return vlLayout;
+				}
+			});
+			tblStatus.addGeneratedColumn("enquiryDate", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<SmsEnqHdrDM> item = (BeanItem<SmsEnqHdrDM>) source.getItem(itemId);
+					SmsEnqHdrDM enq = (SmsEnqHdrDM) item.getBean();
+					VerticalLayout vlLayout = new VerticalLayout();
+					for (WorkOrderHdrDM quoteHdr : serviceWrkOrdHdr.getWorkOrderHDRList(null, null, null, null, null,
+							null, "P", null, enq.getEnquiryId(), null, null, null)) {
+						String status = quoteHdr.getWorkOrdrSts();
+						if (quoteHdr.getWorkOrdrSts() == null) {
+							status = "-----";
+						}
+						vlLayout.addComponent(new Label("<font>" + quoteHdr.getWorkOrdrId() + " - " + status
+								+ "</font>", ContentMode.HTML));
+					}
+					if (vlLayout.getComponentCount() == 0) {
+						vlLayout.addComponent(new Label("-------"));
+					}
+					return vlLayout;
+				}
+			});
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -287,7 +379,8 @@ public class DashbordView implements ClickListener {
 		notificationsLayout.setMargin(true);
 		notificationsLayout.setSpacing(true);
 		enquiryWorkflowDM = serviceWorkflow.getEnqWorkflowList(null, null, "Active", null, null);
-		final Panel panel = new Panel("Notifications(<font color=red><font size=3>"+ countnotify+ "</font></font color>) ");
+		final Panel panel = new Panel("Notifications(<font color=red><font size=3>" + countnotify
+				+ "</font></font color>) ");
 		notificationsLayout.addComponent(panel);
 		FormLayout fmlayout = new FormLayout();
 		VerticalLayout hrLayout = new VerticalLayout();
@@ -301,8 +394,8 @@ public class DashbordView implements ClickListener {
 						+ n.getEnqWorkflowId() + "</font></td></tr></table>", ContentMode.HTML);
 				Label titleLabel1 = new Label("<small>Enquiry No: </small><font color=green>" + n.getEnquiryRef()
 						+ "</font>", ContentMode.HTML);
-				Label titleLabel3 = new Label("<small>Initiator Name : </small><font color=red>"
-						+ n.getInitiatorName() + "</font>", ContentMode.HTML);
+				Label titleLabel3 = new Label("<small>Initiator Name : </small><font color=red>" + n.getInitiatorName()
+						+ "</font>", ContentMode.HTML);
 				Label titleLabel4 = new Label("<small>Alloted Name : </small><font color=red>" + n.getPendingName()
 						+ "</font>", ContentMode.HTML);
 				Label titleLabel5 = new Label("<HR size=3 color=red>", ContentMode.HTML);

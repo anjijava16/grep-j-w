@@ -10,12 +10,12 @@ import org.apache.log4j.Logger;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.Database;
 import com.gnts.erputil.ui.Report;
+import com.gnts.erputil.util.DateUtils;
 import com.gnts.mms.domain.mst.MaterialDM;
 import com.gnts.mms.domain.txn.GatepassHdrDM;
 import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.domain.txn.MaterialLedgerDM;
 import com.gnts.mms.domain.txn.MaterialStockDM;
-import com.gnts.mms.domain.txn.PoReceiptDtlDM;
 import com.gnts.mms.domain.txn.PoReceiptHdrDM;
 import com.gnts.mms.mst.Material;
 import com.gnts.mms.service.mst.MaterialService;
@@ -51,11 +51,11 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -122,7 +122,7 @@ public class DashboardStoreView implements ClickListener {
 		btnGatepass.setStyleName("borderless-colored");
 		btnMaterialReceipt.setStyleName("borderless-colored");
 		btnNotify.setIcon(new ThemeResource("img/download.png"));
-		btnNotify =new Button();
+		btnNotify = new Button();
 		clMainLayout.removeAllComponents();
 		lblDashboardTitle = new Label();
 		lblDashboardTitle.setContentMode(ContentMode.HTML);
@@ -293,7 +293,7 @@ public class DashboardStoreView implements ClickListener {
 					"indentRemarks" });
 			tblIndent.setColumnHeaders(new String[] { "Indent No", "Date", "Status", "Raised by", "Purpose" });
 			tblIndent.setColumnAlignment("indentNo", Align.RIGHT);
-			tblIndent.setColumnWidth("indentRemarks", 140);
+			tblIndent.setColumnWidth("indentRemarks", 105);
 			tblIndent.addGeneratedColumn("indentStatus", new ColumnGenerator() {
 				private static final long serialVersionUID = 1L;
 				
@@ -411,6 +411,7 @@ public class DashboardStoreView implements ClickListener {
 			tblGatepass.setColumnHeaders(new String[] { "Gatepass No.", "Gate Pass Date ", "Gate Pass Type",
 					"Return Date", "Status", "Updated Date", "Updated By" });
 			tblGatepass.setPageLength(13);
+			tblGatepass.setColumnAlignment("gatepassNo", Align.RIGHT);
 			tblGatepass.addGeneratedColumn("gatepassStatus", new ColumnGenerator() {
 				private static final long serialVersionUID = 1L;
 				
@@ -431,6 +432,22 @@ public class DashboardStoreView implements ClickListener {
 						return new Label(
 								"<h1 style='padding-left: 9px;padding-right: 9px;border-radius: 9px;background-color:#EC9E20;font-size:12px'>"
 										+ gatepassHdrDM.getGatepassStatus() + "</h1>", ContentMode.HTML);
+					}
+				}
+			});
+			tblGatepass.addGeneratedColumn("returnDate", new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Object generateCell(Table source, Object itemId, Object columnId) {
+					@SuppressWarnings("unchecked")
+					BeanItem<GatepassHdrDM> item = (BeanItem<GatepassHdrDM>) source.getItem(itemId);
+					GatepassHdrDM gatepassHdrDM = (GatepassHdrDM) item.getBean();
+					if (gatepassHdrDM.getReturnDate() != null) {
+						return new Label("<h2>" + DateUtils.datetostring(gatepassHdrDM.getReturnDate()) + "</h2>",
+								ContentMode.HTML);
+					} else {
+						return new Label("<h2>--------</h2>", ContentMode.HTML);
 					}
 				}
 			});

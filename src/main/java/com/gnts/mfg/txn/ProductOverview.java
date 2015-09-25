@@ -983,7 +983,7 @@ public class ProductOverview implements ClickListener {
 	private void getInvoiceDetails(Long poid) {
 		try {
 			SmsInvoiceHdrDM invoiceHdrDM = serviceInvoiceHdr.getSmsInvoiceHeaderList(null, null, null, null, poid,
-					null, null, "P").get(0);
+					null, null,null, "P").get(0);
 			tfInvoiceRef.setValue(invoiceHdrDM.getInvoiceNo());
 			dfInvoiceDate.setValue(invoiceHdrDM.getInvoiceDate());
 		}

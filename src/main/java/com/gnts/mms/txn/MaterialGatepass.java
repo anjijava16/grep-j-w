@@ -87,13 +87,13 @@ public class MaterialGatepass extends BaseTransUI {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private GatepassHdrService serviceGatepass = (GatepassHdrService) SpringContextHelper.getBean("gatepasshdr");
-	private GatepassDtlService servicegatepassdtl = (GatepassDtlService) SpringContextHelper.getBean("gatepassdtl");
+	private GatepassHdrService serviceGatepassHdr = (GatepassHdrService) SpringContextHelper.getBean("gatepasshdr");
+	private GatepassDtlService serviceGatePassDtl = (GatepassDtlService) SpringContextHelper.getBean("gatepassdtl");
 	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
 	private DcHdrService serviceDCHdr = (DcHdrService) SpringContextHelper.getBean("DCHdr");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private CompanyLookupService servicelookup = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
+	private CompanyLookupService serviceCompLookup = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
@@ -113,7 +113,7 @@ public class MaterialGatepass extends BaseTransUI {
 	private Button btnAddDtl;
 	private List<GatepassDtlDM> listGatePassDtls = null;
 	private String userName;
-	private Long companyId, moduleId, branchID, vendorId;
+	private Long companyId, moduleId, branchId, vendorId;
 	private MmsComments comments;
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	private int recordCnt = 0;
@@ -125,7 +125,7 @@ public class MaterialGatepass extends BaseTransUI {
 				+ "Inside MaterialGatepass() constructor");
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		// Loading the UI
 		buildview(true);
@@ -136,7 +136,7 @@ public class MaterialGatepass extends BaseTransUI {
 				+ "Inside MaterialGatepass() constructor");
 		userName = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyId = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
-		branchID = (Long) UI.getCurrent().getSession().getAttribute("branchId");
+		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		// Loading the UI
 		buildview(false);
@@ -273,13 +273,13 @@ public class MaterialGatepass extends BaseTransUI {
 					VendorDM vendordm = serviceVendor.getVendorList(null,
 							((VendorDM) cbVendor.getValue()).getVendorId(), null, null, null, null, null, null, null,
 							null, "F").get(0);
-					if ((vendordm.getVendorAddress().toString() != null)
-							&& (vendordm.getcountryID().toString() != null)
-							&& (vendordm.getStateId().toString() != null) && (vendordm.getCityId().toString() != null)) {
-						taVendorAddres.setValue((vendordm.getVendorAddress().toString()) + "\n"
-								+ (vendordm.getCityName().toString()) + "\n" + (vendordm.getStateName()).toString()
-								+ "\n" + (vendordm.getCountryName().toString()) + "-"
-								+ (vendordm.getVendorPostcode().toString()));
+					if ((vendordm.getVendorAddress() != null)
+							&& (vendordm.getcountryID() != null)
+							&& (vendordm.getStateId() != null) && (vendordm.getCityId() != null)) {
+						taVendorAddres.setValue((vendordm.getVendorAddress()) + "\n"
+								+ (vendordm.getCityName()) + "\n" + (vendordm.getStateName())
+								+ "\n" + (vendordm.getCountryName()) + "-"
+								+ (vendordm.getVendorPostcode()));
 						tfVendorname.setValue(vendordm.getContactName());
 					}
 				}
@@ -482,7 +482,7 @@ public class MaterialGatepass extends BaseTransUI {
 			tblMstScrSrchRslt.removeAllItems();
 			List<GatepassHdrDM> list = new ArrayList<GatepassHdrDM>();
 			beanGatePassHdr = new BeanItemContainer<GatepassHdrDM>(GatepassHdrDM.class);
-			list = serviceGatepass.getGatepassHdrList(companyId, dfGatepassDt.getValue(),
+			list = serviceGatepassHdr.getGatepassHdrList(companyId, dfGatepassDt.getValue(),
 					(String) cbGatepasstype.getValue(), gatePassId, null, vendorId, (String) cbGateStatus.getValue(),
 					(String) tfGatePassNo.getValue(), "F");
 			recordCnt = list.size();
@@ -553,7 +553,7 @@ public class MaterialGatepass extends BaseTransUI {
 			BeanContainer<String, CompanyLookupDM> beanlookup = new BeanContainer<String, CompanyLookupDM>(
 					CompanyLookupDM.class);
 			beanlookup.setBeanIdProperty("lookupname");
-			beanlookup.addAll(servicelookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "MM_TRNSPRT"));
+			beanlookup.addAll(serviceCompLookup.getCompanyLookUpByLookUp(companyId, moduleId, "Active", "MM_TRNSPRT"));
 			cbModeTransport.setContainerDataSource(beanlookup);
 		}
 		catch (Exception e) {
@@ -603,7 +603,7 @@ public class MaterialGatepass extends BaseTransUI {
 		try {
 			BeanItemContainer<GatepassHdrDM> beanGatePassHdrlist = new BeanItemContainer<GatepassHdrDM>(
 					GatepassHdrDM.class);
-			beanGatePassHdrlist.addAll(serviceGatepass.getGatepassHdrList(companyId, null, null, null, null, null,
+			beanGatePassHdrlist.addAll(serviceGatepassHdr.getGatepassHdrList(companyId, null, null, null, null, null,
 					null, null, "F"));
 			cbGoods.setContainerDataSource(beanGatePassHdrlist);
 		}
@@ -705,19 +705,18 @@ public class MaterialGatepass extends BaseTransUI {
 				}
 				cbGatepasstype.setValue(editHdrIndent.getGatepassType());
 				cbModeTransport.setValue(editHdrIndent.getModeOfTrans());
-				String uom = editHdrIndent.getVendorName();
-				Collection<?> uomid = cbVendor.getItemIds();
-				for (Iterator<?> iterator = uomid.iterator(); iterator.hasNext();) {
+				Long vendorid = editHdrIndent.getVendorId();
+				Collection<?> itemids = cbVendor.getItemIds();
+				for (Iterator<?> iterator = itemids.iterator(); iterator.hasNext();) {
 					Object itemId = (Object) iterator.next();
 					BeanItem<?> item = (BeanItem<?>) cbVendor.getItem(itemId);
 					// Get the actual bean and use the data
 					VendorDM st = (VendorDM) item.getBean();
-					if (uom != null && uom.equals(st.getVendorName())) {
+					if (vendorid != null && vendorid.equals(st.getVendorId())) {
 						cbVendor.setValue(itemId);
 					}
 				}
 				tfVendorname.setValue(editHdrIndent.getVendorName());
-				tfPersonName.setValue(editHdrIndent.getPersonName());
 				cbVendorDCNo.setValue(editHdrIndent.getVendorDcno());
 				taHdrRemarks.setValue(editHdrIndent.getRemarks());
 				dfGatepassDt.setValue(editHdrIndent.getGatepassDtInt());
@@ -727,7 +726,7 @@ public class MaterialGatepass extends BaseTransUI {
 				cbGateStatus.setValue(editHdrIndent.getGatepassStatus());
 				editHdrIndent.setLastUpdatedDt(DateUtils.getcurrentdate());
 				editHdrIndent.setLastUpdatedBy(userName);
-				listGatePassDtls.addAll(servicegatepassdtl.getGatepassDtlList(null, gatePassId, null, null, null,
+				listGatePassDtls.addAll(serviceGatePassDtl.getGatepassDtlList(null, gatePassId, null, null, null,
 						"Active", "F"));
 			}
 			loadDtlList();
@@ -870,9 +869,9 @@ public class MaterialGatepass extends BaseTransUI {
 				gatepasshdr = beanGatePassHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			gatepasshdr.setGatepassNo(tfGatePassNo.getValue());
-			gatepasshdr.setBranchId(branchID);
+			gatepasshdr.setBranchId(branchId);
 			gatepasshdr.setCompanyId(companyId);
-			gatepasshdr.setDcId((Long) (cbDC.getValue()));
+			gatepasshdr.setDcId((Long)cbDC.getValue());
 			gatepasshdr.setGatepassType((String) cbGatepasstype.getValue());
 			gatepasshdr.setModeOfTrans((String) cbModeTransport.getValue());
 			gatepasshdr.setVendorId(Long.valueOf(((VendorDM) cbVendor.getValue()).getVendorId().toString()));
@@ -887,20 +886,20 @@ public class MaterialGatepass extends BaseTransUI {
 			gatepasshdr.setGatepassStatus((String) cbGateStatus.getValue());
 			gatepasshdr.setLastUpdatedDt(DateUtils.getcurrentdate());
 			gatepasshdr.setLastUpdatedBy(userName);
-			serviceGatepass.saveorUpdateGatepassHdrDetails(gatepasshdr);
+			serviceGatepassHdr.saveorUpdateGatepassHdrDetails(gatepasshdr);
 			gatePassId = gatepasshdr.getGatepassId();
 			@SuppressWarnings("unchecked")
 			Collection<GatepassDtlDM> colPlanDtls = ((Collection<GatepassDtlDM>) tblGatepassDetails.getVisibleItemIds());
 			for (GatepassDtlDM saveDtl : (Collection<GatepassDtlDM>) colPlanDtls) {
 				saveDtl.setGatepassid(Long.valueOf(gatepasshdr.getGatepassId()));
-				servicegatepassdtl.saveorupdateDtlDetails(saveDtl);
+				serviceGatePassDtl.saveorupdateDtlDetails(saveDtl);
 			}
 			if (tblMstScrSrchRslt.getValue() == null) {
 				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyId, branchID, moduleId, "MM_GPNO").get(
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyId, branchId, moduleId, "MM_GPNO").get(
 							0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyId, branchID, moduleId, "MM_GPNO");
+						serviceSlnogen.updateNextSequenceNumber(companyId, branchId, moduleId, "MM_GPNO");
 					}
 				}
 				catch (Exception e) {
@@ -914,6 +913,7 @@ public class MaterialGatepass extends BaseTransUI {
 			loadDtlList();
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			logger.info(e.getMessage());
 		}
 	}

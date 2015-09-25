@@ -83,14 +83,14 @@ public class AccountOwners extends BaseUI {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
-				+ "Inside ProductCategory() constructor");
+				+ "Inside AccountOwners() constructor");
 		// Loading the UI
 		buildview();
 	}
 	
 	// Build the UI components
 	private void buildview() {
-		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting Product Category UI");
+		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Painting AccountOwners UI");
 		cbAccountNo = new GERPComboBox("Account Number");
 		cbAccountNo.setItemCaptionPropertyId("accountname");
 		loadAccountNumber();

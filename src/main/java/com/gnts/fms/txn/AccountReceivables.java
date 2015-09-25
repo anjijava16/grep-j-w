@@ -499,7 +499,7 @@ public class AccountReceivables extends BaseUI {
 		try {
 			BeanItemContainer<SmsInvoiceHdrDM> beansmsenqHdr = new BeanItemContainer<SmsInvoiceHdrDM>(
 					SmsInvoiceHdrDM.class);
-			beansmsenqHdr.addAll(serviceInvoiceHdr.getSmsInvoiceHeaderList(null, null, null, null, null, null, null,
+			beansmsenqHdr.addAll(serviceInvoiceHdr.getSmsInvoiceHeaderList(null, null, null, null, null, null, null,null,
 					"P"));
 			cbInvoice.setContainerDataSource(beansmsenqHdr);
 		}

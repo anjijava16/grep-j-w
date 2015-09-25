@@ -129,8 +129,8 @@ public class SerialNumberGenerator {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "BS_VNDRCD").get(0);
 			logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
-				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + venCode + slnoObj.getPrefixCncat()
-						+ slnoObj.getSuffixKey() + String.format("03d", slnoObj.getCurrSeqNo().intValue());
+				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat()+venCode + slnoObj.getPrefixCncat()
+						+ String.format("03d", slnoObj.getCurrSeqNo().intValue());
 			}
 		}
 		catch (Exception e) {

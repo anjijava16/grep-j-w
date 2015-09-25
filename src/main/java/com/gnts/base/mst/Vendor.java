@@ -44,6 +44,7 @@ import com.gnts.erputil.util.DateUtils;
 import com.gnts.saarc.util.SerialNumberGenerator;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents.BlurEvent;
@@ -115,16 +116,15 @@ public class Vendor extends BaseUI {
 		cbVendorTypeName.setWidth("150");
 		cbVendorTypeName.setItemCaptionPropertyId("vendortypename");
 		loadVendorTypeList();
-		// VendorCode generator text field
-		tfVendorCode = new GERPTextField("Vendor Code");
-		tfVendorName.addBlurListener(new BlurListener() {
+		cbVendorTypeName.addValueChangeListener(new ValueChangeListener() {
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
 			
 			@Override
-			public void blur(BlurEvent event) {
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
 				getVendorName();
 				try {
 					tfVendorCode.setReadOnly(false);
@@ -137,6 +137,8 @@ public class Vendor extends BaseUI {
 				}
 			}
 		});
+		// VendorCode generator text field
+		tfVendorCode = new GERPTextField("Vendor Code");
 		// VendorRating text field
 		tfVendorRating = new GERPTextField("Vendor Rating");
 		// ContactName text fieldPUR
@@ -800,5 +802,6 @@ public class Vendor extends BaseUI {
 		for (String value : split) {
 			initial += value.substring(0, 1);
 		}
+		initial ="/" + initial;
 	}
 }

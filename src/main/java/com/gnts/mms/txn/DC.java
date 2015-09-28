@@ -59,6 +59,7 @@ import com.gnts.mms.domain.txn.DcHdrDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.DCDtlService;
 import com.gnts.mms.service.txn.DcHdrService;
+import com.gnts.saarc.util.SerialNumberGenerator;
 import com.gnts.sms.domain.txn.ProductLedgerDM;
 import com.gnts.sms.domain.txn.ProductStockDM;
 import com.gnts.sms.domain.txn.SmsEnqHdrDM;
@@ -153,7 +154,7 @@ public class DC extends BaseTransUI {
 	private MmsComments comments;
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	private Logger logger = Logger.getLogger(DC.class);
-	private String status;
+	private String status, dcTypeRNR, dcType;
 	private static final long serialVersionUID = 1L;
 	
 	// Constructor received the parameters from Login UI class
@@ -237,6 +238,19 @@ public class DC extends BaseTransUI {
 		cbDCTypeRNR = new GERPComboBox("DC Type");
 		cbDCTypeRNR.addItem("Returnable");
 		cbDCTypeRNR.addItem("Non Returnable");
+		cbDCTypeRNR.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				loadSerialNo();
+				cbDCType.setVisible(false);
+				// TODO Auto-generated method stub
+			}
+		});
 		cbDCType = new GERPComboBox("Department");
 		cbDCType.addItem("Marketing");
 		cbDCType.addItem("Store");
@@ -248,6 +262,7 @@ public class DC extends BaseTransUI {
 					if (cbDCType.getValue().equals("Marketing")) {
 						cbClients.setEnabled(true);
 						cbVendor.setEnabled(false);
+						cbEnquiry.setEnabled(true);
 						cbwindcommPerson.setEnabled(true);
 						cbwindTechPers.setEnabled(true);
 						cbClients.setValue(cbClients.getValue());
@@ -275,6 +290,7 @@ public class DC extends BaseTransUI {
 						cbwindcommPerson.setEnabled(false);
 						cbwindTechPers.setEnabled(false);
 						cbEnquiry.setRequired(false);
+						cbEnquiry.setEnabled(false);
 						cbGoodsType.removeAllItems();
 						cbGoodsType.addItem("Material");
 					}
@@ -451,6 +467,7 @@ public class DC extends BaseTransUI {
 		flDCCol2 = new FormLayout();
 		flDCCol3 = new FormLayout();
 		flColumn4 = new FormLayout();
+		tfDcNo.setReadOnly(false);
 		flDCCol1.addComponent(tfDcNo);
 		flDCCol2.addComponent(cbDCType);
 		flDCCol3.addComponent(cbStatus);
@@ -593,8 +610,11 @@ public class DC extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		tfDcNo.setReadOnly(false);
 		tfDcNo.setValue("");
+		tfDcNo.setReadOnly(true);
 		dfDcDt.setValue(new Date());
 		cbDCType.setValue(null);
+		cbDCType.setVisible(true);
+		cbDCTypeRNR.setValue(null);
 		cbVendor.setValue(null);
 		cbClients.setValue(null);
 		cbModeOfTrans.setValue(null);
@@ -619,9 +639,9 @@ public class DC extends BaseTransUI {
 		cbEnquiry.setComponentError(null);
 		cbEnquiry.setValue(null);
 		cbEnquiry.setRequired(true);
+		cbEnquiry.setEnabled(true);
 		listDCDetails = new ArrayList<DCDtlDM>();
 		tblDCDetails.removeAllItems();
-		cbDCTypeRNR.setValue(null);
 		cbClients.setValue(null);
 		cbGoodsType.removeAllItems();
 		cbMaterialId.setComponentError(null);
@@ -653,13 +673,13 @@ public class DC extends BaseTransUI {
 				tfDcNo.setValue(editHdrDC.getDcNo());
 				tfDcNo.setReadOnly(true);
 				cbDCType.setValue(editHdrDC.getDcType());
+				cbDCTypeRNR.setValue(editHdrDC.getDcTypeRNR());
 				cbVendor.setValue(editHdrDC.getVendorId());
 				cbClients.setValue(editHdrDC.getCustomerId());
 				cbModeOfTrans.setValue(editHdrDC.getModeofTrans());
 				cbPersonName.setValue(editHdrDC.getPersonName());
 				taRemarks.setValue(editHdrDC.getRemarks());
 				cbStatus.setValue(editHdrDC.getDcStatus());
-				cbDCTypeRNR.setValue(editHdrDC.getDcTypeRNR());
 				logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Selected DC. Id -> "
 						+ issueId);
 				listDCDetails.addAll(serviceDCDtlHdr.getDCCtlList(null, dcHdrId, null, null, null, null, null, "F"));
@@ -769,19 +789,6 @@ public class DC extends BaseTransUI {
 		assembleInputUserLayout();
 		hlUserIPContainer.addComponent(GERPPanelGenerator.createPanel(hlUserInputLayout));
 		tblDCDetails.setVisible(true);
-		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_DCNO").get(0);
-			tfDcNo.setReadOnly(false);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfDcNo.setValue(slnoObj.getKeyDesc());
-				tfDcNo.setReadOnly(true);
-			} else {
-				tfDcNo.setReadOnly(false);
-			}
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
 		tblDCDetails.setVisible(true);
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
@@ -986,6 +993,13 @@ public class DC extends BaseTransUI {
 				dcHdrDM = beanDcHdrDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			dcHdrDM.setDcNo(tfDcNo.getValue());
+			if (tblMstScrSrchRslt.getValue() == null) {
+				try {
+					updateSerial();
+				}
+				catch (Exception e) {
+				}
+			}
 			dcHdrDM.setCompanyId(companyid);
 			dcHdrDM.setBranchId(branchId);
 			if (cbwindTechPers.getValue() != null) {
@@ -1102,17 +1116,6 @@ public class DC extends BaseTransUI {
 				}
 				catch (Exception e) {
 					logger.info(e.getMessage());
-				}
-			}
-			if (tblMstScrSrchRslt.getValue() == null) {
-				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_DCNO").get(
-							0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_DCNO");
-					}
-				}
-				catch (Exception e) {
 				}
 			}
 			comments.savedc(dcHdrDM.getDcId(), dcHdrDM.getDcStatus());
@@ -1361,6 +1364,40 @@ public class DC extends BaseTransUI {
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
+		}
+	}
+	
+	private void loadSerialNo() {
+		// TODO Auto-generated method stub
+		try {
+			tfDcNo.setReadOnly(false);
+			dcType = ((String) cbDCType.getValue()).substring(0, 1);
+			dcTypeRNR = ((String) cbDCTypeRNR.getValue()).substring(0, 1);
+			if (dcType.equals("M")) {
+				tfDcNo.setValue(SerialNumberGenerator.generateDCNo(companyid, branchId, moduleId, "MM_DCNO", dcType,
+						dcTypeRNR));
+			} else if (dcType.equals("S")) {
+				tfDcNo.setValue(SerialNumberGenerator.generateDCNo(companyid, branchId, moduleId, "MM_DCNOS", dcType,
+						dcTypeRNR));
+			}
+			tfDcNo.setReadOnly(true);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void updateSerial() {
+		if (dcType.equals("M")) {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_DCNO").get(0);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_DCNO");
+			}
+		} else if (dcType.equals("S")) {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_DCNOS").get(0);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_DCNOS");
+			}
 		}
 	}
 }

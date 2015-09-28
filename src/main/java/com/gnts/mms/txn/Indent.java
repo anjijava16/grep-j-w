@@ -823,6 +823,12 @@ public class Indent extends BaseTransUI {
 			for (IndentDtlDM saveDtl : (Collection<IndentDtlDM>) colPlanDtls) {
 				saveDtl.setIndentHdrId(Long.valueOf(indentObj.getIndentId()));
 				serviceIndentDtl.saveorUpdate(saveDtl);
+			}			if (tblMstScrSrchRslt.getValue() == null) {
+				try {
+					updateSerial();
+				}
+				catch (Exception e) {
+				}
 			}
 			loadSerialNo();
 			comments.saveindent(indentObj.getIndentId(), indentObj.getIndentStatus());
@@ -993,42 +999,34 @@ public class Indent extends BaseTransUI {
 	private void loadSerialNo() {
 		// TODO Auto-generated method stub
 		try {
+			String indType = ((String) cbIndType.getValue()).substring(0, 1);
 			tfIndNo.setReadOnly(false);
 			tfIndNo.setValue("");
-			if (cbIndType.getValue() == "Store Indent") {
-				indType = "S";
+			if (cbIndType.getValue() == "S") {
 				tfIndNo.setValue(SerialNumberGenerator
 						.generateIndNo(companyid, branchId, moduleId, "MM_INDNO", indType));
-				if (tblMstScrSrchRslt.getValue() == null) {
-					try {
-						SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNO")
-								.get(0);
-						if (slnoObj.getAutoGenYN().equals("Y")) {
-							serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_INDNO");
-						}
-					}
-					catch (Exception e) {
-					}
-				}
-			} else {
-				indType = "P";
+			} else if (cbIndType.getValue() == "P") {
 				tfIndNo.setValue(SerialNumberGenerator.generateIndNo(companyid, branchId, moduleId, "MM_INDNOP",
 						indType));
 			}
-			if (tblMstScrSrchRslt.getValue() == null) {
-				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNOP")
-							.get(0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_INDNOP");
-					}
-				}
-				catch (Exception e) {
-				}
-			}
+			tfIndNo.setReadOnly(true);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
+		}
+	}
+	
+	private void updateSerial() {
+		if (indType == "S") {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNO").get(0);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_INDNO");
+			}
+		} else if (indType == "P") {
+			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNOP").get(0);
+			if (slnoObj.getAutoGenYN().equals("Y")) {
+				serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_INDNOP");
+			}
 		}
 	}
 }

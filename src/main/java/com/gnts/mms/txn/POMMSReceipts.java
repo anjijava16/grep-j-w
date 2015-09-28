@@ -19,9 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.BranchDM;
-import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.service.mst.BranchService;
-import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.erputil.BASEConstants;
 import com.gnts.erputil.components.GERPAddEditHLayout;
 import com.gnts.erputil.components.GERPButton;
@@ -88,7 +86,6 @@ public class POMMSReceipts extends BaseTransUI {
 			.getBean("materialstock");
 	private POHdrService serviceMMSPOHdr = (POHdrService) SpringContextHelper.getBean("pohdr");
 	private MmsPoDtlService serviceMMSPODtls = (MmsPoDtlService) SpringContextHelper.getBean("mmspoDtl");
-	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	// Parent layout for all the input controls
 	private HorizontalLayout hlSearchLayout;
@@ -225,6 +222,7 @@ public class POMMSReceipts extends BaseTransUI {
 						Notification.show("Value Exceeds PO Quantity",
 								"Accept value is larger than PO Quantity.Kindly refer PO Qty", Type.WARNING_MESSAGE);
 						tfAcceptQty.setValue("0");
+						cbDtlStatus.setValue(null);
 					}
 				}
 			}
@@ -247,6 +245,7 @@ public class POMMSReceipts extends BaseTransUI {
 						Notification.show("Value Exceeds PO Quantity",
 								"Reject value is larger than PO Quantity.Kindly refer PO Qty", Type.WARNING_MESSAGE);
 						tfRejectqty.setValue("0");
+						cbDtlStatus.setValue(null);
 					}
 				}
 			}
@@ -696,16 +695,7 @@ public class POMMSReceipts extends BaseTransUI {
 		tfRejectqty.setRequired(true);
 		resetFields();
 		tfLotNo.setReadOnly(false);
-		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_LOTNO").get(0);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfLotNo.setValue(slnoObj.getKeyDesc());
-				tfLotNo.setReadOnly(true);
-			}
-		}
-		catch (Exception e) {
-			logger.info(e.getMessage());
-		}
+		
 	}
 	
 	// Edit Details
@@ -925,18 +915,7 @@ public class POMMSReceipts extends BaseTransUI {
 					logger.info(e.getMessage());
 				}
 			}
-			if (tblMstScrSrchRslt.getValue() == null) {
-				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_LOTNO")
-							.get(0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_LOTNO");
-					}
-				}
-				catch (Exception e) {
-					logger.info(e.getMessage());
-				}
-			}
+	
 			tfLotNo.setReadOnly(false);
 			tfLotNo.setValue(recepithdrObj.getLotNo());
 			tfLotNo.setReadOnly(true);

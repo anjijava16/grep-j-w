@@ -129,7 +129,7 @@ public class SerialNumberGenerator {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "BS_VNDRCD").get(0);
 			logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
-				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat()+venCode + slnoObj.getPrefixCncat()
+				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + venCode + slnoObj.getPrefixCncat()
 						+ String.format("03d", slnoObj.getCurrSeqNo().intValue());
 			}
 		}
@@ -143,10 +143,7 @@ public class SerialNumberGenerator {
 	public static String generateIndNo(Long companyid, Long branchid, Long moduleid, String refkey, String indType) {
 		String serialnumber = "";
 		try {
-			System.out.println("==================================================>"+indType);
 			if (indType == "P") {
-				System.out.println("==================================P================>"+indType);
-
 				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "MM_INDNOP").get(0);
 				logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
 				if (slnoObj.getAutoGenYN().equals("Y")) {
@@ -154,8 +151,6 @@ public class SerialNumberGenerator {
 							+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey() + "/" + slnoObj.getCurrSeqNo();
 				}
 			} else {
-				System.out.println("==================================S================>"+indType);
-
 				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "MM_INDNO").get(0);
 				logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
 				if (slnoObj.getAutoGenYN().equals("Y")) {
@@ -163,6 +158,34 @@ public class SerialNumberGenerator {
 							+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey() + "/" + slnoObj.getCurrSeqNo();
 				}
 			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		logger.info("serialnumber--->" + serialnumber);
+		return serialnumber;
+	}
+	
+	public static String generateDCNo(Long companyid, Long branchid, Long moduleid, String refkey, String dcType,
+			String dcTypeRNR) {
+		String serialnumber = "";
+		try {
+			if (dcType.equals("M")) {
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "MM_DCNO").get(0);
+				logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
+				if (slnoObj.getAutoGenYN().equals("Y")) {
+					serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + dcType + "/" + dcTypeRNR
+							+ slnoObj.getSuffixCncat() + slnoObj.getCurrSeqNo();
+				}
+			} else if (dcType.equals("S")) {
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "MM_DCNOS").get(0);
+				logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
+				if (slnoObj.getAutoGenYN().equals("Y")) {
+					serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + dcType + "/" + dcTypeRNR
+							+ slnoObj.getSuffixCncat() + slnoObj.getCurrSeqNo();
+				}
+			}
+			dcType = "";
 		}
 		catch (Exception e) {
 			e.printStackTrace();

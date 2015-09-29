@@ -824,7 +824,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 	private void loadMaterialDetails() {
 		if (cbMaterial.getValue() != null) {
 			tfQuoteQnty.setReadOnly(false);
-			tfQuoteQnty.setValue(((MmsQuoteDtlDM) cbMaterial.getValue()).getQuoteqty() + "");
+			tfQuoteQnty.setValue(((MmsQuoteDtlDM) cbMaterial.getValue()).getReqQty() + "");
 			tfQuoteQnty.setReadOnly(true);
 			tfPOQty.setReadOnly(false);
 			tfPOQty.setValue(((MmsQuoteDtlDM) cbMaterial.getValue()).getReqQty().toString());

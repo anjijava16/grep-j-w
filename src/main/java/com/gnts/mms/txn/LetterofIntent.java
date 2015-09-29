@@ -746,9 +746,11 @@ public class LetterofIntent extends BaseTransUI {
 			if (editDtl.getUnitRate() != null) {
 				tfUnitprice.setValue(editDtl.getUnitRate().toString());
 			}
+			tfBasicValue.setReadOnly(false);
 			if (editDtl.getBasicvalue() != null) {
 				tfBasicValue.setValue(editDtl.getBasicvalue().toString());
 			}
+			tfBasicValue.setReadOnly(true);
 			if (editDtl.getStatus() != null) {
 				cbDtlStatus.setValue(editDtl.getStatus());
 			}

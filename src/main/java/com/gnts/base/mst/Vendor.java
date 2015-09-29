@@ -127,9 +127,10 @@ public class Vendor extends BaseUI {
 				// TODO Auto-generated method stub
 				getVendorName();
 				try {
+					String vendorType = ((String) cbVendorTypeName.getValue()).substring(0, 3);
 					tfVendorCode.setReadOnly(false);
 					tfVendorCode.setValue(SerialNumberGenerator.generateSNoVEN(companyid, branchId, moduleId,
-							"BS_VNDRCD", initial));
+							"BS_VNDRCD", initial,vendorType));
 					tfVendorCode.setReadOnly(true);
 				}
 				catch (Exception e) {
@@ -802,6 +803,6 @@ public class Vendor extends BaseUI {
 		for (String value : split) {
 			initial += value.substring(0, 1);
 		}
-		initial ="/" + initial;
+		initial = "/" + initial;
 	}
 }

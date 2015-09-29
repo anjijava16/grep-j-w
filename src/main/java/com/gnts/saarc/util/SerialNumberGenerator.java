@@ -123,7 +123,7 @@ public class SerialNumberGenerator {
 		return serialnumber;
 	}
 	
-	public static String generateSNoVEN(Long companyid, Long branchid, Long moduleid, String refkey, String venCode) {
+	public static String generateSNoVEN(Long companyid, Long branchid, Long moduleid, String refkey, String venCode,String vendorType) {
 		String serialnumber = "";
 		try {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "BS_VNDRCD").get(0);

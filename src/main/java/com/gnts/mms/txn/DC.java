@@ -247,7 +247,7 @@ public class DC extends BaseTransUI {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				loadSerialNo();
-				cbDCType.setVisible(false);
+				cbDCType.setEnabled(false);
 				// TODO Auto-generated method stub
 			}
 		});
@@ -613,7 +613,7 @@ public class DC extends BaseTransUI {
 		tfDcNo.setReadOnly(true);
 		dfDcDt.setValue(new Date());
 		cbDCType.setValue(null);
-		cbDCType.setVisible(true);
+		cbDCType.setEnabled(true);
 		cbDCTypeRNR.setValue(null);
 		cbVendor.setValue(null);
 		cbClients.setValue(null);

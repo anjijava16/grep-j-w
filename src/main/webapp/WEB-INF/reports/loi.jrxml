@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="loi" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
 	<property name="ireport.zoom" value="1.7715610000000024"/>
-	<property name="ireport.x" value="244"/>
-	<property name="ireport.y" value="964"/>
+	<property name="ireport.x" value="51"/>
+	<property name="ireport.y" value="1202"/>
 	<style name="Crosstab Data Text" hAlign="Center"/>
 	<parameter name="LOIID" class="java.lang.Long">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
@@ -658,7 +658,7 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 		</band>
 	</columnFooter>
 	<pageFooter>
-		<band height="94" splitType="Stretch">
+		<band height="71" splitType="Stretch">
 			<staticText>
 				<reportElement uuid="2632bf53-d6c2-45f2-9788-7b5c3e04d48e" x="0" y="12" width="204" height="14"/>
 				<textElement verticalAlignment="Middle">
@@ -667,14 +667,14 @@ and loihdr.loi_hdr_id=$P{LOIID}]]>
 				<text><![CDATA[Thanks with Regards,]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="7789a1fe-31bb-4e80-9de2-1365717a9053" x="1" y="54" width="200" height="15"/>
+				<reportElement uuid="7789a1fe-31bb-4e80-9de2-1365717a9053" x="1" y="32" width="200" height="15"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[M.Karthiga - PD1]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="100bd97a-44ca-41c9-8de2-32d8c4b23f45" x="1" y="69" width="200" height="14"/>
+				<reportElement uuid="100bd97a-44ca-41c9-8de2-32d8c4b23f45" x="1" y="47" width="200" height="14"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>

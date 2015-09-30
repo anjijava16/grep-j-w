@@ -2,11 +2,15 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="mmspo" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2d34a815-f537-4eaa-9b3f-bc83cd3f0c4e">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="363"/>
+	<property name="ireport.y" value="0"/>
 	<style name="Crosstab Data Text" hAlign="Center"/>
-	<parameter name="ENQID" class="java.lang.String"/>
+	<parameter name="POID" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[$P{POID}]]></defaultValueExpression>
+	</parameter>
 	<queryString>
-		<![CDATA[SELECT hdr.po_no,
+		<![CDATA[SELECT
+hdr.po_id,
+hdr.po_no,
   hdr.po_date,
   hdr.po_remark,
   hdr.basic_total,
@@ -28,23 +32,20 @@
   decode (hdr.cess_value,0,'---',hdr.cess_value) cess_value,
   decode (hdr.hed_prcnt,0,'---',hdr.hed_prcnt) hed_prcnt,
   decode (hdr.hed_value,0,'---',hdr.hed_value) hed_value,
-
+decode (dtl.discount_val,0,'---',dtl.discount_val) discount_val,
+decode (dtl.discount_per,0,'---',dtl.discount_per) discount_per,
   hdr.grand_total,
   v.vendor_name,
   v.vendor_address,
   v.vendor_code,
   v.contact_name ||' , '|| v.desigination contact_name,
-  dtl.required_qty,
   hdr.payment_terms,
   hdr.freight_terms,
   hdr.delivery_terms,
   m.materail_name,
+  dtl.required_qty,
   dtl.required_qty ||' '|| dtl.material_uom qty_uom,
   dtl.unit_rate,
-
-decode (dtl.discount_val,0,'---',dtl.discount_val) discount_val,
-
-decode (dtl.discount_per,0,'---',dtl.discount_per) discount_per,
   dtl.basic_value,
   ltrim(pkg_app_utils.fn_amount_to_words(ROUND(hdr.grand_total,2))) amt_words
 FROM t_mms_po_hdr hdr,
@@ -54,8 +55,9 @@ FROM t_mms_po_hdr hdr,
 WHERE hdr.po_id  = dtl.po_id
 AND v.vendor_id  = hdr.vendor_id
 AND m.material_id=dtl.material_id
-AND hdr.po_id    =22100]]>
+AND hdr.po_id    =$P{POID}]]>
 	</queryString>
+	<field name="PO_ID" class="java.math.BigDecimal"/>
 	<field name="PO_NO" class="java.lang.String"/>
 	<field name="PO_DATE" class="java.sql.Timestamp"/>
 	<field name="PO_REMARK" class="java.lang.String"/>
@@ -78,20 +80,20 @@ AND hdr.po_id    =22100]]>
 	<field name="CESS_VALUE" class="java.lang.String"/>
 	<field name="HED_PRCNT" class="java.lang.String"/>
 	<field name="HED_VALUE" class="java.lang.String"/>
+	<field name="DISCOUNT_VAL" class="java.lang.String"/>
+	<field name="DISCOUNT_PER" class="java.lang.String"/>
 	<field name="GRAND_TOTAL" class="java.math.BigDecimal"/>
 	<field name="VENDOR_NAME" class="java.lang.String"/>
 	<field name="VENDOR_ADDRESS" class="java.lang.String"/>
 	<field name="VENDOR_CODE" class="java.lang.String"/>
 	<field name="CONTACT_NAME" class="java.lang.String"/>
-	<field name="REQUIRED_QTY" class="java.lang.String"/>
 	<field name="PAYMENT_TERMS" class="java.lang.String"/>
 	<field name="FREIGHT_TERMS" class="java.lang.String"/>
 	<field name="DELIVERY_TERMS" class="java.lang.String"/>
 	<field name="MATERAIL_NAME" class="java.lang.String"/>
+	<field name="REQUIRED_QTY" class="java.lang.String"/>
 	<field name="QTY_UOM" class="java.lang.String"/>
 	<field name="UNIT_RATE" class="java.math.BigDecimal"/>
-	<field name="DISCOUNT_VAL" class="java.lang.String"/>
-	<field name="DISCOUNT_PER" class="java.lang.String"/>
 	<field name="BASIC_VALUE" class="java.math.BigDecimal"/>
 	<field name="AMT_WORDS" class="java.lang.String"/>
 	<background>

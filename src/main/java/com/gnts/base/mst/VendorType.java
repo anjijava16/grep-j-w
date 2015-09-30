@@ -130,7 +130,7 @@ public class VendorType extends BaseUI {
 			List<VendorTypeDM> list = new ArrayList<VendorTypeDM>();
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ tfvendortypename.getValue() + ", " + (String) cbStatus.getValue());
-			list = serviceVendorType.getVendorTypeList(tfvendortypename.getValue(), (String) cbStatus.getValue(), null,
+			list = serviceVendorType.getVendorTypeList(null,tfvendortypename.getValue(), (String) cbStatus.getValue(), null,
 					companyId);
 			recordCnt = list.size();
 			beanVendortypeDM = new BeanItemContainer<VendorTypeDM>(VendorTypeDM.class);

@@ -19,12 +19,14 @@ import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CityDM;
 import com.gnts.base.domain.mst.CountryDM;
+import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.domain.mst.StateDM;
 import com.gnts.base.domain.mst.VendorDM;
 import com.gnts.base.domain.mst.VendorTypeDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.CityService;
 import com.gnts.base.service.mst.CountryService;
+import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.base.service.mst.StateService;
 import com.gnts.base.service.mst.VendorService;
 import com.gnts.base.service.mst.VendorTypeService;
@@ -62,6 +64,7 @@ import com.vaadin.ui.UI;
 public class Vendor extends BaseUI {
 	// Bean creation
 	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
+	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private VendorTypeService serviceVendorType = (VendorTypeService) SpringContextHelper.getBean("vendorType");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private CountryService serviceCountry = (CountryService) SpringContextHelper.getBean("country");
@@ -127,10 +130,13 @@ public class Vendor extends BaseUI {
 				// TODO Auto-generated method stub
 				getVendorName();
 				try {
-					String vendorType = ((String) cbVendorTypeName.getValue()).substring(0, 3);
+					tfVendorName.setEnabled(false);
+					String vendorType = (serviceVendorType
+							.getVendorTypeList((Long) cbVendorTypeName.getValue(), null, "Active", null, companyid)
+							.get(0).getVendortypename().toString().substring(0, 3));
 					tfVendorCode.setReadOnly(false);
 					tfVendorCode.setValue(SerialNumberGenerator.generateSNoVEN(companyid, branchId, moduleId,
-							"BS_VNDRCD", initial,vendorType));
+							"BS_VNDRCD", initial, vendorType));
 					tfVendorCode.setReadOnly(true);
 				}
 				catch (Exception e) {
@@ -375,7 +381,9 @@ public class Vendor extends BaseUI {
 		cbCity.setComponentError(null);
 		tfVendorCode.setReadOnly(false);
 		tfVendorCode.setValue("");
+		cbVendorTypeName.setReadOnly(false);
 		cbVendorTypeName.setValue(null);
+		tfVendorName.setEnabled(true);
 		tfContactno.setValue("");
 		tfContactno.setComponentError(null);
 		tfContactName.setValue("");
@@ -426,6 +434,9 @@ public class Vendor extends BaseUI {
 		}
 		if (editVendor.getVendorCode() != null) {
 			tfVendorCode.setValue(editVendor.getVendorCode());
+		}
+		if (editVendor.getVendorTypeName() != null) {
+			cbVendorTypeName.setValue(editVendor.getVendorTypeName());
 		}
 		if (editVendor.getVendorrating() != null) {
 			tfVendorRating.setValue(editVendor.getVendorrating());
@@ -696,6 +707,14 @@ public class Vendor extends BaseUI {
 			if (cbCity.getValue() != null) {
 				vendorObj.setCityId((Long.valueOf(cbCity.getValue().toString())));
 			}
+			try {
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "BS_VNDRCD").get(0);
+				if (slnoObj.getAutoGenYN().equals("Y")) {
+					serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "BS_VNDRCD");
+				}
+			}
+			catch (Exception e) {
+			}
 			vendorObj.setContactName(tfContactName.getValue());
 			vendorObj.setContactNo(tfContactno.getValue());
 			vendorObj.setDesidnation(tfDesignation.getValue());
@@ -793,7 +812,7 @@ public class Vendor extends BaseUI {
 	private void loadVendorTypeList() {
 		BeanContainer<Long, VendorTypeDM> beanvendrdm = new BeanContainer<Long, VendorTypeDM>(VendorTypeDM.class);
 		beanvendrdm.setBeanIdProperty("vendorid");
-		beanvendrdm.addAll(serviceVendorType.getVendorTypeList(null, null, null, companyid));
+		beanvendrdm.addAll(serviceVendorType.getVendorTypeList(null, null, null, null, companyid));
 		cbVendorTypeName.setContainerDataSource(beanvendrdm);
 	}
 	

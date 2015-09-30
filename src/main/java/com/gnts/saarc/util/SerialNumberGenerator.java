@@ -123,14 +123,15 @@ public class SerialNumberGenerator {
 		return serialnumber;
 	}
 	
-	public static String generateSNoVEN(Long companyid, Long branchid, Long moduleid, String refkey, String venCode,String vendorType) {
+	public static String generateSNoVEN(Long companyid, Long branchid, Long moduleid, String refkey, String venCode,
+			Object vendorType) {
 		String serialnumber = "";
 		try {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "BS_VNDRCD").get(0);
 			logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
-				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + venCode + slnoObj.getPrefixCncat()
-						+ String.format("03d", slnoObj.getCurrSeqNo().intValue());
+				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + vendorType + venCode
+						+ slnoObj.getSuffixCncat() + slnoObj.getCurrSeqNo().intValue();
 			}
 		}
 		catch (Exception e) {

@@ -56,7 +56,7 @@ public class PhoneCallRegister extends BaseTransUI {
 	// User Input Fields for EC Request
 	private GERPPopupDateField dfCallDate;
 	private GERPComboBox cbEmployee, cbDepartment, cbCallType, tfCompany;
-	private GERPTextField tfPhoneNumber, tfIntercom, tfTime;
+	private GERPTextField tfPhoneNumber, tfIntercom, tfTime, tfContactPerson;
 	private TextArea taPurpose;
 	private GERPComboBox cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
@@ -89,7 +89,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		logger.info("CompanyId" + companyid + "username" + username + "painting PhoneCallRegister UI");
 		// EC Request Components Definition
 		cbCallType = new GERPComboBox("Call Type");
-		cbCallType.setWidth("170");
+		cbCallType.setWidth("150");
 		cbCallType.setRequired(true);
 		loadCallType();
 		tfPhoneNumber = new GERPTextField("Phone Number");
@@ -97,13 +97,16 @@ public class PhoneCallRegister extends BaseTransUI {
 		tfPhoneNumber.setReadOnly(false);
 		tfPhoneNumber.setRequired(true);
 		tfTime = new GERPTextField("Duration");
-		tfTime.setWidth("130");
+		tfTime.setWidth("150");
 		tfIntercom = new GERPTextField("Intercom");
 		tfIntercom.setRequired(true);
+		tfContactPerson = new GERPTextField("Contact Person");
+		tfContactPerson.setRequired(true);
 		tfCompany = new GERPComboBox("Caller Type");
 		tfCompany.addItem("Company");
 		tfCompany.addItem("Customer");
 		tfCompany.addItem("Personal");
+		tfCompany.setWidth("150");
 		cbDepartment = new GERPComboBox("Department");
 		cbDepartment.setItemCaptionPropertyId("deptname");
 		loadDepartmentList();
@@ -121,7 +124,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		dfCallDate.setDateFormat("dd-MMM-yyyy");
 		dfCallDate.setInputPrompt("Select Date");
 		dfCallDate.setWidth("130px");
-		cbStatus.setWidth("130");
+		cbStatus.setWidth("170");
 		hlsearchlayout = new GERPAddEditHLayout();
 		assembleSearchLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlsearchlayout));
@@ -157,10 +160,11 @@ public class PhoneCallRegister extends BaseTransUI {
 		flcol1.addComponent(cbDepartment);
 		flcol2.addComponent(tfPhoneNumber);
 		flcol2.addComponent(tfIntercom);
-		flcol2.addComponent(tfCompany);
+		flcol2.addComponent(tfContactPerson);
+		flcol3.addComponent(tfCompany);
 		flcol3.addComponent(cbCallType);
-		flcol3.addComponent(taPurpose);
-		flcol4.addComponent(tfTime);
+		flcol3.addComponent(tfTime);
+		flcol4.addComponent(taPurpose);
 		flcol4.addComponent(cbStatus);
 		hllayout.setMargin(true);
 		hllayout.addComponent(flcol1);
@@ -263,6 +267,7 @@ public class PhoneCallRegister extends BaseTransUI {
 				dfCallDate.setValue(phoneRegDM.getCallDateD());
 				cbEmployee.setValue(phoneRegDM.getEmployeeId());
 				cbDepartment.setValue(phoneRegDM.getDeptId());
+				tfContactPerson.setValue(phoneRegDM.getContactPerson());
 				cbStatus.setValue(phoneRegDM.getStatus());
 				tfPhoneNumber.setValue(phoneRegDM.getPhoneNumber());
 				tfIntercom.setValue(phoneRegDM.getInterNo());
@@ -290,6 +295,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		phoneRegDM.setStatus((String) cbStatus.getValue());
 		phoneRegDM.setPhoneNumber(tfPhoneNumber.getValue());
 		phoneRegDM.setInterNo(tfIntercom.getValue());
+		phoneRegDM.setContactPerson(tfContactPerson.getValue());
 		phoneRegDM.setCompanyName((String) tfCompany.getValue());
 		phoneRegDM.setPurpose(taPurpose.getValue());
 		phoneRegDM.setPhoneTime(tfTime.getValue());
@@ -398,6 +404,7 @@ public class PhoneCallRegister extends BaseTransUI {
 		taPurpose.setValue("");
 		tfTime.setValue("");
 		cbCallType.setValue(null);
+		tfContactPerson.setValue("");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 	}
 	

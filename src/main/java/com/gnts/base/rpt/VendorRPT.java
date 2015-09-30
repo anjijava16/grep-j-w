@@ -343,7 +343,7 @@ public class VendorRPT extends BaseUI {
 	
 	public void loadVendorTypeList() {
 		List<VendorTypeDM> list = new ArrayList<VendorTypeDM>();
-		list.addAll(serviceVendorType.getVendorTypeList(null, null, null, companyid));
+		list.addAll(serviceVendorType.getVendorTypeList(null,null, null, null, companyid));
 		BeanContainer<Long, VendorTypeDM> beanVendorType = new BeanContainer<Long, VendorTypeDM>(VendorTypeDM.class);
 		beanVendorType.setBeanIdProperty("vendorid");
 		beanVendorType.addAll(list);

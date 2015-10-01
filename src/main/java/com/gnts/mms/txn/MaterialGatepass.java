@@ -57,6 +57,7 @@ import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.DcHdrService;
 import com.gnts.mms.service.txn.GatepassDtlService;
 import com.gnts.mms.service.txn.GatepassHdrService;
+import com.gnts.saarc.util.SerialNumberGenerator;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -93,7 +94,8 @@ public class MaterialGatepass extends BaseTransUI {
 	private DcHdrService serviceDCHdr = (DcHdrService) SpringContextHelper.getBean("DCHdr");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private CompanyLookupService serviceCompLookup = (CompanyLookupService) SpringContextHelper.getBean("companyLookUp");
+	private CompanyLookupService serviceCompLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
 	private MaterialService serviceMaterial = (MaterialService) SpringContextHelper.getBean("material");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
@@ -251,6 +253,7 @@ public class MaterialGatepass extends BaseTransUI {
 			
 			@Override
 			public void valueChange(ValueChangeEvent event) {
+				loadSerialNo();
 				if (cbGatepasstype.getValue() == ("Returnable")) {
 					cbGateStatus.setValue("Pending");
 				} else {
@@ -273,12 +276,10 @@ public class MaterialGatepass extends BaseTransUI {
 					VendorDM vendordm = serviceVendor.getVendorList(null,
 							((VendorDM) cbVendor.getValue()).getVendorId(), null, null, null, null, null, null, null,
 							null, "F").get(0);
-					if ((vendordm.getVendorAddress() != null)
-							&& (vendordm.getcountryID() != null)
+					if ((vendordm.getVendorAddress() != null) && (vendordm.getcountryID() != null)
 							&& (vendordm.getStateId() != null) && (vendordm.getCityId() != null)) {
-						taVendorAddres.setValue((vendordm.getVendorAddress()) + "\n"
-								+ (vendordm.getCityName()) + "\n" + (vendordm.getStateName())
-								+ "\n" + (vendordm.getCountryName()) + "-"
+						taVendorAddres.setValue((vendordm.getVendorAddress()) + "\n" + (vendordm.getCityName()) + "\n"
+								+ (vendordm.getStateName()) + "\n" + (vendordm.getCountryName()) + "-"
 								+ (vendordm.getVendorPostcode()));
 						tfVendorname.setValue(vendordm.getContactName());
 					}
@@ -389,10 +390,10 @@ public class MaterialGatepass extends BaseTransUI {
 		flcolumn2 = new FormLayout();
 		flcolumn3 = new FormLayout();
 		flcolumn4 = new FormLayout();
+		flcolumn1.addComponent(cbGatepasstype);
 		flcolumn1.addComponent(tfGatePassNo);
 		flcolumn3.addComponent(cbVendorDCNo);
 		flcolumn3.addComponent(cbDC);
-		flcolumn1.addComponent(cbGatepasstype);
 		flcolumn1.addComponent(dfGatepassDt);
 		cbGatepasstype.setRequired(true);
 		flcolumn1.addComponent(cbVendor);
@@ -700,6 +701,7 @@ public class MaterialGatepass extends BaseTransUI {
 				cbDC.setValue(editHdrIndent.getDcId());
 				tfGatePassNo.setReadOnly(false);
 				tfGatePassNo.setValue(editHdrIndent.getGatepassNo());
+				tfGatePassNo.setReadOnly(true);
 				if (dfGatepassDt.getValue() != null) {
 					dfGatepassDt.setValue(editHdrIndent.getGatepassDtInt());
 				}
@@ -868,10 +870,12 @@ public class MaterialGatepass extends BaseTransUI {
 			if (tblMstScrSrchRslt.getValue() != null) {
 				gatepasshdr = beanGatePassHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
+			tfGatePassNo.setReadOnly(false);
 			gatepasshdr.setGatepassNo(tfGatePassNo.getValue());
+			tfGatePassNo.setReadOnly(true);
 			gatepasshdr.setBranchId(branchId);
 			gatepasshdr.setCompanyId(companyId);
-			gatepasshdr.setDcId((Long)cbDC.getValue());
+			gatepasshdr.setDcId((Long) cbDC.getValue());
 			gatepasshdr.setGatepassType((String) cbGatepasstype.getValue());
 			gatepasshdr.setModeOfTrans((String) cbModeTransport.getValue());
 			gatepasshdr.setVendorId(Long.valueOf(((VendorDM) cbVendor.getValue()).getVendorId().toString()));
@@ -894,19 +898,33 @@ public class MaterialGatepass extends BaseTransUI {
 				saveDtl.setGatepassid(Long.valueOf(gatepasshdr.getGatepassId()));
 				serviceGatePassDtl.saveorupdateDtlDetails(saveDtl);
 			}
-			if (tblMstScrSrchRslt.getValue() == null) {
-				try {
+			try {
+				comments.savegatepass(gatepasshdr.getGatepassId(), gatepasshdr.getGatepassStatus());
+				comments.resetfields();
+			}
+			catch (Exception e) {
+			}
+			try {
+				System.out.println("=================================================>" + cbGatepasstype.getValue());
+				if (cbGatepasstype.getValue().equals("Returnable")) {
+					System.out
+							.println("=================================================>" + cbGatepasstype.getValue());
 					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyId, branchId, moduleId, "MM_GPNO").get(
 							0);
 					if (slnoObj.getAutoGenYN().equals("Y")) {
 						serviceSlnogen.updateNextSequenceNumber(companyId, branchId, moduleId, "MM_GPNO");
 					}
-				}
-				catch (Exception e) {
+				} else if (cbGatepasstype.getValue().equals("NonReturnable")) {
+					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyId, branchId, moduleId, "NRGPNO_MM")
+							.get(0);
+					if (slnoObj.getAutoGenYN().equals("Y")) {
+						serviceSlnogen.updateNextSequenceNumber(companyId, branchId, moduleId, "NRGPNO_MM");
+					}
 				}
 			}
-			comments.savegatepass(gatepasshdr.getGatepassId(), gatepasshdr.getGatepassStatus());
-			comments.resetfields();
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 			gatepassDtlResetFields();
 			// resetFields();
 			loadSrchRslt();
@@ -1049,5 +1067,24 @@ public class MaterialGatepass extends BaseTransUI {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private void loadSerialNo() {
+		// TODO Auto-generated method stub
+		try {
+			tfGatePassNo.setReadOnly(false);
+			if (cbGatepasstype.getValue().equals("Returnable")) {
+				tfGatePassNo.setValue(SerialNumberGenerator.generateGPNo(companyId, branchId, moduleId, "MM_GPNO"));
+			} else if (cbGatepasstype.getValue().equals("NonReturnable")) {
+				tfGatePassNo.setValue(SerialNumberGenerator.generateGPNo(companyId, branchId, moduleId, "NRGPNO_MM"));
+			}
+			tfGatePassNo.setReadOnly(true);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void updateSerial() {
 	}
 }

@@ -149,7 +149,7 @@ public class SerialNumberGenerator {
 				logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
 				if (slnoObj.getAutoGenYN().equals("Y")) {
 					serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + indType
-							+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey() + "/" + slnoObj.getCurrSeqNo();
+							+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey() + slnoObj.getSuffixCncat()+ slnoObj.getCurrSeqNo();
 				}
 			} else {
 				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "MM_INDNO").get(0);
@@ -167,7 +167,7 @@ public class SerialNumberGenerator {
 		return serialnumber;
 	}
 	
-	public static String generateDCNo(Long companyid, Long branchid, Long moduleid, String refkey, String dcType,
+	public static String generateGPNo(Long companyid, Long branchid, Long moduleid, String refkey, String dcType,
 			String dcTypeRNR) {
 		String serialnumber = "";
 		try {
@@ -187,6 +187,33 @@ public class SerialNumberGenerator {
 				}
 			}
 			dcType = "";
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		logger.info("serialnumber--->" + serialnumber);
+		return serialnumber;
+	}
+	
+	public static String generateGPNo(Long companyid, Long branchid, Long moduleid, String refkey) {
+		String serialnumber = "";
+		try {
+			if (refkey.equals("MM_GPNO")) {
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "MM_GPNO").get(0);
+				logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
+				if (slnoObj.getAutoGenYN().equals("Y")) {
+					serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + slnoObj.getSuffixKey()
+							+ slnoObj.getSuffixCncat() + slnoObj.getCurrSeqNo();
+				}
+			} else if (refkey.equals("NRGPNO_MM")) {
+				SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, null, null, "NRGPNO_MM").get(0);
+				logger.info("LOI Serial No Generation ===>" + companyid + "," + branchid + "," + moduleid);
+				if (slnoObj.getAutoGenYN().equals("Y")) {
+					serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + slnoObj.getSuffixKey()
+							+ slnoObj.getSuffixCncat() + slnoObj.getCurrSeqNo();
+				}
+			}
+			refkey = "";
 		}
 		catch (Exception e) {
 			e.printStackTrace();

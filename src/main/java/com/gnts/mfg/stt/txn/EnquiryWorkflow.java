@@ -29,6 +29,8 @@ import com.gnts.erputil.ui.UploadDocumentUI;
 import com.gnts.sms.service.txn.SmsEnqHdrService;
 import com.gnts.stt.mfg.domain.txn.EnquiryWorkflowDM;
 import com.gnts.stt.mfg.service.txn.EnquiryWorkflowService;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
@@ -41,6 +43,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.UI;
@@ -79,6 +82,7 @@ public class EnquiryWorkflow implements ClickListener {
 	private GERPPopupDateField dfReworkdate = new GERPPopupDateField("Allotted On");
 	private GERPPopupDateField dfTargetDate = new GERPPopupDateField("Target Date");
 	private GERPPopupDateField dfCompletedDate = new GERPPopupDateField("Completed On");
+	private SmsEnqHdrService serviceEnqhdr = (SmsEnqHdrService) SpringContextHelper.getBean("SmsEnqHdr");
 	private EnquiryWorkflowService serviceWorkflow = (EnquiryWorkflowService) SpringContextHelper
 			.getBean("enquiryWorkflow");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
@@ -115,6 +119,28 @@ public class EnquiryWorkflow implements ClickListener {
 		cbPendingWith.setRequired(true);
 		cbFromDept.setRequired(true);
 		cbToDept.setRequired(true);
+		dfReworkdate.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				System.out.println("================================="+serviceEnqhdr.getSmsEnqHdrList(companyid, enquiryId, null, clientId, "Active", "F", null, null)
+								.get(0).getEnquiryDate().toString());
+				if (dfReworkdate.getValue().compareTo(
+						
+						serviceEnqhdr.getSmsEnqHdrList(companyid, enquiryId, null, clientId, "Active", "F", null, null)
+								.get(0).getEnquiryDate()) == -1)
+				;
+				{
+					dfReworkdate.setValue(null);
+					Notification.show("Enter a valid date from Enquiry date");
+				}
+			}
+		});
 		// tfExistingCase.setNullRepresentation("---");
 		cbExistingCase = new GERPComboBox("Existing Case Model");
 		cbExistingCase.setReadOnly(false);
@@ -311,11 +337,10 @@ public class EnquiryWorkflow implements ClickListener {
 			}
 			serviceWorkflow.saveOrUpdateEnqWorkflow(enquiryWorkflowDM);
 			workflowId = enquiryWorkflowDM.getEnqWorkflowId();
-			String enno=enquiryWorkflowDM.getEnquiryRef();
-			System.out.println("------------>"+enno);
+			String enno = enquiryWorkflowDM.getEnquiryRef();
+			System.out.println("------------>" + enno);
 			String messageHdr = "Reg : Enquiry WorkFlow Added";
-			String messageBody = "Hi Sir/Madam ,\nEnquiry No : "
-					+ enno + "\n WorkFlow Id  : " + workflowId;
+			String messageBody = "Hi Sir/Madam ,\nEnquiry No : " + enno + "\n WorkFlow Id  : " + workflowId;
 			resetWorkflowFields();
 			getEnqWorkflowDetails();
 			try {

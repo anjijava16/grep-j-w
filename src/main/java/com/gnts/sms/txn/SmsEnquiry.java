@@ -978,8 +978,8 @@ public class SmsEnquiry extends BaseTransUI {
 		loadEnquirySpec(false, null);
 		new EnquiryWorkflow(hlEnquiryWorkflow, enquiryId, username, clientId);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, enquiryId, null, null,
-				null, status,null);
-		comments.loadsrch(true, null, null, null, null, null, null, null, enquiryId, null, null, null, null,null);
+				null, status, null);
+		comments.loadsrch(true, null, null, null, null, null, null, null, enquiryId, null, null, null, null, null);
 		try {
 			new TestingDocuments(hlDocumentLayout, enquiryId.toString(), "DR");
 		}
@@ -1061,6 +1061,21 @@ public class SmsEnquiry extends BaseTransUI {
 		cdProduct.setComponentError(null);
 		tfEnqQty.setComponentError(null);
 		tfEnqQty.setCaption("Enquiry Qty");
+		tfEnqQty.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (tfEnqQty.getValue().indexOf('.') != -1) {
+					Notification.show("Enter a valid Quanity");
+					tfEnqQty.setValue("0");
+				}
+			}
+		});
 		btndetailadd.setCaption("Add");
 		try {
 			if (UI.getCurrent().getSession().getAttribute("IS_ENQ_WF") != null
@@ -1277,7 +1292,7 @@ public class SmsEnquiry extends BaseTransUI {
 		tblspec.setVisible(true);
 		tblEnqDetails.setVisible(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null,null);
+				null, null);
 		hlDocumentLayout.removeAllComponents();
 		tblspec.removeAllItems();
 	}

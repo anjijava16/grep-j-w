@@ -1374,10 +1374,10 @@ public class DC extends BaseTransUI {
 			dcType = ((String) cbDCType.getValue()).substring(0, 1);
 			dcTypeRNR = ((String) cbDCTypeRNR.getValue()).substring(0, 1);
 			if (dcType.equals("M")) {
-				tfDcNo.setValue(SerialNumberGenerator.generateDCNo(companyid, branchId, moduleId, "MM_DCNO", dcType,
+				tfDcNo.setValue(SerialNumberGenerator.generateGPNo(companyid, branchId, moduleId, "MM_DCNO", dcType,
 						dcTypeRNR));
 			} else if (dcType.equals("S")) {
-				tfDcNo.setValue(SerialNumberGenerator.generateDCNo(companyid, branchId, moduleId, "MM_DCNOS", dcType,
+				tfDcNo.setValue(SerialNumberGenerator.generateGPNo(companyid, branchId, moduleId, "MM_DCNOS", dcType,
 						dcTypeRNR));
 			}
 			tfDcNo.setReadOnly(true);

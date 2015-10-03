@@ -118,8 +118,8 @@ public class Extruder extends BaseTransUI {
 	private Button btnAddTemp = new GERPButton("Add", "addbt", this);
 	private ComboBox cbMtrlStatus, cbDtlStatus, cbTempStatus, cbMaterial, cbLotno;
 	private ComboBox cbMachineName, cbMatName, cbStockType, cbZoneName;
-	private TextField tfExtRefNo, tfGradeNo, tfLotNo, tfExTPlnRef, tfIpQty, tfTotTime, tfOpQty, tfOeePerc, tfMtrlQty,
-			tfIsoNo, tfTempValue;
+	private TextField tfExtRefNo, tfGradeNo, tfLotNo, tfExTPlnRef, tfIpQty, tfTotTime, tfOpQty, tfOeePerc, tfOeeSym,
+			tfMtrlQty, tfIsoNo, tfTempValue;
 	private PopupDateField dfExtDt, dfProdDt;
 	private GERPTimeField tiHeatngTime, tiChrgStTm, tiChargEdTm;
 	private TextArea taInstruct, taRemark;
@@ -327,8 +327,8 @@ public class Extruder extends BaseTransUI {
 				getTotalHours();
 			}
 		});
-		tfOeePerc = new GERPTextField("OEE Percent");
-		tfOeePerc.setWidth("120");
+		tfOeePerc = new TextField();
+		tfOeePerc.setWidth("90");
 		tfOeePerc.setValue("0");
 		tfOeePerc.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
@@ -338,6 +338,10 @@ public class Extruder extends BaseTransUI {
 				getOeePercentage();
 			}
 		});
+		tfOeeSym = new TextField();
+		tfOeeSym.setWidth("30");
+		tfOeeSym.setValue("%");
+		tfOeeSym.setReadOnly(true);
 		taRemark = new TextArea("Instruction");
 		taRemark.setWidth("155px");
 		taRemark.setHeight("");
@@ -503,7 +507,11 @@ public class Extruder extends BaseTransUI {
 		flExtDtlCol1.addComponent(tiChrgStTm);
 		flExtDtlCol1.addComponent(tiChargEdTm);
 		flExtDtlCol1.addComponent(tfTotTime);
-		flExtDtlCol1.addComponent(tfOeePerc);
+		HorizontalLayout hlOeePer = new HorizontalLayout();
+		hlOeePer.setCaption("OEE Percent");
+		hlOeePer.addComponent(tfOeePerc);
+		hlOeePer.addComponent(tfOeeSym);
+		flExtDtlCol1.addComponent(hlOeePer);
 		flExtDtlCol2.addComponent(taRemark);
 		flExtDtlCol2.addComponent(cbDtlStatus);
 		HorizontalLayout hlDtl = new HorizontalLayout();
@@ -902,7 +910,6 @@ public class Extruder extends BaseTransUI {
 		dfExtDt.setRequired(true);
 		cbMaterial.setRequired(true);
 		tfOpQty.setRequired(true);
-		tfOeePerc.setRequired(true);
 		btnAddDtls.setCaption("Add");
 		btnAddMtrl.setCaption("Add");
 		btnAddTemp.setCaption("Add");

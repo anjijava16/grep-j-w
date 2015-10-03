@@ -30,11 +30,9 @@ import com.gnts.base.domain.mst.ApprovalSchemaDM;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.ProductDM;
-import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.service.mst.BranchService;
 import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.ProductService;
-import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.crm.domain.mst.ClientDM;
 import com.gnts.crm.service.mst.ClientService;
 import com.gnts.erputil.BASEConstants;
@@ -108,7 +106,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class SalesPO extends BaseTransUI  {
+public class SalesPO extends BaseTransUI {
 	private ClientService serviceClients = (ClientService) SpringContextHelper.getBean("clients");
 	private SmsCommentsService serviceComment = (SmsCommentsService) SpringContextHelper.getBean("smsComments");
 	private SmsPOHdrService servicesmsPOHdr = (SmsPOHdrService) SpringContextHelper.getBean("smspohdr");
@@ -124,7 +122,6 @@ public class SalesPO extends BaseTransUI  {
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
-	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	// form layout for input controls for PO Header
 	private FormLayout flColumn1, flColumn2, flColumn3, flColumn4;
 	// form layout for input controls for PO Details
@@ -132,11 +129,11 @@ public class SalesPO extends BaseTransUI  {
 	// // User Input Components for PO Details
 	private ComboBox cbBranch, cbStatus, cbPOType, cbQuoteNo, cbEnquiryNumber;
 	private ComboBox cbPaymetTerms, cbFreightTerms, cbWarrentyTerms, cbDelTerms, cbClient;
-	private TextField tfVersionNo, tfBasictotal, tfPackingPer, tfPackingValue, tfPONumber;
+	private TextField tfVersionNo, tfBasictotal, tfPackingPer, tfPackingValue;
 	private TextField tfSubTotal, tfVatPer, tfVatValue, tfEDPer, tfEDValue, tfHEDPer;
 	private TextField tfHEDValue, tfCessPer, tfCessValue, tfCstPer, tfCstValue, tfSubTaxTotal;
 	private TextField tfFreightValue, tfOtherValue, tfGrandtotal, tfDocumentCharges, tfPDCCharges, tfDiscountPer,
-			tfDiscountValue;
+			tfDiscountValue, tfPoNo;
 	private GERPTextField tfDisToatal = new GERPTextField("Total");
 	private TextArea taRemark, taInvoiceAddr, taShipmentAddr, taLiquidatedDamage;
 	private CheckBox chkDutyExe, ckPdcRqu, chkCformReq, ckCashPO;
@@ -206,7 +203,6 @@ public class SalesPO extends BaseTransUI  {
 		cbQuoteNo.setWidth("150");
 		cbQuoteNo.setImmediate(true);
 		cbEnquiryNumber = new ComboBox("Enquiry No.");
-		cbEnquiryNumber = new ComboBox("Enquiry No");
 		cbEnquiryNumber.setItemCaptionPropertyId("enquiryNo");
 		cbEnquiryNumber.setWidth("150");
 		cbEnquiryNumber.setRequired(true);
@@ -251,7 +247,9 @@ public class SalesPO extends BaseTransUI  {
 				}
 			}
 		});
-		cbQuoteNo.setImmediate(true);
+		tfPoNo = new TextField("PO Number");
+		tfPoNo.setRequired(true);
+		tfPoNo.setWidth("150");
 		cbQuoteNo.setImmediate(true);
 		cbQuoteNo.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -285,9 +283,6 @@ public class SalesPO extends BaseTransUI  {
 		dfPODt = new GERPPopupDateField("Purchase Ord Date");
 		dfPODt.setInputPrompt("Select Date");
 		dfPODt.setWidth("150");
-		tfPONumber = new TextField("PO. Number");
-		tfPONumber.setWidth("150");
-		tfPONumber.setRequired(true);
 		taRemark = new TextArea("Remarks");
 		taRemark.setHeight("50");
 		taRemark.setWidth("150");
@@ -755,8 +750,7 @@ public class SalesPO extends BaseTransUI  {
 		flColumn1.addComponent(cbQuoteNo);
 		flColumn1.addComponent(cbClient);
 		flColumn1.addComponent(cbPOType);
-		// flColumn1.addComponent(ckcasePO);
-		flColumn1.addComponent(tfPONumber);
+		flColumn1.addComponent(tfPoNo);
 		flColumn1.addComponent(dfPODt);
 		flColumn1.addComponent(tfVersionNo);
 		flColumn2.addComponent(taInvoiceAddr);
@@ -928,17 +922,14 @@ public class SalesPO extends BaseTransUI  {
 			beansmsPODtl.addAll(listPODetails);
 			BigDecimal sum = new BigDecimal("0");
 			BigDecimal sumPdc = new BigDecimal("0");
-
 			for (SmsPODtlDM obj : listPODetails) {
 				if (obj.getBasicvalue() != null) {
 					sum = sum.add(obj.getBasicvalue());
 				}
 			}
-			
 			for (SmsPODtlDM obj : listPODetails) {
 				if (obj.getPdcValue() != null) {
 					sumPdc = sumPdc.add(obj.getPdcValue());
-					System.out.println("=============================================>" + sumPdc);
 				}
 			}
 			tfBasictotal.setReadOnly(false);
@@ -1134,9 +1125,8 @@ public class SalesPO extends BaseTransUI  {
 			SmsPOHdrDM poHdrDM = beansmsPOHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			poid = poHdrDM.getPoid();
 			cbBranch.setValue(poHdrDM.getBranchid());
-			tfPONumber.setReadOnly(false);
-			tfPONumber.setValue(poHdrDM.getPono());
 			dfPODt.setValue(poHdrDM.getPodate());
+			tfPoNo.setValue(poHdrDM.getPono());
 			taRemark.setValue(poHdrDM.getPoremark());
 			tfVersionNo.setValue(poHdrDM.getVersionno().toString());
 			tfBasictotal.setReadOnly(false);
@@ -1248,10 +1238,10 @@ public class SalesPO extends BaseTransUI  {
 		loadPODetails();
 		loadPOAcceptParamDetails(true);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, poid, null,
-				status,null);
-		comments.loadsrch(true, null, null, null, null, poid, null, null, null, null, null, null, null,null);
+				status, null);
+		comments.loadsrch(true, null, null, null, null, poid, null, null, null, null, null, null, null, null);
 		comments.commentList = serviceComment.getSmsCommentsList(null, null, null, null, poid, null, null, null, null,
-				null, null, null,null);
+				null, null, null, null);
 	}
 	
 	private void editPODtl() {
@@ -1309,7 +1299,7 @@ public class SalesPO extends BaseTransUI  {
 				if ((poDtlDM.getPdcValue() != null)) {
 					tfdtlPDC.setValue(poDtlDM.getPdcValue().toString());
 				}
-				if(taCustProddesc.getValue()!=null){
+				if (taCustProddesc.getValue() != null) {
 					taCustProddesc.setValue(poDtlDM.getCustproddesc());
 				}
 			}
@@ -1339,7 +1329,6 @@ public class SalesPO extends BaseTransUI  {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbStatus.setValue(null);
 		cbPOType.setValue(null);
-		tfPONumber.setValue("");
 		cbBranch.setValue(branchId);
 		lblNotification.setIcon(null);
 		lblNotification.setCaption("");
@@ -1376,18 +1365,6 @@ public class SalesPO extends BaseTransUI  {
 		tfCstValue.setReadOnly(true);
 		assembleInputUserLayout();
 		new UploadDocumentUI(hlPODoc);
-		tfPONumber.setReadOnly(false);
-		try {
-			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_NPONO").get(0);
-			if (slnoObj.getAutoGenYN().equals("Y")) {
-				tfPONumber.setReadOnly(false);
-			} else {
-				tfPONumber.setReadOnly(false);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
 		resetFields();
 		btnsavepurQuote.setCaption("Add");
 		btnAccept.setCaption("Add");
@@ -1395,7 +1372,7 @@ public class SalesPO extends BaseTransUI  {
 		tblSmsAccept.setVisible(true);
 		cbBranch.setValue(branchId);
 		comments = new SmsComments(vlTableForm, null, companyid, null, null, null, null, null, null, null, null, null,
-				null,null);
+				null, null);
 		loadPOAcceptParamDetails(false);
 	}
 	
@@ -1420,7 +1397,7 @@ public class SalesPO extends BaseTransUI  {
 		resetFields();
 		editPOHdr();
 		getCalculatedValues();
-		comments.loadsrch(true, null, null, null, null, null, null, null, null, null, poid, null, null,null);
+		comments.loadsrch(true, null, null, null, null, null, null, null, null, null, poid, null, null, null);
 	}
 	
 	@Override
@@ -1429,14 +1406,9 @@ public class SalesPO extends BaseTransUI  {
 		cbBranch.setComponentError(null);
 		cbPOType.setComponentError(null);
 		cbEnquiryNumber.setComponentError(null);
-		tfPONumber.setComponentError(null);
 		Boolean errorFlag = false;
 		if ((cbBranch.getValue() == null)) {
 			cbBranch.setComponentError(new UserError(GERPErrorCodes.BRANCH_NAME));
-			errorFlag = true;
-		}
-		if (tfPONumber.getValue() == null && tfPONumber.getValue().trim().length() > 0) {
-			tfPONumber.setComponentError(new UserError(GERPErrorCodes.PURCAHSE_ORD_NO));
 			errorFlag = true;
 		}
 		if ((cbEnquiryNumber.getValue() == null)) {
@@ -1478,16 +1450,11 @@ public class SalesPO extends BaseTransUI  {
 			SmsPOHdrDM smspoHdrobj = new SmsPOHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
 				smspoHdrobj = beansmsPOHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
-				if (tfPONumber.getValue() != null) {
-					smspoHdrobj.setPono(tfPONumber.getValue());
-				} else {
-					smspoHdrobj.setPono("");
-				}
 			}
-			smspoHdrobj.setPono(tfPONumber.getValue());
 			smspoHdrobj.setBranchid((Long) cbBranch.getValue());
 			smspoHdrobj.setCompanyid(companyid);
 			smspoHdrobj.setPodate(dfPODt.getValue());
+			smspoHdrobj.setPono(tfPoNo.getValue());
 			smspoHdrobj.setPoremark(taRemark.getValue());
 			smspoHdrobj.setLiquidatedDamage(taLiquidatedDamage.getValue());
 			if (cbPOType.getValue() != null) {
@@ -1588,17 +1555,6 @@ public class SalesPO extends BaseTransUI  {
 			if (smspoHdrobj.getPostatus() != null) {
 				comments.saveSalesPo(smspoHdrobj.getPoid(), smspoHdrobj.getPostatus().toString());
 			}
-			if (tblMstScrSrchRslt.getValue() == null) {
-				try {
-					SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "SM_NPONO")
-							.get(0);
-					if (slnoObj.getAutoGenYN().equals("Y")) {
-						serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "SM_NPONO");
-					}
-				}
-				catch (Exception e) {
-				}
-			}
 			resetFields();
 			loadSrchRslt();
 		}
@@ -1684,7 +1640,6 @@ public class SalesPO extends BaseTransUI  {
 		cbProduct.setRequired(false);
 		cbBranch.setRequired(false);
 		cbPOType.setRequired(false);
-		tfPONumber.setRequired(false);
 		tfBasicValue.setRequired(false);
 		tfUnitRate.setRequired(false);
 		resetFields();
@@ -1701,10 +1656,9 @@ public class SalesPO extends BaseTransUI  {
 		cbEnquiryNumber.setComponentError(null);
 		cbQuoteNo.setContainerDataSource(null);
 		cbClient.setContainerDataSource(null);
-		tfPONumber.setReadOnly(false);
-		tfPONumber.setValue("");
 		tfBasictotal.setReadOnly(false);
 		tfBasictotal.setValue("0");
+		tfPoNo.setValue("");
 		try {
 			tfCessPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "CESS", "Active", "F").get(0)
 					.getTaxprnct().toString());
@@ -1716,8 +1670,8 @@ public class SalesPO extends BaseTransUI  {
 		tfCessValue.setValue("0");
 		chkCformReq.setValue(false);
 		try {
-			tfCstPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "CST", "Active", "F").get(0)
-					.getTaxprnct().toString());
+			tfCstPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "CST", "Active", "F").get(0).getTaxprnct()
+					.toString());
 		}
 		catch (Exception e) {
 			tfCstPer.setValue("0");
@@ -1727,8 +1681,8 @@ public class SalesPO extends BaseTransUI  {
 		tfCstValue.setValue("0");
 		chkDutyExe.setValue(false);
 		try {
-			tfVatPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "VAT", "Active", "F").get(0)
-					.getTaxprnct().toString());
+			tfVatPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "VAT", "Active", "F").get(0).getTaxprnct()
+					.toString());
 		}
 		catch (Exception e) {
 			tfVatPer.setValue("0");
@@ -1764,8 +1718,8 @@ public class SalesPO extends BaseTransUI  {
 		tfHEDValue.setReadOnly(false);
 		tfHEDValue.setValue("0");
 		try {
-			tfHEDPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "HED", "Active", "F").get(0)
-					.getTaxprnct().toString());
+			tfHEDPer.setValue(serviceTaxes.getTaxesSmsList(companyid, null, "HED", "Active", "F").get(0).getTaxprnct()
+					.toString());
 		}
 		catch (Exception e) {
 			tfHEDPer.setValue("0");
@@ -2045,7 +1999,6 @@ public class SalesPO extends BaseTransUI  {
 			if (((SmsQuoteHdrDM) cbQuoteNo.getValue()).getDeliveryTerms() != null) {
 				cbDelTerms.setValue(((SmsQuoteHdrDM) cbQuoteNo.getValue()).getDeliveryTerms().toString());
 			}
-			
 			// load quote details
 			listPODetails = new ArrayList<SmsPODtlDM>();
 			for (SmsQuoteDtlDM quoteDtlDM : serviceQuoteDtl.getsmsquotedtllist(null,

@@ -60,6 +60,8 @@ import com.gnts.stt.mfg.domain.txn.PulvizHdrDM;
 import com.gnts.stt.mfg.service.txn.ExtrudersHdrService;
 import com.gnts.stt.mfg.service.txn.PulvizDtlService;
 import com.gnts.stt.mfg.service.txn.PulvizHdrService;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -77,6 +79,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -104,10 +107,10 @@ public class Pulverizer extends BaseTransUI {
 	private FormLayout flcolumn1, flcolumn2, flcolumn3, flcolumn4;
 	private FormLayout flcolumn1dtl, flcolumn2dtl, flcolumn3dtl, flcolumn4dtl, flcolumn5dtl;
 	private GERPTextArea taInstruction, taDtlRemarks;
-	private GERPTextField tfPulRefNumber, tfLotNumber, tfOEE, tfBalancePercnt, tfInput, tfOutput, tfBalanceQty,
-			tfOPMaterial;
+	private GERPTextField tfPulRefNumber, tfLotNumber, tfInput, tfOutput, tfBalanceQty, tfOPMaterial, tfTotTime;
+	private TextField tfOeeSym, tfBalSym, tfBalancePercnt, tfOEE;
 	private GERPTimeField tfTimeIn, tfTimeOut;
-	private PopupDateField dfPulvizDate, dfRefDate;
+	private PopupDateField dfPulvizDate;
 	private GERPComboBox cbBranchName, cbHdrStatus, cbDtlStatus, cbMachineName, cbExtrudRefNo;
 	private VerticalLayout vlinputhdr, vlinputdtl;
 	private Button btnAddPulvizDtl = new GERPButton("Add", "addbt", this);
@@ -144,17 +147,26 @@ public class Pulverizer extends BaseTransUI {
 		taInstruction.setNullRepresentation("");
 		tfPulRefNumber = new GERPTextField("Pulviz Ref.No");
 		// pulviz Detail
-		cbMachineName = new GERPComboBox("Machine Ref Name");
+		cbMachineName = new GERPComboBox("Machine Name");
 		cbMachineName.setItemCaptionPropertyId("assetName");
 		cbMachineName.setRequired(true);
 		loadMachineDetails();
-		dfRefDate = new PopupDateField("Date");
-		dfRefDate.setWidth("130");
-		dfRefDate.setRequired(true);
-		tfInput = new GERPTextField("Input");
-		tfOutput = new GERPTextField("Output");
+		tfInput = new GERPTextField("Input Qty");
+		tfOutput = new GERPTextField("Output Qty");
 		tfBalanceQty = new GERPTextField("Bal Qty");
-		tfOEE = new GERPTextField("OEE");
+		tfBalancePercnt.addBlurListener(new BlurListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				getBalPercent();
+			}
+		});
+		tfOEE = new TextField();
 		tfOEE.addBlurListener(new BlurListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -163,14 +175,44 @@ public class Pulverizer extends BaseTransUI {
 				getOeePercentage();
 			}
 		});
-		tfBalancePercnt = new GERPTextField("Bal Prcnt");
+		tfOEE.setWidth("120");
+		tfTotTime = new GERPTextField("Total Time");
+		tfTotTime.setWidth("120");
+		tfBalancePercnt = new TextField();
+		tfBalancePercnt.setWidth("120");
 		taDtlRemarks = new GERPTextArea("Remark");
-		taDtlRemarks.setHeight("45");
+		taDtlRemarks.setHeight("70");
 		cbDtlStatus = new GERPComboBox("Status", BASEConstants.T_STT_MFG_PULVIZ_DTL, BASEConstants.PULVIZ_STATUS);
 		// Machine TimeIn TimeField
-		tfTimeIn = new GERPTimeField("Machine Time-In");
+		tfTimeIn = new GERPTimeField("Start Time");
+		tfTimeIn.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getTotalHours();
+			}
+		});
+		tfOeeSym = new TextField();
+		tfOeeSym.setWidth("30");
+		tfOeeSym.setValue("%");
+		tfOeeSym.setReadOnly(true);
+		tfBalSym = new TextField();
+		tfBalSym.setWidth("30");
+		tfBalSym.setValue("%");
+		tfBalSym.setReadOnly(true);
 		// Machine TimeOut TimeField
-		tfTimeOut = new GERPTimeField("Machine Time-Out");
+		tfTimeOut = new GERPTimeField("End Time");
+		tfTimeOut.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getTotalHours();
+			}
+		});
 		btnAddPulvizDtl.setStyleName("Add");
 		btnAddPulvizDtl.setVisible(true);
 		btnAddPulvizDtl.addClickListener(new ClickListener() {
@@ -279,16 +321,24 @@ public class Pulverizer extends BaseTransUI {
 		flcolumn4dtl = new GERPFormLayout();
 		flcolumn5dtl = new GERPFormLayout();
 		flcolumn1dtl.addComponent(cbMachineName);
-		flcolumn1dtl.addComponent(dfRefDate);
 		flcolumn1dtl.addComponent(tfInput);
-		flcolumn2dtl.addComponent(tfOutput);
-		flcolumn2dtl.addComponent(tfBalanceQty);
-		flcolumn2dtl.addComponent(tfOEE);
-		flcolumn3dtl.addComponent(tfBalancePercnt);
-		flcolumn3dtl.addComponent(taDtlRemarks);
-		flcolumn4dtl.addComponent(tfTimeIn);
-		flcolumn4dtl.addComponent(tfTimeOut);
-		flcolumn4dtl.addComponent(cbDtlStatus);
+		flcolumn1dtl.addComponent(tfOutput);
+		flcolumn2dtl.addComponent(tfTimeIn);
+		flcolumn2dtl.addComponent(tfTimeOut);
+		flcolumn2dtl.addComponent(tfTotTime);
+		flcolumn3dtl.addComponent(tfBalanceQty);
+		HorizontalLayout hlBalPer = new HorizontalLayout();
+		hlBalPer.setCaption("Bal Percent");
+		hlBalPer.addComponent(tfBalancePercnt);
+		hlBalPer.addComponent(tfBalSym);
+		flcolumn3dtl.addComponent(hlBalPer);
+		HorizontalLayout hlOeePer = new HorizontalLayout();
+		hlOeePer.setCaption("OEE Percent");
+		hlOeePer.addComponent(tfOEE);
+		hlOeePer.addComponent(tfOeeSym);
+		flcolumn3dtl.addComponent(hlOeePer);
+		flcolumn4dtl.addComponent(taDtlRemarks);
+		flcolumn5dtl.addComponent(cbDtlStatus);
 		flcolumn5dtl.addComponent(btnAddPulvizDtl);
 		flcolumn5dtl.addComponent(btnDelete);
 		hluserInputlayoutDtl = new HorizontalLayout();
@@ -379,7 +429,6 @@ public class Pulverizer extends BaseTransUI {
 			}
 			pulvizDtlDM.setMachid(((AssetDetailsDM) cbMachineName.getValue()).getAssetId());
 			pulvizDtlDM.setMachineName(((AssetDetailsDM) cbMachineName.getValue()).getAssetName());
-			pulvizDtlDM.setProdndate(dfRefDate.getValue());
 			if (Long.valueOf(tfInput.getValue()) != null) {
 				pulvizDtlDM.setInputqty(Long.valueOf(tfInput.getValue()));
 			}
@@ -400,6 +449,9 @@ public class Pulverizer extends BaseTransUI {
 			}
 			if (tfTimeOut.getValue() != null) {
 				pulvizDtlDM.setMchnend(tfTimeOut.getHorsMunites());
+			}
+			if (tfTotTime.getValue() != null) {
+				pulvizDtlDM.setTotalTime(tfTotTime.getValue());
 			}
 			pulvizDtlDM.setRemark(taDtlRemarks.getValue());
 			pulvizDtlDM.setPreparedby(employeeId);
@@ -702,6 +754,7 @@ public class Pulverizer extends BaseTransUI {
 		cbExtrudRefNo.setComponentError(null);
 		tfOPMaterial.setValue("0");
 		taInstruction.setValue("");
+		tfTotTime.setValue("");
 		taInstruction.setComponentError(null);
 		cbBranchName.setValue(null);
 		cbBranchName.setComponentError(null);
@@ -717,8 +770,6 @@ public class Pulverizer extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "reset_PulvizDtl...");
 		cbMachineName.setValue(null);
 		cbMachineName.setComponentError(null);
-		dfRefDate.setValue(null);
-		dfRefDate.setComponentError(null);
 		tfOEE.setValue("0");
 		taDtlRemarks.setValue("");
 		tfBalancePercnt.setValue("0");
@@ -746,9 +797,6 @@ public class Pulverizer extends BaseTransUI {
 						cbMachineName.setValue(itemId);
 					}
 				}
-				if (pulvizDtlDM.getProdndate() != null) {
-					dfRefDate.setValue(pulvizDtlDM.getProdndate1());
-				}
 				tfInput.setValue(pulvizDtlDM.getInputqty().toString());
 				tfOutput.setValue(pulvizDtlDM.getOutputqty().toString());
 				if (pulvizDtlDM.getBalanceqty() != null) {
@@ -762,6 +810,9 @@ public class Pulverizer extends BaseTransUI {
 				}
 				if (pulvizDtlDM.getPlvzdtlstatus() != null) {
 					cbDtlStatus.setValue(pulvizDtlDM.getPlvzdtlstatus());
+				}
+				if (pulvizDtlDM.getTotalTime() != null) {
+					tfTotTime.setValue(pulvizDtlDM.getTotalTime());
 				}
 				tfTimeIn.setTime(pulvizDtlDM.getMchnstart());
 				tfTimeOut.setTime(pulvizDtlDM.getMchnend());
@@ -787,12 +838,6 @@ public class Pulverizer extends BaseTransUI {
 			validpuldtl = false;
 		} else {
 			cbMachineName.setComponentError(null);
-		}
-		if (dfRefDate.getValue() == null) {
-			dfRefDate.setComponentError(new UserError(GERPErrorCodes.NULL_PULVIZDTL_DATE));
-			validpuldtl = false;
-		} else {
-			dfRefDate.setComponentError(null);
 		}
 		Long input;
 		try {
@@ -901,17 +946,49 @@ public class Pulverizer extends BaseTransUI {
 			}
 		}
 	}
+	
 	private void getOeePercentage() {
 		try {
-			BigDecimal outPutOty = (new BigDecimal(tfOutput.getValue()).divide(new BigDecimal("800"), 2,
+			BigDecimal outPutOty = (new BigDecimal(tfOutput.getValue()).divide(new BigDecimal("400"), 2,
 					RoundingMode.HALF_UP)).multiply(new BigDecimal("50"));
-			BigDecimal time = tfTimeIn.getHorsMunitesinBigDecimal()
-					.subtract(tfTimeOut.getHorsMunitesinBigDecimal())
-					.divide(new BigDecimal("8.00"), 2, RoundingMode.HALF_UP);
+			BigDecimal time = (new BigDecimal(tfTotTime.getValue()).divide(new BigDecimal("8.00"), 2,
+					RoundingMode.HALF_UP));
 			tfOEE.setValue(outPutOty.multiply(time).round(new MathContext(2)).toString());
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void getTotalHours() {
+		try {
+			// TODO Auto-generated method stub
+			if (tfTimeIn.getValue() != null && tfTimeOut.getValue() != null) {
+				if (tfTimeIn.getHorsMunitesinBigDecimal().compareTo(tfTimeOut.getHorsMunitesinBigDecimal()) < 0) {
+					tfTotTime.setValue(tfTimeIn.getHorsMunitesinBigDecimal()
+							.subtract(tfTimeOut.getHorsMunitesinBigDecimal()).abs().toString());
+				} else {
+					tfTotTime.setValue("0.0");
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void getBalPercent() {
+		try {
+			// TODO Auto-generated method stub
+			if (tfInput.getValue() != null && tfBalanceQty.getValue() != null) {
+				tfBalancePercnt.setValue((new BigDecimal(tfBalanceQty.getValue()).divide(new BigDecimal(tfInput
+						.getValue()))).multiply(new BigDecimal(100)).round(new MathContext(2)).toString());
+			} else {
+				tfBalancePercnt.setValue("0.0");
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

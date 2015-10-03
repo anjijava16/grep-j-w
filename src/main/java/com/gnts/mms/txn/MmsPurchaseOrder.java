@@ -1801,7 +1801,7 @@ public class MmsPurchaseOrder extends BaseTransUI {
 			statement = connection.createStatement();
 			HashMap<String, Long> parameterMap = new HashMap<String, Long>();
 			System.out.println("poid-->" + poid);
-			parameterMap.put("ENQID", poId);
+			parameterMap.put("POID", poId);
 			Report rpt = new Report(parameterMap, connection);
 			rpt.setReportName(basepath + "/WEB-INF/reports/mmspo"); // productlist is the name of my jasper
 			rpt.callReport(basepath, "Preview");

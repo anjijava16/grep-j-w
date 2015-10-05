@@ -7,9 +7,12 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import org.springframework.context.annotation.Scope;
+import com.gargoylesoftware.htmlunit.javascript.host.Text;
 import com.gnts.crm.txn.Documents;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinService;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
@@ -48,7 +51,7 @@ public class DesignDocumentUI implements Serializable {
 		// BEGIN-EXAMPLE: component.upload.basic
 		// Create the upload with a caption and set receiver later
 		Upload upload = new Upload("", null);
-		upload.setButtonCaption("Attach");
+		upload.setButtonCaption("Attach *");
 		upload.setImmediate(true);
 		/*
 		 * Upload upp=new Upload(); upp.setButtonCaption("Download");

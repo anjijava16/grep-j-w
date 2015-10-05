@@ -9,7 +9,6 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-hdr.po_id,
 hdr.po_no,
   hdr.po_date,
   hdr.po_remark,
@@ -57,7 +56,6 @@ AND v.vendor_id  = hdr.vendor_id
 AND m.material_id=dtl.material_id
 AND hdr.po_id    =$P{POID}]]>
 	</queryString>
-	<field name="PO_ID" class="java.math.BigDecimal"/>
 	<field name="PO_NO" class="java.lang.String"/>
 	<field name="PO_DATE" class="java.sql.Timestamp"/>
 	<field name="PO_REMARK" class="java.lang.String"/>

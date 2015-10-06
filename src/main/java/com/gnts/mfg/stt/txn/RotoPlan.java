@@ -592,7 +592,7 @@ public class RotoPlan extends BaseTransUI {
 			List<RotoPlanHdrDM> listRotoPlanHdr = new ArrayList<RotoPlanHdrDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + dfRotoPlanDt.getValue());
-			listRotoPlanHdr = serviceRotoplanhdr.getRotoPlanHdrDetails(null, companyid, dfRotoPlanDt.getValue(),
+			listRotoPlanHdr = serviceRotoplanhdr.getRotoPlanHdrDetails(null, companyid, null,dfRotoPlanDt.getValue(),
 					cbStatus.getValue().toString());
 			recordCnt = listRotoPlanHdr.size();
 			beanRotoPlanHdrDM = new BeanItemContainer<RotoPlanHdrDM>(RotoPlanHdrDM.class);

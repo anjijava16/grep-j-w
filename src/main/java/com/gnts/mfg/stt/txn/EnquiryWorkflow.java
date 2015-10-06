@@ -128,16 +128,15 @@ public class EnquiryWorkflow implements ClickListener {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
-				System.out.println("================================="+serviceEnqhdr.getSmsEnqHdrList(companyid, enquiryId, null, clientId, "Active", "F", null, null)
-								.get(0).getEnquiryDate().toString());
-				if (dfReworkdate.getValue().compareTo(
-						
-						serviceEnqhdr.getSmsEnqHdrList(companyid, enquiryId, null, clientId, "Active", "F", null, null)
-								.get(0).getEnquiryDate()) == -1)
-				;
-				{
-					dfReworkdate.setValue(null);
-					Notification.show("Enter a valid date from Enquiry date");
+				try {
+					if (dfReworkdate.getValue().compareTo(
+							serviceEnqhdr.getSmsEnqHdrList(companyid, enquiryId, null, null, null, "F", null, null)
+									.get(0).getEnquiryDate()) < 0) {
+						dfReworkdate.setValue(null);
+						Notification.show("Enter a valid date from Enquiry date");
+					}
+				}
+				catch (Exception e) {
 				}
 			}
 		});

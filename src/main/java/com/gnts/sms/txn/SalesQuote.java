@@ -96,6 +96,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
@@ -215,6 +216,21 @@ public class SalesQuote extends BaseTransUI {
 		tfQuoteNumber.setWidth("150");
 		tfQuoteRef = new TextField("Quote Ref");
 		tfQuoteRef.setWidth("150");
+		tfQuoteRef.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				if (serviceQuoteHdr.getSmsQuoteHdrList(companyid, null, branchId, null, tfQuoteRef.getValue(), null,
+						"F", null).size() > 0) {
+					tfQuoteRef.setComponentError(new UserError("Quote Ref Already Exist"));
+					Notification.show("Quote Ref Already Exist");
+				} else {
+					tfQuoteRef.setComponentError(null);
+				}
+			}
+		});
 		dfQuoteDt = new GERPPopupDateField("Quote Date");
 		dfQuoteDt.setInputPrompt("Select Date");
 		dfQuoteDt.setWidth("130px");
@@ -914,13 +930,11 @@ public class SalesQuote extends BaseTransUI {
 			for (SmsQuoteDtlDM obj : listQuoteDtls) {
 				if (obj.getBasicvalue() != null) {
 					sum = sum.add(obj.getBasicvalue());
-					System.out.println("======================================sum=======>" + sum);
 				}
 			}
 			for (SmsQuoteDtlDM obj : listQuoteDtls) {
 				if (obj.getPdcValue() != null) {
 					sumPdc = sumPdc.add(obj.getPdcValue());
-					System.out.println("=============================================>" + sumPdc);
 				}
 			}
 			tfPDCCharges.setReadOnly(false);
@@ -1001,7 +1015,8 @@ public class SalesQuote extends BaseTransUI {
 	// Load EnquiryNo
 	private void loadEnquiryNo() {
 		BeanItemContainer<SmsEnqHdrDM> beansmsenqHdr = new BeanItemContainer<SmsEnqHdrDM>(SmsEnqHdrDM.class);
-		beansmsenqHdr.addAll(serviceEnqHeader.getSmsEnqHdrList(companyid, null, null, null, null, "P", null, null));
+		beansmsenqHdr.addAll(serviceEnqHeader
+				.getSmsEnqHdrList(companyid, null, null, null, "Approved", "P", null, null));
 		cbEnqNo.setContainerDataSource(beansmsenqHdr);
 	}
 	
@@ -1521,6 +1536,15 @@ public class SalesQuote extends BaseTransUI {
 		cbEnqNo.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
+		if (tfQuoteRef.getValue() != null && tfQuoteRef.getValue() != "") {
+			if (serviceQuoteHdr.getSmsQuoteHdrList(companyid, null, branchId, null, tfQuoteRef.getValue(), null, "F",
+					null).size() > 0) {
+				tfQuoteRef.setComponentError(new UserError("Quote Ref Already Exist"));
+				Notification.show("Quote Ref Already Exist");
+			} else {
+				tfQuoteRef.setComponentError(null);
+			}
+		}
 		if (cbBranch.getValue() == null) {
 			cbBranch.setComponentError(new UserError(GERPErrorCodes.BRANCH_NAME));
 			errorFlag = true;
@@ -1797,6 +1821,7 @@ public class SalesQuote extends BaseTransUI {
 		catch (Exception e) {
 			tfCessPer.setValue("0");
 		}
+		tfPDCCharges.setReadOnly(false);
 		tfPDCCharges.setValue("0");
 		cbWindCommPerson.setValue(null);
 		cbWindTechPers.setValue(null);
@@ -2104,10 +2129,9 @@ public class SalesQuote extends BaseTransUI {
 							if (dialog.isConfirmed()) {
 								QuoteTechCondDM quoteTechCondDM = beanQuoteTech.getItem(tblTechnicalTerms.getValue())
 										.getBean();
-								quoteTechCondDM.setStatus("Inactive");
-								serviceQuoteTechCond.saveOrUpdateDetails(quoteTechCondDM);
+								listTechnicalTerms.remove(quoteTechCondDM);
 								resetTechnicalTerms();
-								loadTechnicalTerms(true);
+								loadTechnicalTerms(false);
 							}
 						}
 					});
@@ -2129,10 +2153,9 @@ public class SalesQuote extends BaseTransUI {
 							if (dialog.isConfirmed()) {
 								QuoteCommCondDM quoteCommCondDM = beanQuoteComm.getItem(tblCommercialTerms.getValue())
 										.getBean();
-								quoteCommCondDM.setStatus("Inactive");
-								serviceQuoteCommCond.saveOrUpdateDetails(quoteCommCondDM);
+								listCommercialTerms.remove(quoteCommCondDM);
 								resetCommercialTerms();
-								loadCommmercialTerms(true);
+								loadCommmercialTerms(false);
 							}
 						}
 					});

@@ -54,12 +54,16 @@ import com.gnts.mms.domain.txn.IndentHdrDM;
 import com.gnts.mms.domain.txn.MMSVendorDtlDM;
 import com.gnts.mms.domain.txn.MmsEnqDtlDM;
 import com.gnts.mms.domain.txn.MmsEnqHdrDM;
+import com.gnts.mms.domain.txn.MmsEnqSpecDM;
 import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.mms.service.txn.MMSVendorDtlService;
 import com.gnts.mms.service.txn.MmsEnqDtlService;
 import com.gnts.mms.service.txn.MmsEnqHdrService;
+import com.gnts.mms.service.txn.MmsEnqSpecService;
 import com.gnts.saarc.util.SerialNumberGenerator;
+import com.gnts.sms.domain.txn.QuoteCommCondDM;
+import com.gnts.sms.service.txn.QuoteCommCondService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -99,6 +103,7 @@ public class MaterialEnquiry extends BaseTransUI {
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private BranchService serviceBranch = (BranchService) SpringContextHelper.getBean("mbranch");
 	private VendorService serviceVendor = (VendorService) SpringContextHelper.getBean("Vendor");
+	private MmsEnqSpecService serviceEnqSpec = (MmsEnqSpecService) SpringContextHelper.getBean("mmsEnqSpec");
 	private List<MmsEnqDtlDM> listEnqDetails = new ArrayList<MmsEnqDtlDM>();
 	// form layout for input controls
 	private FormLayout flMmsEnqHdr1, flMmsEnqHdr2, flMmsEnqHdr3, flMmsEnqHdr4, flMmsEnqDtl1, flMmsEnqDtl4,
@@ -123,8 +128,16 @@ public class MaterialEnquiry extends BaseTransUI {
 	private Table tblMmsEnqDtl = new GERPTable();
 	private BeanItemContainer<MmsEnqHdrDM> beanMmsEnqHdrDM = null;
 	private BeanItemContainer<MmsEnqDtlDM> beanMmsEnqDtlDM = null;
+	// Specification Table
+	private Table tblCommercialTerms = new Table();
+	private TextField tfTermsCode = new TextField("Code");
+	private TextArea taTermsDesc = new TextArea("Description");
+	private GERPButton btnAddComm = new GERPButton("Save/Update", "savebt");
+	private GERPButton btnDeleteComm = new GERPButton("Delete", "cancelbt", this);
+	private BeanItemContainer<MmsEnqSpecDM> beanQuoteComm = null;
+	private List<MmsEnqSpecDM> listCommercialTerms = new ArrayList<MmsEnqSpecDM>();
+	private GERPButton btnPrintbackquote = new GERPButton("Print Back", "downloadbt", this);
 	// local variables declaration
-	private String enquiryid;
 	private Long companyid;
 	private Long enquiryId;
 	private int recordCnt = 0;
@@ -251,6 +264,38 @@ public class MaterialEnquiry extends BaseTransUI {
 										null, null, "F").get(0).getMaterialUOM());
 					}
 				}
+			}
+		});
+		tblCommercialTerms.addItemClickListener(new ItemClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				if (tblCommercialTerms.isSelected(event.getItemId())) {
+					resetCommercialTerms();
+				} else {
+					((AbstractSelect) event.getSource()).select(event.getItemId());
+					editCommercialTerms();
+				}
+			}
+		});
+		btnAddComm.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				saveCommercialTerms();
+			}
+		});
+		hlPageHdrContainter.addComponent(btnPrintbackquote);
+		hlPageHdrContainter.setComponentAlignment(btnPrintbackquote, Alignment.MIDDLE_RIGHT);
+		btnPrintbackquote.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				printDetailsback();
 			}
 		});
 		cbUom = new ComboBox();
@@ -397,6 +442,16 @@ public class MaterialEnquiry extends BaseTransUI {
 		hlMmsEnqdTL.addComponent(flMmsEnqDtl6);
 		hlMmsEnqdTL.setSpacing(true);
 		hlMmsEnqdTL.setMargin(true);
+		final HorizontalLayout hlCommTerms = new HorizontalLayout();
+		tblCommercialTerms.setWidth("100%");
+		tblCommercialTerms.setPageLength(5);
+		hlCommTerms.setSpacing(true);
+		hlCommTerms.addComponent(new FormLayout(tfTermsCode));
+		hlCommTerms.addComponent(new FormLayout(taTermsDesc));
+		hlCommTerms.addComponent(btnAddComm);
+		hlCommTerms.addComponent(btnDeleteComm);
+		hlCommTerms.setComponentAlignment(btnAddComm, Alignment.MIDDLE_LEFT);
+		hlCommTerms.setComponentAlignment(btnDeleteComm, Alignment.MIDDLE_LEFT);
 		VerticalLayout vlMmsEnqHDR = new VerticalLayout();
 		vlMmsEnqHDR = new VerticalLayout();
 		vlMmsEnqHDR.addComponent(hlMmsEnqdTL);
@@ -404,6 +459,14 @@ public class MaterialEnquiry extends BaseTransUI {
 		vlMmsEnqHDR.setSpacing(true);
 		TabSheet dtlTab = new TabSheet();
 		dtlTab.addTab(vlMmsEnqHDR, "Material Enquiry Detail");
+		dtlTab.addTab(new VerticalLayout() {
+			private static final long serialVersionUID = 1L;
+			{
+				setSpacing(true);
+				addComponent(hlCommTerms);
+				addComponent(tblCommercialTerms);
+			}
+		}, "Commercial Terms & Conditions");
 		dtlTab.addTab(vlTableForm, "Comments");
 		VerticalLayout vlMmsEnqHdrdTL = new VerticalLayout();
 		vlMmsEnqHdrdTL = new VerticalLayout();
@@ -650,6 +713,7 @@ public class MaterialEnquiry extends BaseTransUI {
 		lsMaterial.setRequired(true);
 		resetFields();
 		tfEnqNo.setReadOnly(false);
+		btnPrintbackquote.setVisible(true);
 		try {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_ENQRYNO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
@@ -685,6 +749,44 @@ public class MaterialEnquiry extends BaseTransUI {
 		lsMaterial.setRequired(true);
 		// cbUom.setRequired(true);
 		loadMatDtl();
+	}
+	
+	private void saveCommercialTerms() {
+		if (tfTermsCode.getValue() != "" && tfTermsCode.getValue() != null && taTermsDesc.getValue() != ""
+				&& taTermsDesc.getValue() != null) {
+			MmsEnqSpecDM mmsEnqSpecDM = new MmsEnqSpecDM();
+			if (tblCommercialTerms.getValue() != null) {
+				mmsEnqSpecDM = beanQuoteComm.getItem(tblCommercialTerms.getValue()).getBean();
+			}
+			mmsEnqSpecDM.setCode(tfTermsCode.getValue());
+			mmsEnqSpecDM.setDescription(taTermsDesc.getValue());
+			mmsEnqSpecDM.setEnquiryId(enquiryId);
+			mmsEnqSpecDM.setStatus("Active");
+			mmsEnqSpecDM.setLastupdatedby(username);
+			mmsEnqSpecDM.setLastupdateddt(DateUtils.getcurrentdate());
+			listCommercialTerms.add(mmsEnqSpecDM);
+			loadCommmercialTerms(false);
+			resetCommercialTerms();
+		}
+	}
+	
+	private void loadCommmercialTerms(Boolean fromdb) {
+		tblCommercialTerms.removeAllItems();
+		if (fromdb) {
+			listCommercialTerms = serviceEnqSpec.getMMSEnqSpecDetails(null, enquiryId, null, "Active");
+		}
+		beanQuoteComm = new BeanItemContainer<MmsEnqSpecDM>(MmsEnqSpecDM.class);
+		beanQuoteComm.addAll(listCommercialTerms);
+		tblCommercialTerms.setContainerDataSource(beanQuoteComm);
+		tblCommercialTerms.setVisibleColumns(new Object[] { "code", "description", "lastupdateddt", "lastupdatedby" });
+		tblCommercialTerms.setColumnHeaders(new String[] { "Code", "Description", "Last Updated Date",
+				"Last Updated By" });
+	}
+	
+	private void editCommercialTerms() {
+		MmsEnqSpecDM mmsEnqSpecDM = beanQuoteComm.getItem(tblCommercialTerms.getValue()).getBean();
+		tfTermsCode.setValue(mmsEnqSpecDM.getCode());
+		taTermsDesc.setValue(mmsEnqSpecDM.getDescription());
 	}
 	
 	@Override
@@ -731,6 +833,37 @@ public class MaterialEnquiry extends BaseTransUI {
 		}
 		if (errorFlag) {
 			throw new ERPException.ValidationException();
+		}
+	}
+	
+	private void printDetailsback() {
+		// TODO Auto-generated method stub
+		Connection connection = null;
+		Statement statement = null;
+		String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+		try {
+			connection = Database.getConnection();
+			statement = connection.createStatement();
+			HashMap<String, String> parameterMap = new HashMap<String, String>();
+			parameterMap.put("QTID", enquiryId.toString());
+			System.out.println("quote id" + enquiryId);
+			Report rpt = new Report(parameterMap, connection);
+			rpt.setReportName(basepath + "/WEB-INF/reports/quoteback"); // productlist is the name of my jasper
+			rpt.callReport(basepath, "Preview");
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				statement.close();
+				Database.close(connection);
+			}
+			catch (Exception e) {
+				logger.info(e.getMessage());
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -881,12 +1014,17 @@ public class MaterialEnquiry extends BaseTransUI {
 		}
 	}
 	
+	private void resetCommercialTerms() {
+		tfTermsCode.setValue("");
+		taTermsDesc.setValue("");
+	}
+	
 	@Override
 	protected void showAuditDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Getting audit record for TestType. ID " + "");
 		UI.getCurrent().getSession().setAttribute("audittable", BASEConstants.T_MMS_ENQUIRY_HDR);
-		UI.getCurrent().getSession().setAttribute("audittablepk", enquiryid);
+		UI.getCurrent().getSession().setAttribute("audittablepk", enquiryId);
 	}
 	
 	@Override

@@ -42,6 +42,7 @@ import com.gnts.stt.mfg.service.txn.RotoPlanHdrService;
 import com.gnts.stt.mfg.service.txn.RotohdrService;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -219,6 +220,18 @@ public class RotoCheck extends BaseTransUI {
 		cbBranch.setItemCaptionPropertyId("branchName");
 		cbBranch.setRequired(true);
 		cbBranch.setWidth("150");
+		cbBranch.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				loadRotoPlanList();
+			}
+		});
 		loadBranchList();
 		tfRotoRef = new GERPTextField("Roto Ref No.");
 		tfRotoRef.setWidth("150");
@@ -232,7 +245,6 @@ public class RotoCheck extends BaseTransUI {
 		cbPlanRef = new GERPComboBox("Plan Ref No.");
 		cbPlanRef.setRequired(true);
 		cbPlanRef.setWidth("150");
-		loadRotoPlanList();
 		cbPlanRef.setItemCaptionPropertyId("rotoplanrefno");
 		cbPlanRef.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -795,7 +807,8 @@ public class RotoCheck extends BaseTransUI {
 	private void loadRotoPlanList() {
 		try {
 			BeanItemContainer<RotoPlanHdrDM> beanrotoplanhdr = new BeanItemContainer<RotoPlanHdrDM>(RotoPlanHdrDM.class);
-			beanrotoplanhdr.addAll(serviceRotoplanhdr.getRotoPlanHdrDetails(null, companyid, null, "Active"));
+			beanrotoplanhdr.addAll(serviceRotoplanhdr.getRotoPlanHdrDetails(null, companyid,
+					(Long) cbBranch.getValue(), null, "Active"));
 			cbPlanRef.setContainerDataSource(beanrotoplanhdr);
 		}
 		catch (Exception e) {

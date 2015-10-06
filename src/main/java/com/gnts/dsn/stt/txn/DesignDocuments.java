@@ -226,21 +226,26 @@ public class DesignDocuments implements ClickListener {
 	private void deleteDetails() {
 		// TODO Auto-generated method stub
 		try {
-			// TODO Auto-generated method stub
-			ConfirmDialog.show(UI.getCurrent(), "Please Confirm:", "Are you really sure?", "Delete File", "Not quite",
-					new ConfirmDialog.Listener() {
-						private static final long serialVersionUID = 1L;
-						
-						public void onClose(ConfirmDialog dialog) {
-							if (dialog.isConfirmed()) {
-								DocumentsDM documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
-								documentsDM.setStatus("Inactive");
-								serviceDocuments.saveOrUpdateDocumentsDetails(documentsDM);
-								resetDetails();
-								loadSearchResult();
+			if (tfDocumentName.getValue() != null && tfDocumentName.getValue() != "") {
+				// TODO Auto-generated method stub
+				ConfirmDialog.show(UI.getCurrent(), "Please Confirm:", "Are you really sure?", "Delete File",
+						"Not quite", new ConfirmDialog.Listener() {
+							private static final long serialVersionUID = 1L;
+							
+							public void onClose(ConfirmDialog dialog) {
+								if (dialog.isConfirmed()) {
+									DocumentsDM documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
+									documentsDM.setStatus("Inactive");
+									serviceDocuments.saveOrUpdateDocumentsDetails(documentsDM);
+									resetDetails();
+									loadSearchResult();
+								}
 							}
-						}
-					});
+						});
+			}
+			else{
+				Notification.show("No Documents Are Selected To Delete");
+			}
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

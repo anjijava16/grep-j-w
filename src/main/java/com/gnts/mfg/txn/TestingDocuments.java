@@ -125,8 +125,8 @@ public class TestingDocuments implements ClickListener {
 			beanDocuments.addAll(documentList);
 			tblDocuments.setSelectable(true);
 			tblDocuments.setContainerDataSource(beanDocuments);
-			tblDocuments.setVisibleColumns(new Object[] { "documentName", "lastUpdatedBy","lastUpdatedDt" });
-			tblDocuments.setColumnHeaders(new String[] { "Document Name", "Uploaded By","Uploaded Dt" });
+			tblDocuments.setVisibleColumns(new Object[] { "documentName", "lastUpdatedBy", "lastUpdatedDt" });
+			tblDocuments.setColumnHeaders(new String[] { "Document Name", "Uploaded By", "Uploaded Dt" });
 			tblDocuments.setColumnFooter("lastUpdatedDt", "No.of Records : " + recordcount);
 		}
 		catch (Exception e) {
@@ -202,20 +202,24 @@ public class TestingDocuments implements ClickListener {
 		// TODO Auto-generated method stub
 		try {
 			// TODO Auto-generated method stub
-			ConfirmDialog.show(UI.getCurrent(), "Please Confirm:", "Are you really sure?", "Delete File", "Not quite",
-					new ConfirmDialog.Listener() {
-						private static final long serialVersionUID = 1L;
-						
-						public void onClose(ConfirmDialog dialog) {
-							if (dialog.isConfirmed()) {
-								DocumentsDM documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
-								documentsDM.setStatus("Inactive");
-								serviceDocuments.saveOrUpdateDocumentsDetails(documentsDM);
-								resetDetails();
-								loadSearchResult(docTypeId);
+			if (tfDocumentName.getValue() != null && tfDocumentName.getValue() != "") {
+				ConfirmDialog.show(UI.getCurrent(), "Please Confirm:", "Are you really sure?", "Delete File",
+						"Not quite", new ConfirmDialog.Listener() {
+							private static final long serialVersionUID = 1L;
+							
+							public void onClose(ConfirmDialog dialog) {
+								if (dialog.isConfirmed()) {
+									DocumentsDM documentsDM = beanDocuments.getItem(tblDocuments.getValue()).getBean();
+									documentsDM.setStatus("Inactive");
+									serviceDocuments.saveOrUpdateDocumentsDetails(documentsDM);
+									resetDetails();
+									loadSearchResult(docTypeId);
+								}
 							}
-						}
-					});
+						});
+			} else {
+				Notification.show("No Documents Are Selected To Delete");
+			}
 		}
 		catch (Exception e) {
 		}

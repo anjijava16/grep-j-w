@@ -72,7 +72,7 @@ abstract public class BaseUI implements ClickListener {
 	private Logger logger = Logger.getLogger(BaseUI.class);
 	
 	public BaseUI() {
-		if(UI.getCurrent().getSession().getAttribute("screenName")!=null){
+		if (UI.getCurrent().getSession().getAttribute("screenName") != null) {
 			screenName = UI.getCurrent().getSession().getAttribute("screenName").toString();
 		}
 		btnScreenName = new GERPButton(screenName, "link", this);
@@ -223,6 +223,7 @@ abstract public class BaseUI implements ClickListener {
 			hlUserIPContainer.removeAllComponents();
 			lblNotification.setIcon(null);
 			lblNotification.setCaption("");
+			UI.getCurrent().getSession().setAttribute("THR_ADD", true);
 			// Dummy implementation, actual will be implemented in extended
 			// class
 			addDetails();
@@ -284,6 +285,7 @@ abstract public class BaseUI implements ClickListener {
 			vlSrchRsltContainer.addComponent(tblMstScrSrchRslt);
 			vlSrchRsltContainer.setExpandRatio(tblMstScrSrchRslt, 1);
 			tblMstScrSrchRslt.setValue(null);
+			UI.getCurrent().getSession().setAttribute("THR_ADD", false);
 			// Dummy implementation, actual will be implemented in extended
 			// class
 			cancelDetails();

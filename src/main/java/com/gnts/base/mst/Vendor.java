@@ -787,7 +787,7 @@ public class Vendor extends BaseUI {
 	private void loadStateList() {
 		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 		beanState.setBeanIdProperty("stateId");
-		beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "P"));
+		beanState.addAll(serviceState.getStateList(null, null,"Active", (Long) cbCountry.getValue(), null, "P"));
 		cbState.setContainerDataSource(beanState);
 	}
 	

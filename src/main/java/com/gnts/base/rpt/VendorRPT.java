@@ -314,7 +314,7 @@ public class VendorRPT extends BaseUI {
 	private void loadStateList() {
 		List<StateDM> getStateList = new ArrayList<StateDM>();
 		getStateList.add(new StateDM(0L, "All states"));
-		getStateList.addAll(serviceState.getStateList(null, "Active", null, companyid, "P"));
+		getStateList.addAll(serviceState.getStateList(null, null,"Active", null, companyid, "P"));
 		BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 		beanState.setBeanIdProperty("stateId");
 		beanState.addAll(getStateList);

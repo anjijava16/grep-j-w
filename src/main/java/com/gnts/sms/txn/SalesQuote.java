@@ -225,7 +225,8 @@ public class SalesQuote extends BaseTransUI {
 				if (serviceQuoteHdr.getSmsQuoteHdrList(companyid, null, branchId, null, tfQuoteRef.getValue(), null,
 						"F", null).size() > 0) {
 					tfQuoteRef.setComponentError(new UserError("Quote Ref Already Exist"));
-					Notification.show("Quote Ref Already Exist");
+					Notification.show("Quote Ref Number : " + tfQuoteRef.getValue() + " is Already Exist");
+					tfQuoteRef.setValue("0");
 				} else {
 					tfQuoteRef.setComponentError(null);
 				}
@@ -1536,15 +1537,6 @@ public class SalesQuote extends BaseTransUI {
 		cbEnqNo.setComponentError(null);
 		Boolean errorFlag = false;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		if (tfQuoteRef.getValue() != null && tfQuoteRef.getValue() != "") {
-			if (serviceQuoteHdr.getSmsQuoteHdrList(companyid, null, branchId, null, tfQuoteRef.getValue(), null, "F",
-					null).size() > 0) {
-				tfQuoteRef.setComponentError(new UserError("Quote Ref Already Exist"));
-				Notification.show("Quote Ref Already Exist");
-			} else {
-				tfQuoteRef.setComponentError(null);
-			}
-		}
 		if (cbBranch.getValue() == null) {
 			cbBranch.setComponentError(new UserError(GERPErrorCodes.BRANCH_NAME));
 			errorFlag = true;

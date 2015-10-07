@@ -220,7 +220,7 @@ public class Branch extends BaseUI {
 			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 			beanState.setBeanIdProperty("stateId");
 			beanState
-					.addAll(serviceState.getStateList(null, "Active", (Long) cbCountryName.getValue(), companyid, "P"));
+					.addAll(serviceState.getStateList(null,null, "Active", (Long) cbCountryName.getValue(), companyid, "P"));
 			cbStateName.setContainerDataSource(beanState);
 		}
 		catch (Exception e) {

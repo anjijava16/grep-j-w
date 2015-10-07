@@ -62,8 +62,6 @@ import com.gnts.mms.service.txn.MmsEnqDtlService;
 import com.gnts.mms.service.txn.MmsEnqHdrService;
 import com.gnts.mms.service.txn.MmsEnqSpecService;
 import com.gnts.saarc.util.SerialNumberGenerator;
-import com.gnts.sms.domain.txn.QuoteCommCondDM;
-import com.gnts.sms.service.txn.QuoteCommCondService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -466,7 +464,7 @@ public class MaterialEnquiry extends BaseTransUI {
 				addComponent(hlCommTerms);
 				addComponent(tblCommercialTerms);
 			}
-		}, "Commercial Terms & Conditions");
+		}, "Enquiry Specification");
 		dtlTab.addTab(vlTableForm, "Comments");
 		VerticalLayout vlMmsEnqHdrdTL = new VerticalLayout();
 		vlMmsEnqHdrdTL = new VerticalLayout();
@@ -845,10 +843,10 @@ public class MaterialEnquiry extends BaseTransUI {
 			connection = Database.getConnection();
 			statement = connection.createStatement();
 			HashMap<String, String> parameterMap = new HashMap<String, String>();
-			parameterMap.put("QTID", enquiryId.toString());
-			System.out.println("quote id" + enquiryId);
+			parameterMap.put("ENQID", enquiryId.toString());
+			System.out.println("Enquiry Id : " + enquiryId);
 			Report rpt = new Report(parameterMap, connection);
-			rpt.setReportName(basepath + "/WEB-INF/reports/quoteback"); // productlist is the name of my jasper
+			rpt.setReportName(basepath + "/WEB-INF/reports/enqSpecBack"); // productlist is the name of my jasper
 			rpt.callReport(basepath, "Preview");
 		}
 		catch (Exception e) {

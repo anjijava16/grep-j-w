@@ -1582,7 +1582,7 @@ public class SmsEnquiry extends BaseTransUI {
 		try {
 			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 			beanState.setBeanIdProperty("stateId");
-			beanState.addAll(serviceState.getStateList(null, "Active", (Long) cbCountry.getValue(), null, "F"));
+			beanState.addAll(serviceState.getStateList(null, null,"Active", (Long) cbCountry.getValue(), null, "F"));
 			cbState.setContainerDataSource(beanState);
 		}
 		catch (Exception e) {

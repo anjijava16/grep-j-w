@@ -257,11 +257,11 @@ public class City extends BaseUI {
 	// Load state list for panelmain's combo Box
 	private void loadaddStatelist(List<StateDM> getStateList) {
 		try {
-			getStateList.addAll(serviceState.getStateList(null, (String) cbStatus.getValue(),
+			getStateList.addAll(serviceState.getStateList(null, null,(String) cbStatus.getValue(),
 					(Long) cbCountry.getValue(), null, "P"));
 			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 			beanState.setBeanIdProperty("stateId");
-			beanState.addAll(serviceState.getStateList(null, (String) cbStatus.getValue(), (Long) cbCountry.getValue(),
+			beanState.addAll(serviceState.getStateList(null, null,(String) cbStatus.getValue(), (Long) cbCountry.getValue(),
 					null, "P"));
 			cbState.setContainerDataSource(beanState);
 		}

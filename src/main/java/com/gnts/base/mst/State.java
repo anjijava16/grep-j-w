@@ -33,6 +33,8 @@ import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.erputil.validations.StringWithSpaceValidation;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.UserError;
@@ -40,6 +42,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -75,16 +78,48 @@ public class State extends BaseUI {
 		buildview();
 	}
 	
+	@SuppressWarnings("serial")
 	private void buildview() {
 		logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Painting State UI");
 		// State Name text field
 		tfStateName = new GERPTextField("State Name");
 		tfStateName.setMaxLength(25);
 		tfStateName.addValidator(new StringWithSpaceValidation("Enter characters only"));
+		tfStateName.addValueChangeListener(new ValueChangeListener() {
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (UI.getCurrent().getSession().getAttribute("THR_ADD") != null
+						&& (Boolean) UI.getCurrent().getSession().getAttribute("THR_ADD")) {
+					if (serviceState.getStateList(tfStateName.getValue(), null, null, null, companyId, "F").size() > 0
+							&& tfStateName.getValue() != null && tfStateName.getValue() != "") {
+						tfStateName.setComponentError(new UserError("State Name Already Exist"));
+						Notification.show("State Name : " + tfStateName.getValue() + " is Already Exist");
+						tfStateName.setValue("");
+					} else {
+						tfStateName.setComponentError(null);
+					}
+				}
+			}
+		});
 		tfStateCode = new TextField("State Code");
 		tfStateCode.setVisible(false);
 		// Only Four Integer only accept it
 		tfStateCode.setMaxLength(4);
+		tfStateCode.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (serviceState.getStateList(null, tfStateCode.getValue(), null, null, companyId, "F").size() > 0
+						&& tfStateCode.getValue() != null && tfStateCode.getValue() != "") {
+					tfStateName.setComponentError(new UserError("State Code Already Exist"));
+					Notification.show("State Code : " + tfStateCode.getValue() + " is Already Exist");
+					tfStateCode.setValue("");
+				} else {
+					tfStateCode.setComponentError(null);
+				}
+			}
+		});
 		// Country Name Combo Box
 		cbCountryName = new GERPComboBox("Country Name");
 		cbCountryName.setWidth("215");
@@ -139,8 +174,8 @@ public class State extends BaseUI {
 			}
 			logger.info("Company ID : " + companyId + " | User Name : " + userName + " > " + "Search Parameters are "
 					+ companyId + ", " + tfStateName.getValue() + ", " + (String) cbStatus.getValue());
-			stateList = serviceState.getStateList(tfStateName.getValue(), (String) cbStatus.getValue(), countryid,
-					companyId, "F");
+			stateList = serviceState.getStateList(tfStateName.getValue(), null, (String) cbStatus.getValue(),
+					countryid, companyId, "F");
 			recordCnt = stateList.size();
 			beanStateDM = new BeanItemContainer<StateDM>(StateDM.class);
 			beanStateDM.addAll(stateList);

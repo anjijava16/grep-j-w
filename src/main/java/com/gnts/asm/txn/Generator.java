@@ -5,12 +5,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -715,23 +710,6 @@ public class Generator extends BaseTransUI {
 				e.printStackTrace();
 			}
 		}
-	}
-	
-	private Date addDays(Date d, int days) {
-		DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		String strDate = sdf.format(d);
-		Date parsedDate = null;
-		try {
-			parsedDate = sdf.parse(strDate);
-		}
-		catch (ParseException e) {
-			// TODO Auto-generated catch block
-			logger.warn("calculate days" + e);
-		}
-		Calendar now = Calendar.getInstance();
-		now.setTime(parsedDate);
-		now.add(Calendar.DAY_OF_MONTH, days);
-		return now.getTime();
 	}
 	
 	private void loadAssetDetails() {

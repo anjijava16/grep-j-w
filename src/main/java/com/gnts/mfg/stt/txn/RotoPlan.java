@@ -17,13 +17,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.gnts.base.domain.mst.BranchDM;
+import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.EmployeeDM;
 import com.gnts.base.domain.mst.SlnoGenDM;
 import com.gnts.base.service.mst.BranchService;
+import com.gnts.base.service.mst.CompanyLookupService;
 import com.gnts.base.service.mst.EmployeeService;
 import com.gnts.base.service.mst.SlnoGenService;
 import com.gnts.crm.domain.mst.ClientDM;
@@ -56,6 +59,7 @@ import com.gnts.stt.mfg.service.txn.RotoPlanHdrService;
 import com.gnts.stt.mfg.service.txn.RotoPlanShiftService;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -92,6 +96,8 @@ public class RotoPlan extends BaseTransUI {
 	private WorkOrderDtlService serviceWorkOrderDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
+	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
+			.getBean("companyLookUp");
 	private List<RotoPlanDtlDM> listRotoPlanDetail = null;
 	private List<RotoPlanArmDM> listRotoPlanArm = null;
 	private List<RotoPlanShiftDM> listRotoPlanShift = null;
@@ -119,10 +125,10 @@ public class RotoPlan extends BaseTransUI {
 	private Button btnShiftdelete = new GERPButton("Delete", "delete", this);
 	private Button btnArmDelete = new GERPButton("Delete", "delete", this);
 	private ComboBox cbBranch, cbStatus, cbArmProd, cbDtlStatus, cbEmpName, cbWO, cbArmstatus, cbProd, cbClientId,
-			cbArmWONo;
+			cbArmWONo, cbArmNo;
 	private ComboBox cbShftStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
-	private TextField tfPlanRefNo, tfPlanHdrQty, tfShiftName, tfTargetQty, tfPlanDtlQty, tfArmno, tfNoofcycle;
+	private TextField tfPlanRefNo, tfPlanHdrQty, tfShiftName, tfTargetQty, tfPlanDtlQty, tfOrderQty, tfNoofcycle;
 	private DateField dfRotoPlanDt;
 	private TextArea taRemark;
 	private Table tblRotoPlanDtls, tblShift, tblArmDtls;
@@ -297,9 +303,10 @@ public class RotoPlan extends BaseTransUI {
 		// Plan Ref.No text field
 		tfPlanRefNo = new GERPTextField("Plan Ref.No");
 		tfPlanRefNo.setWidth("130px");
-		tfArmno = new GERPTextField("Arm No");
-		tfArmno.setWidth("130");
-		tfArmno.setValue("0");
+		cbArmNo = new GERPComboBox("Arm No");
+		cbArmNo.setWidth("130");
+		cbArmNo.setValue("0");
+		loadArmNumberList();
 		tfNoofcycle = new GERPTextField("No Of Cycle");
 		tfNoofcycle.setWidth("110");
 		tfNoofcycle.setValue("0");
@@ -367,20 +374,48 @@ public class RotoPlan extends BaseTransUI {
 		cbProd = new GERPComboBox("Prod.Name");
 		cbProd.setWidth("100px");
 		cbProd.setItemCaptionPropertyId("prodName");
+		cbProd.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				tfOrderQty.setValue(serviceWorkOrderDtl.getWorkOrderDtlList((((WorkOrderDtlDM) cbProd.getValue()).getProductName()), null, null, "F").get(0).getPlanQty()
+						.toString());
+			}
+		});
 		// Arm Product Name ComboBox
 		cbArmProd = new GERPComboBox("Prod.Name");
 		cbArmProd.setWidth("130");
 		cbArmProd.setItemCaptionPropertyId("prodName");
-		loadProduct();
 		// ARM WOID
 		cbArmWONo = new GERPComboBox("WO No.");
 		cbArmWONo.setItemCaptionPropertyId("workOrdrNo");
 		cbArmWONo.setWidth("130");
 		loadarmWorkOrderNo();
+		cbArmWONo.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				loadArmProduct();
+			}
+		});
 		// Plan Qty. Textfield
 		tfPlanDtlQty = new GERPTextField("Plan Qty.");
 		tfPlanDtlQty.setValue("0");
 		tfPlanDtlQty.setWidth("100px");
+		tfOrderQty = new GERPTextField("Order Qty.");
+		tfOrderQty.setValue("0");
+		tfOrderQty.setWidth("100px");
+		tfOrderQty.setEnabled(false);
 		// Status ComboBox
 		cbDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
@@ -508,7 +543,7 @@ public class RotoPlan extends BaseTransUI {
 		new FormLayout();
 		flArmCol1.addComponent(cbArmWONo);
 		flArmCol1.addComponent(cbArmProd);
-		flArmCol1.addComponent(tfArmno);
+		flArmCol1.addComponent(cbArmNo);
 		flArmCol2.addComponent(tfNoofcycle);
 		flArmCol2.addComponent(cbArmstatus);
 		flArmCol3.addComponent(btnAddArm);
@@ -551,6 +586,7 @@ public class RotoPlan extends BaseTransUI {
 		flDtlCol1.addComponent(cbClientId);
 		flDtlCol1.addComponent(cbWO);
 		flDtlCol2.addComponent(cbProd);
+		flDtlCol2.addComponent(tfOrderQty);
 		flDtlCol2.addComponent(tfPlanDtlQty);
 		flDtlCol3.addComponent(cbDtlStatus);
 		HorizontalLayout hlBtn = new HorizontalLayout();
@@ -592,7 +628,7 @@ public class RotoPlan extends BaseTransUI {
 			List<RotoPlanHdrDM> listRotoPlanHdr = new ArrayList<RotoPlanHdrDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + dfRotoPlanDt.getValue());
-			listRotoPlanHdr = serviceRotoplanhdr.getRotoPlanHdrDetails(null, companyid, null,dfRotoPlanDt.getValue(),
+			listRotoPlanHdr = serviceRotoplanhdr.getRotoPlanHdrDetails(null, companyid, null, dfRotoPlanDt.getValue(),
 					cbStatus.getValue().toString());
 			recordCnt = listRotoPlanHdr.size();
 			beanRotoPlanHdrDM = new BeanItemContainer<RotoPlanHdrDM>(RotoPlanHdrDM.class);
@@ -635,8 +671,8 @@ public class RotoPlan extends BaseTransUI {
 					taRemark.setValue(rotoPlanHdrDM.getRemarks());
 				}
 				cbStatus.setValue(rotoPlanHdrDM.getRotoplanstatus());
-				listRotoPlanDetail.addAll(serviceRotoplandtl.getRotoPlanDtlList(null, Long.valueOf(rotoplanId), null,
-						null, cbDtlStatus.getValue().toString()));
+				listRotoPlanDetail.addAll(serviceRotoplandtl.getRotoPlanDtlList(null, null, Long.valueOf(rotoplanId),
+						null, null, null, cbDtlStatus.getValue().toString()));
 				listRotoPlanShift.addAll(serviceRotoplanshift.getRotoPlanShiftList(null, Long.valueOf(rotoplanId),
 						null, cbShftStatus.getValue().toString()));
 				listRotoPlanArm.addAll(serviceRotoplanarm.getRotoPlanArmList(null, Long.valueOf(rotoplanId), null,
@@ -767,7 +803,7 @@ public class RotoPlan extends BaseTransUI {
 					}
 				}
 				if (rotoPlanArmDM.getArmNo() != null) {
-					tfArmno.setValue(rotoPlanArmDM.getArmNo().toString());
+					cbArmNo.setValue(rotoPlanArmDM.getArmNo().toString());
 				}
 				if (rotoPlanArmDM.getNoOfcycle() != null) {
 					tfNoofcycle.setValue(rotoPlanArmDM.getNoOfcycle().toString());
@@ -838,8 +874,9 @@ public class RotoPlan extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbClientId.setValue(null);
 		cbWO.setValue(null);
-		cbProd.setValue(null);
+		//cbProd.setValue(null);
 		tfPlanDtlQty.setValue("0");
+		tfOrderQty.setValue("0");
 		cbDtlStatus.setValue(cbDtlStatus.getItemIds().iterator().next());
 		cbClientId.setComponentError(null);
 		cbWO.setComponentError(null);
@@ -848,7 +885,7 @@ public class RotoPlan extends BaseTransUI {
 	
 	private void resetRotoArmDetails() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
-		tfArmno.setValue("0");
+		cbArmNo.setValue("0");
 		tfNoofcycle.setValue("0");
 		cbArmstatus.setValue(null);
 		cbArmProd.setValue(null);
@@ -893,7 +930,7 @@ public class RotoPlan extends BaseTransUI {
 				rotoPlanArmObj = beanRotoPlanarmDM.getItem(tblArmDtls.getValue()).getBean();
 				listRotoPlanArm.remove(rotoPlanArmObj);
 			}
-			rotoPlanArmObj.setArmNo(Long.valueOf(tfArmno.getValue()));
+			rotoPlanArmObj.setArmNo((Long) cbArmNo.getValue());
 			rotoPlanArmObj.setNoOfcycle(Long.valueOf(tfNoofcycle.getValue()));
 			if (cbArmWONo.getValue() != null) {
 				rotoPlanArmObj.setWoId(((WorkOrderHdrDM) cbArmWONo.getValue()).getWorkOrdrId());
@@ -953,7 +990,7 @@ public class RotoPlan extends BaseTransUI {
 	}
 	
 	private boolean validationArmDetails() {
-		tfArmno.setComponentError(null);
+		cbArmNo.setComponentError(null);
 		tfNoofcycle.setComponentError(null);
 		boolean isValid = true;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
@@ -967,14 +1004,14 @@ public class RotoPlan extends BaseTransUI {
 		}
 		Long armNo;
 		try {
-			armNo = Long.valueOf(tfArmno.getValue());
+			armNo = ((Long) cbArmNo.getValue());
 			if (armNo < 0) {
-				tfArmno.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
+				cbArmNo.setComponentError(new UserError(GERPErrorCodes.LESS_THEN_ZERO));
 				isValid = false;
 			}
 		}
 		catch (Exception e) {
-			tfArmno.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
+			cbArmNo.setComponentError(new UserError(GERPErrorCodes.WORK_ORDER_DTL_QTY));
 			isValid = false;
 		}
 		Long noCycle;
@@ -1068,7 +1105,7 @@ public class RotoPlan extends BaseTransUI {
 		cbProd.setRequired(true);
 		cbArmProd.setRequired(true);
 		cbArmWONo.setRequired(true);
-		tfArmno.setRequired(true);
+		cbArmNo.setRequired(true);
 		tfNoofcycle.setRequired(true);
 		// reset the input controls to default value
 		tblMstScrSrchRslt.setVisible(false);
@@ -1111,7 +1148,7 @@ public class RotoPlan extends BaseTransUI {
 		cbClientId.setRequired(true);
 		cbArmProd.setRequired(true);
 		cbArmWONo.setRequired(true);
-		tfArmno.setRequired(true);
+		cbArmNo.setRequired(true);
 		tfNoofcycle.setRequired(true);
 		// reset the input controls to default value
 		assembleInputUserLayout();
@@ -1133,7 +1170,7 @@ public class RotoPlan extends BaseTransUI {
 		cbWO.setComponentError(null);
 		cbProd.setComponentError(null);
 		cbArmProd.setComponentError(null);
-		tfArmno.setComponentError(null);
+		cbArmNo.setComponentError(null);
 		tfNoofcycle.setComponentError(null);
 		errorFlag = false;
 		if ((cbBranch.getValue() == null)) {
@@ -1248,7 +1285,7 @@ public class RotoPlan extends BaseTransUI {
 		cbWO.setComponentError(null);
 		cbProd.setComponentError(null);
 		cbArmProd.setComponentError(null);
-		tfArmno.setComponentError(null);
+		cbArmNo.setComponentError(null);
 		tfNoofcycle.setComponentError(null);
 		cbBranch.setRequired(false);
 		dfRotoPlanDt.setRequired(false);
@@ -1260,7 +1297,7 @@ public class RotoPlan extends BaseTransUI {
 		cbProd.setRequired(false);
 		cbArmProd.setRequired(false);
 		cbArmWONo.setRequired(false);
-		tfArmno.setRequired(false);
+		cbArmNo.setRequired(false);
 		tfNoofcycle.setRequired(false);
 		resetRotoDetailsFields();
 		resetRotoShiftFields();
@@ -1284,7 +1321,7 @@ public class RotoPlan extends BaseTransUI {
 		tfPlanRefNo.setValue("");
 		tfPlanRefNo.setReadOnly(true);
 		tfPlanRefNo.setComponentError(null);
-		dfRotoPlanDt.setValue(null);
+		dfRotoPlanDt.setValue(new Date());
 		tfPlanHdrQty.setValue("0");
 		taRemark.setValue("");
 		cbShftStatus.setValue(cbShftStatus.getItemIds().iterator().next());
@@ -1300,10 +1337,11 @@ public class RotoPlan extends BaseTransUI {
 		// Assembly Plan Dtls resetfields
 		cbClientId.setValue(null);
 		cbWO.setValue(null);
-		cbProd.setValue(null);
+		//cbProd.setValue(null);
 		tfPlanDtlQty.setValue("0");
+		tfOrderQty.setValue("0");
 		cbArmProd.setComponentError(null);
-		tfArmno.setComponentError(null);
+		cbArmNo.setComponentError(null);
 		tfNoofcycle.setComponentError(null);
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
 		cbArmstatus.setValue(cbArmstatus.getItemIds().iterator().next());
@@ -1328,6 +1366,21 @@ public class RotoPlan extends BaseTransUI {
 			beanBranchDM.setBeanIdProperty("branchId");
 			beanBranchDM.addAll(serviceBranch.getBranchList(null, null, null, "Active", companyid, "P"));
 			cbBranch.setContainerDataSource(beanBranchDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void loadArmNumberList() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
+			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
+					CompanyLookupDM.class);
+			beanCompanyLookUp.setBeanIdProperty("lookupname");
+			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
+					"MP_ARMNO"));
+			cbArmNo.setContainerDataSource(beanCompanyLookUp);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -1382,11 +1435,12 @@ public class RotoPlan extends BaseTransUI {
 	}
 	
 	// Load Product List
-	private void loadProduct() {
+	private void loadArmProduct() {
 		try {
-			BeanItemContainer<WorkOrderDtlDM> beanProduct = new BeanItemContainer<WorkOrderDtlDM>(WorkOrderDtlDM.class);
-			beanProduct.addAll(serviceWorkOrderDtl.getWorkOrderDtlList(null, null, null, "F"));
-			cbArmProd.setContainerDataSource(beanProduct);
+			BeanItemContainer<RotoPlanDtlDM> beanArmProduct = new BeanItemContainer<RotoPlanDtlDM>(RotoPlanDtlDM.class);
+			beanArmProduct.addAll(serviceRotoplandtl.getRotoPlanDtlList(companyid, null, Long.valueOf(rotoplanId),
+					null, null, (Long) cbArmWONo.getValue(),null));
+			cbArmProd.setContainerDataSource(beanArmProduct);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -1415,11 +1469,11 @@ public class RotoPlan extends BaseTransUI {
 	 */
 	private void loadarmWorkOrderNo() {
 		try {
-			BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(
-					WorkOrderHdrDM.class);
-			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
-					null, null, null, null, null));
-			cbArmWONo.setContainerDataSource(beanWrkOrdHdr);
+			BeanItemContainer<RotoPlanDtlDM> beanPlanWrkOrdHdr = new BeanItemContainer<RotoPlanDtlDM>(
+					RotoPlanDtlDM.class);
+			beanPlanWrkOrdHdr.addAll(serviceRotoplandtl.getRotoPlanDtlList(companyid, null, Long.valueOf(rotoplanId),
+					null, null, null, "Active"));
+			cbArmWONo.setContainerDataSource(beanPlanWrkOrdHdr);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

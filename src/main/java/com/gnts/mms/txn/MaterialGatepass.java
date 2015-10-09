@@ -1084,7 +1084,4 @@ public class MaterialGatepass extends BaseTransUI {
 			logger.info(e.getMessage());
 		}
 	}
-	
-	private void updateSerial() {
-	}
 }

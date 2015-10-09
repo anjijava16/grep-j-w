@@ -113,7 +113,7 @@ public class POMMSReceipts extends BaseTransUI {
 	private BeanItemContainer<PoReceiptDtlDM> beanPoReceiptDtlDM = null;
 	private Button btndelete = new GERPButton("Delete", "delete", this);
 	// local variables declaration
-	private Long companyid, enquiryId, receiptId, employeeId, moduleId, branchId;
+	private Long companyid, enquiryId, receiptId, employeeId, branchId;
 	private int recordCnt = 0;
 	private String username, lotNo;
 	// Initialize logger
@@ -125,7 +125,6 @@ public class POMMSReceipts extends BaseTransUI {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
-		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > "
 				+ "Inside PurchasePoReceipt() constructor");
@@ -695,7 +694,6 @@ public class POMMSReceipts extends BaseTransUI {
 		tfRejectqty.setRequired(true);
 		resetFields();
 		tfLotNo.setReadOnly(false);
-		
 	}
 	
 	// Edit Details
@@ -915,7 +913,6 @@ public class POMMSReceipts extends BaseTransUI {
 					logger.info(e.getMessage());
 				}
 			}
-	
 			tfLotNo.setReadOnly(false);
 			tfLotNo.setValue(recepithdrObj.getLotNo());
 			tfLotNo.setReadOnly(true);

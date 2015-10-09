@@ -165,7 +165,6 @@ public class SalesPO extends BaseTransUI {
 	private File file;
 	private Long roleId;
 	private Long branchId;
-	private Long moduleId;
 	private Long appScreenId;
 	private Long branchID;
 	private Long poid;
@@ -185,7 +184,6 @@ public class SalesPO extends BaseTransUI {
 		username = UI.getCurrent().getSession().getAttribute("loginUserName").toString();
 		companyid = Long.valueOf(UI.getCurrent().getSession().getAttribute("loginCompanyId").toString());
 		employeeId = Long.valueOf(UI.getCurrent().getSession().getAttribute("employeeId").toString());
-		moduleId = (Long) UI.getCurrent().getSession().getAttribute("moduleId");
 		branchId = (Long) UI.getCurrent().getSession().getAttribute("branchId");
 		roleId = (Long) UI.getCurrent().getSession().getAttribute("roleId");
 		appScreenId = (Long) UI.getCurrent().getSession().getAttribute("appScreenId");

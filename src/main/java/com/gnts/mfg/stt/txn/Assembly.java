@@ -43,14 +43,20 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
+import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.stt.mfg.domain.txn.AsmblyDtlDM;
 import com.gnts.stt.mfg.domain.txn.AsmblyHdrDM;
+import com.gnts.stt.mfg.domain.txn.AsmblyPlanDtlDM;
 import com.gnts.stt.mfg.domain.txn.AsmblyPlanHdrDM;
 import com.gnts.stt.mfg.domain.txn.AsmblyShiftDM;
+import com.gnts.stt.mfg.domain.txn.RotoPlanArmDM;
 import com.gnts.stt.mfg.service.txn.AsmblyDtlService;
 import com.gnts.stt.mfg.service.txn.AsmblyHdrService;
+import com.gnts.stt.mfg.service.txn.AsmblyPlanDtlService;
 import com.gnts.stt.mfg.service.txn.AsmblyPlanHdrService;
 import com.gnts.stt.mfg.service.txn.AsmblyShiftService;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -84,6 +90,8 @@ public class Assembly extends BaseTransUI {
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private SlnoGenService serviceSLNo = (SlnoGenService) SpringContextHelper.getBean("slnogen");
+	private AsmblyPlanDtlService serviceAsmblyPlanDtl = (AsmblyPlanDtlService) SpringContextHelper
+			.getBean("AsmblyPlanDtl");
 	private List<AsmblyDtlDM> listAsmDtl = null;
 	private List<AsmblyShiftDM> listAsmShift = null;
 	private Button btnDelete = new GERPButton("Delete", "delete", this);
@@ -93,7 +101,7 @@ public class Assembly extends BaseTransUI {
 	private BeanItemContainer<AsmblyShiftDM> beanAsmblyShift = null;
 	private TextField tfAsmRefNo, tfPrdctnTotlQty, tfProductQty, tfShiftName, tfAchievedQty, tfPlanRefNo;
 	private TextArea taRemarks;
-	private ComboBox cbPlndQty, cbHdrStatus, cbProductName, cbDtlStatus, cbEmployeeName, cbShiftStatus;
+	private ComboBox cbPlanRefNo, cbHdrStatus, cbProductName, cbDtlStatus, cbEmployeeName, cbShiftStatus;
 	private DateField dfAsmDt;
 	// form layout for input controls
 	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4, flDtlCol1, flDtlCol2, flDtlCol3, flDtlCol4,
@@ -111,7 +119,7 @@ public class Assembly extends BaseTransUI {
 	private Table tblAsmShift;
 	private String userName;
 	private Long asmbPlanId;
-	private Long companyid, employeeId, cmpId;
+	private Long companyid, employeeId;
 	private Long moduleId;
 	private Long branchID, asmblyHdrId;
 	private Logger logger = Logger.getLogger(Assembly.class);
@@ -132,9 +140,27 @@ public class Assembly extends BaseTransUI {
 	}
 	
 	private void buildView() {
-		cbPlndQty = new GERPComboBox("Plan Ref No");
-		cbPlndQty.setItemCaptionPropertyId("asmplnreffno");
-		cbPlndQty.setWidth("150");
+		cbPlanRefNo = new GERPComboBox("Plan Ref No");
+		cbPlanRefNo.setWidth("150");
+		cbPlanRefNo.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				if (cbPlanRefNo.getValue() != null) {
+					tfPrdctnTotlQty.setValue(serviceAsmblyPlanHrd
+							.getAsmblyPlanHdrDetails(null, companyid, null, cbPlanRefNo.getValue().toString(), null,
+									"Active", "F").get(0).getPlannedqty().toString());
+				}
+				System.out.println("=================================================>1"+((AsmblyPlanDtlDM) cbPlanRefNo.getValue()).getAsmPlnId());
+				loadProductList();
+
+			}
+		});
 		loadAsmPlan();
 		tfAsmRefNo = new TextField("Asm. Ref. No");
 		tfAsmRefNo.setWidth("150");
@@ -151,10 +177,9 @@ public class Assembly extends BaseTransUI {
 		cbHdrStatus.setNullSelectionAllowed(false);
 		cbHdrStatus.setValue(cbHdrStatus.getItemIds().iterator().next());
 		cbProductName = new GERPComboBox("Product Name");
-		cbProductName.setItemCaptionPropertyId("prodname");
+		cbProductName.setItemCaptionPropertyId("prodName");
 		cbProductName.setNullSelectionAllowed(false);
 		cbProductName.setWidth("150");
-		loadProductList();
 		tfProductQty = new GERPTextField("Production Quantity");
 		tfProductQty.setWidth("150");
 		cbDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
@@ -295,7 +320,7 @@ public class Assembly extends BaseTransUI {
 		flHdrCol1 = new FormLayout();
 		flHdrCol2 = new FormLayout();
 		flHdrCol3 = new FormLayout();
-		flHdrCol1.addComponent(cbPlndQty);
+		flHdrCol1.addComponent(cbPlanRefNo);
 		flHdrCol1.addComponent(tfAsmRefNo);
 		flHdrCol1.addComponent(dfAsmDt);
 		flHdrCol1.addComponent(tfPrdctnTotlQty);
@@ -394,7 +419,7 @@ public class Assembly extends BaseTransUI {
 			tblMstScrSrchRslt.removeAllItems();
 			List<AsmblyHdrDM> list = new ArrayList<AsmblyHdrDM>();
 			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Search Parameters are "
-					+ companyid + ", " + cbPlndQty.getValue() + ", " + cbHdrStatus.getValue());
+					+ companyid + ", " + cbPlanRefNo.getValue() + ", " + cbHdrStatus.getValue());
 			list = serviceAsmblyHdr.getAsmblyHdrDMs(null, null, (String) tfPlanRefNo.getValue(), dfAsmDt.getValue(),
 					null, (String) cbHdrStatus.getValue(), "F");
 			recordCnt = list.size();
@@ -473,8 +498,13 @@ public class Assembly extends BaseTransUI {
 	
 	private void loadProductList() {
 		try {
-			BeanItemContainer<ProductDM> beanProductDM = new BeanItemContainer<ProductDM>(ProductDM.class);
-			beanProductDM.addAll(serviceProduct.getProductList(null, null, null, null, "Active", null, null, "F"));
+			BeanItemContainer<AsmblyPlanDtlDM> beanProductDM = new BeanItemContainer<AsmblyPlanDtlDM>(
+					AsmblyPlanDtlDM.class);
+			System.out.println("=================================================>1");
+			beanProductDM
+					.addAll(serviceAsmblyPlanDtl.getAsmPlnDtlList(null,
+							(((AsmblyPlanDtlDM) cbPlanRefNo.getValue()).getAsmPlnId()), null, null, null,
+							null, "F"));
 			cbProductName.setContainerDataSource(beanProductDM);
 		}
 		catch (Exception e) {
@@ -486,10 +516,10 @@ public class Assembly extends BaseTransUI {
 		try {
 			BeanContainer<Long, AsmblyPlanHdrDM> beanAsmPlanHdr = new BeanContainer<Long, AsmblyPlanHdrDM>(
 					AsmblyPlanHdrDM.class);
-			beanAsmPlanHdr.setBeanIdProperty("asmplnid");
-			beanAsmPlanHdr.addAll(serviceAsmblyPlanHrd.getAsmblyPlanHdrDetails(null, cmpId, null, null, null, "Active",
+			beanAsmPlanHdr.setBeanIdProperty("asmplnreffno");
+			beanAsmPlanHdr.addAll(serviceAsmblyPlanHrd.getAsmblyPlanHdrDetails(null, companyid, null, null, null, null,
 					"F"));
-			cbPlndQty.setContainerDataSource(beanAsmPlanHdr);
+			cbPlanRefNo.setContainerDataSource(beanAsmPlanHdr);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -533,7 +563,7 @@ public class Assembly extends BaseTransUI {
 		assembleInputUserLayout();
 		dfAsmDt.setReadOnly(false);
 		dfAsmDt.setValue(new Date());
-		cbPlndQty.setRequired(true);
+		cbPlanRefNo.setRequired(true);
 		tfPrdctnTotlQty.setRequired(true);
 		dfAsmDt.setRequired(true);
 		cbProductName.setRequired(true);
@@ -569,7 +599,7 @@ public class Assembly extends BaseTransUI {
 		hlUserIPContainer.addComponent(hlUserInputLayout);
 		hlCmdBtnLayout.setVisible(false);
 		tblMstScrSrchRslt.setVisible(false);
-		cbPlndQty.setRequired(true);
+		cbPlanRefNo.setRequired(true);
 		dfAsmDt.setRequired(true);
 		cbProductName.setRequired(true);
 		tfProductQty.setRequired(true);
@@ -597,7 +627,7 @@ public class Assembly extends BaseTransUI {
 				asmblyHdrId = Long.valueOf(editAssembly.getAsmblyid());
 				logger.info("Company ID : " + companyid + " | User Name : " + userName + " > "
 						+ "Selected Assembly. Id -> " + asmblyHdrId);
-				cbPlndQty.setValue(editAssembly.getAsmplnid().toString());
+				cbPlanRefNo.setValue(editAssembly.getAsmplnid().toString());
 				tfAsmRefNo.setReadOnly(false);
 				tfAsmRefNo.setValue(editAssembly.getAsmrefno());
 				tfAsmRefNo.setReadOnly(true);
@@ -685,13 +715,13 @@ public class Assembly extends BaseTransUI {
 	
 	@Override
 	protected void validateDetails() throws ValidationException {
-		cbPlndQty.setComponentError(null);
+		cbPlanRefNo.setComponentError(null);
 		tfPrdctnTotlQty.setComponentError(null);
 		dfAsmDt.setComponentError(null);
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Validating Data ");
 		Boolean errorFlag = false;
-		if (cbPlndQty.getValue() == null) {
-			cbPlndQty.setComponentError(new UserError(GERPErrorCodes.NULL_PLANNED_QTY));
+		if (cbPlanRefNo.getValue() == null) {
+			cbPlanRefNo.setComponentError(new UserError(GERPErrorCodes.NULL_PLANNED_QTY));
 			errorFlag = true;
 		}
 		Long prdctnTotlQty;
@@ -784,7 +814,7 @@ public class Assembly extends BaseTransUI {
 				asmblyHdr = beanAsmblyHdr.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			}
 			asmblyHdr.setAsmrefno(tfAsmRefNo.getValue());
-			asmblyHdr.setAsmplnid(Long.valueOf(cbPlndQty.getValue().toString()));
+			asmblyHdr.setAsmplnid(Long.valueOf(cbPlanRefNo.getValue().toString()));
 			asmblyHdr.setAsmdate(dfAsmDt.getValue());
 			asmblyHdr.setProdtntotqty(Long.valueOf(tfPrdctnTotlQty.getValue()));
 			asmblyHdr.setRemarks(taRemarks.getValue().toString());
@@ -903,7 +933,7 @@ public class Assembly extends BaseTransUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Canceling action ");
 		hlUserIPContainer.removeAllComponents();
 		assembleSearchLayout();
-		cbPlndQty.setComponentError(null);
+		cbPlanRefNo.setComponentError(null);
 		dfAsmDt.setComponentError(null);
 		tfAsmRefNo.setComponentError(null);
 		tfPrdctnTotlQty.setComponentError(null);
@@ -913,7 +943,7 @@ public class Assembly extends BaseTransUI {
 		tfShiftName.setComponentError(null);
 		cbEmployeeName.setComponentError(null);
 		tfAchievedQty.setComponentError(null);
-		cbPlndQty.setRequired(false);
+		cbPlanRefNo.setRequired(false);
 		tfPrdctnTotlQty.setRequired(false);
 		dfAsmDt.setRequired(false);
 		tfPrdctnTotlQty.setRequired(false);
@@ -935,8 +965,8 @@ public class Assembly extends BaseTransUI {
 	@Override
 	protected void resetFields() {
 		tfAchievedQty.setComponentError(null);
-		cbPlndQty.setValue(null);
-		cbPlndQty.setComponentError(null);
+		cbPlanRefNo.setValue(null);
+		cbPlanRefNo.setComponentError(null);
 		tfPrdctnTotlQty.setComponentError(null);
 		tfAsmRefNo.setReadOnly(false);
 		tfAsmRefNo.setValue("");

@@ -146,8 +146,8 @@ public class WorkOrder extends BaseTransUI {
 	private Long commentby;
 	private String name = "";
 	private Button btnDtlWrkOrd = new GERPButton("Delete", "delete", this);
-	private GERPTextField tfCustomField1 = new GERPTextField("Part Number");
-	private GERPTextField tfCustomField2 = new GERPTextField("Drawing Number");
+	private GERPTextField tfPartNo = new GERPTextField("Part Number");
+	private GERPTextField tfDrawNo = new GERPTextField("Drawing Number");
 	// for test documents
 	private VerticalLayout hlDocumentLayout = new VerticalLayout();
 	
@@ -456,16 +456,16 @@ public class WorkOrder extends BaseTransUI {
 						System.out.println("((SmsPODtlDM) cbPrdName.getValue()).getCustomField1()"
 								+ ((SmsPODtlDM) cbPrdName.getValue()).getCustomField1());
 						if (((SmsPODtlDM) cbPrdName.getValue()).getCustomField1() != null) {
-							tfCustomField1.setValue(((SmsPODtlDM) cbPrdName.getValue()).getCustomField1());
+							tfPartNo.setValue(((SmsPODtlDM) cbPrdName.getValue()).getCustomField1());
 						} else {
-							tfCustomField1.setValue("");
+							tfPartNo.setValue("");
 						}
 						System.out.println("((SmsPODtlDM) cbPrdName.getValue()).getCustomField2()"
 								+ ((SmsPODtlDM) cbPrdName.getValue()).getCustomField2());
 						if (((SmsPODtlDM) cbPrdName.getValue()).getCustomField2() != null) {
-							tfCustomField2.setValue(((SmsPODtlDM) cbPrdName.getValue()).getCustomField2());
+							tfDrawNo.setValue(((SmsPODtlDM) cbPrdName.getValue()).getCustomField2());
 						} else {
-							tfCustomField2.setValue("");
+							tfDrawNo.setValue("");
 						}
 					}
 					catch (Exception e) {
@@ -588,9 +588,9 @@ public class WorkOrder extends BaseTransUI {
 		flOdrDtlColumn1.addComponent(tfWrkOdrQty);
 		flOdrDtlColumn1.addComponent(tfPlnQty);
 		flOdrDtlColumn2.addComponent(tfBalQty);
-		flOdrDtlColumn2.addComponent(tfCustomField2);
+		flOdrDtlColumn2.addComponent(tfDrawNo);
 		flOdrDtlColumn2.addComponent(dfDelvrySchdDt);
-		flOdrDtlColumn2.addComponent(tfCustomField1);
+		flOdrDtlColumn2.addComponent(tfPartNo);
 		flOdrDtlColumn3.addComponent(tfMoldTime);
 		flOdrDtlColumn3.addComponent(tfPlanTime);
 		flOdrDtlColumn3.addComponent(tfRotoTime);
@@ -877,10 +877,10 @@ public class WorkOrder extends BaseTransUI {
 					taWrkOdrDtlRmks.setValue(workOrderDtlDM.getWorkOrdDlRmrks());
 				}
 				if (workOrderDtlDM.getCustomField1() != null) {
-					tfCustomField1.setValue(workOrderDtlDM.getCustomField1());
+					tfPartNo.setValue(workOrderDtlDM.getCustomField1());
 				}
 				if (workOrderDtlDM.getCustomField2() != null) {
-					tfCustomField2.setValue(workOrderDtlDM.getCustomField2());
+					tfDrawNo.setValue(workOrderDtlDM.getCustomField2());
 				}
 				if (workOrderDtlDM.getDateQc() != null) {
 					dfDelvrySchdDt.setValue(workOrderDtlDM.getDateQc());
@@ -1039,8 +1039,8 @@ public class WorkOrder extends BaseTransUI {
 		tfPrdName.setComponentError(null);
 		dfDelvrySchdDt.setValue(null);
 		taWrkOdrDtlRmks.setValue("");
-		tfCustomField1.setValue("");
-		tfCustomField2.setValue("");
+		tfPartNo.setValue("");
+		tfDrawNo.setValue("");
 		tfMoldTime.setValue("");
 		tfPlanTime.setValue("");
 		tfRotoTime.setValue("");
@@ -1232,8 +1232,8 @@ public class WorkOrder extends BaseTransUI {
 			workOrderDtlDM.setWdStatus((String) cbWorkderStatus.getValue());
 			workOrderDtlDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 			workOrderDtlDM.setLastUpdatedBy(username);
-			workOrderDtlDM.setCustomField1(tfCustomField1.getValue());
-			workOrderDtlDM.setCustomField2(tfCustomField2.getValue());
+			workOrderDtlDM.setCustomField1(tfPartNo.getValue());
+			workOrderDtlDM.setCustomField2(tfDrawNo.getValue());
 			if (tfMoldTime.getValue() != "") {
 				workOrderDtlDM.setMouldTime(tfMoldTime.getValue());
 			}

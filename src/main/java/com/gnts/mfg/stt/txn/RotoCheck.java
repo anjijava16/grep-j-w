@@ -35,11 +35,13 @@ import com.gnts.erputil.util.DateUtils;
 import com.gnts.stt.mfg.domain.txn.RotoArmDM;
 import com.gnts.stt.mfg.domain.txn.RotoCheckDtlDM;
 import com.gnts.stt.mfg.domain.txn.RotoDtlDM;
+import com.gnts.stt.mfg.domain.txn.RotoPlanArmDM;
 import com.gnts.stt.mfg.domain.txn.RotoPlanDtlDM;
 import com.gnts.stt.mfg.domain.txn.RotoPlanHdrDM;
 import com.gnts.stt.mfg.domain.txn.RotohdrDM;
 import com.gnts.stt.mfg.service.txn.RotoArmService;
 import com.gnts.stt.mfg.service.txn.RotoDtlService;
+import com.gnts.stt.mfg.service.txn.RotoPlanArmService;
 import com.gnts.stt.mfg.service.txn.RotoPlanDtlService;
 import com.gnts.stt.mfg.service.txn.RotoPlanHdrService;
 import com.gnts.stt.mfg.service.txn.RotohdrService;
@@ -75,6 +77,7 @@ public class RotoCheck extends BaseTransUI {
 	private RotoPlanHdrService serviceRotoplanhdr = (RotoPlanHdrService) SpringContextHelper.getBean("rotoplanhdr");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
+	private RotoPlanArmService serviceRotoplanarm = (RotoPlanArmService) SpringContextHelper.getBean("rotoplanarm");
 	// User Input Components for Work Order Details
 	private BeanItemContainer<RotohdrDM> beanRotohdrDM = null;
 	private BeanItemContainer<RotoDtlDM> beanRotoDtls = null;
@@ -111,7 +114,7 @@ public class RotoCheck extends BaseTransUI {
 	private GERPTextField tftempZ1, tftempZ2, tftempZ3, tfBoxWgTop, tfBoxWgBot, tfBoxWgTotal, tfCycles, tfKgCm,
 			tfEmpNo;
 	private GERPTimeField tmOvenOn, tmOvenOff, tmCharOn, tmCharOff, tmCoolOn, tmCoolOff;
-	private GERPComboBox cbArmNo, cbBoxModel;
+	private GERPComboBox cbArmNo, cbBoxModel, cbProductName;
 	private TextArea tfRemarksDtl;
 	private String username;
 	private Long companyid, branchId, moduleId;
@@ -263,6 +266,7 @@ public class RotoCheck extends BaseTransUI {
 					rotoplanId = (((RotoPlanHdrDM) cbPlanRef.getValue()).getRotoplanidLong());
 					tfPlanedQty.setValue(((RotoPlanHdrDM) cbPlanRef.getValue()).getPlannedqty().toString());
 					loadPlanDtlRslt();
+					loadArmNumberList();
 				}
 			}
 		});
@@ -272,33 +276,109 @@ public class RotoCheck extends BaseTransUI {
 		dfRotoDt.setInputPrompt("Select Date");
 		dfRotoDt.setWidth("130px");
 		cbStatus.setWidth("150");
-		cbDtlStatus.setWidth("100");
+		cbDtlStatus.setWidth("130");
 		cbArmNo = new GERPComboBox("Arm No.");
-		loadArmNumberList();
 		cbArmNo.setRequired(true);
 		cbArmNo.setWidth("120");
+		cbArmNo.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				loadProductName();
+				if (cbArmNo.getValue() != null) {
+					RotoPlanArmDM rotoPlanArmDM = serviceRotoplanarm.getRotoPlanArmList(null, rotoplanId, null,
+							cbArmNo.getValue().toString(), "Active").get(0);
+					tfCycles.setValue(rotoPlanArmDM.getNoOfcycle().toString());
+				}
+			}
+		});
+		cbProductName = new GERPComboBox("Product");
+		cbProductName.setRequired(true);
+		cbProductName.setWidth("120");
 		tmOvenOn = new GERPTimeField("Oven On");
 		tmOvenOn.setWidth("150");
+		tmOvenOn.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getOvenTime();
+			}
+		});
 		tmOvenOff = new GERPTimeField("Oven Off");
 		tmOvenOff.setWidth("150");
+		tmOvenOff.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getOvenTime();
+			}
+		});
 		tfOvenTotal = new GERPTextField("Oven Total");
 		tfOvenTotal.setWidth("120");
+		tfOvenTotal.setEnabled(false);
 		tmCharOn = new GERPTimeField("Charge On");
 		tmCharOn.setWidth("150");
+		tmCharOn.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getChargeTime();
+			}
+		});
 		tmCharOff = new GERPTimeField("Change Off");
 		tmCharOff.setWidth("150");
+		tmCharOff.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getChargeTime();
+			}
+		});
 		tfCharTot = new GERPTextField("Charge Total");
 		tfCharTot.setWidth("120");
+		tfCharTot.setEnabled(false);
 		tmCoolOn = new GERPTimeField("Cooling On");
 		tmCoolOn.setWidth("150");
+		tmCoolOn.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getCoolTime();
+			}
+		});
 		tmCoolOff = new GERPTimeField("Cooling Off");
 		tmCoolOff.setWidth("150");
+		tmCoolOff.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getCoolTime();
+			}
+		});
 		tfCoolTot = new GERPTextField("Cooling Total");
 		tfCoolTot.setWidth("120");
+		tfCoolTot.setEnabled(false);
 		tftempZ1 = new GERPTextField("Z1");
 		tftempZ1.setWidth("120");
 		tftempZ2 = new GERPTextField("Z2");
-		tftempZ2.setWidth("120");
+		tftempZ2.setWidth("100");
 		tftempZ3 = new GERPTextField("Z3");
 		tftempZ3.setWidth("100");
 		cbBoxModel = new GERPComboBox("Box Model");
@@ -370,10 +450,11 @@ public class RotoCheck extends BaseTransUI {
 		tfBoxWgTotal.setEnabled(false);
 		tfCycles = new GERPTextField("Cycles");
 		tfCycles.setWidth("100");
+		tfCycles.setEnabled(false);
 		tfKgCm = new GERPTextField("Kg/Cm3");
 		tfKgCm.setWidth("100");
 		tfEmpNo = new GERPTextField("No.of Emp.");
-		tfEmpNo.setWidth("100");
+		tfEmpNo.setWidth("130");
 		tfRemarksDtl = new GERPTextArea("Remarks");
 		tfRemarksDtl.setWidth("130");
 		btnSaveChkDtls.addClickListener(new ClickListener() {
@@ -443,31 +524,30 @@ public class RotoCheck extends BaseTransUI {
 		flArmCol4 = new FormLayout();
 		flArmCol5 = new FormLayout();
 		flArmCol1.addComponent(cbArmNo);
-		flArmCol1.addComponent(tmOvenOn);
-		flArmCol1.addComponent(cbArmNo);
+		flArmCol1.addComponent(cbProductName);
 		flArmCol1.addComponent(tmOvenOn);
 		flArmCol1.addComponent(tmOvenOff);
 		flArmCol1.addComponent(tfOvenTotal);
 		flArmCol1.addComponent(tmCharOn);
-		flArmCol1.addComponent(tmCharOff);
+		flArmCol2.addComponent(tmCharOff);
 		flArmCol2.addComponent(tfCharTot);
 		flArmCol2.addComponent(tmCoolOn);
 		flArmCol2.addComponent(tmCoolOff);
 		flArmCol2.addComponent(tfCoolTot);
 		flArmCol2.addComponent(tftempZ1);
-		flArmCol2.addComponent(tftempZ2);
+		flArmCol3.addComponent(tftempZ2);
 		flArmCol3.addComponent(tftempZ3);
 		flArmCol3.addComponent(cbBoxModel);
 		flArmCol3.addComponent(tfBoxSerial);
 		flArmCol3.addComponent(tfPwdTop);
 		flArmCol3.addComponent(tfPwdBot);
-		flArmCol3.addComponent(tfPowTotal);
+		flArmCol4.addComponent(tfPowTotal);
 		flArmCol4.addComponent(tfBoxWgTop);
 		flArmCol4.addComponent(tfBoxWgBot);
 		flArmCol4.addComponent(tfBoxWgTotal);
 		flArmCol4.addComponent(tfCycles);
 		flArmCol4.addComponent(tfKgCm);
-		flArmCol4.addComponent(tfEmpNo);
+		flArmCol5.addComponent(tfEmpNo);
 		flArmCol5.addComponent(tfRemarksDtl);
 		flArmCol5.addComponent(cbDtlStatus);
 		flArmCol5.addComponent(btnSaveChkDtls);
@@ -478,7 +558,7 @@ public class RotoCheck extends BaseTransUI {
 		hlArm.addComponent(flArmCol3);
 		hlArm.addComponent(flArmCol4);
 		hlArm.addComponent(flArmCol5);
-		hlArm.setSpacing(true);
+		hlArm.setSpacing(false);
 		hlArm.setMargin(true);
 		// Adding Dtl Components
 		flDtlCol1 = new FormLayout();
@@ -579,12 +659,26 @@ public class RotoCheck extends BaseTransUI {
 	private void loadArmNumberList() {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
-			BeanContainer<String, CompanyLookupDM> beanCompanyLookUp = new BeanContainer<String, CompanyLookupDM>(
-					CompanyLookupDM.class);
-			beanCompanyLookUp.setBeanIdProperty("lookupname");
-			beanCompanyLookUp.addAll(serviceCompanyLookup.getCompanyLookUpByLookUp(companyid, null, "Active",
-					"MP_ARMNO"));
-			cbArmNo.setContainerDataSource(beanCompanyLookUp);
+			BeanContainer<String, RotoPlanArmDM> beanRotoPlanArm = new BeanContainer<String, RotoPlanArmDM>(
+					RotoPlanArmDM.class);
+			beanRotoPlanArm.setBeanIdProperty("armNo");
+			beanRotoPlanArm.addAll(serviceRotoplanarm.getRotoPlanArmList(null, rotoplanId, null, null, "Active"));
+			cbArmNo.setContainerDataSource(beanRotoPlanArm);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void loadProductName() {
+		try {
+			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading Uom Search...");
+			BeanContainer<String, RotoPlanArmDM> beanRotoPlanArm = new BeanContainer<String, RotoPlanArmDM>(
+					RotoPlanArmDM.class);
+			beanRotoPlanArm.setBeanIdProperty("prodname");
+			beanRotoPlanArm.addAll(serviceRotoplanarm.getRotoPlanArmList(null, rotoplanId, null, cbArmNo.getValue()
+					.toString(), "Active"));
+			cbProductName.setContainerDataSource(beanRotoPlanArm);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());
@@ -876,6 +970,7 @@ public class RotoCheck extends BaseTransUI {
 					logger.info(e.getMessage());
 				}
 			}
+			loadArmRslt(true);
 			loadSrchRslt();
 		}
 		catch (Exception e) {
@@ -991,7 +1086,6 @@ public class RotoCheck extends BaseTransUI {
 			rotocheckdtlDM.setWegTop(tfBoxWgTop.getValue());
 			rotocheckdtlDM.setWegTotal(tfBoxWgTotal.getValue());
 			rotocheckdtlDM.setDtlRemarks(tfRemarksDtl.getValue());
-			// rotocheckdtlDM.setRotoChkId(rotoChkId);
 			rotocheckdtlDM.setLastupdatedby(username);
 			rotocheckdtlDM.setLastupdateddate(DateUtils.getcurrentdate());
 			rotocheckdtlDM.setRotoChkDtlStatus(cbDtlStatus.getValue().toString());
@@ -1030,5 +1124,56 @@ public class RotoCheck extends BaseTransUI {
 		tfKgCm.setValue("");
 		tfEmpNo.setValue("");
 		tfRemarksDtl.setValue("");
+	}
+	
+	private void getOvenTime() {
+		try {
+			// TODO Auto-generated method stub
+			if (tmOvenOn.getValue() != null && tmOvenOff.getValue() != null) {
+				if (tmOvenOn.getHorsMunitesinBigDecimal().compareTo(tmOvenOff.getHorsMunitesinBigDecimal()) < 0) {
+					tfOvenTotal.setValue(tmOvenOn.getHorsMunitesinBigDecimal()
+							.subtract(tmOvenOff.getHorsMunitesinBigDecimal()).abs().toString());
+				} else {
+					tfOvenTotal.setValue("0.0");
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void getCoolTime() {
+		try {
+			// TODO Auto-generated method stub
+			if (tmCoolOn.getValue() != null && tmCoolOff.getValue() != null) {
+				if (tmCoolOn.getHorsMunitesinBigDecimal().compareTo(tmCoolOff.getHorsMunitesinBigDecimal()) < 0) {
+					tfCoolTot.setValue(tmCoolOn.getHorsMunitesinBigDecimal()
+							.subtract(tmCoolOff.getHorsMunitesinBigDecimal()).abs().toString());
+				} else {
+					tfCoolTot.setValue("0.0");
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void getChargeTime() {
+		try {
+			// TODO Auto-generated method stub
+			if (tmCharOn.getValue() != null && tmCharOff.getValue() != null) {
+				if (tmCharOn.getHorsMunitesinBigDecimal().compareTo(tmCharOff.getHorsMunitesinBigDecimal()) < 0) {
+					tfCharTot.setValue(tmCharOn.getHorsMunitesinBigDecimal()
+							.subtract(tmCharOff.getHorsMunitesinBigDecimal()).abs().toString());
+				} else {
+					tfCharTot.setValue("0.0");
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
 	}
 }

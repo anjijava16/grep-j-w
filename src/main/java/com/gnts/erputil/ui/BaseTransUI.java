@@ -55,7 +55,7 @@ abstract public class BaseTransUI implements ClickListener {
 	// Common buttons used across all the screens
 	public Button btnSave = new GERPButton("Save", "savebt", this);
 	public Button btnCancel = new GERPButton("Cancel", "cancelbt", this);
-	public Button btnPrint =new GERPButton("Print", "downloadbt", this);
+	public Button btnPrint = new GERPButton("Print", "downloadbt", this);
 	public Button btnAdd = new GERPButton("Add", "add", this);
 	public Button btnEdit = new GERPButton("Edit", "editbt", this);
 	public Button btnDownload = new GERPButton("Download", "downloadbt", this);
@@ -74,7 +74,7 @@ abstract public class BaseTransUI implements ClickListener {
 	private Logger logger = Logger.getLogger(BaseUI.class);
 	
 	public BaseTransUI() {
-		if(UI.getCurrent().getSession().getAttribute("screenName")!=null){
+		if (UI.getCurrent().getSession().getAttribute("screenName") != null) {
 			screenName = UI.getCurrent().getSession().getAttribute("screenName").toString();
 		}
 		btnScreenName = new GERPButton(screenName, "link", this);
@@ -148,7 +148,6 @@ abstract public class BaseTransUI implements ClickListener {
 		// Set Master screen search table properties and listener events
 		tblMstScrSrchRslt.setSelectable(true);
 		tblMstScrSrchRslt.setPageLength(15);
-
 		tblMstScrSrchRslt.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -187,6 +186,7 @@ abstract public class BaseTransUI implements ClickListener {
 	protected abstract void showAuditDetails();
 	
 	protected abstract void cancelDetails();
+	
 	protected abstract void printDetails();
 	
 	public void downloadDetails() {
@@ -235,6 +235,7 @@ abstract public class BaseTransUI implements ClickListener {
 			hlUserIPContainer.removeAllComponents();
 			lblNotification.setIcon(null);
 			lblNotification.setCaption("");
+			UI.getCurrent().getSession().setAttribute("THR_ADD", true);
 			// Dummy implementation, actual will be implemented in extended
 			// class
 			addDetails();
@@ -298,6 +299,7 @@ abstract public class BaseTransUI implements ClickListener {
 			vlSrchRsltContainer.addComponent(tblMstScrSrchRslt);
 			vlSrchRsltContainer.setExpandRatio(tblMstScrSrchRslt, 1);
 			tblMstScrSrchRslt.setValue(null);
+			UI.getCurrent().getSession().setAttribute("THR_ADD", false);
 			// Dummy implementation, actual will be implemented in extended
 			// class
 			cancelDetails();
@@ -385,8 +387,7 @@ abstract public class BaseTransUI implements ClickListener {
 			vlSrchRsltContainer.setExpandRatio(tblMstScrSrchRslt, 1);
 			tblMstScrSrchRslt.setValue(null);
 			resetSearchDetails();
-		}
-		else if(btnPrint==event.getButton()){
+		} else if (btnPrint == event.getButton()) {
 			printDetails();
 		}
 	}

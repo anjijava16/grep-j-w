@@ -271,10 +271,10 @@ public class DC extends BaseTransUI {
 									.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "F",
 											null, null).get(0).getClientId();
 							if (serviceClients
-									.getClientDetails(companyid, clientid, null, null, null, null, null, null,
+									.getClientDetails(companyid, clientid, null, null, null, null, null,null, null,
 											"Active", "F").get(0).getClientAddress() != null) {
 								taClientAddres.setValue(serviceClients
-										.getClientDetails(companyid, clientid, null, null, null, null, null, null,
+										.getClientDetails(companyid, clientid, null, null, null, null,null, null, null,
 												"Active", "F").get(0).getClientAddress());
 							}
 						}
@@ -1233,7 +1233,7 @@ public class DC extends BaseTransUI {
 					.getClientId();
 			BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanclientDM.setBeanIdProperty("clientId");
-			beanclientDM.addAll(serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null,
+			beanclientDM.addAll(serviceClients.getClientDetails(companyid, clientid, null, null,null, null, null, null,
 					null, "Active", "P"));
 			cbClients.setContainerDataSource(beanclientDM);
 			cbClients.setValue(clientid);

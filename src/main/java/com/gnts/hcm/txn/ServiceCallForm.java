@@ -209,12 +209,10 @@ public class ServiceCallForm extends BaseTransUI {
 				}
 			}
 		});
-		cbEnquiryNumber = new ComboBox("Enquiry No.");
 		cbEnquiryNumber = new ComboBox("Enquiry No");
 		cbEnquiryNumber.setItemCaptionPropertyId("enquiryNo");
 		cbEnquiryNumber.setWidth("150");
 		loadEnquiryNo();
-		cbEnquiryNumber.setImmediate(true);
 		cbEnquiryNumber.setImmediate(true);
 		cbEnquiryNumber.addValueChangeListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -256,10 +254,10 @@ public class ServiceCallForm extends BaseTransUI {
 					try {
 						tfClientname.setValue(serviceClients
 								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
-										null, null, null, null, "Active", "P").get(0).getClientName());
+										null, null, null, null, null, "Active", "P").get(0).getClientName());
 						tfClientCity.setValue(serviceClients
 								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
-										null, null, null, null, "Active", "F").get(0).getCityName());
+										null, null, null, null, null, "Active", "F").get(0).getCityName());
 					}
 					catch (Exception e) {
 						logger.info(e.getMessage());
@@ -503,7 +501,7 @@ public class ServiceCallForm extends BaseTransUI {
 			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClient.setBeanIdProperty("clientId");
 			beanClient.addAll(serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null, null,
-					"Active", "P"));
+					null, "Active", "P"));
 			cbClient.setContainerDataSource(beanClient);
 			cbClient.setValue(clientid);
 		}
@@ -882,12 +880,12 @@ public class ServiceCallForm extends BaseTransUI {
 			}
 			if ((Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM") != null
 					&& (Boolean) UI.getCurrent().getSession().getAttribute("IS_MARK_FRM")) {
-				if (taserviceProblmRep.getValue() == "" && taserviceProblmRep.getValue() == null) {
-					taserviceProblmRep.setComponentError(new UserError("Please Enter Service Problem Description"));
-					errorFlag = true;
-				}
 				if (cbinfnRecBy.getValue() == null) {
 					cbinfnRecBy.setComponentError(new UserError("Please select Information Rec.By"));
+					errorFlag = true;
+				}
+				if (taserviceProblmRep.getValue() == null || taserviceProblmRep.getValue() == "") {
+					taserviceProblmRep.setComponentError(new UserError("Please enter the Service Problrm Reported"));
 					errorFlag = true;
 				}
 			}

@@ -176,10 +176,10 @@ public class ClientContacts extends BaseUI {
 					tfCountry.setReadOnly(false);
 					try {
 						tfCityname.setValue(serviceClients
-								.getClientDetails(null, (Long) cbClient.getValue(), null, null, null, null, null, null,
+								.getClientDetails(null, (Long) cbClient.getValue(), null, null,null, null, null, null, null,
 										null, "F").get(0).getCityName());
 						tfCountry.setValue(serviceClients
-								.getClientDetails(null, (Long) cbClient.getValue(), null, null, null, null, null, null,
+								.getClientDetails(null, (Long) cbClient.getValue(), null, null, null,null, null, null, null,
 										null, "F").get(0).getCountryName());
 					}
 					catch (Exception e) {
@@ -224,7 +224,7 @@ public class ClientContacts extends BaseUI {
 		try {
 			BeanContainer<Long, ClientDM> beanClients = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClients.setBeanIdProperty("clientId");
-			beanClients.addAll(serviceClients.getClientDetails(companyId, clientId, null, null, null, null, null, null,
+			beanClients.addAll(serviceClients.getClientDetails(companyId, clientId, null, null,null, null, null, null, null,
 					"Active", "P"));
 			cbClient.setContainerDataSource(beanClients);
 		}

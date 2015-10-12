@@ -38,7 +38,7 @@ public class SerialNumberGenerator {
 			logger.info("Serial No Generation  Data...===>" + companyid + "," + branchid + "," + moduleid);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				ClientDM clientobj = serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null,
-						null, null, "P").get(0);
+						null, null,null, "P").get(0);
 				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + clientobj.getClientCode()
 						+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey() + slnoObj.getSuffixCncat()
 						+ slnoObj.getCurrSeqNo();
@@ -59,7 +59,7 @@ public class SerialNumberGenerator {
 			logger.info("Serial No Generation  Data...===>" + companyid + "," + branchid + "," + moduleid);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
 				ClientDM clientobj = serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null,
-						null, null, "P").get(0);
+						null,null, null, "P").get(0);
 				serialnumber = slnoObj.getPrefixKey() + slnoObj.getPrefixCncat() + clientobj.getClientCode()
 						+ slnoObj.getPrefixCncat() + slnoObj.getSuffixKey() + slnoObj.getSuffixCncat()
 						+ slnoObj.getCurrSeqNo();

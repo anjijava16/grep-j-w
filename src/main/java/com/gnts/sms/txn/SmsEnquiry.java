@@ -81,6 +81,8 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.UserError;
@@ -258,6 +260,22 @@ public class SmsEnquiry extends BaseTransUI {
 		// Sales Enquiry Header Components Definition
 		tfClntName.setRequired(true);
 		tfClientCode.setRequired(true);
+		tfClientCode.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				if (serviceClients.getClientDetails(companyid, null, null, null, null, null, null, null,
+						tfClientCode.getValue(), null, "F").size() > 0) {
+					tfClientCode.setComponentError(new UserError("Product Name Already Exist"));
+					Notification.show("Product Name : " + tfClientCode.getValue() + " is Already Exist");
+					tfClientCode.setValue("");
+				} else {
+					tfClientCode.setComponentError(null);
+				}
+			}
+		});
 		// tfEmail.setRequired(true);
 		tfPhoneNumber.setRequired(true);
 		cbClntCategory.setRequired(true);
@@ -293,12 +311,12 @@ public class SmsEnquiry extends BaseTransUI {
 						tfclientname.setReadOnly(false);
 						tfclientname.setValue(serviceClients
 								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
-										null, null, null, null, "Active", "P").get(0).getClientName());
+										null, null, null, null,null, "Active", "P").get(0).getClientName());
 						tfclientname.setReadOnly(true);
 						tfClientCity.setReadOnly(false);
 						tfClientCity.setValue(serviceClients
 								.getClientDetails(companyid, Long.valueOf(cbClient.getValue().toString()), null, null,
-										null, null, null, null, "Active", "").get(0).getCityName());
+										null, null, null,null, null, "Active", "").get(0).getCityName());
 						tfClientCity.setReadOnly(true);
 					}
 					catch (Exception e) {
@@ -895,7 +913,7 @@ public class SmsEnquiry extends BaseTransUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Loading client Search...");
 			BeanContainer<Long, ClientDM> beanclientDM = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanclientDM.setBeanIdProperty("clientId");
-			beanclientDM.addAll(serviceClients.getClientDetails(companyid, null, null, null, null, null, null, null,
+			beanclientDM.addAll(serviceClients.getClientDetails(companyid, null, null, null, null, null, null,null, null,
 					"Active", "P"));
 			cbClient.setContainerDataSource(beanclientDM);
 		}
@@ -1582,7 +1600,7 @@ public class SmsEnquiry extends BaseTransUI {
 		try {
 			BeanContainer<Long, StateDM> beanState = new BeanContainer<Long, StateDM>(StateDM.class);
 			beanState.setBeanIdProperty("stateId");
-			beanState.addAll(serviceState.getStateList(null, null,"Active", (Long) cbCountry.getValue(), null, "F"));
+			beanState.addAll(serviceState.getStateList(null, null, "Active", (Long) cbCountry.getValue(), null, "F"));
 			cbState.setContainerDataSource(beanState);
 		}
 		catch (Exception e) {

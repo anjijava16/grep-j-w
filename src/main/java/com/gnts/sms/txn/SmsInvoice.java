@@ -977,7 +977,7 @@ public class SmsInvoice extends BaseTransUI {
 							null, null).get(0).getClientId();
 			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClient.setBeanIdProperty("clientId");
-			beanClient.addAll(serviceClient.getClientDetails(companyid, clientid, null, null, null, null, null, null,
+			beanClient.addAll(serviceClient.getClientDetails(companyid, clientid, null,null, null, null, null, null, null,
 					null, "P"));
 			cbClient.setContainerDataSource(beanClient);
 			cbClient.setValue(clientid);

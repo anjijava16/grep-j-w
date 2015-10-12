@@ -43,13 +43,13 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
-import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
+import com.gnts.hcm.domain.mst.ShiftDM;
+import com.gnts.hcm.service.mst.ShiftService;
 import com.gnts.stt.mfg.domain.txn.AsmblyDtlDM;
 import com.gnts.stt.mfg.domain.txn.AsmblyHdrDM;
 import com.gnts.stt.mfg.domain.txn.AsmblyPlanDtlDM;
 import com.gnts.stt.mfg.domain.txn.AsmblyPlanHdrDM;
 import com.gnts.stt.mfg.domain.txn.AsmblyShiftDM;
-import com.gnts.stt.mfg.domain.txn.RotoPlanArmDM;
 import com.gnts.stt.mfg.service.txn.AsmblyDtlService;
 import com.gnts.stt.mfg.service.txn.AsmblyHdrService;
 import com.gnts.stt.mfg.service.txn.AsmblyPlanDtlService;
@@ -90,6 +90,7 @@ public class Assembly extends BaseTransUI {
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private SlnoGenService serviceSLNo = (SlnoGenService) SpringContextHelper.getBean("slnogen");
+	private ShiftService serviceShift = (ShiftService) SpringContextHelper.getBean("Shift");
 	private AsmblyPlanDtlService serviceAsmblyPlanDtl = (AsmblyPlanDtlService) SpringContextHelper
 			.getBean("AsmblyPlanDtl");
 	private List<AsmblyDtlDM> listAsmDtl = null;
@@ -99,9 +100,9 @@ public class Assembly extends BaseTransUI {
 	private BeanItemContainer<AsmblyHdrDM> beanAsmblyHdr = null;
 	private BeanItemContainer<AsmblyDtlDM> beanAsmblyDtl = null;
 	private BeanItemContainer<AsmblyShiftDM> beanAsmblyShift = null;
-	private TextField tfAsmRefNo, tfPrdctnTotlQty, tfProductQty, tfShiftName, tfAchievedQty, tfPlanRefNo;
+	private TextField tfAsmRefNo, tfPrdctnTotlQty, tfProductQty, tfAchievedQty, tfPlanRefNo;
 	private TextArea taRemarks;
-	private ComboBox cbPlanRefNo, cbHdrStatus, cbProductName, cbDtlStatus, cbEmployeeName, cbShiftStatus;
+	private ComboBox cbPlanRefNo, cbHdrStatus, cbProductName, cbDtlStatus, cbEmployeeName, cbShiftStatus, cbShiftName;
 	private DateField dfAsmDt;
 	// form layout for input controls
 	private FormLayout flHdrCol1, flHdrCol2, flHdrCol3, flHdrCol4, flDtlCol1, flDtlCol2, flDtlCol3, flDtlCol4,
@@ -129,6 +130,7 @@ public class Assembly extends BaseTransUI {
 	private int recordCntDtl = 0;
 	private Button btnAsmShift = new GERPButton("Add", "add", this);
 	private Button btnAsmDtl = new GERPButton("Add", "add", this);
+	private String productName;
 	
 	public Assembly() {
 		// Get the logged in user name and company id from the session
@@ -156,9 +158,7 @@ public class Assembly extends BaseTransUI {
 							.getAsmblyPlanHdrDetails(null, companyid, null, cbPlanRefNo.getValue().toString(), null,
 									"Active", "F").get(0).getPlannedqty().toString());
 				}
-				System.out.println("=================================================>1"+((AsmblyPlanDtlDM) cbPlanRefNo.getValue()).getAsmPlnId());
 				loadProductList();
-
 			}
 		});
 		loadAsmPlan();
@@ -249,8 +249,12 @@ public class Assembly extends BaseTransUI {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (validateDtlDetails()) {
-					saveDtlDetails();
+				try {
+					if (validateDtlDetails()) {
+						saveDtlDetails();
+					}
+				}
+				catch (Exception e) {
 				}
 			}
 		});
@@ -290,7 +294,9 @@ public class Assembly extends BaseTransUI {
 				tfAsmRefNo.setReadOnly(false);
 			}
 		});
-		tfShiftName = new GERPTextField("Shift Name");
+		cbShiftName = new GERPComboBox("Shift Name");
+		cbShiftName.setItemCaptionPropertyId("shiftName");
+		loadShiftList();
 		cbEmployeeName = new GERPComboBox("Employee Name");
 		cbEmployeeName.setItemCaptionPropertyId("fullname");
 		cbEmployeeName.setWidth("150");
@@ -334,7 +340,7 @@ public class Assembly extends BaseTransUI {
 		flAsmShiftCol1 = new FormLayout();
 		flAsmShiftCol2 = new FormLayout();
 		flAsmShiftCol3 = new FormLayout();
-		flAsmShiftCol1.addComponent(tfShiftName);
+		flAsmShiftCol1.addComponent(cbShiftName);
 		flAsmShiftCol1.addComponent(cbEmployeeName);
 		flAsmShiftCol2.addComponent(tfAchievedQty);
 		flAsmShiftCol2.addComponent(cbShiftStatus);
@@ -496,15 +502,26 @@ public class Assembly extends BaseTransUI {
 		}
 	}
 	
+	private void loadShiftList() {
+		try {
+			BeanItemContainer<ShiftDM> beanShiftDM = new BeanItemContainer<ShiftDM>(ShiftDM.class);
+			beanShiftDM.addAll(serviceShift.getShiftList(null, null, companyid, "Active", "F"));
+			cbShiftName.setContainerDataSource(beanShiftDM);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
 	private void loadProductList() {
 		try {
+			String planId = serviceAsmblyPlanHrd
+					.getAsmblyPlanHdrDetails(null, companyid, null, cbPlanRefNo.getValue().toString(), null, "Active",
+							"F").get(0).getAsmplnid();
 			BeanItemContainer<AsmblyPlanDtlDM> beanProductDM = new BeanItemContainer<AsmblyPlanDtlDM>(
 					AsmblyPlanDtlDM.class);
-			System.out.println("=================================================>1");
-			beanProductDM
-					.addAll(serviceAsmblyPlanDtl.getAsmPlnDtlList(null,
-							(((AsmblyPlanDtlDM) cbPlanRefNo.getValue()).getAsmPlnId()), null, null, null,
-							null, "F"));
+			beanProductDM.addAll(serviceAsmblyPlanDtl.getAsmPlnDtlList(null, Long.valueOf(planId), null, null, null,
+					null, "F"));
 			cbProductName.setContainerDataSource(beanProductDM);
 		}
 		catch (Exception e) {
@@ -568,7 +585,7 @@ public class Assembly extends BaseTransUI {
 		dfAsmDt.setRequired(true);
 		cbProductName.setRequired(true);
 		tfProductQty.setRequired(true);
-		tfShiftName.setRequired(true);
+		cbShiftName.setRequired(true);
 		cbEmployeeName.setRequired(true);
 		tfAchievedQty.setRequired(true);
 		// reset the input controls to default value
@@ -603,7 +620,7 @@ public class Assembly extends BaseTransUI {
 		dfAsmDt.setRequired(true);
 		cbProductName.setRequired(true);
 		tfProductQty.setRequired(true);
-		tfShiftName.setRequired(true);
+		cbShiftName.setRequired(true);
 		cbEmployeeName.setRequired(true);
 		tfAchievedQty.setRequired(true);
 		tblMstScrSrchRslt.setVisible(false);
@@ -698,7 +715,7 @@ public class Assembly extends BaseTransUI {
 					}
 				}
 				if (asmblyShiftDM.getShiftName() != null) {
-					tfShiftName.setValue(asmblyShiftDM.getShiftName());
+					cbShiftName.setValue(asmblyShiftDM.getShiftName());
 				}
 				if (asmblyShiftDM.getAchivedQty() != null) {
 					tfAchievedQty.setValue(asmblyShiftDM.getAchivedQty().toString());
@@ -774,13 +791,13 @@ public class Assembly extends BaseTransUI {
 	private boolean validateShiftDetails() {
 		boolean isValid = true;
 		logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Validating Data ");
-		if ((tfShiftName.getValue() == "")) {
-			tfShiftName.setComponentError(new UserError(GERPErrorCodes.NULL_ASMBL_SHIFT));
+		if ((cbShiftName.getValue() == "")) {
+			cbShiftName.setComponentError(new UserError(GERPErrorCodes.NULL_ASMBL_SHIFT));
 			logger.warn("Company ID : " + companyid + " | User Name : " + userName + " > "
-					+ "Throwing ValidationException. User data is > " + tfShiftName.getValue());
+					+ "Throwing ValidationException. User data is > " + cbShiftName.getValue());
 			isValid = false;
 		} else {
-			tfShiftName.setComponentError(null);
+			cbShiftName.setComponentError(null);
 		}
 		if ((cbEmployeeName.getValue() == null)) {
 			cbEmployeeName.setComponentError(new UserError(GERPErrorCodes.NULL_EMPLOYEE_NAME));
@@ -808,6 +825,7 @@ public class Assembly extends BaseTransUI {
 	@Override
 	protected void saveDetails() throws SaveException, FileNotFoundException, IOException {
 		try {
+			System.out.println("====================================>1:Am in save detais");
 			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Saving Data... ");
 			AsmblyHdrDM asmblyHdr = new AsmblyHdrDM();
 			if (tblMstScrSrchRslt.getValue() != null) {
@@ -862,13 +880,15 @@ public class Assembly extends BaseTransUI {
 		try {
 			logger.info("Company ID : " + companyid + " | User Name : " + userName + " > " + "Saving Data... ");
 			AsmblyDtlDM assemblyDtlObj = new AsmblyDtlDM();
+			ProductDM productDM = serviceProduct.getProductList(companyid, null, null, productName, "Active", null,
+					null, "F").get(0);
 			if (tblAsmDtl.getValue() != null) {
 				assemblyDtlObj = beanAsmblyDtl.getItem(tblAsmDtl.getValue()).getBean();
 				listAsmDtl.remove(assemblyDtlObj);
 			}
 			if (cbProductName.getValue() != null) {
-				assemblyDtlObj.setProductId(((ProductDM) cbProductName.getValue()).getProdid());
-				assemblyDtlObj.setProdName(((ProductDM) cbProductName.getValue()).getProdname());
+				assemblyDtlObj.setProductId(productDM.getProdid());
+				assemblyDtlObj.setProdName(productDM.getProdname());
 			}
 			if (tfProductQty.getValue() != null) {
 				assemblyDtlObj.setProdtnQty((Long.valueOf(tfProductQty.getValue().trim().length())));
@@ -896,7 +916,7 @@ public class Assembly extends BaseTransUI {
 				assemblyShiftObj = beanAsmblyShift.getItem(tblAsmShift.getValue()).getBean();
 				listAsmShift.remove(assemblyShiftObj);
 			}
-			assemblyShiftObj.setShiftName(tfShiftName.getValue());
+			assemblyShiftObj.setShiftName(cbShiftName.getValue().toString());
 			if (cbEmployeeName.getValue() != null) {
 				assemblyShiftObj.setEmpId(((EmployeeDM) cbEmployeeName.getValue()).getEmployeeid());
 				assemblyShiftObj.setEmpName(((EmployeeDM) cbEmployeeName.getValue()).getFirstname());
@@ -940,7 +960,7 @@ public class Assembly extends BaseTransUI {
 		taRemarks.setComponentError(null);
 		cbProductName.setComponentError(null);
 		tfProductQty.setComponentError(null);
-		tfShiftName.setComponentError(null);
+		cbShiftName.setComponentError(null);
 		cbEmployeeName.setComponentError(null);
 		tfAchievedQty.setComponentError(null);
 		cbPlanRefNo.setRequired(false);
@@ -950,7 +970,7 @@ public class Assembly extends BaseTransUI {
 		taRemarks.setRequired(false);
 		cbProductName.setRequired(false);
 		tfProductQty.setRequired(false);
-		tfShiftName.setRequired(false);
+		cbShiftName.setRequired(false);
 		cbEmployeeName.setRequired(false);
 		tfAchievedQty.setRequired(false);
 		tblAsmDtl.removeAllItems();
@@ -999,8 +1019,8 @@ public class Assembly extends BaseTransUI {
 	protected void asmblShitResetFields() {
 		cbEmployeeName.setValue(null);
 		cbEmployeeName.setComponentError(null);
-		tfShiftName.setValue("");
-		tfShiftName.setComponentError(null);
+		cbShiftName.setValue("");
+		cbShiftName.setComponentError(null);
 		tfAchievedQty.setValue("0");
 		tfAchievedQty.setComponentError(null);
 		cbShiftStatus.setValue(cbShiftStatus.getItemIds().iterator().next());

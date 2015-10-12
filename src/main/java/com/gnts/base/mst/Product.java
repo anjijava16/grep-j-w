@@ -59,6 +59,8 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractSelect;
@@ -71,6 +73,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.Align;
@@ -139,6 +142,21 @@ public class Product extends BaseUI {
 		// product category Name text field
 		tfProdName = new GERPTextField("Product Name");
 		tfProdName.setMaxLength(25);
+		tfProdName.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				if (serviceProduct.getProductList(companyid, null, null, tfProdName.getValue(), null,null, null, "F").size() > 0) {
+					tfProdName.setComponentError(new UserError("Product Name Already Exist"));
+					Notification.show("Product Name : " + tfProdName.getValue() + " is Already Exist");
+					tfProdName.setValue("");
+				} else {
+					tfProdName.setComponentError(null);
+				}
+			}
+		});
 		// Product category combo box
 		cbprodCtgry = new ComboBox("Product Category");
 		cbprodCtgry.setItemCaptionPropertyId("catename");

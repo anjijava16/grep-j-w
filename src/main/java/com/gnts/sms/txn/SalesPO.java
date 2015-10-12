@@ -96,6 +96,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
@@ -215,7 +216,7 @@ public class SalesPO extends BaseTransUI {
 				// TODO Auto-generated method stub
 				try {
 					ClientDM clientDM = serviceClients.getClientDetails(null, (Long) cbClient.getValue(), null, null,
-							null, null, null, null, null, "P").get(0);
+							null, null, null, null, null,null, "P").get(0);
 					if (clientDM.getClientAddress() != null) {
 						taInvoiceAddr.setValue(clientDM.getClientAddress());
 						taShipmentAddr.setValue(clientDM.getClientAddress());
@@ -719,7 +720,7 @@ public class SalesPO extends BaseTransUI {
 							null, null).get(0).getClientId();
 			BeanContainer<Long, ClientDM> beanClients = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClients.setBeanIdProperty("clientId");
-			beanClients.addAll(serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null, null,
+			beanClients.addAll(serviceClients.getClientDetails(companyid, clientid, null, null,null, null, null, null, null,
 					"Active", "P"));
 			cbClient.setContainerDataSource(beanClients);
 			cbClient.setValue(clientid);
@@ -1411,6 +1412,10 @@ public class SalesPO extends BaseTransUI {
 		}
 		if ((cbEnquiryNumber.getValue() == null)) {
 			cbEnquiryNumber.setComponentError(new UserError(GERPErrorCodes.ENQUIRY_NO));
+			errorFlag = true;
+		}
+		if (tfPoNo.getValue() == null || tfPoNo.getValue() == "") {
+			tfPoNo.setComponentError(new UserError("Enter the PO Number"));
 			errorFlag = true;
 		}
 		if (errorFlag) {

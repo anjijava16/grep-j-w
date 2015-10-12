@@ -667,7 +667,7 @@ public class CustomerVisit extends BaseTransUI {
 			Long clientid = serviceEnquiryHdr
 					.getSmsEnqHdrList(null, Long.valueOf(cbEnqNo.getValue().toString()), null, null, null, "P", null,
 							null).get(0).getClientId();
-			ClientDM clientDM = serviceClients.getClientDetails(companyid, clientid, null, null, null, null, null,
+			ClientDM clientDM = serviceClients.getClientDetails(companyid, clientid, null, null,null, null, null, null,
 					null, "Active", "F").get(0);
 			tfClientName.setValue(clientDM.getClientName());
 			tfClentCity.setValue(clientDM.getCityName());

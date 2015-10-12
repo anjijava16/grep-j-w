@@ -162,7 +162,7 @@ public class SampleDeliveryAdvise extends BaseTransUI {
 								.getSmsEnqHdrList(companyid, (Long) cbEnquiry.getValue(), null, null, null, "F", null,
 										null).get(0).getClientId();
 						taClientAddres.setValue(serviceClients
-								.getClientDetails(null, clientid, null, null, null, null, null, null, "Active", "F")
+								.getClientDetails(null, clientid, null, null, null, null,null, null, null, "Active", "F")
 								.get(0).getClientAddress());
 					}
 					catch (Exception e) {

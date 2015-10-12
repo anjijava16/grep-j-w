@@ -610,7 +610,7 @@ public class ClientAppointments extends BaseUI {
 		try {
 			BeanContainer<Long, ClientDM> beanClients = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClients.setBeanIdProperty("clientId");
-			beanClients.addAll(serviceClients.getClientDetails(companyId, null, null, null, null, null, null, null,
+			beanClients.addAll(serviceClients.getClientDetails(companyId, null, null, null, null, null, null, null,null,
 					"Active", "P"));
 			cbClient.setContainerDataSource(beanClients);
 		}

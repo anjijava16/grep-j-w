@@ -613,7 +613,7 @@ public class FinalInspection extends BaseTransUI {
 		try {
 			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClient.setBeanIdProperty("clientId");
-			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
+			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null,null, null, null, null, null, null,
 					"Active", "P"));
 			cbCaseMod.setContainerDataSource(beanClient);
 		}
@@ -863,7 +863,6 @@ public class FinalInspection extends BaseTransUI {
 			try {
 				Long.valueOf(tfTstCycle.getValue());
 				tfTstCycle.setComponentError(null);
-				qaTestDtlDM.setTstCycleNo(Long.valueOf(tfTstCycle.getValue()));
 				qaTestDtlDM.setQaTstStatus((String) cbQDtlStatus.getValue());
 				qaTestDtlDM.setLastUpdatedDt(DateUtils.getcurrentdate());
 				qaTestDtlDM.setLastUpdatedBy(userName);

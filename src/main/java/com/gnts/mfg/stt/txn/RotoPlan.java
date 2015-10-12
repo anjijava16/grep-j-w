@@ -45,6 +45,7 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
+import com.gnts.hcm.domain.mst.ShiftDM;
 import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.service.txn.WorkOrderDtlService;
@@ -96,6 +97,7 @@ public class RotoPlan extends BaseTransUI {
 	private WorkOrderDtlService serviceWorkOrderDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
+	private RotoPlanDtlService serviceRotoPlanDtl = (RotoPlanDtlService) SpringContextHelper.getBean("rotoplandtl");
 	private CompanyLookupService serviceCompanyLookup = (CompanyLookupService) SpringContextHelper
 			.getBean("companyLookUp");
 	private List<RotoPlanDtlDM> listRotoPlanDetail = null;
@@ -394,7 +396,7 @@ public class RotoPlan extends BaseTransUI {
 		cbArmProd.setItemCaptionPropertyId("prodName");
 		// ARM WOID
 		cbArmWONo = new GERPComboBox("WO No.");
-		cbArmWONo.setItemCaptionPropertyId("workOrdrNo");
+		cbArmWONo.setItemCaptionPropertyId("woNo");
 		cbArmWONo.setWidth("130");
 		loadAWorkOrderNo();
 		cbArmWONo.addValueChangeListener(new ValueChangeListener() {
@@ -679,8 +681,8 @@ public class RotoPlan extends BaseTransUI {
 						null, null, null, cbDtlStatus.getValue().toString()));
 				listRotoPlanShift.addAll(serviceRotoplanshift.getRotoPlanShiftList(null, Long.valueOf(rotoplanId),
 						null, cbShftStatus.getValue().toString()));
-				listRotoPlanArm.addAll(serviceRotoplanarm.getRotoPlanArmList(null, Long.valueOf(rotoplanId),null, null,
-						cbArmstatus.getValue().toString()));
+				listRotoPlanArm.addAll(serviceRotoplanarm.getRotoPlanArmList(null, Long.valueOf(rotoplanId), null,
+						null, cbArmstatus.getValue().toString()));
 			}
 			loadRotoDtlList();
 			loadShiftRslt();
@@ -1409,7 +1411,7 @@ public class RotoPlan extends BaseTransUI {
 	private void loadClientList() {
 		try {
 			BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
-			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
+			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null,null, null, null, null,
 					"Active", "P"));
 			cbClientId.setContainerDataSource(beanClient);
 		}
@@ -1475,10 +1477,12 @@ public class RotoPlan extends BaseTransUI {
 	 */
 	private void loadAWorkOrderNo() {
 		try {
-			BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(
-					WorkOrderHdrDM.class);
-			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
-					null, null, null, null, null));
+			BeanItemContainer<RotoPlanDtlDM> beanWrkOrdHdr = new BeanItemContainer<RotoPlanDtlDM>(RotoPlanDtlDM.class);
+			RotoPlanDtlDM rotoPlanDtlDM = beanRotoPlandtlDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
+			Long rotoplanDtlId = rotoPlanDtlDM.getRotoplandtlId();
+			
+			beanWrkOrdHdr.addAll(serviceRotoPlanDtl.getRotoPlanDtlList(companyid, rotoplanDtlId, null, null, null, null,
+					"Active"));
 			cbArmWONo.setContainerDataSource(beanWrkOrdHdr);
 		}
 		catch (Exception e) {

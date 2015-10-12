@@ -398,7 +398,7 @@ public class Accounts extends BaseTransUI {
 		try {
 			BeanContainer<Long, ClientDM> bean = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			bean.setBeanIdProperty("clientId");
-			bean.addAll(serviceClient.getClientDetails(companyId, null, null, null, null, null, null, null, "Active",
+			bean.addAll(serviceClient.getClientDetails(companyId, null, null,null, null, null, null, null, null, "Active",
 					"T"));
 			cbClientName.setContainerDataSource(bean);
 		}

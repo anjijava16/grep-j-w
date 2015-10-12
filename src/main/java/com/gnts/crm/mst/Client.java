@@ -509,7 +509,7 @@ public class Client extends BaseUI {
 			logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Search Parameters are "
 					+ companyid + ", " + tfClntName.getValue() + ", " + (String) cbClntStatus.getValue());
 			listClient = serviceClients.getClientDetails(companyid, null, (Long) cbClntCategory.getValue(),
-					(Long) cbClntSubCategory.getValue(), null, null, null, (String) tfClntName.getValue(),
+					(Long) cbClntSubCategory.getValue(), null, null, null, (String) tfClntName.getValue(),null,
 					(String) cbClntStatus.getValue(), "F");
 			recordCnt = listClient.size();
 			beanClnt = new BeanItemContainer<ClientDM>(ClientDM.class);

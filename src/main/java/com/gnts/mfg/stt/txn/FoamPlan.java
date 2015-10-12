@@ -1098,7 +1098,7 @@ public class FoamPlan extends BaseTransUI {
 	private void loadClientList() {
 		try {
 			BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
-			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
+			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null,null, null, null, null,
 					"Active", "P"));
 			cbClient.setContainerDataSource(beanClient);
 		}

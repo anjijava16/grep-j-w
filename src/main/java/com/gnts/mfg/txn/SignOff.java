@@ -475,7 +475,7 @@ public class SignOff extends BaseTransUI {
 		try {
 			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClient.setBeanIdProperty("clientId");
-			beanClient.addAll(serviceClient.getClientDetails(companyId, null, null, null, null, null, null, null,
+			beanClient.addAll(serviceClient.getClientDetails(companyId, null, null, null,null, null, null, null, null,
 					"Active", "P"));
 			cbClient.setContainerDataSource(beanClient);
 		}

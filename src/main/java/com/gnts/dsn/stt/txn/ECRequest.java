@@ -322,7 +322,7 @@ public class ECRequest extends BaseTransUI {
 					companyid,
 					serviceEnqHeader
 							.getSmsEnqHdrList(null, (Long) cbEnquiry.getValue(), null, null, null, "F", null, null)
-							.get(0).getClientId(), null, null, null, null, null, null, "Active", "P"));
+							.get(0).getClientId(), null, null, null, null, null, null,null, "Active", "P"));
 			cbClient.setContainerDataSource(beanclientDM);
 			cbClient.setValue(cbClient.getItemIds().iterator().next());
 		}

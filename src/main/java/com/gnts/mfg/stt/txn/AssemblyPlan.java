@@ -39,6 +39,8 @@ import com.gnts.erputil.exceptions.ERPException.ValidationException;
 import com.gnts.erputil.helper.SpringContextHelper;
 import com.gnts.erputil.ui.BaseTransUI;
 import com.gnts.erputil.util.DateUtils;
+import com.gnts.hcm.domain.mst.ShiftDM;
+import com.gnts.hcm.service.mst.ShiftService;
 import com.gnts.mfg.domain.txn.WorkOrderDtlDM;
 import com.gnts.mfg.domain.txn.WorkOrderHdrDM;
 import com.gnts.mfg.service.txn.WorkOrderDtlService;
@@ -89,6 +91,7 @@ public class AssemblyPlan extends BaseTransUI {
 	private WorkOrderDtlService serviceWorkOrderDtl = (WorkOrderDtlService) SpringContextHelper.getBean("workOrderDtl");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
 	private SlnoGenService serviceSlnogen = (SlnoGenService) SpringContextHelper.getBean("slnogen");
+	private ShiftService serviceShift = (ShiftService) SpringContextHelper.getBean("Shift");
 	private List<AsmblyPlanDtlDM> listAsmblyPlanDtls = null;
 	private List<AsmblyPlanShiftDM> listAsmblyPlanShift = null;
 	// form layout for input controls
@@ -108,10 +111,10 @@ public class AssemblyPlan extends BaseTransUI {
 	private Button btnAddShift = new GERPButton("Add", "add", this);
 	private Button btndelete = new GERPButton("Delete", "delete", this);
 	private Button btnShiftdelete = new GERPButton("Delete", "delete", this);
-	private ComboBox cbBranch, cbStatus, cbDtlStatus, cbEmpName, cbWorkOrder, cbProduct, cbClient;
+	private ComboBox cbBranch, cbStatus, cbDtlStatus, cbEmpName, cbWorkOrder, cbProduct, cbClient, cbShiftName;
 	private ComboBox cbHdrStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
-	private TextField tfPlanRefNo, tfPlanHdrQty, tfShiftName, tfTargetQty, tfPlanDtlQty, tfPlnRefNo;
+	private TextField tfPlanRefNo, tfPlanHdrQty, tfTargetQty, tfPlanDtlQty, tfPlnRefNo;
 	private DateField dfAsmPlanDt;
 	private TextArea taRemark;
 	private Table tblAsmbPlanDtl, tblShift;
@@ -268,7 +271,9 @@ public class AssemblyPlan extends BaseTransUI {
 		cbDtlStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbDtlStatus.setWidth("100");
 		// Shift Name TextField
-		tfShiftName = new GERPTextField("Shift Name");
+		cbShiftName = new GERPComboBox("Shift Name");
+		cbShiftName.setItemCaptionPropertyId("shiftName");
+		loadShiftList();
 		// Employee Name combobox
 		cbEmpName = new GERPComboBox("Employee Name");
 		cbEmpName.setItemCaptionPropertyId("fullname");
@@ -370,7 +375,7 @@ public class AssemblyPlan extends BaseTransUI {
 		flAsmShiftCol1 = new FormLayout();
 		flAsmShiftCol2 = new FormLayout();
 		flAsmShiftCol3 = new FormLayout();
-		flAsmShiftCol1.addComponent(tfShiftName);
+		flAsmShiftCol1.addComponent(cbShiftName);
 		flAsmShiftCol1.addComponent(cbEmpName);
 		flAsmShiftCol2.addComponent(tfTargetQty);
 		flAsmShiftCol2.addComponent(cbStatus);
@@ -635,7 +640,7 @@ public class AssemblyPlan extends BaseTransUI {
 					}
 				}
 				if (asmblyPlanShiftDM.getShiftName() != null) {
-					tfShiftName.setValue(asmblyPlanShiftDM.getShiftName());
+					cbShiftName.setValue(asmblyPlanShiftDM.getShiftName());
 				}
 				if (asmblyPlanShiftDM.getTargetQty() != null) {
 					tfTargetQty.setValue(asmblyPlanShiftDM.getTargetQty().toString());
@@ -692,7 +697,7 @@ public class AssemblyPlan extends BaseTransUI {
 		cbBranch.setRequired(true);
 		dfAsmPlanDt.setRequired(true);
 		tfPlanHdrQty.setRequired(true);
-		tfShiftName.setRequired(true);
+		cbShiftName.setRequired(true);
 		tfTargetQty.setRequired(true);
 		cbEmpName.setRequired(true);
 		cbWorkOrder.setRequired(true);
@@ -738,7 +743,7 @@ public class AssemblyPlan extends BaseTransUI {
 		dfAsmPlanDt.setComponentError(null);
 		tfPlanHdrQty.setComponentError(null);
 		tfPlanRefNo.setComponentError(null);
-		tfShiftName.setComponentError(null);
+		cbShiftName.setComponentError(null);
 		tfTargetQty.setComponentError(null);
 		cbEmpName.setComponentError(null);
 		cbClient.setComponentError(null);
@@ -748,7 +753,7 @@ public class AssemblyPlan extends BaseTransUI {
 		cbBranch.setRequired(false);
 		dfAsmPlanDt.setRequired(false);
 		tfPlanHdrQty.setRequired(false);
-		tfShiftName.setRequired(false);
+		cbShiftName.setRequired(false);
 		cbEmpName.setRequired(false);
 		cbClient.setRequired(false);
 		cbWorkOrder.setRequired(false);
@@ -773,7 +778,7 @@ public class AssemblyPlan extends BaseTransUI {
 		hlCmdBtnLayout.setVisible(false);
 		cbBranch.setRequired(true);
 		dfAsmPlanDt.setRequired(true);
-		tfShiftName.setRequired(true);
+		cbShiftName.setRequired(true);
 		cbEmpName.setRequired(true);
 		cbWorkOrder.setRequired(true);
 		cbProduct.setRequired(true);
@@ -804,10 +809,10 @@ public class AssemblyPlan extends BaseTransUI {
 	private void asmblShiftResetFields() {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbEmpName.setValue(null);
-		tfShiftName.setValue("");
+		cbShiftName.setValue("");
 		tfTargetQty.setValue("0");
 		cbStatus.setValue(cbStatus.getItemIds().iterator().next());
-		tfShiftName.setComponentError(null);
+		cbShiftName.setComponentError(null);
 		cbEmpName.setComponentError(null);
 	}
 	
@@ -818,7 +823,7 @@ public class AssemblyPlan extends BaseTransUI {
 		cbBranch.setComponentError(null);
 		dfAsmPlanDt.setComponentError(null);
 		tfPlanHdrQty.setComponentError(null);
-		tfShiftName.setComponentError(null);
+		cbShiftName.setComponentError(null);
 		cbEmpName.setComponentError(null);
 		cbClient.setComponentError(null);
 		cbWorkOrder.setComponentError(null);
@@ -899,13 +904,13 @@ public class AssemblyPlan extends BaseTransUI {
 	private boolean validateShiftDetails() {
 		boolean isValid = true;
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Validating Data ");
-		if ((tfShiftName.getValue() == "")) {
-			tfShiftName.setComponentError(new UserError(GERPErrorCodes.NULL_SHIFT));
+		if ((cbShiftName.getValue() == "")) {
+			cbShiftName.setComponentError(new UserError(GERPErrorCodes.NULL_SHIFT));
 			logger.warn("Company ID : " + companyid + " | User Name : " + username + " > "
-					+ "Throwing ValidationException. User data is > " + tfShiftName.getValue());
+					+ "Throwing ValidationException. User data is > " + cbShiftName.getValue());
 			isValid = false;
 		} else {
-			tfShiftName.setComponentError(null);
+			cbShiftName.setComponentError(null);
 		}
 		Long targetQty;
 		try {
@@ -1032,7 +1037,7 @@ public class AssemblyPlan extends BaseTransUI {
 				assemblyPlanShiftObj = beanAsmblyPlanShiftDM.getItem(tblShift.getValue()).getBean();
 				listAsmblyPlanShift.remove(assemblyPlanShiftObj);
 			}
-			assemblyPlanShiftObj.setShiftName(tfShiftName.getValue());
+			assemblyPlanShiftObj.setShiftName(cbShiftName.getValue().toString());
 			if (cbEmpName.getValue() != null) {
 				assemblyPlanShiftObj.setEmpId(((EmployeeDM) cbEmpName.getValue()).getEmployeeid());
 				assemblyPlanShiftObj.setEmpName(((EmployeeDM) cbEmpName.getValue()).getFirstname());
@@ -1093,9 +1098,20 @@ public class AssemblyPlan extends BaseTransUI {
 	private void loadClientList() {
 		try {
 			BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
-			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,
+			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,null,
 					"Active", "P"));
 			cbClient.setContainerDataSource(beanClient);
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void loadShiftList() {
+		try {
+			BeanItemContainer<ShiftDM> beanShiftDM = new BeanItemContainer<ShiftDM>(ShiftDM.class);
+			beanShiftDM.addAll(serviceShift.getShiftList(null, null, companyid, "Active", "F"));
+			cbShiftName.setContainerDataSource(beanShiftDM);
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

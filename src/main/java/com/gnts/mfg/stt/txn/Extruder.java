@@ -294,7 +294,6 @@ public class Extruder extends BaseTransUI {
 		tfGradeNo.setWidth("140");
 		tfLotNo = new GERPTextField("Lot No.");
 		tfLotNo.setWidth("140");
-		loadLot
 		tiHeatngTime = new GERPTimeField("Heating Time");
 		taInstruct = new TextArea("Instruction");
 		taInstruct.setHeight("78");

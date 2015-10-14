@@ -1,5 +1,6 @@
 package com.gnts.mfg.stt.txn;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -18,11 +19,16 @@ import com.gnts.erputil.ui.BaseUI;
 import com.gnts.erputil.util.DateUtils;
 import com.gnts.stt.mfg.domain.txn.CaseDetailDM;
 import com.gnts.stt.mfg.service.txn.CaseDetailService;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -38,7 +44,7 @@ public class CaseDetail extends BaseUI {
 	// Search Control Layout
 	private HorizontalLayout hlSearchLayout;
 	// Add User Input Controls
-	private TextField tfCaseModel, tfPowWgTop, tfPowWgBot, tfPowWgTotal, tfBoxWgTop, tfBoxWBot, tfBoxWgTotal,
+	private TextField tfCaseModel, tfPowWgTop, tfPowWgBot, tfPowWgTotal, tfBoxWgTop, tfBoxWgBot, tfBoxWgTotal,
 			tfInsertCase, tfWheelPBoltSz, tfFrokLift, tfLatchHook, tfRivertHinge, tfBoltHinge, tfRivert,
 			tfBoltNutWasher, tfWireRopeRevert, tfGasket, tfGasketMtr, tfCaseDInner, tfCaseDOuter;
 	private TextArea taRemarks;
@@ -74,18 +80,83 @@ public class CaseDetail extends BaseUI {
 		cbCaseStatus.setWidth("150");
 		tfCaseModel = new GERPTextField("Case Model");
 		tfCaseModel.setWidth("150");
+		tfCaseModel.addBlurListener(new BlurListener() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void blur(BlurEvent event) {
+				// TODO Auto-generated method stub
+				if (serviceCaseDetail.getCaseDetail(null, companyid, null, null, "F").size() > 0) {
+					tfCaseModel.setComponentError(new UserError("Model Name Already Exist"));
+					Notification.show("Model Name : " + tfCaseModel.getValue() + " is Already Exist");
+					tfCaseModel.setValue("");
+				} else {
+					tfCaseModel.setComponentError(null);
+				}
+			}
+		});
 		tfPowWgTop = new GERPTextField("Powder Top");
 		tfPowWgTop.setWidth("150");
+		tfPowWgTop.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getPowderWeightTotal();
+			}
+		});
 		tfPowWgBot = new GERPTextField("Powder Bottom");
 		tfPowWgBot.setWidth("150");
+		tfPowWgBot.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getPowderWeightTotal();
+			}
+		});
 		tfPowWgTotal = new GERPTextField("Powder Total");
 		tfPowWgTotal.setWidth("150");
-		tfBoxWgTop = new GERPTextField("Box Wg.Top");
+		tfPowWgTotal.setEnabled(false);
+		tfBoxWgTop = new GERPTextField("Box Wt.Top");
 		tfBoxWgTop.setWidth("150");
-		tfBoxWBot = new GERPTextField("Box Wg.Bottom");
-		tfBoxWBot.setWidth("150");
-		tfBoxWgTotal = new GERPTextField("Box Wg.Total");
+		tfBoxWgTop.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getBoxWeightTotal();
+			}
+		});
+		tfBoxWgBot = new GERPTextField("Box Wt.Bottom");
+		tfBoxWgBot.setWidth("150");
+		tfBoxWgBot.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				getBoxWeightTotal();
+			}
+		});
+		tfBoxWgTotal = new GERPTextField("Box Wt.Total");
 		tfBoxWgTotal.setWidth("150");
+		tfBoxWgTotal.setEnabled(false);
 		tfInsertCase = new GERPTextField("Insert");
 		tfInsertCase.setWidth("150");
 		tfWheelPBoltSz = new GERPTextField("wheel/Bolt Size");
@@ -114,6 +185,7 @@ public class CaseDetail extends BaseUI {
 		tfCaseDOuter.setWidth("150");
 		taRemarks = new GERPTextArea("Remarks");
 		taRemarks.setWidth("150");
+		taRemarks.setHeight("70");
 		// build search layout
 		hlSearchLayout = new GERPAddEditHLayout();
 		hlSrchContainer.addComponent(GERPPanelGenerator.createPanel(hlSearchLayout));
@@ -154,7 +226,7 @@ public class CaseDetail extends BaseUI {
 			flColumn1.addComponent(tfPowWgBot);
 			flColumn1.addComponent(tfPowWgTotal);
 			flColumn1.addComponent(tfBoxWgTop);
-			flColumn1.addComponent(tfBoxWBot);
+			flColumn1.addComponent(tfBoxWgBot);
 			flColumn2.addComponent(tfBoxWgTotal);
 			flColumn2.addComponent(tfInsertCase);
 			flColumn2.addComponent(tfWheelPBoltSz);
@@ -211,16 +283,16 @@ public class CaseDetail extends BaseUI {
 		logger.info("Company ID : " + companyid + " | User Name : " + username + " > " + "Resetting the UI controls");
 		cbCaseStatus.setValue(cbCaseStatus.getItemIds().iterator().next());
 		tfCaseModel.setValue("");
-		tfCaseModel.setEnabled(false);
+		tfCaseModel.setEnabled(true);
 		tfCaseModel.setComponentError(null);
 		tfPowWgTop.setValue("");
 		tfPowWgBot.setValue("");
 		tfPowWgTotal.setValue("");
-		tfPowWgTotal.setEnabled(true);
+		tfPowWgTotal.setEnabled(false);
 		tfBoxWgTop.setValue("");
-		tfBoxWBot.setValue("");
+		tfBoxWgBot.setValue("");
 		tfBoxWgTotal.setValue("");
-		tfBoxWgTotal.setEnabled(true);
+		tfBoxWgTotal.setEnabled(false);
 		tfInsertCase.setValue("");
 		tfWheelPBoltSz.setValue("");
 		tfFrokLift.setValue("");
@@ -244,7 +316,7 @@ public class CaseDetail extends BaseUI {
 		caseId = editCaseDetail.getCaseId().toString();
 		if (editCaseDetail.getCaseModel() != null) {
 			tfCaseModel.setValue(editCaseDetail.getCaseModel());
-			tfCaseModel.setEnabled(true);
+			tfCaseModel.setEnabled(false);
 		}
 		if (editCaseDetail.getPowWgTop() != null) {
 			tfPowWgTop.setValue(editCaseDetail.getPowWgTop());
@@ -259,7 +331,7 @@ public class CaseDetail extends BaseUI {
 			tfBoxWgTop.setValue(editCaseDetail.getBoxWgTop());
 		}
 		if (editCaseDetail.getBoxWgBot() != null) {
-			tfBoxWBot.setValue(editCaseDetail.getBoxWgBot());
+			tfBoxWgBot.setValue(editCaseDetail.getBoxWgBot());
 		}
 		if (editCaseDetail.getBoxWgTotal() != null) {
 			tfBoxWgTotal.setValue(editCaseDetail.getBoxWgTotal());
@@ -414,7 +486,7 @@ public class CaseDetail extends BaseUI {
 			CaseDetailObj.setPowWgBot(tfPowWgBot.getValue());
 			CaseDetailObj.setPowWgTotal(tfPowWgTotal.getValue());
 			CaseDetailObj.setBoxWgTop(tfBoxWgTop.getValue());
-			CaseDetailObj.setBoxWgBot(tfBoxWBot.getValue());
+			CaseDetailObj.setBoxWgBot(tfBoxWgBot.getValue());
 			CaseDetailObj.setBoxWgTotal(tfBoxWgTotal.getValue());
 			CaseDetailObj.setInsertCase(tfInsertCase.getValue());
 			CaseDetailObj.setWheelPboltSz(tfWheelPBoltSz.getValue());
@@ -442,6 +514,36 @@ public class CaseDetail extends BaseUI {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void getPowderWeightTotal() {
+		try {
+			// TODO Auto-generated method stub
+			if (tfPowWgTop.getValue() != null && tfPowWgBot.getValue() != null) {
+				tfPowWgTotal.setValue((new BigDecimal(tfPowWgTop.getValue()))
+						.add(new BigDecimal(tfPowWgBot.getValue())).toString());
+			} else {
+				tfPowWgTotal.setValue("0");
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+	}
+	
+	private void getBoxWeightTotal() {
+		try {
+			// TODO Auto-generated method stub
+			if (tfBoxWgTop.getValue() != null && tfBoxWgBot.getValue() != null) {
+				tfBoxWgTotal.setValue((new BigDecimal(tfBoxWgTop.getValue()))
+						.add(new BigDecimal(tfBoxWgBot.getValue())).toString());
+			} else {
+				tfBoxWgTotal.setValue("0");
+			}
+		}
+		catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 	}
 }

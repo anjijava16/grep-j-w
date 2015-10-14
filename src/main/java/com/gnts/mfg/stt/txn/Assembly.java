@@ -86,7 +86,6 @@ public class Assembly extends BaseTransUI {
 	private AsmblyPlanHdrService serviceAsmblyPlanHrd = (AsmblyPlanHdrService) SpringContextHelper
 			.getBean("AsmblyPlanHdr");
 	private EmployeeService serviceEmployee = (EmployeeService) SpringContextHelper.getBean("employee");
-	private ProductService serviceProduct = (ProductService) SpringContextHelper.getBean("Product");
 	private SlnoGenService serviceSLNo = (SlnoGenService) SpringContextHelper.getBean("slnogen");
 	private AsmblyPlanDtlService serviceAsmblyPlanDtl = (AsmblyPlanDtlService) SpringContextHelper
 			.getBean("AsmblyPlanDtl");

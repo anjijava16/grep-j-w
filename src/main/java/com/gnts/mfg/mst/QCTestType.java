@@ -90,7 +90,7 @@ public class QCTestType extends BaseUI {
 	private ComboBox cbTstTypeStatus;
 	private FormLayout fltstTyp, fltstMethdgly, flTstDesc, flTstSts;
 	//
-	private ComboBox cbMtrlType, cbTstDefStatus;
+	private GERPComboBox cbMtrlType, cbTstDefStatus;
 	private ListSelect lsMtrlName;
 	private Table tblTstdef;
 	private Button btnTstDef;
@@ -134,7 +134,7 @@ public class QCTestType extends BaseUI {
 		cbTstTypeStatus.setNullSelectionAllowed(false);
 		cbTstTypeStatus.setValue(cbTstTypeStatus.getItemIds().iterator().next());
 		//
-		cbMtrlType = new ComboBox("Materia Type");
+		cbMtrlType = new GERPComboBox("Material Type");
 		cbMtrlType.setWidth("130");
 		cbMtrlType.setItemCaptionPropertyId("materialTypeName");
 		cbMtrlType.setNullSelectionAllowed(false);
@@ -158,7 +158,7 @@ public class QCTestType extends BaseUI {
 		lsMtrlName.setNullSelectionAllowed(false);
 		lsMtrlName.setMultiSelect(true);
 		lsMtrlName.setWidth("147");
-		lsMtrlName.setHeight("63");
+		lsMtrlName.setHeight("70");
 		cbTstDefStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE, BASEConstants.M_GENERIC_COLUMN);
 		cbTstDefStatus.setValue(cbTstDefStatus.getItemIds().iterator().next());
 		cbTstDefStatus.setNullSelectionAllowed(false);
@@ -549,8 +549,8 @@ public class QCTestType extends BaseUI {
 				taTstDesc.setValue(editTestType.getTstTypeDesc());
 			}
 			cbTstTypeStatus.setValue(editTestType.getTstTypStatus());
-			listTstDef = serviceTestDef.getQCTestDefDetails(null, companyid, Long.valueOf(testTypeId), null, null,
-					"Active");
+			listTstDef = serviceTestDef
+					.getQCTestDefDetails(null, companyid, Long.valueOf(testTypeId), null, null, null);
 			listTstSpec = serviceTestSpec.getQCTestSpecDetails(null, companyid, Long.valueOf(testTypeId), "Active");
 		}
 	}

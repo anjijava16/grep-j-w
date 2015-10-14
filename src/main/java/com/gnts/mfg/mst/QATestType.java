@@ -51,6 +51,7 @@ import com.gnts.mfg.service.mst.TestDefnService;
 import com.gnts.mfg.service.mst.TestGroupService;
 import com.gnts.mfg.service.mst.TestSpecificationService;
 import com.gnts.mfg.service.mst.TestTypeService;
+import com.gnts.stt.mfg.domain.txn.AsmblyPlanDtlDM;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -580,6 +581,7 @@ public class QATestType extends BaseUI {
 					"tstTypeDesc", "preCondtnYN", "tstTypStatus", "lastUpdatedDt", "lastUpdatedBy" });
 			tblMstScrSrchRslt.setColumnHeaders(new String[] { "Ref.Id", "Test Group", "Type", "Methodology",
 					"Description", "Pre.Condition", "Status", "Last Updated Dt.", "Last Updated By" });
+			tblMstScrSrchRslt.setColumnWidth("tstTypeDesc", 250);
 			tblMstScrSrchRslt.setColumnAlignment("qaTstTypId", Align.RIGHT);
 			tblMstScrSrchRslt.setColumnFooter("lastUpdatedBy", "No.of Records : " + recordCnt);
 		}
@@ -658,7 +660,7 @@ public class QATestType extends BaseUI {
 		try {
 			BeanContainer<Long, TestGroupDM> beanCity = new BeanContainer<Long, TestGroupDM>(TestGroupDM.class);
 			beanCity.setBeanIdProperty("qaTestGpID");
-			beanCity.addAll(serviceTestGroup.getTestGpDetails(companyid, null, "Active", "F"));
+			beanCity.addAll(serviceTestGroup.getTestGpDetails(null, companyid, null, "Active", "F"));
 			cbTestGroup.setContainerDataSource(beanCity);
 		}
 		catch (Exception e) {
@@ -722,7 +724,6 @@ public class QATestType extends BaseUI {
 			TestTypeDM testTypeDM = beanTestType.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			testTypeId = testTypeDM.getQaTstTypId().toString();
 			tfTestType.setValue(testTypeDM.getTstType());
-			cbTestGroup.setValue(testTypeDM.getQaTstGpId().toString());
 			tfTestMethdlgy.setValue(testTypeDM.getTstMldlgy());
 			if (testTypeDM.getTstTypeDesc() != null) {
 				taTypeDesc.setValue(testTypeDM.getTstTypeDesc());
@@ -733,10 +734,11 @@ public class QATestType extends BaseUI {
 			} else {
 				chPreCdn.setValue(false);
 			}
+			cbTestGroup.setValue(Long.valueOf(testTypeDM.getQaTstGpId()));
 			listTestDefn = serviceTestDefn.getTestDefnDetails(null, Long.valueOf(testTypeId), companyid, null, null,
 					"Active");
 			listTestSpecification = serviceTestSpecification.getTestSpecDetails(companyid, Long.valueOf(testTypeId),
-					"Active");
+					null);
 			listTestCondition = serviceTestCondition.getTestCondnDetails(companyid, null, Long.valueOf(testTypeId),
 					"Active");
 		}
@@ -1193,6 +1195,7 @@ public class QATestType extends BaseUI {
 		TestSpecificationDM testSpec = new TestSpecificationDM();
 		if (tblTstSpec.getValue() != null) {
 			testSpec = beanTestSpec.getItem(tblTstSpec.getValue()).getBean();
+			testSpec.setTstPrmStatus("Deleted");
 			listTestSpecification.remove(testSpec);
 			resetTstSpec();
 			tblTstSpec.setValue("");

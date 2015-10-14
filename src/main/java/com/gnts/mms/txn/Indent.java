@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.hamcrest.core.IsSame;
 import com.gnts.base.domain.mst.BranchDM;
 import com.gnts.base.domain.mst.CompanyLookupDM;
 import com.gnts.base.domain.mst.DepartmentDM;
@@ -55,6 +56,8 @@ import com.gnts.mms.service.mst.MaterialService;
 import com.gnts.mms.service.txn.IndentDtlService;
 import com.gnts.mms.service.txn.IndentHdrService;
 import com.gnts.saarc.util.SerialNumberGenerator;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -73,6 +76,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
@@ -113,6 +117,7 @@ public class Indent extends BaseTransUI {
 	private ComboBox cbIndType, cbBranchId, cbUom, cbDepartment;
 	private ListSelect cbMatName;
 	private PopupDateField dfIndDate, dfExpDt;
+	private CheckBox ckdateValid;
 	private TextArea taRemarks;
 	private Table tblIndentDtl;
 	private BeanItemContainer<IndentHdrDM> beanIndentHdrDM = null;
@@ -124,6 +129,7 @@ public class Indent extends BaseTransUI {
 	private int recordCnt = 0;
 	private MmsComments comments;
 	private String username;
+	static boolean tempDate;
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Tax.class);
@@ -280,7 +286,44 @@ public class Indent extends BaseTransUI {
 		cbBranchId.setWidth("130px");
 		loadBranchList();
 		// Expected Date field
+		/*
+		 * ckdateValid = new CheckBox("Same Expected Date?"); ckdateValid.addValueChangeListener(new
+		 * Property.ValueChangeListener() {
+		 *//**
+			 * 
+			 */
+		/*
+		 * private static final long serialVersionUID = 1L; public void valueChange(ValueChangeEvent event) { if
+		 * (dfIndDate.getValue() != null && dfExpDt.getValue() != null) { dfExpDt.setValue(dfIndDate.getValue());
+		 * dfExpDt.setEnabled(false); } else { dfExpDt.setEnabled(true); ckdateValid.setValue(null); } } });
+		 */
 		dfExpDt = new GERPPopupDateField("Expected Date");
+		dfExpDt.addValueChangeListener(new ValueChangeListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				try {
+					isSameDate(dfIndDate.getValue(), dfExpDt.getValue());
+					// if (ckdateValid.getValue() == true) {
+					System.out.println("================================>" + tempDate);
+					if (tempDate == true && dfExpDt.getValue().after(dfIndDate.getValue())) {
+					} else {
+						if (dfIndDate.getValue() != null) {
+							dfExpDt.setValue(null);
+							Notification.show("Enter a valid date from Indent Date");
+						}
+					}
+				}
+				// }
+				catch (Exception e) {
+				}
+			}
+		});
 		// Remarks TextArea
 		taRemarks = new TextArea("Purpose");
 		taRemarks.setWidth("110px");
@@ -365,6 +408,7 @@ public class Indent extends BaseTransUI {
 		flIndentCol2.addComponent(tfIndNo);
 		flIndentCol2.addComponent(cbDepartment);
 		flIndentCol3.addComponent(dfIndDate);
+		// flIndentCol3.addComponent(ckdateValid);
 		flIndentCol3.addComponent(dfExpDt);
 		flIndentCol3.setSpacing(true);
 		flIndentCol3.setMargin(true);
@@ -501,6 +545,7 @@ public class Indent extends BaseTransUI {
 		cbIndType.setValue(null);
 		dfIndDate.setValue(new Date());
 		dfExpDt.setValue(DateUtils.addDays(new Date(), 7));
+		dfExpDt.setEnabled(true);
 		cbDepartment.setValue(null);
 		tfIndNo.setReadOnly(false);
 		tfIndNo.setValue("");
@@ -1010,7 +1055,6 @@ public class Indent extends BaseTransUI {
 		if (indType.equals("S")) {
 			SlnoGenDM slnoObj = serviceSlnogen.getSequenceNumber(companyid, branchId, moduleId, "MM_INDNO").get(0);
 			if (slnoObj.getAutoGenYN().equals("Y")) {
-
 				serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_INDNO");
 			}
 		} else if (indType.equals("P")) {
@@ -1019,5 +1063,9 @@ public class Indent extends BaseTransUI {
 				serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_INDNOP");
 			}
 		}
+	}
+	
+	public static boolean isSameDate(Date date0, Date date1) {
+		return tempDate;
 	}
 }

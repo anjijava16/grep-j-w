@@ -685,7 +685,7 @@ public class CustomerVisit extends BaseTransUI {
 					WorkOrderHdrDM.class);
 			beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
 			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "P",
-					null, (Long) cbEnqNo.getValue(), null, null, null));
+					null, (Long) cbEnqNo.getValue(), null, null, null,null));
 			cbWorkorder.setContainerDataSource(beanWrkOrdHdr);
 		}
 		catch (Exception e) {

@@ -211,7 +211,7 @@ public class CalendarMonthly extends VerticalLayout implements CalendarEventProv
 		} else if (type.equalsIgnoreCase("WO_SCHEDULE")) {
 			try {
 				for (WorkOrderHdrDM workOrderHdrDM : serviceWrkOrdHdr.getWorkOrderHDRList(null, null, null, null, null,
-						null, "F", null, null, fromStartDate, toEndDate, null)) {
+						null, "F", null, null, fromStartDate, toEndDate, null,null)) {
 					calendar.setTime(workOrderHdrDM.getWorkOrdrDtF());
 					calendar.add(GregorianCalendar.DATE, 2);
 					CalendarTestEvent event = getNewEvent("Ref. Number : " + workOrderHdrDM.getWorkOrdrNo()

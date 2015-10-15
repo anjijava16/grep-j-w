@@ -76,6 +76,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -122,6 +123,7 @@ public class WorkOrder extends BaseTransUI {
 	private OptionGroup opWorkordtype = new OptionGroup("");
 	private OptionGroup opPONumbers = new OptionGroup("");
 	private ComboBox cbBranchName, cbClientName, cbWrkOdrType, cbPONumber, cbWorkderStatus, cbEnquiryNumber;
+	private CheckBox cbEmergency;
 	// BeanItem container of TestGroupDM
 	private BeanItemContainer<WorkOrderHdrDM> beanWrkOdrHdr = null;
 	private BeanItemContainer<WorkOrderDtlDM> beanWrkOdrDtl = new BeanItemContainer<WorkOrderDtlDM>(
@@ -276,6 +278,7 @@ public class WorkOrder extends BaseTransUI {
 		} else {
 			tfPrdName.setReadOnly(false);
 		}
+		cbEmergency = new CheckBox("Emegency WO ");
 		tfBalQty = new GERPTextField("Work Order Balance Qty.");
 		tfPlnQty = new GERPTextField("Work Order Plan Qty.");
 		tfBalQty.setReadOnly(true);
@@ -574,6 +577,7 @@ public class WorkOrder extends BaseTransUI {
 		// adding components into third column in form layout4
 		flOdrHdrColumn4.addComponent(ogPriority);
 		flOdrHdrColumn4.addComponent(ogMaterialUsage);
+		flOdrHdrColumn4.addComponent(cbEmergency);
 		flOdrHdrColumn4.addComponent(cbWorkderStatus);
 		// adding components into fourth column in form layout3
 		flOdrDtlColumn1 = new FormLayout();
@@ -648,11 +652,11 @@ public class WorkOrder extends BaseTransUI {
 			if (name.equals("Reviewer")) {
 				listWOHeader = serviceWrkOrdHdr.getWorkOrderHDRList(companyid, branch, client,
 						(String) tfPlanRefNo.getValue(), (String) cbWrkOdrType.getValue(),
-						(String) cbWorkderStatus.getValue(), "F", null, null, null, null, null);
+						(String) cbWorkderStatus.getValue(), "F", null, null, null, null, null, null);
 			} else {
 				listWOHeader = serviceWrkOrdHdr.getWorkOrderHDRList(companyid, branch, client,
 						(String) tfPlanRefNo.getValue(), (String) cbWrkOdrType.getValue(),
-						(String) cbWorkderStatus.getValue(), "F", null, null, null, null, null);
+						(String) cbWorkderStatus.getValue(), "F", null, null, null, null, null, null);
 			}
 			recordCnt = listWOHeader.size();
 			beanWrkOdrHdr = new BeanItemContainer<WorkOrderHdrDM>(WorkOrderHdrDM.class);
@@ -728,8 +732,8 @@ public class WorkOrder extends BaseTransUI {
 							null, null).get(0).getClientId();
 			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClient.setBeanIdProperty("clientId");
-			beanClient.addAll(serviceClient.getClientDetails(companyid, clientid, null,null, null, null, null, null, null,
-					"Active", "P"));
+			beanClient.addAll(serviceClient.getClientDetails(companyid, clientid, null, null, null, null, null, null,
+					null, "Active", "P"));
 			cbClientName.setContainerDataSource(beanClient);
 			cbClientName.setValue(clientid);
 		}
@@ -774,6 +778,7 @@ public class WorkOrder extends BaseTransUI {
 		dfWrkOdrDate.setValue(new Date());
 		dfWrkOdrDate.setComponentError(null);
 		tfPlanRefNo.setReadOnly(false);
+		cbEmergency.setValue(null);
 		tfPlanRefNo.setValue("");
 		tfPlanRefNo.setReadOnly(true);
 		tfPlanRefNo.setComponentError(null);
@@ -820,6 +825,9 @@ public class WorkOrder extends BaseTransUI {
 				cbWrkOdrType.setReadOnly(false);
 				cbWrkOdrType.setValue(workOrderHdrDM.getWorkOrdrTyp());
 				cbWrkOdrType.setReadOnly(true);
+				if (workOrderHdrDM.getEmergencyWO() != null) {
+					cbEmergency.setValue(true);
+				}
 				if (workOrderHdrDM.getWorkOrdrRmrks() != null) {
 					taWrkOdrHdrRemarks.setValue(workOrderHdrDM.getWorkOrdrRmrks());
 				}
@@ -1116,6 +1124,9 @@ public class WorkOrder extends BaseTransUI {
 			wrkOdHdr.setPoId((Long) (cbPONumber.getValue()));
 			wrkOdHdr.setWorkOrdrRmrks(taWrkOdrHdrRemarks.getValue());
 			wrkOdHdr.setPreprdBy(employeeId);
+			if (cbEmergency != null) {
+				wrkOdHdr.setEmergencyWO("Active");
+			}
 			wrkOdHdr.setReviewBy(null);
 			wrkOdHdr.setActionedBy(null);
 			wrkOdHdr.setPriority((String) ogPriority.getValue());
@@ -1134,9 +1145,8 @@ public class WorkOrder extends BaseTransUI {
 				save.setWorkOrdHdrId(Long.valueOf(wrkOdHdr.getWorkOrdrId().toString()));
 				Long ponumber = (Long) (cbPONumber.getValue());
 				Long reduceOrdrqty = 0L;
-				reduceOrdrqty = servicePODtl
-						.getsmspodtllist(null, ponumber, save.getProdId(), null, null, null, "F").get(0)
-						.getInvoicedqty();
+				reduceOrdrqty = servicePODtl.getsmspodtllist(null, ponumber, save.getProdId(), null, null, null, "F")
+						.get(0).getInvoicedqty();
 				Long invoiceqty = 0L;
 				if (save.getWorkOrdDlId() == null) {
 					invoiceqty = reduceOrdrqty + save.getPlanQty();

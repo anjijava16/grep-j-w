@@ -354,7 +354,7 @@ public class DashbordView implements ClickListener {
 					SmsEnqHdrDM enq = (SmsEnqHdrDM) item.getBean();
 					VerticalLayout vlLayout = new VerticalLayout();
 					for (WorkOrderHdrDM quoteHdr : serviceWrkOrdHdr.getWorkOrderHDRList(null, null, null, null, null,
-							null, "P", null, enq.getEnquiryId(), null, null, null)) {
+							null, "P", null, enq.getEnquiryId(), null, null, null,null)) {
 						String status = quoteHdr.getWorkOrdrSts();
 						if (quoteHdr.getWorkOrdrSts() == null) {
 							status = "-----";

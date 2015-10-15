@@ -773,7 +773,7 @@ public class ProductOverview implements ClickListener {
 				try {
 					try {
 						WorkOrderHdrDM workOrderHdrDM = serviceWrkOrdHdr.getWorkOrderHDRList(null, null, null, null,
-								null, null, "F", qaTestHdrDM.getWoid(), null, null, null, null).get(0);
+								null, null, "F", qaTestHdrDM.getWoid(), null, null, null, null,null).get(0);
 						try {
 							loadEnquiryDetails(workOrderHdrDM.getEnquiryId(), qaTestHdrDM.getProductid());
 						}

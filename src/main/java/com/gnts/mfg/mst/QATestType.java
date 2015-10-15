@@ -51,7 +51,6 @@ import com.gnts.mfg.service.mst.TestDefnService;
 import com.gnts.mfg.service.mst.TestGroupService;
 import com.gnts.mfg.service.mst.TestSpecificationService;
 import com.gnts.mfg.service.mst.TestTypeService;
-import com.gnts.stt.mfg.domain.txn.AsmblyPlanDtlDM;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;

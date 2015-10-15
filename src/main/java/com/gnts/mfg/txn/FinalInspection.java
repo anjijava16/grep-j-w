@@ -590,7 +590,7 @@ public class FinalInspection extends BaseTransUI {
 					WorkOrderHdrDM.class);
 			beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
 			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "P",
-					null, null, null, null, null));
+					null, null, null, null, null,null));
 		}
 		catch (Exception e) {
 			logger.info(e.getMessage());

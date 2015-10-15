@@ -639,14 +639,14 @@ public class AssemblyPlan extends BaseTransUI {
 						cbEmpName.setValue(itemIdClient);
 					}
 				}
-				if (asmblyPlanShiftDM.getShiftName() != null) {
-					cbShiftName.setValue(asmblyPlanShiftDM.getShiftName());
-				}
 				if (asmblyPlanShiftDM.getTargetQty() != null) {
 					tfTargetQty.setValue(asmblyPlanShiftDM.getTargetQty().toString());
 				}
 				if (asmblyPlanShiftDM.getStatus() != null) {
 					cbStatus.setValue(asmblyPlanShiftDM.getStatus());
+				}
+				if (asmblyPlanShiftDM.getShiftName() != null) {
+					cbShiftName.setValue(Long.valueOf(asmblyPlanShiftDM.getShiftName()));
 				}
 			}
 		}
@@ -1098,7 +1098,7 @@ public class AssemblyPlan extends BaseTransUI {
 	private void loadClientList() {
 		try {
 			BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
-			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null,null,
+			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null, null,
 					"Active", "P"));
 			cbClient.setContainerDataSource(beanClient);
 		}
@@ -1109,7 +1109,8 @@ public class AssemblyPlan extends BaseTransUI {
 	
 	private void loadShiftList() {
 		try {
-			BeanItemContainer<ShiftDM> beanShiftDM = new BeanItemContainer<ShiftDM>(ShiftDM.class);
+			BeanContainer<Long, ShiftDM> beanShiftDM = new BeanContainer<Long, ShiftDM>(ShiftDM.class);
+			beanShiftDM.setBeanIdProperty("shiftId");
 			beanShiftDM.addAll(serviceShift.getShiftList(null, null, companyid, "Active", "F"));
 			cbShiftName.setContainerDataSource(beanShiftDM);
 		}
@@ -1142,7 +1143,7 @@ public class AssemblyPlan extends BaseTransUI {
 			BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(
 					WorkOrderHdrDM.class);
 			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null,
-					"F", null, null, null, null, null));
+					"F", null, null, null, null, null,null));
 			cbWorkOrder.setContainerDataSource(beanWrkOrdHdr);
 		}
 		catch (Exception e) {

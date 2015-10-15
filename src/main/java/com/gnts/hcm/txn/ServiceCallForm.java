@@ -1075,7 +1075,7 @@ public class ServiceCallForm extends BaseTransUI {
 					WorkOrderHdrDM.class);
 			beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
 			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
-					null, null, null, null, (Long) cbPONumber.getValue()));
+					null, null, null, null, (Long) cbPONumber.getValue(),null));
 			cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
 		}
 		catch (Exception e) {

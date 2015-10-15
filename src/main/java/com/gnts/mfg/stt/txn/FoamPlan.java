@@ -1148,7 +1148,7 @@ public class FoamPlan extends BaseTransUI {
 			BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(
 					WorkOrderHdrDM.class);
 			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null,
-					"F", null, null, null, null, null));
+					"F", null, null, null, null, null,null));
 			cbWorkorder.setContainerDataSource(beanWrkOrdHdr);
 		}
 		catch (Exception e) {

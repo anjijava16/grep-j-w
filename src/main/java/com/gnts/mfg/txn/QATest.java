@@ -210,7 +210,7 @@ public class QATest extends BaseTransUI {
 				loadProductList();
 				try {
 					WorkOrderHdrDM workOrderHdrDM = serviceWorkOrderHdr.getWorkOrderHDRList(null, null, null, null,
-							null, null, "P", (Long) cbWorkOrderNo.getValue(), null, null, null, null).get(0);
+							null, null, "P", (Long) cbWorkOrderNo.getValue(), null, null, null, null,null).get(0);
 					new TestingDocuments(hlDocumentLayout, workOrderHdrDM.getEnquiryId().toString(), "DR");
 				}
 				catch (Exception e) {
@@ -700,7 +700,7 @@ public class QATest extends BaseTransUI {
 					WorkOrderHdrDM.class);
 			beanWrkOrdHdr.setBeanIdProperty("workOrdrId");
 			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "P",
-					null, null, null, null, null));
+					null, null, null, null, null,null));
 			cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
 		}
 		catch (Exception e) {
@@ -725,7 +725,7 @@ public class QATest extends BaseTransUI {
 		try {
 			Long clientid = serviceWorkOrderHdr
 					.getWorkOrderHDRList(companyid, null, null, null, null, null, "F", (Long) cbWorkOrderNo.getValue(),
-							null, null, null, null).get(0).getClientId();
+							null, null, null, null,null).get(0).getClientId();
 			BeanContainer<Long, ClientDM> beanClient = new BeanContainer<Long, ClientDM>(ClientDM.class);
 			beanClient.setBeanIdProperty("clientId");
 			beanClient.addAll(serviceClient.getClientDetails(companyid, clientid, null,null, null, null, null, null, null,
@@ -742,7 +742,7 @@ public class QATest extends BaseTransUI {
 		try {
 			BeanContainer<Long, TestGroupDM> beanTstGrp = new BeanContainer<Long, TestGroupDM>(TestGroupDM.class);
 			beanTstGrp.setBeanIdProperty("qaTestGpID");
-			beanTstGrp.addAll(serviceTestGroup.getTestGpDetails(null, null, "Active", "F"));
+			beanTstGrp.addAll(serviceTestGroup.getTestGpDetails(null, companyid,null, "Active", "F"));
 			cbTestGrp.setContainerDataSource(beanTstGrp);
 		}
 		catch (Exception e) {

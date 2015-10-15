@@ -621,7 +621,7 @@ public class WorkOrderPlan extends BaseTransUI {
 				Long workordNo = workOrderPlanHdr.getWrkOrderNoID();
 				cbEnquiryNumber.setValue(serviceWorkOrderHdr
 						.getWorkOrderHDRList(companyid, null, null, null, null, null, "F", workordNo, null, null, null,
-								null).get(0).getEnquiryId());
+								null,null).get(0).getEnquiryId());
 				Collection<?> woids = cbWorkOrderNo.getItemIds();
 				for (Iterator<?> iterator = woids.iterator(); iterator.hasNext();) {
 					Object itemId = (Object) iterator.next();
@@ -681,7 +681,7 @@ public class WorkOrderPlan extends BaseTransUI {
 			BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(
 					WorkOrderHdrDM.class);
 			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, null, null, null, "F",
-					null, (Long) cbEnquiryNumber.getValue(), null, null, null));
+					null, (Long) cbEnquiryNumber.getValue(), null, null, null,null));
 			cbWorkOrderNo.setContainerDataSource(beanWrkOrdHdr);
 		}
 		catch (Exception e) {

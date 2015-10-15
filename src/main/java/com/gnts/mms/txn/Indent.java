@@ -117,7 +117,6 @@ public class Indent extends BaseTransUI {
 	private ComboBox cbIndType, cbBranchId, cbUom, cbDepartment;
 	private ListSelect cbMatName;
 	private PopupDateField dfIndDate, dfExpDt;
-	private CheckBox ckdateValid;
 	private TextArea taRemarks;
 	private Table tblIndentDtl;
 	private BeanItemContainer<IndentHdrDM> beanIndentHdrDM = null;
@@ -129,7 +128,6 @@ public class Indent extends BaseTransUI {
 	private int recordCnt = 0;
 	private MmsComments comments;
 	private String username;
-	static boolean tempDate;
 	private VerticalLayout vlTableForm = new VerticalLayout();
 	// Initialize logger
 	private Logger logger = Logger.getLogger(Tax.class);
@@ -308,10 +306,7 @@ public class Indent extends BaseTransUI {
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
 				try {
-					isSameDate(dfIndDate.getValue(), dfExpDt.getValue());
-					// if (ckdateValid.getValue() == true) {
-					System.out.println("================================>" + tempDate);
-					if (tempDate == true && dfExpDt.getValue().after(dfIndDate.getValue())) {
+					if ((dfIndDate.getValue().compareTo(dfExpDt.getValue())) < 0) {
 					} else {
 						if (dfIndDate.getValue() != null) {
 							dfExpDt.setValue(null);
@@ -319,7 +314,6 @@ public class Indent extends BaseTransUI {
 						}
 					}
 				}
-				// }
 				catch (Exception e) {
 				}
 			}
@@ -1063,9 +1057,5 @@ public class Indent extends BaseTransUI {
 				serviceSlnogen.updateNextSequenceNumber(companyid, branchId, moduleId, "MM_INDNOP");
 			}
 		}
-	}
-	
-	public static boolean isSameDate(Date date0, Date date1) {
-		return tempDate;
 	}
 }

@@ -130,7 +130,8 @@ public class RotoPlan extends BaseTransUI {
 			cbArmWONo, cbArmNo;
 	private ComboBox cbShftStatus = new GERPComboBox("Status", BASEConstants.M_GENERIC_TABLE,
 			BASEConstants.M_GENERIC_COLUMN);
-	private TextField tfPlanRefNo, tfPlanHdrQty, tfShiftName, tfTargetQty, tfPlanDtlQty, tfOrderQty, tfNoofcycle;
+	private TextField tfPlanRefNo, tfPlanHdrQty, tfShiftName, tfTargetQty, tfPlanDtlQty, tfOrderQty, tfNoofcycle,
+			tfEmergency;
 	private DateField dfRotoPlanDt;
 	private TextArea taRemark;
 	private Table tblRotoPlanDtls, tblShift, tblArmDtls;
@@ -305,6 +306,9 @@ public class RotoPlan extends BaseTransUI {
 		// Plan Ref.No text field
 		tfPlanRefNo = new GERPTextField("Plan Ref.No");
 		tfPlanRefNo.setWidth("130px");
+		tfEmergency=new GERPTextField("Emegency WO?");
+		tfEmergency.setValue("No");
+		tfEmergency.setEnabled(false);
 		cbArmNo = new GERPComboBox("Arm No");
 		cbArmNo.setWidth("130");
 		cbArmNo.setValue("0");
@@ -368,6 +372,10 @@ public class RotoPlan extends BaseTransUI {
 				Object itemId = event.getProperty().getValue();
 				BeanItem<?> item = (BeanItem<?>) cbWO.getItem(itemId);
 				if (item != null) {
+					if (serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, null, (String) cbWO.getValue(), null,
+							"Active", "F", null, null, null, null, null, "Active").size() > 0) {
+						tfEmergency.setValue("Yes");
+					}
 					loadProductList();
 				}
 			}
@@ -591,6 +599,7 @@ public class RotoPlan extends BaseTransUI {
 		new FormLayout();
 		flDtlCol1.addComponent(cbClientId);
 		flDtlCol1.addComponent(cbWO);
+		flDtlCol1.addComponent(tfEmergency);
 		flDtlCol2.addComponent(cbProd);
 		flDtlCol2.addComponent(tfOrderQty);
 		flDtlCol2.addComponent(tfPlanDtlQty);
@@ -1341,6 +1350,7 @@ public class RotoPlan extends BaseTransUI {
 		// cbProd.setValue(null);
 		tfPlanDtlQty.setValue("0");
 		tfOrderQty.setValue("0");
+		tfEmergency.setValue("No");
 		cbArmProd.setComponentError(null);
 		cbArmNo.setComponentError(null);
 		tfNoofcycle.setComponentError(null);
@@ -1411,7 +1421,7 @@ public class RotoPlan extends BaseTransUI {
 	private void loadClientList() {
 		try {
 			BeanItemContainer<ClientDM> beanClient = new BeanItemContainer<ClientDM>(ClientDM.class);
-			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null,null, null, null, null,
+			beanClient.addAll(serviceClient.getClientDetails(companyid, null, null, null, null, null, null, null, null,
 					"Active", "P"));
 			cbClientId.setContainerDataSource(beanClient);
 		}
@@ -1464,7 +1474,7 @@ public class RotoPlan extends BaseTransUI {
 			BeanItemContainer<WorkOrderHdrDM> beanWrkOrdHdr = new BeanItemContainer<WorkOrderHdrDM>(
 					WorkOrderHdrDM.class);
 			beanWrkOrdHdr.addAll(serviceWorkOrderHdr.getWorkOrderHDRList(companyid, null, clientId, null, null, null,
-					"F", null, null, null, null, null));
+					"F", null, null, null, null, null, null));
 			cbWO.setContainerDataSource(beanWrkOrdHdr);
 		}
 		catch (Exception e) {
@@ -1480,9 +1490,8 @@ public class RotoPlan extends BaseTransUI {
 			BeanItemContainer<RotoPlanDtlDM> beanWrkOrdHdr = new BeanItemContainer<RotoPlanDtlDM>(RotoPlanDtlDM.class);
 			RotoPlanDtlDM rotoPlanDtlDM = beanRotoPlandtlDM.getItem(tblMstScrSrchRslt.getValue()).getBean();
 			Long rotoplanDtlId = rotoPlanDtlDM.getRotoplandtlId();
-			
-			beanWrkOrdHdr.addAll(serviceRotoPlanDtl.getRotoPlanDtlList(companyid, rotoplanDtlId, null, null, null, null,
-					"Active"));
+			beanWrkOrdHdr.addAll(serviceRotoPlanDtl.getRotoPlanDtlList(companyid, rotoplanDtlId, null, null, null,
+					null, "Active"));
 			cbArmWONo.setContainerDataSource(beanWrkOrdHdr);
 		}
 		catch (Exception e) {
